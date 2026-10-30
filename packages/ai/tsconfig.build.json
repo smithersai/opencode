@@ -6,5 +6,5 @@
     "allowImportingTsExtensions": false,
     "noEmit": false
   },
-  "vibelang": { "declarationSidecars": true }
+  "vibelang": { "declarationSidecars": true, "trustedPackages": ["@opencode/ai"] }
 }

@@ -321,6 +321,7 @@
         "@types/which": "3.0.4",
         "drizzle-kit": "catalog:",
         "fast-check": "catalog:",
+        "vibelang": "file:../../.vibelang-toolchain/vibelang-0.0.11.tgz",
       },
     },
     "packages/desktop": {
@@ -5181,6 +5182,8 @@
     "@opencode/console-app/vite": ["vite@7.3.6", "", { "dependencies": { "esbuild": "^0.27.0 || ^0.28.0", "fdir": "^6.5.0", "picomatch": "^4.0.3", "postcss": "^8.5.6", "rollup": "^4.43.0", "tinyglobby": "^0.2.15" }, "optionalDependencies": { "fsevents": "~2.3.3" }, "peerDependencies": { "@types/node": "^20.19.0 || >=22.12.0", "jiti": ">=1.21.0", "less": "^4.0.0", "lightningcss": "^1.21.0", "sass": "^1.70.0", "sass-embedded": "^1.70.0", "stylus": ">=0.54.8", "sugarss": "^5.0.0", "terser": "^5.16.0", "tsx": "^4.8.1", "yaml": "^2.4.2" }, "optionalPeers": ["@types/node", "jiti", "less", "lightningcss", "sass", "sass-embedded", "stylus", "sugarss", "terser", "tsx", "yaml"], "bin": { "vite": "bin/vite.js" } }, "sha512-4XP60spRGjSZFf1qYH+dJIkK2znL3zQfl9KkOV9MkkRR/3Dls0dxaBsQPTloEc5BLXWPL9vsOxopxyKoMmDueg=="],
 
     "@opencode/console-app/wrangler": ["wrangler@4.50.0", "", { "dependencies": { "@cloudflare/kv-asset-handler": "0.4.0", "@cloudflare/unenv-preset": "2.7.11", "blake3-wasm": "2.1.5", "esbuild": "0.25.4", "miniflare": "4.20251118.1", "path-to-regexp": "6.3.0", "unenv": "2.0.0-rc.24", "workerd": "1.20251118.0" }, "optionalDependencies": { "fsevents": "~2.3.2" }, "peerDependencies": { "@cloudflare/workers-types": "^4.20251118.0" }, "optionalPeers": ["@cloudflare/workers-types"], "bin": { "wrangler": "bin/wrangler.js", "wrangler2": "bin/wrangler.js" } }, "sha512-+nuZuHZxDdKmAyXOSrHlciGshCoAPiy5dM+t6mEohWm7HpXvTHmWQGUf/na9jjWlWJHCJYOWzkA1P5HBJqrIEA=="],
+
+    "@opencode/core/vibelang": ["vibelang@../../.vibelang-toolchain/vibelang-0.0.11.tgz", { "dependencies": { "dprint": "0.64.3" }, "bin": { "vibelang": "bin/vibelang", "vibelang-format": "bin/vibelang-format", "vibelang-ast-grep": "bin/vibelang-ast-grep" } }, "sha512-2OcewFSK9NUb6+Lam0LQmkhmkc+YA1VdJIViFZuNHV0W9lHpbOi4DzE2YIPQZfW+keckoHeOz5wdsjpLUCFscg=="],
 
     "@opencode/gui-plugins/vibelang": ["vibelang@../../.vibelang-toolchain/vibelang-0.0.11.tgz", { "dependencies": { "dprint": "0.64.3" }, "bin": { "vibelang": "bin/vibelang", "vibelang-format": "bin/vibelang-format", "vibelang-ast-grep": "bin/vibelang-ast-grep" } }, "sha512-2OcewFSK9NUb6+Lam0LQmkhmkc+YA1VdJIViFZuNHV0W9lHpbOi4DzE2YIPQZfW+keckoHeOz5wdsjpLUCFscg=="],
 

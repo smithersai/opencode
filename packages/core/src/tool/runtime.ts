@@ -179,12 +179,26 @@ const toJsonSchema = (schema: Schema.Top): JsonSchema.JsonSchema => {
   // emit `$ref` plus root `$defs`; inline acyclic local references so providers receive the full
   // nested schema directly, then remove unused `$defs`. Recursive references stay intact because
   // expanding them would never terminate.
-  const normalized = flattenAllOf(
-    Object.keys(document.definitions).length === 0
-      ? document.schema
-      : { ...document.schema, $defs: document.definitions },
+  const normalized = dropSafeIntegerBounds(
+    flattenAllOf(
+      Object.keys(document.definitions).length === 0
+        ? document.schema
+        : { ...document.schema, $defs: document.definitions },
+    ),
   )
   return dropDefinitionsIfResolved(inlineLocalReferences(normalized)) as JsonSchema.JsonSchema
+}
+
+// Effect 4.1's isInt states the safe-integer range as minimum and maximum. Every integer the decoder accepts is
+// already in that range, so drop the bounds rather than show providers two extra keywords on every integer.
+const dropSafeIntegerBounds = (value: unknown): unknown => {
+  if (Array.isArray(value)) return value.map(dropSafeIntegerBounds)
+  if (typeof value !== "object" || value === null) return value
+  const schema = Object.fromEntries(Object.entries(value).map(([key, item]) => [key, dropSafeIntegerBounds(item)]))
+  if (schema.type !== "integer") return schema
+  if (schema.minimum === Number.MIN_SAFE_INTEGER) delete schema.minimum
+  if (schema.maximum === Number.MAX_SAFE_INTEGER) delete schema.maximum
+  return schema
 }
 
 const flattenAllOf = (value: unknown): unknown => {

@@ -79,8 +79,10 @@ const docTags = (schema: JsonSchema): Array<string> => {
   }
   if (typeof schema.format === "string") tags.push(`@format ${schema.format}`)
   if (schema.type === "integer") tags.push("@integer")
-  if (typeof schema.minimum === "number") tags.push(`@minimum ${schema.minimum}`)
-  if (typeof schema.maximum === "number") tags.push(`@maximum ${schema.maximum}`)
+  // Effect 4.1's isInt also states the safe-integer range, which every integer already implies.
+  const safeBound = (value: number) => schema.type === "integer" && Math.abs(value) === Number.MAX_SAFE_INTEGER
+  if (typeof schema.minimum === "number" && !safeBound(schema.minimum)) tags.push(`@minimum ${schema.minimum}`)
+  if (typeof schema.maximum === "number" && !safeBound(schema.maximum)) tags.push(`@maximum ${schema.maximum}`)
   if (typeof schema.exclusiveMinimum === "number") tags.push(`@exclusiveMinimum ${schema.exclusiveMinimum}`)
   if (typeof schema.exclusiveMaximum === "number") tags.push(`@exclusiveMaximum ${schema.exclusiveMaximum}`)
   if (typeof schema.multipleOf === "number") tags.push(`@multipleOf ${schema.multipleOf}`)
@@ -171,7 +173,11 @@ const renderSchema = (
     ) {
       return "{}"
     }
-    const members = alternatives.map((item) => renderSchema(item, nested, depth + 1, seen))
+    // Effect 4.1 flattens a nullable number's union, so the sentinels stand beside other members too.
+    const flattened = alternatives.some((item) => item.type === "number")
+      ? alternatives.filter((item) => !effectNumberSentinel(item))
+      : alternatives
+    const members = flattened.map((item) => renderSchema(item, nested, depth + 1, seen))
     if (members.some((member) => member === "unknown")) return "unknown"
     return intersection([
       members.join(" | "),

@@ -1,6 +1,7 @@
 import { isAbsolute, join } from "node:path"
 import { Context, Effect, FileSystem, PlatformError, Schema, SchemaAST, SchemaRepresentation } from "effect"
 import { HttpMethod, type HttpRouter } from "effect/http"
+import type { Sse } from "effect/encoding"
 import { HttpApi, HttpApiEndpoint, HttpApiGroup, HttpApiSchema, OpenApi } from "effect/http-api"
 import { format } from "prettier"
 
@@ -93,7 +94,12 @@ type PromiseInputField =
   | (InputField & { readonly optional: boolean })
   | { readonly name: string; readonly source: "wildcard"; readonly optional: false }
 
-const resolveHttpApiStatus = SchemaAST.resolveAt<number>("httpApiStatus")
+// HttpApiSchema.status annotates the key context unless the schema already has an ordinary status annotation.
+function resolveHttpApiStatus(schema: Schema.Top): number | undefined {
+  const annotations = Schema.resolveAnnotations(schema)
+  if (annotations !== undefined && "httpApiStatus" in annotations) return annotations.httpApiStatus
+  return Schema.resolveAnnotationsKey(schema)?.httpApiStatus
+}
 const resolveHttpApiEncoding = SchemaAST.resolveAt<HttpApiSchema.Encoding>("~httpApiEncoding")
 const Manifest = Schema.fromJsonString(Schema.Array(Schema.String))
 const manifestName = ".httpapi-codegen.json"
@@ -696,9 +702,9 @@ function renderImportedEffectFiles(
           : `${item.operation.success === "stream" ? "preserveStream" : "preserveEffect"}<${prefix}Output>()(${result})`
       const declarations =
         options.shapeModule === undefined && item.operation.inputMode !== "none"
-          ? `type ${prefix}Request = Parameters<${rawGroup}[${JSON.stringify(item.endpoint.identifier)}]>[0]\ntype ${prefix}Input = { ${input} }\n`
+          ? `type ${prefix}Request = Omit<Parameters<${rawGroup}[${JSON.stringify(item.endpoint.identifier)}]>[0], "responseMode">\ntype ${prefix}Input = { ${input} }\n`
           : isOpaquePayload(item)
-            ? `type ${prefix}Request = Parameters<${rawGroup}[${JSON.stringify(item.endpoint.identifier)}]>[0]\n`
+            ? `type ${prefix}Request = Omit<Parameters<${rawGroup}[${JSON.stringify(item.endpoint.identifier)}]>[0], "responseMode">\n`
             : ""
       return `${declarations}const ${adapter} = (raw: ${rawGroup}) => (${argument}) => ${output}`
     })
@@ -947,7 +953,7 @@ function renderPromiseClient(groups: ReadonlyArray<Group>) {
         endpoint.payloads.length === 0 ? undefined : `body: ${part("payload")}`,
       ].filter((value): value is string => value !== undefined)
       const declaredStatuses = [...new Set(endpoint.errors.map((error) => error.status))]
-      const descriptor = `{ method: ${JSON.stringify(endpoint.endpoint.method)}, path: ${path}${parts.length === 0 ? "" : `, ${parts.join(", ")}`}, successStatus: ${resolveHttpApiStatus(endpoint.successes[0].ast) ?? 200}, declaredStatuses: [${declaredStatuses.join(", ")}], empty: ${endpoint.operation.success === "void"}${isBinarySchema(endpoint.successes[0]) ? ", binary: true" : ""}${isBinaryPayload(endpoint) ? ", binaryBody: true" : ""} }`
+      const descriptor = `{ method: ${JSON.stringify(endpoint.endpoint.method)}, path: ${path}${parts.length === 0 ? "" : `, ${parts.join(", ")}`}, successStatus: ${resolveHttpApiStatus(endpoint.successes[0]) ?? 200}, declaredStatuses: [${declaredStatuses.join(", ")}], empty: ${endpoint.operation.success === "void"}${isBinarySchema(endpoint.successes[0]) ? ", binary: true" : ""}${isBinaryPayload(endpoint) ? ", binaryBody: true" : ""} }`
       if (endpoint.operation.success === "stream") {
         const success = endpoint.successes[0]
         if (!isStreamSchema(success) || success._tag !== "StreamSse" || success.sseMode !== "data") {
@@ -1320,6 +1326,9 @@ function normalizeTransport(
   operation: string,
 ) {
   if (schema === undefined) return undefined
+  // The schema representation drops key-context annotations, so a status set there becomes an ordinary one.
+  const status = resolveHttpApiStatus(schema)
+  if (status !== undefined) schema = schema.annotate({ httpApiStatus: status })
   if (isStreamSchema(schema)) return { schema, effectPortable: true } as const
   if (!metadataPortable(schema.ast, new Set())) {
     throw new GenerationError({ reason: `Unportable schema: ${operation}.${source}` })
@@ -1453,8 +1462,12 @@ function sameChecks(left: SchemaAST.Checks | undefined, right: SchemaAST.Checks 
   })
 }
 
+// A missing context means a required, immutable key. Effect 4.1 materializes one to carry HttpApiSchema.status.
 function sameContext(left: SchemaAST.Context | undefined, right: SchemaAST.Context | undefined) {
-  return left?.isOptional === right?.isOptional && left?.isMutable === right?.isMutable
+  return (
+    (left?.isOptional ?? false) === (right?.isOptional ?? false) &&
+    (left?.isMutable ?? false) === (right?.isMutable ?? false)
+  )
 }
 
 export function write(
@@ -1738,15 +1751,18 @@ function isDataEnvelope(schema: Schema.Top) {
   )
 }
 
-function isStreamSchema(schema: Schema.Top): schema is HttpApiSchema.StreamSchema {
+// Effect 4.1 added StreamNdjson to StreamSchema; the generator supports only SSE and byte streams.
+type SupportedStreamSchema = HttpApiSchema.StreamSse<Sse.EventCodec, Schema.Top, unknown> | HttpApiSchema.StreamUint8Array
+
+function isStreamSchema(schema: Schema.Top): schema is SupportedStreamSchema {
   return "_tag" in schema && (schema._tag === "StreamSse" || schema._tag === "StreamUint8Array")
 }
 
-function streamDataSchema(schema: Extract<HttpApiSchema.StreamSchema, { readonly _tag: "StreamSse" }>) {
+function streamDataSchema(schema: Extract<SupportedStreamSchema, { readonly _tag: "StreamSse" }>) {
   return Schema.make<Schema.Top>(streamDataAst(Schema.toType(schema.events).ast))
 }
 
-function streamEncodedDataSchema(schema: Extract<HttpApiSchema.StreamSchema, { readonly _tag: "StreamSse" }>) {
+function streamEncodedDataSchema(schema: Extract<SupportedStreamSchema, { readonly _tag: "StreamSse" }>) {
   // oxlint-disable-next-line no-restricted-globals -- Effect exposes this runtime helper without a public type.
   const replaceEncoding: unknown = Reflect.get(SchemaAST, "replaceEncoding")
   if (typeof replaceEncoding !== "function") throw new GenerationError({ reason: "Invalid SSE data schema" })
@@ -1841,7 +1857,7 @@ function renderGroup(group: Group) {
     const inputDeclaration =
       operation.operation.inputMode === "none"
         ? ""
-        : `${opaquePayload ? `type ${prefix}Request = Parameters<RawGroup[${JSON.stringify(endpoint.identifier)}]>[0]\n` : ""}type ${prefix}Input = { ${inputType} }\n`
+        : `${opaquePayload ? `type ${prefix}Request = Omit<Parameters<RawGroup[${JSON.stringify(endpoint.identifier)}]>[0], "responseMode">\n` : ""}type ${prefix}Input = { ${inputType} }\n`
     adapters.push(
       `${inputDeclaration}const ${prefix}DeclaredError = ${declaredSchema}\nconst map${prefix}Error = (error: unknown) => HttpClientError.isHttpClientError(error) || Schema.isSchemaError(error) || Sse.Retry.is(error) ? new ClientError({ cause: error }) : Schema.is(${prefix}DeclaredError)(error) ? error : new ClientError({ cause: error })\nconst ${prefix} = (raw: RawGroup) => (${argument}) => ${operation.operation.success === "stream" ? `Stream.unwrap(${rawCall}.pipe(Effect.mapError(map${prefix}Error), Effect.map((stream) => stream.pipe(Stream.mapError(map${prefix}Error)))))` : mapped}`,
     )
@@ -1857,7 +1873,7 @@ function renderGroup(group: Group) {
 
   function renderSuccess(schema: Schema.Top, name: string) {
     if (!isStreamSchema(schema)) return { source: addSlot(schema, name)!.name }
-    const status = resolveHttpApiStatus(schema.ast) ?? 200
+    const status = resolveHttpApiStatus(schema) ?? 200
     const annotate = status === 200 ? "" : `.pipe(HttpApiSchema.status(${status}))`
     if (schema._tag === "StreamUint8Array") {
       return {
@@ -1944,7 +1960,7 @@ function renderSchemas(slots: ReadonlyArray<Slot>) {
       .map(([name]) => `${JSON.stringify(name)}: ${document.codes[fieldIndex++].runtime}`)
       .join(", ")
     const annotations = Object.entries({
-      httpApiStatus: resolveHttpApiStatus(slot.schema.ast),
+      httpApiStatus: resolveHttpApiStatus(slot.schema),
       "~httpApiEncoding": resolveHttpApiEncoding(slot.schema.ast),
     }).filter((entry) => entry[1] !== undefined)
     const annotate =

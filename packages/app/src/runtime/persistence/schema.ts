@@ -83,24 +83,40 @@ function merge(initial: unknown, value: unknown): unknown {
 // Unlike a decoding default, a fallback also replaces invalid persisted values.
 export function fallback<S extends Schema.ConstraintCodec<unknown, unknown>>(schema: S, value: () => S["Type"]) {
   const defaulted = Schema.withDecodingDefaultType<S>(Effect.sync(value))(schema)
+  const result = Schema.catchDecoding<typeof defaulted>(() => Effect.sync(() => Option.some(value())))(defaulted)
+  entries.set(result, Schema.catchDecoding<S>(() => Effect.sync(() => Option.some(value())))(schema))
 
-  return Schema.catchDecoding<typeof defaulted>(() => Effect.sync(() => Option.some(value())))(defaulted)
+  return result
 }
 
 export function optional<S extends Schema.ConstraintCodec<unknown, unknown>>(schema: S) {
   const field = Schema.optional(schema)
+  const result = Schema.catchDecoding<typeof field>(() => Effect.succeed(Option.none()))(field)
+  entries.set(result, Schema.catchDecoding<S>(() => Effect.succeed(Option.none()))(schema))
 
-  return Schema.catchDecoding<typeof field>(() => Effect.succeed(Option.none()))(field)
+  return result
 }
 
 export function struct<const Fields extends Schema.Struct.Fields>(fields: Fields) {
   return Schema.Struct(fields).mapFields(Struct.map(Schema.mutableKey))
 }
 
-export function record<S extends Schema.ConstraintCodec<unknown, unknown>>(schema: S) {
-  const entries = Schema.Record(Schema.String, Schema.mutableKey(schema))
+// Effect 4.1 rejects an index signature whose value is optional, as a fallback or optional is (its encoded side stands
+// for an absent struct key). A record entry is never absent, so each such schema registers an entry variant without
+// the optional key that recovers an invalid entry the same way: the fallback's value, or leaving the entry out.
+const entries = new WeakMap<object, Schema.ConstraintCodec<unknown, unknown>>()
 
-  return fallback(entries, () => Schema.decodeUnknownSync(entries)({}))
+export function entry<S extends Schema.ConstraintCodec<unknown, unknown>>(schema: S): S {
+  // SAFETY: fallback and optional register, for their own result, a variant over the same schema with the same recovery,
+  // so it decodes and encodes the values schema does.
+  // oxlint-disable-next-line typescript-eslint/no-unsafe-type-assertion -- see SAFETY above
+  return (entries.get(schema) as S | undefined) ?? schema
+}
+
+export function record<S extends Schema.ConstraintCodec<unknown, unknown>>(schema: S) {
+  const values = Schema.Record(Schema.String, Schema.mutableKey(entry(schema)))
+
+  return fallback(values, () => Schema.decodeUnknownSync(values)({}))
 }
 
 // Recover individual entries rather than discarding a whole history or collection.

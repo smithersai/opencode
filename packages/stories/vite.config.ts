@@ -5,6 +5,7 @@ import tailwindcss from "@tailwindcss/vite"
 import { defineConfig, searchForWorkspaceRoot } from "vite"
 import solid from "vite-plugin-solid"
 import { storyIndex } from "./src/index-plugin"
+import vibelang from "vibelang-vite"
 
 // Serves one story at a time for the component tests, the way Storybook's iframe did, without Storybook. The app's
 // browsing UI for stories is the components lab in the app itself.
@@ -32,7 +33,7 @@ const componentTestModules = readdirSync(packages)
 const entry = (file: string) => path.relative(here, file).replaceAll("\\", "/")
 
 export default defineConfig({
-  plugins: [solid(), tailwindcss(), storyIndex(roots)],
+  plugins: [vibelang(), solid(), tailwindcss(), storyIndex(roots)],
   publicDir: path.resolve(packages, "app/public"),
   optimizeDeps: {
     // Vite finds a dependency on its first import and reloads every open page, which would abort a component test

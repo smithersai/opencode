@@ -37,3 +37,5 @@ logs/
 *.bun-build
 tsconfig.tsbuildinfo
 /artifacts/
+.vibelang-toolchain/
+**/.vibelang/vibelang-parser

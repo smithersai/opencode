@@ -26,13 +26,14 @@
     "honeycomb:backfill": "bun src/honeycomb-backfill.ts",
     "test": "bun test --only-failures",
     "typecheck": "bun check --no-script",
-    "typecheck:tsc": "tsc --noEmit"
+    "typecheck:tsc": "vibelang --noEmit"
   },
   "dependencies": {
     "@planetscale/database": "1.19.0",
     "drizzle-orm": "catalog:",
     "effect": "catalog:",
-    "sst": "catalog:"
+    "sst": "catalog:",
+    "vibelang-runtime": "file:../../../.vibelang-toolchain/vibelang-runtime-0.0.11.tgz"
   },
   "devDependencies": {
     "@tsconfig/node22": "catalog:",
@@ -40,7 +41,9 @@
     "@types/node": "catalog:",
     "@typescript/native": "catalog:",
     "drizzle-kit": "catalog:",
-    "typescript": "catalog:"
+    "typescript": "catalog:",
+    "vibelang": "file:../../../.vibelang-toolchain/vibelang-0.0.11.tgz",
+    "vibelang-vite": "file:../../../.vibelang-toolchain/vibelang-vite-0.0.11.tgz"
   },
   "engines": {
     "node": ">=22"

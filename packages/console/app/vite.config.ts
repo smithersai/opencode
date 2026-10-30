@@ -1,9 +1,11 @@
 import { defineConfig, PluginOption } from "vite"
 import { solidStart } from "@solidjs/start/config"
 import { nitro } from "nitro/vite"
+import vibelang from "vibelang-vite"
 
 export default defineConfig({
   plugins: [
+    vibelang(),
     solidStart({
       middleware: "./src/middleware.ts",
     }) as PluginOption,

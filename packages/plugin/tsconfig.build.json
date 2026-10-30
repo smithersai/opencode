@@ -2,11 +2,13 @@
   "$schema": "https://json.schemastore.org/tsconfig",
   "extends": "./tsconfig.json",
   "compilerOptions": {
+    "rewriteRelativeImportExtensions": true,
     "allowImportingTsExtensions": false,
     "noEmit": false
   },
   // Type-level contract files check the SDK's types. `gui/host` is the app's and desktop's internal protocol,
   // `gui/builtin` the API only the app's built-in plugins use, and `gui/updater` the app's own updater contract; none
   // is part of the package.
-  "exclude": ["src/**/*.typecheck.ts", "src/gui/host.ts", "src/gui/builtin.ts", "src/gui/updater.ts"]
+  "exclude": ["src/**/*.typecheck.ts", "src/gui/host.ts", "src/gui/builtin.ts", "src/gui/updater.ts"],
+  "vibelang": { "declarationSidecars": true }
 }

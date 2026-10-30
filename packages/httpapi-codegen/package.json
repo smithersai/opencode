@@ -10,15 +10,18 @@
   "scripts": {
     "test": "bun test --timeout 5000 --only-failures",
     "typecheck": "bun check --no-script",
-    "typecheck:tsc": "tsc --noEmit"
+    "typecheck:tsc": "vibelang --noEmit"
   },
   "dependencies": {
     "effect": "catalog:",
-    "prettier": "3.6.2"
+    "prettier": "3.6.2",
+    "vibelang-runtime": "file:../../.vibelang-toolchain/vibelang-runtime-0.0.11.tgz"
   },
   "devDependencies": {
     "@tsconfig/bun": "catalog:",
     "@types/bun": "catalog:",
-    "@typescript/native": "catalog:"
+    "@typescript/native": "catalog:",
+    "vibelang": "file:../../.vibelang-toolchain/vibelang-0.0.11.tgz",
+    "vibelang-vite": "file:../../.vibelang-toolchain/vibelang-vite-0.0.11.tgz"
   }
 }

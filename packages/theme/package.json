@@ -24,16 +24,19 @@
     "pack": "bun run script/pack.ts",
     "test": "bun test --timeout 30000",
     "typecheck": "bun check --no-script",
-    "typecheck:tsc": "tsc --noEmit"
+    "typecheck:tsc": "vibelang --noEmit"
   },
   "dependencies": {
     "@opentui/core": "catalog:",
-    "effect": "catalog:"
+    "effect": "catalog:",
+    "vibelang-runtime": "file:../../.vibelang-toolchain/vibelang-runtime-0.0.11.tgz"
   },
   "devDependencies": {
     "@tsconfig/bun": "catalog:",
     "@types/bun": "catalog:",
     "@typescript/native": "catalog:",
-    "typescript": "catalog:"
+    "typescript": "catalog:",
+    "vibelang": "file:../../.vibelang-toolchain/vibelang-0.0.11.tgz",
+    "vibelang-vite": "file:../../.vibelang-toolchain/vibelang-vite-0.0.11.tgz"
   }
 }

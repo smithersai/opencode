@@ -1,9 +1,9 @@
 import { AuthOptions, type ProviderAuthOption } from "../route/auth-options.js"
 import { MediaRoute } from "../route/media.js"
 import { type HttpOptions, ProviderID, type ModelID } from "../schema/index.js"
-import { ReplicateImages } from "../protocols/replicate-images.js"
+import { ReplicateImages } from "../protocols/replicate-images.vibe"
 
-export type { ReplicateImageOptions } from "../protocols/replicate-images.js"
+export type { ReplicateImageOptions } from "../protocols/replicate-images.vibe"
 
 export const id = ProviderID.make("replicate")
 

@@ -1,7 +1,7 @@
 import { MediaProtocol } from "../route/media-protocol.js";
 import { MediaRoute } from "../route/media.js";
 import { type OpenString } from "../schema/index.js";
-import { VideoModel, VideoResponse, type VideoRequestFor } from "../video.js";
+import { VideoModel, type VideoRequestFor, VideoResponse } from "../video.js";
 /**
  * Provider-native input. fal video endpoints are model-specific: `duration` is a string enum whose values differ per
  * model (`"8s"` for Veo, `"5"` for Kling), and last-frame fields are named per model (`end_image_url`,

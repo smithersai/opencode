@@ -1,0 +1,180 @@
+import type { HttpClientResponse } from "effect/http"
+import type { Status } from "../generation.ts"
+import { ImageModel, type ImageRequestFor, ImageResponse } from "../image.ts"
+import { Media } from "../media.ts"
+import { MediaProtocol } from "../route/media-protocol.ts"
+import { MediaRoute } from "../route/media.ts"
+import { type AIError, mergeJsonRecords } from "../schema/index.ts"
+import { optionalNull, ProviderShared } from "./shared.ts"
+
+const route = MediaProtocol.identity({ id: "replicate-images", name: "Replicate", provider: "replicate" })
+export const DEFAULT_BASE_URL = "https://api.replicate.com"
+const OUTPUT_RETENTION = Duration.hours(1)
+const MAX_DATA_URL_BYTES = 256 * 1024
+
+// ---------------------------------------------------------------------------
+// 1. Public model input
+// ---------------------------------------------------------------------------
+
+/** Model-defined `input` fields under the model's own names; `Media.Asset` values lower to URLs or data URLs. */
+export type ReplicateImageOptions = Record<string, unknown>
+
+export type Request = ImageRequestFor<ReplicateImageOptions>
+
+// ---------------------------------------------------------------------------
+// 2. Token and response schemas
+// ---------------------------------------------------------------------------
+
+export const Token = Schema.Struct({ id: Schema.String, getURL: Schema.String, cancelURL: Schema.String })
+export type Token = Schema.Schema.Type<typeof Token>
+
+const Prediction = Schema.Struct({
+  id: Schema.String,
+  status: Schema.String,
+  output: optionalNull(Schema.Unknown),
+  error: optionalNull(Schema.Unknown),
+  data_removed: optionalNull(Schema.Boolean),
+  completed_at: optionalNull(Schema.String),
+  metrics: optionalNull(Schema.Struct({ predict_time: optionalNull(Schema.Number) })),
+  urls: Schema.Struct({ get: Schema.String, cancel: Schema.String }),
+})
+
+const Output = Schema.Union([Schema.String, Schema.Array(Schema.String)])
+const isOutput = Schema.is(Output)
+
+const STATUS = {
+  starting: "queued",
+  processing: "running",
+  succeeded: "completed",
+  failed: "failed",
+  canceled: "cancelled",
+  // The prediction hit its `Cancel-After` deadline before it started running.
+  aborted: "expired",
+} as const satisfies Record<string, Status>
+
+// ---------------------------------------------------------------------------
+// 5. Request body construction
+// ---------------------------------------------------------------------------
+
+// Official models run by `owner/name`; anything else (`owner/name:version` or a bare version id) is a pinned version.
+const isOfficial = (model: string): boolean => /^[^/:]+\/[^/:]+$/.test(model)
+
+const inlineSize = (source: Media.Source): number => {
+  if (source.type === "bytes") return source.data.byteLength
+  if (source.type === "base64") return source.data.length * 0.75
+  return 0
+}
+
+const fileInput = (asset: Media.Asset) => {
+  if (inlineSize(asset.source) > MAX_DATA_URL_BYTES) {
+    throw ProviderShared.invalidRequest(
+      `${route.name} data URL inputs are limited to 256 KB; pass a larger file by https URL`,
+    )
+  }
+  return ProviderShared.mediaReference(asset, undefined, route.name).value
+}
+
+const inputValue = (value: unknown): unknown!AIError => {
+  if (value instanceof Media.Asset) return fileInput(value)
+  if (Array.isArray(value) && value.some((item) => item instanceof Media.Asset)) {
+    return forEach(value, (item) => (item instanceof Media.Asset ? fileInput(item) : item))
+  }
+  return value
+}
+
+const fromRequest = (request: Request) =>
+  withSpan(() => {
+    const native = forEach(Object.entries(request.providerOptions ?? {}), ([key, value]) =>
+      [key, inputValue(value)] as const)
+    const input = mergeJsonRecords({ prompt: request.prompt }, Object.fromEntries(native))
+    const model = request.model.id
+    return MediaProtocol.json(
+      mergeJsonRecords(isOfficial(model) ? { input } : { version: model, input }, request.http?.body) ?? {},
+    )
+  }, "ReplicateImages.fromRequest")
+
+// ---------------------------------------------------------------------------
+// 6. Response decoding
+// ---------------------------------------------------------------------------
+
+const decodePrediction = route.decodeJson(Prediction)
+
+const decodeStart = (response: HttpClientResponse.HttpClientResponse) =>
+  withSpan(() => {
+    const output = decodePrediction(response)
+    const prediction = output.value
+    return {
+      token: { id: prediction.id, getURL: prediction.urls.get, cancelURL: prediction.urls.cancel },
+      // `Prefer: wait` can return an already-finished prediction, so `await` skips straight to the result.
+      snapshot: { id: prediction.id, status: MediaProtocol.status(STATUS, prediction.status, output) },
+    }
+  }, "ReplicateImages.decodeStart")
+
+const decodeStatus = (response: HttpClientResponse.HttpClientResponse, context: MediaProtocol.PollContext<Token>) =>
+  withSpan(() => {
+    const output = decodePrediction(response)
+    return { id: context.token.id, status: MediaProtocol.status(STATUS, output.value.status, output) }
+  }, "ReplicateImages.decodeStatus")
+
+const decodeResult = (response: HttpClientResponse.HttpClientResponse, context: MediaProtocol.PollContext<Token>) =>
+  withSpan(() => {
+    const output = decodePrediction(response)
+    const prediction = output.value
+    const status = MediaProtocol.status(STATUS, prediction.status, output)
+    if (status === "failed" || status === "cancelled" || status === "expired") {
+      throw output.ended(
+        status,
+        `${route.name} prediction ${context.token.id} ${prediction.status}${
+          typeof prediction.error === "string" ? `: ${prediction.error}` : ""
+        }`,
+      )
+    }
+    if (status !== "completed") throw output.pending(context.token.id)
+    if (prediction.data_removed === true) {
+      throw output.ended("expired", `${route.name} removed the output of prediction ${context.token.id}`)
+    }
+    if (!isOutput(prediction.output)) {
+      throw output.invalid(`${route.name} prediction ${context.token.id} returned output that is not image URLs`)
+    }
+    const urls = typeof prediction.output === "string" ? [prediction.output] : prediction.output
+    if (urls.length === 0) throw output.invalid(`${route.name} prediction ${context.token.id} returned no images`)
+    const predictTime = prediction.metrics?.predict_time ?? undefined
+    const completedAt = prediction.completed_at ?? undefined
+    const expiresAt = completedAt === undefined
+      ? undefined
+      : Date.parse(completedAt) + Duration.toMillis(OUTPUT_RETENTION)
+    return new ImageResponse({
+      images: urls.map((url) => Media.url(url, { expiresAt })),
+      usage: predictTime === undefined ? undefined : { type: "compute", seconds: predictTime },
+      providerMetadata: { replicate: { predictionId: prediction.id } },
+    })
+  }, "ReplicateImages.decodeResult")
+
+// ---------------------------------------------------------------------------
+// 7. Protocol and route
+// ---------------------------------------------------------------------------
+
+export const protocol = MediaProtocol.queued<Request, ImageResponse, Token>(route, {
+  token: Token,
+  unsupported: ["images", "n", "aspect", "resolution"],
+  start: { body: { from: fromRequest }, decode: decodeStart },
+  status: { path: (token) => token.getURL, decode: decodeStatus },
+  result: { path: (token) => token.getURL, decode: decodeResult },
+  cancel: { method: "POST", path: (token) => token.cancelURL },
+})
+
+export const model = (input: MediaRoute.ModelInput): infer _ =>
+  ImageModel.fromRoute<ReplicateImageOptions, Token>(
+    {
+      protocol,
+      baseURL: DEFAULT_BASE_URL,
+      path: ({ request }) =>
+        isOfficial(request.model.id) ? `/v1/models/${request.model.id}/predictions` : "/v1/predictions",
+    },
+    input,
+  )
+
+export const ReplicateImages = {
+  protocol,
+  model,
+} as const

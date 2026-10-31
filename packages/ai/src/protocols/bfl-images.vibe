@@ -1,13 +1,12 @@
-import { Effect, Schema } from "effect"
 import type { HttpClientResponse } from "effect/http"
-import type { Status } from "../generation.js"
-import { ImageModel, ImageResponse, type ImageRequestFor } from "../image.js"
-import { Media } from "../media.js"
-import { MediaProtocol } from "../route/media-protocol.js"
-import { MediaRoute } from "../route/media.js"
-import { mergeJsonRecords, type OpenString } from "../schema/index.js"
-import { ProviderShared, optionalNull } from "./shared.js"
-import { ImageSizing } from "./utils/image-sizing.js"
+import type { Status } from "../generation.ts"
+import { ImageModel, ImageResponse, type ImageRequestFor } from "../image.ts"
+import { Media } from "../media.ts"
+import { MediaProtocol } from "../route/media-protocol.ts"
+import { MediaRoute } from "../route/media.ts"
+import { mergeJsonRecords, type OpenString } from "../schema/index.ts"
+import { ProviderShared, optionalNull } from "./shared.ts"
+import { ImageSizing } from "./utils/image-sizing.ts"
 
 const route = MediaProtocol.identity({ id: "bfl-images", name: "Black Forest Labs", provider: "black-forest-labs" })
 export const DEFAULT_BASE_URL = "https://api.bfl.ai"
@@ -79,7 +78,7 @@ const STATUS = {
   "Task not found": "expired",
 } as const satisfies Record<string, Status>
 
-const isModerated = (status: string) => status === "Content Moderated" || status === "Request Moderated"
+const isModerated = (status: string): boolean => status === "Content Moderated" || status === "Request Moderated"
 
 // ---------------------------------------------------------------------------
 // 5. Request body construction
@@ -114,49 +113,47 @@ const validate = (request: Request, model: Capabilities) => {
   const id = request.model.id
   const images = request.images?.length ?? 0
   if (request.n !== undefined && request.n > 1)
-    return Effect.fail(route.unsupported("media.n", `${id} generates one image per request; call it once per image`))
+    throw route.unsupported("media.n", `${id} generates one image per request; call it once per image`)
   if (request.aspect !== undefined && model.sizing === "none")
-    return Effect.fail(route.unsupported("media.aspect", `${id} keeps the source image's size`))
+    throw route.unsupported("media.aspect", `${id} keeps the source image's size`)
   if (request.resolution !== undefined && typeof model.sizing === "string")
-    return Effect.fail(route.unsupported("media.resolution", `${id} does not take resolution`))
-  if (images > model.maxImages)
-    return Effect.fail(route.unsupported("media.images", `${id} takes at most ${model.maxImages} images`))
+    throw route.unsupported("media.resolution", `${id} does not take resolution`)
+  if (images > model.maxImages) throw route.unsupported("media.images", `${id} takes at most ${model.maxImages} images`)
   if (request.providerOptions?.mask !== undefined && !model.mask)
-    return Effect.fail(route.unsupported("media.mask", `${id} does not inpaint; use flux-pro-1.0-fill`))
-  return Effect.void
+    throw route.unsupported("media.mask", `${id} does not inpaint; use flux-pro-1.0-fill`)
 }
 
 const imageInput = (asset: Media.Asset) => {
   const value = asset.inline()?.base64 ?? ProviderShared.mediaUrl(asset)
-  if (value === undefined)
-    return Effect.fail(ProviderShared.invalidRequest(`${route.name} accepts inline images or https URLs`))
-  return Effect.succeed(value)
+  if (value === undefined) throw ProviderShared.invalidRequest(`${route.name} accepts inline images or https URLs`)
+  return value
 }
 
-const fromRequest = Effect.fn("BlackForestLabsImages.fromRequest")(function* (request: Request) {
-  const model = capabilities(request.model.id)
-  yield* validate(request, model)
-  const images = yield* Effect.forEach(request.images ?? [], imageInput)
-  const fields = images.map((image, index) => [
-    index === 0 ? model.imageField : `${model.imageField}_${index + 1}`,
-    image,
-  ])
-  const { mask, ...native } = request.providerOptions ?? {}
-  const size = typeof model.sizing === "string" ? undefined : yield* ImageSizing.exact(route, request, model.sizing)
-  return MediaProtocol.json(
-    mergeJsonRecords(
-      {
-        prompt: request.prompt,
-        ...size,
-        aspect_ratio: model.sizing === "aspectRatio" ? request.aspect : undefined,
-        mask: mask === undefined ? undefined : yield* imageInput(mask),
-        ...Object.fromEntries(fields),
-      },
-      native,
-      request.http?.body,
-    ) ?? {},
-  )
-})
+const fromRequest = (request: Request) =>
+  withSpan(() => {
+    const model = capabilities(request.model.id)
+    validate(request, model)
+    const images = forEach(request.images ?? [], imageInput)
+    const fields = images.map((image, index) => [
+      index === 0 ? model.imageField : `${model.imageField}_${index + 1}`,
+      image,
+    ])
+    const { mask, ...native } = request.providerOptions ?? {}
+    const size = typeof model.sizing === "string" ? undefined : ImageSizing.exact(route, request, model.sizing)
+    return MediaProtocol.json(
+      mergeJsonRecords(
+        {
+          prompt: request.prompt,
+          ...size,
+          aspect_ratio: model.sizing === "aspectRatio" ? request.aspect : undefined,
+          mask: mask === undefined ? undefined : imageInput(mask),
+          ...Object.fromEntries(fields),
+        },
+        native,
+        request.http?.body,
+      ) ?? {},
+    )
+  }, "BlackForestLabsImages.fromRequest")
 
 // ---------------------------------------------------------------------------
 // 6. Response decoding
@@ -173,39 +170,35 @@ const decodeStart = route.decodeStarted(StartResponse, (value) => ({
 
 const decodeDocument = route.decodeJson(Result)
 
-const decodeStatus = Effect.fn("BlackForestLabsImages.decodeStatus")(function* (
-  response: HttpClientResponse.HttpClientResponse,
-  context: MediaProtocol.PollContext<Token>,
-) {
-  const output = yield* decodeDocument(response)
-  return { id: context.token.id, status: yield* MediaProtocol.status(STATUS, output.value.status, output) }
-})
+const decodeStatus = (response: HttpClientResponse.HttpClientResponse, context: MediaProtocol.PollContext<Token>) =>
+  withSpan(() => {
+    const output = decodeDocument(response)
+    return { id: context.token.id, status: MediaProtocol.status(STATUS, output.value.status, output) }
+  }, "BlackForestLabsImages.decodeStatus")
 
-const decodeResult = Effect.fn("BlackForestLabsImages.decodeResult")(function* (
-  response: HttpClientResponse.HttpClientResponse,
-  context: MediaProtocol.PollContext<Token>,
-) {
-  const output = yield* decodeDocument(response)
-  const document = output.value
-  const status = yield* MediaProtocol.status(STATUS, document.status, output)
-  if (isModerated(document.status)) return yield* output.contentPolicy(`${route.name} moderated the generation`)
-  if (status === "failed" || status === "expired")
-    return yield* output.ended(status, `${route.name} generation ${context.token.id} ended with ${document.status}`)
-  if (status !== "completed") return yield* output.pending(context.token.id)
-  if (document.result === undefined || document.result === null)
-    return yield* output.invalid(`${route.name} generation ${context.token.id} has no result`)
-  const { sample, seed, prompt, ...rest } = document.result
-  // A settled `cost` on the result supersedes the submit-time cost carried on the token.
-  const cost = document.cost ?? context.token.cost
-  return new ImageResponse({
-    // `sample` is a signed URL that expires 10 minutes after the result is ready, so it is downloaded now.
-    images: [yield* context.materialize(Media.url(sample))],
-    usage: cost === undefined ? undefined : { type: "credits", credits: cost },
-    providerMetadata: {
-      bfl: { id: context.token.id, seed: seed ?? undefined, prompt: prompt ?? undefined, ...rest },
-    },
-  })
-})
+const decodeResult = (response: HttpClientResponse.HttpClientResponse, context: MediaProtocol.PollContext<Token>) =>
+  withSpan(() => {
+    const output = decodeDocument(response)
+    const document = output.value
+    const status = MediaProtocol.status(STATUS, document.status, output)
+    if (isModerated(document.status)) throw output.contentPolicy(`${route.name} moderated the generation`)
+    if (status === "failed" || status === "expired")
+      throw output.ended(status, `${route.name} generation ${context.token.id} ended with ${document.status}`)
+    if (status !== "completed") throw output.pending(context.token.id)
+    if (document.result === undefined || document.result === null)
+      throw output.invalid(`${route.name} generation ${context.token.id} has no result`)
+    const { sample, seed, prompt, ...rest } = document.result
+    // A settled `cost` on the result supersedes the submit-time cost carried on the token.
+    const cost = document.cost ?? context.token.cost
+    return new ImageResponse({
+      // `sample` is a signed URL that expires 10 minutes after the result is ready, so it is downloaded now.
+      images: [context.materialize(Media.url(sample))],
+      usage: cost === undefined ? undefined : { type: "credits", credits: cost },
+      providerMetadata: {
+        bfl: { id: context.token.id, seed: seed ?? undefined, prompt: prompt ?? undefined, ...rest },
+      },
+    })
+  }, "BlackForestLabsImages.decodeResult")
 
 // ---------------------------------------------------------------------------
 // 7. Protocol and route
@@ -218,7 +211,7 @@ export const protocol = MediaProtocol.queued<Request, ImageResponse, Token>(rout
   result: { path: (token) => token.pollingURL, decode: decodeResult },
 })
 
-export const model = (input: MediaRoute.ModelInput) =>
+export const model = (input: MediaRoute.ModelInput): infer _ =>
   ImageModel.fromRoute<BlackForestLabsImageOptions, Token>(
     { protocol, baseURL: DEFAULT_BASE_URL, path: ({ request }) => `/v1/${request.model.id}` },
     input,

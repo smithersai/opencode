@@ -2,7 +2,7 @@ import { Schema } from "effect";
 import { MediaProtocol } from "../route/media-protocol.js";
 import { MediaRoute } from "../route/media.js";
 import { type OpenString } from "../schema/index.js";
-import { TranscriptionModel, TranscriptionResponse, type TranscriptionRequestFor } from "../transcription.js";
+import { TranscriptionModel, type TranscriptionRequestFor, TranscriptionResponse } from "../transcription.js";
 export declare const DEFAULT_BASE_URL = "https://api.assemblyai.com";
 export declare const PATH = "/v2/transcript";
 export declare const UPLOAD_PATH = "/v2/upload";

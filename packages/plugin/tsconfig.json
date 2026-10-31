@@ -12,6 +12,5 @@
     "lib": ["ESNext", "DOM", "DOM.Iterable"],
     "noUncheckedIndexedAccess": false
   },
-  "include": ["src"],
-  "vibelang": { "declarationSidecars": true }
+  "include": ["src"]
 }

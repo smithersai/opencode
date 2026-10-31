@@ -8,6 +8,5 @@
     "noUnusedLocals": true,
     "lib": ["ESNext", "DOM", "DOM.Iterable"],
     "noUncheckedIndexedAccess": false
-  },
-  "vibelang": { "declarationSidecars": true }
+  }
 }

@@ -12,6 +12,5 @@
     "allowImportingTsExtensions": false,
     "allowJs": false,
     "noUncheckedIndexedAccess": false
-  },
-  "vibelang": { "declarationSidecars": true }
+  }
 }

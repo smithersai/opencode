@@ -9,6 +9,5 @@
     "declaration": true
   },
   "include": ["src"],
-  "exclude": ["src/**/*.test.ts"],
-  "vibelang": { "declarationSidecars": true }
+  "exclude": ["src/**/*.test.ts"]
 }

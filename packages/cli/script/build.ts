@@ -15,7 +15,6 @@ import { verifyArtifact, verifySimulationGraph } from "./verify-artifact"
 import { resolveOpencodePty } from "./opencode-pty"
 import { NativeArch } from "../../../script/native-arch"
 import { bundledModelsSnapshot, modelsSnapshotPlugin } from "../../core/script/models-snapshot"
-import vibelang from "vibelang-unplugin/bun"
 
 const dir = path.resolve(import.meta.dirname, "..")
 const binary = "opencode"
@@ -162,7 +161,6 @@ export default { path: file, version: ${JSON.stringify(opencodePty.version)}, sh
     entrypoints: ["./src/index.ts", "./src/photon-worker.ts"],
     tsconfig: "./tsconfig.json",
     plugins: [
-      vibelang(),
       appAssetsPlugin,
       solidPlugin,
       parcelWatcherPlugin,

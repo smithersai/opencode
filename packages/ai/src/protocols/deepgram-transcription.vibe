@@ -65,8 +65,8 @@ schema ListenResponse {
 // 5. Request body construction
 // ---------------------------------------------------------------------------
 
-const query = (request: Request) =>
-  MediaInput.query(
+const query = effect (request: Request) =>
+  try MediaInput.query(
     route.id,
     mergeJsonRecords(
       {
@@ -83,20 +83,23 @@ const query = (request: Request) =>
     ) ?? {},
   )
 
-const fromRequest = (request: Request) =>
-  withSpan(() => {
-    const url = ProviderShared.mediaUrl(request.audio)
-    if (url !== undefined) {
-      return MediaProtocol.json(mergeJsonRecords({ url }, request.http?.body) ?? {}, query(request))
-    }
-    if (request.http?.body !== undefined) {
-      throw ProviderShared.invalidRequest(
-        `${route.name} sends inline audio as the raw body, so http.body cannot apply`,
-      )
-    }
-    const audio = MediaInput.inlineBytes(route.id, request.audio)
-    return MediaProtocol.binary(audio, request.audio.mediaType, query(request))
-  }, "DeepgramTranscription.fromRequest")
+const fromRequest = effect (request: Request) =>
+  try withSpan(
+    effect {
+      const url = ProviderShared.mediaUrl(request.audio)
+      if (url !== undefined) {
+        return MediaProtocol.json(mergeJsonRecords({ url }, request.http?.body) ?? {}, try query(request))
+      }
+      if (request.http?.body !== undefined) {
+        throw ProviderShared.invalidRequest(
+          `${route.name} sends inline audio as the raw body, so http.body cannot apply`,
+        )
+      }
+      const audio = try MediaInput.inlineBytes(route.id, request.audio)
+      return MediaProtocol.binary(audio, request.audio.mediaType, try query(request))
+    },
+    "DeepgramTranscription.fromRequest",
+  )
 
 // ---------------------------------------------------------------------------
 // 6. Response decoding
@@ -108,50 +111,53 @@ const speaker = (value: number | undefined): infer _ => (value === undefined ? u
 
 const wordText = (word: typeof Word.Type): string => word.punctuated_word ?? word.word
 
-const decodeResponse = (
+const decodeResponse = effect (
   response: HttpClientResponse.HttpClientResponse,
 ) =>
-  withSpan(() => {
-    const output = decodeListen(response)
-    const channel = output.value.results.channels[0]
-    const alternative = channel?.alternatives?.[0]
-    if (alternative === undefined) throw output.invalid(`${route.name} returned no transcript`)
-    const duration = output.value.metadata?.duration
-    const requestID = output.value.metadata?.request_id
-    return new TranscriptionResponse({
-      text: alternative.transcript,
-      // Utterances split on pauses, not speakers: the v2 diarizer labels a whole utterance with one speaker even when
-      // its words change speaker, so segments split each utterance at speaker changes.
-      segments: output.value.results.utterances?.flatMap((utterance) =>
-        utterance.words === undefined || utterance.words.length === 0
-          ? [
-            {
-              text: utterance.transcript,
-              startSeconds: utterance.start,
-              endSeconds: utterance.end,
-              speaker: speaker(utterance.speaker),
-            },
-          ]
-          : SpeakerTurns.group(utterance.words, (word) => word.speaker).map((turn) => ({
-            text: turn.map(wordText).join(" "),
-            startSeconds: turn[0].start,
-            endSeconds: turn[turn.length - 1].end,
-            speaker: speaker(turn[0].speaker),
-          }))
-      ),
-      words: alternative.words?.map((word) => ({
-        text: wordText(word),
-        startSeconds: word.start,
-        endSeconds: word.end,
-        speaker: speaker(word.speaker),
-        confidence: word.confidence,
-      })),
-      language: channel?.detected_language?.toLowerCase(),
-      durationSeconds: duration,
-      usage: duration === undefined ? undefined : { type: "seconds", seconds: duration },
-      providerMetadata: requestID === undefined ? undefined : { deepgram: { requestId: requestID } },
-    })
-  }, "DeepgramTranscription.decodeResponse")
+  try withSpan(
+    effect {
+      const output = try decodeListen(response)
+      const channel = output.value.results.channels[0]
+      const alternative = channel?.alternatives?.[0]
+      if (alternative === undefined) throw output.invalid(`${route.name} returned no transcript`)
+      const duration = output.value.metadata?.duration
+      const requestID = output.value.metadata?.request_id
+      return new TranscriptionResponse({
+        text: alternative.transcript,
+        // Utterances split on pauses, not speakers: the v2 diarizer labels a whole utterance with one speaker even when
+        // its words change speaker, so segments split each utterance at speaker changes.
+        segments: output.value.results.utterances?.flatMap((utterance) =>
+          utterance.words === undefined || utterance.words.length === 0
+            ? [
+              {
+                text: utterance.transcript,
+                startSeconds: utterance.start,
+                endSeconds: utterance.end,
+                speaker: speaker(utterance.speaker),
+              },
+            ]
+            : SpeakerTurns.group(utterance.words, (word) => word.speaker).map((turn) => ({
+              text: turn.map(wordText).join(" "),
+              startSeconds: turn[0].start,
+              endSeconds: turn[turn.length - 1].end,
+              speaker: speaker(turn[0].speaker),
+            }))
+        ),
+        words: alternative.words?.map((word) => ({
+          text: wordText(word),
+          startSeconds: word.start,
+          endSeconds: word.end,
+          speaker: speaker(word.speaker),
+          confidence: word.confidence,
+        })),
+        language: channel?.detected_language?.toLowerCase(),
+        durationSeconds: duration,
+        usage: duration === undefined ? undefined : { type: "seconds", seconds: duration },
+        providerMetadata: requestID === undefined ? undefined : { deepgram: { requestId: requestID } },
+      })
+    },
+    "DeepgramTranscription.decodeResponse",
+  )
 
 // ---------------------------------------------------------------------------
 // 7. Protocol and route

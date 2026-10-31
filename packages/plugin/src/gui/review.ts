@@ -1,6 +1,6 @@
 import type { FileDiffInfo } from "@opencode/client/promise"
-import { Contract } from "./core.js"
-import type { SessionRef, SessionScreen } from "./host-apis.js"
+import { Contract } from "./core.vibe"
+import type { SessionRef, SessionScreen } from "./host-apis.vibe"
 
 /**
  * How a file or directory changed.

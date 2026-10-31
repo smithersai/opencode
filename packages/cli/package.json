@@ -53,7 +53,7 @@
     "tree-sitter-powershell": "0.25.10",
     "web-tree-sitter": "0.25.10",
     "ws": "8.21.0",
-    "vibelang-runtime": "file:../../.vibelang-toolchain/vibelang-runtime-0.0.11-956814eb1e95.tgz"
+    "vibelang-runtime": "file:../../.vibelang-toolchain/vibelang-runtime-0.0.11-60bd29302ace.tgz"
   },
   "devDependencies": {
     "@opencode/script": "workspace:*",
@@ -85,9 +85,9 @@
     "solid-refresh": "0.6.3",
     "vite": "catalog:",
     "vite-plugin-solid": "catalog:",
-    "vibelang": "file:../../.vibelang-toolchain/vibelang-0.0.11-b9d250df199d.tgz",
-    "vibelang-vite": "file:../../.vibelang-toolchain/vibelang-vite-0.0.11-a2b67ac4484b.tgz",
-    "vibelang-unplugin": "file:../../.vibelang-toolchain/vibelang-unplugin-0.0.11-d83e2657e595.tgz"
+    "vibelang": "file:../../.vibelang-toolchain/vibelang-0.0.11-ed00210a7ffb.tgz",
+    "vibelang-vite": "file:../../.vibelang-toolchain/vibelang-vite-0.0.11-f8e51b377e05.tgz",
+    "vibelang-unplugin": "file:../../.vibelang-toolchain/vibelang-unplugin-0.0.11-7e3b05c3f55f.tgz"
   },
   "repository": {
     "type": "git",

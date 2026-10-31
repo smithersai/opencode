@@ -7,7 +7,7 @@ import { FSUtil } from "@opencode/util/fs-util"
 import { Hash } from "@opencode/util/hash"
 import type { EffectDrizzleSqlite } from "../database/drizzle.js"
 import { ProjectTable } from "./sql.js"
-import type { ProjectSchema } from "./schema.js"
+import type { ProjectSchema } from "./schema.ts"
 
 const IMAGES = new Set([".svg", ".png", ".ico", ".jpg", ".jpeg", ".webp"])
 const CANDIDATES = [

@@ -8,10 +8,10 @@ import path from "path"
 import { Environment } from "./environment/index.js"
 import { Location } from "./location.js"
 import { Permission } from "./permission.js"
-import { Project } from "./project.js"
+import { Project } from "./project.ts"
 import { AbsolutePath } from "./schema.js"
-import type { SessionErrors } from "./session/error.js"
-import type { Tool } from "./tool.js"
+import type { SessionErrors } from "./session/error.ts"
+import type { Tool } from "./tool.ts"
 
 export const Kind = Schema.Literals(["file", "directory"])
 export type Kind = typeof Kind.Type

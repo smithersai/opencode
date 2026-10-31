@@ -1,0 +1,10 @@
+export * as SessionTransfer from "./session-transfer.vibe"
+
+import { Session } from "./session.vibe"
+import { SessionMessage } from "./session-message.vibe"
+
+export interface Data extends Schema.Schema.Type<typeof Data> {}
+export const Data = Schema.Struct({
+  info: Session.Info,
+  messages: Schema.Array(SessionMessage.Info),
+}).annotate({ identifier: "SessionTransfer.Data" })

@@ -20,7 +20,7 @@ import { Slug } from "../util/slug.js"
 import { SessionEvent } from "./event.js"
 import { SessionMessage } from "./message.js"
 import { SessionProjector } from "./projector.js"
-import { SessionMessageTable, SessionTable } from "./sql.js"
+import { SessionMessageTable, SessionTable } from "./sql.ts"
 
 export const Data = SessionTransfer.Data
 export type Data = SessionTransfer.Data

@@ -96,8 +96,8 @@
     "@types/which": "3.0.4",
     "drizzle-kit": "catalog:",
     "fast-check": "catalog:",
-    "vibelang": "file:../../.vibelang-toolchain/vibelang-0.0.11-b9d250df199d.tgz",
-    "vibelang-unplugin": "file:../../.vibelang-toolchain/vibelang-unplugin-0.0.11-d83e2657e595.tgz"
+    "vibelang": "file:../../.vibelang-toolchain/vibelang-0.0.11-ed00210a7ffb.tgz",
+    "vibelang-unplugin": "file:../../.vibelang-toolchain/vibelang-unplugin-0.0.11-7e3b05c3f55f.tgz"
   },
   "dependencies": {
     "@ai-sdk/cohere": "3.0.27",
@@ -139,6 +139,6 @@
     "web-tree-sitter": "0.25.10",
     "which": "6.0.1",
     "zod": "catalog:",
-    "vibelang-runtime": "file:../../.vibelang-toolchain/vibelang-runtime-0.0.11-956814eb1e95.tgz"
+    "vibelang-runtime": "file:../../.vibelang-toolchain/vibelang-runtime-0.0.11-60bd29302ace.tgz"
   }
 }

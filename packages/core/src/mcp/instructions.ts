@@ -3,7 +3,7 @@ export * as McpInstructions from "./instructions.js"
 import { makeLocationNode } from "@opencode/util/effect/app-node"
 import { Context, Effect, Layer, Schema } from "effect"
 import { Permission } from "../permission.js"
-import { McpTool } from "../tool/mcp.js"
+import { McpTool } from "../tool/mcp.ts"
 import { Mcp } from "./index.js"
 import { Instructions } from "../instructions/index.js"
 

@@ -11,7 +11,7 @@ import type {
   Result,
 } from "@opencode/schema/tool"
 import { Context, Effect, Ref, Schema, Semaphore } from "effect"
-import { definition, normalizedName } from "../tool/runtime.js"
+import { definition, normalizedName } from "../tool/runtime.ts"
 import { CodeModeCatalog } from "./catalog.js"
 import { CodeModeWeb } from "./web.js"
 

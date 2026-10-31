@@ -7,7 +7,7 @@ import type { Bus } from "../bus.js"
 import { Instructions } from "../instructions/index.js"
 import { SessionEvent } from "./event.js"
 import { SessionSchema } from "./schema.js"
-import { InstructionBlobTable, InstructionStateTable } from "./sql.js"
+import { InstructionBlobTable, InstructionStateTable } from "./sql.ts"
 
 type DatabaseService = Database.Interface["db"]
 

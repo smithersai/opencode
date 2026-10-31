@@ -1,7 +1,7 @@
 import { Effect } from "effect"
 import { define } from "@opencode/plugin/effect/plugin"
 import { Npm } from "@opencode/util/npm"
-import { loadSDKFactory } from "./sdk-factory.js"
+import { loadSDKFactory } from "./sdk-factory.ts"
 
 export const DynamicProviderPlugin = define({
   id: "opencode.provider.dynamic",

@@ -4,15 +4,15 @@ import { and, asc, eq, gt } from "drizzle-orm"
 import { Effect } from "effect"
 import { Database } from "../database/database.js"
 import { Bus } from "../bus.js"
-import { Instance } from "../instance/service.js"
+import { Instance } from "../instance/service.ts"
 import { RelativePath } from "../schema.js"
 import { Snapshot } from "../snapshot.js"
 import { SessionEvent } from "./event.js"
-import { MessageNotFoundError } from "./error.js"
+import { MessageNotFoundError } from "./error.ts"
 import { SessionMessage } from "./message.js"
 import { SessionSchema } from "./schema.js"
 import { SessionHistory } from "./history.js"
-import { SessionMessageTable } from "./sql.js"
+import { SessionMessageTable } from "./sql.ts"
 
 interface BoundaryInput {
   readonly sessionID: SessionSchema.ID

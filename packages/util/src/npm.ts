@@ -7,8 +7,8 @@ import { FSUtil } from "./fs-util.js"
 import { Global } from "./global.js"
 import { EffectFlock } from "./effect-flock.js"
 import { makeGlobalNode } from "./effect/app-node.js"
-import { filesystem } from "./effect/app-node-platform.js"
-import { NpmConfig } from "./npm-config.js"
+import { filesystem } from "./effect/app-node-platform.ts"
+import { NpmConfig } from "./npm-config.ts"
 
 export class InstallFailedError extends Schema.TaggedError<InstallFailedError>()("NpmInstallFailedError", {
   add: Schema.Array(Schema.String).pipe(Schema.optional),

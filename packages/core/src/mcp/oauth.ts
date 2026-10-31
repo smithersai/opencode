@@ -23,7 +23,7 @@ import { noTimeoutFetch } from "@opencode/util/no-timeout-fetch"
 import { Credential } from "../credential.js"
 import { OauthCallbackPage } from "../oauth/page.js"
 import type { Integration } from "../integration.js"
-import { ErrorSummary } from "../util/error-summary.js"
+import { ErrorSummary } from "../util/error-summary.ts"
 
 /** Client ID Metadata Document: servers that support CIMD accept this URL as the client_id without registration. */
 export const CLIENT_METADATA_URL = "https://opencode.ai/oauth/opencode/client.json"

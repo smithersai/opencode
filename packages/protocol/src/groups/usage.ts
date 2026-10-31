@@ -2,8 +2,8 @@ import { Location } from "@opencode/schema/location"
 import { UsageLimits } from "@opencode/schema/usage-limits"
 import { Schema } from "effect"
 import { HttpApiEndpoint, HttpApiGroup, OpenApi } from "effect/http-api"
-import { ServiceUnavailableError } from "../errors.js"
-import { LocationQuery, locationQueryOpenApi } from "./location.js"
+import { ServiceUnavailableError } from "../errors.ts"
+import { LocationQuery, locationQueryOpenApi } from "./location.ts"
 
 export const UsageGroup = HttpApiGroup.make("server.usage")
   .add(

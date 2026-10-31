@@ -3,7 +3,7 @@ export * as ConfigSnapshotPlugin from "./snapshot.js"
 import { define } from "@opencode/plugin/effect/plugin"
 import { Effect } from "effect"
 import { Config } from "../../config.js"
-import { Snapshot } from "../../snapshot.js"
+import { Snapshot } from "../../snapshot.ts"
 import { ConfigEntryObserver } from "./entry-observer.js"
 
 export const Plugin = define({

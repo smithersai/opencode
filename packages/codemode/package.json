@@ -29,12 +29,12 @@
   "dependencies": {
     "acorn": "8.15.0",
     "effect": "catalog:",
-    "vibelang-runtime": "file:../../.vibelang-toolchain/vibelang-runtime-0.0.11-956814eb1e95.tgz"
+    "vibelang-runtime": "file:../../.vibelang-toolchain/vibelang-runtime-0.0.11-60bd29302ace.tgz"
   },
   "devDependencies": {
     "@tsconfig/bun": "catalog:",
     "@types/bun": "catalog:",
     "@typescript/native": "catalog:",
-    "vibelang": "file:../../.vibelang-toolchain/vibelang-0.0.11-b9d250df199d.tgz"
+    "vibelang": "file:../../.vibelang-toolchain/vibelang-0.0.11-ed00210a7ffb.tgz"
   }
 }

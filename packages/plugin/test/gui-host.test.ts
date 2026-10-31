@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test"
 import { evaluatePluginBundle, inertModule, pluginIdAvailable, type InertModule } from "../src/gui/host"
-import { Contract } from "../src/gui/core"
+import { Contract } from "../src/gui/core.vibe"
 import { define } from "../src/gui/plugin"
 
 const modules = new Map<string, object>([["@opencode/plugin/gui", { Contract, Plugin: { define } }]])

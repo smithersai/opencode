@@ -20,7 +20,7 @@ import {
 } from "effect"
 import { Integration } from "@opencode/schema/integration"
 import { Credential } from "./credential.js"
-import { State } from "./state.js"
+import { State } from "./state.ts"
 import { Bus } from "./bus.js"
 import { IntegrationConnection } from "./integration/connection.js"
 import { AppProcess } from "@opencode/util/process"

@@ -5,7 +5,7 @@ import { Effect } from "effect"
 import { supportsForeignKeyToggle } from "#sqlite"
 import type { EffectDrizzleSqlite } from "./drizzle.js"
 import { migrations } from "./migration.gen.js"
-import schema from "./schema.gen.js"
+import schema from "./schema.gen.ts"
 import { Global } from "@opencode/util/global"
 
 type Database = EffectDrizzleSqlite.EffectSQLiteDatabase

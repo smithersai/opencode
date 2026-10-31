@@ -13,7 +13,7 @@ import type {
   StoreDeclaration,
   Token,
   TokenValue,
-} from "./core.js"
+} from "./core.vibe"
 import type {
   Appearance,
   Attention,
@@ -36,7 +36,7 @@ import type {
   Toasts,
   Ui,
   Workspaces,
-} from "./host-apis.js"
+} from "./host-apis.vibe"
 
 /**
  * What every window entry gets. Contracts are provided and read at runtime: `ctx.provide` for your own, `ctx.use` for

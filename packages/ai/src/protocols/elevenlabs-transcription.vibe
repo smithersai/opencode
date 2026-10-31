@@ -79,7 +79,7 @@ const RESERVED_FORM_FIELDS = new Set([
   "num_speakers",
 ])
 
-const validate = (request: Request, overlay: Record<string, unknown>) => {
+const validate = effect (request: Request, overlay: Record<string, unknown>) => {
   // Webhook requests return 202 with no transcript; the result arrives at a configured webhook instead.
   if (overlay.webhook === true) {
     throw route.unsupported("transcription.webhook", `${route.name} does not deliver to webhooks`)
@@ -99,35 +99,38 @@ const validate = (request: Request, overlay: Record<string, unknown>) => {
   }
 }
 
-const fromRequest = (request: Request) =>
-  withSpan(() => {
-    const overlay = mergeJsonRecords(request.providerOptions, request.http?.body) ?? {}
-    validate(request, overlay)
-    const form = new FormData()
-    const url = ProviderShared.mediaUrl(request.audio)
-    if (url === undefined) {
-      const extension = mediaTypeExtension(request.audio.mediaType)
-      const audio = MediaInput.inlineBytes(route.id, request.audio)
-      form.append(
-        "file",
-        MediaInput.blob(audio, request.audio.mediaType),
-        extension === undefined ? "audio" : `audio.${extension}`,
+const fromRequest = effect (request: Request) =>
+  try withSpan(
+    effect {
+      const overlay = mergeJsonRecords(request.providerOptions, request.http?.body) ?? {}
+      try validate(request, overlay)
+      const form = new FormData()
+      const url = ProviderShared.mediaUrl(request.audio)
+      if (url === undefined) {
+        const extension = mediaTypeExtension(request.audio.mediaType)
+        const audio = try MediaInput.inlineBytes(route.id, request.audio)
+        form.append(
+          "file",
+          MediaInput.blob(audio, request.audio.mediaType),
+          extension === undefined ? "audio" : `audio.${extension}`,
+        )
+      }
+      MediaInput.appendFields(
+        form,
+        {
+          model_id: request.model.id,
+          // `cloud_storage_url` is deprecated in favor of `source_url`, which accepts any hosted audio or video URL.
+          source_url: url,
+          language_code: request.language,
+          diarize: diarizes(request) ? true : undefined,
+          num_speakers: request.speakers,
+        },
+        { overlay, reserved: RESERVED_FORM_FIELDS, repeatArrays: "key" },
       )
-    }
-    MediaInput.appendFields(
-      form,
-      {
-        model_id: request.model.id,
-        // `cloud_storage_url` is deprecated in favor of `source_url`, which accepts any hosted audio or video URL.
-        source_url: url,
-        language_code: request.language,
-        diarize: diarizes(request) ? true : undefined,
-        num_speakers: request.speakers,
-      },
-      { overlay, reserved: RESERVED_FORM_FIELDS, repeatArrays: "key" },
-    )
-    return MediaProtocol.multipart(form)
-  }, "ElevenLabsTranscription.fromRequest")
+      return MediaProtocol.multipart(form)
+    },
+    "ElevenLabsTranscription.fromRequest",
+  )
 
 // ---------------------------------------------------------------------------
 // 6. Response decoding
@@ -161,34 +164,37 @@ const speakerTurns = (tokens: ReadonlyArray<Token>): infer _ =>
     ]
   })
 
-const decodeResponse = (
+const decodeResponse = effect (
   response: HttpClientResponse.HttpClientResponse,
   context: MediaProtocol.DecodeContext<Request>,
 ) =>
-  withSpan(() => {
-    const output = decodeTranscript(response)
-    const transcript = output.value
-    const tokens = transcript.words ?? []
-    const duration = transcript.audio_duration_secs ?? undefined
-    const transcriptionID = transcript.transcription_id ?? undefined
-    return new TranscriptionResponse({
-      text: transcript.text,
-      segments: diarizes(context.request) ? speakerTurns(tokens) : undefined,
-      words: tokens.filter(isTimedWord).map((word) => ({
-        text: word.text,
-        startSeconds: word.start,
-        endSeconds: word.end,
-        speaker: word.speaker_id ?? undefined,
-        confidence: typeof word.logprob === "number" ? Math.exp(word.logprob) : undefined,
-      })),
-      language: transcript.language_code?.toLowerCase(),
-      durationSeconds: duration,
-      usage: duration === undefined ? undefined : { type: "seconds", seconds: duration },
-      providerMetadata: transcriptionID === undefined
-        ? undefined
-        : { elevenlabs: { transcriptionId: transcriptionID } },
-    })
-  }, "ElevenLabsTranscription.decodeResponse")
+  try withSpan(
+    effect {
+      const output = try decodeTranscript(response)
+      const transcript = output.value
+      const tokens = transcript.words ?? []
+      const duration = transcript.audio_duration_secs ?? undefined
+      const transcriptionID = transcript.transcription_id ?? undefined
+      return new TranscriptionResponse({
+        text: transcript.text,
+        segments: diarizes(context.request) ? speakerTurns(tokens) : undefined,
+        words: tokens.filter(isTimedWord).map((word) => ({
+          text: word.text,
+          startSeconds: word.start,
+          endSeconds: word.end,
+          speaker: word.speaker_id ?? undefined,
+          confidence: typeof word.logprob === "number" ? Math.exp(word.logprob) : undefined,
+        })),
+        language: transcript.language_code?.toLowerCase(),
+        durationSeconds: duration,
+        usage: duration === undefined ? undefined : { type: "seconds", seconds: duration },
+        providerMetadata: transcriptionID === undefined
+          ? undefined
+          : { elevenlabs: { transcriptionId: transcriptionID } },
+      })
+    },
+    "ElevenLabsTranscription.decodeResponse",
+  )
 
 // ---------------------------------------------------------------------------
 // 7. Protocol and route

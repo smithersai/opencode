@@ -14,8 +14,8 @@ import { ConfigMigrateV1 } from "../../v1/config/migrate.js"
 import { Global } from "@opencode/util/global"
 import { Permission } from "../../permission.js"
 import type { FileAccess } from "../../file-access.js"
-import type { ReadTool } from "../../tool/plugin/read.js"
-import type { EditTool } from "../../tool/plugin/edit.js"
+import type { ReadTool } from "../../tool/plugin/read.ts"
+import type { EditTool } from "../../tool/plugin/edit.ts"
 import { AbsolutePath } from "../../schema.js"
 
 const legacySources = [

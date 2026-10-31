@@ -2,7 +2,7 @@ export * as SessionShell from "./shell.js"
 
 import type { Session } from "@opencode/schema/session"
 import { Effect } from "effect"
-import { Instance } from "../instance/service.js"
+import { Instance } from "../instance/service.ts"
 import { Plugin } from "../plugin/service.js"
 import { Shell } from "../shell.js"
 import { ShellResult } from "../shell/result.js"

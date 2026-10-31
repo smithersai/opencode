@@ -1,0 +1,100 @@
+export * as EventManifest from "./event-manifest.vibe"
+
+import { Agent } from "./agent.vibe"
+import { Command } from "./command.vibe"
+import { Config } from "./config.vibe"
+import { Credential } from "./credential.vibe"
+import { Durable } from "./durable-event-manifest.ts"
+import { Event } from "./event.vibe"
+import { FileSystem } from "./filesystem.vibe"
+import { FileSystemV1 } from "./filesystem-v1.ts"
+import { Form } from "./form.vibe"
+import { InstallationEvent } from "./installation-event.vibe"
+import { Integration } from "./integration.vibe"
+import { LegacyEventV1 } from "./legacy-event.ts"
+import { LspEvent } from "./lsp-event.ts"
+import { LocationEvent } from "./location-event.ts"
+import { McpEvent } from "./mcp-event.vibe"
+import { Model } from "./model.vibe"
+import { ModelsDev } from "./models-dev.ts"
+import { Permission } from "./permission.vibe"
+import { PersistentPty } from "./persistent-pty.vibe"
+import { Plugin } from "./plugin.vibe"
+import { Project } from "./project.vibe"
+import { Provider } from "./provider.vibe"
+import { Worktree } from "./worktree.vibe"
+import { Pty } from "./pty.vibe"
+import { Reference } from "./reference.vibe"
+import { ServerEvent } from "./server-event.ts"
+import { Shell } from "./shell.vibe"
+import { Skill } from "./skill.vibe"
+import { SessionEvent } from "./session-event.vibe"
+import { SessionStatusEvent } from "./session-status-event.vibe"
+import { TuiEvent } from "./tui-event.vibe"
+import { VcsEvent } from "./vcs-event.vibe"
+import { WorkspaceEvent } from "./workspace-event.vibe"
+import { WorktreeEvent } from "./worktree-event.vibe"
+import { WebSearch } from "./websearch.vibe"
+
+const coreDefinitions = Event.inventory(...SessionEvent.Definitions)
+
+const foundationDefinitions = Event.inventory(
+  ...LocationEvent.Definitions,
+  ...ModelsDev.Event.Definitions,
+  ...Credential.Event.Definitions,
+  ...Integration.Event.Definitions,
+  ...Provider.Event.Definitions,
+  ...Model.Event.Definitions,
+  ...Agent.Event.Definitions,
+  ...coreDefinitions,
+)
+
+const featureDefinitions = Event.inventory(
+  ...FileSystem.Event.Definitions,
+  ...Reference.Event.Definitions,
+  ...Permission.Event.Definitions,
+  ...Plugin.Event.Definitions,
+  ...Project.Event.Definitions,
+  ...Worktree.Event.Definitions,
+  ...Command.Event.Definitions,
+  ...Config.Event.Definitions,
+  ...Skill.Event.Definitions,
+  ...Pty.Event.Definitions,
+  ...PersistentPty.Event.Definitions,
+  ...Shell.Event.Definitions,
+  ...Form.Event.Definitions,
+  ...WebSearch.Event.Definitions,
+)
+
+export const ServerDefinitions = Event.inventory(
+  ...foundationDefinitions,
+  ...featureDefinitions,
+  // Current events the TUI consumes from the public stream.
+  ...SessionStatusEvent.Definitions,
+  ...TuiEvent.Definitions,
+  ...InstallationEvent.Definitions,
+  ...VcsEvent.Definitions,
+  McpEvent.StatusChanged,
+  McpEvent.ResourcesChanged,
+)
+export const Server = Event.latest(ServerDefinitions)
+export type ServerEvent = Schema.Schema.Type<(typeof ServerDefinitions)[number]>
+export const isServer = (event: { readonly type: string }): event is ServerEvent => Server.has(event.type)
+
+export const Definitions = Event.inventory(
+  ...foundationDefinitions,
+  ...InstallationEvent.Definitions,
+  ...featureDefinitions,
+  ...LspEvent.Definitions,
+  ...TuiEvent.Definitions,
+  ...McpEvent.Definitions,
+  ...LegacyEventV1.Definitions,
+  ...FileSystemV1.Event.Definitions,
+  ...SessionStatusEvent.Definitions,
+  ...VcsEvent.Definitions,
+  ...WorkspaceEvent.Definitions,
+  ...WorktreeEvent.Definitions,
+  ...ServerEvent.Definitions,
+)
+export const Latest = Event.latest(Definitions)
+export { Durable }

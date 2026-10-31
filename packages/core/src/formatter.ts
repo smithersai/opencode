@@ -7,7 +7,7 @@ import { makeLocationNode } from "@opencode/util/effect/app-node"
 import { AppProcess } from "@opencode/util/process"
 import { Location } from "./location.js"
 import type { Info } from "./formatter/builtins.js"
-import { State } from "./state.js"
+import { State } from "./state.ts"
 
 type Data = {
   formatters: Info[]

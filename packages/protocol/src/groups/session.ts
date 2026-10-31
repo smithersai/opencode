@@ -26,7 +26,7 @@ import {
   SessionNotFoundError,
   SkillNotFoundError,
   UnknownError,
-} from "../errors.js"
+} from "../errors.ts"
 import { Agent } from "@opencode/schema/agent"
 import { Skill } from "@opencode/schema/skill"
 import { Model } from "@opencode/schema/model"
@@ -36,7 +36,7 @@ import { SessionEvent } from "@opencode/schema/session-event"
 import { EventLog } from "@opencode/schema/event-log"
 import { FileDiff } from "@opencode/schema/file-diff"
 import { Form } from "@opencode/schema/form"
-import { PublicSessionMessage } from "./message.js"
+import { PublicSessionMessage } from "./message.ts"
 
 const SessionActive = Schema.Struct({
   type: Schema.Literal("running"),

@@ -4,10 +4,10 @@ import { Socket } from "effect/socket"
 import { fileSystem, type Interface, Service } from "../cassette/store.js"
 import type { SocketRecorderOptions } from "../options.js"
 import { make, type Redactor } from "../redaction/redactor.js"
-import { canonicalizeJson, decodeJson, safeText } from "../replay/comparison.js"
+import { canonicalizeJson, decodeJson, safeText } from "../replay/comparison.ts"
 import { makeReplayState, resolveAutoMode } from "../replay/state.js"
-import { webSocketInteractions, type Interaction } from "../cassette/model.js"
-import type { WebSocketEvent, WebSocketInteraction } from "./model.js"
+import { webSocketInteractions, type Interaction } from "../cassette/model.ts"
+import type { WebSocketEvent, WebSocketInteraction } from "./model.vibe"
 
 interface WebSocketRecorderOptions extends SocketRecorderOptions {
   readonly compareClientMessagesAsJson?: boolean

@@ -4,8 +4,8 @@ import { Bus } from "../../bus.js"
 import { IntegrationConnection } from "../../integration/connection.js"
 import { Credential } from "../../credential.js"
 import { Integration } from "../../integration.js"
-import { ModalModels } from "../../modal/models.js"
-import { Provider } from "../../provider.js"
+import { ModalModels } from "../../modal/models.ts"
+import { Provider } from "../../provider.ts"
 import type { PluginInternal } from "../internal.js"
 
 const providerID = Provider.ID.make("modal")

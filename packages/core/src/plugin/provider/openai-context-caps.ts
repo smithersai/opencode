@@ -3,7 +3,7 @@ import { Effect, Stream } from "effect"
 import { Bus } from "../../bus.js"
 import { Credential } from "../../credential.js"
 import { Integration } from "../../integration.js"
-import { Provider } from "../../provider.js"
+import { Provider } from "../../provider.ts"
 import type { PluginInternal } from "../internal.js"
 
 const integrationID = Integration.ID.make("openai")

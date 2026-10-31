@@ -1,7 +1,7 @@
 import type { JSX } from "solid-js"
 import type { IconName } from "./icon-name.js"
-import { Registry } from "./core.js"
-import type { SessionRef, MountedSession, SessionScreen } from "./host-apis.js"
+import { Registry } from "./core.vibe"
+import type { SessionRef, MountedSession, SessionScreen } from "./host-apis.vibe"
 
 /** The name of a shared icon; derived from the dependency-free UI artwork catalog, not a component's props. */
 export type { IconName }

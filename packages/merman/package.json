@@ -25,6 +25,6 @@
     "@tsconfig/bun": "catalog:",
     "@types/bun": "catalog:",
     "@typescript/native": "catalog:",
-    "vibelang": "file:../../.vibelang-toolchain/vibelang-0.0.11-b9d250df199d.tgz"
+    "vibelang": "file:../../.vibelang-toolchain/vibelang-0.0.11-ed00210a7ffb.tgz"
   }
 }

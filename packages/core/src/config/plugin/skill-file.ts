@@ -5,7 +5,7 @@ import { isRecord } from "@opencode/util/record"
 import { Result, Schema, type SchemaIssue, SchemaParser } from "effect"
 import { ConfigMarkdown } from "../markdown.js"
 import { AbsolutePath } from "../../schema.js"
-import { Skill } from "../../skill.js"
+import { Skill } from "../../skill.ts"
 
 const Frontmatter = Schema.Struct({
   name: Schema.String.pipe(Schema.optional),

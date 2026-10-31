@@ -65,33 +65,38 @@ const inlineSize = (source: Media.Source): number => {
   return 0
 }
 
-const fileInput = (asset: Media.Asset) => {
+const fileInput = effect (asset: Media.Asset) => {
   if (inlineSize(asset.source) > MAX_DATA_URL_BYTES) {
     throw ProviderShared.invalidRequest(
       `${route.name} data URL inputs are limited to 256 KB; pass a larger file by https URL`,
     )
   }
-  return ProviderShared.mediaReference(asset, undefined, route.name).value
+  return (try ProviderShared.mediaReference(asset, undefined, route.name)).value
 }
 
-const inputValue = (value: unknown): unknown!AIError => {
-  if (value instanceof Media.Asset) return fileInput(value)
+const inputValue = effect (value: unknown): unknown!AIError => {
+  if (value instanceof Media.Asset) return try fileInput(value)
   if (Array.isArray(value) && value.some((item) => item instanceof Media.Asset)) {
-    return forEach(value, (item) => (item instanceof Media.Asset ? fileInput(item) : item))
+    return try forEach(value, effect (item) => (item instanceof Media.Asset ? try fileInput(item) : item))
   }
   return value
 }
 
-const fromRequest = (request: Request) =>
-  withSpan(() => {
-    const native = forEach(Object.entries(request.providerOptions ?? {}), ([key, value]) =>
-      [key, inputValue(value)] as const)
-    const input = mergeJsonRecords({ prompt: request.prompt }, Object.fromEntries(native))
-    const model = request.model.id
-    return MediaProtocol.json(
-      mergeJsonRecords(isOfficial(model) ? { input } : { version: model, input }, request.http?.body) ?? {},
-    )
-  }, "ReplicateImages.fromRequest")
+const fromRequest = effect (request: Request) =>
+  try withSpan(
+    effect {
+      const native = try forEach(
+        Object.entries(request.providerOptions ?? {}),
+        effect ([key, value]) => [key, try inputValue(value)] as const,
+      )
+      const input = mergeJsonRecords({ prompt: request.prompt }, Object.fromEntries(native))
+      const model = request.model.id
+      return MediaProtocol.json(
+        mergeJsonRecords(isOfficial(model) ? { input } : { version: model, input }, request.http?.body) ?? {},
+      )
+    },
+    "ReplicateImages.fromRequest",
+  )
 
 // ---------------------------------------------------------------------------
 // 6. Response decoding
@@ -99,56 +104,71 @@ const fromRequest = (request: Request) =>
 
 const decodePrediction = route.decodeJson(Prediction)
 
-const decodeStart = (response: HttpClientResponse.HttpClientResponse) =>
-  withSpan(() => {
-    const output = decodePrediction(response)
-    const prediction = output.value
-    return {
-      token: { id: prediction.id, getURL: prediction.urls.get, cancelURL: prediction.urls.cancel },
-      // `Prefer: wait` can return an already-finished prediction, so `await` skips straight to the result.
-      snapshot: { id: prediction.id, status: MediaProtocol.status(STATUS, prediction.status, output) },
-    }
-  }, "ReplicateImages.decodeStart")
+const decodeStart = effect (response: HttpClientResponse.HttpClientResponse) =>
+  try withSpan(
+    effect {
+      const output = try decodePrediction(response)
+      const prediction = output.value
+      return {
+        token: { id: prediction.id, getURL: prediction.urls.get, cancelURL: prediction.urls.cancel },
+        // `Prefer: wait` can return an already-finished prediction, so `await` skips straight to the result.
+        snapshot: { id: prediction.id, status: try MediaProtocol.status(STATUS, prediction.status, output) },
+      }
+    },
+    "ReplicateImages.decodeStart",
+  )
 
-const decodeStatus = (response: HttpClientResponse.HttpClientResponse, context: MediaProtocol.PollContext<Token>) =>
-  withSpan(() => {
-    const output = decodePrediction(response)
-    return { id: context.token.id, status: MediaProtocol.status(STATUS, output.value.status, output) }
-  }, "ReplicateImages.decodeStatus")
+const decodeStatus = effect (
+  response: HttpClientResponse.HttpClientResponse,
+  context: MediaProtocol.PollContext<Token>,
+) =>
+  try withSpan(
+    effect {
+      const output = try decodePrediction(response)
+      return { id: context.token.id, status: try MediaProtocol.status(STATUS, output.value.status, output) }
+    },
+    "ReplicateImages.decodeStatus",
+  )
 
-const decodeResult = (response: HttpClientResponse.HttpClientResponse, context: MediaProtocol.PollContext<Token>) =>
-  withSpan(() => {
-    const output = decodePrediction(response)
-    const prediction = output.value
-    const status = MediaProtocol.status(STATUS, prediction.status, output)
-    if (status === "failed" || status === "cancelled" || status === "expired") {
-      throw output.ended(
-        status,
-        `${route.name} prediction ${context.token.id} ${prediction.status}${
-          typeof prediction.error === "string" ? `: ${prediction.error}` : ""
-        }`,
-      )
-    }
-    if (status !== "completed") throw output.pending(context.token.id)
-    if (prediction.data_removed === true) {
-      throw output.ended("expired", `${route.name} removed the output of prediction ${context.token.id}`)
-    }
-    if (!isOutput(prediction.output)) {
-      throw output.invalid(`${route.name} prediction ${context.token.id} returned output that is not image URLs`)
-    }
-    const urls = typeof prediction.output === "string" ? [prediction.output] : prediction.output
-    if (urls.length === 0) throw output.invalid(`${route.name} prediction ${context.token.id} returned no images`)
-    const predictTime = prediction.metrics?.predict_time ?? undefined
-    const completedAt = prediction.completed_at ?? undefined
-    const expiresAt = completedAt === undefined
-      ? undefined
-      : Date.parse(completedAt) + Duration.toMillis(OUTPUT_RETENTION)
-    return new ImageResponse({
-      images: urls.map((url) => Media.url(url, { expiresAt })),
-      usage: predictTime === undefined ? undefined : { type: "compute", seconds: predictTime },
-      providerMetadata: { replicate: { predictionId: prediction.id } },
-    })
-  }, "ReplicateImages.decodeResult")
+const decodeResult = effect (
+  response: HttpClientResponse.HttpClientResponse,
+  context: MediaProtocol.PollContext<Token>,
+) =>
+  try withSpan(
+    effect {
+      const output = try decodePrediction(response)
+      const prediction = output.value
+      const status = try MediaProtocol.status(STATUS, prediction.status, output)
+      if (status === "failed" || status === "cancelled" || status === "expired") {
+        throw output.ended(
+          status,
+          `${route.name} prediction ${context.token.id} ${prediction.status}${
+            typeof prediction.error === "string" ? `: ${prediction.error}` : ""
+          }`,
+        )
+      }
+      if (status !== "completed") throw output.pending(context.token.id)
+      if (prediction.data_removed === true) {
+        throw output.ended("expired", `${route.name} removed the output of prediction ${context.token.id}`)
+      }
+      if (!isOutput(prediction.output)) {
+        throw output.invalid(`${route.name} prediction ${context.token.id} returned output that is not image URLs`)
+      }
+      const urls = typeof prediction.output === "string" ? [prediction.output] : prediction.output
+      if (urls.length === 0) throw output.invalid(`${route.name} prediction ${context.token.id} returned no images`)
+      const predictTime = prediction.metrics?.predict_time ?? undefined
+      const completedAt = prediction.completed_at ?? undefined
+      const expiresAt = completedAt === undefined
+        ? undefined
+        : Date.parse(completedAt) + Duration.toMillis(OUTPUT_RETENTION)
+      return new ImageResponse({
+        images: urls.map((url) => Media.url(url, { expiresAt })),
+        usage: predictTime === undefined ? undefined : { type: "compute", seconds: predictTime },
+        providerMetadata: { replicate: { predictionId: prediction.id } },
+      })
+    },
+    "ReplicateImages.decodeResult",
+  )
 
 // ---------------------------------------------------------------------------
 // 7. Protocol and route

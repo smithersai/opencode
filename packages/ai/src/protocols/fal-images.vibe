@@ -59,7 +59,7 @@ const sizing = (model: string): infer _ => {
   return undefined
 }
 
-const validate = (request: Request) => {
+const validate = effect (request: Request) => {
   const id = request.model.id
   if (request.resolution !== undefined && sizing(id) === "aspect_ratio") {
     throw route.unsupported("media.resolution", `${id} sizes by aspect only`)
@@ -76,30 +76,33 @@ const validate = (request: Request) => {
 // `image_url` (beside `mask_url`).
 const takesImageList = (model: string): infer _ => model.endsWith("/edit") || model.endsWith("/multi")
 
-const fromRequest = (request: Request) =>
-  withSpan(() => {
-    validate(request)
-    const images = forEach(request.images ?? [], (image) => FalQueue.mediaUrl(image, route.name))
-    const list = takesImageList(request.model.id)
-    const { mask, ...native } = request.providerOptions ?? {}
-    const field = sizing(request.model.id)
-    return MediaProtocol.json(
-      mergeJsonRecords(
-        {
-          prompt: request.prompt,
-          num_images: request.n,
-          ...(field === "image_size"
-            ? { image_size: ImageSizing.exact(route, request, { multiple: 16 }) }
-            : { aspect_ratio: request.aspect, resolution: request.resolution }),
-          image_urls: list && images.length > 0 ? images : undefined,
-          image_url: list ? undefined : images[0],
-          mask_url: mask === undefined ? undefined : FalQueue.mediaUrl(mask, route.name),
-        },
-        native,
-        request.http?.body,
-      ) ?? {},
-    )
-  }, "FalImages.fromRequest")
+const fromRequest = effect (request: Request) =>
+  try withSpan(
+    effect {
+      try validate(request)
+      const images = try forEach(request.images ?? [], effect (image) => try FalQueue.mediaUrl(image, route.name))
+      const list = takesImageList(request.model.id)
+      const { mask, ...native } = request.providerOptions ?? {}
+      const field = sizing(request.model.id)
+      return MediaProtocol.json(
+        mergeJsonRecords(
+          {
+            prompt: request.prompt,
+            num_images: request.n,
+            ...(field === "image_size"
+              ? { image_size: try ImageSizing.exact(route, request, { multiple: 16 }) }
+              : { aspect_ratio: request.aspect, resolution: request.resolution }),
+            image_urls: list && images.length > 0 ? images : undefined,
+            image_url: list ? undefined : images[0],
+            mask_url: mask === undefined ? undefined : try FalQueue.mediaUrl(mask, route.name),
+          },
+          native,
+          request.http?.body,
+        ) ?? {},
+      )
+    },
+    "FalImages.fromRequest",
+  )
 
 // ---------------------------------------------------------------------------
 // 6. Response decoding
@@ -107,23 +110,26 @@ const fromRequest = (request: Request) =>
 
 const decodeQueueResult = route.decodeJson(QueueResult)
 
-const decodeResult = (response: HttpClientResponse, context: MediaProtocol.PollContext<FalQueue.Token>) =>
-  withSpan(() => {
-    const output = decodeQueueResult(response)
-    const { images, seed, ...rest } = output.value
-    if (images.length === 0) throw output.invalid(`${route.name} returned no images`)
-    return new ImageResponse({
-      images: images.map((image) => {
-        const info = { width: image.width ?? undefined, height: image.height ?? undefined }
-        // `sync_mode: true` returns data URIs instead of hosted URLs.
-        return (
-          Media.parseDataUrl(image.url, { info })
-            ?? Media.url(image.url, { mediaType: image.content_type ?? undefined, info })
-        )
-      }),
-      providerMetadata: { fal: { requestId: context.token.requestID, seed: seed ?? undefined, ...rest } },
-    })
-  }, "FalImages.decodeResult")
+const decodeResult = effect (response: HttpClientResponse, context: MediaProtocol.PollContext<FalQueue.Token>) =>
+  try withSpan(
+    effect {
+      const output = try decodeQueueResult(response)
+      const { images, seed, ...rest } = output.value
+      if (images.length === 0) throw output.invalid(`${route.name} returned no images`)
+      return new ImageResponse({
+        images: images.map((image) => {
+          const info = { width: image.width ?? undefined, height: image.height ?? undefined }
+          // `sync_mode: true` returns data URIs instead of hosted URLs.
+          return (
+            Media.parseDataUrl(image.url, { info })
+              ?? Media.url(image.url, { mediaType: image.content_type ?? undefined, info })
+          )
+        }),
+        providerMetadata: { fal: { requestId: context.token.requestID, seed: seed ?? undefined, ...rest } },
+      })
+    },
+    "FalImages.decodeResult",
+  )
 
 // ---------------------------------------------------------------------------
 // 7. Protocol and route

@@ -5,7 +5,7 @@ import type { Session } from "@opencode/schema/session"
 import type { SessionInbox } from "@opencode/schema/session-inbox"
 import { Effect } from "effect"
 import { Command } from "../command.js"
-import { Instance } from "../instance/service.js"
+import { Instance } from "../instance/service.ts"
 import { Plugin } from "../plugin/service.js"
 
 export const execute = Effect.fn("SessionCommand.execute")(function* (input: {

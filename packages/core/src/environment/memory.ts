@@ -1,7 +1,7 @@
 import path from "node:path"
 import { Effect, PlatformError } from "effect"
 import { make } from "effect/process/ChildProcessSpawner"
-import type { Driver } from "./driver.js"
+import type { Driver } from "./driver.ts"
 import { Failed, NotFound, WrongKind, type FileInfo, type FilesImpl, type FileType } from "./files.js"
 
 type Node =

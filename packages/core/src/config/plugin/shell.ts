@@ -3,7 +3,7 @@ export * as ConfigShellPlugin from "./shell.js"
 import { define } from "@opencode/plugin/effect/plugin"
 import { Effect } from "effect"
 import { Config } from "../../config.js"
-import { ShellSelect } from "../../shell/select.js"
+import { ShellSelect } from "../../shell/select.ts"
 import { ConfigEntryObserver } from "./entry-observer.js"
 
 export const Plugin = define({

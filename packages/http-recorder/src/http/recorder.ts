@@ -5,9 +5,9 @@ import { fileSystem, Service } from "../cassette/store.js"
 import type { RecorderOptions } from "../options.js"
 import { make, redactUrl, type Redactor } from "../redaction/redactor.js"
 import { makeReplayPoolState, resolveAutoMode } from "../replay/state.js"
-import { httpInteractions, type CassetteMetadata } from "../cassette/model.js"
+import { httpInteractions, type CassetteMetadata } from "../cassette/model.ts"
 import { defaultMatcher, selectFirstMatching, type RequestMatcher } from "./matching.js"
-import type { HttpInteraction, ResponseSnapshot } from "./model.js"
+import type { HttpInteraction, ResponseSnapshot } from "./model.vibe"
 
 export { defaultMatcher }
 export type RecordReplayMode = "auto" | "record" | "replay" | "passthrough"

@@ -1,8 +1,8 @@
-export * from "./core.js"
+export * from "./core.vibe"
 
 export * from "./registries.js"
 
-export * from "./host-apis.js"
+export * from "./host-apis.vibe"
 
 export * from "./solid.js"
 

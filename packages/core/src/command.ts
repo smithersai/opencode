@@ -7,7 +7,7 @@ import type { SessionInbox } from "@opencode/schema/session-inbox"
 import { makeLocationNode } from "@opencode/util/effect/app-node"
 import { Context, Effect, Layer, Schema } from "effect"
 import { Bus } from "./bus.js"
-import { State } from "./state.js"
+import { State } from "./state.ts"
 
 export const Info = Command.Info
 export type Info = Command.Info

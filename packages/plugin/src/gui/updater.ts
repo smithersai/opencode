@@ -1,5 +1,5 @@
 import { Schema } from "effect"
-import { Ipc } from "./core.js"
+import { Ipc } from "./core.vibe"
 
 /**
  * The updater's state, the same in every window.

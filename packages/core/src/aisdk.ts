@@ -37,9 +37,9 @@ import { makeParser } from "effect/encoding/Sse"
 import { HttpClientRequest, HttpClientResponse } from "effect/http"
 import { AsyncLocalStorage } from "node:async_hooks"
 import type { ID, RuntimeInfo } from "./model.js"
-import { Provider } from "./provider.js"
-import { State } from "./state.js"
-import { stringify } from "./tool/runtime.js"
+import { Provider } from "./provider.ts"
+import { State } from "./state.ts"
+import { stringify } from "./tool/runtime.ts"
 
 type SDK = any
 type UserContent = Extract<LanguageModelV3Message, { role: "user" }>["content"]

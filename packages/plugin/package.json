@@ -19,7 +19,10 @@
     "./runtime": "./src/runtime.ts",
     "./tui": "./src/tui/index.ts",
     "./gui": "./src/gui/index.ts",
-    "./gui/main": "./src/gui/main.ts",
+    "./gui/main": {
+      "types": "./src/gui/main.d.vibe.ts",
+      "default": "./src/gui/main.vibe"
+    },
     "./gui/host": "./src/gui/host.ts",
     "./gui/builtin": "./src/gui/builtin.ts",
     "./gui/file": "./src/gui/file.ts",
@@ -28,6 +31,14 @@
     "./gui/updater": "./src/gui/updater.ts",
     "./gui/vite": "./src/gui/vite.ts",
     "./gui/*": null,
+    "./gui/core": {
+      "types": "./src/gui/core.d.vibe.ts",
+      "default": "./src/gui/core.vibe"
+    },
+    "./gui/host-apis": {
+      "types": "./src/gui/host-apis.d.vibe.ts",
+      "default": "./src/gui/host-apis.vibe"
+    },
     "./*": "./src/*.ts"
   },
   "imports": {
@@ -48,7 +59,7 @@
     "@opencode/schema": "workspace:*",
     "@opencode/util": "workspace:*",
     "effect": "catalog:",
-    "vibelang-runtime": "file:../../.vibelang-toolchain/vibelang-runtime-0.0.11-956814eb1e95.tgz"
+    "vibelang-runtime": "file:../../.vibelang-toolchain/vibelang-runtime-0.0.11-60bd29302ace.tgz"
   },
   "peerDependencies": {
     "@opencode/theme": "workspace:*",
@@ -95,8 +106,8 @@
     "vite": "catalog:",
     "vite-plugin-solid": "catalog:",
     "@typescript/native": "catalog:",
-    "vibelang": "file:../../.vibelang-toolchain/vibelang-0.0.11-b9d250df199d.tgz",
-    "vibelang-vite": "file:../../.vibelang-toolchain/vibelang-vite-0.0.11-a2b67ac4484b.tgz"
+    "vibelang": "file:../../.vibelang-toolchain/vibelang-0.0.11-ed00210a7ffb.tgz",
+    "vibelang-vite": "file:../../.vibelang-toolchain/vibelang-vite-0.0.11-f8e51b377e05.tgz"
   },
   "repository": {
     "type": "git",

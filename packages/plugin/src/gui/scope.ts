@@ -1,4 +1,4 @@
-import type { Cleanup } from "./core.js"
+import type { Cleanup } from "./core.vibe"
 
 /**
  * A lifetime, named after Effect's `Scope` without its runtime. Closing it aborts `signal`, then runs its finalizers

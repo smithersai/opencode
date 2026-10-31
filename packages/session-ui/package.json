@@ -63,8 +63,8 @@
     "@typescript/native": "catalog:",
     "vite": "catalog:",
     "vite-plugin-solid": "catalog:",
-    "vibelang": "file:../../.vibelang-toolchain/vibelang-0.0.11-b9d250df199d.tgz",
-    "vibelang-vite": "file:../../.vibelang-toolchain/vibelang-vite-0.0.11-a2b67ac4484b.tgz"
+    "vibelang": "file:../../.vibelang-toolchain/vibelang-0.0.11-ed00210a7ffb.tgz",
+    "vibelang-vite": "file:../../.vibelang-toolchain/vibelang-vite-0.0.11-f8e51b377e05.tgz"
   },
   "dependencies": {
     "@kitlangton/solid-motion": "0.2.2",
@@ -84,6 +84,6 @@
     "marked": "catalog:",
     "pele": "1.7.0",
     "solid-js": "catalog:",
-    "vibelang-runtime": "file:../../.vibelang-toolchain/vibelang-runtime-0.0.11-956814eb1e95.tgz"
+    "vibelang-runtime": "file:../../.vibelang-toolchain/vibelang-runtime-0.0.11-60bd29302ace.tgz"
   }
 }

@@ -1,7 +1,7 @@
 import { describe, expect, test } from "bun:test"
 import { Schema } from "effect"
-import { Model } from "../src/model.js"
-import { Provider } from "../src/provider.js"
+import { Model } from "../src/model.vibe"
+import { Provider } from "../src/provider.vibe"
 
 describe("Model.Ref", () => {
   test("parses model references with optional variants", () => {

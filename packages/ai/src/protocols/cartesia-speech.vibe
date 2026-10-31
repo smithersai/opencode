@@ -75,7 +75,7 @@ const usesSse = (request: MediaProtocol.Addressed<Request>): boolean =>
 
 const CONTAINERS: Readonly<Record<string, "raw" | "wav" | "mp3">> = { pcm: "raw", wav: "wav", mp3: "mp3" }
 
-const outputFormat = (request: MediaProtocol.Addressed<Request>) => {
+const outputFormat = effect (request: MediaProtocol.Addressed<Request>) => {
   const sse = usesSse(request)
   const format = request.format ?? (sse ? "pcm" : "mp3")
   const container = CONTAINERS[format]
@@ -95,36 +95,40 @@ const outputFormat = (request: MediaProtocol.Addressed<Request>) => {
   return { container, encoding: request.providerOptions?.encoding ?? "pcm_s16le", sample_rate: sampleRate }
 }
 
-const fromRequest = (request: MediaProtocol.Addressed<Request>) =>
-  withSpan(() => {
-    const voice = SpeechStream.voiceID(request.voice)
-    if (voice === undefined) {
-      throw ProviderShared.invalidRequest(`${route.name} requires a voice id; pass it as \`voice\``)
-    }
-    const { sampleRate: _sampleRate, bitRate: _bitRate, encoding: _encoding, ...native } = request.providerOptions ?? {}
-    return MediaProtocol.json(
-      mergeJsonRecords(
-        {
-          model_id: request.model.id,
-          transcript: request.text,
-          voice,
-          output_format: outputFormat(request),
-          language: request.language,
-          generation_config: request.speed === undefined ? undefined : { speed: request.speed },
-          add_timestamps: request.timestamps === true ? true : undefined,
-        },
-        native,
-        request.http?.body,
-      ) ?? {},
-    )
-  }, "CartesiaSpeech.fromRequest")
+const fromRequest = effect (request: MediaProtocol.Addressed<Request>) =>
+  try withSpan(
+    effect {
+      const voice = SpeechStream.voiceID(request.voice)
+      if (voice === undefined) {
+        throw ProviderShared.invalidRequest(`${route.name} requires a voice id; pass it as \`voice\``)
+      }
+      const { sampleRate: _sampleRate, bitRate: _bitRate, encoding: _encoding, ...native } = request.providerOptions
+        ?? {}
+      return MediaProtocol.json(
+        mergeJsonRecords(
+          {
+            model_id: request.model.id,
+            transcript: request.text,
+            voice,
+            output_format: try outputFormat(request),
+            language: request.language,
+            generation_config: request.speed === undefined ? undefined : { speed: request.speed },
+            add_timestamps: request.timestamps === true ? true : undefined,
+          },
+          native,
+          request.http?.body,
+        ) ?? {},
+      )
+    },
+    "CartesiaSpeech.fromRequest",
+  )
 
 // ---------------------------------------------------------------------------
 // 6. Stream parsing
 // ---------------------------------------------------------------------------
 
-const onEvent = (state: State, frame: string) => {
-  const event = decodeEvent(frame)
+const onEvent = effect (state: State, frame: string) => {
+  const event = try decodeEvent(frame)
   if (event.type === "chunk" && event.data !== undefined) return SpeechStream.delta(state, event.data)
   if (event.type === "timestamps" && event.word_timestamps !== undefined) {
     const words = event.word_timestamps
@@ -145,10 +149,10 @@ const onEvent = (state: State, frame: string) => {
   return [state, []] as const
 }
 
-const finish = (state: State, context: MediaProtocol.ResponseContext<Request>) => {
+const finish = effect (state: State, context: MediaProtocol.ResponseContext<Request>) => {
   if (usesSse(context.request) && !state.done) throw route.incomplete()
-  const format = outputFormat(context.request)
-  return SpeechStream.finish(
+  const format = try outputFormat(context.request)
+  return try SpeechStream.finish(
     route,
     state,
     format.container === "raw"

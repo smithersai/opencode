@@ -37,8 +37,8 @@ const STATUS = {
 } as const satisfies Record<string, Status>
 
 // fal accepts public URLs and data URIs; there is no provider file handle to forward.
-export const mediaUrl = (asset: Media.Asset, name: string) =>
-  ProviderShared.mediaReference(asset, undefined, name).value
+export const mediaUrl = effect (asset: Media.Asset, name: string) =>
+  (try ProviderShared.mediaReference(asset, undefined, name)).value
 
 export const protocol = <Request, Response>(
   route: MediaProtocol.Identity,
@@ -69,19 +69,22 @@ export const protocol = <Request, Response>(
     },
     status: {
       path: (token) => token.statusURL,
-      decode: (response, context) =>
-        withSpan(() => {
-          const output = decodeQueueStatus(response)
-          const decoded = output.value
-          const status = MediaProtocol.status(STATUS, decoded.status, output)
-          // fal reports request failures as COMPLETED with an `error`; the response endpoint carries the details.
-          const failed = status === "completed" && decoded.error !== undefined && decoded.error !== null
-          return {
-            id: context.token.requestID,
-            status: failed ? "failed" : status,
-            position: status === "queued" ? (decoded.queue_position ?? undefined) : undefined,
-          }
-        }, "FalQueue.decodeStatus"),
+      decode: effect (response, context) =>
+        try withSpan(
+          effect {
+            const output = try decodeQueueStatus(response)
+            const decoded = output.value
+            const status = try MediaProtocol.status(STATUS, decoded.status, output)
+            // fal reports request failures as COMPLETED with an `error`; the response endpoint carries the details.
+            const failed = status === "completed" && decoded.error !== undefined && decoded.error !== null
+            return {
+              id: context.token.requestID,
+              status: failed ? "failed" : status,
+              position: status === "queued" ? (decoded.queue_position ?? undefined) : undefined,
+            }
+          },
+          "FalQueue.decodeStatus",
+        ),
     },
     result: { path: (token) => token.responseURL, decode: input.decodeResult },
     cancel: { method: "PUT", path: (token) => token.cancelURL },

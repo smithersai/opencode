@@ -1,8 +1,8 @@
 import { Context, Effect, FileSystem, Layer, Schema, Semaphore } from "effect"
 import { existsSync, rmSync } from "node:fs"
 import path from "node:path"
-import { secretFindings, SecretFindingSchema, type SecretFinding } from "../redaction/secrets.js"
-import { CassetteSchema, encodeCassette, type Cassette, type CassetteMetadata, type Interaction } from "./model.js"
+import { secretFindings, SecretFindingSchema, type SecretFinding } from "../redaction/secrets.ts"
+import { CassetteSchema, encodeCassette, type Cassette, type CassetteMetadata, type Interaction } from "./model.ts"
 
 const DEFAULT_RECORDINGS_DIR = path.resolve(process.cwd(), "test", "fixtures", "recordings")
 

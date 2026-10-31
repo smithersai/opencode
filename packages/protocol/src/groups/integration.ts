@@ -8,8 +8,8 @@ import {
   IntegrationMethodNotFoundError,
   IntegrationNotFoundError,
   InvalidRequestError,
-} from "../errors.js"
-import { LocationQuery, locationQueryOpenApi } from "./location.js"
+} from "../errors.ts"
+import { LocationQuery, locationQueryOpenApi } from "./location.ts"
 
 export const IntegrationGroup = HttpApiGroup.make("server.integration")
   .add(

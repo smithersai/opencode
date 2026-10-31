@@ -6,8 +6,8 @@
 
 import type { PluginInfo } from "@opencode/client/promise"
 import { Cause, Exit, Predicate, Schema } from "effect"
-import type { BuiltinStoreDeclaration } from "./builtin.js"
-import type { Cleanup, OS, PluginOptions } from "./core.js"
+import type { BuiltinStoreDeclaration } from "./builtin.ts"
+import type { Cleanup, OS, PluginOptions } from "./core.vibe"
 import type { Declarations } from "./declarations.js"
 import type { MainSetup } from "./plugin.js"
 

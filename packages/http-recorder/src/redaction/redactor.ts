@@ -1,5 +1,5 @@
 import { Option, Schema } from "effect"
-import type { RequestSnapshot, ResponseSnapshot } from "../http/model.js"
+import type { RequestSnapshot, ResponseSnapshot } from "../http/model.vibe"
 import type { RedactOptions } from "../options.js"
 
 export type { RedactOptions } from "../options.js"

@@ -1,6 +1,6 @@
 import { Context, Effect, Layer } from "effect"
 import { Info, Ref, response } from "@opencode/schema/location"
-import { Project } from "./project.js"
+import { Project } from "./project.ts"
 import { LayerNode } from "@opencode/util/effect/layer-node"
 import { makeLocationNode, tags } from "@opencode/util/effect/app-node"
 

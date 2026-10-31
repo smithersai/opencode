@@ -1,7 +1,7 @@
 import { HashSet, Option } from "effect"
 import type { RequestMatcher, RequestSnapshot } from "../api.js"
-import { canonicalizeJson, decodeJson, isJsonRecord, jsonBody, safeText } from "../replay/comparison.js"
-import type { HttpInteraction } from "./model.js"
+import { canonicalizeJson, decodeJson, isJsonRecord, jsonBody, safeText } from "../replay/comparison.ts"
+import type { HttpInteraction } from "./model.vibe"
 
 export type { RequestMatcher } from "../api.js"
 

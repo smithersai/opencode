@@ -53,9 +53,9 @@ const audioFormat = (request: Request): infer _ => {
   }
 }
 
-const queryParameters = (request: Request) => {
+const queryParameters = effect (request: Request) => {
   const { encoding: _encoding, container: _container, sampleRate, bitRate, ...native } = request.providerOptions ?? {}
-  return MediaInput.query(route.id, {
+  return try MediaInput.query(route.id, {
     ...native,
     model: request.model.id,
     ...audioFormat(request),
@@ -65,27 +65,30 @@ const queryParameters = (request: Request) => {
   })
 }
 
-const fromRequest = (request: Request) =>
-  withSpan(() => {
-    // Not in `unsupported`: that list would also reject `timestamps: false`, which asks for nothing.
-    if (request.timestamps === true) {
-      throw route.unsupported("media.timestamps", `${route.name} does not return timestamps`)
-    }
-    if (
-      request.format !== undefined
-      && FORMATS[request.format] === undefined
-      && request.providerOptions?.encoding === undefined
-    ) {
-      throw route.unsupported(
-        "media.format",
-        `${route.name} has no encoding for format "${request.format}"; pass providerOptions.encoding`,
+const fromRequest = effect (request: Request) =>
+  try withSpan(
+    effect {
+      // Not in `unsupported`: that list would also reject `timestamps: false`, which asks for nothing.
+      if (request.timestamps === true) {
+        throw route.unsupported("media.timestamps", `${route.name} does not return timestamps`)
+      }
+      if (
+        request.format !== undefined
+        && FORMATS[request.format] === undefined
+        && request.providerOptions?.encoding === undefined
+      ) {
+        throw route.unsupported(
+          "media.format",
+          `${route.name} has no encoding for format "${request.format}"; pass providerOptions.encoding`,
+        )
+      }
+      return MediaProtocol.json(
+        mergeJsonRecords({ text: request.text }, request.http?.body) ?? {},
+        try queryParameters(request),
       )
-    }
-    return MediaProtocol.json(
-      mergeJsonRecords({ text: request.text }, request.http?.body) ?? {},
-      queryParameters(request),
-    )
-  }, "DeepgramSpeech.fromRequest")
+    },
+    "DeepgramSpeech.fromRequest",
+  )
 
 // ---------------------------------------------------------------------------
 // 6. Stream parsing
@@ -100,7 +103,7 @@ const HEADERLESS_ENCODINGS: Readonly<
   alaw: { encoding: "pcm_alaw", sampleRate: 8000 },
 }
 
-const finish = (state: State, context: MediaProtocol.ResponseContext<Request>) => {
+const finish = effect (state: State, context: MediaProtocol.ResponseContext<Request>) => {
   const headers = context.http.headers
   const mediaType = headers["content-type"]
   const format = audioFormat(context.request)
@@ -108,7 +111,7 @@ const finish = (state: State, context: MediaProtocol.ResponseContext<Request>) =
   const container = format.container ?? (headerless === undefined ? undefined : "wav")
   const requestID = headers["dg-request-id"]
   const modelName = headers["dg-model-name"]
-  return SpeechStream.finish(route, state, {
+  return try SpeechStream.finish(route, state, {
     ...(container === "none" && headerless !== undefined
       ? SpeechStream.pcm(
         headerless.encoding,
@@ -133,7 +136,7 @@ export const protocol = MediaProtocol.stream<Request, SpeechEvent, Uint8Array, S
   body: { from: fromRequest },
   frames: (bytes) => bytes,
   initial: () => ({ chunks: [] }),
-  step: (state, frame) => SpeechStream.delta(state, frame),
+  step: effect (state, frame) => SpeechStream.delta(state, frame),
   finish,
 })
 

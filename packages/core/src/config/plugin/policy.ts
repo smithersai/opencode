@@ -4,7 +4,7 @@ import { define } from "@opencode/plugin/effect/plugin"
 import { Effect } from "effect"
 import { Config } from "../../config.js"
 import { ManagedPolicy } from "../../managed-policy.js"
-import { State } from "../../state.js"
+import { State } from "../../state.ts"
 import { Wildcard } from "../../util/wildcard.js"
 import { ConfigEntryObserver } from "./entry-observer.js"
 

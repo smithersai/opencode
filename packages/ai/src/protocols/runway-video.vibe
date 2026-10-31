@@ -69,38 +69,42 @@ const STATUS = {
 // ---------------------------------------------------------------------------
 
 // Runway accepts HTTPS URLs, `runway://` upload URIs, and data URIs, all as one string.
-const mediaUri = (asset: Media.Asset) => ProviderShared.mediaReference(asset, route.provider, route.name).value
+const mediaUri = effect (asset: Media.Asset) =>
+  (try ProviderShared.mediaReference(asset, route.provider, route.name)).value
 
-const fromRequest = (request: Request) =>
-  withSpan(() => {
-    const first = request.frames?.first === undefined ? undefined : mediaUri(request.frames.first)
-    const last = request.frames?.last === undefined ? undefined : mediaUri(request.frames.last)
-    const promptImage = [
-      ...(first === undefined ? [] : [{ uri: first, position: "first" }]),
-      ...(last === undefined ? [] : [{ uri: last, position: "last" }]),
-    ]
-    const videoUri = request.video === undefined ? undefined : mediaUri(request.video)
-    const references = forEach(request.references ?? [], (asset) => ({ uri: mediaUri(asset) }))
-    return MediaProtocol.json(
-      mergeJsonRecords(
-        {
-          model: request.model.id,
-          promptText: request.prompt,
-          promptImage: promptImage.length === 0 ? undefined : promptImage,
-          videoUri,
-          references: references.length === 0 ? undefined : references,
-          ratio: request.aspect,
-          duration: request.durationSeconds,
-          resolution: request.resolution,
-          audio: request.audio,
-          negativePrompt: request.negativePrompt,
-          seed: request.seed,
-        },
-        request.providerOptions,
-        request.http?.body,
-      ) ?? {},
-    )
-  }, "RunwayVideo.fromRequest")
+const fromRequest = effect (request: Request) =>
+  try withSpan(
+    effect {
+      const first = request.frames?.first === undefined ? undefined : try mediaUri(request.frames.first)
+      const last = request.frames?.last === undefined ? undefined : try mediaUri(request.frames.last)
+      const promptImage = [
+        ...(first === undefined ? [] : [{ uri: first, position: "first" }]),
+        ...(last === undefined ? [] : [{ uri: last, position: "last" }]),
+      ]
+      const videoUri = request.video === undefined ? undefined : try mediaUri(request.video)
+      const references = try forEach(request.references ?? [], effect (asset) => ({ uri: try mediaUri(asset) }))
+      return MediaProtocol.json(
+        mergeJsonRecords(
+          {
+            model: request.model.id,
+            promptText: request.prompt,
+            promptImage: promptImage.length === 0 ? undefined : promptImage,
+            videoUri,
+            references: references.length === 0 ? undefined : references,
+            ratio: request.aspect,
+            duration: request.durationSeconds,
+            resolution: request.resolution,
+            audio: request.audio,
+            negativePrompt: request.negativePrompt,
+            seed: request.seed,
+          },
+          request.providerOptions,
+          request.http?.body,
+        ) ?? {},
+      )
+    },
+    "RunwayVideo.fromRequest",
+  )
 
 // ---------------------------------------------------------------------------
 // 6. Response decoding
@@ -113,49 +117,64 @@ const decodeStart = route.decodeStarted(StartResponse, (value) => ({
 
 const decodeTask = route.decodeJson(Task)
 
-const decodeStatus = (response: HttpClientResponse.HttpClientResponse, context: MediaProtocol.PollContext<Token>) =>
-  withSpan(() => {
-    const output = decodeTask(response)
-    const status = MediaProtocol.status(STATUS, output.value.status, output)
-    return { id: context.token.taskID, status, progress: output.value.progress ?? undefined }
-  }, "RunwayVideo.decodeStatus")
+const decodeStatus = effect (
+  response: HttpClientResponse.HttpClientResponse,
+  context: MediaProtocol.PollContext<Token>,
+) =>
+  try withSpan(
+    effect {
+      const output = try decodeTask(response)
+      const status = try MediaProtocol.status(STATUS, output.value.status, output)
+      return { id: context.token.taskID, status, progress: output.value.progress ?? undefined }
+    },
+    "RunwayVideo.decodeStatus",
+  )
 
-const decodeResult = (response: HttpClientResponse.HttpClientResponse, context: MediaProtocol.PollContext<Token>) =>
-  withSpan(() => {
-    const output = decodeTask(response)
-    const task = output.value
-    const status = MediaProtocol.status(STATUS, task.status, output)
-    if (status === "failed") {
-      const code = task.failureCode ?? undefined
-      const message = `${route.name} task failed${code === undefined ? "" : ` (${code})`}${
-        task.failure ? `: ${task.failure}` : ""
-      }`
-      // Runway failure codes are dotted paths; every moderation outcome carries a SAFETY segment.
-      if (code !== undefined && /(^|\.)SAFETY(\.|$)/.test(code)) throw output.contentPolicy(message)
-      // ASSET.INVALID rejects the caller's input media; Runway documents it as not retryable.
-      throw output.ended(
-        "failed",
-        message,
-        code !== undefined && /^ASSET\.INVALID(\.|$)/.test(code) ? "InvalidRequest" : "ProviderInternal",
-      )
-    }
-    if (status === "cancelled") {
-      throw output.ended("cancelled", `${route.name} task ${context.token.taskID} was cancelled`)
-    }
-    if (status !== "completed") throw output.pending(context.token.taskID)
-    const urls = task.output ?? []
-    if (urls.length === 0) throw output.invalid(`${route.name} task succeeded without any output`)
-    return new VideoResponse({
-      videos: forEach(urls, (url) => MediaProtocol.expiringUrl(url, OUTPUT_RETENTION, { mediaType: "video/mp4" })),
-      usage: task.cost === undefined ? undefined : { type: "credits", credits: task.cost.credits },
-      providerMetadata: {
-        runway: {
-          taskId: context.token.taskID,
-          estimatedCredits: task.estimatedCost?.credits,
+const decodeResult = effect (
+  response: HttpClientResponse.HttpClientResponse,
+  context: MediaProtocol.PollContext<Token>,
+) =>
+  try withSpan(
+    effect {
+      const output = try decodeTask(response)
+      const task = output.value
+      const status = try MediaProtocol.status(STATUS, task.status, output)
+      if (status === "failed") {
+        const code = task.failureCode ?? undefined
+        const message = `${route.name} task failed${code === undefined ? "" : ` (${code})`}${
+          task.failure ? `: ${task.failure}` : ""
+        }`
+        // Runway failure codes are dotted paths; every moderation outcome carries a SAFETY segment.
+        if (code !== undefined && /(^|\.)SAFETY(\.|$)/.test(code)) throw output.contentPolicy(message)
+        // ASSET.INVALID rejects the caller's input media; Runway documents it as not retryable.
+        throw output.ended(
+          "failed",
+          message,
+          code !== undefined && /^ASSET\.INVALID(\.|$)/.test(code) ? "InvalidRequest" : "ProviderInternal",
+        )
+      }
+      if (status === "cancelled") {
+        throw output.ended("cancelled", `${route.name} task ${context.token.taskID} was cancelled`)
+      }
+      if (status !== "completed") throw output.pending(context.token.taskID)
+      const urls = task.output ?? []
+      if (urls.length === 0) throw output.invalid(`${route.name} task succeeded without any output`)
+      return new VideoResponse({
+        videos: try forEach(
+          urls,
+          effect (url) => try MediaProtocol.expiringUrl(url, OUTPUT_RETENTION, { mediaType: "video/mp4" }),
+        ),
+        usage: task.cost === undefined ? undefined : { type: "credits", credits: task.cost.credits },
+        providerMetadata: {
+          runway: {
+            taskId: context.token.taskID,
+            estimatedCredits: task.estimatedCost?.credits,
+          },
         },
-      },
-    })
-  }, "RunwayVideo.decodeResult")
+      })
+    },
+    "RunwayVideo.decodeResult",
+  )
 
 // ---------------------------------------------------------------------------
 // 7. Protocol and route

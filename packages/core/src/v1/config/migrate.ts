@@ -3,13 +3,13 @@ export * as ConfigMigrateV1 from "./migrate.js"
 import { ConfigAgent } from "@opencode/schema/config/agent"
 import { Schema } from "effect"
 import { ConfigAgentV1 } from "./agent.js"
-import { ConfigCommandV1 } from "./command.js"
-import { ConfigMCPV1 } from "./mcp.js"
+import { ConfigCommandV1 } from "./command.ts"
+import { ConfigMCPV1 } from "./mcp.ts"
 import { ConfigPermissionV1 } from "./permission.js"
-import { ConfigProviderV1 } from "./provider.js"
+import { ConfigProviderV1 } from "./provider.ts"
 import { ConfigProviderOptionsV1 } from "./provider-options.js"
-import { Provider } from "../../provider.js"
-import { Model } from "../../model.js"
+import { Provider } from "../../provider.ts"
+import { Model } from "../../model.ts"
 
 const decodeOptions = { errors: "all", onExcessProperty: "ignore" } as const
 const decodeAgent = Schema.decodeUnknownSync(Schema.fromJsonString(ConfigAgent.Info), decodeOptions)

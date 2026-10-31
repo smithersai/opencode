@@ -3,7 +3,7 @@ import { Model } from "@opencode/schema/model"
 import { Provider } from "@opencode/schema/provider"
 import { AbsolutePath, RelativePath } from "../schema.js"
 import { SessionSchema } from "./schema.js"
-import type { SessionTable } from "./sql.js"
+import type { SessionTable } from "./sql.ts"
 import { PersistedRevert } from "@opencode/schema/session-revert"
 import { Money } from "@opencode/schema/money"
 

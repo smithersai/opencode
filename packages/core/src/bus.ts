@@ -194,7 +194,7 @@ export function configured(options?: Options) {
         // Deferred import: a static one would close the module cycle
         // bus → location → project → bus and hit the node bindings in TDZ.
         const { Location } = yield* Effect.promise(() => import("./location.js"))
-        const { SessionTable } = yield* Effect.promise(() => import("./session/sql.js"))
+        const { SessionTable } = yield* Effect.promise(() => import("./session/sql.ts"))
         const pubsub = {
           live: yield* PubSub.unbounded<Event.Payload>(),
           durable: new Map<string, Set<PubSub.PubSub<void>>>(),

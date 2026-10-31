@@ -44,35 +44,38 @@ const QueueResult = Schema.StructWithRest(
 // 5. Request body construction
 // ---------------------------------------------------------------------------
 
-const fromRequest = (request: Request) =>
-  withSpan(() => {
-    if (request.frames?.last !== undefined) {
-      throw route.unsupported(
-        "video.frames.last",
-        `${route.name} names the last frame per model; pass it through providerOptions (e.g. end_image_url) instead of frames.last`,
+const fromRequest = effect (request: Request) =>
+  try withSpan(
+    effect {
+      if (request.frames?.last !== undefined) {
+        throw route.unsupported(
+          "video.frames.last",
+          `${route.name} names the last frame per model; pass it through providerOptions (e.g. end_image_url) instead of frames.last`,
+        )
+      }
+      const imageUrl = request.frames?.first === undefined
+        ? undefined
+        : try FalQueue.mediaUrl(request.frames.first, route.name)
+      const videoUrl = request.video === undefined ? undefined : try FalQueue.mediaUrl(request.video, route.name)
+      return MediaProtocol.json(
+        mergeJsonRecords(
+          {
+            prompt: request.prompt,
+            negative_prompt: request.negativePrompt,
+            seed: request.seed,
+            aspect_ratio: request.aspect,
+            resolution: request.resolution,
+            generate_audio: request.audio,
+            image_url: imageUrl,
+            video_url: videoUrl,
+          },
+          request.providerOptions,
+          request.http?.body,
+        ) ?? {},
       )
-    }
-    const imageUrl = request.frames?.first === undefined
-      ? undefined
-      : FalQueue.mediaUrl(request.frames.first, route.name)
-    const videoUrl = request.video === undefined ? undefined : FalQueue.mediaUrl(request.video, route.name)
-    return MediaProtocol.json(
-      mergeJsonRecords(
-        {
-          prompt: request.prompt,
-          negative_prompt: request.negativePrompt,
-          seed: request.seed,
-          aspect_ratio: request.aspect,
-          resolution: request.resolution,
-          generate_audio: request.audio,
-          image_url: imageUrl,
-          video_url: videoUrl,
-        },
-        request.providerOptions,
-        request.http?.body,
-      ) ?? {},
-    )
-  }, "FalVideo.fromRequest")
+    },
+    "FalVideo.fromRequest",
+  )
 
 // ---------------------------------------------------------------------------
 // 6. Response decoding
@@ -80,23 +83,26 @@ const fromRequest = (request: Request) =>
 
 const decodeQueueResult = route.decodeJson(QueueResult)
 
-const decodeResult = (response: HttpClientResponse, context: MediaProtocol.PollContext<FalQueue.Token>) =>
-  withSpan(() => {
-    const output = decodeQueueResult(response)
-    const { video, seed, ...rest } = output.value
-    return new VideoResponse({
-      videos: [Media.url(video.url, { mediaType: video.content_type ?? "video/mp4" })],
-      providerMetadata: {
-        fal: {
-          requestId: context.token.requestID,
-          seed: seed ?? undefined,
-          fileName: video.file_name ?? undefined,
-          fileSize: video.file_size ?? undefined,
-          ...rest,
+const decodeResult = effect (response: HttpClientResponse, context: MediaProtocol.PollContext<FalQueue.Token>) =>
+  try withSpan(
+    effect {
+      const output = try decodeQueueResult(response)
+      const { video, seed, ...rest } = output.value
+      return new VideoResponse({
+        videos: [Media.url(video.url, { mediaType: video.content_type ?? "video/mp4" })],
+        providerMetadata: {
+          fal: {
+            requestId: context.token.requestID,
+            seed: seed ?? undefined,
+            fileName: video.file_name ?? undefined,
+            fileSize: video.file_size ?? undefined,
+            ...rest,
+          },
         },
-      },
-    })
-  }, "FalVideo.decodeResult")
+      })
+    },
+    "FalVideo.decodeResult",
+  )
 
 // ---------------------------------------------------------------------------
 // 7. Protocol and route

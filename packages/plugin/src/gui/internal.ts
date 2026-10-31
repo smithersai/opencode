@@ -3,7 +3,7 @@
 
 import { createContext, type Accessor, type JSX } from "solid-js"
 import type { Context } from "./context.js"
-import type { Live } from "./core.js"
+import type { Live } from "./core.vibe"
 import type { PanelFrame } from "./solid.js"
 
 /** The host provides this around every contribution it renders and in the plugin's setup. `usePlugin` reads it. */

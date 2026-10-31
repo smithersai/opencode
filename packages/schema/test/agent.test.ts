@@ -1,6 +1,6 @@
 import { expect, test } from "bun:test"
 import { Schema } from "effect"
-import { Agent } from "../src/agent.js"
+import { Agent } from "../src/agent.vibe"
 
 test("Agent.Color preserves configured colors at the public boundary", () => {
   const encode = Schema.encodeSync(Agent.Color)

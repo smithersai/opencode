@@ -1,0 +1,19 @@
+export * as InstallationEvent from "./installation-event.vibe"
+
+import { Event } from "./event.vibe"
+
+export const Updated = Event.ephemeral({
+  type: "installation.updated",
+  schema: {
+    version: Schema.String,
+  },
+})
+
+export const UpdateAvailable = Event.ephemeral({
+  type: "installation.update-available",
+  schema: {
+    version: Schema.String,
+  },
+})
+
+export const Definitions = Event.inventory(Updated, UpdateAvailable)

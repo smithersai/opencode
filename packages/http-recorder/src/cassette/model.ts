@@ -1,7 +1,7 @@
 import { Schema } from "effect"
 import type { JsonValue } from "../api.js"
-import { HttpInteractionSchema } from "../http/model.js"
-import { WebSocketInteractionSchema } from "../websocket/model.js"
+import { HttpInteractionSchema } from "../http/model.vibe"
+import { WebSocketInteractionSchema } from "../websocket/model.vibe"
 
 export type { CassetteMetadata, JsonValue } from "../api.js"
 

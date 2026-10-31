@@ -1,5 +1,5 @@
 import { Effect, Exit, HashSet, Ref, Scope, SynchronizedRef } from "effect"
-import type { Interaction } from "../cassette/model.js"
+import type { Interaction } from "../cassette/model.ts"
 import type { CassetteNotFoundError, Interface, InvalidCassetteError } from "../cassette/store.js"
 
 const isCI = () => {

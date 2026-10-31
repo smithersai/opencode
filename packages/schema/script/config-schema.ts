@@ -1,5 +1,5 @@
 import { Schema } from "effect"
-import { Config } from "../src/config.js"
+import { Config } from "../src/config.vibe"
 
 interface JsonSchema {
   readonly [key: string]: unknown

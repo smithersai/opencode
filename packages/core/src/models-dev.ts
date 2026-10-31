@@ -12,7 +12,7 @@ import { makeGlobalNode } from "@opencode/util/effect/app-node"
 import { httpClient } from "@opencode/util/effect/app-node-platform"
 import { Model } from "./model.js"
 import { AISDKNative } from "./aisdk-native.js"
-import { Provider } from "./provider.js"
+import { Provider } from "./provider.ts"
 import { Variant } from "./variant.js"
 import { KV } from "./kv.js"
 import snapshotText from "./models-dev/snapshot.txt" with { type: "text" }

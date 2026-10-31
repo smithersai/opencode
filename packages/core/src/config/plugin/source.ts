@@ -11,7 +11,7 @@ import { fileURLToPath, pathToFileURL } from "url"
 import { Config } from "../../config.js"
 import { Watcher } from "../../filesystem/watcher.js"
 import { Location } from "../../location.js"
-import { PluginSourceDirectory } from "../../plugin/source-directory.js"
+import { PluginSourceDirectory } from "../../plugin/source-directory.ts"
 
 export type Operation =
   | {

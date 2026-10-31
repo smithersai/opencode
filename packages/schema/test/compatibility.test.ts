@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test"
-import { FileSystem } from "../src/filesystem.js"
+import { FileSystem } from "../src/filesystem.vibe"
 
 describe("schema compatibility", () => {
   test("moved class schemas remain constructible", () => {

@@ -1,7 +1,7 @@
 import { Effect, Option } from "effect"
 import type { Document, Entry } from "@opencode/schema/config"
 import { Config } from "../../config.js"
-import { Provider } from "../../provider.js"
+import { Provider } from "../../provider.ts"
 
 export const configuredSettings = Effect.fn("ProviderPlugin.configuredSettings")(function* (id: Provider.ID) {
   const providers = yield* Provider.Service

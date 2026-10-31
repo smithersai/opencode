@@ -125,7 +125,7 @@
     "./protocols/alibaba-images": "./src/protocols/alibaba-images.ts",
     "./protocols/cloudflare-run-decisions": "./src/protocols/cloudflare-run-decisions.ts",
     "./protocols/cloudflare-workers-ai-images": "./src/protocols/cloudflare-workers-ai-images.ts",
-    "./protocols/deepgram-transcription": "./src/protocols/deepgram-transcription.ts",
+    "./protocols/deepgram-transcription": "./src/protocols/deepgram-transcription.vibe",
     "./protocols/google-images": "./src/protocols/google-images.ts",
     "./protocols/google-speech": "./src/protocols/google-speech.ts",
     "./protocols/google-transcription": "./src/protocols/google-transcription.ts",

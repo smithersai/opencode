@@ -1,5 +1,5 @@
 import { Schema } from "effect";
-import { ImageModel, ImageResponse, type ImageRequestFor } from "../image.js";
+import { ImageModel, type ImageRequestFor, ImageResponse } from "../image.js";
 import { MediaProtocol } from "../route/media-protocol.js";
 import { MediaRoute } from "../route/media.js";
 export declare const DEFAULT_BASE_URL = "https://api.replicate.com";

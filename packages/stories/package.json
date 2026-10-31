@@ -20,7 +20,7 @@
     "typescript": "catalog:",
     "vite": "7.3.6",
     "vite-plugin-solid": "2.11.12",
-    "vibelang": "file:../../.vibelang-toolchain/vibelang-0.0.11.tgz",
-    "vibelang-vite": "file:../../.vibelang-toolchain/vibelang-vite-0.0.11.tgz"
+    "vibelang": "file:../../.vibelang-toolchain/vibelang-0.0.11-9b27ecff9496.tgz",
+    "vibelang-vite": "file:../../.vibelang-toolchain/vibelang-vite-0.0.11-7e6116042b49.tgz"
   }
 }

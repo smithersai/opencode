@@ -48,7 +48,7 @@
     "@opencode/schema": "workspace:*",
     "@opencode/util": "workspace:*",
     "effect": "catalog:",
-    "vibelang-runtime": "file:../../.vibelang-toolchain/vibelang-runtime-0.0.11.tgz"
+    "vibelang-runtime": "file:../../.vibelang-toolchain/vibelang-runtime-0.0.11-2c09183515b6.tgz"
   },
   "peerDependencies": {
     "@opencode/theme": "workspace:*",
@@ -95,8 +95,8 @@
     "vite": "catalog:",
     "vite-plugin-solid": "catalog:",
     "@typescript/native": "catalog:",
-    "vibelang": "file:../../.vibelang-toolchain/vibelang-0.0.11.tgz",
-    "vibelang-vite": "file:../../.vibelang-toolchain/vibelang-vite-0.0.11.tgz"
+    "vibelang": "file:../../.vibelang-toolchain/vibelang-0.0.11-9b27ecff9496.tgz",
+    "vibelang-vite": "file:../../.vibelang-toolchain/vibelang-vite-0.0.11-7e6116042b49.tgz"
   },
   "repository": {
     "type": "git",

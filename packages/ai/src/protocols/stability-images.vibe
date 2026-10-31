@@ -96,19 +96,22 @@ const form = (
   const body = new FormData()
   MediaInput.appendFields(body, fields, { overlay: native, reserved: RESERVED_FORM_FIELDS })
   const image = source?.[0]
-  if (image !== undefined)
+  if (image !== undefined) {
     body.append("image", MediaInput.blob(MediaInput.inlineBytes(identity.id, image), image.mediaType), "image")
+  }
   return MediaProtocol.multipart(body)
 }
 
 const fromRequest = (request: Request) =>
   withSpan(() => {
-    if (request.n !== undefined && request.n > 1)
+    if (request.n !== undefined && request.n > 1) {
       throw route.unsupported("media.n", `${route.name} generates one image per request; call it once per image`)
+    }
     const target = endpoint(request.model.id)
     const edit = (request.images?.length ?? 0) > 0
-    if (edit && target === "core")
+    if (edit && target === "core") {
       throw route.unsupported("media.images", `${route.name} core is text-to-image only; use ultra or sd3.5-*`)
+    }
     return form(
       route,
       {
@@ -124,8 +127,9 @@ const fromRequest = (request: Request) =>
 
 const fromUpscaleRequest = (request: UpscaleRequest) =>
   withSpan(() => {
-    if ((request.images?.length ?? 0) === 0)
+    if ((request.images?.length ?? 0) === 0) {
       throw ProviderShared.invalidRequest(`${upscaleRoute.name} upscale requires the source image in images`)
+    }
     return form(
       upscaleRoute,
       { prompt: request.prompt },
@@ -168,7 +172,10 @@ const decodeStatus = (response: HttpClientResponse.HttpClientResponse, context: 
   status: response.status === 202 ? ("running" as const) : ("completed" as const),
 })
 
-const decodeUpscaleResult = (response: HttpClientResponse.HttpClientResponse, context: MediaProtocol.PollContext<Token>) =>
+const decodeUpscaleResult = (
+  response: HttpClientResponse.HttpClientResponse,
+  context: MediaProtocol.PollContext<Token>,
+) =>
   withSpan(() => {
     if (response.status === 202) {
       const output = upscaleRoute.text(response)

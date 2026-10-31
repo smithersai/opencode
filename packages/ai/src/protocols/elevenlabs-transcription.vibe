@@ -81,19 +81,22 @@ const RESERVED_FORM_FIELDS = new Set([
 
 const validate = (request: Request, overlay: Record<string, unknown>) => {
   // Webhook requests return 202 with no transcript; the result arrives at a configured webhook instead.
-  if (overlay.webhook === true)
+  if (overlay.webhook === true) {
     throw route.unsupported("transcription.webhook", `${route.name} does not deliver to webhooks`)
+  }
   // Separate multichannel output replaces the transcript with one transcript per channel.
-  if (overlay.use_multi_channel === true && overlay.multichannel_output_style !== "combined")
+  if (overlay.use_multi_channel === true && overlay.multichannel_output_style !== "combined") {
     throw route.unsupported(
       "transcription.multichannel",
       `${route.name} returns a single transcript; set multichannel_output_style: "combined" to merge channels`,
     )
-  if (overlay.timestamps_granularity === "none" && (request.timestamps === "word" || diarizes(request)))
+  }
+  if (overlay.timestamps_granularity === "none" && (request.timestamps === "word" || diarizes(request))) {
     throw route.unsupported(
       "media.timestamps",
       `${route.name} cannot return word timestamps or speaker turns with timestamps_granularity: "none"`,
     )
+  }
 }
 
 const fromRequest = (request: Request) =>
@@ -158,7 +161,10 @@ const speakerTurns = (tokens: ReadonlyArray<Token>): infer _ =>
     ]
   })
 
-const decodeResponse = (response: HttpClientResponse.HttpClientResponse, context: MediaProtocol.DecodeContext<Request>) =>
+const decodeResponse = (
+  response: HttpClientResponse.HttpClientResponse,
+  context: MediaProtocol.DecodeContext<Request>,
+) =>
   withSpan(() => {
     const output = decodeTranscript(response)
     const transcript = output.value
@@ -178,7 +184,9 @@ const decodeResponse = (response: HttpClientResponse.HttpClientResponse, context
       language: transcript.language_code?.toLowerCase(),
       durationSeconds: duration,
       usage: duration === undefined ? undefined : { type: "seconds", seconds: duration },
-      providerMetadata: transcriptionID === undefined ? undefined : { elevenlabs: { transcriptionId: transcriptionID } },
+      providerMetadata: transcriptionID === undefined
+        ? undefined
+        : { elevenlabs: { transcriptionId: transcriptionID } },
     })
   }, "ElevenLabsTranscription.decodeResponse")
 

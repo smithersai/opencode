@@ -50,7 +50,7 @@
   },
   "scripts": {
     "typecheck": "bun check --no-script -b",
-    "typecheck:tsc": "tsc -b",
+    "typecheck:tsc": "vibelang -b",
     "test": "bun test src --only-failures",
     "test:components": "playwright test --config playwright.components.config.ts",
     "test:components:ui": "playwright test --config playwright.components.config.ts --ui"
@@ -83,6 +83,7 @@
     "dompurify": "3.4.17",
     "marked": "catalog:",
     "pele": "1.7.0",
-    "solid-js": "catalog:"
+    "solid-js": "catalog:",
+    "vibelang-runtime": "file:../../.vibelang-toolchain/vibelang-runtime-0.0.11-956814eb1e95.tgz"
   }
 }

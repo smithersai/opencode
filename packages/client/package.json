@@ -33,11 +33,12 @@
     "check:generated": "bun run generate && git diff --exit-code -- src/promise/generated src/effect/generated src/effect/api",
     "test": "bun test --timeout 5000",
     "typecheck": "bun check --no-script",
-    "typecheck:tsc": "tsc --noEmit"
+    "typecheck:tsc": "vibelang --noEmit"
   },
   "dependencies": {
     "@opencode/schema": "workspace:*",
-    "@opencode/protocol": "workspace:*"
+    "@opencode/protocol": "workspace:*",
+    "vibelang-runtime": "file:../../.vibelang-toolchain/vibelang-runtime-0.0.11-956814eb1e95.tgz"
   },
   "peerDependencies": {
     "effect": "catalog:",
@@ -59,6 +60,8 @@
     "@types/bun": "catalog:",
     "@typescript/native": "catalog:",
     "effect": "catalog:",
-    "solid-js": "catalog:"
+    "solid-js": "catalog:",
+    "vibelang": "file:../../.vibelang-toolchain/vibelang-0.0.11-b9d250df199d.tgz",
+    "vibelang-unplugin": "file:../../.vibelang-toolchain/vibelang-unplugin-0.0.11-d83e2657e595.tgz"
   }
 }

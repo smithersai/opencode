@@ -22,21 +22,23 @@
     "./proxy": "./src/proxy.ts"
   },
   "scripts": {
-    "build": "tsc -p tsconfig.build.json",
+    "build": "vibelang -p tsconfig.build.json",
     "pack": "bun run script/pack.ts",
     "typecheck": "bun check --no-script -p tsconfig.test.json",
-    "typecheck:tsc": "tsc --noEmit -p tsconfig.test.json",
+    "typecheck:tsc": "vibelang --noEmit -p tsconfig.test.json",
     "test": "bun test"
   },
   "dependencies": {
     "@opencode/plugin": "workspace:*",
     "@opencode/schema": "workspace:*",
-    "effect": "catalog:"
+    "effect": "catalog:",
+    "vibelang-runtime": "file:../../.vibelang-toolchain/vibelang-runtime-0.0.11-956814eb1e95.tgz"
   },
   "devDependencies": {
     "@tsconfig/bun": "catalog:",
     "@types/bun": "catalog:",
     "@typescript/native": "catalog:",
-    "typescript": "catalog:"
+    "typescript": "catalog:",
+    "vibelang": "file:../../.vibelang-toolchain/vibelang-0.0.11-b9d250df199d.tgz"
   }
 }

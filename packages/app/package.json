@@ -13,8 +13,8 @@
   },
   "scripts": {
     "typecheck": "bun check --no-script -b",
-    "typecheck:tsc": "tsc -b",
-    "typecheck:e2e": "tsc -p e2e/tsconfig.json",
+    "typecheck:tsc": "vibelang -b",
+    "typecheck:e2e": "vibelang -p e2e/tsconfig.json",
     "start": "vite",
     "dev": "vite",
     "build": "vite build",
@@ -88,6 +88,7 @@
     "effect": "catalog:",
     "fuzzysort": "catalog:",
     "qr-scanner": "1.4.2",
-    "solid-js": "catalog:"
+    "solid-js": "catalog:",
+    "vibelang-runtime": "file:../../.vibelang-toolchain/vibelang-runtime-0.0.11-956814eb1e95.tgz"
   }
 }

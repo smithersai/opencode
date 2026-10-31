@@ -68,16 +68,19 @@ const queryParameters = (request: Request) => {
 const fromRequest = (request: Request) =>
   withSpan(() => {
     // Not in `unsupported`: that list would also reject `timestamps: false`, which asks for nothing.
-    if (request.timestamps === true) throw route.unsupported("media.timestamps", `${route.name} does not return timestamps`)
+    if (request.timestamps === true) {
+      throw route.unsupported("media.timestamps", `${route.name} does not return timestamps`)
+    }
     if (
-      request.format !== undefined &&
-      FORMATS[request.format] === undefined &&
-      request.providerOptions?.encoding === undefined
-    )
+      request.format !== undefined
+      && FORMATS[request.format] === undefined
+      && request.providerOptions?.encoding === undefined
+    ) {
       throw route.unsupported(
         "media.format",
         `${route.name} has no encoding for format "${request.format}"; pass providerOptions.encoding`,
       )
+    }
     return MediaProtocol.json(
       mergeJsonRecords({ text: request.text }, request.http?.body) ?? {},
       queryParameters(request),
@@ -108,17 +111,16 @@ const finish = (state: State, context: MediaProtocol.ResponseContext<Request>) =
   return SpeechStream.finish(route, state, {
     ...(container === "none" && headerless !== undefined
       ? SpeechStream.pcm(
-          headerless.encoding,
-          SpeechStream.sampleRate(mediaType) ?? context.request.providerOptions?.sampleRate ?? headerless.sampleRate,
-          mediaType,
-        )
-      : // Deepgram's default encoding is MP3; WAV is a container around any encoding.
-        { mediaType, info: { format: container === "wav" ? "wav" : (format.encoding ?? "mp3") } }),
+        headerless.encoding,
+        SpeechStream.sampleRate(mediaType) ?? context.request.providerOptions?.sampleRate ?? headerless.sampleRate,
+        mediaType,
+      )
+      // Deepgram's default encoding is MP3; WAV is a container around any encoding.
+      : { mediaType, info: { format: container === "wav" ? "wav" : (format.encoding ?? "mp3") } }),
     usage: SpeechStream.headerUsage("characters", headers["dg-char-count"]),
-    providerMetadata:
-      requestID === undefined && modelName === undefined
-        ? undefined
-        : { deepgram: { requestId: requestID, modelName } },
+    providerMetadata: requestID === undefined && modelName === undefined
+      ? undefined
+      : { deepgram: { requestId: requestID, modelName } },
   })
 }
 

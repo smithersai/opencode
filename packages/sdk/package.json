@@ -26,7 +26,7 @@
     "pack": "bun run script/pack.ts",
     "test": "bun test --timeout 5000",
     "typecheck": "bun check --no-script -b",
-    "typecheck:tsc": "tsc -b",
+    "typecheck:tsc": "vibelang -b",
     "verify:package": "bun run script/verify-package.ts"
   },
   "dependencies": {
@@ -36,7 +36,8 @@
     "@opencode/schema": "workspace:*",
     "@opencode/server": "workspace:*",
     "@opencode/util": "workspace:*",
-    "effect": "catalog:"
+    "effect": "catalog:",
+    "vibelang-runtime": "file:../../.vibelang-toolchain/vibelang-runtime-0.0.11-956814eb1e95.tgz"
   },
   "devDependencies": {
     "@opencode/ai": "workspace:*",
@@ -44,6 +45,8 @@
     "@opencode/protocol": "workspace:*",
     "@tsconfig/bun": "catalog:",
     "@types/bun": "catalog:",
-    "@typescript/native": "catalog:"
+    "@typescript/native": "catalog:",
+    "vibelang": "file:../../.vibelang-toolchain/vibelang-0.0.11-b9d250df199d.tgz",
+    "vibelang-unplugin": "file:../../.vibelang-toolchain/vibelang-unplugin-0.0.11-d83e2657e595.tgz"
   }
 }

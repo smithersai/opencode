@@ -23,16 +23,18 @@
     "build": "bun run script/build.ts",
     "pack": "bun run script/pack.ts",
     "typecheck": "bun check --no-script",
-    "typecheck:tsc": "tsc --noEmit",
+    "typecheck:tsc": "vibelang --noEmit",
     "test": "bun test"
   },
   "dependencies": {
     "acorn": "8.15.0",
-    "effect": "catalog:"
+    "effect": "catalog:",
+    "vibelang-runtime": "file:../../.vibelang-toolchain/vibelang-runtime-0.0.11-956814eb1e95.tgz"
   },
   "devDependencies": {
     "@tsconfig/bun": "catalog:",
     "@types/bun": "catalog:",
-    "@typescript/native": "catalog:"
+    "@typescript/native": "catalog:",
+    "vibelang": "file:../../.vibelang-toolchain/vibelang-0.0.11-b9d250df199d.tgz"
   }
 }

@@ -175,6 +175,7 @@
     }
   ],
   "ignorePatterns": [
+    "**/*.d.vibe.ts",
     "**/node_modules",
     "**/dist",
     "**/.build",

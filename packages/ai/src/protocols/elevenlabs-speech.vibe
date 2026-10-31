@@ -96,23 +96,26 @@ const OUTPUT_FORMATS: Readonly<Record<string, string>> = {
 /** WAV is served only by the non-streaming endpoints. */
 const outputFormat = (request: MediaProtocol.Addressed<Request>) => {
   const format = request.providerOptions?.outputFormat ?? OUTPUT_FORMATS[request.format ?? "mp3"]
-  if (format === undefined)
+  if (format === undefined) {
     throw route.unsupported(
       "media.format",
       `${route.name} has no default output format for "${request.format}"; pass providerOptions.outputFormat`,
     )
-  if (request.mode === "stream" && format.startsWith("wav_"))
+  }
+  if (request.mode === "stream" && format.startsWith("wav_")) {
     throw route.unsupported(
       "media.format",
       `${route.name} streams mp3, pcm, opus, ulaw, and alaw but not "${format}"; use generate for WAV`,
     )
+  }
   return format
 }
 
 const fromRequest = (request: MediaProtocol.Addressed<Request>) =>
   withSpan(() => {
-    if (request.voice === undefined)
+    if (request.voice === undefined) {
       throw ProviderShared.invalidRequest(`${route.name} requires a voice id; pass it as \`voice\``)
+    }
     const { outputFormat: _outputFormat, ...native } = request.providerOptions ?? {}
     return MediaProtocol.json(
       mergeJsonRecords(
@@ -130,9 +133,9 @@ const fromRequest = (request: MediaProtocol.Addressed<Request>) =>
   }, "ElevenLabsSpeech.fromRequest")
 
 const path = (request: MediaProtocol.Addressed<Request>): string =>
-  `${PATH}/${encodeURIComponent(SpeechStream.voiceID(request.voice) ?? "")}${request.mode === "stream" ? "/stream" : ""}${
-    request.timestamps === true ? "/with-timestamps" : ""
-  }`
+  `${PATH}/${encodeURIComponent(SpeechStream.voiceID(request.voice) ?? "")}${
+    request.mode === "stream" ? "/stream" : ""
+  }${request.timestamps === true ? "/with-timestamps" : ""}`
 
 // ---------------------------------------------------------------------------
 // 6. Stream parsing

@@ -26,7 +26,7 @@
     "update-models-snapshot": "bun run script/update-models-snapshot.ts",
     "test": "bun run script/test.ts",
     "typecheck": "bun check --no-script -b -p tsconfig.tests.json",
-    "typecheck:tsc": "tsc -b tsconfig.json tsconfig.tests.json"
+    "typecheck:tsc": "vibelang -b tsconfig.json tsconfig.tests.json"
   },
   "exports": {
     "./*": "./src/*.ts"
@@ -96,7 +96,8 @@
     "@types/which": "3.0.4",
     "drizzle-kit": "catalog:",
     "fast-check": "catalog:",
-    "vibelang": "file:../../.vibelang-toolchain/vibelang-0.0.11-b9d250df199d.tgz"
+    "vibelang": "file:../../.vibelang-toolchain/vibelang-0.0.11-b9d250df199d.tgz",
+    "vibelang-unplugin": "file:../../.vibelang-toolchain/vibelang-unplugin-0.0.11-d83e2657e595.tgz"
   },
   "dependencies": {
     "@ai-sdk/cohere": "3.0.27",
@@ -137,6 +138,7 @@
     "tree-sitter-powershell": "0.25.10",
     "web-tree-sitter": "0.25.10",
     "which": "6.0.1",
-    "zod": "catalog:"
+    "zod": "catalog:",
+    "vibelang-runtime": "file:../../.vibelang-toolchain/vibelang-runtime-0.0.11-956814eb1e95.tgz"
   }
 }

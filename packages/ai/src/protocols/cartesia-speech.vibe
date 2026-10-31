@@ -70,7 +70,8 @@ interface State extends SpeechStream.Audio {
 // ---------------------------------------------------------------------------
 
 /** Timestamps exist only on the SSE endpoint, so a `generate` that asks for them collects an SSE stream. */
-const usesSse = (request: MediaProtocol.Addressed<Request>): boolean => request.mode === "stream" || request.timestamps === true
+const usesSse = (request: MediaProtocol.Addressed<Request>): boolean =>
+  request.mode === "stream" || request.timestamps === true
 
 const CONTAINERS: Readonly<Record<string, "raw" | "wav" | "mp3">> = { pcm: "raw", wav: "wav", mp3: "mp3" }
 
@@ -78,23 +79,28 @@ const outputFormat = (request: MediaProtocol.Addressed<Request>) => {
   const sse = usesSse(request)
   const format = request.format ?? (sse ? "pcm" : "mp3")
   const container = CONTAINERS[format]
-  if (container === undefined)
+  if (container === undefined) {
     throw route.unsupported("media.format", `${route.name} supports the pcm, wav, and mp3 formats, not "${format}"`)
-  if (sse && container !== "raw")
+  }
+  if (sse && container !== "raw") {
     throw route.unsupported(
       "media.format",
       `${route.name} streams and timestamps only raw PCM; request format "pcm" instead of "${format}"`,
     )
+  }
   const sampleRate = request.providerOptions?.sampleRate ?? DEFAULT_SAMPLE_RATE
-  if (container === "mp3")
+  if (container === "mp3") {
     return { container, sample_rate: sampleRate, bit_rate: request.providerOptions?.bitRate ?? DEFAULT_BIT_RATE }
+  }
   return { container, encoding: request.providerOptions?.encoding ?? "pcm_s16le", sample_rate: sampleRate }
 }
 
 const fromRequest = (request: MediaProtocol.Addressed<Request>) =>
   withSpan(() => {
     const voice = SpeechStream.voiceID(request.voice)
-    if (voice === undefined) throw ProviderShared.invalidRequest(`${route.name} requires a voice id; pass it as \`voice\``)
+    if (voice === undefined) {
+      throw ProviderShared.invalidRequest(`${route.name} requires a voice id; pass it as \`voice\``)
+    }
     const { sampleRate: _sampleRate, bitRate: _bitRate, encoding: _encoding, ...native } = request.providerOptions ?? {}
     return MediaProtocol.json(
       mergeJsonRecords(
@@ -125,14 +131,17 @@ const onEvent = (state: State, frame: string) => {
     return [state, SpeechStream.timestamps(words.words, words.start, words.end)] as const
   }
   if (event.type === "done") return [{ ...state, done: true }, []] as const
-  if (event.type === "error")
+  if (event.type === "error") {
     throw new AIError({
       reason: classifyProviderFailure({
-        message: `${route.name} stream failed${event.title === undefined ? "" : ` (${event.title})`}: ${event.message ?? "unknown error"}`,
+        message: `${route.name} stream failed${event.title === undefined ? "" : ` (${event.title})`}: ${
+          event.message ?? "unknown error"
+        }`,
         status: event.status_code,
         rawBody: frame,
       }),
     })
+  }
   return [state, []] as const
 }
 

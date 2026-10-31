@@ -24,7 +24,7 @@
     "dev": "bun run src/index.ts",
     "test": "bun test --timeout 30000 --only-failures",
     "typecheck": "bun check --no-script -b",
-    "typecheck:tsc": "tsc -b"
+    "typecheck:tsc": "vibelang -b"
   },
   "dependencies": {
     "@agentclientprotocol/sdk": "1.6.0",
@@ -52,7 +52,8 @@
     "tree-sitter-bash": "0.25.0",
     "tree-sitter-powershell": "0.25.10",
     "web-tree-sitter": "0.25.10",
-    "ws": "8.21.0"
+    "ws": "8.21.0",
+    "vibelang-runtime": "file:../../.vibelang-toolchain/vibelang-runtime-0.0.11-956814eb1e95.tgz"
   },
   "devDependencies": {
     "@opencode/script": "workspace:*",
@@ -83,7 +84,10 @@
     "@parcel/watcher-win32-x64": "2.5.1",
     "solid-refresh": "0.6.3",
     "vite": "catalog:",
-    "vite-plugin-solid": "catalog:"
+    "vite-plugin-solid": "catalog:",
+    "vibelang": "file:../../.vibelang-toolchain/vibelang-0.0.11-b9d250df199d.tgz",
+    "vibelang-vite": "file:../../.vibelang-toolchain/vibelang-vite-0.0.11-a2b67ac4484b.tgz",
+    "vibelang-unplugin": "file:../../.vibelang-toolchain/vibelang-unplugin-0.0.11-d83e2657e595.tgz"
   },
   "repository": {
     "type": "git",

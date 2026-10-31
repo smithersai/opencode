@@ -55,8 +55,8 @@
     "vite": "8.2.2",
     "vite-plugin-pwa": "1.3.0",
     "vite-plugin-solid": "2.11.14",
-    "vibelang": "file:../../.vibelang-toolchain/vibelang-0.0.11-9b27ecff9496.tgz",
-    "vibelang-vite": "file:../../.vibelang-toolchain/vibelang-vite-0.0.11-7e6116042b49.tgz"
+    "vibelang": "file:../../.vibelang-toolchain/vibelang-0.0.11-b9d250df199d.tgz",
+    "vibelang-vite": "file:../../.vibelang-toolchain/vibelang-vite-0.0.11-a2b67ac4484b.tgz"
   },
   "dependencies": {
     "@corvu/drawer": "catalog:",

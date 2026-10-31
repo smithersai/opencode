@@ -33,7 +33,7 @@
     "drizzle-orm": "catalog:",
     "effect": "catalog:",
     "sst": "catalog:",
-    "vibelang-runtime": "file:../../../.vibelang-toolchain/vibelang-runtime-0.0.11-2c09183515b6.tgz"
+    "vibelang-runtime": "file:../../../.vibelang-toolchain/vibelang-runtime-0.0.11-956814eb1e95.tgz"
   },
   "devDependencies": {
     "@tsconfig/node22": "catalog:",
@@ -42,8 +42,8 @@
     "@typescript/native": "catalog:",
     "drizzle-kit": "catalog:",
     "typescript": "catalog:",
-    "vibelang": "file:../../../.vibelang-toolchain/vibelang-0.0.11-9b27ecff9496.tgz",
-    "vibelang-vite": "file:../../../.vibelang-toolchain/vibelang-vite-0.0.11-7e6116042b49.tgz"
+    "vibelang": "file:../../../.vibelang-toolchain/vibelang-0.0.11-b9d250df199d.tgz",
+    "vibelang-vite": "file:../../../.vibelang-toolchain/vibelang-vite-0.0.11-a2b67ac4484b.tgz"
   },
   "engines": {
     "node": ">=22"

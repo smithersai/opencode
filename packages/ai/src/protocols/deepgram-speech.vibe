@@ -1,10 +1,9 @@
-import { Effect } from "effect"
-import { MediaProtocol } from "../route/media-protocol.js"
-import { MediaRoute } from "../route/media.js"
-import { mergeJsonRecords, type OpenString } from "../schema/index.js"
-import { SpeechModel, type SpeechEvent, type SpeechRequestFor } from "../speech.js"
-import { MediaInput } from "./utils/media-input.js"
-import { SpeechStream } from "./utils/speech-stream.js"
+import { MediaProtocol } from "../route/media-protocol.ts"
+import { MediaRoute } from "../route/media.ts"
+import { mergeJsonRecords, type OpenString } from "../schema/index.ts"
+import { SpeechModel, type SpeechEvent, type SpeechRequestFor } from "../speech.ts"
+import { MediaInput } from "./utils/media-input.ts"
+import { SpeechStream } from "./utils/speech-stream.ts"
 
 const route = MediaProtocol.identity({ id: "deepgram-speech", name: "Deepgram", provider: "deepgram" })
 export const DEFAULT_BASE_URL = "https://api.deepgram.com"
@@ -46,7 +45,7 @@ const FORMATS: Readonly<Record<string, { readonly encoding: string; readonly con
   aac: { encoding: "aac" },
 }
 
-const audioFormat = (request: Request) => {
+const audioFormat = (request: Request): infer _ => {
   const format = request.format === undefined ? undefined : FORMATS[request.format]
   return {
     encoding: request.providerOptions?.encoding ?? format?.encoding,
@@ -66,24 +65,24 @@ const queryParameters = (request: Request) => {
   })
 }
 
-const fromRequest = Effect.fn("DeepgramSpeech.fromRequest")(function* (request: Request) {
-  // Not in `unsupported`: that list would also reject `timestamps: false`, which asks for nothing.
-  if (request.timestamps === true)
-    return yield* route.unsupported("media.timestamps", `${route.name} does not return timestamps`)
-  if (
-    request.format !== undefined &&
-    FORMATS[request.format] === undefined &&
-    request.providerOptions?.encoding === undefined
-  )
-    return yield* route.unsupported(
-      "media.format",
-      `${route.name} has no encoding for format "${request.format}"; pass providerOptions.encoding`,
+const fromRequest = (request: Request) =>
+  withSpan(() => {
+    // Not in `unsupported`: that list would also reject `timestamps: false`, which asks for nothing.
+    if (request.timestamps === true) throw route.unsupported("media.timestamps", `${route.name} does not return timestamps`)
+    if (
+      request.format !== undefined &&
+      FORMATS[request.format] === undefined &&
+      request.providerOptions?.encoding === undefined
     )
-  return MediaProtocol.json(
-    mergeJsonRecords({ text: request.text }, request.http?.body) ?? {},
-    yield* queryParameters(request),
-  )
-})
+      throw route.unsupported(
+        "media.format",
+        `${route.name} has no encoding for format "${request.format}"; pass providerOptions.encoding`,
+      )
+    return MediaProtocol.json(
+      mergeJsonRecords({ text: request.text }, request.http?.body) ?? {},
+      queryParameters(request),
+    )
+  }, "DeepgramSpeech.fromRequest")
 
 // ---------------------------------------------------------------------------
 // 6. Stream parsing
@@ -132,11 +131,11 @@ export const protocol = MediaProtocol.stream<Request, SpeechEvent, Uint8Array, S
   body: { from: fromRequest },
   frames: (bytes) => bytes,
   initial: () => ({ chunks: [] }),
-  step: (state, frame) => Effect.succeed(SpeechStream.delta(state, frame)),
+  step: (state, frame) => SpeechStream.delta(state, frame),
   finish,
 })
 
-export const model = (input: MediaRoute.ModelInput) =>
+export const model = (input: MediaRoute.ModelInput): infer _ =>
   SpeechModel.fromRoute<DeepgramSpeechOptions, Uint8Array, State>(
     { protocol, baseURL: DEFAULT_BASE_URL, path: PATH },
     input,

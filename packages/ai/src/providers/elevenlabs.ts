@@ -2,10 +2,10 @@ import { Auth } from "../route/auth.js"
 import type { ProviderAuthOption } from "../route/auth-options.js"
 import { MediaRoute } from "../route/media.js"
 import { type HttpOptions, ProviderID, type ModelID } from "../schema/index.js"
-import { ElevenLabsSpeech } from "../protocols/elevenlabs-speech.js"
+import { ElevenLabsSpeech } from "../protocols/elevenlabs-speech.vibe"
 import { ElevenLabsTranscription } from "../protocols/elevenlabs-transcription.js"
 
-export type { ElevenLabsOutputFormat, ElevenLabsSpeechOptions } from "../protocols/elevenlabs-speech.js"
+export type { ElevenLabsOutputFormat, ElevenLabsSpeechOptions } from "../protocols/elevenlabs-speech.vibe"
 export type { ElevenLabsTranscriptionOptions } from "../protocols/elevenlabs-transcription.js"
 
 export const id = ProviderID.make("elevenlabs")

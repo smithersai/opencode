@@ -2,10 +2,10 @@ import { Auth } from "../route/auth.js"
 import type { ProviderAuthOption } from "../route/auth-options.js"
 import { MediaRoute } from "../route/media.js"
 import { type HttpOptions, ProviderID, type ModelID } from "../schema/index.js"
-import { DeepgramSpeech } from "../protocols/deepgram-speech.js"
+import { DeepgramSpeech } from "../protocols/deepgram-speech.vibe"
 import { DeepgramTranscription } from "../protocols/deepgram-transcription.js"
 
-export type { DeepgramEncoding, DeepgramSpeechOptions } from "../protocols/deepgram-speech.js"
+export type { DeepgramEncoding, DeepgramSpeechOptions } from "../protocols/deepgram-speech.vibe"
 export type { DeepgramTranscriptionOptions } from "../protocols/deepgram-transcription.js"
 
 export const id = ProviderID.make("deepgram")

@@ -2,9 +2,9 @@ import { Media } from "../media.ts"
 import { MediaProtocol } from "../route/media-protocol.ts"
 import { MediaRoute } from "../route/media.ts"
 import { mergeJsonRecords, type OpenString } from "../schema/index.ts"
-import { VideoModel, VideoResponse, type VideoRequestFor } from "../video.ts"
+import { VideoModel, type VideoRequestFor, VideoResponse } from "../video.ts"
 import { optionalNull } from "./shared.ts"
-import { FalQueue } from "./utils/fal-queue.ts"
+import { FalQueue } from "./utils/fal-queue.vibe"
 
 const route = MediaProtocol.identity({ id: "fal-video", name: "fal Video", provider: "fal" })
 
@@ -46,12 +46,15 @@ const QueueResult = Schema.StructWithRest(
 
 const fromRequest = (request: Request) =>
   withSpan(() => {
-    if (request.frames?.last !== undefined)
+    if (request.frames?.last !== undefined) {
       throw route.unsupported(
         "video.frames.last",
         `${route.name} names the last frame per model; pass it through providerOptions (e.g. end_image_url) instead of frames.last`,
       )
-    const imageUrl = request.frames?.first === undefined ? undefined : FalQueue.mediaUrl(request.frames.first, route.name)
+    }
+    const imageUrl = request.frames?.first === undefined
+      ? undefined
+      : FalQueue.mediaUrl(request.frames.first, route.name)
     const videoUrl = request.video === undefined ? undefined : FalQueue.mediaUrl(request.video, route.name)
     return MediaProtocol.json(
       mergeJsonRecords(

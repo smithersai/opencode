@@ -1,10 +1,9 @@
-import { Effect, Schema } from "effect"
 import type { HttpClientResponse } from "effect/http"
-import type { Status } from "../../generation.js"
-import type { Media } from "../../media.js"
-import { MediaProtocol } from "../../route/media-protocol.js"
-import type { AIError } from "../../schema/index.js"
-import { ProviderShared, optionalNull } from "../shared.js"
+import type { Status } from "../../generation.ts"
+import type { Media } from "../../media.ts"
+import { MediaProtocol } from "../../route/media-protocol.ts"
+import type { AIError } from "../../schema/index.ts"
+import { ProviderShared, optionalNull } from "../shared.ts"
 
 export const DEFAULT_BASE_URL = "https://queue.fal.run"
 
@@ -39,19 +38,19 @@ const STATUS = {
 
 // fal accepts public URLs and data URIs; there is no provider file handle to forward.
 export const mediaUrl = (asset: Media.Asset, name: string) =>
-  ProviderShared.mediaReference(asset, undefined, name).pipe(Effect.map((reference) => reference.value))
+  ProviderShared.mediaReference(asset, undefined, name).value
 
 export const protocol = <Request, Response>(
   route: MediaProtocol.Identity,
   input: {
     readonly unsupported?: ReadonlyArray<keyof Request & string>
-    readonly from: (request: Request) => Effect.Effect<MediaProtocol.Body, AIError>
+    readonly from: (request: Request) => MediaProtocol.Body!AIError
     readonly decodeResult: (
       response: HttpClientResponse.HttpClientResponse,
       context: MediaProtocol.PollContext<Token>,
-    ) => Effect.Effect<Response, AIError>
+    ) => Response!AIError
   },
-) => {
+): infer _ => {
   const decodeQueueStatus = route.decodeJson(QueueStatus)
   return MediaProtocol.queued<Request, Response, Token>(route, {
     token: Token,
@@ -70,22 +69,23 @@ export const protocol = <Request, Response>(
     },
     status: {
       path: (token) => token.statusURL,
-      decode: Effect.fn("FalQueue.decodeStatus")(function* (response, context) {
-        const output = yield* decodeQueueStatus(response)
-        const decoded = output.value
-        const status = yield* MediaProtocol.status(STATUS, decoded.status, output)
-        // fal reports request failures as COMPLETED with an `error`; the response endpoint carries the details.
-        const failed = status === "completed" && decoded.error !== undefined && decoded.error !== null
-        return {
-          id: context.token.requestID,
-          status: failed ? "failed" : status,
-          position: status === "queued" ? (decoded.queue_position ?? undefined) : undefined,
-        }
-      }),
+      decode: (response, context) =>
+        withSpan(() => {
+          const output = decodeQueueStatus(response)
+          const decoded = output.value
+          const status = MediaProtocol.status(STATUS, decoded.status, output)
+          // fal reports request failures as COMPLETED with an `error`; the response endpoint carries the details.
+          const failed = status === "completed" && decoded.error !== undefined && decoded.error !== null
+          return {
+            id: context.token.requestID,
+            status: failed ? "failed" : status,
+            position: status === "queued" ? (decoded.queue_position ?? undefined) : undefined,
+          }
+        }, "FalQueue.decodeStatus"),
     },
     result: { path: (token) => token.responseURL, decode: input.decodeResult },
     cancel: { method: "PUT", path: (token) => token.cancelURL },
   })
 }
 
-export * as FalQueue from "./fal-queue.js"
+export * as FalQueue from "./fal-queue.vibe"

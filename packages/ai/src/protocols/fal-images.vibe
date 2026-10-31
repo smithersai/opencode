@@ -1,10 +1,10 @@
-import { ImageModel, ImageResponse, type ImageRequestFor } from "../image.ts"
+import { ImageModel, type ImageRequestFor, ImageResponse } from "../image.ts"
 import { Media } from "../media.ts"
 import { MediaProtocol } from "../route/media-protocol.ts"
 import { MediaRoute } from "../route/media.ts"
 import { mergeJsonRecords, type OpenString } from "../schema/index.ts"
 import { optionalNull } from "./shared.ts"
-import { FalQueue } from "./utils/fal-queue.ts"
+import { FalQueue } from "./utils/fal-queue.vibe"
 import { ImageSizing } from "./utils/image-sizing.ts"
 
 const route = MediaProtocol.identity({ id: "fal-images", name: "fal Images", provider: "fal" })
@@ -61,13 +61,15 @@ const sizing = (model: string): infer _ => {
 
 const validate = (request: Request) => {
   const id = request.model.id
-  if (request.resolution !== undefined && sizing(id) === "aspect_ratio")
+  if (request.resolution !== undefined && sizing(id) === "aspect_ratio") {
     throw route.unsupported("media.resolution", `${id} sizes by aspect only`)
-  if ((request.images?.length ?? 0) > 1 && !takesImageList(id))
+  }
+  if ((request.images?.length ?? 0) > 1 && !takesImageList(id)) {
     throw route.unsupported(
       "media.images",
       `${id} takes one image_url; use an /edit or /multi endpoint for several images`,
     )
+  }
 }
 
 // `/edit` and `/multi` (Kontext) endpoints take an `image_urls` list; image-to-image, fill, and Ultra take one
@@ -115,8 +117,8 @@ const decodeResult = (response: HttpClientResponse, context: MediaProtocol.PollC
         const info = { width: image.width ?? undefined, height: image.height ?? undefined }
         // `sync_mode: true` returns data URIs instead of hosted URLs.
         return (
-          Media.parseDataUrl(image.url, { info }) ??
-          Media.url(image.url, { mediaType: image.content_type ?? undefined, info })
+          Media.parseDataUrl(image.url, { info })
+            ?? Media.url(image.url, { mediaType: image.content_type ?? undefined, info })
         )
       }),
       providerMetadata: { fal: { requestId: context.token.requestID, seed: seed ?? undefined, ...rest } },

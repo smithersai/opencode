@@ -1,9 +1,9 @@
 import { AuthOptions, type ProviderAuthOption } from "../route/auth-options.js"
 import { MediaRoute } from "../route/media.js"
 import { type HttpOptions, ProviderID, type ModelID } from "../schema/index.js"
-import { CartesiaSpeech } from "../protocols/cartesia-speech.js"
+import { CartesiaSpeech } from "../protocols/cartesia-speech.vibe"
 
-export type { CartesiaEncoding, CartesiaSpeechOptions } from "../protocols/cartesia-speech.js"
+export type { CartesiaEncoding, CartesiaSpeechOptions } from "../protocols/cartesia-speech.vibe"
 
 export const id = ProviderID.make("cartesia")
 

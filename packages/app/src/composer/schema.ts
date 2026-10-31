@@ -374,7 +374,7 @@ export const LineComment = Persistence.struct({
 export type LineComment = typeof LineComment.Type
 
 export const CommentStore = Persistence.struct({
-  comments: Schema.Record(Schema.String, Schema.mutableKey(Persistence.array(LineComment))),
+  comments: Schema.Record(Schema.String, Schema.mutableKey(Persistence.entry(Persistence.array(LineComment)))),
 })
 
 export type CommentStore = typeof CommentStore.Type

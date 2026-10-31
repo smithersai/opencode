@@ -1,12 +1,11 @@
-import { Effect, Schema } from "effect"
-import { classifyProviderFailure } from "../provider-error.js"
-import { Framing } from "../route/framing.js"
-import { MediaProtocol } from "../route/media-protocol.js"
-import { MediaRoute } from "../route/media.js"
-import { AIError, mergeJsonRecords, type OpenString } from "../schema/index.js"
-import { SpeechModel, type SpeechEvent, type SpeechRequestFor } from "../speech.js"
-import { ProviderShared, optionalNull } from "./shared.js"
-import { SpeechStream } from "./utils/speech-stream.js"
+import { classifyProviderFailure } from "../provider-error.ts"
+import { Framing } from "../route/framing.ts"
+import { MediaProtocol } from "../route/media-protocol.ts"
+import { MediaRoute } from "../route/media.ts"
+import { AIError, mergeJsonRecords, type OpenString } from "../schema/index.ts"
+import { SpeechModel, type SpeechEvent, type SpeechRequestFor } from "../speech.ts"
+import { ProviderShared, optionalNull } from "./shared.ts"
+import { SpeechStream } from "./utils/speech-stream.ts"
 
 const route = MediaProtocol.identity({ id: "cartesia-speech", name: "Cartesia", provider: "cartesia" })
 export const DEFAULT_BASE_URL = "https://api.cartesia.ai"
@@ -71,21 +70,18 @@ interface State extends SpeechStream.Audio {
 // ---------------------------------------------------------------------------
 
 /** Timestamps exist only on the SSE endpoint, so a `generate` that asks for them collects an SSE stream. */
-const usesSse = (request: MediaProtocol.Addressed<Request>) => request.mode === "stream" || request.timestamps === true
+const usesSse = (request: MediaProtocol.Addressed<Request>): boolean => request.mode === "stream" || request.timestamps === true
 
 const CONTAINERS: Readonly<Record<string, "raw" | "wav" | "mp3">> = { pcm: "raw", wav: "wav", mp3: "mp3" }
 
-const outputFormat = Effect.fnUntraced(function* (request: MediaProtocol.Addressed<Request>) {
+const outputFormat = (request: MediaProtocol.Addressed<Request>) => {
   const sse = usesSse(request)
   const format = request.format ?? (sse ? "pcm" : "mp3")
   const container = CONTAINERS[format]
   if (container === undefined)
-    return yield* route.unsupported(
-      "media.format",
-      `${route.name} supports the pcm, wav, and mp3 formats, not "${format}"`,
-    )
+    throw route.unsupported("media.format", `${route.name} supports the pcm, wav, and mp3 formats, not "${format}"`)
   if (sse && container !== "raw")
-    return yield* route.unsupported(
+    throw route.unsupported(
       "media.format",
       `${route.name} streams and timestamps only raw PCM; request format "pcm" instead of "${format}"`,
     )
@@ -93,36 +89,36 @@ const outputFormat = Effect.fnUntraced(function* (request: MediaProtocol.Address
   if (container === "mp3")
     return { container, sample_rate: sampleRate, bit_rate: request.providerOptions?.bitRate ?? DEFAULT_BIT_RATE }
   return { container, encoding: request.providerOptions?.encoding ?? "pcm_s16le", sample_rate: sampleRate }
-})
+}
 
-const fromRequest = Effect.fn("CartesiaSpeech.fromRequest")(function* (request: MediaProtocol.Addressed<Request>) {
-  const voice = SpeechStream.voiceID(request.voice)
-  if (voice === undefined)
-    return yield* ProviderShared.invalidRequest(`${route.name} requires a voice id; pass it as \`voice\``)
-  const { sampleRate: _sampleRate, bitRate: _bitRate, encoding: _encoding, ...native } = request.providerOptions ?? {}
-  return MediaProtocol.json(
-    mergeJsonRecords(
-      {
-        model_id: request.model.id,
-        transcript: request.text,
-        voice,
-        output_format: yield* outputFormat(request),
-        language: request.language,
-        generation_config: request.speed === undefined ? undefined : { speed: request.speed },
-        add_timestamps: request.timestamps === true ? true : undefined,
-      },
-      native,
-      request.http?.body,
-    ) ?? {},
-  )
-})
+const fromRequest = (request: MediaProtocol.Addressed<Request>) =>
+  withSpan(() => {
+    const voice = SpeechStream.voiceID(request.voice)
+    if (voice === undefined) throw ProviderShared.invalidRequest(`${route.name} requires a voice id; pass it as \`voice\``)
+    const { sampleRate: _sampleRate, bitRate: _bitRate, encoding: _encoding, ...native } = request.providerOptions ?? {}
+    return MediaProtocol.json(
+      mergeJsonRecords(
+        {
+          model_id: request.model.id,
+          transcript: request.text,
+          voice,
+          output_format: outputFormat(request),
+          language: request.language,
+          generation_config: request.speed === undefined ? undefined : { speed: request.speed },
+          add_timestamps: request.timestamps === true ? true : undefined,
+        },
+        native,
+        request.http?.body,
+      ) ?? {},
+    )
+  }, "CartesiaSpeech.fromRequest")
 
 // ---------------------------------------------------------------------------
 // 6. Stream parsing
 // ---------------------------------------------------------------------------
 
-const onEvent = Effect.fnUntraced(function* (state: State, frame: string) {
-  const event = yield* decodeEvent(frame)
+const onEvent = (state: State, frame: string) => {
+  const event = decodeEvent(frame)
   if (event.type === "chunk" && event.data !== undefined) return SpeechStream.delta(state, event.data)
   if (event.type === "timestamps" && event.word_timestamps !== undefined) {
     const words = event.word_timestamps
@@ -130,7 +126,7 @@ const onEvent = Effect.fnUntraced(function* (state: State, frame: string) {
   }
   if (event.type === "done") return [{ ...state, done: true }, []] as const
   if (event.type === "error")
-    return yield* new AIError({
+    throw new AIError({
       reason: classifyProviderFailure({
         message: `${route.name} stream failed${event.title === undefined ? "" : ` (${event.title})`}: ${event.message ?? "unknown error"}`,
         status: event.status_code,
@@ -138,22 +134,19 @@ const onEvent = Effect.fnUntraced(function* (state: State, frame: string) {
       }),
     })
   return [state, []] as const
-})
+}
 
-const finish = Effect.fnUntraced(function* (
-  state: State,
-  context: MediaProtocol.ResponseContext<Request>,
-) {
-  if (usesSse(context.request) && !state.done) return yield* route.incomplete()
-  const format = yield* outputFormat(context.request)
-  return yield* SpeechStream.finish(
+const finish = (state: State, context: MediaProtocol.ResponseContext<Request>) => {
+  if (usesSse(context.request) && !state.done) throw route.incomplete()
+  const format = outputFormat(context.request)
+  return SpeechStream.finish(
     route,
     state,
     format.container === "raw"
       ? SpeechStream.pcm(format.encoding, format.sample_rate)
       : SpeechStream.container(format.container, format.sample_rate),
   )
-})
+}
 
 // ---------------------------------------------------------------------------
 // 7. Protocol and route
@@ -168,7 +161,7 @@ export const protocol = MediaProtocol.stream<Request, SpeechEvent, string | Uint
   finish,
 })
 
-export const model = (input: MediaRoute.ModelInput) =>
+export const model = (input: MediaRoute.ModelInput): infer _ =>
   SpeechModel.fromRoute<CartesiaSpeechOptions, string | Uint8Array, State>(
     {
       protocol,

@@ -1,11 +1,10 @@
-import { Effect, Schema } from "effect"
-import { Framing } from "../route/framing.js"
-import { MediaProtocol } from "../route/media-protocol.js"
-import { MediaRoute } from "../route/media.js"
-import { mergeJsonRecords, type OpenString } from "../schema/index.js"
-import { SpeechModel, type SpeechEvent, type SpeechRequestFor } from "../speech.js"
-import { ProviderShared, optionalNull } from "./shared.js"
-import { SpeechStream } from "./utils/speech-stream.js"
+import { Framing } from "../route/framing.ts"
+import { MediaProtocol } from "../route/media-protocol.ts"
+import { MediaRoute } from "../route/media.ts"
+import { mergeJsonRecords, type OpenString } from "../schema/index.ts"
+import { SpeechModel, type SpeechEvent, type SpeechRequestFor } from "../speech.ts"
+import { ProviderShared, optionalNull } from "./shared.ts"
+import { SpeechStream } from "./utils/speech-stream.ts"
 
 const route = MediaProtocol.identity({ id: "elevenlabs-speech", name: "ElevenLabs", provider: "elevenlabs" })
 export const DEFAULT_BASE_URL = "https://api.elevenlabs.io"
@@ -64,11 +63,11 @@ export type Request = SpeechRequestFor<ElevenLabsSpeechOptions>
 // 3. Streaming event schema
 // ---------------------------------------------------------------------------
 
-const Alignment = Schema.Struct({
-  characters: Schema.Array(Schema.String),
-  character_start_times_seconds: Schema.Array(Schema.Number),
-  character_end_times_seconds: Schema.Array(Schema.Number),
-})
+schema Alignment {
+  characters: ReadonlyArray<string>
+  character_start_times_seconds: ReadonlyArray<number>
+  character_end_times_seconds: ReadonlyArray<number>
+}
 
 const TimestampedAudio = Schema.Struct({
   audio_base64: Schema.Uint8ArrayFromBase64,
@@ -95,41 +94,42 @@ const OUTPUT_FORMATS: Readonly<Record<string, string>> = {
 }
 
 /** WAV is served only by the non-streaming endpoints. */
-const outputFormat = Effect.fnUntraced(function* (request: MediaProtocol.Addressed<Request>) {
+const outputFormat = (request: MediaProtocol.Addressed<Request>) => {
   const format = request.providerOptions?.outputFormat ?? OUTPUT_FORMATS[request.format ?? "mp3"]
   if (format === undefined)
-    return yield* route.unsupported(
+    throw route.unsupported(
       "media.format",
       `${route.name} has no default output format for "${request.format}"; pass providerOptions.outputFormat`,
     )
   if (request.mode === "stream" && format.startsWith("wav_"))
-    return yield* route.unsupported(
+    throw route.unsupported(
       "media.format",
       `${route.name} streams mp3, pcm, opus, ulaw, and alaw but not "${format}"; use generate for WAV`,
     )
   return format
-})
+}
 
-const fromRequest = Effect.fn("ElevenLabsSpeech.fromRequest")(function* (request: MediaProtocol.Addressed<Request>) {
-  if (request.voice === undefined)
-    return yield* ProviderShared.invalidRequest(`${route.name} requires a voice id; pass it as \`voice\``)
-  const { outputFormat: _outputFormat, ...native } = request.providerOptions ?? {}
-  return MediaProtocol.json(
-    mergeJsonRecords(
-      {
-        text: request.text,
-        model_id: request.model.id,
-        language_code: request.language,
-        voice_settings: request.speed === undefined ? undefined : { speed: request.speed },
-      },
-      native,
-      request.http?.body,
-    ) ?? {},
-    { output_format: yield* outputFormat(request) },
-  )
-})
+const fromRequest = (request: MediaProtocol.Addressed<Request>) =>
+  withSpan(() => {
+    if (request.voice === undefined)
+      throw ProviderShared.invalidRequest(`${route.name} requires a voice id; pass it as \`voice\``)
+    const { outputFormat: _outputFormat, ...native } = request.providerOptions ?? {}
+    return MediaProtocol.json(
+      mergeJsonRecords(
+        {
+          text: request.text,
+          model_id: request.model.id,
+          language_code: request.language,
+          voice_settings: request.speed === undefined ? undefined : { speed: request.speed },
+        },
+        native,
+        request.http?.body,
+      ) ?? {},
+      { output_format: outputFormat(request) },
+    )
+  }, "ElevenLabsSpeech.fromRequest")
 
-const path = (request: MediaProtocol.Addressed<Request>) =>
+const path = (request: MediaProtocol.Addressed<Request>): string =>
   `${PATH}/${encodeURIComponent(SpeechStream.voiceID(request.voice) ?? "")}${request.mode === "stream" ? "/stream" : ""}${
     request.timestamps === true ? "/with-timestamps" : ""
   }`
@@ -138,8 +138,8 @@ const path = (request: MediaProtocol.Addressed<Request>) =>
 // 6. Stream parsing
 // ---------------------------------------------------------------------------
 
-const onRecord = Effect.fnUntraced(function* (state: State, frame: string) {
-  const record = yield* decodeRecord(frame)
+const onRecord = (state: State, frame: string) => {
+  const record = decodeRecord(frame)
   const [next, events] = SpeechStream.delta(state, record.audio_base64)
   const alignment = record.alignment
   if (!alignment) return [next, events] as const
@@ -154,7 +154,7 @@ const onRecord = Effect.fnUntraced(function* (state: State, frame: string) {
       ),
     ],
   ] as const
-})
+}
 
 const PCM_CODECS: Readonly<Record<string, SpeechStream.PcmEncoding>> = {
   pcm: "pcm_s16le",
@@ -162,25 +162,22 @@ const PCM_CODECS: Readonly<Record<string, SpeechStream.PcmEncoding>> = {
   alaw: "pcm_alaw",
 }
 
-const describeOutput = (format: string) => {
+const describeOutput = (format: string): infer _ => {
   const [codec = format, rate] = format.split("_")
   const sampleRate = rate === undefined ? undefined : Number(rate)
   const encoding = PCM_CODECS[codec]
   return encoding === undefined ? SpeechStream.container(codec, sampleRate) : SpeechStream.pcm(encoding, sampleRate)
 }
 
-const finish = Effect.fnUntraced(function* (
-  state: State,
-  context: MediaProtocol.ResponseContext<Request>,
-) {
+const finish = (state: State, context: MediaProtocol.ResponseContext<Request>) => {
   const requestID = context.http.headers["request-id"]
-  return yield* SpeechStream.finish(route, state, {
-    ...describeOutput(yield* outputFormat(context.request)),
+  return SpeechStream.finish(route, state, {
+    ...describeOutput(outputFormat(context.request)),
     // `character-cost` is billed credits, not a character count (3 for 20 characters on `eleven_flash_v2_5`).
     usage: SpeechStream.headerUsage("credits", context.http.headers["character-cost"]),
     providerMetadata: requestID === undefined ? undefined : { elevenlabs: { requestId: requestID } },
   })
-})
+}
 
 // ---------------------------------------------------------------------------
 // 7. Protocol and route
@@ -198,7 +195,7 @@ export const protocol = MediaProtocol.stream<Request, SpeechEvent, string | Uint
   finish,
 })
 
-export const model = (input: MediaRoute.ModelInput) =>
+export const model = (input: MediaRoute.ModelInput): infer _ =>
   SpeechModel.fromRoute<ElevenLabsSpeechOptions, string | Uint8Array, State>(
     { protocol, baseURL: DEFAULT_BASE_URL, path: ({ request }) => path(request) },
     input,

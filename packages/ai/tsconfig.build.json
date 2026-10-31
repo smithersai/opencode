@@ -2,7 +2,9 @@
   "$schema": "https://json.schemastore.org/tsconfig",
   "extends": "./tsconfig.json",
   "compilerOptions": {
+    "rewriteRelativeImportExtensions": true,
     "allowImportingTsExtensions": false,
     "noEmit": false
-  }
+  },
+  "vibelang": { "declarationSidecars": true, "trustedPackages": ["@opencode/ai"] }
 }

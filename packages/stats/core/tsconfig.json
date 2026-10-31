@@ -2,11 +2,14 @@
   "$schema": "https://json.schemastore.org/tsconfig",
   "extends": "@tsconfig/node22/tsconfig.json",
   "compilerOptions": {
+    "allowArbitraryExtensions": true,
+    "rewriteRelativeImportExtensions": true,
     "noUnusedLocals": true,
     "module": "ESNext",
     "moduleResolution": "bundler",
     "strict": true,
     "noEmit": true,
     "types": ["bun", "node"]
-  }
+  },
+  "vibelang": { "declarationSidecars": true }
 }

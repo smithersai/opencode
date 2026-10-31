@@ -1,10 +1,12 @@
 import { solidStart } from "@solidjs/start/config"
 import { nitro } from "nitro/vite"
 import { defineConfig, type PluginOption } from "vite"
+import vibelang from "vibelang-vite"
 
 export default defineConfig({
   base: "/data/",
   plugins: [
+    vibelang(),
     solidStart({ middleware: "./src/middleware.ts" }) as PluginOption,
     nitro({
       compatibilityDate: "2024-09-19",

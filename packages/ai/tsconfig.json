@@ -2,6 +2,8 @@
   "$schema": "https://json.schemastore.org/tsconfig.json",
   "extends": "@tsconfig/bun/tsconfig.json",
   "compilerOptions": {
+    "allowArbitraryExtensions": true,
+    "rewriteRelativeImportExtensions": true,
     "types": ["bun"],
     "noUnusedLocals": true,
     "module": "NodeNext",
@@ -13,5 +15,6 @@
     "lib": ["ESNext", "DOM", "DOM.Iterable"],
     "noUncheckedIndexedAccess": false
   },
-  "include": ["src"]
+  "include": ["src"],
+  "vibelang": { "declarationSidecars": true, "trustedPackages": ["@opencode/ai"] }
 }

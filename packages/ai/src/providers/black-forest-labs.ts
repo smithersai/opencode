@@ -2,9 +2,9 @@ import { Auth } from "../route/auth.js"
 import type { ProviderAuthOption } from "../route/auth-options.js"
 import { MediaRoute } from "../route/media.js"
 import { type HttpOptions, ProviderID, type ModelID } from "../schema/index.js"
-import { BlackForestLabsImages } from "../protocols/bfl-images.js"
+import { BlackForestLabsImages } from "../protocols/bfl-images.vibe"
 
-export type { BlackForestLabsImageOptions } from "../protocols/bfl-images.js"
+export type { BlackForestLabsImageOptions } from "../protocols/bfl-images.vibe"
 
 export const id = ProviderID.make("black-forest-labs")
 

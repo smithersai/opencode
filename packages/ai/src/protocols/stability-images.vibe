@@ -1,11 +1,10 @@
-import { Effect, Schema } from "effect"
 import type { HttpClientResponse } from "effect/http"
-import { ImageModel, ImageResponse, type ImageRequestFor } from "../image.js"
-import { MediaProtocol } from "../route/media-protocol.js"
-import { MediaRoute } from "../route/media.js"
-import { mergeJsonRecords, type OpenString } from "../schema/index.js"
-import { ProviderShared } from "./shared.js"
-import { MediaInput } from "./utils/media-input.js"
+import { ImageModel, ImageResponse, type ImageRequestFor } from "../image.ts"
+import { MediaProtocol } from "../route/media-protocol.ts"
+import { MediaRoute } from "../route/media.ts"
+import { mergeJsonRecords, type OpenString } from "../schema/index.ts"
+import { ProviderShared } from "./shared.ts"
+import { MediaInput } from "./utils/media-input.ts"
 
 const route = MediaProtocol.identity({ id: "stability-images", name: "Stability AI", provider: "stability" })
 const upscaleRoute = MediaProtocol.identity({ id: "stability-upscale", name: "Stability AI", provider: "stability" })
@@ -69,88 +68,90 @@ export const Token = Schema.Struct({ id: Schema.String })
 export type Token = Schema.Schema.Type<typeof Token>
 
 // Generate names the base64 image `image`; `/v2beta/results/{id}` names it `result`.
-const ImageDocument = Schema.Struct({
-  image: Schema.optional(Schema.String),
-  result: Schema.optional(Schema.String),
-  seed: Schema.optional(Schema.Number),
-  finish_reason: Schema.optional(Schema.String),
-})
+schema ImageDocument {
+  image?: string
+  result?: string
+  seed?: number
+  finish_reason?: string
+}
 
-const Started = Schema.Struct({ id: Schema.String })
+schema Started { id: string }
 
 // ---------------------------------------------------------------------------
 // 5. Request body construction
 // ---------------------------------------------------------------------------
 
 /** `sd3.5-*` ids share the `sd3` endpoint and select the model with a form field. */
-const endpoint = (model: string) => (model.startsWith("sd3") ? "sd3" : model)
+const endpoint = (model: string): string => (model.startsWith("sd3") ? "sd3" : model)
 
 const RESERVED_FORM_FIELDS = new Set(["image", "prompt", "mode", "model"])
 
-const form = Effect.fnUntraced(function* (
+const form = (
   identity: MediaProtocol.Identity,
   fields: Record<string, unknown>,
   native: Record<string, unknown> | undefined,
   source: Request["images"],
-) {
-  if ((source?.length ?? 0) > 1)
-    return yield* identity.unsupported("media.images", `${identity.name} takes one source image`)
+) => {
+  if ((source?.length ?? 0) > 1) throw identity.unsupported("media.images", `${identity.name} takes one source image`)
   const body = new FormData()
   MediaInput.appendFields(body, fields, { overlay: native, reserved: RESERVED_FORM_FIELDS })
   const image = source?.[0]
   if (image !== undefined)
-    body.append("image", MediaInput.blob(yield* MediaInput.inlineBytes(identity.id, image), image.mediaType), "image")
+    body.append("image", MediaInput.blob(MediaInput.inlineBytes(identity.id, image), image.mediaType), "image")
   return MediaProtocol.multipart(body)
-})
+}
 
-const fromRequest = Effect.fn("StabilityImages.fromRequest")(function* (request: Request) {
-  if (request.n !== undefined && request.n > 1)
-    return yield* route.unsupported("media.n", `${route.name} generates one image per request; call it once per image`)
-  const target = endpoint(request.model.id)
-  const edit = (request.images?.length ?? 0) > 0
-  if (edit && target === "core")
-    return yield* route.unsupported("media.images", `${route.name} core is text-to-image only; use ultra or sd3.5-*`)
-  return yield* form(
-    route,
-    {
-      prompt: request.prompt,
-      aspect_ratio: request.aspect,
-      model: target === "sd3" ? request.model.id : undefined,
-      mode: target === "sd3" && edit ? "image-to-image" : undefined,
-    },
-    mergeJsonRecords(request.providerOptions, request.http?.body),
-    request.images,
-  )
-})
+const fromRequest = (request: Request) =>
+  withSpan(() => {
+    if (request.n !== undefined && request.n > 1)
+      throw route.unsupported("media.n", `${route.name} generates one image per request; call it once per image`)
+    const target = endpoint(request.model.id)
+    const edit = (request.images?.length ?? 0) > 0
+    if (edit && target === "core")
+      throw route.unsupported("media.images", `${route.name} core is text-to-image only; use ultra or sd3.5-*`)
+    return form(
+      route,
+      {
+        prompt: request.prompt,
+        aspect_ratio: request.aspect,
+        model: target === "sd3" ? request.model.id : undefined,
+        mode: target === "sd3" && edit ? "image-to-image" : undefined,
+      },
+      mergeJsonRecords(request.providerOptions, request.http?.body),
+      request.images,
+    )
+  }, "StabilityImages.fromRequest")
 
-const fromUpscaleRequest = Effect.fn("StabilityImages.fromUpscaleRequest")(function* (request: UpscaleRequest) {
-  if ((request.images?.length ?? 0) === 0)
-    return yield* ProviderShared.invalidRequest(`${upscaleRoute.name} upscale requires the source image in images`)
-  return yield* form(
-    upscaleRoute,
-    { prompt: request.prompt },
-    mergeJsonRecords(request.providerOptions, request.http?.body),
-    request.images,
-  )
-})
+const fromUpscaleRequest = (request: UpscaleRequest) =>
+  withSpan(() => {
+    if ((request.images?.length ?? 0) === 0)
+      throw ProviderShared.invalidRequest(`${upscaleRoute.name} upscale requires the source image in images`)
+    return form(
+      upscaleRoute,
+      { prompt: request.prompt },
+      mergeJsonRecords(request.providerOptions, request.http?.body),
+      request.images,
+    )
+  }, "StabilityImages.fromUpscaleRequest")
 
 // ---------------------------------------------------------------------------
 // 6. Response decoding
 // ---------------------------------------------------------------------------
 
-const decodeImageDocument = (identity: MediaProtocol.Identity) => {
+const decodeImageDocument = (identity: MediaProtocol.Identity): infer _ => {
   const decode = identity.decodeJson(ImageDocument)
-  return Effect.fn("StabilityImages.decodeImage")(function* (response: HttpClientResponse.HttpClientResponse) {
-    const output = yield* decode(response)
-    const document = output.value
-    const data = document.image ?? document.result
-    if (data === undefined) return yield* output.invalid(`${identity.name} returned no image`)
-    const image = yield* MediaInput.decodedAsset(output.invalid, `${identity.name} result`, data, undefined)
-    return new ImageResponse({
-      images: [image],
-      providerMetadata: { stability: { seed: document.seed, finishReason: document.finish_reason } },
-    })
-  })
+  return (response: HttpClientResponse.HttpClientResponse) =>
+    withSpan(() => {
+      const output = decode(response)
+      const document = output.value
+      const data = document.image ?? document.result
+      if (data === undefined) throw output.invalid(`${identity.name} returned no image`)
+      const image = MediaInput.decodedAsset(output.invalid, `${identity.name} result`, data, undefined)
+      return new ImageResponse({
+        images: [image],
+        providerMetadata: { stability: { seed: document.seed, finishReason: document.finish_reason } },
+      })
+    }, "StabilityImages.decodeImage")
 }
 
 const decodeResponse = decodeImageDocument(route)
@@ -162,22 +163,19 @@ const decodeStart = upscaleRoute.decodeStarted(Started, (value) => ({
 }))
 
 // `/v2beta/results/{id}` answers 202 while in progress and 200 with the finished image document.
-const decodeStatus = (response: HttpClientResponse.HttpClientResponse, context: MediaProtocol.PollContext<Token>) =>
-  Effect.succeed({
-    id: context.token.id,
-    status: response.status === 202 ? ("running" as const) : ("completed" as const),
-  })
-
-const decodeUpscaleResult = Effect.fn("StabilityImages.decodeUpscaleResult")(function* (
-  response: HttpClientResponse.HttpClientResponse,
-  context: MediaProtocol.PollContext<Token>,
-) {
-  if (response.status === 202) {
-    const output = yield* upscaleRoute.text(response)
-    return yield* output.pending(context.token.id)
-  }
-  return yield* decodeUpscaleImage(response)
+const decodeStatus = (response: HttpClientResponse.HttpClientResponse, context: MediaProtocol.PollContext<Token>) => ({
+  id: context.token.id,
+  status: response.status === 202 ? ("running" as const) : ("completed" as const),
 })
+
+const decodeUpscaleResult = (response: HttpClientResponse.HttpClientResponse, context: MediaProtocol.PollContext<Token>) =>
+  withSpan(() => {
+    if (response.status === 202) {
+      const output = upscaleRoute.text(response)
+      throw output.pending(context.token.id)
+    }
+    return decodeUpscaleImage(response)
+  }, "StabilityImages.decodeUpscaleResult")
 
 // ---------------------------------------------------------------------------
 // 7. Protocol and route
@@ -197,7 +195,7 @@ export const upscaleProtocol = MediaProtocol.queued<UpscaleRequest, ImageRespons
   result: { path: (token) => `${RESULTS_PATH}/${token.id}`, decode: decodeUpscaleResult },
 })
 
-export const model = (input: MediaRoute.ModelInput) =>
+export const model = (input: MediaRoute.ModelInput): infer _ =>
   ImageModel.fromRoute<StabilityImageOptions>(
     {
       protocol,
@@ -208,7 +206,7 @@ export const model = (input: MediaRoute.ModelInput) =>
     input,
   )
 
-export const upscaleModel = (input: Omit<MediaRoute.ModelInput, "id">) =>
+export const upscaleModel = (input: Omit<MediaRoute.ModelInput, "id">): infer _ =>
   ImageModel.fromRoute<StabilityUpscaleOptions, Token>(
     {
       protocol: upscaleProtocol,

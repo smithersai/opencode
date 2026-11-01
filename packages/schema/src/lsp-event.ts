@@ -1,6 +1,6 @@
 export * as LspEvent from "./lsp-event.js"
 
-import { Event } from "./event.vibe"
+import { Event } from "./event.js"
 
 export const Updated = Event.ephemeral({ type: "lsp.updated", schema: {} })
 

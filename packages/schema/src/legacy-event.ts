@@ -1,1 +1,1 @@
-export * from "./v1/legacy-event.vibe"
+export * from "./v1/legacy-event.js"

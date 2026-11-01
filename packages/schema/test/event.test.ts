@@ -1,7 +1,7 @@
 import { describe, expect, test } from "bun:test"
 import { Schema } from "effect"
-import { Event } from "../src/event.vibe"
-import { EventLog } from "../src/event-log.vibe"
+import { Event } from "../src/event.js"
+import { EventLog } from "../src/event-log.js"
 
 describe("public event schemas", () => {
   test("definition is pure", () => {

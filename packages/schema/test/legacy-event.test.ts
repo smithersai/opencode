@@ -1,7 +1,7 @@
 import { describe, expect, test } from "bun:test"
 import { LegacyEventV1 } from "../src/legacy-event.js"
 import { PermissionV1 } from "../src/permission-v1.js"
-import { Project } from "../src/project.vibe"
+import { Project } from "../src/project.js"
 import { SessionV1 } from "../src/session-v1.js"
 
 describe("legacy public event schemas", () => {

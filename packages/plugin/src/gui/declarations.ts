@@ -1,4 +1,4 @@
-import type { Catalog, OS, StoreDeclaration } from "./core.vibe"
+import type { Catalog, OS, StoreDeclaration } from "./core.js"
 
 /** The stores a plugin's GUI may declare. */
 export type Stores = Readonly<Record<string, StoreDeclaration>>

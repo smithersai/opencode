@@ -8,7 +8,7 @@ import { Session } from "@opencode/schema/session"
 import { Bus } from "../bus.js"
 import { Pty } from "@opencode/schema/pty"
 import { Global } from "@opencode/util/global"
-import { ShellSelect } from "../shell/select.ts"
+import { ShellSelect } from "../shell/select.js"
 import {
   makeDaemonTransport,
   type DaemonTransport,

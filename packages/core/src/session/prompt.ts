@@ -16,7 +16,7 @@ import { Plugin } from "../plugin/service.js"
 import { PluginHooks } from "../plugin/hooks.js"
 import { Skill } from "../skill.js"
 import { SessionBlob } from "./blob.js"
-import { AttachmentError, SkillNotFoundError } from "./error.ts"
+import { AttachmentError, SkillNotFoundError } from "./error.js"
 import { SessionStored } from "./stored.js"
 
 // Image types the resizer can decode; others such as HEIC and AVIF go to the provider unchanged.

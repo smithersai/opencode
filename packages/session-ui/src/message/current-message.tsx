@@ -9,8 +9,8 @@ import {
   ToolDisplay,
 } from "../tools/tool-renderer"
 import { currentToolError, currentToolInput, currentToolMetadata, currentToolOutput } from "./current-tool-state"
-import type { UserRun } from "../timeline/user-runs"
-import type { TurnSources } from "../sources/sources"
+import type { UserRun } from "../timeline/user-runs.vibe"
+import type { TurnSources } from "../sources/sources.vibe"
 
 export type { SessionUserActions, SessionUserAttachmentReference, SessionUserComment } from "../actions"
 

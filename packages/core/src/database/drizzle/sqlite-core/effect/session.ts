@@ -23,7 +23,7 @@ import type { SelectedFieldsOrdered } from "drizzle-orm/sqlite-core/query-builde
 import type { PreparedQueryConfig, SQLiteExecuteMethod, SQLiteTransactionConfig } from "drizzle-orm/sqlite-core/session"
 import { assertUnreachable, makeJitQueryMapper, type RowsMapper } from "drizzle-orm/utils"
 import { mapResultRow, resolveNullableObjectPaths } from "../../internal/drizzle-utils.js"
-import { SQLiteEffectDatabase } from "./db.ts"
+import { SQLiteEffectDatabase } from "./db.js"
 
 type SQLiteEffectExecuteMethod = SQLiteExecuteMethod | "values"
 

@@ -12,7 +12,7 @@ import { ToolMode } from "@opencode/schema/session-stats"
 import { TokenUsage } from "@opencode/schema/token-usage"
 import { Database } from "../database/database.js"
 import { EventTable } from "../event/sql.js"
-import { SessionMessageTable, SessionTable } from "./sql.ts"
+import { SessionMessageTable, SessionTable } from "./sql.js"
 
 type Input = {
   readonly from?: number

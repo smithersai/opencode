@@ -1,9 +1,9 @@
 import { Effect, Schema } from "effect"
 import type { Extension } from "./extension.js"
-import { executeProgram } from "./interpreter/execute.ts"
+import { executeProgram } from "./interpreter/execute.js"
 import { extensionGlobals } from "./interpreter/extensions.js"
 import { globalNames } from "./interpreter/globals.js"
-import { type Services, type ToolDescription, ToolRuntime } from "./tool-runtime.ts"
+import { type Services, type ToolDescription, ToolRuntime } from "./tool-runtime.js"
 import type { Tools } from "./tools.js"
 
 /** A tool call admitted during an execution. */
@@ -14,9 +14,9 @@ export type {
   ToolCall,
   ToolDescription,
   ToolInvocation,
-} from "./tool-runtime.ts"
+} from "./tool-runtime.js"
 /** Signature-construction helpers for host-owned catalog instructions. */
-export { searchSignature, toolExpression } from "./tool-runtime.ts"
+export { searchSignature, toolExpression } from "./tool-runtime.js"
 
 /** Resource budgets enforced independently during each CodeMode program execution. */
 export type ExecutionLimits = {

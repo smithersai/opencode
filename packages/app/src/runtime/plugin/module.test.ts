@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test"
 import { Command, type Registry } from "@opencode/plugin/gui"
-import { pluginDefinition } from "./module"
+import { pluginDefinition } from "./module.vibe"
 
 // One `./gui-experimental` bundle for both processes, as a bundler emits it: requires hoisted to module scope,
 // including Electron and Node built-ins that only the main setup uses.

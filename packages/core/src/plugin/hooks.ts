@@ -8,7 +8,7 @@ import type { ModelHookOptions } from "@opencode/plugin/effect/registration"
 import type { PermissionHooks } from "@opencode/plugin/effect/permission"
 import { Context, Effect, Layer, Scope } from "effect"
 import { makeLocationNode } from "@opencode/util/effect/app-node"
-import { State } from "../state.ts"
+import { State } from "../state.js"
 
 export interface Domains {
   readonly aisdk: AISDKHooks

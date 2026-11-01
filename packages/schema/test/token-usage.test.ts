@@ -1,5 +1,5 @@
 import { expect, test } from "bun:test"
-import { TokenUsage } from "../src/token-usage.vibe"
+import { TokenUsage } from "../src/token-usage.js"
 
 test("totals every token category", () => {
   expect(TokenUsage.total({ input: 1, output: 2, reasoning: 4, cache: { read: 8, write: 16 } })).toBe(31)

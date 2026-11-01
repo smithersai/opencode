@@ -1,7 +1,7 @@
 export * as Patch from "./patch.js"
 
 import { Result, Schema } from "effect"
-import { Bom } from "./bom.ts"
+import { Bom } from "./bom.js"
 
 export class BoundaryError extends Schema.TaggedError<BoundaryError>()("Patch.BoundaryError", {
   boundary: Schema.Literals(["first", "last"]),

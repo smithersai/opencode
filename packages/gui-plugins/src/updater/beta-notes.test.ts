@@ -8,7 +8,7 @@ import {
   sliceBetaNotes,
   visualSource,
   type EmbeddedNotes,
-} from "./beta-notes"
+} from "./beta-notes.vibe"
 
 const sha = (n: number) => n.toString(16).padStart(4, "0").padEnd(40, "a")
 

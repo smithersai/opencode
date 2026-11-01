@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test"
 import { Schema } from "effect"
-import { Mcp } from "../src/mcp.vibe"
+import { Mcp } from "../src/mcp.js"
 
 describe("Mcp resources", () => {
   test("decodes resource catalogs and omits absent metadata", () => {

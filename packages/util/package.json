@@ -74,7 +74,7 @@
     "@types/pacote": "11.1.8",
     "@typescript/native": "catalog:",
     "jsqr": "1.4.0",
-    "vibelang": "file:../../.vibelang-toolchain/vibelang-0.0.11-ed00210a7ffb.tgz",
+    "vibelang": "file:../../.vibelang-toolchain/vibelang-0.0.11-668770ff8f46.tgz",
     "vibelang-vite": "file:../../.vibelang-toolchain/vibelang-vite-0.0.11-f8e51b377e05.tgz"
   }
 }

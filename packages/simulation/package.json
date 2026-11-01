@@ -46,6 +46,6 @@
     "@types/bun": "catalog:",
     "@types/ws": "8.18.1",
     "@typescript/native": "catalog:",
-    "vibelang": "file:../../.vibelang-toolchain/vibelang-0.0.11-ed00210a7ffb.tgz"
+    "vibelang": "file:../../.vibelang-toolchain/vibelang-0.0.11-668770ff8f46.tgz"
   }
 }

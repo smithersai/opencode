@@ -3,7 +3,7 @@ export * as ConfigCompactionPlugin from "./compaction.js"
 import { define } from "@opencode/plugin/effect/plugin"
 import { Effect } from "effect"
 import { Config } from "../../config.js"
-import { SessionCompaction } from "../../session/compaction.ts"
+import { SessionCompaction } from "../../session/compaction.js"
 import { ConfigEntryObserver } from "./entry-observer.js"
 
 export const Plugin = define({

@@ -1,5 +1,5 @@
 export * as AnthropicMessages from "./anthropic-messages.js"
-export * as BedrockConverse from "./bedrock-converse.js"
+export * as BedrockConverse from "./bedrock-converse.vibe"
 export * as CloudflareRunDecisions from "./cloudflare-run-decisions.js"
 export * as CohereChat from "./cohere-chat.js"
 export * as Gemini from "./gemini.js"

@@ -1,8 +1,8 @@
 import type { RouteDefaultsInput } from "../route/client.js"
 import type { ProviderPackage } from "../provider-package.js"
 import { ProviderConfigurationError, ProviderID, type ModelID } from "../schema/index.js"
-import * as BedrockConverse from "../protocols/bedrock-converse.js"
-import type { BedrockCredentials } from "../protocols/bedrock-converse.js"
+import * as BedrockConverse from "../protocols/bedrock-converse.vibe"
+import type { BedrockCredentials } from "../protocols/bedrock-converse.vibe"
 import { BedrockAuth } from "../protocols/utils/bedrock-auth.js"
 
 export const id = ProviderID.make("amazon-bedrock")

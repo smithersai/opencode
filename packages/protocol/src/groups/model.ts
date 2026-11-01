@@ -2,8 +2,8 @@ import { Model } from "@opencode/schema/model"
 import { Location } from "@opencode/schema/location"
 import { Schema } from "effect"
 import { HttpApiEndpoint, HttpApiGroup, OpenApi } from "effect/http-api"
-import { ServiceUnavailableError } from "../errors.ts"
-import { LocationQuery, locationQueryOpenApi } from "./location.ts"
+import { ServiceUnavailableError } from "../errors.js"
+import { LocationQuery, locationQueryOpenApi } from "./location.js"
 
 const ListQuery = Schema.Struct({
   ...LocationQuery.fields,

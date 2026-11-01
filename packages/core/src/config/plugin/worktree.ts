@@ -7,7 +7,7 @@ import { Config } from "../../config.js"
 import { Global } from "@opencode/util/global"
 import { Location } from "../../location.js"
 import { AbsolutePath } from "../../schema.js"
-import { WorktreeStrategies } from "../../worktree/strategies.ts"
+import { WorktreeStrategies } from "../../worktree/strategies.js"
 import { ConfigEntryObserver } from "./entry-observer.js"
 
 export const Plugin = define({

@@ -13,7 +13,7 @@ import type {
   GenerateObjectResponse,
   LoopInput,
   RequestInput,
-} from "./llm.js"
+} from "./llm.vibe"
 import { Speech, type SpeechModel, type SpeechRequest, type SpeechRequestInput } from "./speech.js"
 import {
   Transcription,

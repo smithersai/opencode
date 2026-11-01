@@ -2,7 +2,7 @@ import { describe, expect, test } from "bun:test"
 import { Schema } from "effect"
 import { Durable } from "../src/durable-event-manifest.js"
 import { SessionLegacy } from "../src/session-legacy.js"
-import { SessionMessage } from "../src/session-message.vibe"
+import { SessionMessage } from "../src/session-message.js"
 
 const ref = { sessionID: "ses_legacy", assistantMessageID: "msg_legacy" }
 const tokens = { input: 0, output: 0, reasoning: 0, cache: { read: 0, write: 0 } }

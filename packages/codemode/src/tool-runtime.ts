@@ -1,7 +1,7 @@
 import { Cause, Effect, Exit, Formatter, Schema } from "effect"
 import type { Json } from "./data.js"
 import type { DiagnosticKind } from "./codemode.js"
-import { toolError } from "./tool-error.ts"
+import { toolError } from "./tool-error.js"
 import {
   decodeInput as decodeToolInput,
   decodeOutput as decodeToolOutput,
@@ -10,9 +10,9 @@ import {
   inputTypeScript,
   isEmptyInput,
   outputTypeScript,
-} from "./tool-schema.ts"
+} from "./tool-schema.js"
 import { isNamespace, type Namespace } from "./namespace.js"
-import { isTool, type Tool } from "./tool.ts"
+import { isTool, type Tool } from "./tool.js"
 import type { Tools } from "./tools.js"
 
 export const compareText = (left: string, right: string) => (left < right ? -1 : left > right ? 1 : 0)

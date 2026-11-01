@@ -3,7 +3,7 @@ export * as Image from "./image.js"
 import { makeLocationNode } from "@opencode/util/effect/app-node"
 import { Context, Effect, Layer, Schema } from "effect"
 import { FileSystem } from "./filesystem.js"
-import { State } from "./state.ts"
+import { State } from "./state.js"
 
 export class ResizerUnavailableError extends Schema.TaggedError<ResizerUnavailableError>()(
   "Image.ResizerUnavailableError",

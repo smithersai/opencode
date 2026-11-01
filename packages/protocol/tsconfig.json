@@ -12,5 +12,6 @@
     "allowImportingTsExtensions": false,
     "allowJs": false,
     "noUncheckedIndexedAccess": false
-  }
+  },
+  "vibelang": { "declarationImportStyle": ".ts" }
 }

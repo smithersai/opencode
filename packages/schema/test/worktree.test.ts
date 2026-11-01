@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test"
 import { Schema } from "effect"
-import { Worktree } from "../src/worktree.vibe"
+import { Worktree } from "../src/worktree.js"
 
 describe("Worktree.CreateInput", () => {
   test("allows the server to choose the destination", () => {

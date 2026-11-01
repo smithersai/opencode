@@ -56,7 +56,7 @@
     "solid-js": "catalog:",
     "typescript": "catalog:",
     "vite": "8.2.2",
-    "vibelang": "file:../../.vibelang-toolchain/vibelang-0.0.11-ed00210a7ffb.tgz"
+    "vibelang": "file:../../.vibelang-toolchain/vibelang-0.0.11-668770ff8f46.tgz"
   },
   "optionalDependencies": {
     "@lydell/node-pty-darwin-arm64": "1.2.0-beta.12",

@@ -11,7 +11,7 @@ import {
   type Accessor,
 } from "solid-js"
 import { createStore } from "solid-js/store"
-import type { Live } from "./core.vibe"
+import type { Live } from "./core.js"
 import { isLiveAccessor, LifetimeContext } from "./internal.js"
 import { usePlugin } from "./solid.js"
 

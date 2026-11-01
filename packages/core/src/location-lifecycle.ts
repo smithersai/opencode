@@ -8,8 +8,8 @@ import { Form } from "./form.js"
 import { Location } from "./location.js"
 import { LocationServiceMap } from "./location-service-map.js"
 import { Permission } from "./permission.js"
-import { Project } from "./project.ts"
-import { Rpc } from "./rpc.ts"
+import { Project } from "./project.js"
+import { Rpc } from "./rpc.js"
 import { SessionEvent } from "./session/event.js"
 
 const isSessionEvent = Schema.is(SessionEvent.Durable)

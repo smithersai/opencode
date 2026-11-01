@@ -12,8 +12,8 @@ import {
   PermissionNotFoundError,
   PermissionSavedNotFoundError,
   SessionNotFoundError,
-} from "../errors.ts"
-import { LocationQuery, locationQueryOpenApi } from "./location.ts"
+} from "../errors.js"
+import { LocationQuery, locationQueryOpenApi } from "./location.js"
 
 export const makePermissionGroup = <
   LocationId extends HttpApiMiddleware.AnyId,

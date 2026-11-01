@@ -3,7 +3,7 @@ export * as InstancePlugins from "./instance.js"
 import type { Plugin } from "@opencode/plugin/effect/plugin"
 import { Context, Layer } from "effect"
 import { makeLocationNode } from "@opencode/util/effect/app-node"
-import type { Generation } from "../plugin.ts"
+import type { Generation } from "../plugin.js"
 
 /**
  * Holds the plugins one instance is born with. Unlike the host-global

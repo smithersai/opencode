@@ -31,7 +31,7 @@ import {
   reviewDiffNeedsLoad,
   sortReviewPaths,
   type RenderDiff,
-} from "./kinds"
+} from "./kinds.vibe"
 import type { ReviewModel } from "./model"
 import { ReviewPanelEmpty, ReviewTitle } from "./parts"
 

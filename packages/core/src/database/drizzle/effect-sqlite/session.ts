@@ -19,7 +19,7 @@ import {
   SQLiteEffectPreparedQuery,
   SQLiteEffectSession,
   SQLiteEffectTransaction,
-} from "../sqlite-core/effect/session.ts"
+} from "../sqlite-core/effect/session.js"
 import type { SelectedFieldsOrdered } from "drizzle-orm/sqlite-core/query-builders/select.types"
 import type { PreparedQueryConfig, SQLiteExecuteMethod, SQLiteTransactionConfig } from "drizzle-orm/sqlite-core/session"
 

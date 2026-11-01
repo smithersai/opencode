@@ -1,7 +1,7 @@
 export * as Data from "./data.js"
 
 import type { Schema } from "effect"
-import type { Interpreter } from "./interpreter/interpreter.ts"
+import type { Interpreter } from "./interpreter/interpreter.js"
 import { MAX_VALUE_DEPTH } from "./interpreter/limits.js"
 import { invalidData, rangeError, typeError } from "./interpreter/model.js"
 import {
@@ -21,7 +21,7 @@ import {
   HeadersObj,
 } from "./interpreter/objects.js"
 import { typeofValue } from "./interpreter/references.js"
-import { type Eval, Slice } from "./interpreter/runner.ts"
+import { type Eval, Slice } from "./interpreter/runner.js"
 
 export type Json = Schema.Json
 

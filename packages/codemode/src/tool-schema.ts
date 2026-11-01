@@ -1,5 +1,5 @@
 import { JsonPointer, Schema } from "effect"
-import type { Tool, JsonSchema, SchemaType } from "./tool.ts"
+import type { Tool, JsonSchema, SchemaType } from "./tool.js"
 
 const isEffectSchema = (schema: SchemaType): schema is Schema.Decoder<unknown> & Schema.Top => Schema.isSchema(schema)
 

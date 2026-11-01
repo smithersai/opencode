@@ -4,7 +4,7 @@ import { makeLocationNode } from "@opencode/util/effect/app-node"
 import { Array, Context, Effect, Layer, Types } from "effect"
 import { Agent } from "@opencode/schema/agent"
 import { Bus } from "./bus.js"
-import { State } from "./state.ts"
+import { State } from "./state.js"
 
 export const ID = Agent.ID
 export type ID = typeof ID.Type

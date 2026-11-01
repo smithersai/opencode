@@ -12,7 +12,7 @@ import { Integration } from "../../integration.js"
 import { IntegrationConnection } from "../../integration/connection.js"
 import { Model } from "../../model.js"
 import { OauthCallbackPage } from "../../oauth/page.js"
-import { Provider } from "../../provider.ts"
+import { Provider } from "../../provider.js"
 import type { PluginInternal } from "../internal.js"
 
 const providerID = Provider.ID.gitlab

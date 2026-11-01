@@ -5,7 +5,7 @@ import { makeLocationNode } from "@opencode/util/effect/app-node"
 import { createPatch } from "diff"
 import { Bus } from "./bus.js"
 import { Instructions } from "./instructions/index.js"
-import { State } from "./state.ts"
+import { State } from "./state.js"
 
 export class File extends Schema.Class<File>("InstructionDiscovery.File")({
   // An absolute file path, or the URL of a configured remote instruction.

@@ -21,7 +21,11 @@
     "./promise/api": "./src/promise/api.ts",
     "./service": "./src/promise/service.ts",
     "./solid": "./src/solid/index.ts",
-    "./effect": "./src/effect/index.ts",
+    "./effect": {
+      "types": "./src/effect/index.d.vibe.ts",
+      "vibelang-source": "./src/effect/index.vibe",
+      "default": "./.vibelang/js/src/effect/index.js"
+    },
     "./effect/api": "./src/effect/api.ts",
     "./effect/service": "./src/effect/service.ts",
     "./mcp": "./src/mcp.ts"
@@ -61,7 +65,7 @@
     "@typescript/native": "catalog:",
     "effect": "catalog:",
     "solid-js": "catalog:",
-    "vibelang": "file:../../.vibelang-toolchain/vibelang-0.0.11-ed00210a7ffb.tgz",
+    "vibelang": "file:../../.vibelang-toolchain/vibelang-0.0.11-668770ff8f46.tgz",
     "vibelang-unplugin": "file:../../.vibelang-toolchain/vibelang-unplugin-0.0.11-7e3b05c3f55f.tgz"
   }
 }

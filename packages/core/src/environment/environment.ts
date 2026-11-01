@@ -6,7 +6,7 @@ import type { Files } from "./files.js"
 import { makeFiles } from "./index.js"
 import { makeLocalDriver } from "./local.js"
 import { Location } from "../location.js"
-import { Workspace } from "../workspace.ts"
+import { Workspace } from "../workspace.js"
 
 export interface Interface {
   readonly files: Files

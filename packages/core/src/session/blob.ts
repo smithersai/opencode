@@ -10,7 +10,7 @@ import { Config } from "../config.js"
 import type { Database } from "../database/database.js"
 import type { SessionMessage } from "./message.js"
 import type { SessionSchema } from "./schema.js"
-import { BlobRefTable, BlobTable, SessionInboxTable, SessionMessageTable } from "./sql.ts"
+import { BlobRefTable, BlobTable, SessionInboxTable, SessionMessageTable } from "./sql.js"
 import { SessionStored } from "./stored.js"
 
 type DatabaseService = Database.Interface["db"]

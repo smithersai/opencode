@@ -2,7 +2,7 @@ import fs from "node:fs/promises"
 import path from "node:path"
 import { Effect } from "effect"
 import type { ChildProcessSpawner } from "effect/process/ChildProcessSpawner"
-import type { Driver } from "./driver.ts"
+import type { Driver } from "./driver.vibe"
 import { Failed, NotFound, WrongKind, type FileInfo, type FilesImpl, type FileType } from "./files.js"
 
 /**

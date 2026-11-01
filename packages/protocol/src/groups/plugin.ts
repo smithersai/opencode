@@ -2,8 +2,8 @@ import { Location } from "@opencode/schema/location"
 import { Plugin } from "@opencode/schema/plugin"
 import { Schema } from "effect"
 import { HttpApiEndpoint, HttpApiGroup, HttpApiSchema, OpenApi } from "effect/http-api"
-import { InvalidRequestError, PluginNotFoundError, ServiceUnavailableError } from "../errors.ts"
-import { LocationQuery, locationQueryOpenApi } from "./location.ts"
+import { InvalidRequestError, PluginNotFoundError, ServiceUnavailableError } from "../errors.js"
+import { LocationQuery, locationQueryOpenApi } from "./location.js"
 
 export const PluginGroup = HttpApiGroup.make("server.plugin")
   .add(

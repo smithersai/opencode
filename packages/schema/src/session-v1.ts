@@ -1,1 +1,1 @@
-export * from "./v1/session.vibe"
+export * from "./v1/session.js"

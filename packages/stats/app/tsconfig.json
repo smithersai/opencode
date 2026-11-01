@@ -21,5 +21,6 @@
       "~/*": ["./src/*"]
     }
   },
-  "include": ["*.ts", "src", "../core/src/resource.d.ts", "*.vibe"]
+  "include": ["*.ts", "src", "../core/src/resource.d.ts", "*.vibe"],
+  "vibelang": { "declarationImportStyle": "extensionless" }
 }

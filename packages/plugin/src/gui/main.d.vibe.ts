@@ -1,7 +1,7 @@
 import type { BrowserWindow, NativeImage, WebContentsView } from "electron";
 import type { Schema } from "effect";
-import { Registry, type BaseContext, type App, type Cleanup, type Ipc, type IpcImpl, type IpcProvider, type IpcSpec, type Persisted } from "./core.vibe";
-export * from "./core.vibe";
+import { Registry, type BaseContext, type App, type Cleanup, type Ipc, type IpcImpl, type IpcProvider, type IpcSpec, type Persisted } from "./core.js";
+export * from "./core.js";
 export * as Plugin from "./plugin.js";
 /** The app's main windows. */
 export interface Windows {

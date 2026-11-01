@@ -1,5 +1,5 @@
 import { expect, test } from "bun:test"
-import { summarize } from "./memory-infra.vibe"
+import { summarize } from "./memory-infra"
 
 const hex = (mib: number) => Math.round(mib * 1024 * 1024).toString(16)
 

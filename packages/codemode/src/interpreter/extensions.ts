@@ -1,11 +1,11 @@
 import { Effect } from "effect"
 import type { Extension } from "../extension.js"
-import { type ExtensionInvocation, hooked } from "../tool-runtime.ts"
-import type { Interpreter } from "./interpreter.ts"
+import { type ExtensionInvocation, hooked } from "../tool-runtime.js"
+import type { Interpreter } from "./interpreter.js"
 import { createErrorValue, isErrorType } from "./intrinsics.js"
 import { MAX_VALUE_DEPTH } from "./limits.js"
 import { PendingThrow, Throw, typeError } from "./model.js"
-import type { Host } from "./runner.ts"
+import type { Host } from "./runner.js"
 import { fn } from "./native.js"
 import {
   define,

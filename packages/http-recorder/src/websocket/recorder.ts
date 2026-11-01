@@ -3,10 +3,10 @@ import { Cause, Deferred, Effect, Exit, Layer, Ref, Scope, Semaphore } from "eff
 import { Socket } from "effect/socket"
 import { fileSystem, type Interface, Service } from "../cassette/store.js"
 import type { SocketRecorderOptions } from "../options.js"
-import { make, type Redactor } from "../redaction/redactor.js"
-import { canonicalizeJson, decodeJson, safeText } from "../replay/comparison.ts"
+import { make, type Redactor } from "../redaction/redactor.vibe"
+import { canonicalizeJson, decodeJson, safeText } from "../replay/comparison.vibe"
 import { makeReplayState, resolveAutoMode } from "../replay/state.js"
-import { webSocketInteractions, type Interaction } from "../cassette/model.ts"
+import { webSocketInteractions, type Interaction } from "../cassette/model.vibe"
 import type { WebSocketEvent, WebSocketInteraction } from "./model.vibe"
 
 interface WebSocketRecorderOptions extends SocketRecorderOptions {

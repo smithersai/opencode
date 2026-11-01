@@ -3,10 +3,10 @@ import { Deferred, Effect, Layer, Ref } from "effect"
 import { FetchHttpClient, HttpClient, HttpClientError, HttpClientRequest, HttpClientResponse } from "effect/http"
 import { fileSystem, Service } from "../cassette/store.js"
 import type { RecorderOptions } from "../options.js"
-import { make, redactUrl, type Redactor } from "../redaction/redactor.js"
+import { make, redactUrl, type Redactor } from "../redaction/redactor.vibe"
 import { makeReplayPoolState, resolveAutoMode } from "../replay/state.js"
-import { httpInteractions, type CassetteMetadata } from "../cassette/model.ts"
-import { defaultMatcher, selectFirstMatching, type RequestMatcher } from "./matching.js"
+import { httpInteractions, type CassetteMetadata } from "../cassette/model.vibe"
+import { defaultMatcher, selectFirstMatching, type RequestMatcher } from "./matching.vibe"
 import type { HttpInteraction, ResponseSnapshot } from "./model.vibe"
 
 export { defaultMatcher }

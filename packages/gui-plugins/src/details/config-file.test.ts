@@ -1,5 +1,5 @@
 import { expect, test } from "bun:test"
-import { globalConfigDirectory, serviceConfigFile } from "./config-file"
+import { globalConfigDirectory, serviceConfigFile } from "./config-file.vibe"
 
 const global = "/home/kit/.config/opencode/opencode.jsonc"
 

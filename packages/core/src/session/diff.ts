@@ -7,10 +7,10 @@ import { Database } from "../database/database.js"
 import { LocationServiceMap } from "../location-service-map.js"
 import { Snapshot } from "../snapshot.js"
 import { PATCH_CONTEXT_LINES } from "../vcs/patch.js"
-import { MessageNotFoundError } from "./error.ts"
+import { MessageNotFoundError } from "./error.js"
 import { SessionMessage } from "./message.js"
 import { SessionSchema } from "./schema.js"
-import { SessionMessageTable } from "./sql.ts"
+import { SessionMessageTable } from "./sql.js"
 
 export class TurnRangeError extends Schema.TaggedError<TurnRangeError>()("Session.TurnRangeError", {
   sessionID: SessionSchema.ID,

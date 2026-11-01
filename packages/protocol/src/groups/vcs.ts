@@ -4,8 +4,8 @@ import { NonNegativeInt, PositiveInt, optional } from "@opencode/schema/schema"
 import { Vcs } from "@opencode/schema/vcs"
 import { Schema } from "effect"
 import { HttpApiEndpoint, HttpApiGroup, HttpApiSchema, OpenApi } from "effect/http-api"
-import { LocationQuery, locationQueryOpenApi } from "./location.ts"
-import { ConflictError, InvalidRequestError, ServiceUnavailableError } from "../errors.ts"
+import { LocationQuery, locationQueryOpenApi } from "./location.js"
+import { ConflictError, InvalidRequestError, ServiceUnavailableError } from "../errors.js"
 
 const InitQuery = Schema.Struct({
   ...LocationQuery.fields,

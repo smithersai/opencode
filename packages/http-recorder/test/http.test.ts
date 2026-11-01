@@ -2,7 +2,7 @@ import { describe, expect, test } from "bun:test"
 import { Effect, Exit } from "effect"
 import { FetchHttpClient, HttpClient, HttpClientRequest } from "effect/http"
 import { existsSync } from "node:fs"
-import { isHttpInteraction } from "../src/cassette/model"
+import { isHttpInteraction } from "../src/cassette/model.vibe"
 import { HttpRecorder } from "../src"
 import { failureText, post, readCassette, seedCassetteDirectory, tempDirectory, withEnvironment } from "./support"
 

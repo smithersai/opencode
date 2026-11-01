@@ -10,9 +10,9 @@ import {
   type IpcProvider,
   type IpcSpec,
   type Persisted,
-} from "./core.vibe"
+} from "./core.ts"
 
-export * from "./core.vibe"
+export * from "./core.ts"
 
 export * as Plugin from "./plugin.ts"
 

@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test"
 import { Effect } from "effect"
-import { Session } from "../src/session.vibe"
+import { Session } from "../src/session.js"
 
 describe("Session.ListCursor", () => {
   test("round trips without Node globals", async () => {

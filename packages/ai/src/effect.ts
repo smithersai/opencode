@@ -236,7 +236,7 @@ export type {
   ToolSchema,
   ToolToModelOutput,
 } from "./tool.js"
-export * as LLM from "./llm.js"
+export * as LLM from "./llm.vibe"
 export type {
   Definition as ProviderPackageDefinition,
   Settings as ProviderPackageSettings,

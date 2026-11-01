@@ -5,11 +5,11 @@ import type { RpcCallOptions, RpcEventPayload, SelectedEvent, SubscribeOptions }
 import { Effect, Schema, SchemaAST, Stream } from "effect"
 import type { Scope } from "effect"
 import { HttpApiEndpoint, HttpApiSchema } from "effect/http-api"
-import { define } from "../effect/plugin.ts"
-import type { ToolFailures, ToolHooks } from "../effect/tool.ts"
-import { AssertInput } from "../permission.ts"
+import { define } from "../effect/plugin.js"
+import type { ToolFailures, ToolHooks } from "../effect/tool.vibe"
+import { AssertInput } from "../permission.js"
 import type { Plugin } from "./plugin.js"
-import type { Info } from "./tool.ts"
+import type { Info } from "./tool.vibe"
 import type { RpcDomain, RpcHandlers } from "./rpc.js"
 
 type HostRegistration = { readonly dispose: Effect.Effect<void> }

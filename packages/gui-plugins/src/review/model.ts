@@ -28,7 +28,7 @@ import {
   reviewDiffNeedsLoad,
   reviewFolderDirectory,
   reviewRootDirectory,
-} from "./kinds"
+} from "./kinds.vibe"
 
 export type ChangeMode = "git" | "branch" | "turn"
 

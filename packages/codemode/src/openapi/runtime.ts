@@ -1,8 +1,8 @@
 import { Effect, Option, Schema, Stream } from "effect"
 import { HttpClient, HttpClientRequest, HttpClientResponse, type HttpMethod } from "effect/http"
-import { ToolError, toolError } from "../tool-error.ts"
-import { isRecord, own } from "./spec.ts"
-import type { AppliedAuth, Credential, Plan, SecurityScheme } from "./types.ts"
+import { ToolError, toolError } from "../tool-error.js"
+import { isRecord, own } from "./spec.js"
+import type { AppliedAuth, Credential, Plan, SecurityScheme } from "./types.js"
 
 const decodeJson = Schema.decodeUnknownOption(Schema.fromJsonString(Schema.Unknown))
 const maxErrorBodyChars = 1_024

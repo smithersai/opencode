@@ -6,8 +6,8 @@ import { AbsolutePath } from "@opencode/schema/schema"
 import type { Session } from "@opencode/schema/session"
 import { FSUtil } from "@opencode/util/fs-util"
 import { Effect, Option, Schema } from "effect"
-import { ACPClient } from "./client"
-import { ACPError } from "./error"
+import { ACPClient } from "./client.vibe"
+import { ACPError } from "./error.vibe"
 
 const key = "opencode.acp.additionalDirectories"
 const decodeStored = Schema.decodeUnknownOption(Schema.Array(Schema.String))

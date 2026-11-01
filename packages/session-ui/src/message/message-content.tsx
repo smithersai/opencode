@@ -23,7 +23,7 @@ import { sessionReferenceText, setupSessionLinks } from "../components/markdown-
 import { useMarkdown } from "../context/markdown"
 import { useSources } from "../context/sources"
 import { SourcesChip } from "../sources/sources-chip"
-import type { TurnSources } from "../sources/sources"
+import type { TurnSources } from "../sources/sources.vibe"
 import { ImagePreview } from "@opencode/ui/image-preview"
 import { getFilename } from "@opencode/util/path"
 import { AttachmentCard } from "./attachment-card"
@@ -40,7 +40,7 @@ import { BasicTool } from "../components/basic-tool"
 import { reasoningHeading } from "../timeline/projection"
 import { Card } from "@opencode/ui/card"
 import { springStyle } from "@opencode/ui/motion/solid"
-import { userRunSpring, type UserRun } from "../timeline/user-runs"
+import { userRunSpring, type UserRun } from "../timeline/user-runs.vibe"
 import type {
   PromptAgentAttachment,
   PromptFileAttachment,

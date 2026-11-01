@@ -8,7 +8,7 @@ import {
   SurfaceName,
   ThemeDefinition,
   ThemeDocument,
-} from "./schema.ts"
+} from "./schema.js"
 import type {
   ActionStateKey,
   ActionStates,

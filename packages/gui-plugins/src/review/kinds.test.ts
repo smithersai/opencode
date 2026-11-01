@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test"
-import { expandReviewFolders, reviewDiffDirectory, reviewDiffNeedsLoad, sortReviewPaths } from "./kinds"
+import { expandReviewFolders, reviewDiffDirectory, reviewDiffNeedsLoad, sortReviewPaths } from "./kinds.vibe"
 
 describe("reviewDiffNeedsLoad", () => {
   test("loads changed files whose aggregate patch has no hunks", () => {

@@ -4,3 +4,4 @@ packages/client/src/generated/
 packages/client/src/generated-effect/
 packages/plugins/figma/skills/
 *.d.vibe.ts
+**/.vibelang/js/**

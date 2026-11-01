@@ -2,8 +2,8 @@ import { Agent } from "@opencode/schema/agent"
 import { Location } from "@opencode/schema/location"
 import { Schema } from "effect"
 import { HttpApiEndpoint, HttpApiGroup, OpenApi } from "effect/http-api"
-import { LocationQuery, locationQueryOpenApi } from "./location.ts"
-import { AgentNotFoundError, ServiceUnavailableError } from "../errors.ts"
+import { LocationQuery, locationQueryOpenApi } from "./location.js"
+import { AgentNotFoundError, ServiceUnavailableError } from "../errors.js"
 
 export const AgentGroup = HttpApiGroup.make("server.agent")
   .add(

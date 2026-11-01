@@ -4,7 +4,7 @@ import { Model } from "@opencode/schema/model"
 import { Provider } from "@opencode/schema/provider"
 import { Effect, Order } from "effect"
 import { builtinCommands, findModel, type Catalog } from "./catalog"
-import { ACPError } from "./error"
+import { ACPError } from "./error.vibe"
 
 const DEFAULT_VARIANT_VALUE = "default"
 

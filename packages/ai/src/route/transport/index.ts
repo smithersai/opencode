@@ -2,7 +2,7 @@ import type { Effect, Scope, Stream } from "effect"
 import { Endpoint } from "../endpoint.js"
 import { Auth } from "../auth.js"
 import type { HttpMiddleware, Interface as RequestExecutorInterface } from "../executor.js"
-import type { WebSocketChannelExecutor } from "./websocket-channel.js"
+import type { WebSocketChannelExecutor } from "./websocket-channel.vibe"
 import type { AIError, HttpContext, LLMRequest } from "../../schema/index.js"
 
 export interface TransportRuntime {
@@ -54,6 +54,6 @@ export type {
   WebSocketChannelExchange,
   WebSocketChannelExecution,
   WebSocketChannelExecutor,
-} from "./websocket-channel.js"
+} from "./websocket-channel.vibe"
 export type { WebSocketConnection, WebSocketConnector, WebSocketRequest } from "./websocket.js"
 export { WebSocketTransport } from "./websocket.js"

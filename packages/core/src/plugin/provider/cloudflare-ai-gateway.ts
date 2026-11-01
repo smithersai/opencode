@@ -2,7 +2,7 @@ import { Effect } from "effect"
 import { isArrayNonEmpty } from "effect/Array"
 import { define } from "@opencode/plugin/effect/plugin"
 import { Form } from "@opencode/schema/form"
-import { Provider } from "../../provider.ts"
+import { Provider } from "../../provider.js"
 import { configuredSettings } from "./configured.js"
 
 const providerID = Provider.ID.make("cloudflare-ai-gateway")

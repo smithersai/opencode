@@ -1,7 +1,7 @@
 export * as AISDKNative from "./aisdk-native.js"
 
 import { Effect, Option, Schema, Struct } from "effect"
-import { Provider } from "./provider.ts"
+import { Provider } from "./provider.js"
 
 type Overlays = {
   settings?: Provider.Settings

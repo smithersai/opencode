@@ -5,7 +5,7 @@ import { FSUtil } from "@opencode/util/fs-util"
 import { Global } from "@opencode/util/global"
 import { Bus } from "../../bus.js"
 import { Credential } from "../../credential.js"
-import { Provider } from "../../provider.ts"
+import { Provider } from "../../provider.js"
 import { configuredSettings } from "./configured.js"
 
 const ADC_METHOD = "google-adc"

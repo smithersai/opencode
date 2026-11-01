@@ -1,6 +1,6 @@
 export * as ModelsDev from "./models-dev.js"
 
-import { ephemeral, inventory } from "./event.vibe"
+import { ephemeral, inventory } from "./event.js"
 
 const Refreshed = ephemeral({
   type: "models-dev.refreshed",

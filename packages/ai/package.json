@@ -72,7 +72,11 @@
     "./providers/google-vertex/responses": "./src/providers/google-vertex/responses.ts",
     "./providers/google/images": "./src/providers/google/images.ts",
     "./providers/google/interactions": "./src/providers/google/interactions.ts",
-    "./providers/groq": "./src/providers/groq.ts",
+    "./providers/groq": {
+      "types": "./src/providers/groq.d.vibe.ts",
+      "vibelang-source": "./src/providers/groq.vibe",
+      "default": "./.vibelang/js/src/providers/groq.js"
+    },
     "./providers/meta": "./src/providers/meta.ts",
     "./providers/meta/chat": "./src/providers/meta/chat.ts",
     "./providers/meta/messages": "./src/providers/meta/messages.ts",
@@ -148,7 +152,7 @@
     "@types/bun": "catalog:",
     "@typescript/native": "catalog:",
     "typescript": "catalog:",
-    "vibelang": "file:../../.vibelang-toolchain/vibelang-0.0.11-ed00210a7ffb.tgz",
+    "vibelang": "file:../../.vibelang-toolchain/vibelang-0.0.11-668770ff8f46.tgz",
     "vibelang-vite": "file:../../.vibelang-toolchain/vibelang-vite-0.0.11-f8e51b377e05.tgz"
   },
   "dependencies": {

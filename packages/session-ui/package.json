@@ -39,7 +39,11 @@
     "./pierre/*": "./src/pierre/*.ts",
     "./context": "./src/context/index.ts",
     "./context/*": "./src/context/*.tsx",
-    "./sources": "./src/sources/sources.ts",
+    "./sources": {
+      "types": "./src/sources/sources.d.vibe.ts",
+      "vibelang-source": "./src/sources/sources.vibe",
+      "default": "./.vibelang/js/src/sources/sources.js"
+    },
     "./sources/experiment": "./src/sources/experiment.ts",
     "./sources/panel": "./src/sources/sources-panel.tsx",
     "./sources/title": "./src/sources/sources-title.tsx",
@@ -63,7 +67,7 @@
     "@typescript/native": "catalog:",
     "vite": "catalog:",
     "vite-plugin-solid": "catalog:",
-    "vibelang": "file:../../.vibelang-toolchain/vibelang-0.0.11-ed00210a7ffb.tgz",
+    "vibelang": "file:../../.vibelang-toolchain/vibelang-0.0.11-668770ff8f46.tgz",
     "vibelang-vite": "file:../../.vibelang-toolchain/vibelang-vite-0.0.11-f8e51b377e05.tgz"
   },
   "dependencies": {

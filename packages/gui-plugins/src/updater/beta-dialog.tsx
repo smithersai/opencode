@@ -12,7 +12,7 @@ import {
   visualSource,
   type BetaNote,
   type BetaNotes,
-} from "./beta-notes"
+} from "./beta-notes.vibe"
 import type definition from "./index"
 
 /**

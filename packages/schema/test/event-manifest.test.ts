@@ -13,13 +13,13 @@ import {
   Session,
   Workspace,
 } from "../src/index.js"
-import { EventManifest } from "../src/event-manifest.vibe"
+import { EventManifest } from "../src/event-manifest.js"
 import { FileSystemV1 } from "../src/filesystem-v1.js"
-import { McpEvent } from "../src/mcp-event.vibe"
-import { SessionEvent } from "../src/session-event.vibe"
-import { SessionID } from "../src/session-id.vibe"
-import { SessionMessage } from "../src/session-message.vibe"
-import { WorkspaceEvent } from "../src/workspace-event.vibe"
+import { McpEvent } from "../src/mcp-event.js"
+import { SessionEvent } from "../src/session-event.js"
+import { SessionID } from "../src/session-id.js"
+import { SessionMessage } from "../src/session-message.js"
+import { WorkspaceEvent } from "../src/workspace-event.js"
 
 describe("public event manifest", () => {
   test("owns the complete public event surface", () => {

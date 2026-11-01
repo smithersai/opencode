@@ -10,7 +10,7 @@ import {
   ProviderRequestError,
   ServiceUnavailableError,
   UnsupportedModelError,
-} from "../errors.ts"
+} from "../errors.js"
 
 const errors = [
   InvalidRequestError,

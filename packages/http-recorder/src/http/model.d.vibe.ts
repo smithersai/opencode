@@ -1,32 +1,32 @@
 import { Schema } from "effect";
-export declare const RequestSnapshotSchema: import("effect/Schema").Struct<{
-    readonly method: import("effect/Schema").String;
-    readonly url: import("effect/Schema").String;
-    readonly headers: import("effect/Schema").$Record<import("effect/Schema").String, import("effect/Schema").String>;
-    readonly body: import("effect/Schema").String;
+export declare const RequestSnapshotSchema: Schema.Struct<{
+    readonly method: Schema.String;
+    readonly url: Schema.String;
+    readonly headers: Schema.$Record<Schema.String, Schema.String>;
+    readonly body: Schema.String;
 }>;
 export type { RequestSnapshot } from "../api.js";
-export declare const ResponseSnapshotSchema: import("effect/Schema").Struct<{
-    readonly status: import("effect/Schema").Number;
-    readonly headers: import("effect/Schema").$Record<import("effect/Schema").String, import("effect/Schema").String>;
-    readonly body: import("effect/Schema").String;
-    readonly bodyEncoding: import("effect/Schema").optional<import("effect/Schema").Literals<readonly ["text", "base64"]>>;
+export declare const ResponseSnapshotSchema: Schema.Struct<{
+    readonly status: Schema.Number;
+    readonly headers: Schema.$Record<Schema.String, Schema.String>;
+    readonly body: Schema.String;
+    readonly bodyEncoding: Schema.optional<Schema.Literals<readonly ["text", "base64"]>>;
 }>;
 export interface ResponseSnapshot extends Schema.Schema.Type<typeof ResponseSnapshotSchema> {
 }
-export declare const HttpInteractionSchema: import("effect/Schema").Struct<{
-    readonly transport: import("effect/Schema").tag<"http">;
-    readonly request: import("effect/Schema").Struct<{
-        readonly method: import("effect/Schema").String;
-        readonly url: import("effect/Schema").String;
-        readonly headers: import("effect/Schema").$Record<import("effect/Schema").String, import("effect/Schema").String>;
-        readonly body: import("effect/Schema").String;
+export declare const HttpInteractionSchema: Schema.Struct<{
+    readonly transport: Schema.tag<"http">;
+    readonly request: Schema.Struct<{
+        readonly method: Schema.String;
+        readonly url: Schema.String;
+        readonly headers: Schema.$Record<Schema.String, Schema.String>;
+        readonly body: Schema.String;
     }>;
-    readonly response: import("effect/Schema").Struct<{
-        readonly status: import("effect/Schema").Number;
-        readonly headers: import("effect/Schema").$Record<import("effect/Schema").String, import("effect/Schema").String>;
-        readonly body: import("effect/Schema").String;
-        readonly bodyEncoding: import("effect/Schema").optional<import("effect/Schema").Literals<readonly ["text", "base64"]>>;
+    readonly response: Schema.Struct<{
+        readonly status: Schema.Number;
+        readonly headers: Schema.$Record<Schema.String, Schema.String>;
+        readonly body: Schema.String;
+        readonly bodyEncoding: Schema.optional<Schema.Literals<readonly ["text", "base64"]>>;
     }>;
 }>;
 export interface HttpInteraction extends Schema.Schema.Type<typeof HttpInteractionSchema> {

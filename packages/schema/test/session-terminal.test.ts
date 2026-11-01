@@ -1,7 +1,7 @@
 import { expect, test } from "bun:test"
 import { Schema } from "effect"
-import { SessionEvent } from "../src/session-event.vibe"
-import { SessionMessage } from "../src/session-message.vibe"
+import { SessionEvent } from "../src/session-event.js"
+import { SessionMessage } from "../src/session-message.js"
 
 const assistant = {
   id: "msg_terminal",

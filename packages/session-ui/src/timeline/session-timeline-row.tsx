@@ -26,7 +26,7 @@ import { Dynamic } from "solid-js/web"
 import type { SessionUserActions, SessionUserAttachmentReference, SessionUserComment } from "../actions"
 import { useData } from "../context"
 import { useSources } from "../context/sources"
-import { turnSources } from "../sources/sources"
+import { turnSources } from "../sources/sources.vibe"
 import { TimelineSeparator } from "../components/timeline-separator"
 import {
   SessionAssistantContent,
@@ -48,7 +48,7 @@ import { SessionRetry } from "../components/session-retry"
 import { SessionError } from "../components/session-error"
 import { timelineCategory, type TimelineDetail } from "./detail"
 import { currentToolFailed } from "../message/current-tool-state"
-import { userMessageRuns, userRunSpring } from "./user-runs"
+import { userMessageRuns, userRunSpring } from "./user-runs.vibe"
 import { attached } from "../components/message-file"
 import {
   createReactiveTimelineProjection,

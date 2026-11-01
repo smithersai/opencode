@@ -2,7 +2,7 @@ export * as LocationWatcherPolicy from "./location-watcher-policy.js"
 
 import { makeLocationNode } from "@opencode/util/effect/app-node"
 import { Context, Effect, Layer, Scope } from "effect"
-import { State } from "../state.ts"
+import { State } from "../state.js"
 
 type Data = {
   ignore: string[]

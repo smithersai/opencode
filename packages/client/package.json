@@ -42,7 +42,7 @@
   "dependencies": {
     "@opencode/schema": "workspace:*",
     "@opencode/protocol": "workspace:*",
-    "vibelang-runtime": "file:../../.vibelang-toolchain/vibelang-runtime-0.0.11-60bd29302ace.tgz"
+    "vibelang-runtime": "file:../../.vibelang-toolchain/vibelang-runtime-0.0.11-587937650a6b.tgz"
   },
   "peerDependencies": {
     "effect": "catalog:",
@@ -65,7 +65,7 @@
     "@typescript/native": "catalog:",
     "effect": "catalog:",
     "solid-js": "catalog:",
-    "vibelang": "file:../../.vibelang-toolchain/vibelang-0.0.11-668770ff8f46.tgz",
-    "vibelang-unplugin": "file:../../.vibelang-toolchain/vibelang-unplugin-0.0.11-7e3b05c3f55f.tgz"
+    "vibelang": "file:../../.vibelang-toolchain/vibelang-0.0.11-1ded989eae73.tgz",
+    "vibelang-unplugin": "file:../../.vibelang-toolchain/vibelang-unplugin-0.0.11-0cd78f8e2c0c.tgz"
   }
 }

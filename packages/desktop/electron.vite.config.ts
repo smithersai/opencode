@@ -3,6 +3,7 @@ import type { Plugin } from "vite"
 import { BetaNotes } from "./script/beta-notes"
 import { pickerPlugin } from "./script/picker"
 import { nodePtyPackage } from "./script/utils"
+import vibelang from "vibelang-vite"
 
 function resolveChannel() {
   const raw = process.env.OPENCODE_CHANNEL
@@ -83,6 +84,7 @@ const require = __cjs_mod__.createRequire(import.meta.url);
         },
       },
       plugins: [
+        vibelang(),
         {
           name: "opencode:node-pty-narrower",
           enforce: "pre",
@@ -95,6 +97,7 @@ const require = __cjs_mod__.createRequire(import.meta.url);
       ],
     },
     preload: {
+      plugins: [vibelang()],
       build: {
         minify: command === "build",
         rolldownOptions: {
@@ -122,7 +125,7 @@ const require = __cjs_mod__.createRequire(import.meta.url);
           command === "serve" && process.env.OPENCODE_TEST_ONBOARDING === "1",
         ),
       },
-      plugins: [pickerPlugin(), appPlugin, initialChunk],
+      plugins: [vibelang(), pickerPlugin(), appPlugin, initialChunk],
       publicDir: "../../../app/public",
       root: "src/renderer",
       build: {

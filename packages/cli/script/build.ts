@@ -159,7 +159,6 @@ export default { path: file, version: ${JSON.stringify(opencodePty.version)}, sh
   const executablePath = await compileExecutable(item)
   console.log(`building ${name}`)
   const result = await Bun.build({
-    conditions: ["vibelang-source"],
     entrypoints: ["./src/index.ts", "./src/photon-worker.ts"],
     tsconfig: "./tsconfig.json",
     plugins: [

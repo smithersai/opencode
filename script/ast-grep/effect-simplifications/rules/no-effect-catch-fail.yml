@@ -73,3 +73,5 @@ transform:
         - unwrap-stream-fail
       source: $$$ARGS
 fix: $MODULE.mapError($MAPPED_ARGS)
+ignores:
+  - "**/*.d.vibe.ts"

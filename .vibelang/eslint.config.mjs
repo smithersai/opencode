@@ -1,86 +1,217 @@
 import { existsSync, readFileSync } from "node:fs"
 import parser from "vibelang/eslint"
-// The repository's Oxlint configuration, read on each run: its rules and its
-// overrides (a *.ts glob read as *.vibe) apply to .vibe files wherever ESLint
-// or typescript-eslint has the rule. typescript-eslint's recommended rules
-// stand in for Oxlint's default correctness rules unless the configuration
-// turns that category off. Rules of other Oxlint plugins are not carried.
-const read = (name) => {
-  const url = new URL("../" + name, import.meta.url)
-  return existsSync(url) ? readFileSync(url, "utf8") : null
-}
-const text = read(".oxlintrc.json") ?? read(".oxlintrc.jsonc")
-const oxlint = text
-  ? JSON.parse(
-      text
-        .replace(/("(?:\\.|[^"\\])*")|\/\*[\s\S]*?\*\/|\/\/[^\n]*/g, (all, string) => string ?? "")
-        .replace(/,(\s*[}\]])/g, "$1"),
-    )
-  : {}
-// typescript-eslint refuses TypeScript 7, so its rules join only where it loads.
-const tseslint = await import("typescript-eslint").then(
-  ({ default: loaded }) => loaded,
-  () => null,
-)
-const core = await import("eslint/use-at-your-own-risk").then(
-  ({ builtinRules }) => builtinRules,
-  () => null,
-)
-const typed = new Set(Object.keys(tseslint?.plugin?.rules ?? {}))
-const levels = {
-  allow: "off",
-  deny: "error",
-  off: "off",
-  warn: "warn",
-  error: "error",
-  0: "off",
-  1: "warn",
-  2: "error",
-}
-const rules = (settings = {}) =>
-  Object.fromEntries(
-    Object.entries(settings).flatMap(([name, setting]) => {
-      const [level, ...options] = [setting].flat()
-      const value = [levels[level] ?? level, ...options]
-      const plugin = name.includes("/") ? name.slice(0, name.lastIndexOf("/")) : ""
-      const rule = name.slice(name.lastIndexOf("/") + 1)
-      // A core rule typescript-eslint extends for TypeScript, as Oxlint's does, is typescript-eslint's.
-      if (
-        plugin === "typescript" ||
-        plugin === "@typescript-eslint" ||
-        ((plugin === "" || plugin === "eslint") && typed.has(rule))
+import { pathToFileURL } from "node:url"
+import oxc from "./oxlint-rules.mjs"
+import { withOxlintComments } from "./oxlint-comments.mjs"
+const aliases = new Map()
+export const oxlintRuleName = (name) => aliases.get(name) ?? (name.includes("/") ? name : "eslint/" + name)
+export async function configFor(configPath, strict = false) {
+  aliases.clear()
+  // The repository's Oxlint configuration, read on each run: its rules and its
+  // overrides (a *.ts glob read as *.vibe) apply to .vibe files wherever ESLint,
+  // typescript-eslint or one of the configuration's JS plugins has the rule.
+  // typescript-eslint's recommended rules stand in for Oxlint's default
+  // correctness rules unless the configuration turns that category off. Rules of
+  // Oxlint's other built-in plugins, such as unicorn, are not carried.
+  const read = (name) => {
+    const url = new URL("../" + name, import.meta.url)
+    return existsSync(url) ? readFileSync(url, "utf8") : null
+  }
+  const text = configPath ? readFileSync(configPath, "utf8") : (read(".oxlintrc.json") ?? read(".oxlintrc.jsonc"))
+  const base = configPath ? new URL("./", pathToFileURL(configPath)) : new URL("../" + "", import.meta.url)
+  const oxlint = text
+    ? JSON.parse(
+        text
+          .replace(/("(?:\\.|[^"\\])*")|\/\*[\s\S]*?\*\/|\/\/[^\n]*/g, (all, string) => string ?? "")
+          .replace(/,(\s*[}\]])/g, "$1"),
       )
-        return typed.has(rule) ? [["@typescript-eslint/" + rule, value]] : []
-      if (plugin === "" || plugin === "eslint") return !core || core.has(rule) ? [[rule, value]] : []
-      return []
-    }),
+    : {}
+  // An Oxlint JS plugin is an ESLint plugin. Each loads as Oxlint loads it: a
+  // path from the configuration's directory, else a package, named by its alias,
+  // else by its meta.name or package name less an eslint-plugin or oxlint-plugin
+  // prefix. Its rules read a .vibe file's source tree as they read a .ts file's.
+  const pluginName = (name, specifier) => {
+    if (typeof name !== "string")
+      throw new Error(
+        specifier + ": Oxlint names a JS plugin by its alias, its meta.name or its package name, and this one has none",
+      )
+    const slash = name.indexOf("/")
+    const scope = slash === -1 ? "" : name.slice(0, slash + 1)
+    const rest = name.slice(scope.length)
+    for (const prefix of ["eslint-plugin", "oxlint-plugin"]) {
+      if (scope && rest === prefix) return scope.slice(0, -1)
+      if (rest.startsWith(prefix + "-")) return scope + rest.slice(prefix.length + 1)
+    }
+    return name
+  }
+  // A rule written for Oxlint's createOnce API runs as Oxlint's
+  // eslintCompatPlugin runs it under ESLint: once per file.
+  const eslintRule = (rule) =>
+    rule.create || !rule.createOnce
+      ? rule
+      : {
+          ...rule,
+          create(context) {
+            const { before, after, ...visitor } = rule.createOnce(context)
+            if (before && before() === false) return {}
+            if (!after) return visitor
+            const exit = visitor["Program:exit"]
+            return {
+              ...visitor,
+              "Program:exit"(node) {
+                if (exit) exit(node)
+                after()
+              },
+            }
+          },
+        }
+  const jsPlugins = new Map(
+    await Promise.all(
+      (oxlint.jsPlugins ?? []).map(async (entry) => {
+        const { name, specifier } = typeof entry === "string" ? { specifier: entry } : entry
+        const local = /^(?:\.\.?)?\//.test(specifier)
+        const module = await import(local ? new URL(specifier, base).href : specifier)
+        const plugin = module.default ?? module
+        const packageName = local
+          ? undefined
+          : specifier
+              .split("/")
+              .slice(0, specifier.startsWith("@") ? 2 : 1)
+              .join("/")
+        const rules = Object.fromEntries(
+          Object.entries(plugin.rules ?? {}).map(([rule, definition]) => [rule, eslintRule(definition)]),
+        )
+        return [name ?? pluginName(plugin.meta?.name ?? packageName, specifier), { ...plugin, rules }]
+      }),
+    ),
   )
-const vibe = (glob) =>
-  glob
-    .replace(/\.\{([^}]*)\}$/, (all, list) =>
-      list.split(",").some((e) => /^[cm]?tsx?$/.test(e.trim())) ? ".vibe" : all,
+  // typescript-eslint refuses TypeScript 7, so its rules join only where it loads.
+  const tseslint = await import("typescript-eslint").then(
+    ({ default: loaded }) => loaded,
+    () => null,
+  )
+  const core = await import("eslint/use-at-your-own-risk").then(
+    ({ builtinRules }) => builtinRules,
+    () => null,
+  )
+  const typed = new Set(Object.keys(tseslint?.plugin?.rules ?? {}))
+  const levels = {
+    allow: "off",
+    deny: "error",
+    off: "off",
+    warn: "warn",
+    error: "error",
+    0: "off",
+    1: "warn",
+    2: "error",
+  }
+  const missing = new Set()
+  const rules = (settings = {}) =>
+    Object.fromEntries(
+      Object.entries(settings).flatMap(([name, setting]) => {
+        const [level, ...options] = [setting].flat()
+        const value = [levels[level] ?? level, ...options]
+        const plugin = name.includes("/") ? name.slice(0, name.lastIndexOf("/")) : ""
+        const rule = name.slice(name.lastIndexOf("/") + 1)
+        const typedName = "@typescript-eslint/" + rule
+        // A core rule typescript-eslint extends for TypeScript, as Oxlint's does, is typescript-eslint's.
+        if (
+          plugin === "typescript" ||
+          plugin === "@typescript-eslint" ||
+          ((plugin === "" || plugin === "eslint") && typed.has(rule))
+        ) {
+          if (!typed.has(rule)) {
+            if (levels[level] !== "off") missing.add(name)
+            return []
+          }
+          aliases.set(typedName, plugin === "" || plugin === "eslint" ? "eslint/" + rule : "typescript/" + rule)
+          return [[typedName, value]]
+        }
+        if (plugin === "" || plugin === "eslint")
+          return !core || core.has(rule) ? [[rule, value]] : (levels[level] === "off" || missing.add(name), [])
+        if (plugin === "oxc" && oxc.rules[rule]) return [[name, value]]
+        if (jsPlugins.get(plugin)?.rules[rule]) return [[name, value]]
+        if (levels[level] !== "off") missing.add(name)
+        return []
+      }),
     )
-    .replace(/\.[cm]?tsx?$/, ".vibe")
-const overrides = (oxlint.overrides ?? [])
-  .map((override) => ({
-    files: [override.files]
-      .flat()
-      .filter((glob) => vibe(glob) !== glob)
-      .map(vibe),
-    rules: rules(override.rules),
-  }))
-  .filter((override) => override.files.length && Object.keys(override.rules).length)
-const correctness = levels[oxlint.categories?.correctness] !== "off"
-export default [
-  { ignores: ["**/node_modules/**", "**/dist/**", "**/build/**"] },
-  ...(correctness && tseslint
-    ? tseslint.configs.recommended.map((config) => ({ ...config, files: ["**/*.vibe"] }))
-    : []),
-  {
-    files: ["**/*.vibe"],
-    languageOptions: { parser },
-    ...(tseslint ? { plugins: { "@typescript-eslint": tseslint.plugin } } : {}),
-    rules: { "no-debugger": "error", ...rules(oxlint.rules) },
-  },
-  ...overrides,
-]
+  const vibe = (glob) =>
+    glob
+      .replace(/\.\{([^}]*)\}$/, (all, list) =>
+        list.split(",").some((e) => /^[cm]?tsx?$/.test(e.trim())) ? ".vibe" : all,
+      )
+      .replace(/\.[cm]?tsx?$/, ".vibe")
+  const overrides = (oxlint.overrides ?? [])
+    .map((override) => ({
+      files: [override.files]
+        .flat()
+        .filter((glob) => vibe(glob) !== glob || glob.endsWith(".vibe") || !/[.][a-z0-9]+$/i.test(glob))
+        .map((glob) => (vibe(glob) === glob ? [glob, "**/*.vibe"] : vibe(glob))),
+      rules: rules(override.rules),
+    }))
+    .filter((override) => override.files.length && Object.keys(override.rules).length)
+  // Like Oxlint, ignorePatterns are relative to the lint invocation's cwd.
+  const ignores = (function nativeIgnorePatterns(patterns) {
+    const convert = (value) => {
+      const negative = value.startsWith("!")
+      let pattern = negative ? value.slice(1) : value
+      const slash = pattern.indexOf("/")
+      if (slash < 0 || slash === pattern.length - 1) pattern = "**/" + pattern
+      else if (slash === 0) pattern = pattern.slice(1)
+      // Parentheses are literal in Oxlint, not minimatch extglobs.
+      let escaped = ""
+      for (let i = 0; i < pattern.length; i++) {
+        const char = pattern[i]
+        if (char === "\\" && i + 1 < pattern.length) escaped += char + pattern[++i]
+        else escaped += char === "(" ? "\\(" : char
+      }
+      if (escaped.endsWith("/")) escaped += "**/*"
+      else if (escaped.endsWith("/**")) escaped += "/*"
+      const prefix = negative ? "!" : ""
+      return [prefix + escaped, prefix + escaped + "/**/*"]
+    }
+    return patterns.flatMap((pattern) => {
+      if (pattern === "") return []
+      const native = pattern
+        .replace(/\.\{([^{}]+)\}$/, (whole, list) => {
+          const parts = list.split(",")
+          if (!parts.some((part) => /^(?:[cm]?ts|tsx)$/.test(part))) return whole
+          const mapped = [...new Set(parts.map((part) => (/^(?:[cm]?ts|tsx)$/.test(part) ? "vibe" : part)))]
+          return mapped.length === 1 ? "." + mapped[0] : ".{" + mapped.join(",") + "}"
+        })
+        .replace(/\.(?:[cm]?ts|tsx)$/, ".vibe")
+      const mapped = [...new Set([pattern, native])].flatMap(convert)
+      if (!pattern.startsWith("!")) return mapped
+      // Reopen only ancestors the negated glob can reach. A fixed prefix
+      // must not force traversal through every unrelated ignored directory.
+      const ancestors = []
+      for (const value of mapped) {
+        const parts = value.slice(1).split("/")
+        for (let i = 1; i < parts.length; i++) ancestors.push("!" + parts.slice(0, i).join("/") + "/")
+      }
+      return [...new Set(ancestors), ...mapped]
+    })
+  })(oxlint.ignorePatterns ?? [])
+  const correctness = levels[oxlint.categories?.correctness] !== "off"
+  const configs = [
+    { ignores: [...ignores, "**/node_modules/**", "**/dist/**", "**/build/**", "**/*.d.vibe.ts"] },
+    ...(correctness && tseslint
+      ? tseslint.configs.recommended.map((config) => ({ ...config, files: ["**/*.vibe"] }))
+      : []),
+    {
+      files: ["**/*.vibe"],
+      linterOptions: { reportUnusedDisableDirectives: "off" },
+      languageOptions: { parser: withOxlintComments(parser, aliases) },
+      plugins: {
+        oxc,
+        ...(tseslint ? { "@typescript-eslint": tseslint.plugin } : {}),
+        ...Object.fromEntries(jsPlugins),
+      },
+      rules: { ...(correctness ? { "no-debugger": "error" } : {}), ...rules(oxlint.rules) },
+    },
+    ...overrides,
+  ]
+  if (strict && missing.size) throw new Error("Oxlint rules unavailable under ESLint: " + [...missing].join(", "))
+  return configs
+}
+export default await configFor()

@@ -4,11 +4,11 @@ import { readdir, rm } from "node:fs/promises"
 import vibelang from "vibelang-unplugin/bun"
 
 await rm("dist", { recursive: true, force: true })
-await $`bunx tsc --emitDeclarationOnly`
+await $`bunx vibelang --emitDeclarationOnly`
 
 const build = await Bun.build({
   plugins: [vibelang()],
-  entrypoints: ["src/index.ts"],
+  entrypoints: ["src/index.vibe"],
   outdir: "dist",
   target: "node",
   format: "esm",

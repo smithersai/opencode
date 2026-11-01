@@ -6,7 +6,7 @@ import vibelang from "vibelang-vite"
 export default defineConfig({
   base: "/data/",
   plugins: [
-    vibelang(),
+    vibelang({ register: true }),
     solidStart({ middleware: "./src/middleware.ts" }) as PluginOption,
     nitro({
       compatibilityDate: "2024-09-19",

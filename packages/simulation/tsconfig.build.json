@@ -12,5 +12,6 @@
     "emitDeclarationOnly": true,
     "tsBuildInfoFile": null
   },
-  "include": ["src"]
+  "include": ["src"],
+  "vibelang": { "declarationImportStyle": "extensionless" }
 }

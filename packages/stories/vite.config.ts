@@ -68,9 +68,7 @@ export default defineConfig({
       { find: "@", replacement: app },
     ],
   },
-  worker: {
-    format: "es",
-  },
+  worker: { plugins: () => [vibelang()], format: "es" },
   server: {
     host: "127.0.0.1",
     fs: {

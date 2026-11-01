@@ -8,3 +8,5 @@ rule:
     - inside:
         kind: import_statement
         stopBy: end
+ignores:
+  - "**/*.d.vibe.ts"

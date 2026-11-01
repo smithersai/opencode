@@ -8,7 +8,7 @@ import vibelang from "vibelang-unplugin/bun"
 process.chdir(fileURLToPath(new URL("..", import.meta.url)))
 
 await $`rm -rf dist`
-await $`bun tsc -p tsconfig.build.json`
+await $`bun vibelang -p tsconfig.build.json`
 const root = path.resolve("src")
 const result = await Bun.build({
   plugins: [vibelang()],

@@ -13,5 +13,5 @@
     "tsBuildInfoFile": null
   },
   "include": ["src"],
-  "vibelang": { "declarationImportStyle": ".ts" }
+  "vibelang": { "declarationImportStyle": "extensionless" }
 }

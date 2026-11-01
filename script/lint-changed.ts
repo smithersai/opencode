@@ -27,10 +27,11 @@ const packages = [
 // oxlint skips declaration files and prints a non-JSON message when given only those.
 const files = [...new Set([...tracked, ...untracked])].filter(
   (file) =>
-    /\.(ts|tsx)$/.test(file) &&
+    /\.(ts|tsx|vibe)$/.test(file) &&
     !file.endsWith(".d.ts") &&
     packages.some((prefix) => file.startsWith(prefix)) &&
-    Bun.file(file).size > 0,
+    Bun.file(file).size > 0 &&
+    !file.endsWith(".d.vibe.ts"),
 )
 
 if (files.length === 0) {
@@ -39,11 +40,13 @@ if (files.length === 0) {
 }
 
 // In chunks: a renamed package lists hundreds of files, more than one Windows command line holds.
-const chunks = Array.from({ length: Math.ceil(files.length / 100) }, (_, index) => files.slice(index * 100, index * 100 + 100))
+const chunks = Array.from({ length: Math.ceil(files.length / 100) }, (_, index) =>
+  files.slice(index * 100, index * 100 + 100),
+)
 const report: { diagnostics: Diagnostic[] } = { diagnostics: [] }
 
 for (const chunk of chunks) {
-  const output = JSON.parse(await $`bunx oxlint --format json ${chunk}`.nothrow().quiet().text()) as {
+  const output = JSON.parse(await $`./.vibelang/oxlint.mjs --format json ${chunk}`.nothrow().quiet().text()) as {
     diagnostics: Diagnostic[]
   }
   report.diagnostics.push(...output.diagnostics)

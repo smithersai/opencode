@@ -7,5 +7,5 @@ export default defineConfig({
   root: fileURLToPath(new URL(".", import.meta.url)),
   plugins: [vibelang(), solid()],
   build: { outDir: process.env.MARKDOWN_BUILD_DIR, emptyOutDir: true, sourcemap: true },
-  worker: { format: "es" },
+  worker: { plugins: () => [vibelang()], format: "es" },
 })

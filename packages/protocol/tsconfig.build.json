@@ -8,6 +8,5 @@
     "noEmit": false,
     "declaration": true
   },
-  "include": ["src"],
-  "vibelang": { "declarationImportStyle": ".ts" }
+  "include": ["src"]
 }

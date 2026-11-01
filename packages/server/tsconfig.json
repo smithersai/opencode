@@ -10,5 +10,5 @@
     "noUncheckedIndexedAccess": false
   },
   "references": [{ "path": "../core" }],
-  "vibelang": { "declarationImportStyle": ".ts" }
+  "vibelang": { "declarationImportStyle": "extensionless" }
 }

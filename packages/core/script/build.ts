@@ -10,7 +10,7 @@ import vibelang from "vibelang-unplugin/bun"
 process.chdir(fileURLToPath(new URL("..", import.meta.url)))
 
 await rm("dist", { recursive: true, force: true })
-await $`bun tsc -p tsconfig.build.json`
+await $`bun vibelang -p tsconfig.build.json`
 
 const root = path.resolve("src")
 const files = await Array.fromAsync(new Bun.Glob("**/*.ts").scan({ cwd: root, absolute: true }))

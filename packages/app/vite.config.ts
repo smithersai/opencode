@@ -24,8 +24,9 @@ const sentry =
     : false
 
 export default defineConfig({
+  worker: { plugins: () => [vibelang()] },
   plugins: [
-    vibelang(),
+    vibelang({ register: true }),
     desktopPlugin,
     icons(channel),
     serviceWorker(fileURLToPath(new URL("./dist", import.meta.url))),

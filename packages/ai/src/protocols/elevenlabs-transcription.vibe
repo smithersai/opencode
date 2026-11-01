@@ -1,11 +1,11 @@
 import type { HttpClientResponse } from "effect/http"
 import { MediaProtocol } from "../route/media-protocol.ts"
-import { MediaRoute } from "../route/media.ts"
+import { MediaRoute } from "../route/media.vibe"
 import { mergeJsonRecords, type OpenString } from "../schema/index.ts"
 import { TranscriptionModel, TranscriptionResponse, type TranscriptionRequestFor } from "../transcription.ts"
 import { mediaTypeExtension } from "../utils/media-type.ts"
 import { ProviderShared, optionalNull } from "./shared.ts"
-import { MediaInput } from "./utils/media-input.ts"
+import { MediaInput } from "./utils/media-input.vibe"
 import { SpeakerTurns } from "./utils/speaker-turns.ts"
 
 const route = MediaProtocol.identity({

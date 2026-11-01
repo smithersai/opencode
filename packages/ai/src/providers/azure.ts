@@ -1,9 +1,9 @@
 import { Auth } from "../route/auth.js"
-import { type AtLeastOne, type ProviderAuthOption } from "../route/auth-options.js"
+import { type AtLeastOne, type ProviderAuthOption } from "../route/auth-options.vibe"
 import type { Route, RouteDefaultsInput, CompactionOperations } from "../route/client.js"
 import { Endpoint } from "../route/endpoint.js"
 import type { ProviderPackage } from "../provider-package.js"
-import { MediaRoute } from "../route/media.js"
+import { MediaRoute } from "../route/media.vibe"
 import {
   HttpOptions,
   ProviderConfigurationError,

@@ -7,7 +7,7 @@ import { Patch } from "@opencode/util/patch"
 import { applyPatch, parsePatch, reversePatch, structuredPatch, type StructuredPatch } from "diff"
 import { Effect, Option, Schema } from "effect"
 import { ACPChild } from "./child"
-import { ACPClient } from "./client.vibe"
+import { ACPClient } from "./client"
 import type { ACPConnection } from "./connection"
 import {
   absolutePath,

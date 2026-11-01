@@ -5,7 +5,7 @@ export declare const RequestSnapshotSchema: Schema.Struct<{
     readonly headers: Schema.$Record<Schema.String, Schema.String>;
     readonly body: Schema.String;
 }>;
-export type { RequestSnapshot } from "../api.js";
+export type { RequestSnapshot } from "../api.ts";
 export declare const ResponseSnapshotSchema: Schema.Struct<{
     readonly status: Schema.Number;
     readonly headers: Schema.$Record<Schema.String, Schema.String>;

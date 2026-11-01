@@ -2,7 +2,7 @@ import { Effect, Fiber, Schedule } from "effect"
 import { onCleanup, type Accessor } from "solid-js"
 import { createStore } from "solid-js/store"
 import { createKeyed, type IpcClient } from "@opencode/plugin/gui"
-import type { Ssh, SshConfig, SshItem } from "./contract"
+import type { Ssh, SshConfig, SshItem } from "./contract.vibe"
 import { isSshConnecting } from "./name"
 
 export type SshController = ReturnType<typeof createSshController>

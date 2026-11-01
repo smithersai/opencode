@@ -16,8 +16,16 @@
     "dist"
   ],
   "exports": {
-    "./tui": "./src/tui/index.ts",
-    "./tui/v1": "./src/tui/v1.ts"
+    "./tui": {
+      "types": "./src/tui/index.ts",
+      "vibelang-source": "./src/tui/index.ts",
+      "default": "./.vibelang/js/src/tui/index.js"
+    },
+    "./tui/v1": {
+      "types": "./src/tui/v1.ts",
+      "vibelang-source": "./src/tui/v1.ts",
+      "default": "./.vibelang/js/src/tui/v1.js"
+    }
   },
   "scripts": {
     "build": "bun run script/build.ts",

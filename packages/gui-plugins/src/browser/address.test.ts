@@ -1,6 +1,6 @@
 import { expect, test } from "bun:test"
 import { addressParts, resolveAddress } from "./address"
-import { remember, suggest } from "./history"
+import { remember, suggest } from "./history.vibe"
 
 test("the address field navigates to what reads as an address and searches for anything else", () => {
   const search = (query: string) => `https://www.google.com/search?q=${encodeURIComponent(query)}`

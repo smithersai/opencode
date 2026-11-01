@@ -2,6 +2,7 @@
 import * as Schema from "effect/Schema";
 import { withSpan } from "effect/Effect";
 import * as Effect from "effect/Effect";
+import * as runtime from "vibelang-runtime";
 import { MediaProtocol } from "../route/media-protocol.js";
 import { MediaRoute } from "../route/media.js";
 import { mergeJsonRecords } from "../schema/index.js";
@@ -63,7 +64,7 @@ const validate = Effect.fnUntraced(function* validate(request, overlay) {
         return yield* Effect.fail(route.unsupported("media.timestamps", `${route.name} cannot return word timestamps or speaker turns with timestamps_granularity: "none"`));
     }
 });
-const fromRequest = (request) => Effect.suspend({ fromRequest: () => { return withSpan(Effect.gen(function* () {
+const fromRequest = (request) => Effect.suspend({ fromRequest: () => { return withSpan(Effect.gen(runtime.$joinedFrame(function* () {
         const overlay = mergeJsonRecords(request.providerOptions, request.http?.body) ?? {};
         yield* validate(request, overlay);
         const form = new FormData();
@@ -82,7 +83,7 @@ const fromRequest = (request) => Effect.suspend({ fromRequest: () => { return wi
             num_speakers: request.speakers,
         }, { overlay, reserved: RESERVED_FORM_FIELDS, repeatArrays: "key" });
         return MediaProtocol.multipart(form);
-    }), "ElevenLabsTranscription.fromRequest"); } }.fromRequest);
+    })), "ElevenLabsTranscription.fromRequest"); } }.fromRequest);
 // ---------------------------------------------------------------------------
 // 6. Response decoding
 // ---------------------------------------------------------------------------

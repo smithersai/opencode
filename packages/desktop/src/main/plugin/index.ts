@@ -2,7 +2,7 @@ export * as Plugins from "./index"
 
 import { app } from "electron"
 import { Context, Effect, Layer } from "effect"
-import type { PluginEndpoint } from "../../shared/ipc-rpc/plugins"
+import type { PluginEndpoint } from "../../shared/ipc-rpc/plugins.vibe"
 import { ApplicationLifecycle } from "../lifecycle"
 import { Shutdown } from "../lifecycle/shutdown"
 

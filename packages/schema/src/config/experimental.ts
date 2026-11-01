@@ -1,7 +1,7 @@
 export * as ConfigExperimental from "./experimental.js"
 
 import { Schema } from "effect"
-import { NonNegativeInt, optional } from "../schema.js"
+import { NonNegativeInt, optional } from "../schema.vibe"
 import { ConfigPolicy } from "./policy.js"
 
 export class Info extends Schema.Class<Info>("ConfigExperimental.Info")({

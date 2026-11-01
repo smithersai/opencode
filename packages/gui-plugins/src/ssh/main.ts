@@ -4,7 +4,7 @@ import { FetchHttpClient } from "effect/http"
 import { builtinMainContext } from "@opencode/plugin/gui/builtin"
 import type { Plugin } from "@opencode/plugin/gui/main"
 import { SshFailure } from "./command"
-import { Ssh, SshConfig } from "./contract"
+import { Ssh, SshConfig } from "./contract.vibe"
 import { createSshController } from "./controller"
 
 const setup: Plugin.MainSetup = async (ctx) => {

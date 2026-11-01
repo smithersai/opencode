@@ -1,10 +1,10 @@
 export * as Pty from "./pty.js"
 
 import { Schema } from "effect"
-import { optional } from "./schema.js"
+import { optional } from "./schema.vibe"
 import { ephemeral, inventory } from "./event.js"
 import { ascending } from "./identifier.js"
-import { NonNegativeInt, PositiveInt, statics } from "./schema.js"
+import { NonNegativeInt, PositiveInt, statics } from "./schema.vibe"
 
 const IDSchema = Schema.String.check(Schema.isStartingWith("pty")).pipe(
   Schema.brand("PtyID"),

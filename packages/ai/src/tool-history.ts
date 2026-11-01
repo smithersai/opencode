@@ -1,4 +1,4 @@
-import { Message, ToolResultPart, type ToolCallPart } from "./schema/messages.js"
+import { Message, ToolResultPart, type ToolCallPart } from "./schema/messages.vibe"
 
 const EMPTY_TOOL_OUTPUT = "(no tool output)"
 const MISSING_TOOL_RESULT = "Tool result missing"

@@ -2,6 +2,7 @@
 import * as Schema from "effect/Schema";
 import { forEach, withSpan } from "effect/Effect";
 import * as Effect from "effect/Effect";
+import * as runtime from "vibelang-runtime";
 import { ImageModel, ImageResponse } from "../image.js";
 import { Media } from "../media.js";
 import { MediaProtocol } from "../route/media-protocol.js";
@@ -91,7 +92,7 @@ const imageInput = Effect.fnUntraced(function* imageInput(asset) {
         return yield* Effect.fail(ProviderShared.invalidRequest(`${route.name} accepts inline images or https URLs`));
     return value;
 });
-const fromRequest = (request) => Effect.suspend({ fromRequest: () => { return withSpan(Effect.gen(function* () {
+const fromRequest = (request) => Effect.suspend({ fromRequest: () => { return withSpan(Effect.gen(runtime.$joinedFrame(function* () {
         const model = capabilities(request.model.id);
         yield* validate(request, model);
         const images = yield* forEach(request.images ?? [], imageInput);
@@ -108,7 +109,7 @@ const fromRequest = (request) => Effect.suspend({ fromRequest: () => { return wi
             mask: mask === undefined ? undefined : yield* imageInput(mask),
             ...Object.fromEntries(fields),
         }, native, request.http?.body) ?? {});
-    }), "BlackForestLabsImages.fromRequest"); } }.fromRequest);
+    })), "BlackForestLabsImages.fromRequest"); } }.fromRequest);
 // ---------------------------------------------------------------------------
 // 6. Response decoding
 // ---------------------------------------------------------------------------

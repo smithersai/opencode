@@ -1,8 +1,8 @@
 import { Schema } from "effect";
-import { MediaProtocol } from "../route/media-protocol.js";
-import { MediaRoute } from "../route/media.js";
-import { type OpenString } from "../schema/index.js";
-import { VideoModel, type VideoRequestFor, VideoResponse } from "../video.js";
+import { MediaProtocol } from "../route/media-protocol.ts";
+import { MediaRoute } from "../route/media.vibe";
+import { type OpenString } from "../schema/index.ts";
+import { VideoModel, type VideoRequestFor, VideoResponse } from "../video.ts";
 export declare const DEFAULT_BASE_URL = "https://api.dev.runwayml.com/v1";
 /** Every Runway request must pin the API version. */
 export declare const API_VERSION = "2024-11-06";

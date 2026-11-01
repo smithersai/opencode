@@ -2,7 +2,7 @@ export * as ConfigMCP from "./mcp.js"
 
 import { Schema } from "effect"
 import { Mcp } from "../mcp.js"
-import { optional } from "../schema.js"
+import { optional } from "../schema.vibe"
 
 export const Timeout = Mcp.TimeoutConfig
 export type Timeout = Mcp.TimeoutConfig

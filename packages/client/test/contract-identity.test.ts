@@ -8,7 +8,7 @@ import { Session } from "@opencode/schema/session"
 import { SessionMessage } from "@opencode/schema/session-message"
 import { Vcs } from "@opencode/schema/vcs"
 
-const Client = await import("../src/effect/index.vibe")
+const Client = await import("../src/effect")
 
 test("effect entrypoint exposes canonical Schema contracts", () => {
   expect(Client.Agent).toBe(Agent)

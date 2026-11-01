@@ -1,6 +1,6 @@
 import { Deferred, Effect, Stream } from "effect"
 import { Llm, OpenCodeDriver } from "opencode-drive"
-import { AbsolutePath } from "../../packages/schema/src/schema"
+import { AbsolutePath } from "../../packages/schema/src/schema.vibe"
 import { Database } from "bun:sqlite"
 
 const label = process.env.DEMO_LABEL ?? "AFTER"

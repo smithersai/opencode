@@ -3,9 +3,9 @@ import { Tool } from "@opencode/schema/tool"
 import { Route } from "../route/client.js"
 import { Auth } from "../route/auth.js"
 import { Endpoint } from "../route/endpoint.js"
-import { Framing } from "../route/framing.js"
-import { HttpTransport } from "../route/transport/index.js"
-import { Protocol } from "../route/protocol.js"
+import { Framing } from "../route/framing.vibe"
+import { HttpTransport } from "../route/transport/index.vibe"
+import { Protocol } from "../route/protocol.vibe"
 import {
   AIError,
   AIErrorReason,
@@ -22,12 +22,12 @@ import {
   type ToolCallPart,
   type ToolDefinition,
 } from "../schema/index.js"
-import { classifyProviderFailure } from "../provider-error.js"
+import { classifyProviderFailure } from "../provider-error.vibe"
 import { isRecord, JsonObject, optionalArray, optionalNull, ProviderShared } from "./shared.js"
 import { placesMarkers, requestTTL } from "../cache-policy.js"
 import * as Cache from "./utils/cache.js"
 import { resolveParallelToolCalls } from "./open-responses.js"
-import { OpenResponsesOptions } from "./utils/open-responses-options.js"
+import { OpenResponsesOptions } from "./utils/open-responses-options.vibe"
 import { Lifecycle } from "./utils/lifecycle.js"
 import { ToolStream } from "./utils/tool-stream.js"
 

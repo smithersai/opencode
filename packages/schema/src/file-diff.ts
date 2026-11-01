@@ -1,7 +1,7 @@
 export * as FileDiff from "./file-diff.js"
 
 import { Schema } from "effect"
-import { NonNegativeInt, optional } from "./schema.js"
+import { NonNegativeInt, optional } from "./schema.vibe"
 
 export const Info = Schema.Struct({
   file: Schema.String,

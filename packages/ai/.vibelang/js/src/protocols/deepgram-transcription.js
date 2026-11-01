@@ -2,6 +2,7 @@
 import * as Schema from "effect/Schema";
 import { withSpan } from "effect/Effect";
 import * as Effect from "effect/Effect";
+import * as runtime from "vibelang-runtime";
 import { MediaProtocol } from "../route/media-protocol.js";
 import { MediaRoute } from "../route/media.js";
 import { mergeJsonRecords } from "../schema/index.js";
@@ -58,7 +59,7 @@ const query = (request) => Effect.suspend({ query: () => { return MediaInput.que
         diarize_model: request.diarize === true ? "latest" : undefined,
         utterances: request.diarize === true || request.timestamps === "segment" ? true : undefined,
     }, request.providerOptions) ?? {}); } }.query);
-const fromRequest = (request) => Effect.suspend({ fromRequest: () => { return withSpan(Effect.gen(function* () {
+const fromRequest = (request) => Effect.suspend({ fromRequest: () => { return withSpan(Effect.gen(runtime.$joinedFrame(function* () {
         const url = ProviderShared.mediaUrl(request.audio);
         if (url !== undefined) {
             return MediaProtocol.json(mergeJsonRecords({ url }, request.http?.body) ?? {}, yield* query(request));
@@ -68,7 +69,7 @@ const fromRequest = (request) => Effect.suspend({ fromRequest: () => { return wi
         }
         const audio = yield* MediaInput.inlineBytes(route.id, request.audio);
         return MediaProtocol.binary(audio, request.audio.mediaType, yield* query(request));
-    }), "DeepgramTranscription.fromRequest"); } }.fromRequest);
+    })), "DeepgramTranscription.fromRequest"); } }.fromRequest);
 // ---------------------------------------------------------------------------
 // 6. Response decoding
 // ---------------------------------------------------------------------------

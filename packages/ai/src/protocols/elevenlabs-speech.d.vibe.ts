@@ -1,8 +1,8 @@
-import { MediaProtocol } from "../route/media-protocol.js";
-import { MediaRoute } from "../route/media.js";
-import { type OpenString } from "../schema/index.js";
-import { SpeechModel, type SpeechRequestFor } from "../speech.js";
-import { SpeechStream } from "./utils/speech-stream.js";
+import { MediaProtocol } from "../route/media-protocol.ts";
+import { MediaRoute } from "../route/media.vibe";
+import { type OpenString } from "../schema/index.ts";
+import { SpeechModel, type SpeechRequestFor } from "../speech.ts";
+import { SpeechStream } from "./utils/speech-stream.vibe";
 export declare const DEFAULT_BASE_URL = "https://api.elevenlabs.io";
 export declare const PATH = "/v1/text-to-speech";
 export type ElevenLabsOutputFormat = OpenString<"mp3_22050_32" | "mp3_24000_48" | "mp3_44100_32" | "mp3_44100_64" | "mp3_44100_96" | "mp3_44100_128" | "mp3_44100_192" | "pcm_8000" | "pcm_16000" | "pcm_22050" | "pcm_24000" | "pcm_32000" | "pcm_44100" | "pcm_48000" | "wav_8000" | "wav_16000" | "wav_22050" | "wav_24000" | "wav_32000" | "wav_44100" | "wav_48000" | "ulaw_8000" | "alaw_8000" | "opus_48000_32" | "opus_48000_64" | "opus_48000_96" | "opus_48000_128" | "opus_48000_192">;
@@ -38,7 +38,7 @@ export declare const protocol: MediaProtocol.Streamed<Request, {
     readonly progress?: number | undefined;
 } | {
     readonly type: "finish";
-    readonly audio: import("../media.js").Asset;
+    readonly audio: import("../media.ts").Asset;
     readonly usage?: {
         readonly type: "seconds";
         readonly seconds: number;
@@ -88,7 +88,7 @@ export declare const ElevenLabsSpeech: {
         readonly progress?: number | undefined;
     } | {
         readonly type: "finish";
-        readonly audio: import("../media.js").Asset;
+        readonly audio: import("../media.ts").Asset;
         readonly usage?: {
             readonly type: "seconds";
             readonly seconds: number;

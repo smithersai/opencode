@@ -17,7 +17,7 @@ import { EventManifest } from "../src/event-manifest.js"
 import { FileSystemV1 } from "../src/filesystem-v1.js"
 import { McpEvent } from "../src/mcp-event.js"
 import { SessionEvent } from "../src/session-event.js"
-import { SessionID } from "../src/session-id.js"
+import { SessionID } from "../src/session-id.vibe"
 import { SessionMessage } from "../src/session-message.js"
 import { WorkspaceEvent } from "../src/workspace-event.js"
 

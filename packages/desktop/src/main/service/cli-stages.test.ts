@@ -5,7 +5,7 @@ import path from "node:path"
 import { NodeFileSystem, NodePath } from "@effect/platform-node"
 import { Effect, Layer } from "effect"
 
-import { cleanStages } from "./cli-stages"
+import { cleanStages } from "./cli-stages.vibe"
 
 describe("cleanStages", () => {
   test.each([

@@ -3,9 +3,9 @@ import { Location } from "@opencode/schema/location"
 import { PtyTicket } from "@opencode/schema/pty-ticket"
 import { Context, Schema } from "effect"
 import { HttpApiEndpoint, HttpApiGroup, HttpApiMiddleware, HttpApiSchema, OpenApi } from "effect/http-api"
-import { ForbiddenError, LocationNotFoundError, McpServerNotFoundError } from "../errors.js"
-import { LocationQuery, locationQueryOpenApi } from "./location.js"
-import { PTY_CONNECT_TICKET_QUERY, PTY_CONNECT_TOKEN_HEADER } from "./pty.js"
+import { ForbiddenError, LocationNotFoundError, McpServerNotFoundError } from "../errors.vibe"
+import { LocationQuery, locationQueryOpenApi } from "./location.vibe"
+import { PTY_CONNECT_TICKET_QUERY, PTY_CONNECT_TOKEN_HEADER } from "./pty.vibe"
 
 export const MCP_CLIENT_PATH = "/api/experimental/client-mcp"
 

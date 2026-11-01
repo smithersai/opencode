@@ -1,9 +1,9 @@
 import { Effect, Schema } from "effect"
-import { Protocol } from "../route/protocol.js"
+import { Protocol } from "../route/protocol.vibe"
 import { OpenResponses } from "./open-responses.js"
 import { JsonObject, ProviderShared } from "./shared.js"
-import { OpenResponsesOptions } from "./utils/open-responses-options.js"
-import { ResponsesHostedTools } from "./utils/responses-hosted-tools.js"
+import { OpenResponsesOptions } from "./utils/open-responses-options.vibe"
+import { ResponsesHostedTools } from "./utils/responses-hosted-tools.vibe"
 
 const Options = Schema.Struct({
   reasoningEffort: Schema.optional(OpenResponsesOptions.ReasoningEffort),

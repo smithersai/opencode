@@ -1,7 +1,7 @@
 import { Effect, Option, Schema } from "effect"
 import type { Content } from "@opencode/schema/tool"
-import { HttpTransport } from "../route/transport/index.js"
-import { Protocol } from "../route/protocol.js"
+import { HttpTransport } from "../route/transport/index.vibe"
+import { Protocol } from "../route/protocol.vibe"
 import {
   AIError,
   LLMEvent,
@@ -27,9 +27,9 @@ import {
   ProviderShared,
   withUntypedFrames,
 } from "./shared.js"
-import { classifyProviderFailure } from "../provider-error.js"
+import { classifyProviderFailure } from "../provider-error.vibe"
 import { effortUpdate } from "../effort-updates.js"
-import { OpenResponsesOptions } from "./utils/open-responses-options.js"
+import { OpenResponsesOptions } from "./utils/open-responses-options.vibe"
 import { Lifecycle } from "./utils/lifecycle.js"
 import { ToolStream } from "./utils/tool-stream.js"
 

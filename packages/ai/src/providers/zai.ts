@@ -1,11 +1,11 @@
 import type { ProviderPackage } from "../provider-package.js"
-import { ZAIChat } from "../protocols/zai-chat.js"
+import { ZAIChat } from "../protocols/zai-chat.vibe"
 import { ZAIImages } from "../protocols/zai-images.js"
 import { OpenAIChat } from "../protocols/openai-chat.js"
-import { AuthOptions, type ProviderAuthOption } from "../route/auth-options.js"
+import { AuthOptions, type ProviderAuthOption } from "../route/auth-options.vibe"
 import { Route, type RouteDefaultsInput } from "../route/client.js"
 import { Endpoint } from "../route/endpoint.js"
-import { MediaRoute } from "../route/media.js"
+import { MediaRoute } from "../route/media.vibe"
 import { ProviderID, type ModelID, type ProviderOptions } from "../schema/index.js"
 
 export const id = ProviderID.make("zai")

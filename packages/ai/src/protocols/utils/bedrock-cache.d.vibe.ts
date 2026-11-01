@@ -1,5 +1,5 @@
 import { Schema } from "effect";
-import { type CacheHint, type LLMRequest } from "../../schema/index.js";
+import { type CacheHint, type LLMRequest } from "../../schema/index.ts";
 export declare const CachePointBlock: Schema.Struct<{
     readonly cachePoint: Schema.Struct<{
         readonly type: Schema.tag<"default">;

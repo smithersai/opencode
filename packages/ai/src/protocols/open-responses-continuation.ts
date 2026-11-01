@@ -4,7 +4,7 @@ import type {
   ChannelCreate,
   ChannelObservation,
   WebSocketChannelDriver,
-} from "../route/transport/index.js"
+} from "../route/transport/index.vibe"
 import { Effect, Option, Schema } from "effect"
 import * as ProviderShared from "./shared.js"
 import { OpenResponses } from "./open-responses.js"

@@ -2,6 +2,7 @@
 import * as Schema from "effect/Schema";
 import { withSpan } from "effect/Effect";
 import * as Effect from "effect/Effect";
+import * as runtime from "vibelang-runtime";
 import { classifyProviderFailure } from "../provider-error.js";
 import { Framing } from "../route/framing.js";
 import { MediaProtocol } from "../route/media-protocol.js";
@@ -57,7 +58,7 @@ const outputFormat = Effect.fnUntraced(function* outputFormat(request) {
     }
     return { container, encoding: request.providerOptions?.encoding ?? "pcm_s16le", sample_rate: sampleRate };
 });
-const fromRequest = (request) => Effect.suspend({ fromRequest: () => { return withSpan(Effect.gen(function* () {
+const fromRequest = (request) => Effect.suspend({ fromRequest: () => { return withSpan(Effect.gen(runtime.$joinedFrame(function* () {
         const voice = SpeechStream.voiceID(request.voice);
         if (voice === undefined) {
             return yield* Effect.fail(ProviderShared.invalidRequest(`${route.name} requires a voice id; pass it as \`voice\``));
@@ -73,7 +74,7 @@ const fromRequest = (request) => Effect.suspend({ fromRequest: () => { return wi
             generation_config: request.speed === undefined ? undefined : { speed: request.speed },
             add_timestamps: request.timestamps === true ? true : undefined,
         }, native, request.http?.body) ?? {});
-    }), "CartesiaSpeech.fromRequest"); } }.fromRequest);
+    })), "CartesiaSpeech.fromRequest"); } }.fromRequest);
 // ---------------------------------------------------------------------------
 // 6. Stream parsing
 // ---------------------------------------------------------------------------

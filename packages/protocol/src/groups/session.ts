@@ -26,7 +26,7 @@ import {
   SessionNotFoundError,
   SkillNotFoundError,
   UnknownError,
-} from "../errors.js"
+} from "../errors.vibe"
 import { Agent } from "@opencode/schema/agent"
 import { Skill } from "@opencode/schema/skill"
 import { Model } from "@opencode/schema/model"

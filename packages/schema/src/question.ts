@@ -1,7 +1,7 @@
 export * as Question from "./question.js"
 
 import { Schema } from "effect"
-import { optional } from "./schema.js"
+import { optional } from "./schema.vibe"
 
 const Option = Schema.Struct({
   label: Schema.String.annotate({ description: "Display text (1-5 words, concise)" }),

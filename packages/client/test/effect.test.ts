@@ -11,7 +11,7 @@ import {
   Prompt,
   Session,
   SessionMessage,
-} from "../src/effect/index.vibe"
+} from "../src/effect/index"
 
 const synced = { type: "log.synced" as const, aggregateID: "ses_test", seq: Event.Seq.make(1) }
 

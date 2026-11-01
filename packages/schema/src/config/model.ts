@@ -3,7 +3,7 @@ export * as ConfigModel from "./model.js"
 import { Schema, SchemaGetter } from "effect"
 import { Model } from "../model.js"
 import { Provider } from "../provider.js"
-import { optional } from "../schema.js"
+import { optional } from "../schema.vibe"
 
 const ProviderID = Provider.ID.check(Schema.isPattern(/^[^/#]+$/u))
 const ModelID = Model.ID.check(Schema.isPattern(/^[^#]+$/u))

@@ -1,0 +1,28 @@
+import { Plugin, Store } from "@opencode/plugin/gui"
+import en from "./i18n/en.ts"
+
+schema ChatModel {
+  providerID: string
+  id: string
+  variant?: string
+}
+
+schema Chats {
+  chats: ReadonlyArray<{
+    id: string
+    question: string
+    answer?: string
+    agent?: string
+    model?: ChatModel
+    created?: number
+    duration?: number
+  }>
+}
+
+export default Plugin.define({
+  stores: {
+    // Each open /btw tab's chat (its question and answer), kept until its tab closes.
+    chats: Store.session(Chats, { chats: [] }),
+  },
+  i18n: { en },
+})

@@ -1,0 +1,6 @@
+import { InvalidRequestError } from "../errors.vibe"
+
+export class SchemaErrorMiddleware extends HttpApiMiddleware.Service<SchemaErrorMiddleware>()(
+  "@opencode/HttpApiSchemaError",
+  { error: InvalidRequestError },
+) {}

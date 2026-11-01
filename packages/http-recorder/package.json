@@ -34,7 +34,11 @@
     "verify:package": "bun ./script/verify-package.vibe"
   },
   "exports": {
-    ".": "./src/index.ts"
+    ".": {
+      "types": "./src/index.d.vibe.ts",
+      "vibelang-source": "./src/index.vibe",
+      "default": "./.vibelang/js/src/index.js"
+    }
   },
   "sideEffects": false,
   "files": [

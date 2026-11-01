@@ -1,0 +1,94 @@
+import { builtinCatalog } from "@opencode/plugin/gui/builtin"
+import { Plugin, Store } from "@opencode/plugin/gui"
+import { BuiltinStore } from "@opencode/plugin/gui/builtin"
+import en from "./i18n/en.ts"
+
+schema ReleaseNotes { enabled: boolean }
+
+schema Seen { version?: string; commit?: string }
+
+export default Plugin.define({
+  stores: {
+    // Whether What's New shows after an update; stored before in the app settings.
+    releaseNotes: BuiltinStore.global(
+      ReleaseNotes,
+      { enabled: true },
+      {
+        key: "settings.v3",
+        pick: (value: { general?: { releaseNotes?: unknown } } | null) => {
+          const enabled = value?.general?.releaseNotes
+
+          return enabled === undefined ? undefined : { enabled }
+        },
+      },
+    ),
+    // The version whose What's New was last shown or skipped, and on beta its commit; stored before under the app's
+    // own key.
+    seen: Store.global(Seen, {}, "highlights.v1"),
+  },
+  i18n: builtinCatalog({
+    en,
+    am: () => import("./i18n/am.ts"),
+    ar: () => import("./i18n/ar.ts"),
+    az: () => import("./i18n/az.ts"),
+    bg: () => import("./i18n/bg.ts"),
+    bn: () => import("./i18n/bn.ts"),
+    br: () => import("./i18n/br.ts"),
+    bs: () => import("./i18n/bs.ts"),
+    ca: () => import("./i18n/ca.ts"),
+    cs: () => import("./i18n/cs.ts"),
+    da: () => import("./i18n/da.ts"),
+    de: () => import("./i18n/de.ts"),
+    dv: () => import("./i18n/dv.ts"),
+    dz: () => import("./i18n/dz.ts"),
+    el: () => import("./i18n/el.ts"),
+    es: () => import("./i18n/es.ts"),
+    et: () => import("./i18n/et.ts"),
+    fa: () => import("./i18n/fa.ts"),
+    fi: () => import("./i18n/fi.ts"),
+    fo: () => import("./i18n/fo.ts"),
+    fr: () => import("./i18n/fr.ts"),
+    he: () => import("./i18n/he.ts"),
+    hi: () => import("./i18n/hi.ts"),
+    hr: () => import("./i18n/hr.ts"),
+    hu: () => import("./i18n/hu.ts"),
+    hy: () => import("./i18n/hy.ts"),
+    id: () => import("./i18n/id.ts"),
+    is: () => import("./i18n/is.ts"),
+    it: () => import("./i18n/it.ts"),
+    ja: () => import("./i18n/ja.ts"),
+    ka: () => import("./i18n/ka.ts"),
+    km: () => import("./i18n/km.ts"),
+    ko: () => import("./i18n/ko.ts"),
+    lo: () => import("./i18n/lo.ts"),
+    lt: () => import("./i18n/lt.ts"),
+    lv: () => import("./i18n/lv.ts"),
+    mk: () => import("./i18n/mk.ts"),
+    mn: () => import("./i18n/mn.ts"),
+    ms: () => import("./i18n/ms.ts"),
+    my: () => import("./i18n/my.ts"),
+    ne: () => import("./i18n/ne.ts"),
+    nl: () => import("./i18n/nl.ts"),
+    no: () => import("./i18n/no.ts"),
+    pa: () => import("./i18n/pa.ts"),
+    pl: () => import("./i18n/pl.ts"),
+    ro: () => import("./i18n/ro.ts"),
+    ru: () => import("./i18n/ru.ts"),
+    si: () => import("./i18n/si.ts"),
+    sk: () => import("./i18n/sk.ts"),
+    sl: () => import("./i18n/sl.ts"),
+    sq: () => import("./i18n/sq.ts"),
+    sr: () => import("./i18n/sr.ts"),
+    sv: () => import("./i18n/sv.ts"),
+    tg: () => import("./i18n/tg.ts"),
+    th: () => import("./i18n/th.ts"),
+    tk: () => import("./i18n/tk.ts"),
+    tr: () => import("./i18n/tr.ts"),
+    uk: () => import("./i18n/uk.ts"),
+    ur: () => import("./i18n/ur.ts"),
+    uz: () => import("./i18n/uz.ts"),
+    vi: () => import("./i18n/vi.ts"),
+    zh: () => import("./i18n/zh.ts"),
+    zht: () => import("./i18n/zht.ts"),
+  }),
+})

@@ -11,9 +11,9 @@ import { createBrowserPage, type BrowserPage, type Shared } from "./chromium"
 import { browserFailure } from "./errors"
 import { createBrowserNetwork, type BrowserNetwork } from "./network"
 import { destinationOrigin, fileURLWithin, refusal } from "./policy"
-import { createRefs } from "./refs"
-import type { PaneEvent } from "./ipc"
-import { createBrowserRestoreStore } from "./restore"
+import { createRefs } from "./refs.vibe"
+import type { PaneEvent } from "./ipc.vibe"
+import { createBrowserRestoreStore } from "./restore.vibe"
 
 type Target = { readonly server: string; readonly session: string; readonly restore?: Browser.State }
 

@@ -2,7 +2,7 @@ export * as Command from "./command.js"
 
 import { Schema } from "effect"
 import { ephemeral, inventory } from "./event.js"
-import { optional } from "./schema.js"
+import { optional } from "./schema.vibe"
 
 const Updated = ephemeral({ type: "command.updated", schema: {} })
 

@@ -1,7 +1,7 @@
 export * as SessionError from "./session-error.js"
 
 import { Schema } from "effect"
-import { NonNegativeInt, optional } from "./schema.js"
+import { NonNegativeInt, optional } from "./schema.vibe"
 
 export interface Error extends Schema.Schema.Type<typeof Error> {}
 export const Error = Schema.Struct({

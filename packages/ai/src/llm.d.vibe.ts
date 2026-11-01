@@ -1,7 +1,7 @@
 import { Effect, JsonSchema, Schema, Stream } from "effect";
-import { Service, type StreamOptions } from "./route/client.js";
-import { GenerationOptions, HttpOptions, AIError, LLMEvent, LLMRequest, LLMResponse, Message, LanguageModel, SystemPart, ToolChoice, type ContentPart, type LanguageModelProviderOptions, type ToolEntryInput } from "./schema/index.js";
-import { type ExecutableTools, type ToolSchema } from "./tool.js";
+import { Service, type StreamOptions } from "./route/client.ts";
+import { GenerationOptions, HttpOptions, AIError, LLMEvent, LLMRequest, LLMResponse, Message, LanguageModel, SystemPart, ToolChoice, type ContentPart, type LanguageModelProviderOptions, type ToolEntryInput } from "./schema/index.ts";
+import { type ExecutableTools, type ToolSchema } from "./tool.vibe";
 /** Input accepted by `LLM.request`, normalized into the canonical `LLMRequest` class. */
 export type RequestInput<SelectedLanguageModel extends LanguageModel = LanguageModel> = Omit<ConstructorParameters<typeof LLMRequest>[0], "model" | "system" | "messages" | "tools" | "toolChoice" | "generation" | "http" | "providerOptions"> & {
     readonly model: SelectedLanguageModel;
@@ -203,7 +203,7 @@ export declare class GenerateObjectResponse<T> {
             readonly category?: string | undefined;
             readonly explanation?: string | undefined;
         };
-        readonly usage?: import("./schema/events.js").Usage | undefined;
+        readonly usage?: import("./schema/events.vibe").Usage | undefined;
         readonly providerMetadata?: {
             readonly [x: string]: {
                 readonly [x: string]: unknown;
@@ -217,7 +217,7 @@ export declare class GenerateObjectResponse<T> {
             readonly category?: string | undefined;
             readonly explanation?: string | undefined;
         };
-        readonly usage?: import("./schema/events.js").Usage | undefined;
+        readonly usage?: import("./schema/events.vibe").Usage | undefined;
         readonly providerMetadata?: {
             readonly [x: string]: {
                 readonly [x: string]: unknown;
@@ -225,7 +225,7 @@ export declare class GenerateObjectResponse<T> {
         } | undefined;
     } | {
         readonly type: "media";
-        readonly media: import("./media.js").Asset;
+        readonly media: import("./media.ts").Asset;
         readonly providerMetadata?: {
             readonly [x: string]: {
                 readonly [x: string]: unknown;
@@ -253,7 +253,7 @@ export declare class GenerateObjectResponse<T> {
         readonly text: string | null;
         readonly encrypted?: never;
     })))[];
-    get usage(): import("./schema/events.js").Usage | undefined;
+    get usage(): import("./schema/events.vibe").Usage | undefined;
 }
 export interface GenerateObjectOptions<S extends ToolSchema<any>, SelectedLanguageModel extends LanguageModel = LanguageModel> extends GenerateObjectBase<SelectedLanguageModel> {
     readonly schema: S;

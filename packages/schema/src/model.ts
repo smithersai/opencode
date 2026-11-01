@@ -1,9 +1,9 @@
 export * as Model from "./model.js"
 
 import { Schema, Struct } from "effect"
-import { optional, statics } from "./schema.js"
+import { optional, statics } from "./schema.vibe"
 import { Provider } from "./provider.js"
-import { Compatibility, MaxTokensField, MediaInput, ReasoningField } from "./model-compatibility.js"
+import { Compatibility, MaxTokensField, MediaInput, ReasoningField } from "./model-compatibility.vibe"
 import { Money } from "./money.js"
 import { ephemeral, inventory } from "./event.js"
 

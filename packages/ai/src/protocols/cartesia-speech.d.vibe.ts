@@ -1,8 +1,8 @@
-import { MediaProtocol } from "../route/media-protocol.js";
-import { MediaRoute } from "../route/media.js";
-import { type OpenString } from "../schema/index.js";
-import { SpeechModel, type SpeechRequestFor } from "../speech.js";
-import { SpeechStream } from "./utils/speech-stream.js";
+import { MediaProtocol } from "../route/media-protocol.ts";
+import { MediaRoute } from "../route/media.vibe";
+import { type OpenString } from "../schema/index.ts";
+import { SpeechModel, type SpeechRequestFor } from "../speech.ts";
+import { SpeechStream } from "./utils/speech-stream.vibe";
 export declare const DEFAULT_BASE_URL = "https://api.cartesia.ai";
 export declare const API_VERSION = "2026-08-14";
 export declare const BYTES_PATH = "/tts/bytes";
@@ -42,7 +42,7 @@ export declare const protocol: MediaProtocol.Streamed<Request, {
     readonly progress?: number | undefined;
 } | {
     readonly type: "finish";
-    readonly audio: import("../media.js").Asset;
+    readonly audio: import("../media.ts").Asset;
     readonly usage?: {
         readonly type: "seconds";
         readonly seconds: number;
@@ -92,7 +92,7 @@ export declare const CartesiaSpeech: {
         readonly progress?: number | undefined;
     } | {
         readonly type: "finish";
-        readonly audio: import("../media.js").Asset;
+        readonly audio: import("../media.ts").Asset;
         readonly usage?: {
             readonly type: "seconds";
             readonly seconds: number;

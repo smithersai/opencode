@@ -3,11 +3,11 @@ import type { HttpClientResponse } from "effect/http"
 import { ImageModel, ImageResponse, type ImageRequestFor } from "../image.js"
 import { Media } from "../media.js"
 import { MediaProtocol } from "../route/media-protocol.js"
-import type { MediaRoute } from "../route/media.js"
+import type { MediaRoute } from "../route/media.vibe"
 import { mergeJsonRecords } from "../schema/index.js"
 import { ProviderShared } from "./shared.js"
-import { ImageSizing } from "./utils/image-sizing.js"
-import { MediaInput } from "./utils/media-input.js"
+import { ImageSizing } from "./utils/image-sizing.vibe"
+import { MediaInput } from "./utils/media-input.vibe"
 
 const route = MediaProtocol.identity({
   id: "cloudflare-workers-ai-images",

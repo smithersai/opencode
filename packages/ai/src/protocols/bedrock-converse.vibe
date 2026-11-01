@@ -1,6 +1,6 @@
 import { Route } from "../route/client.ts"
 import { Endpoint } from "../route/endpoint.ts"
-import { Protocol } from "../route/protocol.ts"
+import { Protocol } from "../route/protocol.vibe"
 import {
   AIError,
   LLMEvent,
@@ -18,7 +18,7 @@ import {
   type ToolResultPart,
 } from "../schema/index.ts"
 import { BedrockEventStream } from "./bedrock-event-stream.ts"
-import { classifyProviderFailure } from "../provider-error.ts"
+import { classifyProviderFailure } from "../provider-error.vibe"
 import { JsonObject, optionalArray, ProviderShared } from "./shared.ts"
 import { BedrockAuth } from "./utils/bedrock-auth.ts"
 import { BedrockCache } from "./utils/bedrock-cache.vibe"

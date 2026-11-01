@@ -1,7 +1,7 @@
-import { MediaProtocol } from "../route/media-protocol.js";
-import { MediaRoute } from "../route/media.js";
-import { type OpenString } from "../schema/index.js";
-import { TranscriptionModel, TranscriptionResponse, type TranscriptionRequestFor } from "../transcription.js";
+import { MediaProtocol } from "../route/media-protocol.ts";
+import { MediaRoute } from "../route/media.vibe";
+import { type OpenString } from "../schema/index.ts";
+import { TranscriptionModel, TranscriptionResponse, type TranscriptionRequestFor } from "../transcription.ts";
 export declare const DEFAULT_BASE_URL = "https://api.elevenlabs.io";
 export declare const PATH = "/v1/speech-to-text";
 export type ElevenLabsTranscriptionOptions = {

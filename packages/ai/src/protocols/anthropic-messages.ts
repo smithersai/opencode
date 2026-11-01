@@ -4,10 +4,10 @@ import { Tool } from "@opencode/schema/tool"
 import { Route } from "../route/client.js"
 import { Auth } from "../route/auth.js"
 import { Endpoint } from "../route/endpoint.js"
-import { Framing } from "../route/framing.js"
-import { Protocol } from "../route/protocol.js"
+import { Framing } from "../route/framing.vibe"
+import { Protocol } from "../route/protocol.vibe"
 import { Headers } from "effect/http"
-import { HttpTransport } from "../route/transport/index.js"
+import { HttpTransport } from "../route/transport/index.vibe"
 import {
   AIError,
   CacheTTL,
@@ -27,7 +27,7 @@ import {
   type ToolResultPart,
 } from "../schema/index.js"
 import { JsonObject, knownString, optionalArray, optionalNull, ProviderShared, withUntypedFrames } from "./shared.js"
-import { classifyProviderFailure } from "../provider-error.js"
+import { classifyProviderFailure } from "../provider-error.vibe"
 import { effortUpdate, resolveEffortUpdates } from "../effort-updates.js"
 import * as Cache from "./utils/cache.js"
 import { claudeVersion, supportsThinkingBlockBinding, THINKING_BINDING_BETA } from "./utils/claude-model.js"

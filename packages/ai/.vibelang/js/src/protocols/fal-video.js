@@ -2,6 +2,7 @@
 import * as Schema from "effect/Schema";
 import { withSpan } from "effect/Effect";
 import * as Effect from "effect/Effect";
+import * as runtime from "vibelang-runtime";
 import { Media } from "../media.js";
 import { MediaProtocol } from "../route/media-protocol.js";
 import { MediaRoute } from "../route/media.js";
@@ -25,7 +26,7 @@ const QueueResult = Schema.StructWithRest(Schema.Struct({
 // ---------------------------------------------------------------------------
 // 5. Request body construction
 // ---------------------------------------------------------------------------
-const fromRequest = (request) => Effect.suspend({ fromRequest: () => { return withSpan(Effect.gen(function* () {
+const fromRequest = (request) => Effect.suspend({ fromRequest: () => { return withSpan(Effect.gen(runtime.$joinedFrame(function* () {
         if (request.frames?.last !== undefined) {
             return yield* Effect.fail(route.unsupported("video.frames.last", `${route.name} names the last frame per model; pass it through providerOptions (e.g. end_image_url) instead of frames.last`));
         }
@@ -43,7 +44,7 @@ const fromRequest = (request) => Effect.suspend({ fromRequest: () => { return wi
             image_url: imageUrl,
             video_url: videoUrl,
         }, request.providerOptions, request.http?.body) ?? {});
-    }), "FalVideo.fromRequest"); } }.fromRequest);
+    })), "FalVideo.fromRequest"); } }.fromRequest);
 // ---------------------------------------------------------------------------
 // 6. Response decoding
 // ---------------------------------------------------------------------------

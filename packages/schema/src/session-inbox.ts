@@ -3,9 +3,9 @@ export * as SessionInbox from "./session-inbox.js"
 import { Schema } from "effect"
 import { Location } from "./location.js"
 import { Project } from "./project.js"
-import { Attachment, Prompt } from "./prompt.js"
-import { DateTimeUtcFromMillis, optional, RelativePath } from "./schema.js"
-import { SessionID } from "./session-id.js"
+import { Attachment, Prompt } from "./prompt.vibe"
+import { DateTimeUtcFromMillis, optional, RelativePath } from "./schema.vibe"
+import { SessionID } from "./session-id.vibe"
 import { SessionMessage } from "./session-message.js"
 
 export const Delivery = Schema.Literals(["steer", "queue"]).annotate({ identifier: "Session.Inbox.Delivery" })

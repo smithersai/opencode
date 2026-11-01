@@ -1,6 +1,6 @@
 import type { Attention } from "@opencode/plugin/tui/context";
-import { Config } from "./config/index.js";
-import * as TuiAudio from "./audio.js";
+import { Config } from "./config/index.tsx";
+import * as TuiAudio from "./audio.ts";
 type AttentionRenderer = {
     readonly isDestroyed: boolean;
     on(event: "focus" | "blur", listener: () => void): unknown;

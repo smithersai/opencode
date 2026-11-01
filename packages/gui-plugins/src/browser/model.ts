@@ -13,10 +13,10 @@ import {
   type ShortcutEvent,
   type Zoom,
 } from "./connection"
-import { recordable, remember, withIcon } from "./history"
+import { recordable, remember, withIcon } from "./history.vibe"
 import type definition from "./index"
 import { workspaceFileURL } from "./link"
-import { BrowserPane, type PaneEvent } from "./ipc"
+import { BrowserPane, type PaneEvent } from "./ipc.vibe"
 
 type Session = Pick<SessionRef, "key">
 

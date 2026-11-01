@@ -1,7 +1,7 @@
 import { Effect, Schema, type Stream } from "effect"
 import type { Tool } from "@opencode/schema/tool"
 import { Media } from "../../media.js"
-import { Framing } from "../../route/framing.js"
+import { Framing } from "../../route/framing.vibe"
 import type { MediaProtocol } from "../../route/media-protocol.js"
 import {
   AIError,
@@ -12,7 +12,7 @@ import {
   type ProviderMetadata,
 } from "../../schema/index.js"
 import { ProviderShared } from "../shared.js"
-import { MediaInput } from "./media-input.js"
+import { MediaInput } from "./media-input.vibe"
 
 const PROVIDER = ProviderID.make("google")
 

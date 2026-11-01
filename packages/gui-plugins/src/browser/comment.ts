@@ -1,7 +1,7 @@
 import { Browser } from "@opencode/plugin-browser/rpc"
 import { Schema } from "effect"
 import type { ComposerNote } from "@opencode/plugin/gui"
-import type { PaneElement } from "./ipc"
+import type { PaneElement } from "./ipc.vibe"
 
 /** A comment on a picked element. The ref is absent once the page navigated. */
 export type ElementComment = {

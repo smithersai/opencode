@@ -2,6 +2,7 @@
 import * as Schema from "effect/Schema";
 import { withSpan } from "effect/Effect";
 import * as Effect from "effect/Effect";
+import * as runtime from "vibelang-runtime";
 import { ImageModel, ImageResponse } from "../image.js";
 import { MediaProtocol } from "../route/media-protocol.js";
 import { MediaRoute } from "../route/media.js";
@@ -35,7 +36,7 @@ const Started = Schema.Struct({
 /** `sd3.5-*` ids share the `sd3` endpoint and select the model with a form field. */
 const endpoint = (model) => (model.startsWith("sd3") ? "sd3" : model);
 const RESERVED_FORM_FIELDS = new Set(["image", "prompt", "mode", "model"]);
-const form = Effect.fnUntraced(function* form(identity, fields, native, source) {
+const form = Effect.fnUntraced(runtime.$joinedFrame(function* form(identity, fields, native, source) {
     if ((source?.length ?? 0) > 1)
         return yield* Effect.fail(identity.unsupported("media.images", `${identity.name} takes one source image`));
     const body = new FormData();
@@ -45,8 +46,8 @@ const form = Effect.fnUntraced(function* form(identity, fields, native, source) 
         body.append("image", MediaInput.blob(yield* MediaInput.inlineBytes(identity.id, image), image.mediaType), "image");
     }
     return MediaProtocol.multipart(body);
-});
-const fromRequest = (request) => Effect.suspend({ fromRequest: () => { return withSpan(Effect.gen(function* () {
+}));
+const fromRequest = (request) => Effect.suspend({ fromRequest: () => { return withSpan(Effect.gen(runtime.$joinedFrame(function* () {
         if (request.n !== undefined && request.n > 1) {
             return yield* Effect.fail(route.unsupported("media.n", `${route.name} generates one image per request; call it once per image`));
         }
@@ -61,13 +62,13 @@ const fromRequest = (request) => Effect.suspend({ fromRequest: () => { return wi
             model: target === "sd3" ? request.model.id : undefined,
             mode: target === "sd3" && edit ? "image-to-image" : undefined,
         }, mergeJsonRecords(request.providerOptions, request.http?.body), request.images);
-    }), "StabilityImages.fromRequest"); } }.fromRequest);
-const fromUpscaleRequest = (request) => Effect.suspend({ fromUpscaleRequest: () => { return withSpan(Effect.gen(function* () {
+    })), "StabilityImages.fromRequest"); } }.fromRequest);
+const fromUpscaleRequest = (request) => Effect.suspend({ fromUpscaleRequest: () => { return withSpan(Effect.gen(runtime.$joinedFrame(function* () {
         if ((request.images?.length ?? 0) === 0) {
             return yield* Effect.fail(ProviderShared.invalidRequest(`${upscaleRoute.name} upscale requires the source image in images`));
         }
         return yield* form(upscaleRoute, { prompt: request.prompt }, mergeJsonRecords(request.providerOptions, request.http?.body), request.images);
-    }), "StabilityImages.fromUpscaleRequest"); } }.fromUpscaleRequest);
+    })), "StabilityImages.fromUpscaleRequest"); } }.fromUpscaleRequest);
 // ---------------------------------------------------------------------------
 // 6. Response decoding
 // ---------------------------------------------------------------------------

@@ -2,7 +2,7 @@ import { createMemo, lazy, onCleanup, Suspense } from "solid-js"
 import { Icon } from "@opencode/ui/icon"
 import { Command, createKeyed, type PanelTab, type Plugin } from "@opencode/plugin/gui"
 import { BuiltinPanel, onIdle } from "@opencode/plugin/gui/builtin"
-import type Btw from "./index"
+import type Btw from "./index.vibe"
 import { createBtw } from "./model"
 
 const setup: Plugin.Setup<typeof Btw> = (ctx) => {

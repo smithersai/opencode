@@ -1,8 +1,8 @@
 export * as Mcp from "./mcp.js"
 
 import { Schema } from "effect"
-import { optional, PositiveInt } from "./schema.js"
-import { IntegrationID } from "./integration-id.js"
+import { optional, PositiveInt } from "./schema.vibe"
+import { IntegrationID } from "./integration-id.vibe"
 
 export class TimeoutConfig extends Schema.Class<TimeoutConfig>("Mcp.TimeoutConfig")({
   startup: PositiveInt.pipe(optional).annotate({

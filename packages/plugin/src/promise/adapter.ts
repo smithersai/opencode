@@ -6,10 +6,10 @@ import { Effect, Schema, SchemaAST, Stream } from "effect"
 import type { Scope } from "effect"
 import { HttpApiEndpoint, HttpApiSchema } from "effect/http-api"
 import { define } from "../effect/plugin.js"
-import type { ToolFailures, ToolHooks } from "../effect/tool.vibe"
+import type { ToolFailures, ToolHooks } from "../effect/tool.js"
 import { AssertInput } from "../permission.js"
 import type { Plugin } from "./plugin.js"
-import type { Info } from "./tool.vibe"
+import type { Info } from "./tool.js"
 import type { RpcDomain, RpcHandlers } from "./rpc.js"
 
 type HostRegistration = { readonly dispose: Effect.Effect<void> }

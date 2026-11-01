@@ -1,5 +1,5 @@
 import type { BlockStatement, Expression, Pattern } from "acorn"
-import { ToolReference } from "../tool-runtime.js"
+import { ToolReference } from "../tool-runtime.vibe"
 import type { Builtins } from "./intrinsics.js"
 import { checkArrayLength } from "./limits.js"
 import { type AstNode, AsyncIteratorSymbol, type Binding, IteratorSymbol, rangeError, typeError } from "./model.js"

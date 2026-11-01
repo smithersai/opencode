@@ -36,7 +36,7 @@ import type {
 import { OPENCODE_VERSION } from "../version"
 import { ACPCapabilities, type Capabilities } from "./capabilities"
 import type { ACPCatalog } from "./catalog"
-import { ACPClient } from "./client.vibe"
+import { ACPClient } from "./client"
 import { configOptions, resolveChange } from "./config-option"
 import type { ACPConnection } from "./connection"
 import { ACPDirectories } from "./directories"

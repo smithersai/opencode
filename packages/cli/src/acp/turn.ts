@@ -19,7 +19,7 @@ import {
 import type { Capabilities } from "./capabilities"
 import { findModel, type ACPCatalog } from "./catalog"
 import { ACPChild } from "./child"
-import { ACPClient } from "./client.vibe"
+import { ACPClient } from "./client"
 import { currentModel } from "./config-option"
 import type { ACPConnection } from "./connection"
 import { ACPElicitation } from "./elicitation"

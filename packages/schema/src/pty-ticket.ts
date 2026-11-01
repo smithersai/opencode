@@ -1,7 +1,7 @@
 export * as PtyTicket from "./pty-ticket.js"
 
 import { Schema } from "effect"
-import { PositiveInt } from "./schema.js"
+import { PositiveInt } from "./schema.vibe"
 
 export const ConnectToken = Schema.Struct({
   ticket: Schema.String,

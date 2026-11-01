@@ -20,7 +20,7 @@ import {
 import { describeValue, rejectCircularInsertion } from "../interpreter/references.js"
 import { applyCollectionCallback, invoke, preserveConsumerError, withPrimitives } from "../interpreter/callback.js"
 import type { Interpreter } from "../interpreter/interpreter.js"
-import { compareText } from "../tool-runtime.js"
+import { compareText } from "../tool-runtime.vibe"
 
 const arrayLikeSource = (source: Value): { readonly length: number; readonly source: Obj } => {
   // JS would treat a promise as an empty array-like; that would hide a missing `await`.

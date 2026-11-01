@@ -1,8 +1,8 @@
 import { Effect, Schema } from "effect";
 import type { HttpClientResponse } from "effect/http";
-import type { Media } from "../../media.js";
-import { MediaProtocol } from "../../route/media-protocol.js";
-import type { AIError } from "../../schema/index.js";
+import type { Media } from "../../media.ts";
+import { MediaProtocol } from "../../route/media-protocol.ts";
+import type { AIError } from "../../schema/index.ts";
 export declare const DEFAULT_BASE_URL = "https://queue.fal.run";
 /** fal hands back absolute follow-up URLs on submit; they are authoritative for status, result, and cancel. */
 export declare const Token: Schema.Struct<{

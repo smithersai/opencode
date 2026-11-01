@@ -10,8 +10,8 @@ import {
   ToolResultPart,
   type Usage,
 } from "../../src/schema/index.js"
-import { type Tools, toDefinitions } from "../../src/tool.js"
-import { ToolRuntime } from "../../src/tool-runtime.js"
+import { type Tools, toDefinitions } from "../../src/tool.vibe"
+import { ToolRuntime } from "../../src/tool-runtime.vibe"
 
 interface RunOptions<T extends Tools> {
   readonly request: LLMRequest

@@ -2,7 +2,7 @@ export * as ConfigAgent from "./agent.js"
 
 import { Effect, Schema } from "effect"
 import { Permission } from "../permission.js"
-import { optional, PositiveInt } from "../schema.js"
+import { optional, PositiveInt } from "../schema.vibe"
 import { ConfigModel } from "./model.js"
 import { ConfigProvider } from "./provider.js"
 

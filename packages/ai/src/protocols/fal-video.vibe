@@ -1,6 +1,6 @@
 import { Media } from "../media.ts"
 import { MediaProtocol } from "../route/media-protocol.ts"
-import { MediaRoute } from "../route/media.ts"
+import { MediaRoute } from "../route/media.vibe"
 import { mergeJsonRecords, type OpenString } from "../schema/index.ts"
 import { VideoModel, type VideoRequestFor, VideoResponse } from "../video.ts"
 import { optionalNull } from "./shared.ts"

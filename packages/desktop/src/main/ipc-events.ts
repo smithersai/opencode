@@ -1,6 +1,6 @@
 import type { WebContents } from "electron"
 import { Effect, Queue, Stream } from "effect"
-import type { DesktopEvent } from "../shared/ipc-rpc/events"
+import type { DesktopEvent } from "../shared/ipc-rpc/events.vibe"
 
 const queues = new Map<number, Queue.Queue<DesktopEvent>>()
 

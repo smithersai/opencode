@@ -1,10 +1,10 @@
-import type { ProviderPackage } from "../provider-package.js";
-import { OpenAIChat } from "../protocols/openai-chat.js";
-import { type ProviderAuthOption } from "../route/auth-options.js";
-import { Route, type RouteDefaultsInput } from "../route/client.js";
-import { Protocol } from "../route/protocol.js";
-import { type ModelID } from "../schema/index.js";
-import type { OpenAIProviderOptionsInput } from "./openai-options.js";
+import type { ProviderPackage } from "../provider-package.ts";
+import { OpenAIChat } from "../protocols/openai-chat.ts";
+import { type ProviderAuthOption } from "../route/auth-options.vibe";
+import { Route, type RouteDefaultsInput } from "../route/client.ts";
+import { Protocol } from "../route/protocol.vibe";
+import { type ModelID } from "../schema/index.ts";
+import type { OpenAIProviderOptionsInput } from "./openai-options.ts";
 export declare const id: string & import("effect/Brand").Brand<"AI.ProviderID">;
 export type ProviderOptions = Pick<OpenAIProviderOptionsInput, "reasoningEffort"> & {
     /** Controls visible reasoning on GPT-OSS; other models always use parsed reasoning. */
@@ -146,9 +146,9 @@ export declare const protocol: Protocol<{
     readonly prompt_cache_options?: {
         readonly ttl?: string | undefined;
     } | undefined;
-    readonly reasoning_effort?: import("../schema/options.js").ReasoningEffort | undefined;
-    readonly verbosity?: import("../schema/options.js").OpenString<"high" | "low" | "medium"> | undefined;
-    readonly service_tier?: import("../schema/options.js").OpenString<"auto" | "default" | "flex" | "priority"> | undefined;
+    readonly reasoning_effort?: import("../schema/options.vibe").ReasoningEffort | undefined;
+    readonly verbosity?: import("../schema/options.vibe").OpenString<"high" | "low" | "medium"> | undefined;
+    readonly service_tier?: import("../schema/options.vibe").OpenString<"auto" | "default" | "flex" | "priority"> | undefined;
     readonly parallel_tool_calls?: boolean | undefined;
     readonly metadata?: {
         readonly [x: string]: string;
@@ -364,9 +364,9 @@ export declare const route: Route<{
     readonly prompt_cache_options?: {
         readonly ttl?: string | undefined;
     } | undefined;
-    readonly reasoning_effort?: import("../schema/options.js").ReasoningEffort | undefined;
-    readonly verbosity?: import("../schema/options.js").OpenString<"high" | "low" | "medium"> | undefined;
-    readonly service_tier?: import("../schema/options.js").OpenString<"auto" | "default" | "flex" | "priority"> | undefined;
+    readonly reasoning_effort?: import("../schema/options.vibe").ReasoningEffort | undefined;
+    readonly verbosity?: import("../schema/options.vibe").OpenString<"high" | "low" | "medium"> | undefined;
+    readonly service_tier?: import("../schema/options.vibe").OpenString<"auto" | "default" | "flex" | "priority"> | undefined;
     readonly parallel_tool_calls?: boolean | undefined;
     readonly metadata?: {
         readonly [x: string]: string;
@@ -384,15 +384,15 @@ export declare const route: Route<{
     readonly reasoning_format?: "parsed" | undefined;
     readonly include_reasoning?: boolean | undefined;
     readonly user?: string | undefined;
-}, import("../route/transport/http.js").HttpPrepared<string>, import("../route/client.js").CompactionOperations | undefined>;
+}, import("../route/transport/http.vibe").HttpPrepared<string>, import("../route/client.ts").CompactionOperations | undefined>;
 export declare const configure: (input?: LanguageModelOptions) => {
     id: string & import("effect/Brand").Brand<"AI.ProviderID">;
-    model: (modelID: string | ModelID) => import("../schema/options.js").LanguageModel<ProviderOptions, import("../route/client.js").CompactionOperations | undefined>;
+    model: (modelID: string | ModelID) => import("../schema/options.vibe").LanguageModel<ProviderOptions, import("../route/client.ts").CompactionOperations | undefined>;
     configure: typeof configure;
 };
 export declare const provider: {
     id: string & import("effect/Brand").Brand<"AI.ProviderID">;
-    model: (modelID: string | ModelID) => import("../schema/options.js").LanguageModel<ProviderOptions, import("../route/client.js").CompactionOperations | undefined>;
+    model: (modelID: string | ModelID) => import("../schema/options.vibe").LanguageModel<ProviderOptions, import("../route/client.ts").CompactionOperations | undefined>;
     configure: typeof configure;
 };
 export declare const model: ProviderPackage.Definition<Settings, ProviderOptions>["model"];

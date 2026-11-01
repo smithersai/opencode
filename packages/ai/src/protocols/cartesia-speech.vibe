@@ -1,11 +1,11 @@
-import { classifyProviderFailure } from "../provider-error.ts"
-import { Framing } from "../route/framing.ts"
+import { classifyProviderFailure } from "../provider-error.vibe"
+import { Framing } from "../route/framing.vibe"
 import { MediaProtocol } from "../route/media-protocol.ts"
-import { MediaRoute } from "../route/media.ts"
+import { MediaRoute } from "../route/media.vibe"
 import { AIError, mergeJsonRecords, type OpenString } from "../schema/index.ts"
 import { SpeechModel, type SpeechEvent, type SpeechRequestFor } from "../speech.ts"
 import { ProviderShared, optionalNull } from "./shared.ts"
-import { SpeechStream } from "./utils/speech-stream.ts"
+import { SpeechStream } from "./utils/speech-stream.vibe"
 
 const route = MediaProtocol.identity({ id: "cartesia-speech", name: "Cartesia", provider: "cartesia" })
 export const DEFAULT_BASE_URL = "https://api.cartesia.ai"

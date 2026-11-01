@@ -1,8 +1,8 @@
 import { Clock, Effect, Redacted, Schema } from "effect"
 import { HttpClientRequest } from "effect/http"
-import { RequestExecutor } from "../route/executor.js"
+import { RequestExecutor } from "../route/executor.vibe"
 import { AIError, InvalidProviderOutputError, InvalidRequestError } from "../schema/index.js"
-import { encodeJson } from "../utils/json.js"
+import { encodeJson } from "../utils/json.vibe"
 
 const OPENAI_BASE_URL = "https://api.openai.com/v1"
 const XAI_BASE_URL = "https://api.x.ai/v1"

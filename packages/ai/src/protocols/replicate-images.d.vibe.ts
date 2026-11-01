@@ -1,7 +1,7 @@
 import { Schema } from "effect";
-import { ImageModel, type ImageRequestFor, ImageResponse } from "../image.js";
-import { MediaProtocol } from "../route/media-protocol.js";
-import { MediaRoute } from "../route/media.js";
+import { ImageModel, type ImageRequestFor, ImageResponse } from "../image.ts";
+import { MediaProtocol } from "../route/media-protocol.ts";
+import { MediaRoute } from "../route/media.vibe";
 export declare const DEFAULT_BASE_URL = "https://api.replicate.com";
 /** Model-defined `input` fields under the model's own names; `Media.Asset` values lower to URLs or data URLs. */
 export type ReplicateImageOptions = Record<string, unknown>;

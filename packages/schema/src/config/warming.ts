@@ -1,7 +1,7 @@
 export * as ConfigWarming from "./warming.js"
 
 import { Schema } from "effect"
-import { optional } from "../schema.js"
+import { optional } from "../schema.vibe"
 
 export class Info extends Schema.Class<Info>("Config.Warming")({
   prompt: Schema.String.pipe(optional).annotate({

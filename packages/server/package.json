@@ -16,6 +16,11 @@
     "dist"
   ],
   "exports": {
+    "./request-tracing": {
+      "types": "./src/request-tracing.d.vibe.ts",
+      "vibelang-source": "./src/request-tracing.vibe",
+      "default": "./.vibelang/js/src/request-tracing.js"
+    },
     "./*": "./src/*.ts"
   },
   "scripts": {

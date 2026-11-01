@@ -1,8 +1,8 @@
 export * as PromptInput from "./prompt-input.js"
 
 import { Schema } from "effect"
-import { AgentAttachment, PromptMention } from "./prompt.js"
-import { optional } from "./schema.js"
+import { AgentAttachment, PromptMention } from "./prompt.vibe"
+import { optional } from "./schema.vibe"
 import { Skill } from "./skill.js"
 
 export interface FileAttachment extends Schema.Schema.Type<typeof FileAttachment> {}

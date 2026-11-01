@@ -1,8 +1,8 @@
-import { MediaProtocol } from "../route/media-protocol.js";
-import { MediaRoute } from "../route/media.js";
-import { type OpenString } from "../schema/index.js";
-import { SpeechModel, type SpeechRequestFor } from "../speech.js";
-import { SpeechStream } from "./utils/speech-stream.js";
+import { MediaProtocol } from "../route/media-protocol.ts";
+import { MediaRoute } from "../route/media.vibe";
+import { type OpenString } from "../schema/index.ts";
+import { SpeechModel, type SpeechRequestFor } from "../speech.ts";
+import { SpeechStream } from "./utils/speech-stream.vibe";
 export declare const DEFAULT_BASE_URL = "https://api.deepgram.com";
 export declare const PATH = "/v1/speak";
 export type DeepgramEncoding = OpenString<"linear16" | "mulaw" | "alaw" | "mp3" | "opus" | "flac" | "aac">;
@@ -35,7 +35,7 @@ export declare const protocol: MediaProtocol.Streamed<Request, {
     readonly progress?: number | undefined;
 } | {
     readonly type: "finish";
-    readonly audio: import("../media.js").Asset;
+    readonly audio: import("../media.ts").Asset;
     readonly usage?: {
         readonly type: "seconds";
         readonly seconds: number;
@@ -85,7 +85,7 @@ export declare const DeepgramSpeech: {
         readonly progress?: number | undefined;
     } | {
         readonly type: "finish";
-        readonly audio: import("../media.js").Asset;
+        readonly audio: import("../media.ts").Asset;
         readonly usage?: {
             readonly type: "seconds";
             readonly seconds: number;

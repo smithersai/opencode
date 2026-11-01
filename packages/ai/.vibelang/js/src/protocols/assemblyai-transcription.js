@@ -2,6 +2,7 @@
 import * as Schema from "effect/Schema";
 import { withSpan } from "effect/Effect";
 import * as Effect from "effect/Effect";
+import * as runtime from "vibelang-runtime";
 import { Media } from "../media.js";
 import { MediaProtocol } from "../route/media-protocol.js";
 import { MediaRoute } from "../route/media.js";
@@ -61,7 +62,7 @@ const prepare = (request, send) => Effect.suspend({ prepare: () => { return with
         const uploaded = yield* decodeUpload(yield* send(UPLOAD_PATH, MediaProtocol.binary(audio, "application/octet-stream")));
         return { ...request, audio: Media.url(uploaded.value.upload_url, { mediaType: request.audio.mediaType }) };
     }), "AssemblyAITranscription.prepare"); } }.prepare);
-const fromRequest = (request) => Effect.suspend({ fromRequest: () => { return withSpan(Effect.gen(function* () {
+const fromRequest = (request) => Effect.suspend({ fromRequest: () => { return withSpan(Effect.gen(runtime.$joinedFrame(function* () {
         const audio = yield* ProviderShared.mediaReference(request.audio, route.provider, route.name);
         return MediaProtocol.json(mergeJsonRecords({
             audio_url: audio.value,
@@ -75,7 +76,7 @@ const fromRequest = (request) => Effect.suspend({ fromRequest: () => { return wi
                 : undefined,
             speakers_expected: request.speakers,
         }, request.providerOptions, request.http?.body) ?? {});
-    }), "AssemblyAITranscription.fromRequest"); } }.fromRequest);
+    })), "AssemblyAITranscription.fromRequest"); } }.fromRequest);
 // ---------------------------------------------------------------------------
 // 6. Response decoding
 // ---------------------------------------------------------------------------

@@ -3,6 +3,7 @@ import * as Duration from "effect/Duration";
 import * as Schema from "effect/Schema";
 import { forEach, withSpan } from "effect/Effect";
 import * as Effect from "effect/Effect";
+import * as runtime from "vibelang-runtime";
 import { Media } from "../media.js";
 import { MediaProtocol } from "../route/media-protocol.js";
 import { MediaRoute } from "../route/media.js";
@@ -51,7 +52,7 @@ const STATUS = {
 // ---------------------------------------------------------------------------
 // Runway accepts HTTPS URLs, `runway://` upload URIs, and data URIs, all as one string.
 const mediaUri = Effect.fnUntraced(function* mediaUri(asset) { return (yield* ProviderShared.mediaReference(asset, route.provider, route.name)).value; });
-const fromRequest = (request) => Effect.suspend({ fromRequest: () => { return withSpan(Effect.gen(function* () {
+const fromRequest = (request) => Effect.suspend({ fromRequest: () => { return withSpan(Effect.gen(runtime.$joinedFrame(function* () {
         const first = request.frames?.first === undefined ? undefined : yield* mediaUri(request.frames.first);
         const last = request.frames?.last === undefined ? undefined : yield* mediaUri(request.frames.last);
         const promptImage = [
@@ -73,7 +74,7 @@ const fromRequest = (request) => Effect.suspend({ fromRequest: () => { return wi
             negativePrompt: request.negativePrompt,
             seed: request.seed,
         }, request.providerOptions, request.http?.body) ?? {});
-    }), "RunwayVideo.fromRequest"); } }.fromRequest);
+    })), "RunwayVideo.fromRequest"); } }.fromRequest);
 // ---------------------------------------------------------------------------
 // 6. Response decoding
 // ---------------------------------------------------------------------------

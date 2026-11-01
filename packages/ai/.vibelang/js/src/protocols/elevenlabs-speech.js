@@ -2,6 +2,7 @@
 import * as Schema from "effect/Schema";
 import { withSpan } from "effect/Effect";
 import * as Effect from "effect/Effect";
+import * as runtime from "vibelang-runtime";
 import { Framing } from "../route/framing.js";
 import { MediaProtocol } from "../route/media-protocol.js";
 import { MediaRoute } from "../route/media.js";
@@ -45,7 +46,7 @@ const outputFormat = Effect.fnUntraced(function* outputFormat(request) {
     }
     return format;
 });
-const fromRequest = (request) => Effect.suspend({ fromRequest: () => { return withSpan(Effect.gen(function* () {
+const fromRequest = (request) => Effect.suspend({ fromRequest: () => { return withSpan(Effect.gen(runtime.$joinedFrame(function* () {
         if (request.voice === undefined) {
             return yield* Effect.fail(ProviderShared.invalidRequest(`${route.name} requires a voice id; pass it as \`voice\``));
         }
@@ -56,7 +57,7 @@ const fromRequest = (request) => Effect.suspend({ fromRequest: () => { return wi
             language_code: request.language,
             voice_settings: request.speed === undefined ? undefined : { speed: request.speed },
         }, native, request.http?.body) ?? {}, { output_format: yield* outputFormat(request) });
-    }), "ElevenLabsSpeech.fromRequest"); } }.fromRequest);
+    })), "ElevenLabsSpeech.fromRequest"); } }.fromRequest);
 const path = (request) => `${PATH}/${encodeURIComponent(SpeechStream.voiceID(request.voice) ?? "")}${request.mode === "stream" ? "/stream" : ""}${request.timestamps === true ? "/with-timestamps" : ""}`;
 // ---------------------------------------------------------------------------
 // 6. Stream parsing

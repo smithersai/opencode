@@ -3,7 +3,7 @@ import { SessionMessage } from "@opencode/schema/session-message"
 import { Location } from "@opencode/schema/location"
 import { Schema, Struct } from "effect"
 import { HttpApiEndpoint, HttpApiGroup, OpenApi } from "effect/http-api"
-import { InvalidCursorError, SessionNotFoundError, UnknownError } from "../errors.js"
+import { InvalidCursorError, SessionNotFoundError, UnknownError } from "../errors.vibe"
 
 // Keyed by message type so a new message type cannot be left out of the filter.
 const MessageTypes = {

@@ -2,11 +2,11 @@ export * as Agent from "./agent.js"
 
 import { Schema } from "effect"
 import { ephemeral, inventory } from "./event.js"
-import { optional } from "./schema.js"
+import { optional } from "./schema.vibe"
 import { Model } from "./model.js"
 import { Permission } from "./permission.js"
 import { Provider } from "./provider.js"
-import { PositiveInt, statics } from "./schema.js"
+import { PositiveInt, statics } from "./schema.vibe"
 
 const Updated = ephemeral({ type: "agent.updated", schema: {} })
 

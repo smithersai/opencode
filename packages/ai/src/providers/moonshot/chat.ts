@@ -1,1 +1,1 @@
-export { model, type Settings } from "../moonshot.js"
+export { model, type Settings } from "../moonshot.vibe"

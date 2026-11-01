@@ -2,7 +2,7 @@ export * as Workspace from "./workspace.js"
 
 import { Schema } from "effect"
 import { WorkspaceEvent } from "./workspace-event.js"
-import { WorkspaceID } from "./workspace-id.js"
+import { WorkspaceID } from "./workspace-id.vibe"
 
 export const ID = WorkspaceID
 export type ID = WorkspaceID

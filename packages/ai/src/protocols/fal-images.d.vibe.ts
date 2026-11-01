@@ -1,8 +1,8 @@
-import { ImageModel, type ImageRequestFor, ImageResponse } from "../image.js";
-import { Media } from "../media.js";
-import { MediaProtocol } from "../route/media-protocol.js";
-import { MediaRoute } from "../route/media.js";
-import { type OpenString } from "../schema/index.js";
+import { ImageModel, type ImageRequestFor, ImageResponse } from "../image.ts";
+import { Media } from "../media.ts";
+import { MediaProtocol } from "../route/media-protocol.ts";
+import { MediaRoute } from "../route/media.vibe";
+import { type OpenString } from "../schema/index.ts";
 /** Model-defined `input` fields; `aspect` and `resolution` lower to `image_size` or `aspect_ratio` per model. */
 export type FalImageOptions = {
     readonly image_size?: OpenString<"square_hd" | "square" | "portrait_4_3" | "portrait_16_9" | "landscape_4_3" | "landscape_16_9"> | {

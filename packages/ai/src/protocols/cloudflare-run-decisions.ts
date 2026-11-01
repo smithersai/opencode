@@ -1,5 +1,5 @@
 import { Effect, Schema } from "effect"
-import { DecisionRoute } from "../route/decision.js"
+import { DecisionRoute } from "../route/decision.vibe"
 import { Endpoint } from "../route/endpoint.js"
 import { MediaProtocol } from "../route/media-protocol.js"
 import { SystemOne } from "./system-one.js"

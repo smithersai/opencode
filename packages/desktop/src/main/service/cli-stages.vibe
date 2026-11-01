@@ -1,0 +1,32 @@
+// Each version and architecture stages its own copy of the CLI, and only the current one (plus any adopted
+// beta server still running) is kept: a downgrade stages its copy anew. Windows refuses to delete an executable
+// that has not exited yet, so a failed removal is logged and retried on the next launch.
+export const cleanStages = effect (
+  binary: string,
+  options?: { readonly keep?: ReadonlyArray<string> } | undefined,
+) =>
+  try withSpan(
+    effect {
+      const fs = try FileSystem.FileSystem
+      const path = try Path.Path
+      const current = path.dirname(binary)
+      const root = path.dirname(current)
+      const keep = new Set([path.basename(current), ...(options?.keep ?? [])])
+      const entries = try fs.readDirectory(root)
+      try Effect.forEach(
+        entries,
+        effect (entry) => {
+          if (keep.has(entry)) return
+          const target = path.join(root, entry)
+          const stat = try (fs.stat(target) |> Effect.orElseSucceed(%, () => undefined))
+
+          if (stat?.type !== "Directory") return
+          try (fs
+            .remove(target, { recursive: true, force: true })
+            |> Effect.catch(%, (error) => Effect.logError("failed to clean staged v2 CLI", { path: target, error })))
+        },
+        { concurrency: "unbounded" },
+      )
+    },
+    "DesktopCli.cleanStages",
+  )

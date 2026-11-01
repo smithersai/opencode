@@ -1,6 +1,6 @@
 import { app, BrowserWindow, systemPreferences } from "electron"
 import { Effect } from "effect"
-import { WindowRpcs } from "../../shared/ipc-rpc"
+import { WindowRpcs } from "../../shared/ipc-rpc.vibe"
 import { IpcPortHandoff } from "../ipc-transport"
 import {
   getPinchZoomEnabled,

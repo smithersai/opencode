@@ -19,7 +19,7 @@ import {
   type ToolEntry,
   type ToolResultPart,
 } from "../schema/index.js"
-import { Json, decodeJson, encodeJson } from "../utils/json.js"
+import { Json, decodeJson, encodeJson } from "../utils/json.vibe"
 import { isRecord } from "../utils/record.js"
 export { Json, decodeJson, encodeJson, isRecord }
 

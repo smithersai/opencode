@@ -2,7 +2,7 @@ export * as WorkspaceEvent from "./workspace-event.js"
 
 import { Schema } from "effect"
 import { Event } from "./event.js"
-import { WorkspaceID } from "./workspace-id.js"
+import { WorkspaceID } from "./workspace-id.vibe"
 
 export const ConnectionStatus = Schema.Struct({
   workspaceID: WorkspaceID,

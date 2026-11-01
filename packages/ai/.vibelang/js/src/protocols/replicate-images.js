@@ -3,6 +3,7 @@ import * as Duration from "effect/Duration";
 import * as Schema from "effect/Schema";
 import { forEach, withSpan } from "effect/Effect";
 import * as Effect_1 from "effect/Effect";
+import * as runtime from "vibelang-runtime";
 import { ImageModel, ImageResponse } from "../image.js";
 import { Media } from "../media.js";
 import { MediaProtocol } from "../route/media-protocol.js";
@@ -64,12 +65,12 @@ const inputValue = Effect_1.fnUntraced(function* inputValue(value) {
     }
     return value;
 });
-const fromRequest = (request) => Effect_1.suspend({ fromRequest: () => { return withSpan(Effect_1.gen(function* () {
+const fromRequest = (request) => Effect_1.suspend({ fromRequest: () => { return withSpan(Effect_1.gen(runtime.$joinedFrame(function* () {
         const native = yield* forEach(Object.entries(request.providerOptions ?? {}), Effect_1.fnUntraced(function* ([key, value]) { return [key, yield* inputValue(value)]; }));
         const input = mergeJsonRecords({ prompt: request.prompt }, Object.fromEntries(native));
         const model = request.model.id;
         return MediaProtocol.json(mergeJsonRecords(isOfficial(model) ? { input } : { version: model, input }, request.http?.body) ?? {});
-    }), "ReplicateImages.fromRequest"); } }.fromRequest);
+    })), "ReplicateImages.fromRequest"); } }.fromRequest);
 // ---------------------------------------------------------------------------
 // 6. Response decoding
 // ---------------------------------------------------------------------------

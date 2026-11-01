@@ -2,10 +2,10 @@ import { Duration, Effect, Schema } from "effect"
 import type { HttpClientResponse } from "effect/http"
 import { ImageModel, ImageResponse, type ImageRequestFor } from "../image.js"
 import { MediaProtocol } from "../route/media-protocol.js"
-import { MediaRoute } from "../route/media.js"
+import { MediaRoute } from "../route/media.vibe"
 import { mergeJsonRecords } from "../schema/index.js"
 import { JsonObject, ProviderShared, lenient } from "./shared.js"
-import { ImageSizing } from "./utils/image-sizing.js"
+import { ImageSizing } from "./utils/image-sizing.vibe"
 
 const route = MediaProtocol.identity({ id: "alibaba-images", name: "Alibaba Images", provider: "alibaba" })
 export const PATH = "/services/aigc/multimodal-generation/generation"

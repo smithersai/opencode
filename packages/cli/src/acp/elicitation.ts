@@ -9,7 +9,7 @@ import { Form } from "@opencode/schema/form"
 import { Effect, Option, Schema } from "effect"
 import type { Capabilities } from "./capabilities"
 import { ACPChild } from "./child"
-import { ACPClient } from "./client.vibe"
+import { ACPClient } from "./client"
 import type { ACPConnection } from "./connection"
 
 export type AskedForm = Omit<Form.Info, "id"> & { readonly id: string }

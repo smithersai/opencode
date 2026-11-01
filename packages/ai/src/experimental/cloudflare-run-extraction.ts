@@ -1,9 +1,9 @@
 import { Effect, Schema } from "effect"
-import { ExtractionAnswers, ExtractionModel, ExtractionResponse, type ExtractionRequestFor } from "./extraction.js"
+import { ExtractionAnswers, ExtractionModel, ExtractionResponse, type ExtractionRequestFor } from "./extraction.vibe"
 import { JsonObject, ProviderShared } from "../protocols/shared.js"
 import { Endpoint } from "../route/endpoint.js"
 import { MediaProtocol } from "../route/media-protocol.js"
-import { MediaRoute } from "../route/media.js"
+import { MediaRoute } from "../route/media.vibe"
 import { Usage, mergeJsonRecords } from "../schema/index.js"
 
 const route = MediaProtocol.identity({

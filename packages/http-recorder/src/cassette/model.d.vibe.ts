@@ -1,6 +1,6 @@
 import { Schema } from "effect";
-import type { JsonValue } from "../api.js";
-export type { CassetteMetadata, JsonValue } from "../api.js";
+import type { JsonValue } from "../api.ts";
+export type { CassetteMetadata, JsonValue } from "../api.ts";
 export declare const CassetteMetadataSchema: Schema.$Record<Schema.String, Schema.suspend<Schema.Codec<JsonValue, JsonValue, never, never>>>;
 export declare const InteractionSchema: Schema.toTaggedUnion<"transport", readonly [Schema.Struct<{
     readonly transport: Schema.tag<"http">;

@@ -3,7 +3,7 @@ export * as SessionStats from "./session-stats.js"
 import { Schema } from "effect"
 import { Model } from "./model.js"
 import { Money } from "./money.js"
-import { DateTimeUtcFromMillis, NonNegativeInt, optional } from "./schema.js"
+import { DateTimeUtcFromMillis, NonNegativeInt, optional } from "./schema.vibe"
 import { TokenUsage } from "./token-usage.js"
 
 export const Activity = Schema.Struct({

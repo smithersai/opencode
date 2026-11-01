@@ -1,7 +1,7 @@
 export * as Vcs from "./vcs.js"
 
 import { Schema } from "effect"
-import { NonNegativeInt, optional } from "./schema.js"
+import { NonNegativeInt, optional } from "./schema.vibe"
 
 export const Branch = Schema.Struct({
   current: optional(Schema.String),

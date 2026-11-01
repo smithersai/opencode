@@ -3,7 +3,7 @@ export * as PersistentPty from "./persistent-pty.js"
 import { Schema } from "effect"
 import { ephemeral, inventory } from "./event.js"
 import { Pty } from "./pty.js"
-import { NonNegativeInt, PositiveInt, optional } from "./schema.js"
+import { NonNegativeInt, PositiveInt, optional } from "./schema.vibe"
 import { Session } from "./session.js"
 
 export const Info = Schema.Struct({

@@ -1,6 +1,6 @@
 import { Predicate } from "effect"
 import type { Bridge, BridgeMessage } from "@opencode/plugin/gui/host"
-import type { PluginFailure } from "../shared/ipc-rpc/plugins"
+import type { PluginFailure } from "../shared/ipc-rpc/plugins.vibe"
 import { api } from "./api"
 import { cancellable, invoke, listen, send } from "./ipc-client"
 

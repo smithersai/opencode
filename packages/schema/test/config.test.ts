@@ -6,7 +6,7 @@ import { ConfigMCP } from "../src/config/mcp.js"
 import { ConfigProvider } from "../src/config/provider.js"
 import { Mcp } from "../src/mcp.js"
 import { Provider } from "../src/provider.js"
-import { AbsolutePath } from "../src/schema.js"
+import { AbsolutePath } from "../src/schema.vibe"
 import { WebSearch } from "../src/websearch.js"
 
 describe("Config.Entry", () => {

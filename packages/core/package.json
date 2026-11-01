@@ -29,16 +29,6 @@
     "typecheck:tsc": "vibelang -b tsconfig.json tsconfig.tests.json"
   },
   "exports": {
-    "./environment/driver": {
-      "types": "./src/environment/driver.d.vibe.ts",
-      "vibelang-source": "./src/environment/driver.vibe",
-      "default": "./.vibelang/js/src/environment/driver.js"
-    },
-    "./mcp/socket-client": {
-      "types": "./src/mcp/socket-client.d.vibe.ts",
-      "vibelang-source": "./src/mcp/socket-client.vibe",
-      "default": "./.vibelang/js/src/mcp/socket-client.js"
-    },
     "./*": "./src/*.ts"
   },
   "imports": {

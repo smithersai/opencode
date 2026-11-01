@@ -2,7 +2,7 @@ export * as LegacyEventV1 from "./legacy-event.js"
 
 import { Schema } from "effect"
 import { ephemeral, inventory } from "../event.js"
-import { SessionID } from "../session-id.js"
+import { SessionID } from "../session-id.vibe"
 import { SessionV1 } from "./session.js"
 
 export const CommandExecuted = ephemeral({

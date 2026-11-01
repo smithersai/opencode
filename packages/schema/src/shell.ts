@@ -1,10 +1,10 @@
 export * as Shell from "./shell.js"
 
 import { Schema } from "effect"
-import { optional } from "./schema.js"
+import { optional } from "./schema.vibe"
 import { ephemeral, inventory } from "./event.js"
 import { ascending } from "./identifier.js"
-import { NonNegativeInt, statics } from "./schema.js"
+import { NonNegativeInt, statics } from "./schema.vibe"
 
 const IDSchema = Schema.String.check(Schema.isStartingWith("sh_")).pipe(
   Schema.brand("Shell.ID"),

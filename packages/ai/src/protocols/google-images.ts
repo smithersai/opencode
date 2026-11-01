@@ -2,11 +2,11 @@ import { Effect, Schema } from "effect"
 import type { HttpClientResponse } from "effect/http"
 import { ImageModel, ImageResponse, type ImageRequestFor } from "../image.js"
 import { MediaProtocol } from "../route/media-protocol.js"
-import { MediaRoute } from "../route/media.js"
+import { MediaRoute } from "../route/media.vibe"
 import { mergeJsonRecords, tokenUsage, type OpenString } from "../schema/index.js"
 import { ProviderShared } from "./shared.js"
 import { GeminiGenerateContent } from "./utils/gemini-generate-content.js"
-import { MediaInput } from "./utils/media-input.js"
+import { MediaInput } from "./utils/media-input.vibe"
 
 const route = MediaProtocol.identity({ id: "google-images", name: "Google Images", provider: "google" })
 export const DEFAULT_BASE_URL = "https://generativelanguage.googleapis.com/v1beta"

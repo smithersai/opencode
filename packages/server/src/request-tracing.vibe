@@ -1,0 +1,2 @@
+export const withoutParentSpan = <A, E>(effect: A!E!Scope) =>
+  effect |> Effect.updateContext(%, (context: Context<Scope>) => Context.omit(Tracer.ParentSpan)(context))

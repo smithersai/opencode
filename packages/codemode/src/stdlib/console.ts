@@ -1,6 +1,6 @@
 import { type Method, methods } from "../interpreter/native.js"
 import { entries, get, Arr, Obj, type Value } from "../interpreter/objects.js"
-import { ToolReference } from "../tool-runtime.js"
+import { ToolReference } from "../tool-runtime.vibe"
 import { containsOpaqueReference } from "../interpreter/references.js"
 import type { Interpreter } from "../interpreter/interpreter.js"
 

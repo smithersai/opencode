@@ -1,0 +1,24 @@
+import { dialog } from "electron"
+import { DesktopCli } from "../service/desktop-cli.ts"
+import { nativeT } from "./translations.ts"
+
+export function showCliInstaller(desktopCli: DesktopCli.Interface) {
+  return desktopCli.install
+    |> Effect.tap(%, (path) =>
+      Effect.promise(() =>
+        dialog.showMessageBox({
+          type: "info",
+          message: nativeT("desktop.cli.installed.message", { path }),
+          title: nativeT("desktop.cli.installed.title"),
+        })
+      ))
+    |> (%() catch (error) =>
+      Effect.promise(() =>
+        dialog.showMessageBox({
+          type: "error",
+          message: nativeT("desktop.cli.failed.message", { error: error.message }),
+          title: nativeT("desktop.cli.failed.title"),
+        })
+      ))
+    |> Effect.asVoid(%)
+}

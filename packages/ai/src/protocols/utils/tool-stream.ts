@@ -1,7 +1,7 @@
 import { Effect, Option } from "effect"
 import { AIError, LLMEvent, type ProviderMetadata, type ToolCall, type ToolInputError } from "../../schema/index.js"
 import { eventError, parseToolInput, type ToolAccumulator } from "../shared.js"
-import { parse } from "./partial-json.js"
+import { parse } from "./partial-json.vibe"
 
 type StreamKey = string | number
 const parsePartialInput = Option.liftThrowable(parse)

@@ -1,8 +1,8 @@
 import { Schema } from "effect";
-import { ImageModel, ImageResponse, type ImageRequestFor } from "../image.js";
-import { MediaProtocol } from "../route/media-protocol.js";
-import { MediaRoute } from "../route/media.js";
-import { type OpenString } from "../schema/index.js";
+import { ImageModel, ImageResponse, type ImageRequestFor } from "../image.ts";
+import { MediaProtocol } from "../route/media-protocol.ts";
+import { MediaRoute } from "../route/media.vibe";
+import { type OpenString } from "../schema/index.ts";
 export declare const DEFAULT_BASE_URL = "https://api.stability.ai";
 export type StabilityStylePreset = OpenString<"enhance" | "anime" | "photographic" | "digital-art" | "comic-book" | "fantasy-art" | "line-art" | "analog-film" | "neon-punk" | "isometric" | "low-poly" | "origami" | "modeling-compound" | "cinematic" | "3d-model" | "pixel-art" | "tile-texture">;
 /** Native form fields; `aspect` lowers to `aspect_ratio`. */

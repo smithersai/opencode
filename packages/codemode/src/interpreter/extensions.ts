@@ -1,6 +1,6 @@
 import { Effect } from "effect"
 import type { Extension } from "../extension.js"
-import { type ExtensionInvocation, hooked } from "../tool-runtime.js"
+import { type ExtensionInvocation, hooked } from "../tool-runtime.vibe"
 import type { Interpreter } from "./interpreter.js"
 import { createErrorValue, isErrorType } from "./intrinsics.js"
 import { MAX_VALUE_DEPTH } from "./limits.js"

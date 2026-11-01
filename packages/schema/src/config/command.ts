@@ -1,7 +1,7 @@
 export * as ConfigCommand from "./command.js"
 
 import { Schema } from "effect"
-import { optional } from "../schema.js"
+import { optional } from "../schema.vibe"
 import { ConfigModel } from "./model.js"
 
 export class Info extends Schema.Class<Info>("Config.Command")({

@@ -1,11 +1,11 @@
 export * as Credential from "./credential.js"
 
 import { Schema } from "effect"
-import { optional } from "./schema.js"
+import { optional } from "./schema.vibe"
 import { ephemeral, inventory } from "./event.js"
-import { IntegrationID, IntegrationMethodID } from "./integration-id.js"
+import { IntegrationID, IntegrationMethodID } from "./integration-id.vibe"
 import { ascending } from "./identifier.js"
-import { NonNegativeInt, statics } from "./schema.js"
+import { NonNegativeInt, statics } from "./schema.vibe"
 
 export const ID = Schema.String.pipe(
   Schema.brand("Credential.ID"),

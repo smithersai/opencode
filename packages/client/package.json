@@ -21,11 +21,7 @@
     "./promise/api": "./src/promise/api.ts",
     "./service": "./src/promise/service.ts",
     "./solid": "./src/solid/index.ts",
-    "./effect": {
-      "types": "./src/effect/index.d.vibe.ts",
-      "vibelang-source": "./src/effect/index.vibe",
-      "default": "./.vibelang/js/src/effect/index.js"
-    },
+    "./effect": "./src/effect/index.ts",
     "./effect/api": "./src/effect/api.ts",
     "./effect/service": "./src/effect/service.ts",
     "./mcp": "./src/mcp.ts"

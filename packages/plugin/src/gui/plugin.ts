@@ -1,7 +1,7 @@
 import type { SetupContext } from "./context.js"
 import type { Cleanup } from "./core.js"
 import type { Declarations, Stores } from "./declarations.js"
-import type { MainContext } from "./main.vibe"
+import type { MainContext } from "./main.js"
 
 export type { Cleanup, Declarations }
 

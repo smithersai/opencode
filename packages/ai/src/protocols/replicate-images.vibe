@@ -1,9 +1,9 @@
 import type { HttpClientResponse } from "effect/http"
-import type { Status } from "../generation.ts"
+import type { Status } from "../generation.vibe"
 import { ImageModel, type ImageRequestFor, ImageResponse } from "../image.ts"
 import { Media } from "../media.ts"
 import { MediaProtocol } from "../route/media-protocol.ts"
-import { MediaRoute } from "../route/media.ts"
+import { MediaRoute } from "../route/media.vibe"
 import { type AIError, mergeJsonRecords } from "../schema/index.ts"
 import { optionalNull, ProviderShared } from "./shared.ts"
 

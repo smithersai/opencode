@@ -1,7 +1,7 @@
 import { HashSet } from "effect";
-import type { RequestMatcher, RequestSnapshot } from "../api.js";
+import type { RequestMatcher, RequestSnapshot } from "../api.ts";
 import type { HttpInteraction } from "./model.vibe";
-export type { RequestMatcher } from "../api.js";
+export type { RequestMatcher } from "../api.ts";
 export declare const canonicalSnapshot: (snapshot: RequestSnapshot) => string;
 export declare const defaultMatcher: RequestMatcher;
 export declare const requestDiff: (expected: RequestSnapshot, received: RequestSnapshot) => ReadonlyArray<string>;

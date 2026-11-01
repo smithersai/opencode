@@ -1,10 +1,10 @@
 import { Schema } from "effect";
-import { Route } from "../route/client.js";
-import { Protocol } from "../route/protocol.js";
-import { Usage, type FinishReasonDetails, type ProviderOptions } from "../schema/index.js";
-import { Lifecycle } from "./utils/lifecycle.js";
-import { ToolStream } from "./utils/tool-stream.js";
-export type { Credentials as BedrockCredentials } from "./utils/bedrock-auth.js";
+import { Route } from "../route/client.ts";
+import { Protocol } from "../route/protocol.vibe";
+import { Usage, type FinishReasonDetails, type ProviderOptions } from "../schema/index.ts";
+import { Lifecycle } from "./utils/lifecycle.ts";
+import { ToolStream } from "./utils/tool-stream.ts";
+export type { Credentials as BedrockCredentials } from "./utils/bedrock-auth.ts";
 declare const BedrockConverseBody: Schema.Struct<{
     modelId: Schema.String;
     messages: Schema.$Array<Schema.toTaggedUnion<"role", readonly [Schema.Struct<{
@@ -124,17 +124,17 @@ declare const BedrockConverseBody: Schema.Struct<{
     }>>;
     additionalModelRequestFields: Schema.optional<Schema.$Record<Schema.String, Schema.Unknown>>;
     serviceTier: Schema.optional<Schema.Struct<{
-        readonly type: Schema.declare<import("../schema/options.js").OpenString<"default" | "flex" | "priority" | "reserved">, import("../schema/options.js").OpenString<"default" | "flex" | "priority" | "reserved">>;
+        readonly type: Schema.declare<import("../schema/options.vibe").OpenString<"default" | "flex" | "priority" | "reserved">, import("../schema/options.vibe").OpenString<"default" | "flex" | "priority" | "reserved">>;
     }>>;
     guardrailConfig: Schema.optional<Schema.Struct<{
         readonly guardrailIdentifier: Schema.String;
         readonly guardrailVersion: Schema.String;
-        readonly trace: Schema.optional<Schema.declare<import("../schema/options.js").OpenString<"disabled" | "enabled" | "enabled_full">, import("../schema/options.js").OpenString<"disabled" | "enabled" | "enabled_full">>>;
-        readonly streamProcessingMode: Schema.optional<Schema.declare<import("../schema/options.js").OpenString<"async" | "sync">, import("../schema/options.js").OpenString<"async" | "sync">>>;
+        readonly trace: Schema.optional<Schema.declare<import("../schema/options.vibe").OpenString<"disabled" | "enabled" | "enabled_full">, import("../schema/options.vibe").OpenString<"disabled" | "enabled" | "enabled_full">>>;
+        readonly streamProcessingMode: Schema.optional<Schema.declare<import("../schema/options.vibe").OpenString<"async" | "sync">, import("../schema/options.vibe").OpenString<"async" | "sync">>>;
     }>>;
     outputConfig: Schema.optional<Schema.Struct<{
         readonly textFormat: Schema.Struct<{
-            readonly type: Schema.declare<import("../schema/options.js").OpenString<"json_schema">, import("../schema/options.js").OpenString<"json_schema">>;
+            readonly type: Schema.declare<import("../schema/options.vibe").OpenString<"json_schema">, import("../schema/options.vibe").OpenString<"json_schema">>;
             readonly structure: Schema.Struct<{
                 readonly jsonSchema: Schema.Struct<{
                     readonly schema: Schema.String;
@@ -154,16 +154,16 @@ declare const Options: Schema.Struct<{
         readonly budgetTokens: Schema.Number;
     }>, Schema.Struct<{
         readonly type: Schema.Literal<"adaptive">;
-        readonly display: Schema.optional<Schema.declare<import("../schema/options.js").OpenString<"omitted" | "summarized">, import("../schema/options.js").OpenString<"omitted" | "summarized">>>;
+        readonly display: Schema.optional<Schema.declare<import("../schema/options.vibe").OpenString<"omitted" | "summarized">, import("../schema/options.vibe").OpenString<"omitted" | "summarized">>>;
     }>, Schema.Struct<{
         readonly type: Schema.Literal<"disabled">;
     }>]>>;
     /** Reasoning effort, sent in the field each model family reads. */
-    readonly effort: Schema.optional<Schema.declare<import("../schema/options.js").OpenString<"high" | "low" | "max" | "medium" | "xhigh">, import("../schema/options.js").OpenString<"high" | "low" | "max" | "medium" | "xhigh">>>;
-    readonly serviceTier: Schema.optional<Schema.declare<import("../schema/options.js").OpenString<"default" | "flex" | "priority" | "reserved">, import("../schema/options.js").OpenString<"default" | "flex" | "priority" | "reserved">>>;
+    readonly effort: Schema.optional<Schema.declare<import("../schema/options.vibe").OpenString<"high" | "low" | "max" | "medium" | "xhigh">, import("../schema/options.vibe").OpenString<"high" | "low" | "max" | "medium" | "xhigh">>>;
+    readonly serviceTier: Schema.optional<Schema.declare<import("../schema/options.vibe").OpenString<"default" | "flex" | "priority" | "reserved">, import("../schema/options.vibe").OpenString<"default" | "flex" | "priority" | "reserved">>>;
     /** Constrains the response text to a JSON schema. */
     readonly outputFormat: Schema.optional<Schema.Struct<{
-        readonly type: Schema.declare<import("../schema/options.js").OpenString<"json_schema">, import("../schema/options.js").OpenString<"json_schema">>;
+        readonly type: Schema.declare<import("../schema/options.vibe").OpenString<"json_schema">, import("../schema/options.vibe").OpenString<"json_schema">>;
         readonly schema: Schema.$Record<Schema.String, Schema.Unknown>;
         readonly name: Schema.optional<Schema.String>;
         readonly description: Schema.optional<Schema.String>;
@@ -171,8 +171,8 @@ declare const Options: Schema.Struct<{
     readonly guardrail: Schema.optional<Schema.Struct<{
         readonly identifier: Schema.String;
         readonly version: Schema.String;
-        readonly trace: Schema.optional<Schema.declare<import("../schema/options.js").OpenString<"disabled" | "enabled" | "enabled_full">, import("../schema/options.js").OpenString<"disabled" | "enabled" | "enabled_full">>>;
-        readonly streamProcessingMode: Schema.optional<Schema.declare<import("../schema/options.js").OpenString<"async" | "sync">, import("../schema/options.js").OpenString<"async" | "sync">>>;
+        readonly trace: Schema.optional<Schema.declare<import("../schema/options.vibe").OpenString<"disabled" | "enabled" | "enabled_full">, import("../schema/options.vibe").OpenString<"disabled" | "enabled" | "enabled_full">>>;
+        readonly streamProcessingMode: Schema.optional<Schema.declare<import("../schema/options.vibe").OpenString<"async" | "sync">, import("../schema/options.vibe").OpenString<"async" | "sync">>>;
     }>>;
     /** Key-value pairs for filtering invocation logs. */
     readonly requestMetadata: Schema.optional<Schema.$Record<Schema.String, Schema.String>>;
@@ -306,17 +306,17 @@ export declare const protocol: Protocol<{
         readonly [x: string]: unknown;
     } | undefined;
     readonly serviceTier?: {
-        readonly type: import("../schema/options.js").OpenString<"default" | "flex" | "priority" | "reserved">;
+        readonly type: import("../schema/options.vibe").OpenString<"default" | "flex" | "priority" | "reserved">;
     } | undefined;
     readonly guardrailConfig?: {
         readonly guardrailIdentifier: string;
         readonly guardrailVersion: string;
-        readonly trace?: import("../schema/options.js").OpenString<"disabled" | "enabled" | "enabled_full"> | undefined;
-        readonly streamProcessingMode?: import("../schema/options.js").OpenString<"async" | "sync"> | undefined;
+        readonly trace?: import("../schema/options.vibe").OpenString<"disabled" | "enabled" | "enabled_full"> | undefined;
+        readonly streamProcessingMode?: import("../schema/options.vibe").OpenString<"async" | "sync"> | undefined;
     } | undefined;
     readonly outputConfig?: {
         readonly textFormat: {
-            readonly type: import("../schema/options.js").OpenString<"json_schema">;
+            readonly type: import("../schema/options.vibe").OpenString<"json_schema">;
             readonly structure: {
                 readonly jsonSchema: {
                     readonly schema: string;
@@ -518,17 +518,17 @@ export declare const route: Route<{
         readonly [x: string]: unknown;
     } | undefined;
     readonly serviceTier?: {
-        readonly type: import("../schema/options.js").OpenString<"default" | "flex" | "priority" | "reserved">;
+        readonly type: import("../schema/options.vibe").OpenString<"default" | "flex" | "priority" | "reserved">;
     } | undefined;
     readonly guardrailConfig?: {
         readonly guardrailIdentifier: string;
         readonly guardrailVersion: string;
-        readonly trace?: import("../schema/options.js").OpenString<"disabled" | "enabled" | "enabled_full"> | undefined;
-        readonly streamProcessingMode?: import("../schema/options.js").OpenString<"async" | "sync"> | undefined;
+        readonly trace?: import("../schema/options.vibe").OpenString<"disabled" | "enabled" | "enabled_full"> | undefined;
+        readonly streamProcessingMode?: import("../schema/options.vibe").OpenString<"async" | "sync"> | undefined;
     } | undefined;
     readonly outputConfig?: {
         readonly textFormat: {
-            readonly type: import("../schema/options.js").OpenString<"json_schema">;
+            readonly type: import("../schema/options.vibe").OpenString<"json_schema">;
             readonly structure: {
                 readonly jsonSchema: {
                     readonly schema: string;
@@ -541,8 +541,8 @@ export declare const route: Route<{
     readonly requestMetadata?: {
         readonly [x: string]: string;
     } | undefined;
-}, import("../route/transport/http.js").HttpPrepared<{
+}, import("../route/transport/http.vibe").HttpPrepared<{
     readonly [x: string]: unknown;
     readonly rawBody: string;
-}>, import("../route/client.js").CompactionOperations | undefined>;
+}>, import("../route/client.ts").CompactionOperations | undefined>;
 export * as BedrockConverse from "./bedrock-converse.vibe";

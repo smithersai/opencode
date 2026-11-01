@@ -1,7 +1,7 @@
 import { RGBA } from "@opentui/core"
 import { oklchToHex, rgbToOklch } from "./color.js"
 import type { BaseThemeDefinition, HueDefinition, Mode, ThemeDefinition, ThemeDocument } from "./index.js"
-import { HueStep } from "./schema.js"
+import { HueStep } from "./schema.vibe"
 import type { Theme, ThemeV1Json } from "./v1.js"
 
 type ThemeColor = Exclude<keyof Theme, "thinkingOpacity" | "_hasSelectedListItemText">

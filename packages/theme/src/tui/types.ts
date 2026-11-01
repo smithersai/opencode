@@ -8,7 +8,7 @@ import type {
   SemanticHue,
   SurfaceName,
   SyntaxToken,
-} from "./schema.js"
+} from "./schema.vibe"
 
 export type ResolvedActionState = "base" | ActionState
 export type ResolvedFormfieldState = ResolvedActionState

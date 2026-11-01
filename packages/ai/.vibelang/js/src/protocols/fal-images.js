@@ -2,6 +2,7 @@
 import * as Schema from "effect/Schema";
 import { forEach, withSpan } from "effect/Effect";
 import * as Effect from "effect/Effect";
+import * as runtime from "vibelang-runtime";
 import { ImageModel, ImageResponse } from "../image.js";
 import { Media } from "../media.js";
 import { MediaProtocol } from "../route/media-protocol.js";
@@ -49,7 +50,7 @@ const validate = Effect.fnUntraced(function* validate(request) {
 // `/edit` and `/multi` (Kontext) endpoints take an `image_urls` list; image-to-image, fill, and Ultra take one
 // `image_url` (beside `mask_url`).
 const takesImageList = (model) => model.endsWith("/edit") || model.endsWith("/multi");
-const fromRequest = (request) => Effect.suspend({ fromRequest: () => { return withSpan(Effect.gen(function* () {
+const fromRequest = (request) => Effect.suspend({ fromRequest: () => { return withSpan(Effect.gen(runtime.$joinedFrame(function* () {
         yield* validate(request);
         const images = yield* forEach(request.images ?? [], (image) => Effect.suspend(() => { return FalQueue.mediaUrl(image, route.name); }));
         const list = takesImageList(request.model.id);
@@ -65,7 +66,7 @@ const fromRequest = (request) => Effect.suspend({ fromRequest: () => { return wi
             image_url: list ? undefined : images[0],
             mask_url: mask === undefined ? undefined : yield* FalQueue.mediaUrl(mask, route.name),
         }, native, request.http?.body) ?? {});
-    }), "FalImages.fromRequest"); } }.fromRequest);
+    })), "FalImages.fromRequest"); } }.fromRequest);
 // ---------------------------------------------------------------------------
 // 6. Response decoding
 // ---------------------------------------------------------------------------

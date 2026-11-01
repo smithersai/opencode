@@ -1,10 +1,10 @@
 import { Effect, Schema } from "effect"
 import { Base64 } from "effect/encoding"
-import { Protocol } from "../route/protocol.js"
+import { Protocol } from "../route/protocol.vibe"
 import { LLMEvent, LLMRequest, Message, ToolResultPart } from "../schema/index.js"
 import { OpenResponses } from "./open-responses.js"
 import { JsonObject, optionalArray, optionalNull, ProviderShared } from "./shared.js"
-import { ResponsesHostedTools } from "./utils/responses-hosted-tools.js"
+import { ResponsesHostedTools } from "./utils/responses-hosted-tools.vibe"
 import { detectMediaType } from "../utils/media-type.js"
 
 const ADAPTER = "meta-responses"

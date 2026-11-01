@@ -6,7 +6,7 @@ import {
   type DecisionRequestInput,
   type DecisionModelRoute,
 } from "../src/effect.js"
-import type { Service } from "../src/decision-client.js"
+import type { Service } from "../src/decision-client.vibe"
 import { Baseten, OpenAI, OpenCode, OpenRouter, TypeSafeAI } from "../src/providers.js"
 
 type Requirements<T> = T extends Effect.Effect<infer _A, infer _E, infer R> ? R : never

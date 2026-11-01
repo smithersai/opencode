@@ -3,9 +3,9 @@ export * as ConfigProvider from "./provider.js"
 import { Schema, Struct } from "effect"
 import { Money } from "../money.js"
 import { Capabilities, Compatibility, Family, ID, Model, Type, VariantID } from "../model.js"
-import { ProviderCompatibility } from "../model-compatibility.js"
+import { ProviderCompatibility } from "../model-compatibility.vibe"
 import { Provider } from "../provider.js"
-import { optional } from "../schema.js"
+import { optional } from "../schema.vibe"
 
 export const Settings = Schema.StructWithRest(Schema.Struct(Provider.Settings.schema.fields), [
   Schema.Record(Schema.String, Schema.UndefinedOr(Schema.Json)),

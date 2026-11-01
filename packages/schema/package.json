@@ -16,8 +16,66 @@
     "dist"
   ],
   "exports": {
-    ".": "./src/index.ts",
-    "./*": "./src/*.ts"
+    ".": {
+      "types": "./src/index.ts",
+      "vibelang-source": "./src/index.ts",
+      "default": "./.vibelang/js/src/index.js"
+    },
+    "./session-metadata": {
+      "types": "./src/session-metadata.d.vibe.ts",
+      "vibelang-source": "./src/session-metadata.vibe",
+      "default": "./.vibelang/js/src/session-metadata.js"
+    },
+    "./schema": {
+      "types": "./src/schema.d.vibe.ts",
+      "vibelang-source": "./src/schema.vibe",
+      "default": "./.vibelang/js/src/schema.js"
+    },
+    "./workspace-id": {
+      "types": "./src/workspace-id.d.vibe.ts",
+      "vibelang-source": "./src/workspace-id.vibe",
+      "default": "./.vibelang/js/src/workspace-id.js"
+    },
+    "./session-revert": {
+      "types": "./src/session-revert.d.vibe.ts",
+      "vibelang-source": "./src/session-revert.vibe",
+      "default": "./.vibelang/js/src/session-revert.js"
+    },
+    "./rpc": {
+      "types": "./src/rpc.d.vibe.ts",
+      "vibelang-source": "./src/rpc.vibe",
+      "default": "./.vibelang/js/src/rpc.js"
+    },
+    "./model-compatibility": {
+      "types": "./src/model-compatibility.d.vibe.ts",
+      "vibelang-source": "./src/model-compatibility.vibe",
+      "default": "./.vibelang/js/src/model-compatibility.js"
+    },
+    "./session-id": {
+      "types": "./src/session-id.d.vibe.ts",
+      "vibelang-source": "./src/session-id.vibe",
+      "default": "./.vibelang/js/src/session-id.js"
+    },
+    "./project-id": {
+      "types": "./src/project-id.d.vibe.ts",
+      "vibelang-source": "./src/project-id.vibe",
+      "default": "./.vibelang/js/src/project-id.js"
+    },
+    "./integration-id": {
+      "types": "./src/integration-id.d.vibe.ts",
+      "vibelang-source": "./src/integration-id.vibe",
+      "default": "./.vibelang/js/src/integration-id.js"
+    },
+    "./prompt": {
+      "types": "./src/prompt.d.vibe.ts",
+      "vibelang-source": "./src/prompt.vibe",
+      "default": "./.vibelang/js/src/prompt.js"
+    },
+    "./*": {
+      "types": "./src/*.ts",
+      "vibelang-source": "./src/*.ts",
+      "default": "./.vibelang/js/src/*.js"
+    }
   },
   "scripts": {
     "build": "bun run script/build.ts",

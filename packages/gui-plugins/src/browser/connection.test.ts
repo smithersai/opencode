@@ -2,7 +2,7 @@ import { afterEach, expect, jest, test } from "bun:test"
 import { Browser } from "@opencode/plugin-browser/rpc"
 import type { IpcClient } from "@opencode/plugin/gui"
 import { createConnection } from "./connection"
-import type { BrowserPane, PaneEvent } from "./ipc"
+import type { BrowserPane, PaneEvent } from "./ipc.vibe"
 
 type Input = Parameters<typeof createConnection>[0]
 

@@ -1,12 +1,12 @@
 import type { HttpClientResponse } from "effect/http"
-import type { Status } from "../generation.ts"
+import type { Status } from "../generation.vibe"
 import { Media } from "../media.ts"
 import { MediaProtocol } from "../route/media-protocol.ts"
-import { MediaRoute } from "../route/media.ts"
+import { MediaRoute } from "../route/media.vibe"
 import { mergeJsonRecords, type OpenString } from "../schema/index.ts"
 import { TranscriptionModel, type TranscriptionRequestFor, TranscriptionResponse } from "../transcription.ts"
 import { optionalNull, ProviderShared } from "./shared.ts"
-import { MediaInput } from "./utils/media-input.ts"
+import { MediaInput } from "./utils/media-input.vibe"
 
 const route = MediaProtocol.identity({ id: "assemblyai-transcription", name: "AssemblyAI", provider: "assemblyai" })
 export const DEFAULT_BASE_URL = "https://api.assemblyai.com"

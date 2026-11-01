@@ -2,7 +2,7 @@ export * as Plugin from "./plugin.js"
 
 import { Schema } from "effect"
 import { ephemeral, inventory } from "./event.js"
-import { optional } from "./schema.js"
+import { optional } from "./schema.vibe"
 
 export const ID = Schema.String.pipe(Schema.brand("Plugin.ID"), Schema.annotate({ identifier: "Plugin.ID" }))
 export type ID = typeof ID.Type

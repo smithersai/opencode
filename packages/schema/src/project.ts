@@ -2,8 +2,8 @@ export * as Project from "./project.js"
 
 import { Schema } from "effect"
 import { ephemeral, inventory } from "./event.js"
-import { AbsolutePath, NonNegativeInt, optional } from "./schema.js"
-import { ProjectID } from "./project-id.js"
+import { AbsolutePath, NonNegativeInt, optional } from "./schema.vibe"
+import { ProjectID } from "./project-id.vibe"
 
 export const ID = ProjectID
 export type ID = typeof ID.Type

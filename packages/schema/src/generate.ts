@@ -3,8 +3,8 @@ export * as Generate from "./generate.js"
 import { Schema } from "effect"
 import { Model } from "./model.js"
 import { Money } from "./money.js"
-import { Base64 } from "./prompt.js"
-import { PositiveInt, optional } from "./schema.js"
+import { Base64 } from "./prompt.vibe"
+import { PositiveInt, optional } from "./schema.vibe"
 
 const description = (text: string) => ({ description: text })
 

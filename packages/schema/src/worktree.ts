@@ -2,7 +2,7 @@ export * as Worktree from "./worktree.js"
 
 import { Schema } from "effect"
 import { durable, ephemeral, inventory } from "./event.js"
-import { AbsolutePath, optional } from "./schema.js"
+import { AbsolutePath, optional } from "./schema.vibe"
 import { Project } from "./project.js"
 
 export const StrategyID = Schema.Trim.pipe(Schema.check(Schema.isNonEmpty()), Schema.brand("Worktree.StrategyID"))

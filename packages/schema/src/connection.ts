@@ -2,7 +2,7 @@ export * as Connection from "./connection.js"
 
 import { Schema } from "effect"
 import { Credential } from "./credential.js"
-import { optional } from "./schema.js"
+import { optional } from "./schema.vibe"
 
 /**
  * Runtime problem an integration reported for a connection. `needs_auth` asks the user to sign in again:

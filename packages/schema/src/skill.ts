@@ -1,8 +1,8 @@
 export * as Skill from "./skill.js"
 
 import { Schema } from "effect"
-import { optional } from "./schema.js"
-import { AbsolutePath } from "./schema.js"
+import { optional } from "./schema.vibe"
+import { AbsolutePath } from "./schema.vibe"
 import { ephemeral, inventory } from "./event.js"
 
 export const ID = Schema.String.pipe(Schema.brand("Skill.ID"), Schema.annotate({ identifier: "Skill.ID" }))

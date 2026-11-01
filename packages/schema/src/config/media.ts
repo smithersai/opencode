@@ -1,7 +1,7 @@
 export * as ConfigMedia from "./media.js"
 
 import { Schema } from "effect"
-import { optional, PositiveInt } from "../schema.js"
+import { optional, PositiveInt } from "../schema.vibe"
 
 export class Image extends Schema.Class<Image>("Config.Media.Image")({
   auto_resize: Schema.Boolean.pipe(optional),

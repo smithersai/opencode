@@ -1,5 +1,5 @@
 import type { ProviderPackage } from "../../provider-package.js"
-import { MiniMax } from "../minimax.js"
+import { MiniMax } from "../minimax.vibe"
 
 export type Settings = MiniMax.Settings<MiniMax.ChatOptionsInput>
 

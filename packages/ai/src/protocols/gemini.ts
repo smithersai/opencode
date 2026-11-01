@@ -3,13 +3,13 @@ import { Tool } from "@opencode/schema/tool"
 import { Route } from "../route/client.js"
 import { Auth } from "../route/auth.js"
 import { Endpoint } from "../route/endpoint.js"
-import { Protocol } from "../route/protocol.js"
+import { Protocol } from "../route/protocol.vibe"
 import {
   HttpTransport,
   type Transport,
   type TransportExecution,
   type TransportPrepareInput,
-} from "../route/transport/index.js"
+} from "../route/transport/index.vibe"
 import {
   AIError,
   InvalidProviderOutputError,
@@ -24,7 +24,7 @@ import {
   type ToolCallPart,
   type ToolDefinition,
 } from "../schema/index.js"
-import { classifyProviderFailure } from "../provider-error.js"
+import { classifyProviderFailure } from "../provider-error.vibe"
 import { Media } from "../media.js"
 import { JsonObject, knownString, lenient, optionalArray, optionalNull, ProviderShared } from "./shared.js"
 import { GeminiGenerateContent } from "./utils/gemini-generate-content.js"

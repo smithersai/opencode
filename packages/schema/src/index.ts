@@ -18,7 +18,7 @@ export { Project } from "./project.js"
 export { Worktree } from "./worktree.js"
 export { Provider } from "./provider.js"
 export { Reference } from "./reference.js"
-export { Rpc } from "./rpc.js"
+export { Rpc } from "./rpc.vibe"
 export { WebSearch } from "./websearch.js"
 export { Session } from "./session.js"
 export { Vcs } from "./vcs.js"
@@ -45,6 +45,6 @@ export {
   MediaFileAttachment,
   Attachment,
   AgentAttachment,
-} from "./prompt.js"
+} from "./prompt.vibe"
 export { PromptInput } from "./prompt-input.js"
-export * from "./schema.js"
+export * from "./schema.vibe"

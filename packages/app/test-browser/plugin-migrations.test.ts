@@ -8,7 +8,7 @@ import { globalStoreTarget, renamedStoreName, storeName } from "@/runtime/plugin
 import { migrateKeybinds } from "@/settings/keybinds/migration"
 import contextSetup from "../../gui-plugins/src/context/renderer"
 import review from "../../gui-plugins/src/review/index"
-import updater from "../../gui-plugins/src/updater/index"
+import updater from "../../gui-plugins/src/updater/index.vibe"
 
 /** A web window: storage is the page's localStorage. */
 const web: Platform = {

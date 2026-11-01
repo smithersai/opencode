@@ -7,7 +7,7 @@ import { AwsV4Signer } from "aws4fetch"
 import { Config, ConfigProvider, Effect, FileSystem, PlatformError, Redacted } from "effect"
 import { FetchHttpClient, HttpClient, HttpClientRequest, type HttpClientResponse } from "effect/http"
 import * as ProviderShared from "../src/protocols/shared.ts"
-import { CloudflareAIGateway } from "../src/providers/cloudflare-ai-gateway.ts"
+import { CloudflareAIGateway } from "../src/providers/cloudflare-ai-gateway.vibe"
 import { CloudflareWorkersAI } from "../src/providers/cloudflare-workers-ai.ts"
 
 type Provider = {

@@ -3,7 +3,7 @@ import { Effect, Exit } from "effect"
 import { FetchHttpClient, HttpClient, HttpClientRequest } from "effect/http"
 import { existsSync } from "node:fs"
 import { isHttpInteraction } from "../src/cassette/model.vibe"
-import { HttpRecorder } from "../src"
+import { HttpRecorder } from "../src/index.vibe"
 import { failureText, post, readCassette, seedCassetteDirectory, tempDirectory, withEnvironment } from "./support"
 
 const run = <A, E>(effect: Effect.Effect<A, E, HttpClient.HttpClient>) =>

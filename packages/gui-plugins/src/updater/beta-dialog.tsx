@@ -13,7 +13,7 @@ import {
   type BetaNote,
   type BetaNotes,
 } from "./beta-notes.vibe"
-import type definition from "./index"
+import type definition from "./index.vibe"
 
 /**
  * Shows the features and fixes this beta build carries since the commit of the build the user saw last, and remembers

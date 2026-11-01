@@ -3,7 +3,7 @@ export * as CredentialLegacy from "./credential-legacy.js"
 import { Schema, SchemaTransformation } from "effect"
 import { Credential } from "./credential.js"
 import { Form } from "./form.js"
-import { optional } from "./schema.js"
+import { optional } from "./schema.vibe"
 
 /**
  * Storage and import compatibility for credentials written before v2.1 (not V1 contracts). Key credentials then kept

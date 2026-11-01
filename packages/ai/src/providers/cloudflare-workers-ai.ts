@@ -3,10 +3,10 @@ import { CloudflareRunExtraction } from "../experimental/cloudflare-run-extracti
 import { CloudflareRunDecisions } from "../protocols/cloudflare-run-decisions.js"
 import { CloudflareWorkersAIImages } from "../protocols/cloudflare-workers-ai-images.js"
 import { OpenAIChat } from "../protocols/openai-chat.js"
-import { AuthOptions, type AtLeastOne, type ProviderAuthOption } from "../route/auth-options.js"
+import { AuthOptions, type AtLeastOne, type ProviderAuthOption } from "../route/auth-options.vibe"
 import { Route, type RouteDefaultsInput } from "../route/client.js"
 import { Endpoint } from "../route/endpoint.js"
-import { MediaRoute } from "../route/media.js"
+import { MediaRoute } from "../route/media.vibe"
 import { ProviderConfigurationError, ProviderID, type ModelID, type ProviderOptions } from "../schema/index.js"
 import type { OpenAIProviderOptionsInput } from "./openai-options.js"
 

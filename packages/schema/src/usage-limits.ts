@@ -4,7 +4,7 @@ import { Schema } from "effect"
 import { Model } from "./model.js"
 import { Money } from "./money.js"
 import { Provider } from "./provider.js"
-import { optional } from "./schema.js"
+import { optional } from "./schema.vibe"
 
 const Percent = Schema.Finite.check(Schema.isBetween({ minimum: 0, maximum: 100 }))
 const Instant = Schema.Finite.annotate({ description: "Milliseconds since the Unix epoch" })

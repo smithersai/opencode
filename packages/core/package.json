@@ -165,6 +165,18 @@
       "vibelang-source": "./src/tool/plugin/todo.vibe",
       "default": "./.vibelang/js/src/tool/plugin/todo.js"
     },
+    "./location-services": {
+      "types": "./src/location-services.d.vibe.ts",
+      "default": "./src/location-services.vibe"
+    },
+    "./permission/saved": {
+      "types": "./src/permission/saved.d.vibe.ts",
+      "default": "./src/permission/saved.vibe"
+    },
+    "./voice": {
+      "types": "./src/voice.d.vibe.ts",
+      "default": "./src/voice.vibe"
+    },
     "./*": {
       "types": "./src/*.ts",
       "vibelang-source": "./src/*.ts",

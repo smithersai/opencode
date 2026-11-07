@@ -10,7 +10,7 @@ import { SessionErrors } from "./session/error.js"
 import { SessionSchema } from "./session/schema.js"
 import { SessionStore } from "./session/store.js"
 import { Wildcard } from "./util/wildcard.js"
-import { PermissionSaved } from "./permission/saved.js"
+import { PermissionSaved } from "./permission/saved.vibe"
 import { PluginHooks } from "./plugin/hooks.js"
 
 const PermissionEffect = Permission.Effect

@@ -1,4 +1,4 @@
-import { buildLocationServiceMap } from "../location-services.js"
+import { buildLocationServiceMap } from "../location-services.vibe"
 import { LocationServiceMap } from "../location-service-map.js"
 import { LayerNode } from "@opencode/util/effect/layer-node"
 import { makeGlobalNode } from "@opencode/util/effect/app-node"

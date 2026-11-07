@@ -2,7 +2,7 @@ import { Effect } from "effect"
 import { define } from "@opencode/plugin/effect/plugin"
 import { Form } from "@opencode/schema/form"
 import { Provider } from "../../provider.js"
-import { configuredSettings } from "./configured.js"
+import { configuredSettings } from "./configured.vibe"
 
 const providerID = Provider.ID.make("cloudflare-workers-ai")
 

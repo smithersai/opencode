@@ -1,7 +1,7 @@
 import { OpenApi } from "effect/http-api"
 import { format } from "prettier"
 import { fileURLToPath } from "url"
-import { ClientApi } from "../src/client.js"
+import { ClientApi } from "../src/client.vibe"
 import { stabilizeOpenApi } from "./openapi-stabilize.js"
 
 const document = await format(JSON.stringify(stabilizeOpenApi(OpenApi.fromApi(ClientApi)), null, 2), {

@@ -1,7 +1,7 @@
 import type { Effect } from "effect"
 import type { RpcMessage } from "effect/rpc"
-import type { DesktopRpcClient } from "../shared/ipc-rpc"
-import type { DesktopEvent } from "../shared/ipc-rpc/events"
+import type { DesktopRpcClient } from "../shared/ipc-rpc.vibe"
+import type { DesktopEvent } from "../shared/ipc-rpc/events.vibe"
 import { IpcTransportPort, omitUndefined } from "../shared/ipc-transport"
 
 // The main process serves Effect's RpcServer over a MessagePort; this side speaks its wire format

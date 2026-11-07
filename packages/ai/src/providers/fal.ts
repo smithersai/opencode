@@ -1,12 +1,12 @@
 import { Auth } from "../route/auth.js"
-import type { ProviderAuthOption } from "../route/auth-options.js"
-import { MediaRoute } from "../route/media.js"
+import type { ProviderAuthOption } from "../route/auth-options.vibe"
+import { MediaRoute } from "../route/media.vibe"
 import { type HttpOptions, ProviderID, type ModelID } from "../schema/index.js"
-import { FalImages } from "../protocols/fal-images.js"
-import { FalVideo } from "../protocols/fal-video.js"
+import { FalImages } from "../protocols/fal-images.vibe"
+import { FalVideo } from "../protocols/fal-video.vibe"
 
-export type { FalImageOptions } from "../protocols/fal-images.js"
-export type { FalVideoOptions } from "../protocols/fal-video.js"
+export type { FalImageOptions } from "../protocols/fal-images.vibe"
+export type { FalVideoOptions } from "../protocols/fal-video.vibe"
 
 export const id = ProviderID.make("fal")
 

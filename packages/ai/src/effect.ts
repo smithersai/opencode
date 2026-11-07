@@ -1,9 +1,9 @@
-export { AIClient } from "./ai-client.js"
+export { AIClient } from "./ai-client.vibe"
 export { LLMClient } from "./route/client.js"
-export { ImageClient } from "./image-client.js"
+export { ImageClient } from "./image-client.vibe"
 export { Auth } from "./route/auth.js"
 export { ProviderPackage } from "./provider-package.js"
-export { isContextOverflow, isContextOverflowFailure, isRetryable } from "./provider-error.js"
+export { isContextOverflow, isContextOverflowFailure, isRetryable } from "./provider-error.vibe"
 export type { Interface as LLMClientShape, LLMClientService } from "./route/client.js"
 export {
   ProtocolID,
@@ -115,7 +115,7 @@ export type {
   ImageRoute,
 } from "./image.js"
 export { Image } from "./image.js"
-export { VideoClient } from "./video-client.js"
+export { VideoClient } from "./video-client.vibe"
 export {
   VideoAspectRatio,
   VideoEvent,
@@ -134,7 +134,7 @@ export type {
   VideoRoute,
 } from "./video.js"
 export { Video } from "./video.js"
-export { SpeechClient } from "./speech-client.js"
+export { SpeechClient } from "./speech-client.vibe"
 export {
   SpeechEvent,
   SpeechModel,
@@ -153,7 +153,7 @@ export type {
   SpeechRoute,
 } from "./speech.js"
 export { Speech } from "./speech.js"
-export { TranscriptionClient } from "./transcription-client.js"
+export { TranscriptionClient } from "./transcription-client.vibe"
 export {
   TranscriptionEvent,
   TranscriptionModel,
@@ -172,7 +172,7 @@ export type {
   TranscriptionRoute,
 } from "./transcription.js"
 export { Transcription } from "./transcription.js"
-export { DecisionClient } from "./decision-client.js"
+export { DecisionClient } from "./decision-client.vibe"
 export {
   ChoiceAnswer,
   ChoiceQuestion,
@@ -195,7 +195,7 @@ export {
   PredicateQuestion,
   ScoreAnswer,
   ScoreQuestion,
-} from "./decision.js"
+} from "./decision.vibe"
 export type {
   AnswerFor,
   AnswersFor,
@@ -207,11 +207,11 @@ export type {
   DecisionRequestInput,
   DecisionResponseFor,
   DecisionModelRoute,
-} from "./decision.js"
-export { Decision } from "./decision.js"
-export { DecisionRoute } from "./route/decision.js"
+} from "./decision.vibe"
+export { Decision } from "./decision.vibe"
+export { DecisionRoute } from "./route/decision.vibe"
 export { Media } from "./media.js"
-export { Generation } from "./generation.js"
+export { Generation } from "./generation.vibe"
 export type {
   AwaitOptions as GenerationAwaitOptions,
   Event as GenerationEvent,
@@ -219,10 +219,10 @@ export type {
   Route as GenerationRoute,
   Snapshot as GenerationSnapshot,
   Status as GenerationStatus,
-} from "./generation.js"
-export { Tool, ToolFailure, emptyInputJsonSchema, toDefinitions } from "./tool.js"
-export { ToolRuntime } from "./tool-runtime.js"
-export type { DispatchResult as ToolDispatchResult, ToolSettlement } from "./tool-runtime.js"
+} from "./generation.vibe"
+export { Tool, ToolFailure, emptyInputJsonSchema, toDefinitions } from "./tool.vibe"
+export { ToolRuntime } from "./tool-runtime.vibe"
+export type { DispatchResult as ToolDispatchResult, ToolSettlement } from "./tool-runtime.vibe"
 export type {
   AnyExecutableTool,
   AnyTool,
@@ -235,8 +235,8 @@ export type {
   Tools,
   ToolSchema,
   ToolToModelOutput,
-} from "./tool.js"
-export * as LLM from "./llm.js"
+} from "./tool.vibe"
+export * as LLM from "./llm.vibe"
 export type {
   Definition as ProviderPackageDefinition,
   Settings as ProviderPackageSettings,

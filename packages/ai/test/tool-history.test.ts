@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test"
-import { Message, ToolCallPart, ToolResultPart } from "../src/schema/messages.js"
+import { Message, ToolCallPart, ToolResultPart } from "../src/schema/messages.vibe"
 import { normalizeToolHistory } from "../src/tool-history.js"
 
 const toolCall = (id: string, name = id) => ToolCallPart.make({ id, name, input: {} })

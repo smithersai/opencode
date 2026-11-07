@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test"
-import { withoutMedia } from "./slide-text"
+import { withoutMedia } from "./slide-text.vibe"
 
 type File = { readonly name: string; readonly text: string }
 

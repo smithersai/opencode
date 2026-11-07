@@ -11,7 +11,7 @@ import {
 import * as Google from "../../src/providers/google.js"
 import * as OpenAI from "../../src/providers/openai.js"
 import * as OpenAICompatible from "../../src/providers/openai-compatible.js"
-import * as OpenRouter from "../../src/providers/openrouter.js"
+import * as OpenRouter from "../../src/providers/openrouter.vibe"
 import * as XAI from "../../src/providers/xai.js"
 import { describeRecordedGoldenScenarios } from "../recorded-golden.js"
 

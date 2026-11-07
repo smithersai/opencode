@@ -1,0 +1,14 @@
+import { Commands } from "../../commands.vibe"
+import { Runtime } from "../../../framework/runtime.ts"
+import { ServiceConfig } from "../../../services/service-config.ts"
+
+export default Runtime.handler(
+  Commands.commands.service.commands.unset,
+  effect (input) =>
+    try withSpan(
+      effect {
+        try ServiceConfig.unset(input.key, Option.getOrUndefined(input.name))
+      },
+      "cli.service.unset",
+    ),
+)

@@ -6,7 +6,7 @@ import { createStore } from "solid-js/store"
 import { Schema, SchemaGetter } from "effect"
 import { useModels } from "@/providers/models/models"
 import { useSettings } from "@/settings/model"
-import { syncWhileBooting, useProviders } from "@/providers/catalog/providers"
+import { syncWhileBooting, useProviders } from "../catalog/providers.vibe"
 import { Persist, persisted } from "@/runtime/persistence/storage"
 import { Persistence } from "@/runtime/persistence/schema"
 import { hasCustomAgent, resolveAgent } from "./agent"
@@ -41,7 +41,7 @@ type State = typeof StateSchema.Type
 
 const SessionsSchema = Schema.Record(
   Schema.String,
-  Schema.mutableKey(Persistence.fallback(Schema.UndefinedOr(StateSchema), () => undefined)),
+  Schema.mutableKey(Persistence.entry(Persistence.fallback(Schema.UndefinedOr(StateSchema), () => undefined))),
 )
 
 const Current = Persistence.struct({ session: SessionsSchema })

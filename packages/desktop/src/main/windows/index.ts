@@ -8,7 +8,7 @@ import { DesktopStorage } from "../storage"
 import { getStore } from "../storage/store"
 import { WINDOW_IDS_KEY } from "../storage/keys"
 import { windowDataFile } from "../../shared/ipc-transport"
-import { windowArguments } from "./bootstrap"
+import { windowArguments } from "./bootstrap.vibe"
 import {
   getBackgroundColor,
   getPinchZoomEnabled,

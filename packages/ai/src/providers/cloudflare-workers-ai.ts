@@ -1,12 +1,12 @@
 import type { ProviderPackage } from "../provider-package.js"
-import { CloudflareRunExtraction } from "../experimental/cloudflare-run-extraction.js"
-import { CloudflareRunDecisions } from "../protocols/cloudflare-run-decisions.js"
-import { CloudflareWorkersAIImages } from "../protocols/cloudflare-workers-ai-images.js"
+import { CloudflareRunExtraction } from "../experimental/cloudflare-run-extraction.vibe"
+import { CloudflareRunDecisions } from "../protocols/cloudflare-run-decisions.vibe"
+import { CloudflareWorkersAIImages } from "../protocols/cloudflare-workers-ai-images.vibe"
 import { OpenAIChat } from "../protocols/openai-chat.js"
-import { AuthOptions, type AtLeastOne, type ProviderAuthOption } from "../route/auth-options.js"
+import { AuthOptions, type AtLeastOne, type ProviderAuthOption } from "../route/auth-options.vibe"
 import { Route, type RouteDefaultsInput } from "../route/client.js"
 import { Endpoint } from "../route/endpoint.js"
-import { MediaRoute } from "../route/media.js"
+import { MediaRoute } from "../route/media.vibe"
 import { ProviderConfigurationError, ProviderID, type ModelID, type ProviderOptions } from "../schema/index.js"
 import type { OpenAIProviderOptionsInput } from "./openai-options.js"
 
@@ -30,7 +30,7 @@ export type Settings = ProviderPackage.Settings &
     readonly apiKey?: string
   }
 
-export type { CloudflareWorkersAIImageOptions } from "../protocols/cloudflare-workers-ai-images.js"
+export type { CloudflareWorkersAIImageOptions } from "../protocols/cloudflare-workers-ai-images.vibe"
 
 export const baseURL = (input: WorkersAIURL) => {
   if (input.baseURL) return input.baseURL

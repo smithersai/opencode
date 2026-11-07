@@ -1,7 +1,7 @@
 /*
  * Adapted from partial-json by the Promplate Dev Team:
  * https://github.com/promplate/partial-json-parser-js/blob/main/src/options.ts
- * Licensed under the MIT License; see partial-json.ts for the complete notice.
+ * Licensed under the MIT License; see partial-json.vibe for the complete notice.
  */
 
 /**

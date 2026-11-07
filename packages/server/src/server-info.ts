@@ -1,6 +1,6 @@
 import { Context, Layer } from "effect"
 import { networkInterfaces } from "node:os"
-import type { ServerOptions } from "./options"
+import type { ServerOptions } from "./options.vibe"
 
 export class Service extends Context.Service<
   Service,

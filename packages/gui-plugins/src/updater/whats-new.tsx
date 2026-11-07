@@ -3,7 +3,7 @@ import { Effect, Option, Predicate, Schema } from "effect"
 import { Button } from "@opencode/ui/button"
 import { Dialog } from "@opencode/ui/dialog"
 import { usePlugin, type DialogHandle, type SetupContext } from "@opencode/plugin/gui"
-import type definition from "./index"
+import type definition from "./index.vibe"
 
 const CHANGELOG_URL = "https://opencode.ai/changelog.json"
 

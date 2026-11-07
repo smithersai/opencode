@@ -1,6 +1,6 @@
 import { expect, test } from "bun:test"
 import { Schema } from "effect"
-import { Vcs } from "../src/vcs.js"
+import { Vcs } from "../src/vcs.vibe"
 
 test("review base preserves its stable identity and local provenance", () => {
   expect(Vcs.Base.ast.annotations?.identifier).toBe("Vcs.Base")

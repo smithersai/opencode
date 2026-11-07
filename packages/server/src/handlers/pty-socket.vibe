@@ -1,0 +1,29 @@
+export type Outbound = string | Uint8Array | Socket.CloseEvent
+
+// Outbound frames flow through one queue drained by a single writer so replay, live output, and the close
+// frame keep their order. Either side closing ends the connection normally, and every exit detaches.
+export function runPtySocket<R>(input: {
+  readonly socket: Socket
+  readonly outbox: Queue.Dequeue<Outbound>
+  readonly onOpen?: void!never!R
+  readonly onMessage: (message: string | Uint8Array) => void!never!R
+  readonly detach: () => void
+}) {
+  const drain = effect {
+    const writer = try input.socket.writer
+    while (true) {
+      const item = try Queue.take(input.outbox)
+      try writer.write(item)
+      if (item instanceof Socket.CloseEvent) return
+    }
+  }
+  const read = effect {
+    const reader = try input.socket.reader
+    if (input.onOpen) try input.onOpen
+    while (true) try Effect.forEach(try reader.pull, input.onMessage, { discard: true })
+  }
+  return Effect.raceFirst(drain, read)
+    |> Effect.ensuring(%, Effect.sync(input.detach))
+    |> Effect.catchReason(%, "SocketError", "SocketCloseError", () => Effect.void)
+    |> Effect.orDie(%)
+}

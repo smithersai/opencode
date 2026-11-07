@@ -2,7 +2,7 @@ export * as BrowserTunnel from "./tunnel.js"
 
 import type { Socket } from "node:net"
 import { Effect } from "effect"
-import { Browser } from "./rpc.js"
+import { Browser } from "./rpc.vibe"
 
 export type Tunnels = ReturnType<typeof make>
 

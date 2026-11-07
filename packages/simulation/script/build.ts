@@ -7,7 +7,7 @@ import { fileURLToPath } from "node:url"
 process.chdir(fileURLToPath(new URL("..", import.meta.url)))
 
 await rm("dist", { recursive: true, force: true })
-await $`bun tsc -p tsconfig.build.json`
+await $`bun vibelang -p tsconfig.build.json`
 const files = await Array.fromAsync(new Bun.Glob("**/*.ts").scan({ cwd: "src" })).then((items) =>
   items.map((item) => `src/${item}`),
 )

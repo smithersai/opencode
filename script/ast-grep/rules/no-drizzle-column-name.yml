@@ -20,3 +20,5 @@ rule:
 constraints:
   NAME:
     kind: string
+ignores:
+  - "**/*.d.vibe.ts"

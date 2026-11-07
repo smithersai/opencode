@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test"
 import type { CreateElicitationResponse } from "@agentclientprotocol/sdk"
-import { ACPElicitation } from "../../src/acp/elicitation"
+import { ACPElicitation } from "../../src/acp/elicitation.vibe"
 import {
   delivered,
   ephemeralEvent,

@@ -2,7 +2,7 @@ import { describe, expect, test } from "bun:test"
 import { LLM, LLMRequest, Message, ToolCallPart, ToolDefinition } from "../src/effect.js"
 import { OpenAIChat } from "../src/protocols.js"
 import { Auth } from "../src/route.js"
-import { sanitizeSurrogates } from "../src/utils/sanitize.js"
+import { sanitizeSurrogates } from "../src/utils/sanitize.vibe"
 
 const model = OpenAIChat.route
   .with({ endpoint: { baseURL: "https://api.openai.test/v1/" }, auth: Auth.bearer("test") })

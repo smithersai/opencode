@@ -4,8 +4,8 @@
 import type { Schema } from "effect"
 import type { Context } from "./context.js"
 import { Registry, type Catalog, type Messages, type Persisted, type StoreDeclaration, type StoreFrom } from "./core.js"
-import type { Desktop, Layout, Locale, StorageScope, StoreOptions } from "./host-apis.js"
-import type { MainContext } from "./main.js"
+import type { Desktop, Layout, Locale, StorageScope, StoreOptions } from "./host-apis.vibe"
+import type { MainContext } from "./main.vibe"
 import type { Command, IconName, Panel, PanelTab, SlotMap } from "./registries.js"
 import { type JSX } from "solid-js"
 

@@ -1,0 +1,72 @@
+import { Ipc } from "@opencode/plugin/gui"
+
+export schema SshConfig { id: string; target: string; name: string }
+
+export schema SshHttp { url: string; password: string }
+
+export const SshStage = Schema.Literals([
+  "disconnected",
+  "connecting",
+  "checking",
+  "downloading",
+  "uploading",
+  "starting",
+  "ready",
+  "authentication",
+  "incompatible",
+  "failed",
+])
+
+export const SshPrompt = Schema.Struct({
+  id: Schema.String,
+  text: Schema.String,
+  confirm: Schema.Boolean,
+})
+
+export schema SshItem {
+  config: SshConfig
+  saved: boolean
+  destination?: string
+  stage: SshStage
+  http?: SshHttp
+  prompt?: SshPrompt
+  authenticatingElsewhere?: boolean
+  detail: string
+  error?:
+    | "connection"
+    | "input"
+    | "platform"
+    | "version"
+    | "install"
+    | "service"
+    | "host-key"
+    | "ssh-missing"
+    | "unpublished"
+}
+
+/** `revision` grows with every push, so a caller can wait for the state that follows its request. */
+export schema SshState { servers: ReadonlyArray<SshItem>; revision: number }
+
+export schema SshStart {
+  id: string
+  target: string
+  name: string
+  replace?: boolean
+  background?: boolean
+}
+
+schema Id { id: string }
+
+/** SSH connections, owned by the main process. Prompts reach only the window that started the attempt. */
+export const Ssh = Ipc.define({
+  id: "ssh",
+  state: SshState,
+  methods: {
+    /** Resolves with the state revision that includes the admitted attempt. */
+    start: { input: SshStart, output: Schema.Number },
+    resolve: { input: Id, output: Schema.NullOr(SshHttp) },
+    respond: { input: Schema.Struct({ id: Schema.String, prompt: Schema.String, value: Schema.String }) },
+    cancel: { input: Id },
+    forget: { input: Id },
+  },
+})

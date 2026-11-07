@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test"
-import { ImageSizing } from "../src/protocols/utils/image-sizing.js"
+import { ImageSizing } from "../src/protocols/utils/image-sizing.vibe"
 
 const GPT_IMAGE_2 = { multiple: 16, maxEdge: 3840, minPixels: 655_360, maxPixels: 8_294_400, maxRatio: 3 }
 const STANDARD = [

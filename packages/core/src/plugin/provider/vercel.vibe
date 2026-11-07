@@ -1,0 +1,25 @@
+import { define } from "@opencode/plugin/effect/plugin"
+import { Provider } from "../../provider.ts"
+
+export const VercelPlugin = define({
+  id: "opencode.provider.vercel",
+  effect: effect (ctx) => {
+    try ctx.provider.transform((evt) => {
+      for (const item of evt.list()) {
+        if (!Provider.isAISDK(item.provider.package)) continue
+        if (Provider.packageName(item.provider.package) !== "@ai-sdk/vercel") continue
+        evt.update(item.provider.id, (provider) => {
+          provider.headers = { ...provider.headers, "http-referer": "https://opencode.ai/", "x-title": "opencode" }
+        })
+      }
+    })
+    try ctx.aisdk.hook(
+      "sdk",
+      effect (evt) => {
+        if (evt.package !== "@ai-sdk/vercel") return
+        const mod = try Effect.promise(() => import("@ai-sdk/vercel"))
+        evt.sdk = try Effect.orDie(Effect.try({ try: () => mod.createVercel(evt.options), catch: (e) => e }))
+      },
+    )
+  },
+})

@@ -2,3 +2,9 @@ ruleDirs:
   - rules
 testConfigs:
   - testDir: rule-tests
+customLanguages:
+  VibeLang:
+    libraryPath: .vibelang/vibelang-parser
+    languageSymbol: tree_sitter_vibe
+    extensions: [vibe]
+    expandoChar: µ

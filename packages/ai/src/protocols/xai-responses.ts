@@ -1,10 +1,10 @@
 import { Effect, Schema } from "effect"
-import { Protocol } from "../route/protocol.js"
+import { Protocol } from "../route/protocol.vibe"
 import type { LLMRequest } from "../schema/index.js"
 import { OpenResponses } from "./open-responses.js"
 import { JsonObject, optionalNull, ProviderShared } from "./shared.js"
-import { ResponsesHostedTools } from "./utils/responses-hosted-tools.js"
-import { ResponsesCompaction } from "./utils/responses-compaction.js"
+import { ResponsesHostedTools } from "./utils/responses-hosted-tools.vibe"
+import { ResponsesCompaction } from "./utils/responses-compaction.vibe"
 
 const ADAPTER = "xai-responses"
 const NAME = "xAI Responses"

@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test"
-import { Allow, MalformedJSON, PartialJSON, parse } from "../src/protocols/utils/partial-json.js"
+import { Allow, MalformedJSON, PartialJSON, parse } from "../src/protocols/utils/partial-json.vibe"
 
 describe("partial JSON", () => {
   test("parses complete JSON", () => {

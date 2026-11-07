@@ -17,7 +17,7 @@ import {
 } from "effect"
 import { HttpClient } from "effect/http"
 import { ChildProcess, ChildProcessSpawner } from "effect/process"
-import type { SshConfig, SshHttp, SshItem, SshStart, SshState } from "./contract"
+import type { SshConfig, SshHttp, SshItem, SshStart, SshState } from "./contract.vibe"
 import { createAskpass } from "./askpass"
 import { bootstrap } from "./bootstrap"
 import { parseTarget, quote, runSsh, sshArgs, sshExecutable, tunnelArgs, SshFailure } from "./command"

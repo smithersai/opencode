@@ -2,7 +2,7 @@ import { expect } from "bun:test"
 import { Effect, Exit, Fiber, Queue } from "effect"
 import { Socket } from "effect/socket"
 import { it } from "../../core/test/lib/effect"
-import { type Outbound, runPtySocket } from "../src/handlers/pty-socket"
+import { type Outbound, runPtySocket } from "../src/handlers/pty-socket.vibe"
 
 const connection = Effect.gen(function* () {
   const inbound = yield* Queue.unbounded<string | Uint8Array, Socket.SocketError>()

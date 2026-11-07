@@ -5,6 +5,7 @@ import { defineConfig, type Plugin, type UserConfig } from "vite"
 import solid from "vite-plugin-solid"
 import { nodeExecArgv, nodeTarget, type NodeTarget, photonWasmAsset, shellParserWasmAssets } from "./src/node/target"
 import { verifySimulationGraph } from "./script/verify-artifact"
+import vibelang from "vibelang-vite"
 
 const dir = import.meta.dirname
 
@@ -263,6 +264,7 @@ export function mainConfig(input: NodeBuildInput): UserConfig {
   return defineConfig({
     root: dir,
     plugins: [
+      vibelang(),
       appAssetsPlugin(),
       rawTextPlugin(input.modelsSnapshot),
       runtimeRequirePlugin(),

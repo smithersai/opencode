@@ -23,8 +23,8 @@ import { createTimelineController, type TimelineController, type TimelineSession
 import { createTimelineVirtualizer } from "./virtualizer"
 import { containsDirectory } from "@opencode/util/path"
 import { isWorkspaceDirectory } from "@/workspaces/paths"
-import { parseCommentNote, readPromptPresentation } from "@/composer/comment-note"
-import { parseVoiceDelegation } from "./voice-delegation"
+import { parseCommentNote, readPromptPresentation } from "../../composer/comment-note.vibe"
+import { parseVoiceDelegation } from "./voice-delegation.vibe"
 import { useCommand } from "@/shell/commands/command"
 import { usePluginScoped } from "@/runtime/plugin/commands"
 import {

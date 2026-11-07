@@ -1,1 +1,1 @@
-export { model, type Settings, type MessagesOptionsInput } from "../minimax.js"
+export { model, type Settings, type MessagesOptionsInput } from "../minimax.vibe"

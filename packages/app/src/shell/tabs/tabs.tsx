@@ -20,7 +20,7 @@ import {
   type PromptModel,
 } from "@/composer/state"
 import { appendPrompt, promptLength } from "@/composer/prompt-parts"
-import { TabStorage } from "./schema"
+import { TabStorage } from "./schema.vibe"
 import { useCurrentRoute } from "@/shell/state/layout"
 
 export type SessionTab = typeof TabStorage.Session.Type

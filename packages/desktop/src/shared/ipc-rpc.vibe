@@ -1,0 +1,25 @@
+import { AppRpcs } from "./ipc-rpc/app.vibe"
+import { EventRpcs } from "./ipc-rpc/events.vibe"
+import { PluginRpcs } from "./ipc-rpc/plugins.vibe"
+import { FileRpcs } from "./ipc-rpc/files.vibe"
+import { MenuRpcs } from "./ipc-rpc/menu.vibe"
+import { StorageRpcs } from "./ipc-rpc/storage.vibe"
+import { WindowRpcs } from "./ipc-rpc/window.vibe"
+
+export { AppRpcs } from "./ipc-rpc/app.vibe"
+
+export { EventRpcs } from "./ipc-rpc/events.vibe"
+
+export { PluginRpcs } from "./ipc-rpc/plugins.vibe"
+
+export { FileRpcs } from "./ipc-rpc/files.vibe"
+
+export { MenuRpcs } from "./ipc-rpc/menu.vibe"
+
+export { StorageRpcs } from "./ipc-rpc/storage.vibe"
+
+export { WindowRpcs } from "./ipc-rpc/window.vibe"
+
+export const DesktopRpcs = AppRpcs.merge(StorageRpcs, FileRpcs, WindowRpcs, MenuRpcs, EventRpcs, PluginRpcs)
+
+export type DesktopRpcClient = RpcClient.FromGroup<typeof DesktopRpcs, RpcClientError>

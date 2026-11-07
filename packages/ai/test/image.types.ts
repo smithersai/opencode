@@ -8,7 +8,7 @@ import {
   type ImageOptions,
   type ImageRequestFor,
 } from "../src/effect.js"
-import type { Service } from "../src/image-client.js"
+import type { Service } from "../src/image-client.vibe"
 import { Anthropic, BlackForestLabs, Google, OpenAI, Stability, XAI, ZAI } from "../src/providers.js"
 
 type Requirements<T> = T extends Effect.Effect<infer _A, infer _E, infer R> ? R : never

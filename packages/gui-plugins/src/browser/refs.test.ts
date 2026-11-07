@@ -1,6 +1,6 @@
 import { expect, test } from "bun:test"
 import { Schema } from "effect"
-import { createRefs, RefsStore } from "./refs"
+import { createRefs, RefsStore } from "./refs.vibe"
 
 /** Main storage's row for the store, as its schema encodes it. */
 type Disk = { stored?: number }

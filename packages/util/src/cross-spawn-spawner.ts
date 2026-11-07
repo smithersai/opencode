@@ -1,7 +1,19 @@
 import { isArrayNonEmpty } from "effect/Array"
 import * as NodeSink from "@effect/platform-node/NodeSink"
 import * as NodeStream from "@effect/platform-node/NodeStream"
-import { Deferred, Effect, Exit, FileSystem, Layer, Path, PlatformError, Predicate, Sink, Stream } from "effect"
+import {
+  Deferred,
+  Effect,
+  Exit,
+  FileSystem,
+  Layer,
+  Path,
+  PlatformError,
+  Predicate,
+  Redacted,
+  Sink,
+  Stream,
+} from "effect"
 import type { Scope } from "effect"
 import { ChildProcess } from "effect/process"
 import {
@@ -129,8 +141,19 @@ const makeCrossSpawnSpawner = Effect.gen(function* () {
     return path.resolve(opts.cwd)
   })
 
-  const env = (opts: ChildProcess.CommandOptions) =>
-    opts.extendEnv ? { ...globalThis.process.env, ...opts.env } : opts.env
+  // Effect 4.1 allows Redacted arguments and environment values; the child receives their plain values.
+  const unwrap = (value: string | Redacted.Redacted<string>) =>
+    Redacted.isRedacted(value) ? Redacted.value(value) : value
+
+  const env = (opts: ChildProcess.CommandOptions): NodeJS.ProcessEnv | undefined => {
+    if (opts.env === undefined) return opts.extendEnv ? { ...globalThis.process.env } : undefined
+    const out: NodeJS.ProcessEnv = opts.extendEnv ? { ...globalThis.process.env } : {}
+    for (const [key, value] of Object.entries(opts.env)) {
+      if (value === undefined) delete out[key]
+      else out[key] = unwrap(value)
+    }
+    return out
+  }
 
   const input = (x: ChildProcess.CommandInput | undefined): NodeChildProcess.IOType | undefined =>
     Stream.isStream(x) ? "pipe" : x
@@ -302,7 +325,7 @@ const makeCrossSpawnSpawner = Effect.gen(function* () {
     Effect.callback<Spawned, PlatformError.PlatformError>((resume) => {
       const closed = Deferred.makeUnsafe<readonly [code: number | null, signal: NodeJS.Signals | null]>()
       const exited = Deferred.makeUnsafe<readonly [code: number | null, signal: NodeJS.Signals | null]>()
-      const proc = launch(command.command, command.args, opts)
+      const proc = launch(command.command, command.args.map(unwrap), opts)
       let settle = () => {}
       let end = false
       let exit: readonly [code: number | null, signal: NodeJS.Signals | null] | undefined

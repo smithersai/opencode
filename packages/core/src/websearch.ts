@@ -7,7 +7,7 @@ import { Clock, Context, Effect, Layer, Option, Schema, Stream } from "effect"
 import { HttpClientError } from "effect/http"
 import { makeLocationNode } from "@opencode/util/effect/app-node"
 import { Bus } from "./bus.js"
-import { KV } from "./kv.js"
+import { KV } from "./kv.vibe"
 import { State } from "./state.js"
 
 export const ID = WebSearch.ID

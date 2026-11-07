@@ -2,7 +2,7 @@ import { onCleanup, Show } from "solid-js"
 import { makeEventListener } from "@solid-primitives/event-listener"
 import { SessionReview } from "@opencode/session-ui/session-review"
 import { createKeyed, usePlugin, type MountedSession } from "@opencode/plugin/gui"
-import type Review from "./index"
+import type Review from "./index.vibe"
 import type { ReviewModel } from "./model"
 import { ReviewEmpty, ReviewTitle } from "./parts"
 

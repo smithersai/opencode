@@ -2,7 +2,7 @@ import { describe, expect, test } from "bun:test"
 import type { SessionMessageUser } from "@opencode/client/promise"
 import { extractPromptContext, extractPromptFromMessage } from "./prompt"
 import { buildPromptRequest } from "./request"
-import { contextItemKey } from "./schema"
+import { contextItemKey } from "./schema.vibe"
 
 describe("extractPromptFromMessage", () => {
   test("restores a renamed session and preserves file offsets when resubmitted", () => {

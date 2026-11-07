@@ -51,7 +51,7 @@ import type {
 } from "acorn"
 import type { Context } from "effect"
 import { fromJson, type Json, toBoundary } from "../data.js"
-import { ToolReference, type ToolRuntime } from "../tool-runtime.js"
+import { ToolReference, type ToolRuntime } from "../tool-runtime.vibe"
 import {
   type AstNode,
   AsyncIteratorSymbol,

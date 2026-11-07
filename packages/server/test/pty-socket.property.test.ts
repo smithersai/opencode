@@ -2,7 +2,7 @@ import { expect, test } from "bun:test"
 import { Cause, Effect, Fiber, Queue } from "effect"
 import { Socket } from "effect/socket"
 import FastCheck from "fast-check"
-import { type Outbound, runPtySocket } from "../src/handlers/pty-socket"
+import { type Outbound, runPtySocket } from "../src/handlers/pty-socket.vibe"
 
 // Latencies are mostly scheduler yields so interleavings stay dense and fast; a few are real sleeps.
 type Latency = { readonly yields: number } | { readonly millis: number }

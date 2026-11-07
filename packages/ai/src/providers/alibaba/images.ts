@@ -1,2 +1,2 @@
-export { imageModel as model } from "../alibaba.js"
-export type { Settings } from "../alibaba.js"
+export { imageModel as model } from "../alibaba.vibe"
+export type { Settings } from "../alibaba.vibe"

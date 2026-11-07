@@ -4,7 +4,7 @@ import type { Bridge, BridgePluginGui, BridgePluginGuis, Entry } from "@opencode
 import type { OpenCodeClient } from "@opencode/client/promise"
 import { useGlobal } from "@/runtime/server/runtime"
 import { ServerConnection } from "@/runtime/server/registry"
-import { pluginDefinition } from "./module"
+import { pluginDefinition } from "./module.vibe"
 
 /** A plugin's `./gui-experimental` bundle as this window evaluated it, at one revision. */
 type Loaded = {

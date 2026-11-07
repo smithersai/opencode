@@ -10,8 +10,8 @@ import { Location } from "./location.js"
 import { Permission } from "./permission.js"
 import { Project } from "./project.js"
 import { AbsolutePath } from "./schema.js"
-import type { SessionErrors } from "./session/error.js"
-import type { Tool } from "./tool.js"
+import type { SessionErrors } from "./session/error.vibe"
+import type { Tool } from "./tool.vibe"
 
 export const Kind = Schema.Literals(["file", "directory"])
 export type Kind = typeof Kind.Type

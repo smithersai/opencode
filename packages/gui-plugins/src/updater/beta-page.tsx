@@ -4,8 +4,8 @@ import { Option } from "effect"
 import { Button } from "@opencode/ui/button"
 import { usePlugin } from "@opencode/plugin/gui"
 import { Meta, Visual } from "./beta-dialog"
-import { allBetaNotes, betaHistory, decodeEmbeddedNotes, type BetaNote, type EmbeddedNotes } from "./beta-notes"
-import type definition from "./index"
+import { allBetaNotes, betaHistory, decodeEmbeddedNotes, type BetaNote, type EmbeddedNotes } from "./beta-notes.vibe"
+import type definition from "./index.vibe"
 
 /** Settings > What's new in beta: every change this build carries, in the host's settings list markup. */
 export default function BetaNotesPage() {

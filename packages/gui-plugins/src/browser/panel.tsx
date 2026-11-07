@@ -23,10 +23,10 @@ import {
   type SessionScreen,
 } from "@opencode/plugin/gui"
 import { addressParts, connection, loopback, resolveAddress, searches } from "./address"
-import { commentNote, pageNote } from "./comment"
-import { bare, completes, highlight, suggest, type Visit } from "./history"
+import { commentNote, pageNote } from "./comment.vibe"
+import { bare, completes, highlight, suggest, type Visit } from "./history.vibe"
 import type { Model } from "./model"
-import type { PaneElement } from "./ipc"
+import type { PaneElement } from "./ipc.vibe"
 import { PageIcon } from "./page-icon"
 
 type PaneState = {

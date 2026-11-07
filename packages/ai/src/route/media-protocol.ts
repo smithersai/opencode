@@ -1,9 +1,9 @@
 import { Clock, Duration, Effect, Schema, type Stream } from "effect"
 import { HttpClientResponse } from "effect/http"
-import type { Snapshot, Status } from "../generation.js"
+import type { Snapshot, Status } from "../generation.vibe"
 import { Media } from "../media.js"
 import type { AuthInput } from "./auth.js"
-import { RequestExecutor } from "./executor.js"
+import { RequestExecutor } from "./executor.vibe"
 import {
   AIError,
   AuthenticationError,

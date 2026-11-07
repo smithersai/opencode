@@ -1,5 +1,5 @@
 import { expect, test } from "bun:test"
-import { isOpenCodeEvent, OpenCodeEvent, type OpenCodeEventEncoded } from "../src/groups/event.js"
+import { isOpenCodeEvent, OpenCodeEvent, type OpenCodeEventEncoded } from "../src/groups/event.vibe"
 
 type JsonShape<Value> = Value extends string | number | boolean | null
   ? Value

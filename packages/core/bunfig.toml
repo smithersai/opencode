@@ -1,2 +1,3 @@
+preload = ["vibelang/bun"]
 [test]
-preload = ["./test/preload.ts"]
+preload = ["vibelang/bun", "./test/preload.ts"]

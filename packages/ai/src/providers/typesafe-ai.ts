@@ -1,6 +1,6 @@
 import { HttpOptions, ProviderID, type ModelID, type ProviderOptions } from "../schema/index.js"
 import type { ProviderPackage } from "../provider-package.js"
-import { AuthOptions, type ProviderAuthOption } from "../route/auth-options.js"
+import { AuthOptions, type ProviderAuthOption } from "../route/auth-options.vibe"
 import { SystemOne } from "../protocols/system-one.js"
 
 export const id = ProviderID.make("typesafe-ai")

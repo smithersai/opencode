@@ -7,7 +7,7 @@ import {
   inputTypeScript,
   jsonSchemaToTypeScript,
   outputTypeScript,
-} from "../src/tool-schema.js"
+} from "../src/tool-schema.vibe"
 
 // A raw JSON Schema tool in the shape an MCP adapter produces: render-only input schema
 // whose property descriptions and constraints must surface as JSDoc in pretty signatures.

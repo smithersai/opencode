@@ -1,11 +1,11 @@
 import { Effect, Layer, ManagedRuntime, Schema, Stream } from "effect"
-import { AIClient } from "./ai-client.js"
-import { Decision, type DecisionModel, type DecisionQuestions, type DecisionRequestInput } from "./decision.js"
-import type { AwaitOptions, Event, Generation, Snapshot } from "./generation.js"
+import { AIClient } from "./ai-client.vibe"
+import { Decision, type DecisionModel, type DecisionQuestions, type DecisionRequestInput } from "./decision.vibe"
+import type { AwaitOptions, Event, Generation, Snapshot } from "./generation.vibe"
 import { Image, type ImageModel, type ImageRequest, type ImageRequestInput } from "./image.js"
 import { LLM } from "./effect.js"
 import { Media } from "./media.js"
-import { RequestExecutor } from "./route/executor.js"
+import { RequestExecutor } from "./route/executor.vibe"
 import { AIError, InvalidRequestError, LanguageModel, type LLMRequest } from "./schema/index.js"
 import type {
   GenerateObjectDynamicOptions,
@@ -13,7 +13,7 @@ import type {
   GenerateObjectResponse,
   LoopInput,
   RequestInput,
-} from "./llm.js"
+} from "./llm.vibe"
 import { Speech, type SpeechModel, type SpeechRequest, type SpeechRequestInput } from "./speech.js"
 import {
   Transcription,
@@ -21,7 +21,7 @@ import {
   type TranscriptionRequest,
   type TranscriptionRequestInput,
 } from "./transcription.js"
-import { Tool, ToolFailure, type ToolExecuteContext, type ToolSchema } from "./tool.js"
+import { Tool, ToolFailure, type ToolExecuteContext, type ToolSchema } from "./tool.vibe"
 import { fileMediaType } from "./utils/media-type.js"
 import { Video, type VideoModel, type VideoRequest, type VideoRequestInput } from "./video.js"
 

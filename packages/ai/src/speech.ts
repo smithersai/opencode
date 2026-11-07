@@ -1,10 +1,10 @@
 import { Effect, Schema, Stream } from "effect"
-import { ProgressEvent, QueuedEvent } from "./generation.js"
+import { ProgressEvent, QueuedEvent } from "./generation.vibe"
 import { Media } from "./media.js"
-import { MediaModel, composeRoute, tryRequest } from "./media-model.js"
-import { MediaRoute } from "./route/media.js"
+import { MediaModel, composeRoute, tryRequest } from "./media-model.vibe"
+import { MediaRoute } from "./route/media.vibe"
 import { AIError, HttpOptions, MediaUsage, ProviderMetadata, ProviderOptions, type OpenString } from "./schema/index.js"
-import { SpeechClient, Service } from "./speech-client.js"
+import { SpeechClient, Service } from "./speech-client.vibe"
 
 // ---------------------------------------------------------------------------
 // Model

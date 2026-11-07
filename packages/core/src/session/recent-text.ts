@@ -1,7 +1,7 @@
 export * as SessionRecentText from "./recent-text.js"
 
 import type { SessionMessage } from "./message.js"
-import type { SessionStored } from "./stored.js"
+import type { SessionStored } from "./stored.vibe"
 
 const TOOL_OUTPUT_MAX_CHARS = 1_250
 

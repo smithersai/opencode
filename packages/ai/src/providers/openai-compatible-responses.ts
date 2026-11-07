@@ -1,6 +1,6 @@
 import type { ProviderPackage } from "../provider-package.js"
 import { OpenAICompatibleResponses } from "../protocols/openai-compatible-responses.js"
-import { AuthOptions, type ProviderAuthOption } from "../route/auth-options.js"
+import { AuthOptions, type ProviderAuthOption } from "../route/auth-options.vibe"
 import type { RouteDefaultsInput } from "../route/client.js"
 import { ProviderID, type ModelID } from "../schema/index.js"
 import type { OpenResponsesProviderOptionsInput } from "./open-responses-options.js"

@@ -39,7 +39,11 @@
     "./pierre/*": "./src/pierre/*.ts",
     "./context": "./src/context/index.ts",
     "./context/*": "./src/context/*.tsx",
-    "./sources": "./src/sources/sources.ts",
+    "./sources": {
+      "types": "./src/sources/sources.d.vibe.ts",
+      "vibelang-source": "./src/sources/sources.vibe",
+      "default": "./.vibelang/js/src/sources/sources.js"
+    },
     "./sources/experiment": "./src/sources/experiment.ts",
     "./sources/panel": "./src/sources/sources-panel.tsx",
     "./sources/title": "./src/sources/sources-title.tsx",
@@ -50,7 +54,7 @@
   },
   "scripts": {
     "typecheck": "bun check --no-script -b",
-    "typecheck:tsc": "tsc -b",
+    "typecheck:tsc": "vibelang -b",
     "test": "bun test src --only-failures",
     "test:components": "playwright test --config playwright.components.config.ts",
     "test:components:ui": "playwright test --config playwright.components.config.ts --ui"
@@ -62,7 +66,9 @@
     "@types/bun": "catalog:",
     "@typescript/native": "catalog:",
     "vite": "catalog:",
-    "vite-plugin-solid": "catalog:"
+    "vite-plugin-solid": "catalog:",
+    "vibelang": "file:../../.vibelang-toolchain/vibelang-0.0.11-1ded989eae73.tgz",
+    "vibelang-vite": "file:../../.vibelang-toolchain/vibelang-vite-0.0.11-5223c46c8aba.tgz"
   },
   "dependencies": {
     "@kitlangton/solid-motion": "0.2.2",
@@ -81,6 +87,7 @@
     "dompurify": "3.4.17",
     "marked": "catalog:",
     "pele": "1.7.0",
-    "solid-js": "catalog:"
+    "solid-js": "catalog:",
+    "vibelang-runtime": "file:../../.vibelang-toolchain/vibelang-runtime-0.0.11-587937650a6b.tgz"
   }
 }

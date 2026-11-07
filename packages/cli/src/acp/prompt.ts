@@ -6,7 +6,7 @@ import { access, constants } from "node:fs/promises"
 import { fileURLToPath } from "node:url"
 import { builtinCommands, type Catalog } from "./catalog"
 import { linkReference, promptContentToParts, type PromptPart } from "./content"
-import { ACPError } from "./error"
+import { ACPError } from "./error.vibe"
 import type { ACPTranslate } from "./translate"
 
 export type Prepared = {

@@ -4,7 +4,7 @@ import { expect, test } from "bun:test"
 import { Effect, Exit, FileSystem } from "effect"
 import { Command } from "effect/cli"
 import path from "node:path"
-import { Commands } from "../src/commands/commands"
+import { Commands } from "../src/commands/commands.vibe"
 import { ServiceConfig } from "../src/services/service-config"
 import { it } from "../../core/test/lib/effect"
 

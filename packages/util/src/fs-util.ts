@@ -36,7 +36,8 @@ export namespace FSUtil {
     readonly type?: "file" | "directory"
   }
 
-  export interface Interface extends FileSystem.FileSystem {
+  // Effect 4.1 added FileSystem.readDirectoryEntries with its own entry type; this service keeps its lowercase DirEntry.
+  export interface Interface extends Omit<FileSystem.FileSystem, "readDirectoryEntries"> {
     readonly isDir: (path: string) => Effect.Effect<boolean>
     readonly isFile: (path: string) => Effect.Effect<boolean>
     readonly existsSafe: (path: string) => Effect.Effect<boolean>

@@ -1,13 +1,13 @@
-import { AuthOptions, type ProviderAuthOption } from "../route/auth-options.js"
+import { AuthOptions, type ProviderAuthOption } from "../route/auth-options.vibe"
 import { Route, type RouteDefaultsInput } from "../route/client.js"
 import { Endpoint } from "../route/endpoint.js"
-import { MediaRoute } from "../route/media.js"
+import { MediaRoute } from "../route/media.vibe"
 import { ProviderID, type ModelID, type ProviderOptions } from "../schema/index.js"
 import { OpenAIChat } from "../protocols/openai-chat.js"
 import { OpenResponsesChannel } from "../protocols/open-responses-channel.js"
 import { XAIResponses } from "../protocols/xai-responses.js"
-import { XAIImages } from "../protocols/xai-images.js"
-import { XAIVideo } from "../protocols/xai-video.js"
+import { XAIImages } from "../protocols/xai-images.vibe"
+import { XAIVideo } from "../protocols/xai-video.vibe"
 import type { OpenAIOptionsInput } from "./openai-options.js"
 import type { ProviderPackage } from "../provider-package.js"
 
@@ -29,8 +29,8 @@ export type Settings = ProviderPackage.Settings &
     readonly baseURL?: string
   }
 
-export type { XAIImageOptions } from "../protocols/xai-images.js"
-export type { XAIVideoOptions } from "../protocols/xai-video.js"
+export type { XAIImageOptions } from "../protocols/xai-images.vibe"
+export type { XAIVideoOptions } from "../protocols/xai-video.vibe"
 
 const RESPONSES_WEBSOCKET_ROTATE_AFTER_MS = 24 * 60 * 1000
 

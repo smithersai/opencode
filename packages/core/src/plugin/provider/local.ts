@@ -5,11 +5,11 @@ import { HttpClient, HttpClientRequest, HttpClientResponse } from "effect/http"
 import { shellParserWasm } from "#shell-parser-wasm"
 import { Config } from "../../config.js"
 import { Environment } from "../../environment/index.js"
-import { EnvironmentUnavailable } from "../../environment/unavailable.js"
+import { EnvironmentUnavailable } from "../../environment/unavailable.vibe"
 import { Location } from "../../location.js"
 import { Model } from "../../model.js"
 import type { PluginInternal } from "../internal.js"
-import { foldSettings } from "./configured.js"
+import { foldSettings } from "./configured.vibe"
 
 export type LocalModel = {
   readonly id: string

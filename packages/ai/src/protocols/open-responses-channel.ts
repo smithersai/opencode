@@ -1,6 +1,6 @@
 import { Effect, Schema, Stream } from "effect"
 import { Headers } from "effect/http"
-import { Framing } from "../route/framing.js"
+import { Framing } from "../route/framing.vibe"
 import type { AIError, HttpContext } from "../schema/index.js"
 import {
   HttpTransport,
@@ -10,7 +10,7 @@ import {
   type Transport,
   type WebSocketChannelDriver,
   type WebSocketChannelExchange,
-} from "../route/transport/index.js"
+} from "../route/transport/index.vibe"
 import * as ProviderShared from "./shared.js"
 import { OpenResponses } from "./open-responses.js"
 import { OpenResponsesContinuation } from "./open-responses-continuation.js"

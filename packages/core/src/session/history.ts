@@ -4,7 +4,7 @@ import { Effect, Option, Schema } from "effect"
 import type { Model } from "@opencode/schema/model"
 import { SessionLegacy } from "@opencode/schema/session-legacy"
 import { Database } from "../database/database.js"
-import { MessageDecodeError } from "./error.js"
+import { MessageDecodeError } from "./error.vibe"
 import { SessionMessage } from "./message.js"
 import type { SessionSchema } from "./schema.js"
 import { Instructions } from "../instructions/index.js"
@@ -12,7 +12,7 @@ import { InstructionState } from "./instruction-state.js"
 import { SessionBlob } from "./blob.js"
 import { SessionRecentText } from "./recent-text.js"
 import { SessionMessageTable } from "./sql.js"
-import { SessionStored } from "./stored.js"
+import { SessionStored } from "./stored.vibe"
 
 type DatabaseService = Database.Interface["db"]
 

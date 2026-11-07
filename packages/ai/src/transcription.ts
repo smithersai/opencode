@@ -1,10 +1,10 @@
 import { Effect, Schema, Stream } from "effect"
-import { Generation, ProgressEvent, QueuedEvent, type AwaitOptions } from "./generation.js"
+import { Generation, ProgressEvent, QueuedEvent, type AwaitOptions } from "./generation.vibe"
 import { Media } from "./media.js"
-import { MediaModel, composeRoute, tryRequest } from "./media-model.js"
-import { MediaRoute } from "./route/media.js"
+import { MediaModel, composeRoute, tryRequest } from "./media-model.vibe"
+import { MediaRoute } from "./route/media.vibe"
 import { AIError, HttpOptions, MediaUsage, ProviderMetadata, ProviderOptions } from "./schema/index.js"
-import { TranscriptionClient, Service } from "./transcription-client.js"
+import { TranscriptionClient, Service } from "./transcription-client.vibe"
 
 // ---------------------------------------------------------------------------
 // Model

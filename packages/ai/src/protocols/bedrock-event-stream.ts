@@ -3,7 +3,7 @@ import { fromUtf8, toUtf8 } from "@smithy/util-utf8"
 import { Effect, Schema, Stream } from "effect"
 import { Base64 } from "effect/encoding"
 import { AIError, AIErrorReason, InvalidProviderOutputError } from "../schema/index.js"
-import { Framing } from "../route/framing.js"
+import { Framing } from "../route/framing.vibe"
 import { ProviderShared } from "./shared.js"
 
 // Bedrock streams responses using the AWS event stream binary protocol — each

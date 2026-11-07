@@ -4,9 +4,9 @@ import { Context, Effect, Layer } from "effect"
 import { HttpEffect, HttpMiddleware, HttpRouter, HttpServer } from "effect/http"
 import { SessionRestart } from "@opencode/core/session/execution/restart"
 import type { LayerNode } from "@opencode/util/effect/layer-node"
-import { isAllowedCorsOrigin } from "./cors"
+import { isAllowedCorsOrigin } from "./cors.vibe"
 import { createRoutes } from "./routes"
-import type { ServerOptions } from "./options"
+import type { ServerOptions } from "./options.vibe"
 
 export interface BootOptions {
   /**

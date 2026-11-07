@@ -16,7 +16,7 @@ import { IntegrationConnection } from "./integration/connection.js"
 import { Credential } from "@opencode/schema/credential"
 import { Location } from "./location.js"
 import { freeze } from "immer"
-import { AISDKNative } from "./aisdk-native.js"
+import { AISDKNative } from "./aisdk-native.vibe"
 
 export const ID = Provider.ID
 export type ID = typeof ID.Type

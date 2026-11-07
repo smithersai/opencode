@@ -13,17 +13,42 @@
     "access": "public"
   },
   "files": [
-    "dist"
+    "dist",
+    ".vibelang/js"
   ],
   "exports": {
-    ".": "./src/promise/index.ts",
-    "./promise": "./src/promise/index.ts",
+    ".": {
+      "types": "./src/promise/index.ts",
+      "vibelang-source": "./src/promise/index.ts",
+      "default": "./.vibelang/js/src/promise/index.js"
+    },
+    "./promise": {
+      "types": "./src/promise/index.ts",
+      "vibelang-source": "./src/promise/index.ts",
+      "default": "./.vibelang/js/src/promise/index.js"
+    },
     "./promise/api": "./src/promise/api.ts",
-    "./service": "./src/promise/service.ts",
-    "./solid": "./src/solid/index.ts",
-    "./effect": "./src/effect/index.ts",
+    "./service": {
+      "types": "./src/promise/service.ts",
+      "vibelang-source": "./src/promise/service.ts",
+      "default": "./.vibelang/js/src/promise/service.js"
+    },
+    "./solid": {
+      "types": "./src/solid/index.ts",
+      "vibelang-source": "./src/solid/index.ts",
+      "default": "./.vibelang/js/src/solid/index.js"
+    },
+    "./effect": {
+      "types": "./src/effect/index.d.vibe.ts",
+      "vibelang-source": "./src/effect/index.vibe",
+      "default": "./.vibelang/js/src/effect/index.js"
+    },
     "./effect/api": "./src/effect/api.ts",
-    "./effect/service": "./src/effect/service.ts",
+    "./effect/service": {
+      "types": "./src/effect/service.ts",
+      "vibelang-source": "./src/effect/service.ts",
+      "default": "./.vibelang/js/src/effect/service.js"
+    },
     "./mcp": "./src/mcp.ts"
   },
   "scripts": {
@@ -33,11 +58,12 @@
     "check:generated": "bun run generate && git diff --exit-code -- src/promise/generated src/effect/generated src/effect/api",
     "test": "bun test --timeout 5000",
     "typecheck": "bun check --no-script",
-    "typecheck:tsc": "tsc --noEmit"
+    "typecheck:tsc": "vibelang --noEmit"
   },
   "dependencies": {
     "@opencode/schema": "workspace:*",
-    "@opencode/protocol": "workspace:*"
+    "@opencode/protocol": "workspace:*",
+    "vibelang-runtime": "file:../../.vibelang-toolchain/vibelang-runtime-0.0.11-587937650a6b.tgz"
   },
   "peerDependencies": {
     "effect": "catalog:",
@@ -59,6 +85,8 @@
     "@types/bun": "catalog:",
     "@typescript/native": "catalog:",
     "effect": "catalog:",
-    "solid-js": "catalog:"
+    "solid-js": "catalog:",
+    "vibelang": "file:../../.vibelang-toolchain/vibelang-0.0.11-1ded989eae73.tgz",
+    "vibelang-unplugin": "file:../../.vibelang-toolchain/vibelang-unplugin-0.0.11-0cd78f8e2c0c.tgz"
   }
 }

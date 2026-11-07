@@ -1,5 +1,5 @@
 import { Cause, type Context, Effect, Exit, Fiber } from "effect"
-import type { Diagnostic } from "../codemode.js"
+import type { Diagnostic } from "../codemode.vibe"
 import { locate, normalizeError } from "./errors.js"
 import type { Interpreter } from "./interpreter.js"
 import { MAX_PENDING_PROMISES } from "./limits.js"

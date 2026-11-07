@@ -1,10 +1,10 @@
 import { intro, log, outro, spinner } from "@clack/prompts"
 import { Effect, Option } from "effect"
-import { Commands } from "../commands"
+import { Commands } from "../commands.vibe"
 import { Runtime } from "../../framework/runtime"
 import { Updater } from "../../services/updater"
 import { handlePromptErrors } from "../../ui/prompt"
-import { OPENCODE_VERSION } from "../../version"
+import { OPENCODE_VERSION } from "../../version.vibe"
 import { stripVTControlCharacters } from "node:util"
 
 export default Runtime.handler(

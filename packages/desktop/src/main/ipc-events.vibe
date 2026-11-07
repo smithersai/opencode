@@ -1,0 +1,33 @@
+import type { WebContents } from "electron"
+import type { DesktopEvent } from "../shared/ipc-rpc/events.vibe"
+
+const queues = new Map<number, Queue<DesktopEvent>>()
+
+export const bindIpcEvents = effect (senderId: number) =>
+  try withSpan(
+    effect {
+      const queue = try Queue.unbounded<DesktopEvent>()
+      const previous = queues.get(senderId)
+      queues.set(senderId, queue)
+
+      if (previous) try Queue.shutdown(previous)
+
+      return (effect () => {
+        if (queues.get(senderId) === queue) queues.delete(senderId)
+        try Queue.shutdown(queue)
+      })()
+    },
+    "IpcEvents.bind",
+  )
+
+export function ipcEventStream(senderId: number) {
+  const queue = queues.get(senderId)
+
+  return queue ? Stream.fromQueue(queue) : Stream.empty
+}
+
+export function emitIpcEvent(sender: WebContents, event: DesktopEvent) {
+  const queue = queues.get(sender.id)
+
+  if (queue) Queue.offerUnsafe(queue, event)
+}

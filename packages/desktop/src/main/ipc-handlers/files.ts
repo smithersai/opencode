@@ -1,5 +1,5 @@
 import { Effect } from "effect"
-import { FileRpcs } from "../../shared/ipc-rpc"
+import { FileRpcs } from "../../shared/ipc-rpc.vibe"
 import { DesktopFiles, openExternalURL, openLocalFileURL } from "../files"
 import { IpcPortHandoff } from "../ipc-transport"
 import { sender } from "./context"

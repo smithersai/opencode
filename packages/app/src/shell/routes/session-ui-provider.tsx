@@ -3,7 +3,7 @@ import { MarkdownProvider, type ReadMarkdownImage } from "@opencode/session-ui/c
 import { useNavigate, useParams } from "@solidjs/router"
 import { useQuery } from "@tanstack/solid-query"
 import { createMemo, onCleanup, type ParentProps } from "solid-js"
-import { useProviders } from "@/providers/catalog/providers"
+import { useProviders } from "../../providers/catalog/providers.vibe"
 import { LocalProvider } from "@/providers/models/selection"
 import type { ServerConnection } from "@/runtime/server/registry"
 import { sessionHref } from "@/shell/routes/session"

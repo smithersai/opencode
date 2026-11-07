@@ -1,0 +1,69 @@
+export * as LocationLifecycle from "./location-lifecycle.vibe"
+
+import { Effect } from "effect"
+import { makeLocationNode } from "@opencode/util/effect/app-node"
+import { LocationEvent } from "@opencode/schema/location-event"
+import { Bus } from "./bus.ts"
+import { Form } from "./form.ts"
+import { Location } from "./location.ts"
+import { LocationServiceMap } from "./location-service-map.ts"
+import { Permission } from "./permission.ts"
+import { Project } from "./project.ts"
+import { Rpc } from "./rpc.ts"
+import { SessionEvent } from "./session/event.ts"
+
+const isSessionEvent = Schema.is(SessionEvent.Durable)
+
+export service Service: { readonly isClosed: () => boolean; readonly shutdown: void!! } {
+  static readonly key = "@opencode/LocationLifecycle"
+}
+
+const layer = Layer.effect(
+  Service,
+  effect {
+    const bus = try Bus.Service
+    const location = try Location.Service
+    const permission = try Permission.Service
+    const forms = try Form.Service
+    const rpc = try Rpc.Service
+    const project = try Project.Service
+    const scope = try Effect.scope
+    try project.activate(location.project.id)
+    const unsubscribe = try bus.listen((event) => {
+      if (!isSessionEvent(event) || !event.location) return Effect.void
+      const ref = LocationServiceMap.canonical(event.location)
+      if (ref.directory !== location.directory || ref.workspaceID !== location.workspaceID) return Effect.void
+      // Listeners run inside publish; keep the write and its Project event off that path.
+      return project.activate(location.project.id) |> Effect.forkIn(%, scope) |> Effect.asVoid(%)
+    })
+    try Effect.addFinalizer(() => unsubscribe)
+    let closed = false
+    const done = try Deferred.make<void>()
+    const shutdown = Effect.suspend(() => {
+      if (closed) return Deferred.await(done)
+      closed = true
+      return effect {
+        try permission.close
+        try forms.close
+        try rpc.close
+        try bus.publish(
+          LocationEvent.Shutdown,
+          {},
+          {
+            location: Location.Ref.make({ directory: location.directory, workspaceID: location.workspaceID }),
+          },
+        )
+      } |> Effect.ensuring(%, Deferred.succeed(done, undefined))
+    }) |> Effect.uninterruptible(%)
+    return Service.of({
+      isClosed: () => closed,
+      shutdown,
+    })
+  },
+)
+
+export const node = makeLocationNode({
+  service: Service,
+  layer,
+  deps: [Bus.node, Location.node, Permission.node, Project.node, Form.node, Rpc.node],
+})

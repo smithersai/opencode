@@ -185,6 +185,7 @@ const make = (options: Config) =>
         compiler,
         transactionAcquirer,
         transactionService: WorkerdTransaction,
+        driver: "opencode-sqlite-workerd",
         spanAttributes: [
           ...(options.spanAttributes ? Object.entries(options.spanAttributes) : []),
           [ATTR_DB_SYSTEM_NAME, "sqlite"],

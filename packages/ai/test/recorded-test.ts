@@ -1,22 +1,22 @@
 import { HttpRecorder } from "@opencode/http-recorder"
-import { NodeSocket } from "@effect/platform-node"
+import { NodeWS } from "@effect/platform-node"
 import { Effect, Layer } from "effect"
 import { Socket } from "effect/socket"
 import * as path from "node:path"
 import { fileURLToPath } from "node:url"
 import { LLMClient, RequestExecutor } from "../src/route.js"
-import { ImageClient } from "../src/image-client.js"
-import { VideoClient } from "../src/video-client.js"
-import { SpeechClient } from "../src/speech-client.js"
-import { TranscriptionClient } from "../src/transcription-client.js"
-import { DecisionClient } from "../src/decision-client.js"
-import type { Service as DecisionClientService } from "../src/decision-client.js"
-import type { Service as ImageClientService } from "../src/image-client.js"
-import type { Service as VideoClientService } from "../src/video-client.js"
-import type { Service as SpeechClientService } from "../src/speech-client.js"
-import type { Service as TranscriptionClientService } from "../src/transcription-client.js"
+import { ImageClient } from "../src/image-client.vibe"
+import { VideoClient } from "../src/video-client.vibe"
+import { SpeechClient } from "../src/speech-client.vibe"
+import { TranscriptionClient } from "../src/transcription-client.vibe"
+import { DecisionClient } from "../src/decision-client.vibe"
+import type { Service as DecisionClientService } from "../src/decision-client.vibe"
+import type { Service as ImageClientService } from "../src/image-client.vibe"
+import type { Service as VideoClientService } from "../src/video-client.vibe"
+import type { Service as SpeechClientService } from "../src/speech-client.vibe"
+import type { Service as TranscriptionClientService } from "../src/transcription-client.vibe"
 import type { Service as LLMClientService } from "../src/route/client.js"
-import type { Service as RequestExecutorService } from "../src/route/executor.js"
+import type { Service as RequestExecutorService } from "../src/route/executor.vibe"
 import {
   recordedEffectGroup,
   type RecordedCaseOptions as RunnerCaseOptions,
@@ -100,7 +100,7 @@ export const recordedTests = (options: RecordedTestsOptions) =>
         ...recorderOptions,
         directory: FIXTURES_DIR,
         metadata: recorderMetadata,
-      }).pipe(Layer.provide(NodeSocket.layerWebSocketConstructorWS))
+      }).pipe(Layer.provide(NodeWS.layerWebSocketConstructor))
       const layer = Layer.mergeAll(
         requestExecutor,
         LLMClient.layer.pipe(Layer.provide(requestExecutor)),

@@ -20,7 +20,7 @@ import {
   refusal,
   type Policy,
 } from "./policy"
-import type { PaneElement } from "./ipc"
+import type { PaneElement } from "./ipc.vibe"
 
 type Element = { backendID: number; frameID: string; sessionID?: string }
 

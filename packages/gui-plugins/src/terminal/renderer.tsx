@@ -14,7 +14,7 @@ import {
 import type Terminal from "./index"
 import { terminalToggleCommand } from "./index"
 import { createTerminalModel, type TerminalWorkspace } from "./model"
-import { terminalTab, type LocalPTY } from "./state"
+import { terminalTab, type LocalPTY } from "./state.vibe"
 import { terminalTabLabel } from "./title"
 import { TerminalTabLabel } from "./label"
 import quoteStyles from "./quote.css?inline"

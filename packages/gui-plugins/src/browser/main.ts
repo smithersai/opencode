@@ -1,8 +1,8 @@
 import { builtinMainContext } from "@opencode/plugin/gui/builtin"
 import type { Plugin } from "@opencode/plugin/gui/main"
 import type { Pane } from "./pane"
-import { RefsStore } from "./refs"
-import { BrowserPane } from "./ipc"
+import { RefsStore } from "./refs.vibe"
+import { BrowserPane } from "./ipc.vibe"
 
 /** The pane once a window first registered one. */
 type LoadedPane = { pane?: Promise<Pane> }

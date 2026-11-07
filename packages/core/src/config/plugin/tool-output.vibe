@@ -1,0 +1,23 @@
+export * as ConfigToolOutputPlugin from "./tool-output.vibe"
+
+import { define } from "@opencode/plugin/effect/plugin"
+import { Config } from "../../config.js"
+import { ToolOutput } from "../../tool-output.js"
+import { ConfigEntryObserver } from "./entry-observer.js"
+
+export const Plugin = define({
+  id: "opencode.config.tool-output",
+  effect: effect (ctx) => {
+    const config = try Config.Service
+    const output = try ToolOutput.Service
+    const loaded = try ConfigEntryObserver.observe(config, ctx.event, output.reload())
+    try output.transform((editor) => {
+      const configured = Config.latest(loaded.entries, "tool_output")
+      if (!configured) return
+      editor.configure({
+        ...(configured.max_lines === undefined ? {} : { maxLines: configured.max_lines }),
+        ...(configured.max_bytes === undefined ? {} : { maxBytes: configured.max_bytes }),
+      })
+    })
+  },
+})

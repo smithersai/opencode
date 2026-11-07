@@ -6,7 +6,7 @@ import { Global } from "@opencode/util/global"
 import { Bus } from "../../bus.js"
 import { Credential } from "../../credential.js"
 import { Provider } from "../../provider.js"
-import { configuredSettings } from "./configured.js"
+import { configuredSettings } from "./configured.vibe"
 
 const ADC_METHOD = "google-adc"
 

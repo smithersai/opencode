@@ -2,6 +2,7 @@
   "$schema": "https://json.schemastore.org/tsconfig",
   "extends": "./tsconfig.json",
   "compilerOptions": {
+    "rewriteRelativeImportExtensions": true,
     "composite": false,
     "incremental": false,
     "rootDir": "src",
@@ -11,5 +12,6 @@
     "emitDeclarationOnly": true,
     "tsBuildInfoFile": null
   },
-  "include": ["src"]
+  "include": ["src"],
+  "vibelang": { "declarationImportStyle": "extensionless" }
 }

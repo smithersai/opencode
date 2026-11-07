@@ -1,5 +1,5 @@
 import os from "os"
-import { App } from "../../app.js"
+import { App } from "../../app.vibe"
 import { Clock, Deferred, Effect, Exit, Option, Schema, Semaphore, Stream } from "effect"
 import { HttpClient, HttpClientRequest, HttpClientResponse } from "effect/http"
 import type { Server, ServerResponse } from "node:http"

@@ -1,13 +1,13 @@
 export * as ToolOutput from "./tool-output.js"
 
 import path from "path"
-import type { Tool } from "./tool.js"
+import type { Tool } from "./tool.vibe"
 import { Context, Duration, Effect, Layer, Schedule } from "effect"
 import { makeGlobalNode, makeLocationNode } from "@opencode/util/effect/app-node"
 import { FSUtil } from "@opencode/util/fs-util"
 import { Global } from "@opencode/util/global"
 import { Identifier } from "@opencode/schema/identifier"
-import { FileRetention } from "./file-retention.js"
+import { FileRetention } from "./file-retention.vibe"
 import { State } from "./state.js"
 
 export const MAX_LINES = 2_000

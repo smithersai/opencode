@@ -68,7 +68,7 @@ import {
   renamedStoreName,
   storeImports,
   storeName,
-} from "./stores"
+} from "./stores.vibe"
 import { ui } from "./ui"
 
 type Attached = {

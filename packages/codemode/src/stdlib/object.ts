@@ -24,7 +24,7 @@ import { primitivePrototype } from "../interpreter/intrinsics.js"
 import { containsOpaqueReference, describeValue, rejectCircularInsertion } from "../interpreter/references.js"
 import { invoke, preserveConsumerError } from "../interpreter/callback.js"
 import type { Interpreter } from "../interpreter/interpreter.js"
-import { ToolReference } from "../tool-runtime.js"
+import { ToolReference } from "../tool-runtime.vibe"
 import { groupBy } from "./collections.js"
 
 // ToObject for enumeration.

@@ -1,0 +1,14 @@
+import { EventRpcs } from "../../shared/ipc-rpc.vibe"
+import { ipcEventStream } from "../ipc-events.vibe"
+import { IpcPortHandoff } from "../ipc-transport.ts"
+import { sender } from "./context.ts"
+
+export const eventHandlers = EventRpcs.toLayer(
+  effect {
+    const handoff = try IpcPortHandoff
+
+    return EventRpcs.of({
+      DesktopEvents: (_request, context) => ipcEventStream(sender(handoff, context).id),
+    })
+  },
+)

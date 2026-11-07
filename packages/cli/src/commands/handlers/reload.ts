@@ -2,7 +2,7 @@ import { EOL } from "node:os"
 import { Effect } from "effect"
 import { OpenCode } from "@opencode/client"
 import { Service } from "@opencode/client/effect/service"
-import { Commands } from "../commands"
+import { Commands } from "../commands.vibe"
 import { Runtime } from "../../framework/runtime"
 import { ServerConnection } from "../../services/server-connection"
 

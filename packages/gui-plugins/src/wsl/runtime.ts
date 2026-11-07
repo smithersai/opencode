@@ -2,7 +2,7 @@ import { spawn } from "node:child_process"
 import { existsSync } from "node:fs"
 import { join } from "node:path"
 import type { MainContext } from "@opencode/plugin/gui/main"
-import type { WslDistroProbe, WslInstalledDistro, WslOnlineDistro, WslRuntimeCheck } from "./contract"
+import type { WslDistroProbe, WslInstalledDistro, WslOnlineDistro, WslRuntimeCheck } from "./contract.vibe"
 import { discoverScript, installScript, parseVersion, versionScript } from "./remote-cli"
 
 export type WslCommandLine = {

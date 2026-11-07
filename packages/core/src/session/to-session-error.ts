@@ -3,7 +3,7 @@ import { Tool } from "@opencode/schema/tool"
 import { SessionError } from "@opencode/schema/session-error"
 import { Permission } from "../permission.js"
 import { Integration } from "../integration.js"
-import { AgentNotFoundError, StepFailedError } from "./error.js"
+import { AgentNotFoundError, StepFailedError } from "./error.vibe"
 import { ModelResolver } from "../model-resolver.js"
 import { SessionRunnerModel } from "./runner/model.js"
 

@@ -11,9 +11,9 @@ import type { ServerOptions } from "@opencode/server/options"
 import type { LayerNode } from "@opencode/util/effect/layer-node"
 import { Context, Effect, Layer, ManagedRuntime, Scope } from "effect"
 import { HttpEffect, HttpRouter, HttpServer, HttpServerRequest } from "effect/http"
-import { context, layer, type LogOptions } from "../logging"
+import { context, layer, type LogOptions } from "../logging.vibe"
 import { OwnedFetch } from "./fetch"
-import { SdkInstances } from "./instances"
+import { SdkInstances } from "./instances.vibe"
 
 export interface CreateOptions<R = never> extends Omit<ServerOptions, "hostname" | "port" | "password"> {
   readonly log?: LogOptions

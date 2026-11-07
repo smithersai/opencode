@@ -15,7 +15,7 @@ import {
   type MountedSession,
   type SessionScreen,
 } from "@opencode/plugin/gui"
-import type { OpenApp } from "./apps"
+import type { OpenApp } from "./apps.vibe"
 import { useShared, type OpenRequest } from "./context"
 import { openInAppParentPath } from "./path"
 

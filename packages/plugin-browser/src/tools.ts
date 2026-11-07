@@ -5,8 +5,8 @@ import { Tool } from "@opencode/schema/tool"
 import { Effect, Result, Schema } from "effect"
 import { Base64 } from "effect/encoding"
 import type { BrowserConnection } from "./connection.js"
-import { BrowserFiles } from "./files.js"
-import { Browser } from "./rpc.js"
+import { BrowserFiles } from "./files.vibe"
+import { Browser } from "./rpc.vibe"
 import { BrowserSkill } from "./skill.js"
 
 export const register = Effect.fn("BrowserTools.register")(function* (

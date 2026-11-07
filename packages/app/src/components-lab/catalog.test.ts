@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test"
 import { choice, knob, text, toggle } from "knobs"
-import { knobArgs, labEntry, labFields, stateArgs } from "./catalog"
+import { knobArgs, labEntry, labFields, stateArgs } from "./catalog.vibe"
 
 const source = `
 export default { title: "Lab/Docks" }

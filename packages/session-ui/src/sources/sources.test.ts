@@ -1,6 +1,6 @@
 import type { SessionMessageAssistant, SessionMessageAssistantTool, SessionMessageInfo } from "@opencode/client/promise"
 import { describe, expect, test } from "bun:test"
-import { turnMessages, turnSources } from "./sources"
+import { turnMessages, turnSources } from "./sources.vibe"
 
 const model = { id: "claude-sonnet-4", providerID: "anthropic" }
 

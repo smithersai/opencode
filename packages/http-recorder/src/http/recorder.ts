@@ -3,11 +3,11 @@ import { Deferred, Effect, Layer, Ref } from "effect"
 import { FetchHttpClient, HttpClient, HttpClientError, HttpClientRequest, HttpClientResponse } from "effect/http"
 import { fileSystem, Service } from "../cassette/store.js"
 import type { RecorderOptions } from "../options.js"
-import { make, redactUrl, type Redactor } from "../redaction/redactor.js"
+import { make, redactUrl, type Redactor } from "../redaction/redactor.vibe"
 import { makeReplayPoolState, resolveAutoMode } from "../replay/state.js"
-import { httpInteractions, type CassetteMetadata } from "../cassette/model.js"
-import { defaultMatcher, selectFirstMatching, type RequestMatcher } from "./matching.js"
-import type { HttpInteraction, ResponseSnapshot } from "./model.js"
+import { httpInteractions, type CassetteMetadata } from "../cassette/model.vibe"
+import { defaultMatcher, selectFirstMatching, type RequestMatcher } from "./matching.vibe"
+import type { HttpInteraction, ResponseSnapshot } from "./model.vibe"
 
 export { defaultMatcher }
 export type RecordReplayMode = "auto" | "record" | "replay" | "passthrough"
@@ -63,7 +63,11 @@ const responseFromSnapshot = (request: HttpClientRequest.HttpClientRequest, snap
 export const redactedErrorRequest = (
   request: HttpClientRequest.HttpClientRequest,
   redactedUrl = redactUrl(request.url),
-) => HttpClientRequest.make(request.method)(redactedUrl)
+) => {
+  // A request's method is any string since Effect 4.1, so rebuild the bare request around it rather than narrow it.
+  const bare = HttpClientRequest.get(redactedUrl)
+  return HttpClientRequest.makeWith(request.method, bare.url, bare.urlParams, bare.hash, bare.headers, bare.body)
+}
 const transportError = (request: HttpClientRequest.HttpClientRequest, description: string, redactedUrl?: string) =>
   new HttpClientError.HttpClientError({
     reason: new HttpClientError.TransportError({ request: redactedErrorRequest(request, redactedUrl), description }),

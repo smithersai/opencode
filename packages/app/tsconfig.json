@@ -1,6 +1,8 @@
 {
   "$schema": "https://json.schemastore.org/tsconfig",
   "compilerOptions": {
+    "rewriteRelativeImportExtensions": true,
+    "allowArbitraryExtensions": true,
     "types": ["bun", "node"],
     "composite": true,
     "target": "ESNext",
@@ -29,7 +31,9 @@
     "component-tests",
     "playwright.components.config.ts",
     "../stories/playwright/*.ts",
-    "package.json"
+    "package.json",
+    "playwright.components.config.vibe",
+    "../stories/playwright/*.vibe"
   ],
   "exclude": ["dist", "ts-dist"]
 }

@@ -6,7 +6,7 @@ import type { SessionMessage } from "@opencode/schema/session-message"
 import { TokenUsage } from "@opencode/schema/token-usage"
 import { ACPChild } from "./child"
 import { ACPCompaction } from "./compaction"
-import { ACPError } from "./error"
+import { ACPError } from "./error.vibe"
 import {
   completedToolUpdate,
   errorToolUpdate,

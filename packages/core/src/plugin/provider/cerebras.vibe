@@ -1,0 +1,15 @@
+import { define } from "@opencode/plugin/effect/plugin"
+
+export const CerebrasPlugin = define({
+  id: "opencode.provider.cerebras",
+  effect: effect (ctx) => {
+    try ctx.provider.transform((evt) => {
+      for (const item of evt.list()) {
+        if (item.provider.package !== "@opencode/ai/providers/cerebras") continue
+        evt.update(item.provider.id, (provider) => {
+          provider.headers = { ...provider.headers, "X-Cerebras-3rd-Party-Integration": "opencode" }
+        })
+      }
+    })
+  },
+})

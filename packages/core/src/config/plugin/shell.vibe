@@ -1,0 +1,19 @@
+export * as ConfigShellPlugin from "./shell.vibe"
+
+import { define } from "@opencode/plugin/effect/plugin"
+import { Config } from "../../config.js"
+import { ShellSelect } from "../../shell/select.js"
+import { ConfigEntryObserver } from "./entry-observer.js"
+
+export const Plugin = define({
+  id: "opencode.config.shell",
+  effect: effect (ctx) => {
+    const config = try Config.Service
+    const shell = try ShellSelect.Service
+    const loaded = try ConfigEntryObserver.observe(config, ctx.event, shell.reload())
+    try shell.transform((editor) => {
+      const configured = Config.latest(loaded.entries, "shell")
+      if (configured) editor.configure(configured)
+    })
+  },
+})

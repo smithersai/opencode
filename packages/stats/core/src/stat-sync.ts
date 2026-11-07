@@ -1,8 +1,8 @@
 import { DateTime, Effect } from "effect"
 import { Resource } from "sst/resource"
-import { DatabaseError } from "./database"
+import { DatabaseError } from "./database.vibe"
 import { loadCatalogIdentity } from "./domain/catalog-identity"
-import { GeoStatRepo, rowsFromAggregates as geoRowsFromAggregates } from "./domain/geo"
+import { GeoStatRepo, rowsFromAggregates as geoRowsFromAggregates } from "./domain/geo.vibe"
 import {
   buildRetentionQueries,
   buildStatsQueries,
@@ -12,11 +12,11 @@ import {
   toProviderAggregate,
   toRetentionAggregate,
 } from "./domain/inference"
-import { ModelStatRepo, rowsFromAggregates as modelRowsFromAggregates } from "./domain/model"
+import { ModelStatRepo, rowsFromAggregates as modelRowsFromAggregates } from "./domain/model.vibe"
 import { statProvider } from "./domain/model-normalization"
-import { ProviderStatRepo, rowsFromAggregates as providerRowsFromAggregates } from "./domain/provider"
-import { RetentionStatRepo, rowsFromAggregates as retentionRowsFromAggregates } from "./domain/retention"
-import { R2Sql, R2SqlQueryError } from "./r2-sql"
+import { ProviderStatRepo, rowsFromAggregates as providerRowsFromAggregates } from "./domain/provider.vibe"
+import { RetentionStatRepo, rowsFromAggregates as retentionRowsFromAggregates } from "./domain/retention.vibe"
+import { R2Sql, R2SqlQueryError } from "./r2-sql.vibe"
 import { syncRange } from "./sync-range"
 
 export type SyncStatsResult = { ok: true; rows: number; startedAt: string; periodStart: string; periodEnd: string }

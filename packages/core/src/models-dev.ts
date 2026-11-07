@@ -4,19 +4,19 @@ import { ConfigProvider } from "@opencode/schema/config/provider"
 import { MaxTokensField, MediaInput } from "@opencode/schema/model-compatibility"
 import { ModelsDev } from "@opencode/schema/models-dev"
 import { Money } from "@opencode/schema/money"
-import { App } from "./app.js"
+import { App } from "./app.vibe"
 import { Hash } from "@opencode/util/hash"
 import { FSUtil } from "@opencode/util/fs-util"
 import { Bus } from "./bus.js"
 import { makeGlobalNode } from "@opencode/util/effect/app-node"
 import { httpClient } from "@opencode/util/effect/app-node-platform"
 import { Model } from "./model.js"
-import { AISDKNative } from "./aisdk-native.js"
+import { AISDKNative } from "./aisdk-native.vibe"
 import { Provider } from "./provider.js"
 import { Variant } from "./variant.js"
-import { KV } from "./kv.js"
+import { KV } from "./kv.vibe"
 import snapshotText from "./models-dev/snapshot.txt" with { type: "text" }
-import { isV1, toV2 } from "./models-dev/v1.js"
+import { isV1, toV2 } from "./models-dev/v1.vibe"
 
 // Only the fields opencode reads are decoded. Unknown keys are ignored, and a model that
 // doesn't match is skipped rather than failing the whole catalog.

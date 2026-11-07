@@ -2,8 +2,8 @@ import { Effect, Schema, SchemaGetter } from "effect"
 import { Route } from "../route/client.js"
 import { Auth } from "../route/auth.js"
 import { Endpoint } from "../route/endpoint.js"
-import { Framing } from "../route/framing.js"
-import { Protocol } from "../route/protocol.js"
+import { Framing } from "../route/framing.vibe"
+import { Protocol } from "../route/protocol.vibe"
 import {
   AIError,
   LLMEvent,
@@ -14,13 +14,13 @@ import {
   type ToolResultPart,
 } from "../schema/index.js"
 import { Media } from "../media.js"
-import { classifyProviderFailure, providerErrorMessage } from "../provider-error.js"
-import { encodeJson } from "../utils/json.js"
+import { classifyProviderFailure, providerErrorMessage } from "../provider-error.vibe"
+import { encodeJson } from "../utils/json.vibe"
 import { JsonObject, knownString, lenient, optionalNull, ProviderShared } from "./shared.js"
 import { Lifecycle } from "./utils/lifecycle.js"
-import { MediaInput } from "./utils/media-input.js"
-import { GeminiGenerateContent } from "./utils/gemini-generate-content.js"
-import { ToolStream } from "./utils/tool-stream.js"
+import { MediaInput } from "./utils/media-input.vibe"
+import { GeminiGenerateContent } from "./utils/gemini-generate-content.vibe"
+import { ToolStream } from "./utils/tool-stream.vibe"
 
 const ADAPTER = "google-interactions"
 export const DEFAULT_BASE_URL = "https://generativelanguage.googleapis.com/v1beta"

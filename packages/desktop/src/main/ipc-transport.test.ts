@@ -6,7 +6,7 @@ import { Effect, Layer, ManagedRuntime, Predicate, Schema, Stream } from "effect
 import { Rpc, RpcGroup, RpcMessage, RpcServer } from "effect/rpc"
 import { Transferable } from "effect/workers"
 import { omitUndefined } from "../shared/ipc-transport"
-import { FilesOpenFilePicker } from "../shared/ipc-rpc/files"
+import { FilesOpenFilePicker } from "../shared/ipc-rpc/files.vibe"
 import { IpcPortHandoff, IpcServerProtocolLive } from "./ipc-transport"
 
 describe("desktop RPC transport", () => {

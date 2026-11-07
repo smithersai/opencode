@@ -13,20 +13,37 @@
     "access": "public"
   },
   "files": [
-    "dist"
+    "dist",
+    ".vibelang/js"
   ],
   "exports": {
-    ".": "./src/index.ts",
-    "./effect": "./src/effect/index.ts",
-    "./workerd": "./src/workerd.ts",
-    "./workerd/effect": "./src/effect/workerd.ts"
+    ".": {
+      "types": "./src/index.ts",
+      "vibelang-source": "./src/index.ts",
+      "default": "./.vibelang/js/src/index.js"
+    },
+    "./effect": {
+      "types": "./src/effect/index.ts",
+      "vibelang-source": "./src/effect/index.ts",
+      "default": "./.vibelang/js/src/effect/index.js"
+    },
+    "./workerd": {
+      "types": "./src/workerd.ts",
+      "vibelang-source": "./src/workerd.ts",
+      "default": "./.vibelang/js/src/workerd.js"
+    },
+    "./workerd/effect": {
+      "types": "./src/effect/workerd.ts",
+      "vibelang-source": "./src/effect/workerd.ts",
+      "default": "./.vibelang/js/src/effect/workerd.js"
+    }
   },
   "scripts": {
     "build": "bun run script/build.ts",
     "pack": "bun run script/pack.ts",
     "test": "bun test --timeout 5000",
     "typecheck": "bun check --no-script -b",
-    "typecheck:tsc": "tsc -b",
+    "typecheck:tsc": "vibelang -b",
     "verify:package": "bun run script/verify-package.ts"
   },
   "dependencies": {
@@ -36,7 +53,8 @@
     "@opencode/schema": "workspace:*",
     "@opencode/server": "workspace:*",
     "@opencode/util": "workspace:*",
-    "effect": "catalog:"
+    "effect": "catalog:",
+    "vibelang-runtime": "file:../../.vibelang-toolchain/vibelang-runtime-0.0.11-587937650a6b.tgz"
   },
   "devDependencies": {
     "@opencode/ai": "workspace:*",
@@ -44,6 +62,8 @@
     "@opencode/protocol": "workspace:*",
     "@tsconfig/bun": "catalog:",
     "@types/bun": "catalog:",
-    "@typescript/native": "catalog:"
+    "@typescript/native": "catalog:",
+    "vibelang": "file:../../.vibelang-toolchain/vibelang-0.0.11-1ded989eae73.tgz",
+    "vibelang-unplugin": "file:../../.vibelang-toolchain/vibelang-unplugin-0.0.11-0cd78f8e2c0c.tgz"
   }
 }

@@ -14,8 +14,8 @@ import { SessionSchema } from "../schema.js"
 import { SessionError } from "@opencode/schema/session-error"
 import { Money } from "@opencode/schema/money"
 import { contentFilterError } from "../to-session-error.js"
-import type { Tool } from "../../tool.js"
-import { stringify } from "../../tool/runtime.js"
+import type { Tool } from "../../tool.vibe"
+import { stringify } from "../../tool/runtime.vibe"
 
 type Input = {
   readonly sessionID: SessionSchema.ID

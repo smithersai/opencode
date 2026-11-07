@@ -1,9 +1,9 @@
 import { Client } from "@planetscale/database"
 import { Effect } from "effect"
 import { Resource } from "sst/resource"
-import type { ModelStatMetric } from "./model"
+import type { ModelStatMetric } from "./model.vibe"
 import { RETIRED_STAT_PROVIDERS, statProvider } from "./model-normalization"
-import { isMissingRetentionTable } from "./retention"
+import { isMissingRetentionTable } from "./retention.vibe"
 import { DATA_SITE_TIERS, normalizeTier } from "./stat"
 
 export type UsageProduct = "All Users" | "Zen" | "Go" | "Enterprise"

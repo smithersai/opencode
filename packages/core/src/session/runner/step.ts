@@ -15,10 +15,10 @@ import { SessionError } from "@opencode/schema/session-error"
 import { Bus } from "../../bus.js"
 import { Permission } from "../../permission.js"
 import { Snapshot } from "../../snapshot.js"
-import { Tool } from "../../tool.js"
+import { Tool } from "../../tool.vibe"
 import { ToolOutput } from "../../tool-output.js"
-import { QuestionTool } from "../../tool/plugin/question.js"
-import { StepFailedError } from "../error.js"
+import { QuestionTool } from "../../tool/plugin/question.vibe"
+import { StepFailedError } from "../error.vibe"
 import { SessionEvent } from "../event.js"
 import { SessionMessage } from "../message.js"
 import { SessionModelRequest } from "../model-request.js"
@@ -27,7 +27,7 @@ import { toSessionError } from "../to-session-error.js"
 import { SessionUsage } from "../usage.js"
 import { SessionRunnerModel } from "./model.js"
 import { createLLMEventPublisher } from "./publish-llm-event.js"
-import { SessionRunnerRetry } from "./retry.js"
+import { SessionRunnerRetry } from "./retry.vibe"
 
 export type Outcome = Data.TaggedEnum<{
   Completed: { readonly needsContinuation: boolean }
@@ -144,7 +144,12 @@ export const make = Effect.gen(function* () {
         const streamFailure = Option.getOrUndefined(Exit.findErrorOption(stream))
         const streamInterrupted = Exit.hasInterrupts(stream)
         // Cancelled before the start snapshot existed: record nothing, as when the capture preceded the request.
-        if (streamInterrupted && !publisher.hasStarted() && !pendingStartSnapshot.pollUnsafe())
+        if (
+          streamInterrupted &&
+          Exit.isFailure(stream) &&
+          !publisher.hasStarted() &&
+          !pendingStartSnapshot.pollUnsafe()
+        )
           return yield* Effect.failCause(stream.cause)
         if (!overflowFailure && publisher.hasStarted()) yield* publisher.streamed()
         if (streamInterrupted) yield* interruptTools

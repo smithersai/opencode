@@ -4,7 +4,7 @@ import { IconButton } from "@opencode/ui/icon-button"
 import { Menu } from "@opencode/ui/menu"
 import { Show } from "solid-js"
 import { usePlugin, type IpcClient, type ServerRow } from "@opencode/plugin/gui"
-import type { Wsl, WslServersState } from "./contract"
+import type { Wsl, WslServersState } from "./contract.vibe"
 import { wslOpencodeAction } from "./model"
 
 export default function WslRow(props: {

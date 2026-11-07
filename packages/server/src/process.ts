@@ -14,13 +14,13 @@ import { HttpMiddleware, HttpRouter, HttpServerRequest, HttpServerResponse } fro
 import { NetAddress } from "effect/net"
 import { createServer } from "node:http"
 import { ServerAuth } from "./auth"
-import { isAllowedCorsOrigin } from "./cors"
+import { isAllowedCorsOrigin } from "./cors.vibe"
 import { authorizedRequest, unauthorizedResponse } from "./middleware/authorization"
-import { withoutParentSpan } from "./request-tracing"
+import { withoutParentSpan } from "./request-tracing.vibe"
 import { createRoutes } from "./routes"
 import { ServerInfo } from "./server-info"
 import { Status } from "./service-status"
-import type { ServerOptions } from "./options"
+import type { ServerOptions } from "./options.vibe"
 
 export interface Lifecycle<E = never, R = never> {
   readonly onListen: (

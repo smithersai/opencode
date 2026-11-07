@@ -10,7 +10,7 @@ import { Throw } from "../../src/interpreter/model.js"
 import { createErrorValue } from "../../src/interpreter/intrinsics.js"
 import { constructor, fn, methods } from "../../src/interpreter/native.js"
 import { Callable, define, get, hidden, Arr, Fn, Obj, type Value } from "../../src/interpreter/objects.js"
-import { ToolRuntime } from "../../src/tool-runtime.js"
+import { ToolRuntime } from "../../src/tool-runtime.vibe"
 
 export const root = import.meta.dir
 

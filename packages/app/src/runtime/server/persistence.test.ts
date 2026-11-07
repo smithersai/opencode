@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test"
 import { Schema } from "effect"
-import { ModelState, ServerState } from "./persistence"
+import { ModelState, ServerState } from "./persistence.vibe"
 import { Persistence } from "@/runtime/persistence/schema"
 
 const initial = { list: [], hidden: {}, lastProjectID: {}, usedProjectIDs: {}, hostnames: {}, projects: {} }

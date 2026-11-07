@@ -5,27 +5,29 @@
   "private": true,
   "type": "module",
   "license": "MIT",
-  "main": "./src/stat-sync.ts",
+  "main": "./src/stat-sync.vibe",
   "exports": {
-    ".": "./src/stat-sync.ts"
+    ".": "./src/stat-sync.vibe"
   },
   "scripts": {
     "start": "bun src/stat-sync.ts",
     "typecheck": "bun check --no-script",
-    "typecheck:tsc": "tsc --noEmit"
+    "typecheck:tsc": "vibelang --noEmit"
   },
   "dependencies": {
     "@effect/platform-node": "catalog:",
     "@opencode/stats-core": "workspace:*",
     "effect": "catalog:",
-    "sst": "catalog:"
+    "sst": "catalog:",
+    "vibelang-runtime": "file:../../../.vibelang-toolchain/vibelang-runtime-0.0.11-587937650a6b.tgz"
   },
   "devDependencies": {
     "@tsconfig/node22": "catalog:",
     "@types/bun": "catalog:",
     "@types/node": "catalog:",
     "@typescript/native": "catalog:",
-    "typescript": "catalog:"
+    "typescript": "catalog:",
+    "vibelang": "file:../../../.vibelang-toolchain/vibelang-0.0.11-1ded989eae73.tgz"
   },
   "engines": {
     "node": ">=22"

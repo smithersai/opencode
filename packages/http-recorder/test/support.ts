@@ -4,7 +4,7 @@ import { HttpBody, HttpClient, HttpClientRequest } from "effect/http"
 import { mkdtempSync, readFileSync, rmSync } from "node:fs"
 import { tmpdir } from "node:os"
 import { join } from "node:path"
-import { decodeCassette, type Interaction } from "../src/cassette/model"
+import { decodeCassette, type Interaction } from "../src/cassette/model.vibe"
 import { Service, fileSystem } from "../src/cassette/store"
 
 export const tempDirectory = (prefix: string) => {

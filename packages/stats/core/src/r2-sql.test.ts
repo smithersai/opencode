@@ -2,7 +2,7 @@ import { Database } from "bun:sqlite"
 import { Effect, Fiber } from "effect"
 import { TestClock } from "effect/testing"
 import { expect, test } from "bun:test"
-import { queryR2SqlPages, R2SqlQueryError, type R2SqlData } from "./r2-sql"
+import { queryR2SqlPages, R2SqlQueryError, type R2SqlData } from "./r2-sql.vibe"
 
 test("includes the transport failure in the message used by sync logging", () => {
   const cause = new DOMException("The operation timed out.", "TimeoutError")

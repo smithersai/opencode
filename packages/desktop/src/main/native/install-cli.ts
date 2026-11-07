@@ -1,7 +1,7 @@
 import { dialog } from "electron"
 import { Effect } from "effect"
-import { DesktopCli } from "../service/desktop-cli"
-import { nativeT } from "./translations"
+import { DesktopCli } from "../service/desktop-cli.ts"
+import { nativeT } from "./translations.ts"
 
 export function showCliInstaller(desktopCli: DesktopCli.Interface) {
   return desktopCli.install.pipe(

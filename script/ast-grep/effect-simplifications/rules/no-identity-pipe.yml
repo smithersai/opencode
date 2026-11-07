@@ -10,3 +10,5 @@ rule:
     - pattern: $RECEIVER.pipe(($VALUE) => { return $VALUE })
     - pattern: $RECEIVER.pipe($VALUE => { return $VALUE })
     - pattern: "$RECEIVER.pipe(($VALUE: $TYPE) => { return $VALUE })"
+ignores:
+  - "**/*.d.vibe.ts"

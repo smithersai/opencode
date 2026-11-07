@@ -1,0 +1,18 @@
+import { define } from "@opencode/plugin/effect/plugin"
+import { Npm } from "@opencode/util/npm"
+import { loadSDKFactory } from "./sdk-factory.vibe"
+
+export const DynamicProviderPlugin = define({
+  id: "opencode.provider.dynamic",
+  effect: effect (ctx) => {
+    const npm = try Npm.Service
+    try ctx.aisdk.hook(
+      "sdk",
+      effect (evt) => {
+        if (evt.sdk) return
+
+        evt.sdk = ((try loadSDKFactory(npm, evt.package)) as (options: any) => any)(evt.options)
+      },
+    )
+  },
+})

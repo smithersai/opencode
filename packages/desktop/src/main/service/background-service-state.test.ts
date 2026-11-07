@@ -1,6 +1,6 @@
 import { expect, test } from "bun:test"
 import { Deferred, Effect, Fiber } from "effect"
-import { BackgroundServiceState } from "./background-service-state"
+import { BackgroundServiceState } from "./background-service-state.vibe"
 
 test("new consumers receive the latest reconnected service", async () => {
   const initial = { url: "http://127.0.0.1:4100", password: "first" }

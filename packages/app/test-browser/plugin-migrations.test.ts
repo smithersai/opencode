@@ -4,11 +4,11 @@ import { BuiltinPanel, type BuiltinStoreDeclaration } from "@opencode/plugin/gui
 import type { Platform } from "@/runtime/platform/platform"
 import { Persist, persisted, removePersisted } from "@/runtime/persistence/storage"
 import { legacyKeys } from "@/runtime/plugin/panel-keys"
-import { globalStoreTarget, renamedStoreName, storeName } from "@/runtime/plugin/stores"
-import { migrateKeybinds } from "@/settings/keybinds/migration"
+import { globalStoreTarget, renamedStoreName, storeName } from "../src/runtime/plugin/stores.vibe"
+import { migrateKeybinds } from "../src/settings/keybinds/migration.vibe"
 import contextSetup from "../../gui-plugins/src/context/renderer"
-import review from "../../gui-plugins/src/review/index"
-import updater from "../../gui-plugins/src/updater/index"
+import review from "../../gui-plugins/src/review/index.vibe"
+import updater from "../../gui-plugins/src/updater/index.vibe"
 
 /** A web window: storage is the page's localStorage. */
 const web: Platform = {

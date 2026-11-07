@@ -4,7 +4,7 @@ import { Switch } from "@opencode/ui/switch"
 import { usePlugin } from "@opencode/plugin/gui"
 import { updaterAction } from "./action"
 import type { UpdaterState } from "@opencode/plugin/gui/updater"
-import type definition from "./index"
+import type definition from "./index.vibe"
 
 export default function UpdatesSection(props: { state: () => UpdaterState | undefined; run: () => void }) {
   const ctx = usePlugin<typeof definition>()

@@ -35,7 +35,7 @@ import {
 import type { BuiltinCatalog, BuiltinMainContext, Lifecycle } from "@opencode/plugin/gui/builtin"
 import type { OpenCodeClient, PluginGuiBundle } from "@opencode/client"
 import { Exit, Match, Predicate, Schema } from "effect"
-import type { PluginEndpoint, PluginInstalled } from "../../shared/ipc-rpc/plugins"
+import type { PluginEndpoint, PluginInstalled } from "../../shared/ipc-rpc/plugins.vibe"
 import {
   PluginAvailable,
   PluginEvent,
@@ -44,9 +44,9 @@ import {
   PluginState,
   PluginsChanged,
   type DesktopEvent,
-} from "../../shared/ipc-rpc/events"
+} from "../../shared/ipc-rpc/events.vibe"
 import { CHANNEL, VERSION } from "../constants"
-import { emitIpcEvent } from "../ipc-events"
+import { emitIpcEvent } from "../ipc-events.vibe"
 import { refreshMenu, setMenubarProvider } from "../native/menu"
 import {
   formatNativeTemplate,
@@ -64,7 +64,7 @@ import { createLifecycle, type ErrorLog, type Instance, type Revision } from "./
 import { createManager } from "./manager"
 import { evaluateMain } from "./module"
 import { getStore } from "../storage/store"
-import { createStorage } from "./storage"
+import { createStorage } from "./storage.vibe"
 import { createEmbeds } from "./embeds"
 
 export type PluginHost = ReturnType<typeof createHost>

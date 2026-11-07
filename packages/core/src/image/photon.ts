@@ -3,7 +3,7 @@ export * as Photon from "./photon.js"
 import { Effect, Exit, Schema, Semaphore } from "effect"
 import type { Worker } from "node:worker_threads"
 import type { FileSystem } from "../filesystem.js"
-import { DecodeError, ResizerUnavailableError, SizeError, type Limits } from "../image.js"
+import { DecodeError, ResizerUnavailableError, SizeError, type Limits } from "../image.vibe"
 import { PhotonNormalize } from "./photon-normalize.js"
 import type { Reply, Request } from "./photon-worker.js"
 

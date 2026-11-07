@@ -7,9 +7,9 @@ import { produce, type Draft } from "immer"
 import { applyEdits, modify, parse, type ParseError } from "jsonc-parser"
 import path from "path"
 import { ConfigMigration } from "./migrate"
-import { Info, normalizeLegacyTabs, SchemaURL } from "./schema"
+import { Info, normalizeLegacyTabs, SchemaURL } from "./schema.vibe"
 
-export * from "./schema"
+export * from "./schema.vibe"
 
 export interface Interface {
   readonly path: string

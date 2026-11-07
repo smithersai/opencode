@@ -1,5 +1,5 @@
 import type { SessionTab, Tab, TabInfo } from "./tabs"
-import type { TabStorage } from "./schema"
+import type { TabStorage } from "./schema.vibe"
 
 export type ClosedTab = typeof TabStorage.ClosedTab.Type
 

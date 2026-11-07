@@ -4,6 +4,7 @@ import { defineConfig } from "vite"
 import desktopPlugin, { channel } from "./vite.js"
 import { icons } from "./vite.icons"
 import { serviceWorker } from "./vite.pwa"
+import vibelang from "vibelang-vite"
 
 const sentry =
   process.env.SENTRY_AUTH_TOKEN && process.env.SENTRY_ORG && process.env.SENTRY_PROJECT
@@ -23,7 +24,9 @@ const sentry =
     : false
 
 export default defineConfig({
+  worker: { plugins: () => [vibelang()] },
   plugins: [
+    vibelang({ register: true }),
     desktopPlugin,
     icons(channel),
     serviceWorker(fileURLToPath(new URL("./dist", import.meta.url))),

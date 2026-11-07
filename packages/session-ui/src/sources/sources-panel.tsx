@@ -4,7 +4,7 @@ import { frameLoop, prefersReducedMotion, Spring } from "@opencode/ui/motion"
 import { createSignal, For, Match, onCleanup, Show, Switch } from "solid-js"
 import { sourcesExpand, type SiteIconMode } from "./experiment"
 import { SiteIcon } from "./site-icon"
-import type { SourceResult, SourceStep, TurnSources } from "./sources"
+import type { SourceResult, SourceStep, TurnSources } from "./sources.vibe"
 import "./sources.css"
 
 /** A turn's searches and opened pages in the order they ran. `onOpen` opens a result's or page's URL. */

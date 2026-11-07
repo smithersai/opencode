@@ -11,9 +11,9 @@ import { HttpServerRequest, HttpServerResponse } from "effect/http"
 import { HttpApiBuilder, HttpApiSchema } from "effect/http-api"
 import { Socket } from "effect/socket"
 import { Api } from "../api"
-import { CorsConfig, isAllowedRequestOrigin } from "../cors"
+import { CorsConfig, isAllowedRequestOrigin } from "../cors.vibe"
 import { makeMediaGet } from "./media"
-import { type Outbound, runPtySocket } from "./pty-socket"
+import { type Outbound, runPtySocket } from "./pty-socket.vibe"
 
 export const PersistentPtyHandler = HttpApiBuilder.group(Api, "server.experimental", (handlers) =>
   Effect.gen(function* () {

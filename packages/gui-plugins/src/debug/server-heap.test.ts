@@ -2,7 +2,7 @@ import { GlobalRegistrator } from "@happy-dom/global-registrator"
 import { afterAll, beforeAll, expect, test } from "bun:test"
 import os from "node:os"
 import path from "node:path"
-import { captureServer } from "./server-heap"
+import { captureServer } from "./server-heap.vibe"
 
 // Main-process code: run it with the runtime's own fetch and Response, as Electron's main process has, not happy-dom's.
 beforeAll(() => GlobalRegistrator.unregister())

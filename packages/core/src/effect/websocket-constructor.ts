@@ -1,5 +1,7 @@
 // The platform barrel also exposes Redis and its optional native hash loader, which workerd cannot resolve.
-import { NodeWS } from "@effect/platform-node/NodeSocket"
+// Effect 4.1 moved NodeWS out of NodeSocket into its own module, which exports only the ws namespace.
+// ast-grep-ignore: no-star-import
+import * as NodeWS from "@effect/platform-node/NodeWS"
 import { HttpProxyAgent } from "http-proxy-agent"
 import { HttpsProxyAgent } from "https-proxy-agent"
 import { Layer } from "effect"

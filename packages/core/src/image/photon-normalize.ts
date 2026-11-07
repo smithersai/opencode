@@ -4,7 +4,7 @@ import photonWasm from "#photon-wasm"
 import path from "node:path"
 import { fileURLToPath } from "node:url"
 import type { FileSystem } from "../filesystem.js"
-import type { Limits } from "../image.js"
+import type { Limits } from "../image.vibe"
 
 // Plain data on purpose: this module runs on the server thread and inside the
 // photon worker, and its results cross postMessage.

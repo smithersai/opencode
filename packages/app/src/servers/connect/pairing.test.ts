@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test"
-import { bareServerAddress, legacyPairingLink, pairingLink } from "./pairing"
+import { bareServerAddress, legacyPairingLink, pairingLink } from "./pairing.vibe"
 
 describe("pairing link", () => {
   test("reads the server address and code from opencode pair links", () => {

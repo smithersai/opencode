@@ -4,7 +4,7 @@ import { gzipSync, gunzipSync } from "node:zlib"
 import { Schema } from "effect"
 import type { Cdp } from "./cdp"
 import type { BrowserFiles } from "./files"
-import { analyzeCpu, analyzeTrace, parseHeap } from "./analysis"
+import { analyzeCpu, analyzeTrace, parseHeap } from "./analysis.vibe"
 
 export type Recording = {
   owner: WebContents

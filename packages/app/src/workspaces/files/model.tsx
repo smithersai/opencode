@@ -21,12 +21,12 @@ import {
   resetFileContentLru,
   touchFileContent,
 } from "./content-cache"
-import { createFileViewCache } from "./view-cache"
+import { createFileViewCache } from "./view-cache.vibe"
 import { useServerSDK } from "@/runtime/server/client"
 import { formatServerError } from "@/runtime/server/errors"
 import { createFileTreeStore } from "./tree-store"
 import { invalidateFromWatcher } from "./watcher"
-import { selectionFromLines, type FileState, type FileSelection, type SelectedLineRange } from "./types"
+import { selectionFromLines, type FileState, type FileSelection, type SelectedLineRange } from "./types.vibe"
 
 export type { FileSelection, SelectedLineRange, FileState }
 

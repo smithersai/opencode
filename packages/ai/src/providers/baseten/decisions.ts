@@ -1,2 +1,2 @@
-export { decisionModel as model } from "../baseten.js"
-export type { Settings } from "../baseten.js"
+export { decisionModel as model } from "../baseten.vibe"
+export type { Settings } from "../baseten.vibe"

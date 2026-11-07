@@ -2,9 +2,11 @@ import { defineConfig } from "vite"
 import solidPlugin from "vite-plugin-solid"
 import { iconsSpritesheet } from "vite-plugin-icons-spritesheet"
 import fs from "fs"
+import vibelang from "vibelang-vite"
 
 export default defineConfig({
   plugins: [
+    vibelang(),
     solidPlugin(),
     providerIconsPlugin(),
     iconsSpritesheet([

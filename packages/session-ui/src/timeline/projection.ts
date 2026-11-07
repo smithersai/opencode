@@ -14,8 +14,8 @@ import {
   currentToolFailed,
   currentToolGroupedRead,
   currentToolHasLoadedFiles,
-} from "../message/current-tool-state"
-import { TimelineRow, type PartGroup, type PartRef, type TimelineRowMap } from "./timeline-row"
+} from "../message/current-tool-state.vibe"
+import { TimelineRow, type PartGroup, type PartRef, type TimelineRowMap } from "./timeline-row.vibe"
 import { timelineCategory, timelineNoticePlacement, timelineNoticeRequired, type TimelineDetail } from "./detail"
 
 export { TimelineRow, type PartGroup, type PartRef, type TimelineRowMap }

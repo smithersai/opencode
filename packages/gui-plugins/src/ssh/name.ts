@@ -1,5 +1,5 @@
 import type { ServerState } from "@opencode/plugin/gui"
-import type { SshConfig, SshItem } from "./contract"
+import type { SshConfig, SshItem } from "./contract.vibe"
 
 export function sshHostname(target: string) {
   // Accepted SSH targets end with a hostname or user@hostname, never a remote

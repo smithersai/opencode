@@ -8,7 +8,7 @@ import {
   type HttpContext,
   type TransportOperation,
 } from "../../schema/index.js"
-import type { ChannelObservation, WebSocketChannelExecutor } from "./websocket-channel.js"
+import type { ChannelObservation, WebSocketChannelExecutor } from "./websocket-channel.vibe"
 
 export interface WebSocketRequest {
   readonly url: string

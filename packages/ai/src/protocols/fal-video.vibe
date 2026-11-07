@@ -1,0 +1,126 @@
+import { Media } from "../media.ts"
+import { MediaProtocol } from "../route/media-protocol.ts"
+import { MediaRoute } from "../route/media.vibe"
+import { mergeJsonRecords, type OpenString } from "../schema/index.ts"
+import { VideoModel, type VideoRequestFor, VideoResponse } from "../video.ts"
+import { optionalNull } from "./shared.ts"
+import { FalQueue } from "./utils/fal-queue.vibe"
+
+const route = MediaProtocol.identity({ id: "fal-video", name: "fal Video", provider: "fal" })
+
+// ---------------------------------------------------------------------------
+// 1. Public model input
+// ---------------------------------------------------------------------------
+
+/**
+ * Provider-native input. fal video endpoints are model-specific: `duration` is a string enum whose values differ per
+ * model (`"8s"` for Veo, `"5"` for Kling), and last-frame fields are named per model (`end_image_url`,
+ * `last_frame_url`, `tail_image_url`), so those pass through here instead of lowering from common fields.
+ */
+export type FalVideoOptions = {
+  readonly duration?: OpenString<"4s" | "6s" | "8s" | "5" | "10">
+} & Record<string, unknown>
+
+export type Request = VideoRequestFor<FalVideoOptions>
+
+// ---------------------------------------------------------------------------
+// 2. Response schema
+// ---------------------------------------------------------------------------
+
+const QueueResult = Schema.StructWithRest(
+  Schema.Struct({
+    video: Schema.Struct({
+      url: Schema.String,
+      content_type: optionalNull(Schema.String),
+      file_name: optionalNull(Schema.String),
+      file_size: optionalNull(Schema.Number),
+    }),
+    seed: optionalNull(Schema.Number),
+  }),
+  [Schema.Record(Schema.String, Schema.Unknown)],
+)
+
+// ---------------------------------------------------------------------------
+// 5. Request body construction
+// ---------------------------------------------------------------------------
+
+const fromRequest = effect (request: Request) =>
+  try withSpan(
+    effect {
+      if (request.frames?.last !== undefined) {
+        throw route.unsupported(
+          "video.frames.last",
+          `${route.name} names the last frame per model; pass it through providerOptions (e.g. end_image_url) instead of frames.last`,
+        )
+      }
+      const imageUrl = request.frames?.first === undefined
+        ? undefined
+        : try FalQueue.mediaUrl(request.frames.first, route.name)
+      const videoUrl = request.video === undefined ? undefined : try FalQueue.mediaUrl(request.video, route.name)
+      return MediaProtocol.json(
+        mergeJsonRecords(
+          {
+            prompt: request.prompt,
+            negative_prompt: request.negativePrompt,
+            seed: request.seed,
+            aspect_ratio: request.aspect,
+            resolution: request.resolution,
+            generate_audio: request.audio,
+            image_url: imageUrl,
+            video_url: videoUrl,
+          },
+          request.providerOptions,
+          request.http?.body,
+        ) ?? {},
+      )
+    },
+    "FalVideo.fromRequest",
+  )
+
+// ---------------------------------------------------------------------------
+// 6. Response decoding
+// ---------------------------------------------------------------------------
+
+const decodeQueueResult = route.decodeJson(QueueResult)
+
+const decodeResult = effect (response: HttpClientResponse, context: MediaProtocol.PollContext<FalQueue.Token>) =>
+  try withSpan(
+    effect {
+      const output = try decodeQueueResult(response)
+      const { video, seed, ...rest } = output.value
+      return new VideoResponse({
+        videos: [Media.url(video.url, { mediaType: video.content_type ?? "video/mp4" })],
+        providerMetadata: {
+          fal: {
+            requestId: context.token.requestID,
+            seed: seed ?? undefined,
+            fileName: video.file_name ?? undefined,
+            fileSize: video.file_size ?? undefined,
+            ...rest,
+          },
+        },
+      })
+    },
+    "FalVideo.decodeResult",
+  )
+
+// ---------------------------------------------------------------------------
+// 7. Protocol and route
+// ---------------------------------------------------------------------------
+
+export const protocol = FalQueue.protocol<Request, VideoResponse>(route, {
+  unsupported: ["n", "durationSeconds", "references"],
+  from: fromRequest,
+  decodeResult,
+})
+
+export const model = (input: MediaRoute.ModelInput): infer _ =>
+  VideoModel.fromRoute<FalVideoOptions, FalQueue.Token>(
+    { protocol, baseURL: FalQueue.DEFAULT_BASE_URL, path: ({ request }) => `/${request.model.id}` },
+    input,
+  )
+
+export const FalVideo = {
+  protocol,
+  model,
+} as const

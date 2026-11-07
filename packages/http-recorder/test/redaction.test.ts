@@ -1,7 +1,7 @@
 import { describe, expect, test } from "bun:test"
 import { HttpBody, HttpClientRequest } from "effect/http"
 import { redactedErrorRequest } from "../src/http/recorder"
-import { make, redactHeaders, redactUrl } from "../src/redaction/redactor"
+import { make, redactHeaders, redactUrl } from "../src/redaction/redactor.vibe"
 import { secretFindings } from "../src/redaction/secrets"
 
 describe("redaction", () => {

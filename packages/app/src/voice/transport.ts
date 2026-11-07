@@ -1,5 +1,5 @@
 import type { OpenCodeClient } from "@opencode/client/promise"
-import { decodeEvent, type VoiceEvent } from "./protocol"
+import { decodeEvent, type VoiceEvent } from "./protocol.vibe"
 import { delegatorInstructions, liveInstructions, tools } from "./spec"
 
 export class VoiceFailure extends Error {

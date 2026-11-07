@@ -8,7 +8,7 @@ import { HttpServerRequest, HttpServerResponse } from "effect/http"
 import { HttpApiBuilder, HttpApiSchema } from "effect/http-api"
 import { Socket } from "effect/socket"
 import { Api } from "../api"
-import { CorsConfig, isAllowedRequestOrigin } from "../cors"
+import { CorsConfig, isAllowedRequestOrigin } from "../cors.vibe"
 import { ForbiddenError, PtyNotFoundError } from "@opencode/protocol/errors"
 import {
   PTY_CONNECT_TICKET_QUERY,
@@ -16,7 +16,7 @@ import {
   PTY_CONNECT_TOKEN_HEADER_VALUE,
 } from "@opencode/protocol/groups/pty"
 import { locationErrors, requestRef, response } from "../location"
-import { type Outbound, runPtySocket } from "./pty-socket"
+import { type Outbound, runPtySocket } from "./pty-socket.vibe"
 
 const notFound = (ptyID: Pty.ID) => new PtyNotFoundError({ ptyID, message: `PTY session not found: ${ptyID}` })
 

@@ -1,6 +1,6 @@
 // Changing the top-level reasoning effort invalidates the provider prompt cache. Protocols with a native
 // per-message update keep it frozen and lower `Message.effort(...)` markers instead; other routes strip them.
-import { LLMRequest, type EffortPart, type Message } from "./schema/messages.js"
+import { LLMRequest, type EffortPart, type Message } from "./schema/messages.vibe"
 
 export const effortUpdate = (message: Message): EffortPart | undefined => {
   if (message.role !== "system" || message.content.length !== 1) return undefined

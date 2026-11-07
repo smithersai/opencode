@@ -1,5 +1,7 @@
 {
   "compilerOptions": {
+    "rewriteRelativeImportExtensions": true,
+    "allowArbitraryExtensions": true,
     "noUnusedLocals": true,
     "target": "ESNext",
     "module": "ESNext",
@@ -20,5 +22,6 @@
   },
   "references": [{ "path": "../app" }],
   "include": ["src", "package.json"],
-  "exclude": ["src/**/*.test.ts"]
+  "exclude": ["src/**/*.test.ts"],
+  "vibelang": { "declarationImportStyle": "extensionless" }
 }

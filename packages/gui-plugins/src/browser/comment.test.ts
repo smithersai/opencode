@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test"
 import { Browser } from "@opencode/plugin-browser/rpc"
-import { commentNote } from "./comment"
+import { commentNote } from "./comment.vibe"
 
 const comment = {
   origin: "browser",

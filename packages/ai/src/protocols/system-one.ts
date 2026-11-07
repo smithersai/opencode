@@ -7,13 +7,13 @@ import {
   type DecisionPart,
   type DecisionQuestion,
   type DecisionRequestFor,
-} from "../decision.js"
+} from "../decision.vibe"
 import type { Media } from "../media.js"
-import { DecisionRoute } from "../route/decision.js"
+import { DecisionRoute } from "../route/decision.vibe"
 import { Endpoint } from "../route/endpoint.js"
 import { MediaProtocol } from "../route/media-protocol.js"
 import { AIError, UnsupportedOperationError, mergeJsonRecords } from "../schema/index.js"
-import { encodeJson } from "../utils/json.js"
+import { encodeJson } from "../utils/json.vibe"
 import { JsonObject, ProviderShared } from "./shared.js"
 
 export const DEFAULT_PATH = "/systemone"

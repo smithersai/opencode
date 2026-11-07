@@ -1,7 +1,7 @@
 import { expect, test } from "bun:test"
 import { Effect, Option, Scope, Tracer } from "effect"
 import { HttpMiddleware, HttpServerRequest, HttpServerResponse } from "effect/http"
-import { withoutParentSpan } from "../src/request-tracing"
+import { withoutParentSpan } from "../src/request-tracing.vibe"
 
 test("requests ignore ambient parents and continue inbound trace context", async () => {
   const spans: Tracer.NativeSpan[] = []

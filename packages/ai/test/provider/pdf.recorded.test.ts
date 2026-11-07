@@ -3,7 +3,7 @@ import { Effect, Schema, Stream } from "effect"
 import { LLM, LLMResponse, Message, ToolDefinition, type LanguageModel, Media } from "../../src/effect.js"
 import { AmazonBedrock, Anthropic, Google, OpenAI, XAI } from "../../src/providers.js"
 import { LLMClient } from "../../src/route.js"
-import { Tool } from "../../src/tool.js"
+import { Tool } from "../../src/tool.vibe"
 import { runTools } from "../lib/tool-runtime.js"
 import { recordedTests } from "../recorded-test.js"
 

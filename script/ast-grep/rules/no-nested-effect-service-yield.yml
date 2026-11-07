@@ -9,3 +9,5 @@ rule:
 constraints:
   SERVICE:
     regex: \.Service$
+ignores:
+  - "**/*.d.vibe.ts"

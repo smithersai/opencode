@@ -35,7 +35,14 @@ export function discoverPluginRuntimeSpecifiers(
       loadDir === realDir ? resolved : path.join(loadDir, path.relative(realDir, resolved))
     const rootEntry = Bun.resolveSync(pkgName, from)
     const relParts = path.relative(realDir, rootEntry).replaceAll("\\", "/").split("/")
-    const scanDir = relParts.length > 1 ? path.join(realDir, relParts[0]) : realDir
+    // A package with VibeLang modules routes its exports to emitted JavaScript under `.vibelang/js/`, which mirrors the
+    // source tree. Scan the mirrored source directory, so a specifier stays `@opencode/plugin/effect`.
+    const emitted = relParts[0] === ".vibelang" && relParts[1] === "js" && relParts.length > 3
+    const scanDir = emitted
+      ? path.join(realDir, ".vibelang", "js", relParts[2])
+      : relParts.length > 1
+        ? path.join(realDir, relParts[0])
+        : realDir
     const ext = path.extname(rootEntry) || ".js"
     entries.set(pkgName, toLoadPath(rootEntry))
     for (const file of new Bun.Glob(`**/*${ext}`).scanSync({ cwd: scanDir })) {

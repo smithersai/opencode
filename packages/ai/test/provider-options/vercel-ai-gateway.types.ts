@@ -1,5 +1,5 @@
 import { LLM } from "../../src/effect.js"
-import { VercelAIGateway } from "../../src/providers/vercel-ai-gateway.js"
+import { VercelAIGateway } from "../../src/providers/vercel-ai-gateway.vibe"
 
 const gateway = VercelAIGateway.configure({
   apiKey: "fixture",

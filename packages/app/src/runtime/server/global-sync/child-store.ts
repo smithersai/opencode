@@ -18,7 +18,7 @@ import { directoryKey, type DirectoryKey } from "./utils"
 import type { ServerScope } from "@/runtime/server/scope"
 import type { Data } from "@opencode/client/solid"
 import { normalizeAgentList, normalizeProviderList } from "./utils"
-import { ProjectState, VcsState } from "../persistence"
+import { ProjectState, VcsState } from "../persistence.vibe"
 
 export function createChildStoreManager(input: {
   owner: Owner

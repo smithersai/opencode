@@ -4,7 +4,7 @@ import type { Command } from "@opencode/schema/command"
 import type { Model } from "@opencode/schema/model"
 import { FSUtil } from "@opencode/util/fs-util"
 import { Cause, Deferred, Effect, Exit, Schedule, Semaphore, Stream, SubscriptionRef } from "effect"
-import { ACPError } from "./error"
+import { ACPError } from "./error.vibe"
 
 export const builtinCommands = new Map([
   ["compact", { description: "Compact the session", start: "compaction" as const }],

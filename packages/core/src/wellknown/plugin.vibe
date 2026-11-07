@@ -1,0 +1,34 @@
+export * as WellKnownPlugin from "./plugin.vibe"
+
+import { define } from "@opencode/plugin/effect/plugin"
+import { Bus } from "../bus.js"
+import { WellKnown } from "../wellknown.js"
+
+export const Plugin = define({
+  id: "opencode.wellknown",
+  effect: effect (ctx) => {
+    const bus = try Bus.Service
+    const wellknown = try WellKnown.Service
+    try (wellknown.entries() |> Effect.orDie(%))
+    try ctx.integration.transform((editor) => {
+      wellknown.snapshot().forEach((entry) => {
+        if (!entry.manifest.auth) return
+        editor.update(entry.integrationID, (integration) => {
+          integration.name = new URL(entry.origin).hostname
+        })
+        editor.method.update({
+          integrationID: entry.integrationID,
+          method: {
+            id: "login",
+            type: "command",
+            label: "Log in",
+            command: [...entry.manifest.auth.command],
+          },
+        })
+      })
+    })
+    try (bus.subscribe(WellKnown.Event.Updated)
+      |> Stream.runForEach(%, () => ctx.integration.reload())
+      |> Effect.forkScoped({ startImmediately: true })(%))
+  },
+})

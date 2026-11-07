@@ -6,7 +6,7 @@ import { Effect, Option } from "effect"
 import { FetchHttpClient, HttpClient, HttpClientRequest } from "effect/http"
 import { Writable } from "node:stream"
 import { ACP } from "../../acp/agent"
-import { Commands } from "../commands"
+import { Commands } from "../commands.vibe"
 import { Runtime } from "../../framework/runtime"
 import { Standalone } from "../../services/standalone"
 

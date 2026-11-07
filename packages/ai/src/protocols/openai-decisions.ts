@@ -1,10 +1,10 @@
 import { Effect, Schema } from "effect"
-import { DecisionResponse, DecisionUsage, type DecisionAnswer, type DecisionPart, type DecisionRequestFor } from "../decision.js"
-import { DecisionRoute } from "../route/decision.js"
+import { DecisionResponse, DecisionUsage, type DecisionAnswer, type DecisionPart, type DecisionRequestFor } from "../decision.vibe"
+import { DecisionRoute } from "../route/decision.vibe"
 import { Endpoint } from "../route/endpoint.js"
 import { MediaProtocol } from "../route/media-protocol.js"
 import { AIError, UnsupportedOperationError, mergeJsonRecords, type ProviderOptions } from "../schema/index.js"
-import { encodeJson } from "../utils/json.js"
+import { encodeJson } from "../utils/json.vibe"
 import { OpenResponses } from "./open-responses.js"
 import { ProviderShared } from "./shared.js"
 

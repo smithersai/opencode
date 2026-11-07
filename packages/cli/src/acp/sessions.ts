@@ -5,10 +5,10 @@ import { Mcp } from "@opencode/schema/mcp"
 import type { Session } from "@opencode/schema/session"
 import { Cause, Deferred, Effect, Exit, Queue, Ref, Scope, Stream } from "effect"
 import type { ACPCatalog, Catalog } from "./catalog"
-import { ACPClient } from "./client"
+import { ACPClient } from "./client.vibe"
 import { availableCommands, configOptions, type Change, type Selection } from "./config-option"
 import { ACPConnection } from "./connection"
-import { ACPError } from "./error"
+import { ACPError } from "./error.vibe"
 
 export type SupportedMcpServer = Exclude<McpServer, { readonly type: "acp" | "sse" }>
 

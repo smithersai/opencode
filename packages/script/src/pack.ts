@@ -30,17 +30,37 @@ export async function pack(
   const original = await Bun.file(file).text()
   // SAFETY: release packages declare a name, a version, and string export targets.
   const pkg = JSON.parse(original) as Manifest
-  const declaration = (value: string) => value.replace("./src/", types).replace(/\.tsx?$/, ".d.ts")
-  const output = (value: string) => value.replace("./src/", "./dist/").replace(/\.tsx?$/, ".js")
+  const declaration = (value: string) => value.replace("./src/", types).replace(/\.(?:tsx?|vibe)$/, ".d.ts")
+  const output = (value: string) => value.replace("./src/", "./dist/").replace(/\.(?:tsx?|vibe)$/, ".js")
   const tarball = path.join(npmDir, `${pkg.name.replace("@", "").replace("/", "-")}-${pkg.version}.tgz`)
 
   await $`bun run build`.cwd(directory)
 
   const exports = Object.fromEntries(
-    Object.entries(pkg.exports).map(([key, value]) => {
+    Object.entries(
+      Object.fromEntries(
+        Object.entries(pkg.exports).map(([key, target]: [string, unknown]) => [
+          key,
+          target !== null &&
+          typeof target === "object" &&
+          "vibelang-source" in target &&
+          typeof target["vibelang-source"] === "string"
+            ? target["vibelang-source"]
+            : target !== null &&
+                typeof target === "object" &&
+                "default" in target &&
+                typeof target.default === "string" &&
+                target.default.endsWith(".vibe") &&
+                "types" in target &&
+                target.types === target.default.slice(0, -5) + ".d.vibe.ts"
+              ? target.default
+              : target,
+        ]),
+      ) as typeof pkg.exports,
+    ).map(([key, value]) => {
       if (value === null || options.workspaceOnly?.includes(key)) return [key, null]
 
-      if (!/\.tsx?$/.test(value)) return [key, value]
+      if (!/\.(?:tsx?|vibe)$/.test(value)) return [key, value]
 
       return [key, { import: options.source ? value : output(value), types: declaration(value) }]
     }),

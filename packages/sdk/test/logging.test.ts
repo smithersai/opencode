@@ -1,7 +1,7 @@
 import { expect, test } from "bun:test"
 import { Effect } from "effect"
-import type { LogEntry } from "../src/logging"
-import { layer } from "../src/logging"
+import type { LogEntry } from "../src/logging.vibe"
+import { layer } from "../src/logging.vibe"
 
 test("maps Effect log levels to SDK log levels", async () => {
   const entries: LogEntry[] = []

@@ -14,7 +14,7 @@ import { Repository } from "./repository.js"
 import { AbsolutePath } from "./schema.js"
 import { makeGlobalNode } from "@opencode/util/effect/app-node"
 import { EffectFlock } from "@opencode/util/effect-flock"
-import { KV } from "./kv.js"
+import { KV } from "./kv.vibe"
 
 const Refresh = Schema.Struct({
   attemptedAt: Schema.Number,

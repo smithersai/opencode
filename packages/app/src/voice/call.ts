@@ -6,7 +6,7 @@ import { TranscriptTail } from "./tail"
 import { VoiceTools } from "./tools"
 import { VoiceFailure, VoiceTransport } from "./transport"
 import { delegatorInstructions } from "./spec"
-import type { ToolCall, VoiceEvent } from "./protocol"
+import type { ToolCall, VoiceEvent } from "./protocol.vibe"
 
 export type CallState = {
   status: "idle" | "connecting" | "connected" | "dropped"

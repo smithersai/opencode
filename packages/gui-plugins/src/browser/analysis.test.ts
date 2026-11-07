@@ -1,5 +1,5 @@
 import { expect, test } from "bun:test"
-import { analyzeCpu, analyzeTrace, parseHeap } from "./analysis"
+import { analyzeCpu, analyzeTrace, parseHeap } from "./analysis.vibe"
 
 test("trace analysis reports observed durations without inventing Web Vitals", () => {
   const result = analyzeTrace({

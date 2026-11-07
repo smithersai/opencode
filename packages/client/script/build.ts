@@ -3,13 +3,15 @@
 import { $ } from "bun"
 import path from "node:path"
 import { fileURLToPath } from "node:url"
+import vibelang from "vibelang-unplugin/bun"
 
 process.chdir(fileURLToPath(new URL("..", import.meta.url)))
 
 await $`rm -rf dist`
-await $`bun tsc -p tsconfig.build.json`
+await $`bun vibelang -p tsconfig.build.json`
 const root = path.resolve("src")
 const result = await Bun.build({
+  plugins: [vibelang()],
   entrypoints: await Array.fromAsync(new Bun.Glob("**/*.ts").scan({ cwd: root, absolute: true })).then((files) =>
     files.filter((file) => !file.endsWith(".d.ts")),
   ),

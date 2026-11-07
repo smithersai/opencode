@@ -22,7 +22,7 @@ import {
   formatQuoteComment,
   type PromptAttachmentReference,
   type PromptComment,
-} from "@/composer/comment-note"
+} from "./comment-note.vibe"
 
 // Network fields feed both boundaries; display fields keep desktop-only rendering details in the local echo.
 type PromptRequest = {

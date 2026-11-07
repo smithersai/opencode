@@ -2,9 +2,9 @@ import { Effect, Schema } from "effect"
 import { Auth } from "../route/auth.js"
 import { Route } from "../route/client.js"
 import { Endpoint } from "../route/endpoint.js"
-import { Framing } from "../route/framing.js"
-import { Protocol } from "../route/protocol.js"
-import { HttpTransport } from "../route/transport/index.js"
+import { Framing } from "../route/framing.vibe"
+import { Protocol } from "../route/protocol.vibe"
+import { HttpTransport } from "../route/transport/index.vibe"
 import {
   AIError,
   InvalidProviderOutputError,
@@ -18,11 +18,11 @@ import {
   type ToolCallPart,
   type ToolDefinition,
 } from "../schema/index.js"
-import { classifyProviderFailure } from "../provider-error.js"
+import { classifyProviderFailure } from "../provider-error.vibe"
 import { JsonObject, optionalArray, optionalNull, ProviderShared } from "./shared.js"
 import { Lifecycle } from "./utils/lifecycle.js"
 import { MistralToolID } from "./utils/mistral-tool-id.js"
-import { ToolStream } from "./utils/tool-stream.js"
+import { ToolStream } from "./utils/tool-stream.vibe"
 
 const ADAPTER = "mistral-chat"
 const DONE = "[DONE]" as const

@@ -7,8 +7,8 @@ import {
   WindowFullscreenChanged,
   WindowPinchZoomChanged,
   WindowZoomChanged,
-} from "../../shared/ipc-rpc/events"
-import { emitIpcEvent } from "../ipc-events"
+} from "../../shared/ipc-rpc/events.vibe"
+import { emitIpcEvent } from "../ipc-events.vibe"
 import type { DesktopPaths } from "../paths"
 import { BACKGROUND_COLOR_KEY, PINCH_ZOOM_ENABLED_KEY, ZOOM_LEVEL_KEY } from "../storage/keys"
 import { getStore } from "../storage/store"

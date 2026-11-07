@@ -3,7 +3,7 @@ export * as ConfigImagePlugin from "./image.vibe"
 import { define } from "@opencode/plugin/effect/plugin"
 import { Config } from "../../config.js"
 import { Image } from "../../image.vibe"
-import { ConfigEntryObserver } from "./entry-observer.js"
+import { ConfigEntryObserver } from "./entry-observer.vibe"
 
 export const Plugin = define({
   id: "opencode.config.image",

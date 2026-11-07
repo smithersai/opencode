@@ -8,7 +8,7 @@ import { Global } from "@opencode/util/global"
 import { Location } from "../../location.js"
 import { AbsolutePath } from "../../schema.js"
 import { WorktreeStrategies } from "../../worktree/strategies.js"
-import { ConfigEntryObserver } from "./entry-observer.js"
+import { ConfigEntryObserver } from "#vibelang/emitted/src/config/plugin/entry-observer"
 
 export const Plugin = define({
   id: "opencode.config.worktree",

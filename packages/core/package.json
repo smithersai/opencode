@@ -544,6 +544,16 @@
       "types": "./src/*.ts",
       "vibelang-source": "./src/*.ts",
       "default": "./.vibelang/js/src/*.js"
+    },
+    "./config/plugin/entry-observer": {
+      "types": "./src/config/plugin/entry-observer.d.vibe.ts",
+      "vibelang-source": "./src/config/plugin/entry-observer.vibe",
+      "default": "./.vibelang/js/src/config/plugin/entry-observer.js"
+    },
+    "./config/plugin/mcp": {
+      "types": "./src/config/plugin/mcp.d.vibe.ts",
+      "vibelang-source": "./src/config/plugin/mcp.vibe",
+      "default": "./.vibelang/js/src/config/plugin/mcp.js"
     }
   },
   "imports": {
@@ -701,6 +711,16 @@
         "vibelang-source": "./src/database/v1-migration.noop.ts",
         "default": "./.vibelang/js/src/database/v1-migration.noop.js"
       }
+    },
+    "#vibelang/emitted/src/config/plugin/entry-observer": {
+      "types": "./src/config/plugin/entry-observer.d.vibe.ts",
+      "vibelang-source": "./src/config/plugin/entry-observer.vibe",
+      "default": "./.vibelang/js/src/config/plugin/entry-observer.js"
+    },
+    "#vibelang/emitted/src/config/plugin/mcp": {
+      "types": "./src/config/plugin/mcp.d.vibe.ts",
+      "vibelang-source": "./src/config/plugin/mcp.vibe",
+      "default": "./.vibelang/js/src/config/plugin/mcp.js"
     }
   },
   "devDependencies": {

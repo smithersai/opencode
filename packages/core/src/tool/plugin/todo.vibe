@@ -4,7 +4,7 @@ import { ToolFailure } from "@opencode/ai/effect"
 import type { Context } from "@opencode/plugin/effect/plugin"
 import { Effect, Schema } from "effect"
 import { Config } from "../../config.ts"
-import { ConfigEntryObserver } from "../../config/plugin/entry-observer.ts"
+import { ConfigEntryObserver } from "../../config/plugin/entry-observer.vibe"
 import { Permission } from "../../permission.ts"
 import DESCRIPTION from "../todowrite.txt"
 

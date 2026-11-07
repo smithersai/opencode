@@ -3,7 +3,7 @@ export * as ConfigLocationWatcherPlugin from "./location-watcher.vibe"
 import { define } from "@opencode/plugin/effect/plugin"
 import { Config } from "../../config.js"
 import { LocationWatcherPolicy } from "../../filesystem/location-watcher-policy.vibe"
-import { ConfigEntryObserver } from "./entry-observer.js"
+import { ConfigEntryObserver } from "./entry-observer.vibe"
 
 export const Plugin = define({
   id: "opencode.config.location-watcher",

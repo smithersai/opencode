@@ -4,7 +4,7 @@ import context from "./context";
 import contextRenderer from "./context/renderer";
 import btw from "./btw/index.js";
 import btwRenderer from "./btw/renderer";
-import debug from "./debug";
+import debug from "./debug/index.js";
 import debugRenderer from "./debug/renderer";
 import terminal from "./terminal";
 import terminalRenderer from "./terminal/renderer";

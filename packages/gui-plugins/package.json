@@ -61,5 +61,12 @@
     "vite": "catalog:",
     "vibelang": "file:../../.vibelang-toolchain/vibelang-0.0.11-1ded989eae73.tgz",
     "vibelang-vite": "file:../../.vibelang-toolchain/vibelang-vite-0.0.11-5223c46c8aba.tgz"
+  },
+  "imports": {
+    "#vibelang/emitted/src/debug/index": {
+      "types": "./src/debug/index.d.vibe.ts",
+      "vibelang-source": "./src/debug/index.vibe",
+      "default": "./.vibelang/js/src/debug/index.js"
+    }
   }
 }

@@ -13,13 +13,30 @@
     "access": "public"
   },
   "files": [
-    "dist"
+    "dist",
+    ".vibelang/js"
   ],
   "exports": {
-    ".": "./src/index.ts",
-    "./effect": "./src/effect/index.ts",
-    "./workerd": "./src/workerd.ts",
-    "./workerd/effect": "./src/effect/workerd.ts"
+    ".": {
+      "types": "./src/index.ts",
+      "vibelang-source": "./src/index.ts",
+      "default": "./.vibelang/js/src/index.js"
+    },
+    "./effect": {
+      "types": "./src/effect/index.ts",
+      "vibelang-source": "./src/effect/index.ts",
+      "default": "./.vibelang/js/src/effect/index.js"
+    },
+    "./workerd": {
+      "types": "./src/workerd.ts",
+      "vibelang-source": "./src/workerd.ts",
+      "default": "./.vibelang/js/src/workerd.js"
+    },
+    "./workerd/effect": {
+      "types": "./src/effect/workerd.ts",
+      "vibelang-source": "./src/effect/workerd.ts",
+      "default": "./.vibelang/js/src/effect/workerd.js"
+    }
   },
   "scripts": {
     "build": "bun run script/build.ts",

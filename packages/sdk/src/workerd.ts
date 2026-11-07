@@ -1,8 +1,8 @@
 export * as OpenCodeWorkerd from "./workerd"
 
 import { WorkerdProfile } from "./internal/workerd"
-import type { LogOptions } from "./logging"
-import { PromiseSdk } from "./promise"
+import type { LogOptions } from "./logging.vibe"
+import { PromiseSdk } from "./promise.vibe"
 
 export type Configuration = WorkerdProfile.Configuration
 

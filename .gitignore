@@ -39,3 +39,10 @@ tsconfig.tsbuildinfo
 /artifacts/
 .vibelang-toolchain/
 **/.vibelang/vibelang-parser
+
+# Optional per-developer VibeLang agent setup
+/.agents/skills/vibelang/SKILL.md
+/.claude/settings.json
+/.claude/skills/vibelang/SKILL.md
+/.claude/skills/vibelang-lsp/.claude-plugin/plugin.json
+/.opencode/plugins/vibelang.js

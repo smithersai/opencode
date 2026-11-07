@@ -1,5 +1,5 @@
 import { Context, Effect, Layer } from "effect"
-import { Agent } from "./agent.js"
+import { Agent } from "./agent.vibe"
 import { AISDK } from "./aisdk.js"
 import { Model } from "./model.js"
 import { Provider } from "./provider.js"

@@ -10,11 +10,11 @@ import type { PersistentPty } from "./persistent-pty.js"
 import { Cause, Context, Effect, Exit, Latch, Layer, Logger, Queue, References, Scope, Semaphore } from "effect"
 import { Bus } from "./bus.js"
 import { KV } from "./kv.js"
-import { PluginHost } from "./plugin/host.js"
-import { type Failure, type Generation, Service } from "./plugin/service.js"
+import { PluginHost } from "./plugin/host.vibe"
+import { type Failure, type Generation, Service } from "./plugin/service.vibe"
 import { State } from "./state.js"
 
-export { awaitActivation, type Generation, type Interface, Service } from "./plugin/service.js"
+export { awaitActivation, type Generation, type Interface, Service } from "./plugin/service.vibe"
 
 const layer = Layer.effect(
   Service,

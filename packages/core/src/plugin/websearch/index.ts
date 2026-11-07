@@ -1,4 +1,4 @@
-import { WebSearchExa } from "./exa.js"
+import { WebSearchExa } from "./exa.vibe"
 import { WebSearchFirecrawl } from "./firecrawl.js"
 import { WebSearchParallel } from "./parallel.js"
 import { WebSearchTavily } from "./tavily.js"

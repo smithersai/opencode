@@ -11,7 +11,7 @@ import { Plugin } from "../plugin.js"
 import { InstancePlugins } from "./instance.js"
 import { PluginInternal } from "./internal.js"
 import { PluginModule } from "./module.js"
-import { SdkPlugins } from "./sdk.js"
+import { SdkPlugins } from "./sdk.vibe"
 import { PluginUpdate } from "./update.js"
 import { Watcher } from "../filesystem/watcher.js"
 

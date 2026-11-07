@@ -1,0 +1,742 @@
+export * as PluginHost from "./host.vibe"
+
+import { Plugin } from "@opencode/plugin/effect"
+import type { IntegrationMethodRegistration } from "@opencode/plugin/effect/integration"
+import { EventManifest } from "@opencode/schema/event-manifest"
+import type { Event } from "@opencode/schema/event"
+import { ServerConfig } from "@opencode/schema/mcp"
+import { App } from "../app.ts"
+import { Effect } from "effect"
+import { Agent } from "../agent.vibe"
+import { AISDK } from "../aisdk.ts"
+import { Command } from "../command.ts"
+import { Credential } from "../credential.ts"
+import { Bus } from "../bus.ts"
+import { Integration } from "../integration.ts"
+import { KV } from "../kv.ts"
+import { Location } from "../location.ts"
+import { LocationServiceMap } from "../location-service-map.ts"
+import { Model } from "../model.ts"
+import { Mcp } from "../mcp/index.ts"
+import { Session } from "../session.ts"
+import { InstructionEntry } from "../session/instruction-entry.ts"
+import { PersistentPty } from "../persistent-pty.ts"
+import { Provider } from "../provider.ts"
+import { Reference } from "../reference.ts"
+import { Rpc } from "../rpc.ts"
+import { AbsolutePath, type DeepMutable } from "../schema.ts"
+import { Skill } from "../skill.ts"
+import { Tool } from "../tool.ts"
+import { Workspace } from "../workspace.ts"
+import { Vcs } from "../vcs.ts"
+import { WebSearch } from "../websearch.ts"
+import { Worktree } from "../worktree.ts"
+import { WorktreeStrategies } from "../worktree/strategies.ts"
+import { Generate } from "../generate.ts"
+import { Permission } from "../permission.ts"
+import { PluginHooks } from "./hooks.ts"
+import type { Interface } from "../plugin.ts"
+import { LayerNode } from "@opencode/util/effect/layer-node"
+
+const mutable = <T>(value: T) => value as DeepMutable<T>
+type RpcEvent = Event.Payload & {
+  readonly type: `rpc.${string}`
+  readonly location: Location.Ref
+  readonly data: Readonly<Record<string, unknown>>
+}
+const isRpcType = (type: string): type is RpcEvent["type"] => type.startsWith("rpc.")
+const isRpcEvent = (event: Event.Payload): event is RpcEvent => isRpcType(event.type)
+const isPublicEvent = (event: Event.Payload): event is EventManifest.ServerEvent | RpcEvent =>
+  EventManifest.isServer(event) || isRpcEvent(event)
+export const make = effect (
+  plugin: Pick<Interface, "list">,
+  pluginID: string | undefined = "test",
+) =>
+  try withSpan(
+    effect {
+      const app = try App.Metadata
+      const agents = try Agent.Service
+      const aisdk = try AISDK.Service
+      const providers = try Provider.Service
+      const models = try Model.Service
+      const commands = try Command.Service
+      const bus = try Bus.Service
+      const integration = try Integration.Service
+      const kv = try KV.Service
+      const mcp = try Mcp.Service
+      const location = try Location.Service
+      const reference = try Reference.Service
+      const rpc = try Rpc.Service
+      const skill = try Skill.Service
+      const tools = try Tool.Service
+      const vcs = try Vcs.Service
+      const websearch = try WebSearch.Service
+      const generate = try Generate.Service
+      const generateText = (input: Generate.TextInput) => generate.text(input) |> Effect.map(%, (text) => ({ text }))
+      const permission = try Permission.Service
+      const hooks = try PluginHooks.Service
+      const sessions = try Session.Service
+      const instructionEntries = try InstructionEntry.Service
+      const persistentPty = try PersistentPty.Service
+      const locations = try LocationServiceMap.Service
+      const worktrees = try Worktree.Service
+      const worktreeStrategies = try WorktreeStrategies.Service
+      const currentWorktreeStrategies = location.workspaceID ? undefined : worktreeStrategies
+      const locationInfo = () =>
+        new Location.Info({
+          directory: location.directory,
+          workspaceID: location.workspaceID,
+          project: location.project,
+        })
+      const locationRef = (
+        input?: { readonly location?: { readonly directory?: string; readonly workspace?: string } },
+      ) =>
+        input?.location === undefined
+          ? undefined
+          : Location.Ref.make({
+            directory: AbsolutePath.make(input.location.directory ?? location.directory),
+            workspaceID: input.location.workspace === undefined
+              ? location.workspaceID
+              : Workspace.ID.make(input.location.workspace),
+          })
+      const isCurrentLocation = (ref: Location.Ref) =>
+        ref.directory === location.directory && ref.workspaceID === location.workspaceID
+      const response = <A, E, R>(effect: A!E!R) =>
+        effect |> Effect.map(%, (data) => ({ location: locationInfo(), data }))
+
+      const decodeWorktree = Schema.decodeUnknownEffect(Worktree.Info)
+      const decodeWorktrees = Schema.decodeUnknownEffect(Schema.Array(Worktree.ListEntry))
+
+      const listAgents = Effect.fn("PluginHost.listAgents")((ref: Location.Ref) =>
+        effect {
+          const location = try Location.Service
+          const agents = try Agent.Service
+          return {
+            location: new Location.Info({
+              directory: location.directory,
+              workspaceID: location.workspaceID,
+              project: location.project,
+            }),
+            data: try agents.list(),
+          }
+        } |> Effect.provide(%, locations.get(ref)) |> Effect.orDie(%)
+      )
+
+      // Keep the instance graph's inferred types independent of Session handles.
+      const context: Plugin.Context = {
+        app,
+        location: locationInfo(),
+        options: {},
+        rpc: Object.assign(rpc.client, { register: rpc.register }),
+        agent: {
+          get: (input) => {
+            const ref = locationRef(input)
+            const output = ref && !isCurrentLocation(ref)
+              ? (listAgents(ref)
+                |> Effect.map(%, (result) => ({
+                  ...result,
+                  data: result.data.find((agent) => agent.id === input.agentID),
+                })))
+              : response(agents.get(input.agentID))
+            return output
+              |> Effect.flatMap(%, (result) =>
+                result.data
+                  ? Effect.succeed({ ...result, data: result.data })
+                  : Effect.fail(new Error(`Agent not found: ${input.agentID}`)))
+          },
+          list: (input) => {
+            const ref = locationRef(input)
+            if (ref && !isCurrentLocation(ref)) return listAgents(ref)
+            return response(agents.list())
+          },
+          reload: agents.reload,
+          transform: (callback) =>
+            agents.transform((editor) => {
+              callback({
+                list: editor.list,
+                get: (id) => editor.get(Agent.ID.make(id)),
+                default: (id) => editor.default(id === undefined ? undefined : Agent.ID.make(id)),
+                update: (id, update) => editor.update(Agent.ID.make(id), update),
+                remove: (id) => editor.remove(Agent.ID.make(id)),
+              })
+            }),
+        },
+        aisdk: {
+          hook: (name, callback, options) => {
+            if (name === "sdk") {
+              return aisdk.hook.sdk((event) => {
+                if (options?.providerID !== undefined && options.providerID !== event.model.providerID) {
+                  return Effect.void
+                }
+                const output = {
+                  model: mutable(event.model),
+                  package: event.package,
+                  options: event.options,
+                  sdk: event.sdk,
+                }
+                // oxlint-disable-next-line no-restricted-globals -- The generic hook callback remains a union after narrowing by hook name.
+                return Reflect.apply(callback, undefined, [output])
+                  |> Effect.tap(%, effect () => (event.sdk = output.sdk))
+              })
+            }
+            return aisdk.hook.language((event) => {
+              if (options?.providerID !== undefined && options.providerID !== event.model.providerID) return Effect.void
+              const output = {
+                model: mutable(event.model),
+                options: event.options,
+                sdk: event.sdk,
+                language: event.language,
+              }
+              // oxlint-disable-next-line no-restricted-globals -- The generic hook callback remains a union after narrowing by hook name.
+              return Reflect.apply(callback, undefined, [output])
+                |> Effect.tap(%, effect () => (event.language = output.language))
+            })
+          },
+        },
+        provider: {
+          list: () => response(providers.available()),
+          get: (input) =>
+            providers
+              .get(Provider.ID.make(input.providerID))
+            |> Effect.flatMap(%, (provider) =>
+              provider === undefined
+                ? Effect.fail(new Error(`Provider not found: ${input.providerID}`))
+                : response(Effect.succeed(provider))),
+          reload: providers.reload,
+          transform: (callback) =>
+            providers.transform((editor) => {
+              callback({
+                list: editor.list,
+                get: (id) => editor.get(Provider.ID.make(id)),
+                add: (definition) =>
+                  editor.add({
+                    ...definition,
+                    sourceConnection: definition.sourceConnection?.type === "credential"
+                      ? { ...definition.sourceConnection, id: Credential.ID.make(definition.sourceConnection.id) }
+                      : definition.sourceConnection,
+                  }),
+                update: (id, update) => editor.update(Provider.ID.make(id), update),
+                remove: (id) => editor.remove(Provider.ID.make(id)),
+                models: {
+                  set: (id, models) => editor.models.set(Provider.ID.make(id), models),
+                  update: (providerID, modelID, update) =>
+                    editor.models.update(Provider.ID.make(providerID), Model.ID.make(modelID), update),
+                  remove: (providerID, modelID) =>
+                    editor.models.remove(Provider.ID.make(providerID), Model.ID.make(modelID)),
+                },
+              })
+            }),
+        },
+        model: {
+          list: (input) => response(models.available(input?.types)),
+          default: () => response(models.default()),
+          reload: models.reload,
+          transform: (callback) =>
+            models.transform((editor) =>
+              callback({
+                list: (providerID) => editor.list(providerID === undefined ? undefined : Provider.ID.make(providerID)),
+                get: (providerID, modelID) => editor.get(Provider.ID.make(providerID), Model.ID.make(modelID)),
+                update: (providerID, modelID, update) =>
+                  editor.update(Provider.ID.make(providerID), Model.ID.make(modelID), update),
+                remove: (providerID, modelID) => editor.remove(Provider.ID.make(providerID), Model.ID.make(modelID)),
+                default: {
+                  get: editor.default.get,
+                  set: (providerID, modelID) =>
+                    editor.default.set(Provider.ID.make(providerID), Model.ID.make(modelID)),
+                },
+                provider: {
+                  list: editor.provider.list,
+                  get: (id) => editor.provider.get(Provider.ID.make(id)),
+                },
+              })
+            ),
+        },
+        command: {
+          list: () => response(commands.list()),
+          reload: commands.reload,
+          transform: commands.transform,
+        },
+        credential: {
+          activate: (input) => integration.connection.activate(input.credentialID),
+        },
+        event: {
+          // The bus only delivers the requested types, which TypeScript cannot follow through the generic signature.
+          subscribe: ((input?: { readonly types?: ReadonlyArray<string> }) => {
+            if (!input?.types?.length) return bus.subscribe().pipe(Stream.filter(isPublicEvent))
+            const unknown = new Array<string>()
+            const [first, ...rest] = input.types.flatMap((type) => {
+              if (isRpcType(type)) return [Rpc.eventDefinition(type)]
+              const definition = EventManifest.Server.get(type)
+              if (!definition) unknown.push(type)
+              return definition ? [definition] : []
+            })
+            const events = first ? bus.subscribe([first, ...rest]) : Stream.never
+            if (unknown.length === 0) return events
+            return Stream.unwrap(
+              Effect.logWarning("ignoring unknown event types", { pluginID, types: unknown })
+                |> Effect.as(%, events),
+            )
+          }) as Plugin.Context["event"]["subscribe"],
+        },
+        experimental: {
+          terminal: {
+            read: (input) => persistentPty.read(input.sessionID, input.lines),
+          },
+          generate: {
+            text: generateText,
+            image: generate.image,
+            decisions: generate.decisions,
+          },
+        },
+        generate: {
+          text: generateText,
+        },
+        integration: {
+          list: () => response(integration.list()),
+          get: effect (input) => {
+            const item = try integration.get(Integration.ID.make(input.integrationID))
+            if (!item) throw new Error(`Integration not found: ${input.integrationID}`)
+            return try response(Effect.succeed(item))
+          },
+          connect: {
+            key: (input) =>
+              integration.connection.key({
+                integrationID: Integration.ID.make(input.integrationID),
+                key: input.key,
+                answer: input.answer,
+                label: input.label,
+              }),
+            external: (input) =>
+              integration.connection.external({
+                integrationID: Integration.ID.make(input.integrationID),
+                methodID: Integration.MethodID.make(input.methodID),
+                answer: input.answer,
+                label: input.label,
+              }),
+          },
+          oauth: {
+            connect: (input) =>
+              response(
+                integration.oauth.connect({
+                  integrationID: Integration.ID.make(input.integrationID),
+                  methodID: Integration.MethodID.make(input.methodID),
+                  answer: input.answer,
+                  label: input.label,
+                }),
+              ),
+            status: (input) =>
+              response(
+                integration.oauth.status({
+                  integrationID: Integration.ID.make(input.integrationID),
+                  attemptID: Integration.AttemptID.make(input.attemptID),
+                }),
+              ),
+            complete: (input) =>
+              integration.oauth.complete({
+                integrationID: Integration.ID.make(input.integrationID),
+                attemptID: Integration.AttemptID.make(input.attemptID),
+                code: input.code,
+              }),
+            cancel: (input) =>
+              integration.oauth.cancel({
+                integrationID: Integration.ID.make(input.integrationID),
+                attemptID: Integration.AttemptID.make(input.attemptID),
+              }),
+          },
+          command: {
+            connect: (input) =>
+              response(
+                integration.command.connect({
+                  integrationID: Integration.ID.make(input.integrationID),
+                  methodID: Integration.MethodID.make(input.methodID),
+                  label: input.label,
+                }),
+              ),
+            status: (input) =>
+              response(
+                integration.command.status({
+                  integrationID: Integration.ID.make(input.integrationID),
+                  attemptID: Integration.AttemptID.make(input.attemptID),
+                }),
+              ),
+            cancel: (input) =>
+              integration.command.cancel({
+                integrationID: Integration.ID.make(input.integrationID),
+                attemptID: Integration.AttemptID.make(input.attemptID),
+              }),
+          },
+          reload: integration.reload,
+          connection: {
+            active: (id) => integration.connection.active(Integration.ID.make(id)),
+            resolve: (connection) =>
+              integration.connection.resolve(
+                connection.type === "credential"
+                  ? { ...connection, id: Credential.ID.make(connection.id) }
+                  : connection,
+              ),
+            status: (input) =>
+              integration.connection.status({
+                integrationID: Integration.ID.make(input.integrationID),
+                connection: input.connection.type === "credential"
+                  ? { ...input.connection, id: Credential.ID.make(input.connection.id) }
+                  : input.connection,
+                status: input.status,
+              }),
+          },
+          transform: (callback) =>
+            integration.transform((editor) => {
+              callback({
+                list: editor.list,
+                get: (id) => editor.get(Integration.ID.make(id)),
+                update: (id, update) => editor.update(Integration.ID.make(id), update),
+                remove: (id) => editor.remove(Integration.ID.make(id)),
+                method: {
+                  list: (id) => editor.method.list(Integration.ID.make(id)),
+                  update: (input) => editor.method.update(methodImplementation(input)),
+                  remove: (id, method) =>
+                    editor.method.remove(Integration.ID.make(id), Schema.decodeUnknownSync(Integration.Method)(method)),
+                },
+              })
+            }),
+        },
+        mcp: {
+          list: (input) => {
+            const ref = locationRef(input)
+            if (ref && !isCurrentLocation(ref)) {
+              return effect {
+                const location = try Location.Service
+                const mcp = try Mcp.Service
+                return {
+                  location: new Location.Info({
+                    directory: location.directory,
+                    workspaceID: location.workspaceID,
+                    project: location.project,
+                  }),
+                  data: try mcp.servers(),
+                }
+              } |> Effect.provide(%, locations.get(ref))
+            }
+            return response(mcp.servers())
+          },
+          reload: mcp.reload,
+          transform: (callback) =>
+            mcp.transform((editor) => {
+              callback({
+                list: () => editor.list().map(([name, config]) => [name, mutable(config)]),
+                get: (name) => mutable(editor.get(name)),
+                set: (name, config) => editor.set(name, Schema.decodeUnknownSync(ServerConfig)(config)),
+                update: editor.update,
+                remove: editor.remove,
+              })
+            }),
+        },
+        permission: {
+          hook: (name, callback) => hooks.register("permission", name, callback),
+          list: (input) => permission.forSession(input.sessionID),
+          get: (input) =>
+            permission
+              .get(input.requestID)
+            |> Effect.flatMap(%, (request) =>
+              request?.sessionID === input.sessionID
+                ? Effect.succeed(request)
+                : Effect.fail(new Error(`Permission request not found: ${input.requestID}`))),
+          reply: (input) =>
+            permission
+              .get(input.requestID)
+            |> Effect.flatMap(%, (request) =>
+              request?.sessionID === input.sessionID
+                ? permission.reply({ requestID: input.requestID, reply: input.decision, message: input.message })
+                : Effect.fail(new Error(`Permission request not found: ${input.requestID}`))),
+          // Plain rejections stay defects, as for built-in tools, so they end the step.
+          assert: (input) =>
+            do {
+              const catchProgram = permission.assert(input)
+              effect {
+                return catchProgram catch effect (error) => match (error) {
+                  when { _tag: "Permission.BlockedError" }: throw new Tool.Error({ message: error.message, error });
+                  when { _tag: "Permission.CorrectedError" }: throw new Tool.Error({ message: error.feedback, error });
+                  when { _tag: "Session.NotFoundError" }: throw new Tool.Error({
+                    message: `Session not found: ${error.sessionID}`,
+                    error,
+                  });
+                }
+              }
+            },
+        },
+        plugin: {
+          list: () => response(plugin.list()),
+        },
+        reference: {
+          list: () => response(reference.list()),
+          reload: reference.reload,
+          transform: (callback) =>
+            reference.transform((editor) => {
+              callback({
+                add: (name, source) => editor.add(name, Schema.decodeUnknownSync(Reference.Source)(source)),
+                remove: editor.remove,
+                list: editor.list,
+                get: editor.get,
+              })
+            }),
+        },
+        skill: {
+          list: () => response(skill.list()),
+          reload: skill.reload,
+          transform: (callback) =>
+            skill.transform((editor) => {
+              callback({
+                list: () => mutable(editor.list()),
+                get: editor.get,
+                add: (value) => editor.add(Schema.decodeUnknownSync(Skill.Info)(value)),
+                update: editor.update,
+                remove: editor.remove,
+              })
+            }),
+        },
+        storage: storage(kv, pluginID),
+        shell: {
+          hook: (name, callback) => hooks.register("shell", name, callback),
+        },
+        tool: {
+          transform: tools.transform,
+          reload: tools.reload,
+          list: tools.list,
+          hook: (name, callback) => hooks.register("tool", name, callback),
+        },
+        vcs: {
+          get: () => response(vcs.info()),
+          base: () => response(vcs.base()),
+          branch: {
+            list: (input) => response(vcs.branches({ search: input?.search, limit: input?.limit })),
+          },
+          status: () => response(vcs.status()),
+          diff: (input) => response(vcs.diff(input.mode, { context: input.context, base: input.base })),
+          transform: vcs.transform,
+          reload: vcs.reload,
+        },
+        websearch: {
+          providers: () => response(websearch.providers()),
+          query: (input) =>
+            response(
+              websearch.query({
+                query: input.query,
+                providerID: input.providerID === undefined ? undefined : WebSearch.ID.make(input.providerID),
+              }),
+            ),
+          reload: websearch.reload,
+          transform: (callback) =>
+            websearch.transform((editor) => {
+              callback({
+                add: (definition) =>
+                  editor.add({
+                    id: WebSearch.ID.make(definition.id),
+                    name: definition.name,
+                    execute: definition.execute,
+                  }),
+                default: {
+                  get: editor.default.get,
+                  set: (selection) =>
+                    editor.default.set(
+                      selection === false || selection === "random" ? selection : WebSearch.ID.make(selection),
+                    ),
+                },
+              })
+            }),
+        },
+        worktree: {
+          list: worktrees.list,
+          create: (input) => worktrees.create(input, currentWorktreeStrategies),
+          refresh: (input) => worktrees.refresh(input, currentWorktreeStrategies) |> Effect.asVoid(%),
+          remove: (input) => worktrees.remove(input, currentWorktreeStrategies),
+          reload: worktreeStrategies.reload,
+          transform: (callback) =>
+            worktreeStrategies.transform((editor) =>
+              callback({
+                add: (definition) =>
+                  editor.add({
+                    id: Worktree.StrategyID.make(definition.id),
+                    create: (input) => definition.create(input) |> Effect.flatMap(%, decodeWorktree),
+                    remove: (input) => definition.remove(input),
+                    list: (directory) => definition.list(directory) |> Effect.flatMap(%, decodeWorktrees),
+                  }),
+              })
+            ),
+        },
+        session: {
+          hook: (name, callback, options) => hooks.register("session", name, callback, options),
+          list: sessions.list,
+          create: (input) =>
+            sessions.create({
+              id: input?.id,
+              title: input?.title,
+              agent: input?.agent,
+              model: input?.model,
+              metadata: input?.metadata,
+              permissions: input?.permissions,
+              ...(input?.parentID === undefined
+                ? {
+                  location: input?.location
+                    ?? Location.Ref.make({ directory: location.directory, workspaceID: location.workspaceID }),
+                }
+                : { parentID: input.parentID }),
+            }),
+          get: (input) => sessions.get(input.sessionID),
+          remove: (input) => sessions.remove(input.sessionID),
+          switchAgent: sessions.switchAgent,
+          switchModel: sessions.switchModel,
+          prompt: sessions.prompt,
+          generate: (input) => sessions.generate(input) |> Effect.map(%, (text) => ({ text })),
+          command: (input) => sessions.command({ ...input, command: input.name }),
+          compact: sessions.compact,
+          update: effect (input) => {
+            try sessions.get(input.sessionID)
+            if (input.title !== undefined) try sessions.rename({ sessionID: input.sessionID, title: input.title })
+            if (input.metadata !== undefined) {
+              try sessions.setMetadata({ sessionID: input.sessionID, metadata: input.metadata })
+            }
+            if (input.permissions !== undefined) {
+              try sessions.setPermissions({ sessionID: input.sessionID, permissions: input.permissions })
+            }
+          },
+          move: sessions.move,
+          synthetic: sessions.synthetic,
+          interrupt: (input) =>
+            sessions
+              .interrupt(input.sessionID, { resume: input.resume })
+            |> Effect.map(%, (interrupted) => ({ interrupted })),
+          wait: (input) => sessions.wait(input.sessionID),
+          context: (input) => sessions.context(input.sessionID),
+          instructions: {
+            entry: {
+              list: effect (input) => {
+                try sessions.get(input.sessionID)
+                return try instructionEntries.list(input.sessionID)
+              },
+              put: effect (input) => {
+                const key = try Schema.decodeUnknownEffect(InstructionEntry.Key)(input.key)
+                try sessions.get(input.sessionID)
+                try instructionEntries.put({ ...input, key })
+              },
+              remove: effect (input) => {
+                const key = try Schema.decodeUnknownEffect(InstructionEntry.Key)(input.key)
+                try sessions.get(input.sessionID)
+                try instructionEntries.remove({ ...input, key })
+              },
+            },
+          },
+        },
+      }
+      return context
+    },
+    "PluginHost.make",
+  )
+
+export const requirements = LayerNode.group([
+  App.node,
+  Agent.node,
+  AISDK.node,
+  Provider.node,
+  Model.node,
+  Command.node,
+  Bus.node,
+  Integration.node,
+  KV.node,
+  Mcp.node,
+  Location.node,
+  Reference.node,
+  Rpc.node,
+  Skill.node,
+  Tool.node,
+  Vcs.node,
+  WebSearch.node,
+  Worktree.node,
+  WorktreeStrategies.node,
+  Generate.node,
+  Permission.node,
+  PluginHooks.node,
+  Session.node,
+  InstructionEntry.node,
+  PersistentPty.node,
+  LocationServiceMap.node,
+])
+
+export function storage(kv: KV.Interface, pluginID: string): Plugin.Context["storage"] {
+  const namespace = `plugin:${
+    pluginID
+      .split("")
+      .map((value) => value.charCodeAt(0).toString(16).padStart(4, "0"))
+      .join("")
+  }:`
+  return {
+    get: (key) => kv.get(namespace + key),
+    set: (key, value) => kv.set(namespace + key, value),
+    remove: (key) => kv.remove(namespace + key),
+    scan: (options) =>
+      kv
+        .scan({
+          prefix: namespace + options.prefix,
+          after: options.after === undefined ? undefined : namespace + options.after,
+          limit: options.limit,
+        })
+      |> Effect.map(%, (result) => {
+        const entries = result.entries.map((entry) => ({
+          key: entry.key.slice(namespace.length),
+          value: entry.value,
+        }))
+        if (result.next === undefined) return { entries }
+        return { entries, next: result.next.slice(namespace.length) }
+      }),
+  }
+}
+
+function methodImplementation(input: IntegrationMethodRegistration): Integration.Implementation {
+  if ("authorize" in input) {
+    const refresh = input.refresh
+    return {
+      integrationID: Integration.ID.make(input.integrationID),
+      method: { ...input.method, id: Integration.MethodID.make(input.method.id) },
+      authorize: (answer) =>
+        input.authorize(answer)
+        |> Effect.map(%, (authorization) => {
+          if (authorization.mode === "auto") {
+            return {
+              ...authorization,
+              callback: authorization.callback |> Effect.map(%, credential),
+            }
+          }
+          return {
+            ...authorization,
+            callback: (code: string) => authorization.callback(code) |> Effect.map(%, credential),
+          }
+        }),
+      ...(refresh ? { refresh: (value: Credential.OAuth) => refresh(value) |> Effect.map(%, credential) } : {}),
+      ...(input.label ? { label: input.label } : {}),
+    }
+  }
+  if (input.method.type === "env") {
+    return {
+      integrationID: Integration.ID.make(input.integrationID),
+      method: input.method,
+    }
+  }
+  if (input.method.type === "command") {
+    return {
+      integrationID: Integration.ID.make(input.integrationID),
+      method: { ...input.method, id: Integration.MethodID.make(input.method.id) },
+    }
+  }
+  if (input.method.type === "external") {
+    return {
+      integrationID: Integration.ID.make(input.integrationID),
+      method: { ...input.method, id: Integration.MethodID.make(input.method.id) },
+    }
+  }
+  return {
+    integrationID: Integration.ID.make(input.integrationID),
+    method: input.method,
+  }
+}
+
+function credential(value: Credential.OAuth) {
+  return Credential.OAuth.make({ ...value, methodID: Integration.MethodID.make(value.methodID) })
+}

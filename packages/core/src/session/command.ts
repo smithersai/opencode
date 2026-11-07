@@ -6,7 +6,7 @@ import type { SessionInbox } from "@opencode/schema/session-inbox"
 import { Effect } from "effect"
 import { Command } from "../command.js"
 import { Instance } from "../instance/service.js"
-import { Plugin } from "../plugin/service.js"
+import { Plugin } from "../plugin/service.vibe"
 
 export const execute = Effect.fn("SessionCommand.execute")(function* (input: {
   session: Session.Info

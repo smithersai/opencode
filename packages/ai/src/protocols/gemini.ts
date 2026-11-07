@@ -27,7 +27,7 @@ import {
 import { classifyProviderFailure } from "../provider-error.vibe"
 import { Media } from "../media.js"
 import { JsonObject, knownString, lenient, optionalArray, optionalNull, ProviderShared } from "./shared.js"
-import { GeminiGenerateContent } from "./utils/gemini-generate-content.js"
+import { GeminiGenerateContent } from "./utils/gemini-generate-content.vibe"
 import { Lifecycle } from "./utils/lifecycle.js"
 
 const ADAPTER = "gemini"

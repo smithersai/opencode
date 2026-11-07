@@ -114,7 +114,7 @@ export declare const routes: Route<{
 export declare const configure: (input?: Config) => {
     id: string & import("effect/Brand").Brand<"AI.ProviderID">;
     model: (modelID: string | ModelID) => import("../schema/options.vibe").LanguageModel<GeminiOptionsInput, import("../route/client.ts").CompactionOperations | undefined>;
-    image: (modelID: string | ModelID, providerOptions?: ProviderOptions) => import("../image.ts").ImageModel<import("../protocols/google-images.ts").GoogleImageOptions>;
+    image: (modelID: string | ModelID, providerOptions?: ProviderOptions) => import("../image.ts").ImageModel<import("../protocols/google-images.vibe").GoogleImageOptions>;
     configure: typeof configure;
 };
 export declare const provider: {
@@ -122,4 +122,4 @@ export declare const provider: {
     configure: typeof configure;
 };
 export declare const model: ProviderPackage.Definition<Settings, GeminiProviderOptionsInput>["model"];
-export declare const imageModel: (modelID: string, settings: Settings) => import("../image.ts").ImageModel<import("../protocols/google-images.ts").GoogleImageOptions>;
+export declare const imageModel: (modelID: string, settings: Settings) => import("../image.ts").ImageModel<import("../protocols/google-images.vibe").GoogleImageOptions>;

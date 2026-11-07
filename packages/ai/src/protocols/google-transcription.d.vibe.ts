@@ -2,7 +2,7 @@ import { MediaProtocol } from "../route/media-protocol.ts";
 import { MediaRoute } from "../route/media.vibe";
 import { type OpenString } from "../schema/index.ts";
 import { TranscriptionModel, type TranscriptionRequestFor, type TranscriptionSegment, type TranscriptionWord } from "../transcription.ts";
-import { GeminiGenerateContent } from "./utils/gemini-generate-content.ts";
+import { GeminiGenerateContent } from "./utils/gemini-generate-content.vibe";
 export declare const DEFAULT_BASE_URL = "https://generativelanguage.googleapis.com/v1beta";
 /**
  * Merged into `generationConfig`. The API rejects `customVocabulary` and `mode: "SMART"` alongside diarization or word

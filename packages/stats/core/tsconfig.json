@@ -11,5 +11,5 @@
     "noEmit": true,
     "types": ["bun", "node"]
   },
-  "vibelang": { "declarationImportStyle": "extensionless" }
+  "vibelang": { "declarationImportStyle": "extensionless", "trustedPackages": ["@opencode/stats-core", "drizzle-orm"] }
 }

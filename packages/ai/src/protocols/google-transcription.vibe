@@ -11,7 +11,7 @@ import {
   type TranscriptionWord,
   type TranscriptionEvent,
 } from "../transcription.ts"
-import { GeminiGenerateContent } from "./utils/gemini-generate-content.ts"
+import { GeminiGenerateContent } from "./utils/gemini-generate-content.vibe"
 
 const route = MediaProtocol.identity({ id: "google-transcription", name: "Google Transcription", provider: "google" })
 export const DEFAULT_BASE_URL = "https://generativelanguage.googleapis.com/v1beta"

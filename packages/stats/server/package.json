@@ -5,9 +5,9 @@
   "private": true,
   "type": "module",
   "license": "MIT",
-  "main": "./src/stat-sync.ts",
+  "main": "./src/stat-sync.vibe",
   "exports": {
-    ".": "./src/stat-sync.ts"
+    ".": "./src/stat-sync.vibe"
   },
   "scripts": {
     "start": "bun src/stat-sync.ts",

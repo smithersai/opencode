@@ -7,7 +7,7 @@ import { Schema } from "effect"
 import { openDatabase, type Database } from "../storage/database"
 import { createStateStore, type StateStore } from "../storage/state"
 import { createSettingsStore, type SettingsStore } from "../storage/store"
-import { createStorage, type SettingsFiles } from "./storage"
+import { createStorage, type SettingsFiles } from "./storage.vibe"
 
 const roots: string[] = []
 

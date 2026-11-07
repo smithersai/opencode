@@ -547,24 +547,24 @@
       "default": "./.vibelang/js/src/protocols.js"
     },
     "./protocols/alibaba-images": {
-      "types": "./src/protocols/alibaba-images.ts",
-      "vibelang-source": "./src/protocols/alibaba-images.ts",
+      "types": "./src/protocols/alibaba-images.d.vibe.ts",
+      "vibelang-source": "./src/protocols/alibaba-images.vibe",
       "default": "./.vibelang/js/src/protocols/alibaba-images.js"
     },
     "./protocols/cloudflare-run-decisions": {
-      "types": "./src/protocols/cloudflare-run-decisions.ts",
-      "vibelang-source": "./src/protocols/cloudflare-run-decisions.ts",
+      "types": "./src/protocols/cloudflare-run-decisions.d.vibe.ts",
+      "vibelang-source": "./src/protocols/cloudflare-run-decisions.vibe",
       "default": "./.vibelang/js/src/protocols/cloudflare-run-decisions.js"
     },
     "./protocols/cloudflare-workers-ai-images": {
-      "types": "./src/protocols/cloudflare-workers-ai-images.ts",
-      "vibelang-source": "./src/protocols/cloudflare-workers-ai-images.ts",
+      "types": "./src/protocols/cloudflare-workers-ai-images.d.vibe.ts",
+      "vibelang-source": "./src/protocols/cloudflare-workers-ai-images.vibe",
       "default": "./.vibelang/js/src/protocols/cloudflare-workers-ai-images.js"
     },
     "./protocols/deepgram-transcription": "./src/protocols/deepgram-transcription.vibe",
     "./protocols/google-images": {
-      "types": "./src/protocols/google-images.ts",
-      "vibelang-source": "./src/protocols/google-images.ts",
+      "types": "./src/protocols/google-images.d.vibe.ts",
+      "vibelang-source": "./src/protocols/google-images.vibe",
       "default": "./.vibelang/js/src/protocols/google-images.js"
     },
     "./protocols/google-speech": {
@@ -593,8 +593,8 @@
       "default": "./.vibelang/js/src/protocols/openai-images.js"
     },
     "./protocols/openai-responses": {
-      "types": "./src/protocols/openai-responses.ts",
-      "vibelang-source": "./src/protocols/openai-responses.ts",
+      "types": "./src/protocols/openai-responses.d.vibe.ts",
+      "vibelang-source": "./src/protocols/openai-responses.vibe",
       "default": "./.vibelang/js/src/protocols/openai-responses.js"
     },
     "./protocols/openai-speech": {
@@ -613,18 +613,18 @@
       "default": "./.vibelang/js/src/protocols/system-one.js"
     },
     "./protocols/xai-images": {
-      "types": "./src/protocols/xai-images.ts",
-      "vibelang-source": "./src/protocols/xai-images.ts",
+      "types": "./src/protocols/xai-images.d.vibe.ts",
+      "vibelang-source": "./src/protocols/xai-images.vibe",
       "default": "./.vibelang/js/src/protocols/xai-images.js"
     },
     "./protocols/xai-video": {
-      "types": "./src/protocols/xai-video.ts",
-      "vibelang-source": "./src/protocols/xai-video.ts",
+      "types": "./src/protocols/xai-video.d.vibe.ts",
+      "vibelang-source": "./src/protocols/xai-video.vibe",
       "default": "./.vibelang/js/src/protocols/xai-video.js"
     },
     "./protocols/zai-images": {
-      "types": "./src/protocols/zai-images.ts",
-      "vibelang-source": "./src/protocols/zai-images.ts",
+      "types": "./src/protocols/zai-images.d.vibe.ts",
+      "vibelang-source": "./src/protocols/zai-images.vibe",
       "default": "./.vibelang/js/src/protocols/zai-images.js"
     }
   },

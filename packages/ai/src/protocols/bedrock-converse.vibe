@@ -26,7 +26,7 @@ import { BedrockMedia } from "./utils/bedrock-media.ts"
 import { claudeVersion, supportsThinkingBlockBinding, THINKING_BINDING_BETA } from "./utils/claude-model.ts"
 import { Lifecycle } from "./utils/lifecycle.ts"
 import { MistralToolID } from "./utils/mistral-tool-id.ts"
-import { ToolStream } from "./utils/tool-stream.ts"
+import { ToolStream } from "./utils/tool-stream.vibe"
 import { concatBytes } from "../utils/bytes.ts"
 
 const ADAPTER = "bedrock-converse"

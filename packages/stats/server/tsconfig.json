@@ -11,5 +11,6 @@
     "noEmit": true,
     "types": ["bun", "node"]
   },
-  "include": ["src", "../core/src/resource.d.ts"]
+  "include": ["src", "../core/src/resource.d.ts"],
+  "vibelang": { "trustedPackages": ["@opencode/stats-core", "drizzle-orm"] }
 }

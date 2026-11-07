@@ -6,7 +6,7 @@ import { Protocol } from "../route/protocol.vibe"
 import { LLMEvent, Usage, type FinishReasonDetails, type LLMRequest } from "../schema/index.js"
 import { JsonObject, ProviderShared } from "./shared.js"
 import { Lifecycle } from "./utils/lifecycle.js"
-import { ToolStream } from "./utils/tool-stream.js"
+import { ToolStream } from "./utils/tool-stream.vibe"
 
 const ADAPTER = "cohere-chat"
 export const DEFAULT_BASE_URL = "https://api.cohere.com/v2"

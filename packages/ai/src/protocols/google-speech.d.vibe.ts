@@ -1,7 +1,7 @@
 import { MediaProtocol } from "../route/media-protocol.ts";
 import { MediaRoute } from "../route/media.vibe";
 import { SpeechModel, type SpeechRequestFor } from "../speech.ts";
-import { GeminiGenerateContent } from "./utils/gemini-generate-content.ts";
+import { GeminiGenerateContent } from "./utils/gemini-generate-content.vibe";
 import { SpeechStream } from "./utils/speech-stream.vibe";
 export declare const DEFAULT_BASE_URL = "https://generativelanguage.googleapis.com/v1beta";
 /** Style is directed in the text itself, and `speechConfig.multiSpeakerVoiceConfig` excludes `voice`. */

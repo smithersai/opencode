@@ -1,7 +1,7 @@
 import { app } from "electron"
 import { Context, Effect, FileSystem, Layer, Option, Path, Schema } from "effect"
 import { CHANNEL } from "../constants"
-import { BackgroundServiceState } from "./background-service-state"
+import { BackgroundServiceState } from "./background-service-state.vibe"
 import { cleanStages } from "./cli-stages.vibe"
 import { keptStages, serviceVersion, shouldRetryEnsure } from "./cli-version"
 import { DesktopCli } from "./desktop-cli"

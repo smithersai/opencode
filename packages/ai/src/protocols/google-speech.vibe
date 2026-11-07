@@ -2,7 +2,7 @@ import { MediaProtocol } from "../route/media-protocol.ts"
 import { MediaRoute } from "../route/media.vibe"
 import { mergeJsonRecords } from "../schema/index.ts"
 import { SpeechModel, type SpeechEvent, type SpeechRequestFor } from "../speech.ts"
-import { GeminiGenerateContent } from "./utils/gemini-generate-content.ts"
+import { GeminiGenerateContent } from "./utils/gemini-generate-content.vibe"
 import { SpeechStream } from "./utils/speech-stream.vibe"
 
 const route = MediaProtocol.identity({ id: "google-speech", name: "Google Speech", provider: "google" })

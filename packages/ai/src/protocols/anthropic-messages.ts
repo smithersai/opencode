@@ -32,7 +32,7 @@ import { effortUpdate, resolveEffortUpdates } from "../effort-updates.js"
 import * as Cache from "./utils/cache.js"
 import { claudeVersion, supportsThinkingBlockBinding, THINKING_BINDING_BETA } from "./utils/claude-model.js"
 import { Lifecycle } from "./utils/lifecycle.js"
-import { ToolStream } from "./utils/tool-stream.js"
+import { ToolStream } from "./utils/tool-stream.vibe"
 
 const ADAPTER = "anthropic-messages"
 export const DEFAULT_BASE_URL = "https://api.anthropic.com/v1"

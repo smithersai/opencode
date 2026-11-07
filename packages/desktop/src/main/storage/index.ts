@@ -6,7 +6,7 @@ import { marks } from "../lifecycle/marks"
 import { openDatabase } from "./database"
 import { setStorageSnapshotProvider } from "./snapshot"
 import { createDraftStore } from "./drafts"
-import { importLegacyStores } from "./legacy"
+import { importLegacyStores } from "./legacy.vibe"
 import { createStateStore } from "./state"
 import { readEnableState } from "../plugin/enable-state"
 

@@ -31,7 +31,7 @@ import { classifyProviderFailure } from "../provider-error.vibe"
 import { effortUpdate } from "../effort-updates.js"
 import { OpenResponsesOptions } from "./utils/open-responses-options.vibe"
 import { Lifecycle } from "./utils/lifecycle.js"
-import { ToolStream } from "./utils/tool-stream.js"
+import { ToolStream } from "./utils/tool-stream.vibe"
 
 const ADAPTER = "open-responses"
 const NAME = "Open Responses"

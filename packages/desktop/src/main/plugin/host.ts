@@ -46,7 +46,7 @@ import {
   type DesktopEvent,
 } from "../../shared/ipc-rpc/events.vibe"
 import { CHANNEL, VERSION } from "../constants"
-import { emitIpcEvent } from "../ipc-events"
+import { emitIpcEvent } from "../ipc-events.vibe"
 import { refreshMenu, setMenubarProvider } from "../native/menu"
 import {
   formatNativeTemplate,
@@ -64,7 +64,7 @@ import { createLifecycle, type ErrorLog, type Instance, type Revision } from "./
 import { createManager } from "./manager"
 import { evaluateMain } from "./module"
 import { getStore } from "../storage/store"
-import { createStorage } from "./storage"
+import { createStorage } from "./storage.vibe"
 import { createEmbeds } from "./embeds"
 
 export type PluginHost = ReturnType<typeof createHost>

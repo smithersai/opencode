@@ -6,15 +6,15 @@ import type { ProviderPackage } from "../provider-package.js"
 import { ProviderID, type ModelID, type ProviderOptions } from "../schema/index.js"
 import { Gemini } from "../protocols/gemini.js"
 import { GoogleInteractions } from "../protocols/google-interactions.js"
-import { GoogleImages } from "../protocols/google-images.js"
+import { GoogleImages } from "../protocols/google-images.vibe"
 import { GoogleSpeech } from "../protocols/google-speech.vibe"
 import { GoogleTranscription } from "../protocols/google-transcription.vibe"
-import { GoogleVideo } from "../protocols/google-video.js"
+import { GoogleVideo } from "../protocols/google-video.vibe"
 
-export type { GoogleImageOptions } from "../protocols/google-images.js"
+export type { GoogleImageOptions } from "../protocols/google-images.vibe"
 export type { GoogleSpeechOptions } from "../protocols/google-speech.vibe"
 export type { GoogleTranscriptionOptions } from "../protocols/google-transcription.vibe"
-export type { GoogleVideoOptions } from "../protocols/google-video.js"
+export type { GoogleVideoOptions } from "../protocols/google-video.vibe"
 export type GeminiOptionsInput = Gemini.OptionsInput
 export type GeminiProviderOptionsInput = Gemini.ProviderOptionsInput
 export type GoogleInteractionsOptionsInput = GoogleInteractions.OptionsInput

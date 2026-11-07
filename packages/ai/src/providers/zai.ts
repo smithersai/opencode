@@ -1,6 +1,6 @@
 import type { ProviderPackage } from "../provider-package.js"
 import { ZAIChat } from "../protocols/zai-chat.vibe"
-import { ZAIImages } from "../protocols/zai-images.js"
+import { ZAIImages } from "../protocols/zai-images.vibe"
 import { OpenAIChat } from "../protocols/openai-chat.js"
 import { AuthOptions, type ProviderAuthOption } from "../route/auth-options.vibe"
 import { Route, type RouteDefaultsInput } from "../route/client.js"
@@ -24,7 +24,7 @@ export type Settings = ProviderPackage.Settings &
     readonly baseURL?: string
   }
 
-export type { ZAIImageOptions } from "../protocols/zai-images.js"
+export type { ZAIImageOptions } from "../protocols/zai-images.vibe"
 
 const auth = (options: ProviderAuthOption<"optional">) => AuthOptions.bearer(options, "ZAI_API_KEY")
 

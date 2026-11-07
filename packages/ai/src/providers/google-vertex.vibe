@@ -1,6 +1,6 @@
 import type { ProviderPackage } from "../provider-package.ts"
 import { Gemini } from "../protocols/gemini.ts"
-import { GoogleImages } from "../protocols/google-images.ts"
+import { GoogleImages } from "../protocols/google-images.vibe"
 import { ProviderShared } from "../protocols/shared.ts"
 import { Auth } from "../route/auth.ts"
 import { Route, type RouteDefaultsInput } from "../route/client.ts"

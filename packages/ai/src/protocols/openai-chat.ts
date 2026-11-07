@@ -29,7 +29,7 @@ import * as Cache from "./utils/cache.js"
 import { resolveParallelToolCalls } from "./open-responses.js"
 import { OpenResponsesOptions } from "./utils/open-responses-options.vibe"
 import { Lifecycle } from "./utils/lifecycle.js"
-import { ToolStream } from "./utils/tool-stream.js"
+import { ToolStream } from "./utils/tool-stream.vibe"
 
 const ADAPTER = "openai-chat"
 const RESERVED_REASONING_FIELDS = new Set(["role", "content", "refusal", "tool_calls"])

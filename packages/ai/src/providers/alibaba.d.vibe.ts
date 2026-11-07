@@ -10,7 +10,7 @@ export type Region = "ap-southeast-1" | "cn-beijing" | "cn-hongkong" | "us-east-
 export type ChatOptionsInput = AlibabaChat.OptionsInput;
 export type MessagesOptionsInput = AlibabaMessages.OptionsInput;
 export type ResponsesOptionsInput = AlibabaResponses.OptionsInput;
-export type { AlibabaImageOptions } from "../protocols/alibaba-images.ts";
+export type { AlibabaImageOptions } from "../protocols/alibaba-images.vibe";
 type Location = AtLeastOne<{
     readonly region: Region;
     /** Overrides the selected API's complete base URL, including its version prefix. */

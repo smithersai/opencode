@@ -1,5 +1,5 @@
 import { EventRpcs } from "../../shared/ipc-rpc.vibe"
-import { ipcEventStream } from "../ipc-events.ts"
+import { ipcEventStream } from "../ipc-events.vibe"
 import { IpcPortHandoff } from "../ipc-transport.ts"
 import { sender } from "./context.ts"
 

@@ -10,7 +10,7 @@ import {
   type DesktopMenuRole,
 } from "@opencode/app/desktop-menu"
 import { MenuCommandTriggered } from "../../shared/ipc-rpc/events.vibe"
-import { emitIpcEvent } from "../ipc-events"
+import { emitIpcEvent } from "../ipc-events.vibe"
 
 import { runDesktopMenuAction } from "./menu-actions"
 import { nativeT } from "./translations"

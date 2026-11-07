@@ -22,7 +22,7 @@ import { classifyProviderFailure } from "../provider-error.vibe"
 import { JsonObject, optionalArray, optionalNull, ProviderShared } from "./shared.js"
 import { Lifecycle } from "./utils/lifecycle.js"
 import { MistralToolID } from "./utils/mistral-tool-id.js"
-import { ToolStream } from "./utils/tool-stream.js"
+import { ToolStream } from "./utils/tool-stream.vibe"
 
 const ADAPTER = "mistral-chat"
 const DONE = "[DONE]" as const

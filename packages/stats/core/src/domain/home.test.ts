@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test"
-import type { ModelStatMetric } from "./model"
+import type { ModelStatMetric } from "./model.vibe"
 import type { RetentionMetricRow } from "./home"
 
 process.env.SST_RESOURCE_App = JSON.stringify({ name: "opencode", stage: "test" })

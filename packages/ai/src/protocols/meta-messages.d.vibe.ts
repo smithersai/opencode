@@ -394,7 +394,7 @@ export declare const protocol: Protocol<{
     provider: string & import("effect/Brand").Brand<"AI.ProviderID">;
     compactions: {};
     providerMetadataKey: string;
-    tools: Partial<Record<number, import("./utils/tool-stream.ts").PendingTool>>;
+    tools: Partial<Record<number, import("./utils/tool-stream.vibe").PendingTool>>;
     reasoningSignatures: {};
     lifecycle: import("./utils/lifecycle.ts").State;
 }>;

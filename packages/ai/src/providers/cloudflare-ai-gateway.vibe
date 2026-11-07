@@ -1,6 +1,6 @@
 import type { Config, Redacted } from "effect"
 import type { ProviderPackage } from "../provider-package.ts"
-import { CloudflareRunDecisions } from "../protocols/cloudflare-run-decisions.ts"
+import { CloudflareRunDecisions } from "../protocols/cloudflare-run-decisions.vibe"
 import { AnthropicMessages, OpenAIChat, OpenAIResponses } from "../protocols/index.ts"
 import { Auth } from "../route/auth.ts"
 import { Endpoint } from "../route/endpoint.ts"

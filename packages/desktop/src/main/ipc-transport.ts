@@ -1,7 +1,7 @@
 import type { MessagePortMain, WebContents } from "electron"
 import { Context, Effect, Layer, Option, Queue, Schema, Stream } from "effect"
 import { RpcMessage, RpcServer } from "effect/rpc"
-import { bindIpcEvents } from "./ipc-events"
+import { bindIpcEvents } from "./ipc-events.vibe"
 
 type PortBinding = {
   readonly id: number

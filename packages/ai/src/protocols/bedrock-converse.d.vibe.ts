@@ -3,7 +3,7 @@ import { Route } from "../route/client.ts";
 import { Protocol } from "../route/protocol.vibe";
 import { Usage, type FinishReasonDetails, type ProviderOptions } from "../schema/index.ts";
 import { Lifecycle } from "./utils/lifecycle.ts";
-import { ToolStream } from "./utils/tool-stream.ts";
+import { ToolStream } from "./utils/tool-stream.vibe";
 export type { Credentials as BedrockCredentials } from "./utils/bedrock-auth.ts";
 declare const BedrockConverseBody: Schema.Struct<{
     modelId: Schema.String;

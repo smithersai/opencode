@@ -6,8 +6,8 @@ import { ProviderID, type ModelID, type ProviderOptions } from "../schema/index.
 import { OpenAIChat } from "../protocols/openai-chat.js"
 import { OpenResponsesChannel } from "../protocols/open-responses-channel.js"
 import { XAIResponses } from "../protocols/xai-responses.js"
-import { XAIImages } from "../protocols/xai-images.js"
-import { XAIVideo } from "../protocols/xai-video.js"
+import { XAIImages } from "../protocols/xai-images.vibe"
+import { XAIVideo } from "../protocols/xai-video.vibe"
 import type { OpenAIOptionsInput } from "./openai-options.js"
 import type { ProviderPackage } from "../provider-package.js"
 
@@ -29,8 +29,8 @@ export type Settings = ProviderPackage.Settings &
     readonly baseURL?: string
   }
 
-export type { XAIImageOptions } from "../protocols/xai-images.js"
-export type { XAIVideoOptions } from "../protocols/xai-video.js"
+export type { XAIImageOptions } from "../protocols/xai-images.vibe"
+export type { XAIVideoOptions } from "../protocols/xai-video.vibe"
 
 const RESPONSES_WEBSOCKET_ROTATE_AFTER_MS = 24 * 60 * 1000
 

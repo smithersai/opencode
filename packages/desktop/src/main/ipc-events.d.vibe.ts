@@ -1,0 +1,6 @@
+import { Effect, Stream } from "effect";
+import type { WebContents } from "electron";
+import type { DesktopEvent } from "../shared/ipc-rpc/events.vibe";
+export declare const bindIpcEvents: (senderId: number) => Effect.Effect<Effect.Effect<void, never, never>, never, never>;
+export declare function ipcEventStream(senderId: number): Stream.Stream<import("../shared/ipc-rpc/events.vibe").DeepLinksOpened | import("../shared/ipc-rpc/events.vibe").MenuCommandTriggered | import("../shared/ipc-rpc/events.vibe").PluginAvailable | import("../shared/ipc-rpc/events.vibe").PluginEvent | import("../shared/ipc-rpc/events.vibe").PluginGuisChanged | import("../shared/ipc-rpc/events.vibe").PluginMenubarItemsChanged | import("../shared/ipc-rpc/events.vibe").PluginState | import("../shared/ipc-rpc/events.vibe").PluginsChanged | import("../shared/ipc-rpc/events.vibe").StorageChanged | import("../shared/ipc-rpc/events.vibe").WindowFocusChanged | import("../shared/ipc-rpc/events.vibe").WindowFullscreenChanged | import("../shared/ipc-rpc/events.vibe").WindowPinchZoomChanged | import("../shared/ipc-rpc/events.vibe").WindowZoomChanged, never, never>;
+export declare function emitIpcEvent(sender: WebContents, event: DesktopEvent): void;

@@ -15,7 +15,7 @@ import {
 import { Auth, LLMClient } from "../src/route.js"
 import * as AnthropicMessages from "../src/protocols/anthropic-messages.js"
 import * as OpenAIChat from "../src/protocols/openai-chat.js"
-import * as OpenAIResponses from "../src/protocols/openai-responses.js"
+import * as OpenAIResponses from "../src/protocols/openai-responses.vibe"
 import { Tool, ToolFailure, type ToolExecuteContext } from "../src/tool.vibe"
 import { ToolRuntime } from "../src/tool-runtime.vibe"
 import { it } from "./lib/effect.js"

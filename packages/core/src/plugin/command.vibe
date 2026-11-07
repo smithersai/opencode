@@ -1,7 +1,6 @@
-export * as CommandPlugin from "./command.js"
+export * as CommandPlugin from "./command.vibe"
 
 import { define } from "@opencode/plugin/effect/plugin"
-import { Effect, Stream } from "effect"
 import { Bus } from "../bus.js"
 import { Location } from "../location.js"
 import { Mcp } from "../mcp/index.js"
@@ -10,22 +9,19 @@ import PROMPT_REVIEW from "./command/review.txt"
 
 export const Plugin = define({
   id: "opencode.command",
-  effect: Effect.fn(function* (ctx) {
-    const location = yield* Location.Service
-    const mcp = yield* Mcp.Service
-    const bus = yield* Bus.Service
+  effect: effect (ctx) => {
+    const location = try Location.Service
+    const mcp = try Mcp.Service
+    const bus = try Bus.Service
     const loaded = { prompts: [] as Mcp.Prompt[] }
-    yield* bus.subscribe(Mcp.PromptsChanged).pipe(
-      Stream.runForEach(() =>
-        mcp.prompts().pipe(
-          Effect.tap((prompts) => Effect.sync(() => (loaded.prompts = prompts))),
-          Effect.andThen(ctx.command.reload()),
-        ),
-      ),
-      Effect.forkScoped({ startImmediately: true }),
-    )
-    loaded.prompts = yield* mcp.prompts()
-    yield* ctx.command.transform((editor) => {
+    try (bus.subscribe(Mcp.PromptsChanged)
+      |> Stream.runForEach(%, () =>
+        mcp.prompts()
+        |> Effect.tap(%, effect (prompts) => (loaded.prompts = prompts))
+        |> Effect.andThen(%, ctx.command.reload()))
+      |> Effect.forkScoped({ startImmediately: true })(%))
+    loaded.prompts = try mcp.prompts()
+    try ctx.command.transform((editor) => {
       editor.add({
         name: "init",
         description: "guided AGENTS.md setup",
@@ -36,8 +32,7 @@ export const Plugin = define({
               sessionID: input.sessionID,
               text: append(PROMPT_INITIALIZE.replace("${path}", location.project.directory), input.prompt.text),
               delivery: input.delivery,
-            })
-            .pipe(Effect.asVoid),
+            }) |> Effect.asVoid(%),
       })
       editor.add({
         name: "review",
@@ -49,25 +44,24 @@ export const Plugin = define({
               sessionID: input.sessionID,
               text: append(PROMPT_REVIEW.replace("${path}", location.project.directory), input.prompt.text),
               delivery: input.delivery,
-            })
-            .pipe(Effect.asVoid),
+            }) |> Effect.asVoid(%),
       })
       for (const prompt of loaded.prompts) {
         editor.add({
           name: mcpCommandName(prompt.server, prompt.name),
           description: prompt.description,
           execute: (input) =>
-            Effect.gen(function* () {
+            effect {
               const args = parseArguments(input.prompt.text)
-              const result = yield* mcp.prompt({
+              const result = try mcp.prompt({
                 server: prompt.server,
                 name: prompt.name,
                 args: Object.fromEntries(
                   (prompt.arguments ?? []).map((argument, index) => [argument.name, args[index] ?? ""]),
                 ),
               })
-              if (!result) return yield* Effect.fail(new Error(`MCP prompt not found: ${prompt.server}:${prompt.name}`))
-              yield* ctx.session.prompt({
+              if (!result) throw new Error(`MCP prompt not found: ${prompt.server}:${prompt.name}`)
+              try ctx.session.prompt({
                 ...input.prompt,
                 sessionID: input.sessionID,
                 text: result.messages
@@ -76,11 +70,11 @@ export const Plugin = define({
                   .trim(),
                 delivery: input.delivery,
               })
-            }).pipe(Effect.asVoid),
+            } |> Effect.asVoid(%),
         })
       }
     })
-  }),
+  },
 })
 
 function append(template: string, input: string) {

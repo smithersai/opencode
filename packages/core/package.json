@@ -535,6 +535,11 @@
       "vibelang-source": "./src/worktree/directory.vibe",
       "default": "./.vibelang/js/src/worktree/directory.js"
     },
+    "./plugin/command": {
+      "types": "./src/plugin/command.d.vibe.ts",
+      "vibelang-source": "./src/plugin/command.vibe",
+      "default": "./.vibelang/js/src/plugin/command.js"
+    },
     "./*": {
       "types": "./src/*.ts",
       "vibelang-source": "./src/*.ts",

@@ -13,22 +13,67 @@
     "access": "public"
   },
   "files": [
-    "dist"
+    "dist",
+    ".vibelang/js"
   ],
   "exports": {
-    "./effect/layer-node": "./src/effect/layer-node.ts",
-    "./*": "./src/*.ts"
+    "./effect/layer-node": {
+      "types": "./src/effect/layer-node.ts",
+      "vibelang-source": "./src/effect/layer-node.ts",
+      "default": "./.vibelang/js/src/effect/layer-node.js"
+    },
+    "./bom": {
+      "types": "./src/bom.d.vibe.ts",
+      "vibelang-source": "./src/bom.vibe",
+      "default": "./.vibelang/js/src/bom.js"
+    },
+    "./patch": {
+      "types": "./src/patch.d.vibe.ts",
+      "vibelang-source": "./src/patch.vibe",
+      "default": "./.vibelang/js/src/patch.js"
+    },
+    "./*": {
+      "types": "./src/*.ts",
+      "vibelang-source": "./src/*.ts",
+      "default": "./.vibelang/js/src/*.js"
+    },
+    "./bom.vibe.$call$ts": null,
+    "./patch.vibe.$throw$ts": null
   },
   "imports": {
     "#global-roots": {
-      "workerd": "./src/global-roots.workerd.ts",
-      "default": "./src/global-roots.ts"
+      "workerd": {
+        "types": "./src/global-roots.workerd.ts",
+        "vibelang-source": "./src/global-roots.workerd.ts",
+        "default": "./.vibelang/js/src/global-roots.workerd.js"
+      },
+      "default": {
+        "types": "./src/global-roots.ts",
+        "vibelang-source": "./src/global-roots.ts",
+        "default": "./.vibelang/js/src/global-roots.js"
+      }
     },
     "#runtime-import": {
-      "workerd": "./src/runtime/import.workerd.ts",
-      "bun": "./src/runtime/import.bun.ts",
-      "node": "./src/runtime/import.node.ts",
-      "default": "./src/runtime/import.bun.ts"
+      "workerd": {
+        "types": "./src/runtime/import.workerd.ts",
+        "vibelang-source": "./src/runtime/import.workerd.ts",
+        "default": "./.vibelang/js/src/runtime/import.workerd.js"
+      },
+      "bun": {
+        "types": "./src/runtime/import.bun.ts",
+        "vibelang-source": "./src/runtime/import.bun.ts",
+        "default": "./.vibelang/js/src/runtime/import.bun.js"
+      },
+      "node": {
+        "types": "./src/runtime/import.node.ts",
+        "vibelang-source": "./src/runtime/import.node.ts",
+        "default": "./.vibelang/js/src/runtime/import.node.js"
+      },
+      "default": {
+        "types": "./src/runtime/import.bun.ts",
+        "vibelang-source": "./src/runtime/import.bun.ts",
+        "default": "./.vibelang/js/src/runtime/import.bun.js"
+      }
     }
   },
   "scripts": {

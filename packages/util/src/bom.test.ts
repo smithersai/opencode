@@ -1,5 +1,5 @@
 import { expect, test } from "bun:test"
-import { Bom } from "./bom.js"
+import { Bom } from "./bom.vibe"
 
 test.each([
   { prefix: "", bom: false, expected: undefined },

@@ -1,6 +1,6 @@
 export * as FileSystemV1 from "./filesystem.vibe"
 
-import { ephemeral, inventory } from "../event.ts"
+import { ephemeral, inventory } from "../event.vibe"
 
 const Edited = ephemeral({
   type: "file.edited",

@@ -4,7 +4,7 @@ import { Effect, Schema } from "effect"
 import { Integration } from "./integration.js"
 import { ProviderCompatibility } from "./model-compatibility.vibe"
 import { optional, statics } from "./schema.vibe"
-import { ephemeral, inventory } from "./event.js"
+import { ephemeral, inventory } from "./event.vibe"
 
 export const ID = Schema.String.pipe(
   Schema.brand("Provider.ID"),

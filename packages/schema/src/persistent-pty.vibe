@@ -1,6 +1,6 @@
 export * as PersistentPty from "./persistent-pty.vibe"
 
-import { ephemeral, inventory } from "./event.ts"
+import { ephemeral, inventory } from "./event.vibe"
 import { Pty } from "./pty.vibe"
 import { NonNegativeInt, PositiveInt, optional } from "./schema.vibe"
 import { Session } from "./session.vibe"

@@ -1,7 +1,7 @@
 export * as SessionEvent from "./session-event.vibe"
 
 import { optional } from "./schema.vibe"
-import { Event } from "./event.ts"
+import { Event } from "./event.vibe"
 import { FinishReason } from "./llm.vibe"
 import { Content } from "./tool.vibe"
 import { Model } from "./model.ts"

@@ -5,7 +5,7 @@ import { optional, statics } from "./schema.vibe"
 import { Provider } from "./provider.js"
 import { Compatibility, MaxTokensField, MediaInput, ReasoningField } from "./model-compatibility.vibe"
 import { Money } from "./money.vibe"
-import { ephemeral, inventory } from "./event.js"
+import { ephemeral, inventory } from "./event.vibe"
 
 export const ID = Schema.String.pipe(Schema.brand("Model.ID"))
 export type ID = typeof ID.Type

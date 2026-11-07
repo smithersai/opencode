@@ -10,7 +10,7 @@ import { Bus } from "../bus.js"
 import { Mcp } from "../mcp/index.js"
 import { Mime } from "../mime.js"
 import { Permission } from "../permission.js"
-import { Tool } from "../tool.js"
+import { Tool } from "../tool.vibe"
 import { ToolOutput } from "../tool-output.js"
 import { ReadToolFileSystem } from "./read-filesystem.js"
 

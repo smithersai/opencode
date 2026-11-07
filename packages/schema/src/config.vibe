@@ -1,6 +1,6 @@
 export * as Config from "./config.vibe"
 
-import { ephemeral, inventory } from "./event.ts"
+import { ephemeral, inventory } from "./event.vibe"
 import { Permission } from "./permission.vibe"
 import { AbsolutePath, optional } from "./schema.vibe"
 import { ConfigAgent } from "./config/agent.vibe"

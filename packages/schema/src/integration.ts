@@ -2,7 +2,7 @@ export * as Integration from "./integration.js"
 
 import { Schema } from "effect"
 import { optional } from "./schema.vibe"
-import { ephemeral, inventory } from "./event.js"
+import { ephemeral, inventory } from "./event.vibe"
 import { Connection } from "./connection.vibe"
 import { ascending } from "./identifier.js"
 import { statics } from "./schema.vibe"

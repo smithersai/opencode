@@ -1,7 +1,7 @@
 export * as Rpc from "./rpc.vibe";
 import type { StandardSchemaV1 } from "@standard-schema/spec";
 import type { JsonSchema, Schema } from "effect";
-import type { Event } from "./event.ts";
+import type { Event } from "./event.vibe";
 import type { Location } from "./location.vibe";
 import type { Tool } from "./tool.vibe";
 export type ErrorMap = Readonly<Record<string, Tool.ValueSchema>> & {

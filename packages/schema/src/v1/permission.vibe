@@ -1,6 +1,6 @@
 export * as PermissionV1 from "./permission.vibe"
 
-import { ephemeral, inventory } from "../event.ts"
+import { ephemeral, inventory } from "../event.vibe"
 import { ascending } from "../identifier.ts"
 import { Project } from "../project.vibe"
 import { statics } from "../schema.vibe"

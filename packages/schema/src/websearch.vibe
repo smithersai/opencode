@@ -1,6 +1,6 @@
 export * as WebSearch from "./websearch.vibe"
 
-import { ephemeral, inventory } from "./event.ts"
+import { ephemeral, inventory } from "./event.vibe"
 import { optional } from "./schema.vibe"
 
 export const ID = Schema.String.pipe(Schema.brand("WebSearch.ID"), Schema.annotate({ identifier: "WebSearch.ID" }))

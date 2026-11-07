@@ -1,7 +1,7 @@
 export * as TuiEvent from "./tui-event.vibe"
 
 import { optional } from "./schema.vibe"
-import { Event } from "./event.ts"
+import { Event } from "./event.vibe"
 import { PositiveInt } from "./schema.vibe"
 import { SessionID } from "./session-id.vibe"
 

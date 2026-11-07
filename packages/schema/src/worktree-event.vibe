@@ -1,7 +1,7 @@
 export * as WorktreeEvent from "./worktree-event.vibe"
 
 import { optional } from "./schema.vibe"
-import { Event } from "./event.ts"
+import { Event } from "./event.vibe"
 
 export const Ready = Event.ephemeral({
   type: "worktree.ready",

@@ -1,7 +1,7 @@
 export * as Shell from "./shell.vibe"
 
 import { optional } from "./schema.vibe"
-import { ephemeral, inventory } from "./event.ts"
+import { ephemeral, inventory } from "./event.vibe"
 import { ascending } from "./identifier.ts"
 import { NonNegativeInt, statics } from "./schema.vibe"
 

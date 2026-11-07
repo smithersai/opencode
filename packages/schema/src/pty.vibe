@@ -1,7 +1,7 @@
 export * as Pty from "./pty.vibe"
 
 import { optional } from "./schema.vibe"
-import { ephemeral, inventory } from "./event.ts"
+import { ephemeral, inventory } from "./event.vibe"
 import { ascending } from "./identifier.ts"
 import { NonNegativeInt, PositiveInt, statics } from "./schema.vibe"
 

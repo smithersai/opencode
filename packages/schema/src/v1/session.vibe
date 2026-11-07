@@ -1,6 +1,6 @@
 export * as SessionV1 from "./session.vibe"
 
-import { durable, ephemeral, inventory } from "../event.ts"
+import { durable, ephemeral, inventory } from "../event.vibe"
 import { Project } from "../project.vibe"
 import { Provider } from "../provider.ts"
 import { Model } from "../model.ts"

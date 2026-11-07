@@ -1,6 +1,6 @@
 export * as ServerEvent from "./server-event.js"
 
-import { Event } from "./event.js"
+import { Event } from "./event.vibe"
 
 export const Connected = Event.ephemeral({ type: "server.connected", schema: {} })
 export const Disposed = Event.ephemeral({ type: "global.disposed", schema: {} })

@@ -1,6 +1,6 @@
 export * as InstallationEvent from "./installation-event.vibe"
 
-import { Event } from "./event.ts"
+import { Event } from "./event.vibe"
 
 export const Updated = Event.ephemeral({
   type: "installation.updated",

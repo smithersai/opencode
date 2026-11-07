@@ -11,7 +11,7 @@ import { llmClient, requestExecutor } from "./effect/app-node-platform.js"
 import { Integration } from "./integration.js"
 import { ModelResolver } from "./model-resolver.js"
 import { Model } from "./model.js"
-import { ModelRetry } from "./model-retry.js"
+import { ModelRetry } from "./model-retry.vibe"
 
 export interface TextInput {
   readonly prompt: string

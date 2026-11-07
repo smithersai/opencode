@@ -11,7 +11,7 @@ import { SessionContext } from "./context.js"
 import type { AgentNotFoundError } from "./error.js"
 import { SessionHistory } from "./history.js"
 import { SessionModelRequest } from "./model-request.js"
-import { ModelRetry } from "../model-retry.js"
+import { ModelRetry } from "../model-retry.vibe"
 import type { SessionRunnerModel } from "./runner/model.js"
 import type { SessionSchema } from "./schema.js"
 

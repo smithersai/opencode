@@ -1,6 +1,6 @@
 export * as Command from "./command.vibe"
 
-import { ephemeral, inventory } from "./event.ts"
+import { ephemeral, inventory } from "./event.vibe"
 import { optional } from "./schema.vibe"
 
 const Updated = ephemeral({ type: "command.updated", schema: {} })

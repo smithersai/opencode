@@ -7,7 +7,7 @@ import { isDeepStrictEqual } from "node:util"
 import { makeGlobalNode } from "@opencode/util/effect/app-node"
 import { httpClient } from "@opencode/util/effect/app-node-platform"
 import { Bus } from "./bus.js"
-import { KV } from "./kv.js"
+import { KV } from "./kv.vibe"
 
 export interface Auth extends Schema.Schema.Type<typeof Auth> {}
 export const Auth = Schema.Struct({

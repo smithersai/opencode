@@ -456,10 +456,8 @@
       "default": "./.vibelang/js/src/identifier.js"
     },
     "./event": {
-      "types": {
-        "default": "./src/event.ts"
-      },
-      "vibelang-source": "./src/event.ts",
+      "types": "./src/event.d.vibe.ts",
+      "vibelang-source": "./src/event.vibe",
       "default": "./.vibelang/js/src/event.js"
     },
     "./integration": {

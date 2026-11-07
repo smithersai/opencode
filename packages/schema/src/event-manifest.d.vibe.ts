@@ -1,7 +1,7 @@
 import { Schema } from "effect";
 export * as EventManifest from "./event-manifest.vibe";
 import { Durable } from "./durable-event-manifest.ts";
-import { Event } from "./event.ts";
+import { Event } from "./event.vibe";
 export declare const ServerDefinitions: readonly [Schema.Struct<{
     readonly id: Schema.brand<Schema.String, "Event.ID"> & {
         create: () => string & import("effect/Brand").Brand<"Event.ID">;

@@ -2,7 +2,7 @@ export * as Skill from "./skill.vibe"
 
 import { optional } from "./schema.vibe"
 import { AbsolutePath } from "./schema.vibe"
-import { ephemeral, inventory } from "./event.ts"
+import { ephemeral, inventory } from "./event.vibe"
 
 export const ID = Schema.String.pipe(Schema.brand("Skill.ID"), Schema.annotate({ identifier: "Skill.ID" }))
 export type ID = typeof ID.Type

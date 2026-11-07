@@ -1,6 +1,6 @@
 export * as Worktree from "./worktree.vibe"
 
-import { durable, ephemeral, inventory } from "./event.ts"
+import { durable, ephemeral, inventory } from "./event.vibe"
 import { AbsolutePath, optional } from "./schema.vibe"
 import { Project } from "./project.vibe"
 

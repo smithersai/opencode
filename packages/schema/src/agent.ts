@@ -1,7 +1,7 @@
 export * as Agent from "./agent.js"
 
 import { Schema } from "effect"
-import { ephemeral, inventory } from "./event.js"
+import { ephemeral, inventory } from "./event.vibe"
 import { optional } from "./schema.vibe"
 import { Model } from "./model.js"
 import { Permission } from "./permission.vibe"

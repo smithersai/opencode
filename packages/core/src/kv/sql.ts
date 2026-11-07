@@ -1,6 +1,6 @@
 import { sqliteTable, text } from "drizzle-orm/sqlite-core"
 import { Timestamps } from "../database/schema.sql.js"
-import type { KV } from "../kv.js"
+import type { KV } from "../kv.vibe"
 
 export const KVTable = sqliteTable("kv", {
   key: text().primaryKey(),

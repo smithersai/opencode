@@ -275,10 +275,30 @@
       "vibelang-source": "./src/app.vibe",
       "default": "./.vibelang/js/src/app.js"
     },
+    "./file-mutation": {
+      "types": "./src/file-mutation.d.vibe.ts",
+      "vibelang-source": "./src/file-mutation.vibe",
+      "default": "./.vibelang/js/src/file-mutation.js"
+    },
     "./file-retention": {
       "types": "./src/file-retention.d.vibe.ts",
       "vibelang-source": "./src/file-retention.vibe",
       "default": "./.vibelang/js/src/file-retention.js"
+    },
+    "./kv": {
+      "types": "./src/kv.d.vibe.ts",
+      "vibelang-source": "./src/kv.vibe",
+      "default": "./.vibelang/js/src/kv.js"
+    },
+    "./model-retry": {
+      "types": "./src/model-retry.d.vibe.ts",
+      "vibelang-source": "./src/model-retry.vibe",
+      "default": "./.vibelang/js/src/model-retry.js"
+    },
+    "./tool": {
+      "types": "./src/tool.d.vibe.ts",
+      "vibelang-source": "./src/tool.vibe",
+      "default": "./.vibelang/js/src/tool.js"
     },
     "./usage-limits": {
       "types": "./src/usage-limits.d.vibe.ts",

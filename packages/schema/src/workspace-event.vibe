@@ -1,6 +1,6 @@
 export * as WorkspaceEvent from "./workspace-event.vibe"
 
-import { Event } from "./event.ts"
+import { Event } from "./event.vibe"
 import { WorkspaceID } from "./workspace-id.vibe"
 
 export const ConnectionStatus = Schema.Struct({

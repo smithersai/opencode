@@ -48,7 +48,7 @@ import { toolDefinitions } from "./lib/tool"
 import { Database } from "../src/database/database"
 import { Bus } from "../src/bus"
 import { Reference } from "../src/reference"
-import { Tool } from "../src/tool"
+import { Tool } from "../src/tool.vibe"
 
 const it = testEffect(
   AppNodeBuilder.build(LayerNode.group([Database.node, Bus.node, LocationServiceMap.node]), [

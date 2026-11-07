@@ -1,6 +1,6 @@
 export * as Form from "./form.vibe"
 
-import { ephemeral, inventory } from "./event.ts"
+import { ephemeral, inventory } from "./event.vibe"
 import { ascending } from "./identifier.ts"
 import { NonNegativeInt, optional, statics } from "./schema.vibe"
 

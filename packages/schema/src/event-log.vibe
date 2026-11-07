@@ -1,6 +1,6 @@
 export * as EventLog from "./event-log.vibe"
 
-import { Event } from "./event.ts"
+import { Event } from "./event.vibe"
 import { optional } from "./schema.vibe"
 
 /**

@@ -1,6 +1,5 @@
-export * as Event from "./event.js"
+export * as Event from "./event.vibe"
 
-import { Schema, SchemaTransformation } from "effect"
 import { optional } from "./schema.vibe"
 import { ascending } from "./identifier.js"
 import { Location } from "./location.vibe"

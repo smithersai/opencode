@@ -14,7 +14,7 @@ import { Model } from "./model.js"
 import { AISDKNative } from "./aisdk-native.vibe"
 import { Provider } from "./provider.js"
 import { Variant } from "./variant.js"
-import { KV } from "./kv.js"
+import { KV } from "./kv.vibe"
 import snapshotText from "./models-dev/snapshot.txt" with { type: "text" }
 import { isV1, toV2 } from "./models-dev/v1.js"
 

@@ -1,6 +1,6 @@
 export * as McpEvent from "./mcp-event.vibe"
 
-import { Event } from "./event.ts"
+import { Event } from "./event.vibe"
 
 export const ToolsChanged = Event.ephemeral({
   type: "mcp.tools.changed",

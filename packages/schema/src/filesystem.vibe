@@ -1,7 +1,7 @@
 export * as FileSystem from "./filesystem.vibe"
 
 import { optional } from "./schema.vibe"
-import { ephemeral, inventory } from "./event.ts"
+import { ephemeral, inventory } from "./event.vibe"
 import { AbsolutePath, NonNegativeInt, PositiveInt, RelativePath } from "./schema.vibe"
 
 const Changed = ephemeral({

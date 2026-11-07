@@ -1,6 +1,6 @@
 export * as Project from "./project.vibe"
 
-import { ephemeral, inventory } from "./event.ts"
+import { ephemeral, inventory } from "./event.vibe"
 import { AbsolutePath, NonNegativeInt, optional } from "./schema.vibe"
 import { ProjectID } from "./project-id.vibe"
 

@@ -1,17 +1,18 @@
-export * as TuiKeybind from "./keybind.vibe"
+export * as TuiKeybind from "./keybind"
 
 import type { KeyEvent, Renderable } from "@opentui/core"
 import type { Binding } from "@opentui/keymap"
 import type { BindingCommandMap, BindingConfig, BindingDefaults } from "@opentui/keymap/extras"
+import { Schema } from "effect"
 
-schema KeyStroke {
-  name: string
-  ctrl?: boolean
-  shift?: boolean
-  meta?: boolean
-  super?: boolean
-  hyper?: boolean
-}
+const KeyStroke = Schema.Struct({
+  name: Schema.String,
+  ctrl: Schema.optional(Schema.Boolean),
+  shift: Schema.optional(Schema.Boolean),
+  meta: Schema.optional(Schema.Boolean),
+  super: Schema.optional(Schema.Boolean),
+  hyper: Schema.optional(Schema.Boolean),
+})
 
 const BindingObject = Schema.StructWithRest(
   Schema.Struct({

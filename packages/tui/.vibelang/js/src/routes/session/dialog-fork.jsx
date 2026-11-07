@@ -9,7 +9,7 @@ import { DIALOG_LIST_INSET, DialogHeader, DialogLayout, useDialog } from "../../
 import { useToast } from "../../ui/toast";
 import { errorMessage } from "../../util/error";
 import { Locale } from "../../util/locale";
-import { projectedPromptInput } from "../../prompt/codec.js";
+import { projectedPromptInput } from "../../prompt/codec";
 export function DialogFork(props) {
     const data = useData();
     const dialog = useDialog();

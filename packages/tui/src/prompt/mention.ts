@@ -1,6 +1,6 @@
 import type { PromptInput, PromptMention } from "@opencode/schema"
 import { measureEditText, type WidthMethod } from "@opentui/core"
-import type { EditablePromptInput } from "./codec.vibe"
+import type { EditablePromptInput } from "./codec"
 import { expandTrackedPastedText } from "./part"
 
 type TextRange = {

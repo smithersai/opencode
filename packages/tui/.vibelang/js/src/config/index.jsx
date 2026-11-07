@@ -7,7 +7,7 @@ import { createContext, onCleanup, useContext } from "solid-js";
 import { createStore, reconcile } from "solid-js/store";
 import { safeWatch } from "../util/watch";
 import path from "path";
-import { TuiKeybind } from "./keybind.js";
+import { TuiKeybind } from "./keybind";
 export const AttentionSoundName = Schema.Literals([
     "default",
     "question",

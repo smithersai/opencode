@@ -4,8 +4,8 @@ import { expect, test } from "bun:test"
 import { Schema } from "effect"
 import { resolve, ConfigProvider, Info, useConfig, type Interface } from "../src/config"
 import { settings } from "../src/component/dialog-config"
-import { TuiKeybind } from "../src/config/keybind.vibe"
-import { CommandMap, Definitions } from "../src/config/v1/keybind.vibe"
+import { TuiKeybind } from "../src/config/keybind"
+import { CommandMap, Definitions } from "../src/config/v1/keybind"
 
 const decodeInfo = Schema.decodeUnknownSync(Info)
 

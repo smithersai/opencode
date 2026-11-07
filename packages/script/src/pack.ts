@@ -1,4 +1,4 @@
-import { assertPublishableDeclarations } from "./declaration-routes"
+import { assertPublishableDeclarations } from "./declaration-routes.js"
 import { $ } from "bun"
 import { mkdir, rm } from "node:fs/promises"
 import path from "node:path"

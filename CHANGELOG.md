@@ -6,6 +6,7 @@ Release notes for OpenCode V2, newest first.
 
 ### Bugs fixed
 
+- Package typechecks could reject the shared pack helper; its declaration guard now resolves correctly in `NodeNext` projects.
 - Debug stories could fail while loading their registry; the original source URL now resolves again.
 - Package archives could expose internal compiler routes in their declarations; packing now rejects those unresolved routes before creating an archive.
 - Browser tests could fail while importing VibeLang helpers; test collection now loads those helpers correctly.

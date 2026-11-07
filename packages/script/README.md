@@ -9,3 +9,5 @@ The shared `pack` helper runs the package build before creating its archive. Ord
 Fix the emitter or retain the native source boundary when a migrated module introduces such a reference. Changing typecheck flags does not make the published route resolvable. Quoted string types and comments are allowed because they do not import a module.
 
 Run `bun test` in `packages/script` to check the pack rejection regression and declaration-route properties.
+
+The helper is also checked by packages using `NodeNext`. Keep explicit `.js` extensions on its relative ECMAScript imports. The test suite compiles the actual helper from generated consumers under both `Node16` and `NodeNext` resolution.

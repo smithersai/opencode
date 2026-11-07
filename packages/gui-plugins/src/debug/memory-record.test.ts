@@ -1,5 +1,5 @@
 import { afterEach, expect, setSystemTime, test } from "bun:test"
-import { memoryRecord } from "./memory-record"
+import { memoryRecord } from "./memory-record.vibe"
 
 afterEach(() => setSystemTime())
 

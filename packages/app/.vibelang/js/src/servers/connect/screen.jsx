@@ -9,7 +9,7 @@ import { useLanguage } from "@/runtime/i18n/language";
 import { usePlatform } from "@/runtime/platform/platform";
 import { useCheckServerHealth } from "@/runtime/server/health";
 import { useServers } from "@/runtime/server/registry";
-import { bareServerAddress, serverAddress } from "./pairing";
+import { bareServerAddress, serverAddress } from "./pairing.js";
 import { useRedeemPairing } from "./redeem";
 import { isMixedContent } from "./browser";
 import { cameraHint, createCameraAvailability } from "./camera";

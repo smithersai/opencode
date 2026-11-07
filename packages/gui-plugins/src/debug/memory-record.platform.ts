@@ -1,18 +1,7 @@
+// The platform code of memory-record.vibe, which a .vibe file does not import as a value (EK4402).
+
 import type { ProcessMetric } from "electron"
-import { Schema } from "effect"
-
-export const RendererMemory = Schema.Struct({
-  jsHeap: Schema.NullOr(Schema.Struct({ used: Schema.Number, total: Schema.Number, limit: Schema.Number })),
-  domElements: Schema.Number,
-})
-
-export type RendererRecord = {
-  id: number
-  pid: number
-  type: string
-  sample?: typeof RendererMemory.Type
-  error?: string
-}
+import type { RendererRecord } from "./memory-record.vibe"
 
 export function memoryRecord(metrics: ProcessMetric[], renderers: RendererRecord[], preciseJsHeap: boolean) {
   return {

@@ -1,7 +1,7 @@
 import { useLanguage } from "@/runtime/i18n/language"
 import { usePlatform } from "@/runtime/platform/platform"
 import { isMixedContent } from "./browser"
-import { legacyPairingLink, pairingLink, redeemPairingLink, type Pairing } from "./pairing"
+import { legacyPairingLink, pairingLink, redeemPairingLink, type Pairing } from "./pairing.vibe"
 
 type Redemption = { readonly pairing: Pairing } | { readonly error: string }
 

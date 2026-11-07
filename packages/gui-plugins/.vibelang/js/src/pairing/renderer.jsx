@@ -2,7 +2,7 @@
 import { lazy, onCleanup, Suspense } from "solid-js";
 import { Command, SettingsPage } from "@opencode/plugin/gui";
 import { onIdle } from "@opencode/plugin/gui/builtin";
-import { Pairing } from "./contract";
+import { Pairing } from "./contract.js";
 const setup = (ctx) => {
     if (!ctx.desktop)
         return;

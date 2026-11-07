@@ -6,7 +6,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/solid-query"
 import { createMemo, createSignal, onCleanup, Show, type Accessor, type JSX } from "solid-js"
 import { renderSVG } from "@opencode/util/qr"
 import { usePlugin, type Live, type IpcClient } from "@opencode/plugin/gui"
-import type { Pairing } from "./contract"
+import type { Pairing } from "./contract.vibe"
 import type definition from "./index"
 import { remoteAddress } from "./remote"
 

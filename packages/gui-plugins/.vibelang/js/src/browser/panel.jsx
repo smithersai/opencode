@@ -15,7 +15,7 @@ import { createMemo, For, on, onCleanup, Show } from "solid-js";
 import { createStore } from "solid-js/store";
 import { createKeyed, usePlugin, usePanel, } from "@opencode/plugin/gui";
 import { addressParts, connection, loopback, resolveAddress, searches } from "./address";
-import { commentNote, pageNote } from "./comment";
+import { commentNote, pageNote } from "./comment.js";
 import { bare, completes, highlight, suggest } from "./history.js";
 import { PageIcon } from "./page-icon";
 /** Suggestions the address field lists, and pages the new tab page lists. */

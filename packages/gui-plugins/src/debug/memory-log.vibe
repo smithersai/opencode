@@ -1,0 +1,7 @@
+import type { Log } from "@opencode/plugin/gui/main"
+import * as $platform from "./memory-log.platform.ts"
+
+/** Appends a sample every `interval` ms to a new JSONL file in the desktop logs, which exported debug logs include. */
+export function startMemoryLog(interval: number, log: Log) {
+  return $platform.startMemoryLog(interval, log)
+}

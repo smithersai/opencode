@@ -2,7 +2,7 @@
 import { compose } from "@opencode/plugin/gui/host";
 import context from "./context";
 import btw from "./btw/index.js";
-import debug from "./debug/index.js";
+import debug from "./debug";
 import terminal from "./terminal";
 import file from "./file";
 import review from "./review/index.js";
@@ -18,16 +18,16 @@ import sources from "./sources";
 export const builtins = compose({
     context,
     btw,
-    debug: { ...debug, mainEntry: () => import("./debug/main") },
+    debug: { ...debug, mainEntry: () => import("./debug/main.js") },
     terminal,
     file,
     review,
     details,
     browser: { ...browser, mainEntry: () => import("./browser/main") },
-    pairing: { ...pairing, mainEntry: () => import("./pairing/main") },
+    pairing: { ...pairing, mainEntry: () => import("./pairing/main.js") },
     updater: { ...updater, mainEntry: () => import("./updater/main") },
     ssh: { ...ssh, mainEntry: () => import("./ssh/main") },
-    wsl: { ...wsl, mainEntry: () => import("./wsl/main") },
+    wsl: { ...wsl, mainEntry: () => import("./wsl/main.js") },
     "microsoft-office": microsoftOffice,
     sources,
 });

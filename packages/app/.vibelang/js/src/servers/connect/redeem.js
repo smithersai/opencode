@@ -2,7 +2,7 @@
 import { useLanguage } from "@/runtime/i18n/language";
 import { usePlatform } from "@/runtime/platform/platform";
 import { isMixedContent } from "./browser";
-import { legacyPairingLink, pairingLink, redeemPairingLink } from "./pairing";
+import { legacyPairingLink, pairingLink, redeemPairingLink } from "./pairing.js";
 // Pasted and scanned links share one redeem path so every surface explains a failure the same way.
 // Each form keeps the last token it redeemed: the code is spent, so a retry after a failed connection check reuses it,
 // whichever form the link takes (a scanned QR payload, or the link the scanner then shows).

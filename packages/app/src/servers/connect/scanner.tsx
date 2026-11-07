@@ -3,7 +3,7 @@ import { onCleanup, onMount, Show } from "solid-js"
 import { createStore } from "solid-js/store"
 import { Button } from "@opencode/ui/button"
 import { useLanguage } from "@/runtime/i18n/language"
-import { pairingLink } from "./pairing"
+import { pairingLink } from "./pairing.vibe"
 import type { RedeemPairing } from "./redeem"
 import "./scanner.css"
 

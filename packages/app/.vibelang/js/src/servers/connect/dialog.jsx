@@ -17,7 +17,7 @@ import { useCheckServerHealth } from "@/runtime/server/health";
 import { usePlatform } from "@/runtime/platform/platform";
 import { isMixedContent } from "./browser";
 import { cameraHint, createCameraAvailability } from "./camera";
-import { bareServerAddress, pairingLink } from "./pairing";
+import { bareServerAddress, pairingLink } from "./pairing.js";
 import { useRedeemPairing } from "./redeem";
 import { ConnectMethodSwitch } from "./method";
 import "@/settings/settings.css";

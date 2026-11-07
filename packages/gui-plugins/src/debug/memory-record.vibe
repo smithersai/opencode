@@ -1,0 +1,18 @@
+import type { ProcessMetric } from "electron"
+import { Schema } from "effect"
+import * as $platform from "./memory-record.platform.ts"
+
+export const RendererMemory = Schema.Struct({
+  jsHeap: Schema.NullOr(Schema.Struct({ used: Schema.Number, total: Schema.Number, limit: Schema.Number })),
+  domElements: Schema.Number,
+})
+export type RendererRecord = {
+  id: number
+  pid: number
+  type: string
+  sample?: typeof RendererMemory.Type
+  error?: string
+}
+export function memoryRecord(metrics: ProcessMetric[], renderers: RendererRecord[], preciseJsHeap: boolean) {
+  return $platform.memoryRecord(metrics, renderers, preciseJsHeap)
+}

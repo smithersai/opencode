@@ -3,7 +3,7 @@ import { createStore, reconcile } from "solid-js/store"
 import { makeEventListener } from "@solid-primitives/event-listener"
 import type { Browser } from "@opencode/plugin-browser/rpc"
 import { createKeyed, type SessionRef, type SetupContext } from "@opencode/plugin/gui"
-import { readHref } from "./comment"
+import { readHref } from "./comment.vibe"
 import {
   createConnection,
   unavailable,

@@ -1,9 +1,11 @@
+// The platform code of memory-log.vibe, which a .vibe file does not import as a value (EK4402).
+
 import { appendFile, mkdir } from "node:fs/promises"
 import path from "node:path"
 import { app, webContents } from "electron"
 import { Schema } from "effect"
 import type { Log } from "@opencode/plugin/gui/main"
-import { memoryRecord, RendererMemory, type RendererRecord } from "./memory-record"
+import { memoryRecord, RendererMemory, type RendererRecord } from "./memory-record.vibe"
 
 // Runs only while diagnostics are on; no preload hooks, observers, or store subscriptions.
 const probe = `(() => {
@@ -13,7 +15,6 @@ const probe = `(() => {
     domElements: document.getElementsByTagName('*').length
   };
 })()`
-
 /** Appends a sample every `interval` ms to a new JSONL file in the desktop logs, which exported debug logs include. */
 export function startMemoryLog(interval: number, log: Log) {
   const file = path.join(

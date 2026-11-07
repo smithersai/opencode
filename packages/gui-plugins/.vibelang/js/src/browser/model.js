@@ -3,7 +3,7 @@ import { batch, createRoot, createSignal, getOwner, onCleanup } from "solid-js";
 import { createStore, reconcile } from "solid-js/store";
 import { makeEventListener } from "@solid-primitives/event-listener";
 import { createKeyed } from "@opencode/plugin/gui";
-import { readHref } from "./comment";
+import { readHref } from "./comment.js";
 import { createConnection, unavailable, } from "./connection";
 import { recordable, remember, withIcon } from "./history.js";
 import { workspaceFileURL } from "./link";

@@ -1,7 +1,7 @@
 import { lazy, onCleanup, Suspense } from "solid-js"
 import { Command, SettingsPage, type Plugin } from "@opencode/plugin/gui"
 import { onIdle } from "@opencode/plugin/gui/builtin"
-import { Pairing } from "./contract"
+import { Pairing } from "./contract.vibe"
 import type definition from "./index"
 
 const setup: Plugin.Setup<typeof definition> = (ctx) => {

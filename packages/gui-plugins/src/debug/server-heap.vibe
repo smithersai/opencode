@@ -1,10 +1,7 @@
-import { ClientError, OpenCode } from "@opencode/client/promise"
-import { Predicate } from "effect"
-import path from "node:path"
 import type { ServerEndpoint } from "@opencode/plugin/gui/main"
+import * as $platform from "./server-heap.platform.ts"
 
 type Memory = Readonly<Record<"rss" | "heapTotal" | "heapUsed" | "external" | "arrayBuffers", number>>
-
 /**
  * What the manifest records about the desktop server's snapshot.
  * - `file`: the server wrote it into the folder.
@@ -19,7 +16,6 @@ export type ServerSnapshot =
   | { readonly process: "server"; readonly pid: number; readonly file: string; readonly memory?: Memory }
   | { readonly process: "server"; readonly pid: number; readonly path: string; readonly memory?: Memory }
   | { readonly process: "server"; readonly error: string }
-
 /**
  * Asks the desktop's own server to write a heap snapshot into `directory`. Never rejects: a failure becomes an
  * `error` entry.
@@ -33,31 +29,5 @@ export async function captureServer(
   directory: string,
   signal: AbortSignal,
 ): Promise<ServerSnapshot> {
-  if (!endpoint) return { process: "server", error: "The server is not running." }
-
-  return OpenCode.make({ baseUrl: endpoint.url, headers: endpoint.headers })
-    .debug.heapDump({ directory }, { signal })
-    .then(
-      (snapshot): ServerSnapshot =>
-        // The server joins the directory and file name, so the same join recognizes a snapshot it wrote there.
-        path.join(directory, path.basename(snapshot.path)) === snapshot.path
-          ? { process: "server", pid: snapshot.pid, file: path.basename(snapshot.path), memory: snapshot.memory }
-          : { process: "server", pid: snapshot.pid, path: snapshot.path, memory: snapshot.memory },
-      (error: Error): ServerSnapshot => ({
-        process: "server",
-        error: unsupported(error)
-          ? "The server does not support heap dumps. Update and restart it."
-          : error.message || String(error),
-      }),
-    )
-}
-
-// Servers released before the endpoint answer 404.
-function unsupported(error: Error) {
-  return (
-    error instanceof ClientError &&
-    error.reason === "UnexpectedStatus" &&
-    Predicate.hasProperty(error.cause, "status") &&
-    error.cause.status === 404
-  )
+  return $platform.captureServer(endpoint, directory, signal)
 }

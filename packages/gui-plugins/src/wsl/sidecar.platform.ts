@@ -1,3 +1,5 @@
+// The platform code of sidecar.vibe, which a .vibe file does not import as a value (EK4402).
+
 import { spawn, type ChildProcess } from "node:child_process"
 import { randomUUID } from "node:crypto"
 import { createServer } from "node:net"
@@ -5,13 +7,12 @@ import { Predicate } from "effect"
 import type { MainContext } from "@opencode/plugin/gui/main"
 import { type WslCommandLine, type WslRuntime, shellEscape, wslArgs } from "./runtime"
 
-export type WslSidecar = {
+type WslSidecar = {
   stop: () => Promise<void>
   onExit: (cb: (code: number | null, signal: NodeJS.Signals | null) => void) => void
   url: string
   password: string
 }
-
 export async function spawnWslSidecar(
   distro: string,
   opts: {
@@ -116,7 +117,6 @@ export async function spawnWslSidecar(
     password,
   }
 }
-
 function stop(child: ChildProcess) {
   // A process that never started or already exited has nothing to wait for.
   if (child.pid === undefined || child.exitCode !== null || child.signalCode !== null) return Promise.resolve()
@@ -126,7 +126,6 @@ function stop(child: ChildProcess) {
     child.kill()
   })
 }
-
 async function checkHealth(url: string, password: string) {
   const auth = Buffer.from(`opencode:${password}`).toString("base64")
 
@@ -139,14 +138,12 @@ async function checkHealth(url: string, password: string) {
     () => false,
   )
 }
-
 async function pollWslHealth(check: () => Promise<boolean>, signal: AbortSignal) {
   while (!signal.aborted) {
     if (await check()) return
     await new Promise((resolve) => setTimeout(resolve, 100))
   }
 }
-
 function allocatePort(t: MainContext["t"]) {
   return new Promise<number>((resolve, reject) => {
     const server = createServer()
@@ -166,7 +163,6 @@ function allocatePort(t: MainContext["t"]) {
     })
   })
 }
-
 function forwardLines(
   stream: NodeJS.ReadableStream,
   source: WslCommandLine["stream"],

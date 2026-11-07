@@ -17,9 +17,9 @@ import { ServerAuth } from "./auth";
 import { isAllowedCorsOrigin } from "./cors.js";
 import { authorizedRequest, unauthorizedResponse } from "./middleware/authorization";
 import { withoutParentSpan } from "./request-tracing.js";
-import { createRoutes } from "./routes";
+import { createRoutes } from "./routes.js";
 import { ServerInfo } from "./server-info";
-import { Status } from "./service-status";
+import { Status } from "./service-status.js";
 const errorResponseLogger = HttpMiddleware.make((app) => HttpMiddleware.logger(Effect.tap(app, (response) => response.status < 400 ? HttpMiddleware.withLoggerDisabled(Effect.void) : Effect.void)));
 export const start = Effect.fn("ServerProcess.start")(function* (options, lifecycle, transform, remoteURLs) {
     const password = options.password;

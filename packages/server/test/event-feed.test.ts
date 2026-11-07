@@ -6,7 +6,7 @@ import { Event } from "@opencode/schema/event"
 import { IntegrationID } from "@opencode/schema/integration-id"
 import { Deferred, Effect, Exit, Fiber, Option, Schema, Stream } from "effect"
 import { it } from "../../core/test/lib/effect"
-import { EventFeed } from "../src/event-feed"
+import { EventFeed } from "../src/event-feed.vibe"
 
 const Internal = Bus.ephemeral({ type: "test.internal", schema: { value: Schema.String } })
 

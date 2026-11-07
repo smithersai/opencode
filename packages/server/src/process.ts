@@ -17,9 +17,9 @@ import { ServerAuth } from "./auth"
 import { isAllowedCorsOrigin } from "./cors.vibe"
 import { authorizedRequest, unauthorizedResponse } from "./middleware/authorization"
 import { withoutParentSpan } from "./request-tracing.vibe"
-import { createRoutes } from "./routes"
+import { createRoutes } from "#vibelang/emitted/src/routes"
 import { ServerInfo } from "./server-info"
-import { Status } from "./service-status"
+import { Status } from "#vibelang/emitted/src/service-status"
 import type { ServerOptions } from "./options.vibe"
 
 export interface Lifecycle<E = never, R = never> {

@@ -7,7 +7,7 @@ import { useToast } from "../../ui/toast";
 import { useClient } from "../../context/client";
 import { errorMessage } from "../../util/error";
 import { DialogFork } from "./dialog-fork";
-import { projectedPromptInput } from "../../prompt/codec";
+import { projectedPromptInput } from "../../prompt/codec.js";
 import { useNewDesigns } from "../../config";
 export function DialogMessage(props) {
     const data = useData();

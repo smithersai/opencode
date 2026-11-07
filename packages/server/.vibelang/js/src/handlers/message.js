@@ -5,7 +5,7 @@ import { Effect, Option, Schema } from "effect";
 import { HttpServerResponse } from "effect/http";
 import { HttpApiBuilder } from "effect/http-api";
 import { Api } from "../api";
-import { wantsMediaRefs } from "../media-uri";
+import { wantsMediaRefs } from "../media-uri.js";
 import { InvalidCursorError } from "@opencode/protocol/errors";
 import { SessionMediaMessagesResponse } from "@opencode/protocol/groups/message";
 import { failedMessageDecode, missingSession } from "./session-error";

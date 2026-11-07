@@ -1,7 +1,7 @@
 import { compose } from "@opencode/plugin/gui/host"
 import context from "./context"
 import btw from "./btw/index.vibe"
-import debug from "./debug/index.vibe"
+import debug from "./debug"
 import terminal from "./terminal"
 import file from "./file"
 import review from "./review/index.vibe"

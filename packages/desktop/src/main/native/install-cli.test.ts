@@ -48,11 +48,13 @@ console.log("INSTALLER_PROPERTIES_PASSED")`,
     ],
     { cwd: import.meta.dir, stdout: "pipe", stderr: "pipe" },
   )
+
   const [exit, stdout, stderr] = await Promise.all([
     child.exited,
     new Response(child.stdout).text(),
     new Response(child.stderr).text(),
   ])
+
   expect({ exit, stderr }).toEqual({ exit: 0, stderr: "" })
   expect(stdout).toContain("INSTALLER_PROPERTIES_PASSED")
 }, 30_000)

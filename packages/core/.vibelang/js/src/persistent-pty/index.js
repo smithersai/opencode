@@ -8,7 +8,7 @@ import { Session } from "@opencode/schema/session";
 import { Bus } from "../bus.js";
 import { Pty } from "@opencode/schema/pty";
 import { Global } from "@opencode/util/global";
-import { ShellSelect } from "../shell/select.js";
+import { ShellSelect } from "#vibelang/emitted/src/shell/select";
 import { makeDaemonTransport, } from "./daemon.js";
 import { resolveBinary } from "#persistent-pty-binary";
 export { Handoff } from "@opencode/schema/persistent-pty";

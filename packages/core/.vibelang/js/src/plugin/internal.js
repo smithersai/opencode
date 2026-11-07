@@ -61,7 +61,7 @@ import { SessionCompaction } from "../session/compaction.js";
 import { SessionInstructions } from "../session/instructions.js";
 import { SubagentJob } from "../session/subagent-job.js";
 import { Shell } from "../shell.js";
-import { ShellSelect } from "../shell/select.js";
+import { ShellSelect } from "#vibelang/emitted/src/shell/select";
 import { Snapshot } from "../snapshot.js";
 import { Skill } from "../skill.js";
 import { SkillDiscovery } from "../skill/discovery.js";

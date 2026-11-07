@@ -14,7 +14,7 @@ import { Environment } from "./environment/index.js";
 import { FileRetention } from "./file-retention.js";
 import { Location } from "./location.js";
 import { Global } from "@opencode/util/global";
-import { ShellSelect } from "./shell/select.js";
+import { ShellSelect } from "#vibelang/emitted/src/shell/select";
 import { PluginHooks } from "./plugin/hooks.js";
 import { SessionEnvironment } from "./session/environment.js";
 import { SessionSchema } from "./session/schema.js";

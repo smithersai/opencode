@@ -1,0 +1,11 @@
+import { Plugin } from "@opencode/plugin/effect"
+import { BrowserConnection } from "./connection.ts"
+import { BrowserTools } from "./tools.ts"
+
+export default Plugin.define({
+  id: "opencode.browser",
+  effect: effect (ctx) => {
+    const connection = try BrowserConnection.make(ctx)
+    try BrowserTools.register(ctx, connection)
+  },
+})

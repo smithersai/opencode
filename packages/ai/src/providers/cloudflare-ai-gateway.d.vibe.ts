@@ -1363,7 +1363,10 @@ export declare const routes: (import("../route/client.ts").Route<{
 }>)[];
 export declare const configure: (input: LanguageModelOptions) => {
     id: string & import("effect/Brand").Brand<"AI.ProviderID">;
-    model: (value: string | ModelID) => import("../schema/options.vibe").LanguageModel<import("./openai-options.ts").OpenAIOptionsInput, import("../route/client.ts").CompactionOperations | undefined>;
+    model: (value: string | ModelID) => import("../schema/options.vibe").LanguageModel<import("./openai-options.ts").OpenAIOptionsInput, {
+        endpoint: import("../route/client.ts").CompactOperation;
+        trigger: import("../route/client.ts").TriggerCompactOperation;
+    }>;
     decision: (value: string | ModelID, providerOptions?: ProviderOptions) => import("../decision.vibe").DecisionModel<import("../decision.vibe").DecisionOptions>;
     configure: typeof configure;
 };

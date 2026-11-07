@@ -5,7 +5,7 @@ import { Effect, Schema } from "effect"
 import fs from "node:fs/promises"
 import os from "node:os"
 import path from "node:path"
-import { OPENCODE_VERSION } from "../src/version.vibe"
+import { OPENCODE_VERSION } from "../src/version.ts"
 import { isolatedEnv } from "./fixture/environment"
 
 // Real `serve --service` processes driven by the real CLI commands and client. Only behavior that

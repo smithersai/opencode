@@ -1,7 +1,7 @@
 import { NodeServices } from "@effect/platform-node"
 import { Effect } from "effect"
 import { Command } from "effect/cli"
-import { Commands } from "../../src/commands/commands.vibe"
+import { Commands } from "../../src/commands/commands.ts"
 import upgrade from "../../src/commands/handlers/upgrade"
 import { Updater } from "../../src/services/updater"
 

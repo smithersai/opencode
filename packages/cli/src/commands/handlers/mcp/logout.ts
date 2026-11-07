@@ -1,7 +1,7 @@
 import { EOL } from "node:os"
 import { Effect } from "effect"
 import { OpenCode } from "@opencode/client"
-import { Commands } from "../../commands.vibe"
+import { Commands } from "../../commands.ts"
 import { Runtime } from "../../../framework/runtime"
 import { Service } from "@opencode/client/effect/service"
 import { ServerConnection } from "../../../services/server-connection"

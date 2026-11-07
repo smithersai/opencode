@@ -1,7 +1,7 @@
 import { EOL } from "node:os"
 import { Cause, Effect, Exit, Option } from "effect"
 import { Npm } from "@opencode/util/npm"
-import { Commands } from "../../commands.vibe"
+import { Commands } from "../../commands.ts"
 import { Runtime } from "../../../framework/runtime"
 import { inspect } from "./inventory"
 

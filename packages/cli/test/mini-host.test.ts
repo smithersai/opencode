@@ -9,7 +9,7 @@ import {
   type InteractiveStdin,
   usingInteractiveStdin,
 } from "../src/mini-host"
-import { OPENCODE_VERSION } from "../src/version.vibe"
+import { OPENCODE_VERSION } from "../src/version.ts"
 import { tmpdir } from "./fixture/tmpdir"
 
 const model = { providerID: "openai", modelID: "gpt-5" }

@@ -1,7 +1,7 @@
 import { confirm, intro, log, outro } from "@clack/prompts"
 import { Effect, Option } from "effect"
 import { OpenCode, type IntegrationInfo, type IntegrationOAuthMethod, type McpServer } from "@opencode/client"
-import { Commands } from "../../commands.vibe"
+import { Commands } from "../../commands.ts"
 import { Runtime } from "../../../framework/runtime"
 import { Service } from "@opencode/client/effect/service"
 import { ServerConnection } from "../../../services/server-connection"

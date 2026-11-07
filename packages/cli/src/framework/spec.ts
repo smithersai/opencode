@@ -1,4 +1,4 @@
-import { type GlobalFlag } from "effect/cli"
+import { Command, type GlobalFlag } from "effect/cli"
 
 type Options<Config extends Command.Command.Config, Commands extends ReadonlyArray<Any>> = {
   readonly description?: string
@@ -10,7 +10,7 @@ type Options<Config extends Command.Command.Config, Commands extends ReadonlyArr
 
 export interface Node<
   Name extends string,
-  Spec extends Command<Name, any, any, any, any>,
+  Spec extends Command.Command<Name, any, any, any, any>,
   Commands extends Children,
 > {
   readonly name: Name
@@ -19,7 +19,7 @@ export interface Node<
   readonly aliases: ReadonlyArray<Any>
 }
 
-export type Any = Node<string, Command<any, any, any, any, any>, Children>
+export type Any = Node<string, Command.Command<any, any, any, any, any>, Children>
 export type Children = Readonly<Record<string, Any>>
 
 export function make<
@@ -62,4 +62,4 @@ type ChildrenOf<Commands extends ReadonlyArray<Any>> = {
   readonly [Node in Commands[number] as Node["name"]]: Node
 }
 
-export * as Spec from "./spec.vibe"
+export * as Spec from "./spec"

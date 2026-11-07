@@ -7,7 +7,7 @@ import { Effect, FileSystem, Option, Schema } from "effect"
 import { randomUUID } from "crypto"
 import { applyEdits, createScanner, modify, parse, parseTree, type Node, type ParseError } from "jsonc-parser"
 import path from "path"
-import { Info, SchemaURL } from "./schema.vibe"
+import { Info, SchemaURL } from "./schema.ts"
 
 const decodeV1 = Schema.decodeUnknownOption(TuiConfigV1.Info)
 const decodeInfo = Schema.decodeUnknownOption(Info)

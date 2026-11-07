@@ -1,6 +1,6 @@
 import { intro, outro, spinner } from "@clack/prompts"
 import { Effect, Option } from "effect"
-import { Commands } from "../../commands.vibe"
+import { Commands } from "../../commands.ts"
 import { Runtime } from "../../../framework/runtime"
 import { handlePromptErrors, requireInteractive } from "../../../ui/prompt"
 import { createClient, loadIntegrations, request } from "./shared"

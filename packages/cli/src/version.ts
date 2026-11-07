@@ -9,14 +9,15 @@ const version = typeof OPENCODE_VERSION === "string" ? OPENCODE_VERSION : "local
 const channel = typeof OPENCODE_CHANNEL === "string" ? OPENCODE_CHANNEL : "local"
 const artifact = typeof OPENCODE_ARTIFACT === "string" ? OPENCODE_ARTIFACT : "cli"
 // Stable release builds embed the release notes' Highlights; every other build has none.
-const highlights = typeof OPENCODE_RELEASE_HIGHLIGHTS === "string"
-  ? Option.getOrElse(
-    Schema.decodeUnknownOption(
-      Schema.fromJsonString(Schema.Array(Schema.Struct({ title: Schema.String, body: Schema.String }))),
-    )(OPENCODE_RELEASE_HIGHLIGHTS),
-    () => [],
-  )
-  : []
+const highlights =
+  typeof OPENCODE_RELEASE_HIGHLIGHTS === "string"
+    ? Option.getOrElse(
+        Schema.decodeUnknownOption(
+          Schema.fromJsonString(Schema.Array(Schema.Struct({ title: Schema.String, body: Schema.String }))),
+        )(OPENCODE_RELEASE_HIGHLIGHTS),
+        () => [],
+      )
+    : []
 
 export {
   version as OPENCODE_VERSION,

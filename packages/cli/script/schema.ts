@@ -1,6 +1,6 @@
 import { Schema } from "effect"
 import { format } from "prettier"
-import { Info, SchemaURL } from "../src/config/schema.vibe"
+import { Info, SchemaURL } from "../src/config/schema.ts"
 
 const target = process.argv[2]
 if (!target) throw new Error("A schema output path is required")

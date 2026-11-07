@@ -1,5 +1,5 @@
 import { Global } from "@opencode/util/global"
-import { OPENCODE_CHANNEL, OPENCODE_VERSION } from "../version.vibe"
+import { OPENCODE_CHANNEL, OPENCODE_VERSION } from "../version.ts"
 import { Hash } from "@opencode/util/hash"
 import { Service } from "@opencode/client/effect/service"
 import { Effect, FileSystem, Option, Schedule, Schema } from "effect"

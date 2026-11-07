@@ -2,7 +2,7 @@ import { expect, test } from "bun:test"
 import fs from "node:fs/promises"
 import path from "node:path"
 import { ServiceConfig } from "../src/services/service-config"
-import { OPENCODE_VERSION } from "../src/version.vibe"
+import { OPENCODE_VERSION } from "../src/version.ts"
 import { isolatedEnv } from "./fixture/environment"
 import { tmpdir } from "./fixture/tmpdir"
 

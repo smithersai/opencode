@@ -1,7 +1,7 @@
 import { intro, log, outro, select, spinner, text } from "@clack/prompts"
 import { Effect, Option } from "effect"
 import type { FormAnswer, IntegrationInfo, OpenCodeClient } from "@opencode/client"
-import { Commands } from "../../commands.vibe"
+import { Commands } from "../../commands.ts"
 import { Runtime } from "../../../framework/runtime"
 import { selectIntegration, type IntegrationChoice } from "../../../ui/integration-picker"
 import { handlePromptErrors, openUrl, prompt, requireInteractive } from "../../../ui/prompt"

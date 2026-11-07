@@ -3,7 +3,7 @@ import { readFileSync } from "node:fs"
 import path from "node:path"
 import { brotliDecompressSync } from "node:zlib"
 import { AppArchive } from "./app-archive"
-import { OPENCODE_LOCAL } from "./version.vibe"
+import { OPENCODE_LOCAL } from "./version.ts"
 
 export type AssetMap = Readonly<Record<string, string | Uint8Array>>
 /** Each asset's brotli-compressed bytes, when the build embedded them. */

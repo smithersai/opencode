@@ -4,7 +4,7 @@ import fs from "node:fs"
 import { readFile } from "node:fs/promises"
 import path from "node:path"
 import { ReadStream } from "node:tty"
-import { OPENCODE_VERSION } from "./version.vibe"
+import { OPENCODE_VERSION } from "./version.ts"
 
 export const INTERACTIVE_INPUT_ERROR = "opencode mini requires a controlling terminal for input"
 

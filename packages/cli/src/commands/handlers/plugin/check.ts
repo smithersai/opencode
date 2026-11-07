@@ -1,6 +1,6 @@
 import { EOL } from "node:os"
 import { Effect, Option } from "effect"
-import { Commands } from "../../commands.vibe"
+import { Commands } from "../../commands.ts"
 import { Runtime } from "../../../framework/runtime"
 import { format, inspect } from "./inventory"
 

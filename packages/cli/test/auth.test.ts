@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test"
 import path from "node:path"
-import { OPENCODE_VERSION } from "../src/version.vibe"
+import { OPENCODE_VERSION } from "../src/version.ts"
 import type { FormFields } from "@opencode/client"
 
 const consoleForm = [

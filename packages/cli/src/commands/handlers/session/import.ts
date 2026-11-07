@@ -4,7 +4,7 @@ import { Session } from "@opencode/schema/session"
 import { Effect, Option, Schema } from "effect"
 import { EOL } from "node:os"
 import path from "node:path"
-import { Commands } from "../../commands.vibe"
+import { Commands } from "../../commands.ts"
 import { Runtime } from "../../../framework/runtime"
 import { ServerConnection } from "../../../services/server-connection"
 

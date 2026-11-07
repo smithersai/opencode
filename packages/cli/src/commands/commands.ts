@@ -1,5 +1,7 @@
-import { Spec } from "../framework/spec.vibe"
-import { Updater } from "../services/updater.ts"
+import { Argument, Flag, GlobalFlag } from "effect/cli"
+import { Schema } from "effect"
+import { Spec } from "../framework/spec.ts"
+import { Updater } from "../services/updater"
 
 export const PrintLogs = GlobalFlag.Setting("print-logs")({
   flag: Flag.Boolean("print-logs").pipe(
@@ -540,11 +542,8 @@ const Root = Spec.make(typeof OPENCODE_CLI_NAME === "string" ? OPENCODE_CLI_NAME
           Flag.mapTryCatch(
             (value) => {
               const url = new URL(value)
-              if (
-                !["http:", "https:"].includes(url.protocol) || url.username || url.password || url.search || url.hash
-              ) {
+              if (!["http:", "https:"].includes(url.protocol) || url.username || url.password || url.search || url.hash)
                 throw new Error("Invalid pairing URL")
-              }
               return url.href.replace(/\/+$/, "")
             },
             () => "Expected an HTTP(S) server URL without credentials, query parameters, or a fragment",

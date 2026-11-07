@@ -1,7 +1,7 @@
 import { EOL } from "os"
 import { Effect, Option } from "effect"
 import { Global } from "@opencode/util/global"
-import { Commands } from "../../commands.vibe"
+import { Commands } from "../../commands.ts"
 import { Runtime } from "../../../framework/runtime"
 import { databasePath } from "../../../database-path"
 

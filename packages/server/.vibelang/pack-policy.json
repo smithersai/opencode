@@ -1,7 +1,5 @@
 {
   "version": 1,
-  "files": [
-    ".vibelang/js"
-  ],
+  "files": [".vibelang/js"],
   "ignores": []
 }

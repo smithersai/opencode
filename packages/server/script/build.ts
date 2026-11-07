@@ -23,8 +23,6 @@ class __vibelangBuildGlob extends Bun.Glob {
   }
 }
 
-
-
 process.chdir(fileURLToPath(new URL("..", import.meta.url)))
 
 await rm("dist", { recursive: true, force: true })
@@ -32,9 +30,9 @@ await $`bun vibelang -p tsconfig.build.json`
 const root = path.resolve("src")
 const result = await Bun.build({
   plugins: [vibelang()],
-  entrypoints: await Array.fromAsync(new __vibelangBuildGlob("**/*.{ts,vibe}").scan({ cwd: root, absolute: true })).then((files) =>
-    files.filter((file) => !file.endsWith(".d.ts")),
-  ),
+  entrypoints: await Array.fromAsync(
+    new __vibelangBuildGlob("**/*.{ts,vibe}").scan({ cwd: root, absolute: true }),
+  ).then((files) => files.filter((file) => !file.endsWith(".d.ts"))),
   root,
   outdir: "dist",
   target: "node",

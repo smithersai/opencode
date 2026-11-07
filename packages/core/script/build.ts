@@ -24,8 +24,6 @@ class __vibelangBuildGlob extends Bun.Glob {
   }
 }
 
-
-
 process.chdir(fileURLToPath(new URL("..", import.meta.url)))
 
 await rm("dist", { recursive: true, force: true })

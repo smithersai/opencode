@@ -50,6 +50,7 @@
         "@tsconfig/bun": "catalog:",
         "@types/bun": "catalog:",
         "@typescript/native": "catalog:",
+        "fast-check": "catalog:",
         "typescript": "catalog:",
         "vibelang": "file:../../.vibelang-toolchain/vibelang-0.0.11-1ded989eae73.tgz",
         "vibelang-vite": "file:../../.vibelang-toolchain/vibelang-vite-0.0.11-5223c46c8aba.tgz",

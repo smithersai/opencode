@@ -1569,3 +1569,7 @@ This package is built on Effect. Public methods in `@opencode/ai/effect` return 
 - `AGENTS.md` — architecture, route construction, contributor guide
 - `example/tutorial.ts` — runnable end-to-end walkthrough (`bun example/tutorial.ts <example>`)
 - `test/provider/*.test.ts` — fixture-first protocol tests; `*.recorded.test.ts` files cover live cassettes
+
+## Development scripts
+
+Run `bun test test/recording-script.test.ts` from this directory to check the example and recording setup programs, including gateway URL options.

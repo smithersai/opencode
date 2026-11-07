@@ -6,6 +6,7 @@ Release notes for OpenCode V2, newest first.
 
 ### Bugs fixed
 
+- AI examples and recording setup failed standalone checks; their native scripts now check successfully with supported gateway URL options.
 - Package verification rejected readonly command arguments; it now accepts them without changing their contents.
 
 ## v2.2.0 — 2026-10-27

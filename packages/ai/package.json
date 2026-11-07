@@ -5,7 +5,7 @@
   "type": "module",
   "license": "MIT",
   "scripts": {
-    "setup:recording-env": "bun run script/setup-recording-env.vibe",
+    "setup:recording-env": "bun run script/setup-recording-env.ts",
     "test": "bun test --timeout 30000 --only-failures",
     "typecheck": "bun check --no-script && bun check --no-script -p tsconfig.types.json",
     "typecheck:tsc": "vibelang --noEmit && vibelang --noEmit -p tsconfig.types.json",
@@ -638,7 +638,8 @@
     "@typescript/native": "catalog:",
     "typescript": "catalog:",
     "vibelang": "file:../../.vibelang-toolchain/vibelang-0.0.11-1ded989eae73.tgz",
-    "vibelang-vite": "file:../../.vibelang-toolchain/vibelang-vite-0.0.11-5223c46c8aba.tgz"
+    "vibelang-vite": "file:../../.vibelang-toolchain/vibelang-vite-0.0.11-5223c46c8aba.tgz",
+    "fast-check": "catalog:"
   },
   "dependencies": {
     "@aws-sdk/credential-providers": "3.1057.0",

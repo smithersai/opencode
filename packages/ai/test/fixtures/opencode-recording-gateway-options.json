@@ -1,0 +1,17 @@
+[
+  {
+    "account": "account",
+    "gateway": "gateway"
+  },
+  {
+    "account": "space / slash",
+    "gateway": ""
+  },
+  {
+    "account": "日本語",
+    "gateway": "ignored"
+  },
+  {
+    "account": "a?b#c"
+  }
+]

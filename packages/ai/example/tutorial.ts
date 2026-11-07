@@ -10,7 +10,7 @@ import { OpenAI } from "@opencode/ai/providers"
  *
  * Run from `packages/ai` with an OpenAI key in the environment:
  *
- *   OPENAI_API_KEY=... bun example/tutorial.vibe [example]
+ *   OPENAI_API_KEY=... bun example/tutorial.ts [example]
  *
  * where `example` is one of the keys of `examples` at the bottom (default
  * `tools`). The `fake` example runs offline and needs no key.
@@ -59,7 +59,7 @@ const request = LLM.request({
 
 // 3. `generate` sends the request and collects the event stream into one
 // response object. `response.text` is the collected text output.
-const generateOnce = Effect.gen(function*() {
+const generateOnce = Effect.gen(function* () {
   const response = yield* LLM.generate(request)
 
   console.log("\n== generate ==")
@@ -73,12 +73,11 @@ const streamText = LLM.stream(request).pipe(
   Stream.tap((event) =>
     Effect.sync(() => {
       if (event.type === "text-delta") process.stdout.write(`\ntext: ${event.text}`)
-      if (event.type === "finish") {
+      if (event.type === "finish")
         process.stdout.write(
           `\nfinish: ${event.reason.normalized}${event.reason.raw ? ` (${event.reason.raw})` : ""}\n`,
         )
-      }
-    })
+    }),
   ),
   Stream.runDrain,
 )
@@ -95,7 +94,7 @@ const tools = {
   }),
 }
 
-const streamWithTools = Effect.gen(function*() {
+const streamWithTools = Effect.gen(function* () {
   const request = LLM.request({
     model,
     prompt: "Use get_weather for San Francisco, then answer in one sentence.",
@@ -132,7 +131,7 @@ const WeatherReport = Schema.Struct({
   highFahrenheit: Schema.Number,
 })
 
-const generateStructuredObject = Effect.gen(function*() {
+const generateStructuredObject = Effect.gen(function* () {
   const response = yield* LLM.generateObject({
     model,
     system: "Return only structured weather data.",
@@ -227,10 +226,10 @@ const fakeExecutor = RequestExecutor.middleware((request) =>
       request,
       new Response("data: hello\n\ndata: from fake-echo\n\n", { headers: { "content-type": "text/event-stream" } }),
     ),
-  )
+  ),
 )
 
-const generateFake = Effect.gen(function*() {
+const generateFake = Effect.gen(function* () {
   const response = yield* LLM.generate({ model: FakeEcho.configure().model("echo-1"), prompt: "Say hello." })
   console.log("\n== fake provider ==")
   console.log("generated text:", response.text)
@@ -239,7 +238,7 @@ const generateFake = Effect.gen(function*() {
 // 8. Image generation uses the same facade and the same request/generate shape.
 // `response.image` is a `Media.Asset`: bytes decode lazily and are cached, and
 // `Media.write` persists them through the Effect `FileSystem`.
-const generateImage = Effect.gen(function*() {
+const generateImage = Effect.gen(function* () {
   const response = yield* Image.generate({
     model: openai.image("gpt-image-1-mini"),
     prompt: "A flat black circle centered on a plain white background.",
@@ -272,9 +271,8 @@ const examples: Record<string, Effect.Effect<void, unknown, AIClient.Services>> 
 }
 
 const name = process.argv[2] ?? "tools"
-if (!Object.hasOwn(examples, name)) {
+if (!Object.hasOwn(examples, name))
   throw new Error(`Unknown example ${name}; pick one of ${Object.keys(examples).join(", ")}`)
-}
 
 Effect.runPromise(
   examples[name].pipe(Effect.provide(name === "fake" ? AIClient.layerWith(fakeExecutor) : AIClient.layer)),

@@ -58,9 +58,7 @@ const PROVIDERS: ReadonlyArray<Provider> = [
     vars: [{ name: "GOOGLE_GENERATIVE_AI_API_KEY" }],
     validate: (env) =>
       HttpClientRequest.get(
-        `https://generativelanguage.googleapis.com/v1beta/models?key=${
-          encodeURIComponent(env.GOOGLE_GENERATIVE_AI_API_KEY)
-        }`,
+        `https://generativelanguage.googleapis.com/v1beta/models?key=${encodeURIComponent(env.GOOGLE_GENERATIVE_AI_API_KEY)}`,
       ).pipe(executeRequest),
   },
   {
@@ -114,7 +112,7 @@ const PROVIDERS: ReadonlyArray<Provider> = [
     vars: [{ name: "FAL_KEY" }],
     // fal has no free authenticated list endpoint; a 404 for an unknown request id proves the key was accepted.
     validate: (env) =>
-      Effect.gen(function*() {
+      Effect.gen(function* () {
         const http = yield* HttpClient.HttpClient
         const response = yield* http.execute(
           HttpClientRequest.get(
@@ -228,12 +226,9 @@ const PROVIDERS: ReadonlyArray<Provider> = [
     ],
     validate: (env) =>
       validateChat({
-        url: `${
-          CloudflareAIGateway.baseURL({
-            accountId: env.CLOUDFLARE_ACCOUNT_ID,
-            gatewayId: env.CLOUDFLARE_GATEWAY_ID || undefined,
-          })
-        }/chat/completions`,
+        url: `${CloudflareAIGateway.baseURL({
+          accountId: env.CLOUDFLARE_ACCOUNT_ID,
+        })}/chat/completions`,
         token: Redacted.make(envValue(env, CloudflareAIGateway.authEnvVars)),
         tokenHeader: "cf-aig-authorization",
         model: "workers-ai/@cf/meta/llama-3.1-8b-instruct",
@@ -358,9 +353,8 @@ const interactive = Boolean(process.stdin.isTTY && process.stdout.isTTY)
 const envNames = Array.from(new Set(PROVIDERS.flatMap((provider) => provider.vars.map((item) => item.name))))
 
 const providersForOption = (value: string | undefined) => {
-  if (!value || value === "recommended") {
+  if (!value || value === "recommended")
     return PROVIDERS.filter((provider) => provider.tier === "core" || provider.tier === "canary")
-  }
   if (value === "recorded") return PROVIDERS.filter((provider) => provider.tier !== "optional")
   if (value === "all") return PROVIDERS
   const ids = new Set(
@@ -382,7 +376,7 @@ const catchMissingFile = (error: PlatformError.PlatformError) => {
   return Effect.fail(error)
 }
 
-const readEnvFile = Effect.fn("RecordingEnv.readFile")(function*() {
+const readEnvFile = Effect.fn("RecordingEnv.readFile")(function* () {
   const fileSystem = yield* FileSystem.FileSystem
   return yield* fileSystem.readFileString(envPath).pipe(Effect.catch(catchMissingFile))
 })
@@ -397,12 +391,11 @@ const readConfigString = (provider: ConfigProvider.ConfigProvider, name: string)
       }),
     )
 
-const parseEnv = Effect.fn("RecordingEnv.parseEnv")(function*(contents: string) {
+const parseEnv = Effect.fn("RecordingEnv.parseEnv")(function* (contents: string) {
   const provider = ConfigProvider.fromDotEnvContents(contents)
   return Object.fromEntries(
-    (yield* Effect.forEach(
-      envNames,
-      (name) => readConfigString(provider, name).pipe(Effect.map((value) => [name, value] as const)),
+    (yield* Effect.forEach(envNames, (name) =>
+      readConfigString(provider, name).pipe(Effect.map((value) => [name, value] as const)),
     )).filter((entry): entry is readonly [string, string] => entry[1] !== undefined),
   )
 })
@@ -422,9 +415,7 @@ const statusLine = (provider: Provider, fileEnv: Env) =>
     ...provider.vars.map((item) => {
       const value = status(item.name, fileEnv)
       const suffix = item.optional ? " optional" : ""
-      return `  ${value === "missing" ? "missing" : "set"} ${item.name}${suffix}${
-        value === "shell" ? " (shell only)" : ""
-      }`
+      return `  ${value === "missing" ? "missing" : "set"} ${item.name}${suffix}${value === "shell" ? " (shell only)" : ""}`
     }),
   ].join("\n")
 
@@ -480,7 +471,7 @@ const envWithValues = (fileEnv: Env, values: Env): Env => ({
   ...values,
 })
 
-const responseError = Effect.fn("RecordingEnv.responseError")(function*(
+const responseError = Effect.fn("RecordingEnv.responseError")(function* (
   response: HttpClientResponse.HttpClientResponse,
 ) {
   if (response.status >= 200 && response.status < 300) return undefined
@@ -488,7 +479,7 @@ const responseError = Effect.fn("RecordingEnv.responseError")(function*(
   return `${response.status}${body ? `: ${body.slice(0, 180)}` : ""}`
 })
 
-const executeRequest = Effect.fn("RecordingEnv.executeRequest")(function*(
+const executeRequest = Effect.fn("RecordingEnv.executeRequest")(function* (
   request: HttpClientRequest.HttpClientRequest,
 ) {
   const http = yield* HttpClient.HttpClient
@@ -520,7 +511,7 @@ const validateChat = (input: {
   }).pipe(executeRequest)
 
 const validateBedrock = (env: Env) =>
-  Effect.gen(function*() {
+  Effect.gen(function* () {
     const request = yield* Effect.promise(() =>
       new AwsV4Signer({
         url: `https://bedrock.${env.BEDROCK_RECORDING_REGION || "us-east-1"}.amazonaws.com/foundation-models`,
@@ -530,7 +521,7 @@ const validateBedrock = (env: Env) =>
         accessKeyId: env.AWS_ACCESS_KEY_ID,
         secretAccessKey: env.AWS_SECRET_ACCESS_KEY,
         sessionToken: env.AWS_SESSION_TOKEN || undefined,
-      }).sign()
+      }).sign(),
     )
     return yield* HttpClientRequest.get(request.url.toString()).pipe(
       HttpClientRequest.setHeaders(Object.fromEntries(request.headers.entries())),
@@ -538,7 +529,7 @@ const validateBedrock = (env: Env) =>
     )
   })
 
-const validateProvider = Effect.fn("RecordingEnv.validateProvider")(function*(provider: Provider, env: Env) {
+const validateProvider = Effect.fn("RecordingEnv.validateProvider")(function* (provider: Provider, env: Env) {
   return yield* (provider.validate?.(env) ?? Effect.succeed("no lightweight validator")).pipe(
     Effect.catch((error) => {
       if (error instanceof Error) return Effect.succeed(error.message)
@@ -547,7 +538,7 @@ const validateProvider = Effect.fn("RecordingEnv.validateProvider")(function*(pr
   )
 })
 
-const validateProviders = Effect.fn("RecordingEnv.validateProviders")(function*(
+const validateProviders = Effect.fn("RecordingEnv.validateProviders")(function* (
   providers: ReadonlyArray<Provider>,
   env: Env,
 ) {
@@ -570,7 +561,7 @@ const validateProviders = Effect.fn("RecordingEnv.validateProviders")(function*(
   )
 })
 
-const writeEnvFile = Effect.fn("RecordingEnv.writeFile")(function*(contents: string) {
+const writeEnvFile = Effect.fn("RecordingEnv.writeFile")(function* (contents: string) {
   const fileSystem = yield* FileSystem.FileSystem
   yield* fileSystem.makeDirectory(path.dirname(envPath), { recursive: true })
   yield* fileSystem.writeFileString(envPath, contents, { mode: 0o600 })
@@ -578,7 +569,7 @@ const writeEnvFile = Effect.fn("RecordingEnv.writeFile")(function*(contents: str
 
 const prompt = <A>(run: () => Promise<A | symbol>) => Effect.promise(run).pipe(Effect.map(exitIfCancel))
 
-const chooseConfigurableProviders = Effect.fn("RecordingEnv.chooseConfigurableProviders")(function*(
+const chooseConfigurableProviders = Effect.fn("RecordingEnv.chooseConfigurableProviders")(function* (
   providers: ReadonlyArray<Provider>,
   fileEnv: Env,
 ) {
@@ -589,16 +580,14 @@ const chooseConfigurableProviders = Effect.fn("RecordingEnv.chooseConfigurablePr
       options: configurable.map((provider) => ({
         value: provider.id,
         label: provider.label,
-        hint: `${providerRequiredStatus(provider, fileEnv)} - ${
-          requiredVars(provider)
-            .map((item) => item.name)
-            .join(", ")
-        }`,
+        hint: `${providerRequiredStatus(provider, fileEnv)} - ${requiredVars(provider)
+          .map((item) => item.name)
+          .join(", ")}`,
       })),
       initialValues: configurable
         .filter((provider) => providerRequiredStatus(provider, fileEnv) === "missing")
         .map((provider) => provider.id),
-    })
+    }),
   )
   return configurable.filter((provider) => selected.includes(provider.id))
 })
@@ -615,7 +604,7 @@ const promptEnvVar = (item: Provider["vars"][number]) =>
     return item.secret === false ? prompts.text(input) : prompts.password(input)
   })
 
-const promptProviderValues = Effect.fn("RecordingEnv.promptProviderValues")(function*(
+const promptProviderValues = Effect.fn("RecordingEnv.promptProviderValues")(function* (
   providers: ReadonlyArray<Provider>,
 ) {
   const values: Env = {}
@@ -630,7 +619,7 @@ const promptProviderValues = Effect.fn("RecordingEnv.promptProviderValues")(func
   return values
 })
 
-const main = Effect.fn("RecordingEnv.main")(function*() {
+const main = Effect.fn("RecordingEnv.main")(function* () {
   prompts.intro("LLM recording credentials")
   const contents = yield* readEnvFile()
   const fileEnv = yield* parseEnv(contents)
@@ -654,8 +643,8 @@ const main = Effect.fn("RecordingEnv.main")(function*() {
   }
 
   if (
-    interactive
-    && (yield* prompt(() => prompts.confirm({ message: "Validate credentials before saving?", initialValue: true })))
+    interactive &&
+    (yield* prompt(() => prompts.confirm({ message: "Validate credentials before saving?", initialValue: true })))
   ) {
     yield* validateProviders(selectedProviders, envWithValues(fileEnv, values))
   }

@@ -4,7 +4,7 @@ import { Commands } from "../commands.ts"
 import { Runtime } from "../../framework/runtime"
 import { Updater } from "../../services/updater"
 import { handlePromptErrors } from "../../ui/prompt"
-import { OPENCODE_VERSION } from "../../version.ts"
+import { OPENCODE_VERSION } from "#vibelang/emitted/src/version"
 import { stripVTControlCharacters } from "node:util"
 
 export default Runtime.handler(

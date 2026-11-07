@@ -1,5 +1,5 @@
 import path from "node:path"
-import { OPENCODE_CHANNEL } from "./version.ts"
+import { OPENCODE_CHANNEL } from "#vibelang/emitted/src/version"
 
 export function databasePath(data: string) {
   const filename =

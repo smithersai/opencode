@@ -1,6 +1,6 @@
 import { Service, type Endpoint, type EnsureOptions } from "@opencode/client/effect/service"
 import { ClientError, isUnauthorizedError, OpenCode } from "@opencode/client/promise"
-import { OPENCODE_VERSION } from "../version.ts"
+import { OPENCODE_VERSION } from "#vibelang/emitted/src/version"
 import { Effect, Option, Redacted } from "effect"
 import { Server as ServerFlag, Standalone as StandaloneFlag } from "../commands/commands.ts"
 import { Env } from "../env"

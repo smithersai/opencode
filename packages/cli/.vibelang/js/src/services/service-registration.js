@@ -5,7 +5,7 @@ import path from "node:path";
 import { Effect, FileSystem, Schedule, Schema } from "effect";
 import { HttpServer } from "effect/http";
 import { NetAddress } from "effect/net";
-import { OPENCODE_VERSION } from "../version.js";
+import { OPENCODE_VERSION } from "#vibelang/emitted/src/version";
 const infoJson = Schema.fromJsonString(Service.Info);
 const encodeInfo = Schema.encodeEffect(infoJson);
 const decodeInfo = Schema.decodeUnknownEffect(infoJson);

@@ -2,7 +2,7 @@ import { describe, expect, test } from "bun:test"
 import fs from "node:fs/promises"
 import os from "node:os"
 import path from "node:path"
-import { OPENCODE_VERSION } from "../src/version.ts"
+import { OPENCODE_VERSION } from "../src/version.vibe"
 import { redactConfig } from "../src/commands/handlers/debug/redact"
 
 describe("debug config command", () => {

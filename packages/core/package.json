@@ -550,6 +550,11 @@
       "vibelang-source": "./src/location-activity.vibe",
       "default": "./.vibelang/js/src/location-activity.js"
     },
+    "./plugin/internal": {
+      "types": "./src/plugin/internal.d.vibe.ts",
+      "vibelang-source": "./src/plugin/internal.vibe",
+      "default": "./.vibelang/js/src/plugin/internal.js"
+    },
     "./*": {
       "types": "./src/*.ts",
       "vibelang-source": "./src/*.ts",

@@ -5,7 +5,7 @@ import type { SessionRequest } from "@opencode/plugin/effect/session"
 import { Effect } from "effect"
 import { Model } from "../model.js"
 import { Provider } from "../provider.js"
-import type { PluginInternal } from "./internal.js"
+import type { PluginInternal } from "./internal.vibe"
 
 const direct = new Set([
   "@opencode/ai/providers/openai",

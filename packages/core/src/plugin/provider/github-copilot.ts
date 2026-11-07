@@ -13,7 +13,7 @@ import { Agent } from "../../agent.vibe"
 import { define } from "@opencode/plugin/effect/plugin"
 import { Provider } from "../../provider.js"
 import { SessionAffinity } from "../../session/affinity.js"
-import type { PluginInternal } from "../internal.js"
+import type { PluginInternal } from "../internal.vibe"
 
 const clientID = "Ov23li8tweQw6odWQebz"
 const apiVersion = "2026-08-01"

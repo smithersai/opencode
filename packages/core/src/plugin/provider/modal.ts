@@ -6,7 +6,7 @@ import { Credential } from "../../credential.js"
 import { Integration } from "../../integration.js"
 import { ModalModels } from "../../modal/models.js"
 import { Provider } from "../../provider.js"
-import type { PluginInternal } from "../internal.js"
+import type { PluginInternal } from "../internal.vibe"
 
 const providerID = Provider.ID.make("modal")
 

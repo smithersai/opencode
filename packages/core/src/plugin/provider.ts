@@ -31,7 +31,7 @@ import { VercelPlugin } from "./provider/vercel.vibe"
 import { VLLMPlugin } from "./provider/vllm.vibe"
 import { XAIPlugin } from "./provider/xai.js"
 import { ZenmuxPlugin } from "./provider/zenmux.vibe"
-import type { PluginInternal } from "./internal.js"
+import type { PluginInternal } from "./internal.vibe"
 
 export const ProviderPlugins: PluginInternal.InternalPlugin[] = [
   AmazonBedrockPlugin,

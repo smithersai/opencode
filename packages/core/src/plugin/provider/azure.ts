@@ -12,7 +12,7 @@ import { IntegrationConnection } from "../../integration/connection.js"
 import { Model } from "../../model.js"
 import { Provider } from "../../provider.js"
 import { which } from "../../util/which.js"
-import type { PluginInternal } from "../internal.js"
+import type { PluginInternal } from "../internal.vibe"
 import { configuredSettings } from "./configured.vibe"
 
 const cognitiveScope = "https://cognitiveservices.azure.com/.default"

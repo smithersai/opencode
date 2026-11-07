@@ -10,7 +10,7 @@ import { Integration } from "../../integration.js"
 import { Model } from "../../model.js"
 import { OauthCallbackPage } from "../../oauth/page.js"
 import { Provider } from "../../provider.js"
-import type { PluginInternal } from "../internal.js"
+import type { PluginInternal } from "../internal.vibe"
 
 const providerID = Provider.ID.make("digitalocean")
 const integrationID = Integration.ID.make("digitalocean")

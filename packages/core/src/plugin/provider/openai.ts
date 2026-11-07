@@ -10,7 +10,7 @@ import { Integration } from "../../integration.js"
 import { OauthCallbackPage } from "../../oauth/page.js"
 import { Provider } from "../../provider.js"
 import { SessionAffinity } from "../../session/affinity.js"
-import type { PluginInternal } from "../internal.js"
+import type { PluginInternal } from "../internal.vibe"
 import { configuredSettings } from "./configured.vibe"
 
 const clientID = "app_EMoamEEZ73f0CkXaXp7hrann"

@@ -14,7 +14,7 @@ import { Model } from "../../model.js"
 import { OauthCallbackPage } from "../../oauth/page.js"
 import { Provider } from "../../provider.js"
 import { SessionAffinity } from "../../session/affinity.js"
-import type { PluginInternal } from "../internal.js"
+import type { PluginInternal } from "../internal.vibe"
 import { configuredSettings } from "./configured.vibe"
 
 // First-time sign-in registers a user-owned client; OpenAI returns its issued client ID on the callback.

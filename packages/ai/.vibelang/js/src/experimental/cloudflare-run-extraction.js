@@ -20,7 +20,10 @@ const decodeEnvelope = route.decodeJson(Schema.Struct({
         answers: Schema.Record(Schema.String, JsonObject),
         truncated: Schema.optional(Schema.Boolean),
         state_text: Schema.optional(Schema.String),
-        usage: Schema.optional(Schema.StructWithRest(Schema.Struct({ input_tokens: Schema.optional(Schema.Number), output_tokens: Schema.optional(Schema.Number) }), [JsonObject])),
+        usage: Schema.optional(Schema.StructWithRest(Schema.Struct({
+            input_tokens: Schema.optional(Schema.Number),
+            output_tokens: Schema.optional(Schema.Number),
+        }), [JsonObject])),
     }),
 }));
 /** Posts Clairic's `{ model, state, fields }` body to Cloudflare's `/ai/run/{model}`. */
@@ -43,10 +46,12 @@ export const protocol = MediaProtocol.inline(route, {
                 const result = output.value.result;
                 // Each answer decodes as the field it answers; extra answers are dropped.
                 const answers = yield* Effect.forEach(Object.entries(context.request.fields), ([name, field]) => {
-                    if (!Object.hasOwn(result.answers, name))
+                    if (!Object.hasOwn(result.answers, name)) {
                         return Effect.fail(output.invalid(`${route.name} returned no answer for ${name}`));
-                    if (!Object.hasOwn(ExtractionAnswers, field.type))
+                    }
+                    if (!Object.hasOwn(ExtractionAnswers, field.type)) {
                         return Effect.succeed([name, result.answers[name]]);
+                    }
                     return Effect.mapError(Effect.map(Schema.decodeUnknownEffect(ExtractionAnswers[field.type])(result.answers[name]), (answer) => [name, answer]), (cause) => output.invalid(`${route.name} returned an invalid answer for ${name}`, cause));
                 });
                 return new ExtractionResponse({

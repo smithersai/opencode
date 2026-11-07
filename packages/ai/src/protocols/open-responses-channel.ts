@@ -13,7 +13,7 @@ import {
 } from "../route/transport/index.vibe"
 import * as ProviderShared from "./shared.js"
 import { OpenResponses } from "./open-responses.js"
-import { OpenResponsesContinuation } from "./open-responses-continuation.js"
+import { OpenResponsesContinuation } from "./open-responses-continuation.vibe"
 
 const WebSocketResponseCreate = Schema.StructWithRest(Schema.Struct({ type: Schema.tag("response.create") }), [
   Schema.Record(Schema.String, Schema.Unknown),

@@ -1,5 +1,5 @@
 import { ExtractionModel, ExtractionResponse, type ExtractionRequestFor } from "./extraction.vibe";
-import { MediaProtocol } from "../route/media-protocol.js";
+import { MediaProtocol } from "../route/media-protocol.vibe";
 import { MediaRoute } from "../route/media.vibe";
 /** Posts Clairic's `{ model, state, fields }` body to Cloudflare's `/ai/run/{model}`. */
 export declare const protocol: MediaProtocol.Inline<ExtractionRequestFor, ExtractionResponse>;

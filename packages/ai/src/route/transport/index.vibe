@@ -1,6 +1,6 @@
 import type { Effect, Scope, Stream } from "effect"
 import { Endpoint } from "../endpoint.ts"
-import { Auth } from "../auth.ts"
+import { Auth } from "../auth.vibe"
 import type { HttpMiddleware, Interface as RequestExecutorInterface } from "../executor.vibe"
 import type { WebSocketChannelExecutor } from "./websocket-channel.vibe"
 import type { AIError, HttpContext, LLMRequest } from "../../schema/index.ts"

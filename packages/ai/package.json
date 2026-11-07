@@ -13,7 +13,8 @@
     "pack": "bun run script/pack.ts"
   },
   "files": [
-    "dist"
+    "dist",
+    ".vibelang/js"
   ],
   "exports": {
     ".": {
@@ -583,13 +584,13 @@
       "default": "./.vibelang/js/src/protocols/openai-chat.js"
     },
     "./protocols/openai-decisions": {
-      "types": "./src/protocols/openai-decisions.ts",
-      "vibelang-source": "./src/protocols/openai-decisions.ts",
+      "types": "./src/protocols/openai-decisions.d.vibe.ts",
+      "vibelang-source": "./src/protocols/openai-decisions.vibe",
       "default": "./.vibelang/js/src/protocols/openai-decisions.js"
     },
     "./protocols/openai-images": {
-      "types": "./src/protocols/openai-images.ts",
-      "vibelang-source": "./src/protocols/openai-images.ts",
+      "types": "./src/protocols/openai-images.d.vibe.ts",
+      "vibelang-source": "./src/protocols/openai-images.vibe",
       "default": "./.vibelang/js/src/protocols/openai-images.js"
     },
     "./protocols/openai-responses": {
@@ -608,8 +609,8 @@
       "default": "./.vibelang/js/src/protocols/openai-transcription.js"
     },
     "./protocols/system-one": {
-      "types": "./src/protocols/system-one.ts",
-      "vibelang-source": "./src/protocols/system-one.ts",
+      "types": "./src/protocols/system-one.d.vibe.ts",
+      "vibelang-source": "./src/protocols/system-one.vibe",
       "default": "./.vibelang/js/src/protocols/system-one.js"
     },
     "./protocols/xai-images": {

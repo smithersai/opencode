@@ -1,6 +1,6 @@
 import { Effect } from "effect";
 import { Media } from "../../media.ts";
-import type { MediaProtocol } from "../../route/media-protocol.ts";
+import type { MediaProtocol } from "../../route/media-protocol.vibe";
 import type { AIError, MediaUsage, ProviderMetadata } from "../../schema/index.ts";
 import { type SpeechEvent, type SpeechVoice } from "../../speech.ts";
 export interface Audio {

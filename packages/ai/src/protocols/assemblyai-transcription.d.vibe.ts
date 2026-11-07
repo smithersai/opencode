@@ -1,5 +1,5 @@
 import { Schema } from "effect";
-import { MediaProtocol } from "../route/media-protocol.ts";
+import { MediaProtocol } from "../route/media-protocol.vibe";
 import { MediaRoute } from "../route/media.vibe";
 import { type OpenString } from "../schema/index.ts";
 import { TranscriptionModel, type TranscriptionRequestFor, TranscriptionResponse } from "../transcription.ts";

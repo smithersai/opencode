@@ -1,7 +1,7 @@
 import { Effect } from "effect";
 export * as SessionShell from "./shell.vibe";
 import type { Session } from "@opencode/schema/session";
-import { Instance } from "../instance/service.ts";
+import { Instance } from "../instance/service.vibe";
 import { ShellResult } from "../shell/result.ts";
 export declare const start: (input: {
     session: Session.Info;

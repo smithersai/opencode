@@ -4549,7 +4549,7 @@ export declare const makeSessionGroup: <I extends HttpApiMiddleware.AnyId, S, Fo
     key: Schema.String;
 }>>, never, Schema.toCodecJson<Schema.Struct<{
     readonly value: Schema.Codec<Schema.Json, Schema.Json, never, never>;
-}>>, never, Schema.toCodecJson<HttpApiSchema.NoContent>, Schema.toCodecJson<typeof InstructionEntry.ValueTooLargeError | typeof SessionNotFoundError>, never, never> | HttpApiEndpoint.HttpApiEndpoint<"session.instructions.entry.remove", "DELETE", "/api/experimental/session/:sessionID/instructions/entries/:key", Schema.toCodecStringTree<Schema.Struct<{
+}>>, never, Schema.toCodecJson<HttpApiSchema.NoContent>, Schema.toCodecJson<typeof SessionNotFoundError | typeof InstructionEntry.ValueTooLargeError>, never, never> | HttpApiEndpoint.HttpApiEndpoint<"session.instructions.entry.remove", "DELETE", "/api/experimental/session/:sessionID/instructions/entries/:key", Schema.toCodecStringTree<Schema.Struct<{
     sessionID: Schema.brand<Schema.String, "SessionID"> & {
         create: () => string & import("effect/Brand").Brand<"SessionID">;
     };

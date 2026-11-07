@@ -1,5 +1,5 @@
 import { ImageModel, ImageResponse, type ImageRequestFor } from "../image.js";
-import { MediaProtocol } from "../route/media-protocol.js";
+import { MediaProtocol } from "../route/media-protocol.vibe";
 import type { MediaRoute } from "../route/media.vibe";
 /**
  * Native Run API inputs. Step counts are `steps` on FLUX and Lucid Origin and `num_steps` on the other models;

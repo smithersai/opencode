@@ -32,8 +32,9 @@ const RunResponse = Schema.Struct({
 // 5. Request body construction
 // ---------------------------------------------------------------------------
 const fromRequest = (request) => Effect_1.suspend({ fromRequest: () => { return withSpan(Effect_1.gen(runtime.$joinedFrame(function* () {
-        if (request.n !== undefined && request.n > 1)
+        if (request.n !== undefined && request.n > 1) {
             return yield* Effect_1.fail(route.unsupported("media.n", `${route.name} generates one image per request; call it once per image`));
+        }
         const fields = {
             prompt: request.prompt,
             ...(yield* ImageSizing.exact(route, request, { multiple: 16, minEdge: 256, maxEdge: 2048 })),
@@ -41,8 +42,9 @@ const fromRequest = (request) => Effect_1.suspend({ fromRequest: () => { return 
         const native = mergeJsonRecords(request.providerOptions, request.http?.body);
         const images = request.images ?? [];
         if (!request.model.id.startsWith(MULTIPART_MODEL_PREFIX)) {
-            if (images.length > 1)
+            if (images.length > 1) {
                 return yield* Effect_1.fail(route.unsupported("media.images", `${request.model.id} takes one input image as image_b64`));
+            }
             const image = images[0]?.inline();
             if (images[0] !== undefined && image === undefined)
                 return yield* Effect_1.fail(ProviderShared.inlineRequired(route.id, images[0]));
@@ -60,8 +62,9 @@ const decodeDocument = route.decodeJson(RunResponse);
 // FLUX and Lucid Origin wrap base64 in the Run API envelope; the Stable Diffusion family, DreamShaper, and Phoenix
 // answer with the raw image, whose declared content type does not always match the bytes.
 const decodeResponse = (response) => Effect_1.suspend({ decodeResponse: () => { return withSpan(Effect_1.gen(function* () {
-        if (!response.headers["content-type"]?.startsWith("application/json"))
+        if (!response.headers["content-type"]?.startsWith("application/json")) {
             return new ImageResponse({ images: [Media.bytes(yield* route.bytes(response))] });
+        }
         const output = yield* decodeDocument(response);
         const result = output.value.result;
         if (result.image === undefined)

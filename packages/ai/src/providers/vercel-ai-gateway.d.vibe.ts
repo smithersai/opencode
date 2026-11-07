@@ -79,7 +79,7 @@ export declare const configure: (input?: Options) => {
     messages: (modelID: string | ModelID) => import("../schema/options.vibe").LanguageModel<ProviderOptionsInput, import("../route/client.ts").CompactionOperations | undefined>;
     responses: (modelID: string | ModelID) => import("../schema/options.vibe").LanguageModel<ProviderOptionsInput, import("../route/client.ts").CompactionOperations | undefined>;
     chat: (modelID: string | ModelID) => import("../schema/options.vibe").LanguageModel<ProviderOptionsInput, import("../route/client.ts").CompactionOperations | undefined>;
-    image: (modelID: string | ModelID, providerOptions?: ProviderOptions) => import("../image.ts").ImageModel<import("../protocols/openai-images.ts").OpenAIImageOptions>;
+    image: (modelID: string | ModelID, providerOptions?: ProviderOptions) => import("../image.ts").ImageModel<import("../protocols/openai-images.vibe").OpenAIImageOptions>;
     decision: (modelID: string | ModelID, providerOptions?: ProviderOptions) => import("../decision.vibe").DecisionModel<import("../decision.vibe").DecisionOptions>;
     configure: typeof configure;
 };
@@ -89,7 +89,7 @@ export declare const provider: {
     messages: (modelID: string | ModelID) => import("../schema/options.vibe").LanguageModel<ProviderOptionsInput, import("../route/client.ts").CompactionOperations | undefined>;
     responses: (modelID: string | ModelID) => import("../schema/options.vibe").LanguageModel<ProviderOptionsInput, import("../route/client.ts").CompactionOperations | undefined>;
     chat: (modelID: string | ModelID) => import("../schema/options.vibe").LanguageModel<ProviderOptionsInput, import("../route/client.ts").CompactionOperations | undefined>;
-    image: (modelID: string | ModelID, providerOptions?: ProviderOptions) => import("../image.ts").ImageModel<import("../protocols/openai-images.ts").OpenAIImageOptions>;
+    image: (modelID: string | ModelID, providerOptions?: ProviderOptions) => import("../image.ts").ImageModel<import("../protocols/openai-images.vibe").OpenAIImageOptions>;
     decision: (modelID: string | ModelID, providerOptions?: ProviderOptions) => import("../decision.vibe").DecisionModel<import("../decision.vibe").DecisionOptions>;
     configure: typeof configure;
 };
@@ -97,11 +97,11 @@ export declare const decision: (modelID: string | ModelID, providerOptions?: Pro
 export declare const messages: (modelID: string | ModelID) => import("../schema/options.vibe").LanguageModel<ProviderOptionsInput, import("../route/client.ts").CompactionOperations | undefined>;
 export declare const responses: (modelID: string | ModelID) => import("../schema/options.vibe").LanguageModel<ProviderOptionsInput, import("../route/client.ts").CompactionOperations | undefined>;
 export declare const chat: (modelID: string | ModelID) => import("../schema/options.vibe").LanguageModel<ProviderOptionsInput, import("../route/client.ts").CompactionOperations | undefined>;
-export declare const image: (modelID: string | ModelID, providerOptions?: ProviderOptions) => import("../image.ts").ImageModel<import("../protocols/openai-images.ts").OpenAIImageOptions>;
+export declare const image: (modelID: string | ModelID, providerOptions?: ProviderOptions) => import("../image.ts").ImageModel<import("../protocols/openai-images.vibe").OpenAIImageOptions>;
 export declare const model: ProviderPackage.Definition<Settings, ProviderOptionsInput>["model"];
 export declare const messagesModel: ProviderPackage.Definition<Settings, ProviderOptionsInput>["model"];
 export declare const responsesModel: ProviderPackage.Definition<Settings, ProviderOptionsInput>["model"];
 export declare const chatModel: ProviderPackage.Definition<Settings, ProviderOptionsInput>["model"];
-export declare const imageModel: (modelID: string, settings: Settings) => import("../image.ts").ImageModel<import("../protocols/openai-images.ts").OpenAIImageOptions>;
+export declare const imageModel: (modelID: string, settings: Settings) => import("../image.ts").ImageModel<import("../protocols/openai-images.vibe").OpenAIImageOptions>;
 export declare const decisionModel: (modelID: string, settings: Settings) => import("../decision.vibe").DecisionModel<import("../decision.vibe").DecisionOptions>;
 export * as VercelAIGateway from "./vercel-ai-gateway.vibe";

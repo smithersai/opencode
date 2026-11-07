@@ -6,7 +6,11 @@
   "type": "module",
   "license": "MIT",
   "exports": {
-    ".": "./src/index.ts",
+    ".": {
+      "types": "./src/index.ts",
+      "vibelang-source": "./src/index.ts",
+      "default": "./.vibelang/js/src/index.js"
+    },
     "./config": "./src/config.vibe",
     "./database": "./src/database.vibe",
     "./database/*": "./src/database/*.ts",
@@ -17,8 +21,54 @@
     "./domain/*": "./src/domain/*.ts",
     "./r2-sql": "./src/r2-sql.vibe",
     "./runtime": "./src/runtime.vibe",
-    "./stat-sync": "./src/stat-sync.ts",
-    "./sync-range": "./src/sync-range.ts"
+    "./stat-sync": "./src/stat-sync.vibe",
+    "./sync-range": {
+      "types": "./src/sync-range.ts",
+      "vibelang-source": "./src/sync-range.ts",
+      "default": "./.vibelang/js/src/sync-range.js"
+    },
+    "./database/schema": {
+      "types": {
+        "default": "./src/database/schema.ts"
+      },
+      "vibelang-source": "./src/database/schema.ts",
+      "default": "./.vibelang/js/src/database/schema.js"
+    },
+    "./domain/model-normalization": {
+      "types": {
+        "default": "./src/domain/model-normalization.ts"
+      },
+      "vibelang-source": "./src/domain/model-normalization.ts",
+      "default": "./.vibelang/js/src/domain/model-normalization.js"
+    },
+    "./domain/stat": {
+      "types": {
+        "default": "./src/domain/stat.ts"
+      },
+      "vibelang-source": "./src/domain/stat.ts",
+      "default": "./.vibelang/js/src/domain/stat.js"
+    },
+    "./domain/home": {
+      "types": {
+        "default": "./src/domain/home.ts"
+      },
+      "vibelang-source": "./src/domain/home.ts",
+      "default": "./.vibelang/js/src/domain/home.js"
+    },
+    "./domain/catalog-identity": {
+      "types": {
+        "default": "./src/domain/catalog-identity.ts"
+      },
+      "vibelang-source": "./src/domain/catalog-identity.ts",
+      "default": "./.vibelang/js/src/domain/catalog-identity.js"
+    },
+    "./domain/inference": {
+      "types": {
+        "default": "./src/domain/inference.ts"
+      },
+      "vibelang-source": "./src/domain/inference.ts",
+      "default": "./.vibelang/js/src/domain/inference.js"
+    }
   },
   "scripts": {
     "db:generate": "drizzle-kit generate --config=drizzle.config.ts",

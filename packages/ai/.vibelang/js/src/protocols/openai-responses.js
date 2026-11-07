@@ -204,8 +204,8 @@ const fromRequest = (request) => Effect_1.suspend({ fromRequest: () => { return 
             tools: request.tools.length === 0 ? undefined : yield* lowerTools(request),
             tool_choice: request.tools.length === 0
                 ? undefined
-                : (OpenResponses.allowedToolChoice(request, options) ??
-                    (request.toolChoice ? yield* lowerToolChoice(request.toolChoice, request.tools) : undefined)),
+                : (OpenResponses.allowedToolChoice(request, options)
+                    ?? (request.toolChoice ? yield* lowerToolChoice(request.toolChoice, request.tools) : undefined)),
         };
     }), "OpenAIResponses.fromRequest"); } }.fromRequest);
 const checkpointBody = {
@@ -213,12 +213,14 @@ const checkpointBody = {
     from: (request) => Effect_1.suspend({ from: () => { return withSpan(Effect_1.gen(function* () {
             const overlay = request.http?.body;
             // Complete history is required for stateless replay and SSE recovery. Raw input overrides bypass that contract.
-            if (overlay?.input !== undefined ||
-                overlay?.previous_response_id !== undefined ||
-                overlay?.conversation !== undefined)
+            if (overlay?.input !== undefined
+                || overlay?.previous_response_id !== undefined
+                || overlay?.conversation !== undefined) {
                 return yield* Effect_1.fail(ProviderShared.invalidRequest("Trigger compaction requires complete canonical history, not an input or continuation override"));
-            if (overlay?.stream !== undefined && overlay.stream !== true)
+            }
+            if (overlay?.stream !== undefined && overlay.stream !== true) {
                 return yield* Effect_1.fail(ProviderShared.invalidRequest("Trigger compaction requires a streamed response"));
+            }
             const native = yield* fromRequest(request);
             return {
                 ...native,
@@ -261,12 +263,14 @@ const HOSTED_TOOLS = {
 };
 const step = (state, input) => {
     const event = OpenResponses.normalize(state, input);
-    if (event.type === "response.reasoning_text.delta")
+    if (event.type === "response.reasoning_text.delta") {
         return event.item_id !== undefined
             ? Effect.succeed(OpenResponses.onReasoningDelta(state, event, event.item_id))
             : ProviderShared.eventError(ADAPTER, `${event.type} is missing item_id`);
-    if (event.type === "response.output_item.done" && event.item && ResponsesHostedTools.isItem(event.item, HOSTED_TOOLS))
+    }
+    if (event.type === "response.output_item.done" && event.item && ResponsesHostedTools.isItem(event.item, HOSTED_TOOLS)) {
         return ResponsesHostedTools.onDone(state, event.item, HOSTED_TOOLS);
+    }
     return OpenResponses.step(state, event);
 };
 export const protocol = Protocol.make({

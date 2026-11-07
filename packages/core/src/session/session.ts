@@ -8,7 +8,7 @@ import { Event } from "@opencode/schema/event"
 import { FSUtil } from "@opencode/util/fs-util"
 import { Bus } from "../bus.js"
 import { Database } from "../database/database.js"
-import { Instance } from "../instance/service.js"
+import { Instance } from "../instance/service.vibe"
 import { ShellResult } from "../shell/result.js"
 import type { Skill } from "../skill.js"
 import {

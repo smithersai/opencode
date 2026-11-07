@@ -1,5 +1,5 @@
 import { Framing } from "../route/framing.vibe"
-import { MediaProtocol } from "../route/media-protocol.ts"
+import { MediaProtocol } from "../route/media-protocol.vibe"
 import { MediaRoute } from "../route/media.vibe"
 import { mergeJsonRecords, type OpenString } from "../schema/index.ts"
 import { SpeechModel, type SpeechEvent, type SpeechRequestFor } from "../speech.ts"

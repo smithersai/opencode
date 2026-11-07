@@ -9,7 +9,7 @@ import {
   WindowZoomChanged,
 } from "../../shared/ipc-rpc/events.vibe"
 import { emitIpcEvent } from "../ipc-events.vibe"
-import type { DesktopPaths } from "../paths"
+import type { DesktopPaths } from "../paths.vibe"
 import { BACKGROUND_COLOR_KEY, PINCH_ZOOM_ENABLED_KEY, ZOOM_LEVEL_KEY } from "../storage/keys"
 import { getStore } from "../storage/store"
 import { platformFrame, savedBackgroundColor, storedBackgroundColor, storedZoomLevel, titlebarOverlay, tone } from "./defaults"

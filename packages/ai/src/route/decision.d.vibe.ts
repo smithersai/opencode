@@ -2,9 +2,9 @@ import { Effect } from "effect";
 import type { HttpClientResponse } from "effect/http";
 import { DecisionModel, DecisionModelCompatibility, type DecisionOptions, type DecisionRequestFor, type DecisionResponse } from "../decision.vibe";
 import { HttpOptions, ProviderID, type AIError, type ProviderOptions } from "../schema/index.ts";
-import { Auth } from "./auth.ts";
+import { Auth } from "./auth.vibe";
 import { Endpoint } from "./endpoint.ts";
-import { MediaProtocol } from "./media-protocol.ts";
+import { MediaProtocol } from "./media-protocol.vibe";
 /** One decision API: how a request becomes its JSON body and how its response becomes a `DecisionResponse`. */
 export interface Protocol {
     readonly id: string;

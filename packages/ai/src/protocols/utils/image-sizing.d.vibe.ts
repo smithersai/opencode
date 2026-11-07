@@ -1,5 +1,5 @@
 import { Effect } from "effect";
-import type { MediaProtocol } from "../../route/media-protocol.ts";
+import type { MediaProtocol } from "../../route/media-protocol.vibe";
 export interface Size {
     readonly width: number;
     readonly height: number;

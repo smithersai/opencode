@@ -1,6 +1,6 @@
 import { Effect } from "effect";
 import { Media } from "../../media.ts";
-import type { MediaProtocol } from "../../route/media-protocol.ts";
+import type { MediaProtocol } from "../../route/media-protocol.vibe";
 import { type AIError, type ProviderID } from "../../schema/index.ts";
 /** Owned bytes for multipart uploads; decodes `base64` sources and rejects remote sources. */
 export declare const inlineBytes: (route: string, asset: Media.Asset) => Effect.Effect<Uint8Array, AIError>;

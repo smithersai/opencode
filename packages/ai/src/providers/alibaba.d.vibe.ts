@@ -1,7 +1,7 @@
 import type { ProviderPackage } from "../provider-package.ts";
 import { AlibabaChat } from "../protocols/alibaba-chat.vibe";
 import { AlibabaMessages } from "../protocols/alibaba-messages.vibe";
-import { AlibabaResponses } from "../protocols/alibaba-responses.ts";
+import { AlibabaResponses } from "../protocols/alibaba-responses.vibe";
 import { type AtLeastOne, type ProviderAuthOption } from "../route/auth-options.vibe";
 import { Route, type RouteDefaultsInput } from "../route/client.ts";
 import { ToolDefinition, type ModelID, type ProviderOptions } from "../schema/index.ts";

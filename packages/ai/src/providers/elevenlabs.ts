@@ -1,4 +1,4 @@
-import { Auth } from "../route/auth.js"
+import { Auth } from "../route/auth.vibe"
 import type { ProviderAuthOption } from "../route/auth-options.vibe"
 import { MediaRoute } from "../route/media.vibe"
 import { type HttpOptions, ProviderID, type ModelID } from "../schema/index.js"

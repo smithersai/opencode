@@ -1,5 +1,5 @@
 import { Cause, Context, Effect, Layer, Option, Schema, Stream } from "effect"
-import { Auth } from "./auth.js"
+import { Auth } from "./auth.vibe"
 import { Endpoint, type EndpointPatch } from "./endpoint.js"
 import { RequestExecutor } from "./executor.vibe"
 import { Framing } from "./framing.vibe"

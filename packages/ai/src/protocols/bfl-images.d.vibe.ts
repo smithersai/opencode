@@ -1,7 +1,7 @@
 import { Schema } from "effect";
 import { ImageModel, ImageResponse, type ImageRequestFor } from "../image.ts";
 import { Media } from "../media.ts";
-import { MediaProtocol } from "../route/media-protocol.ts";
+import { MediaProtocol } from "../route/media-protocol.vibe";
 import { MediaRoute } from "../route/media.vibe";
 import { type OpenString } from "../schema/index.ts";
 export declare const DEFAULT_BASE_URL = "https://api.bfl.ai";

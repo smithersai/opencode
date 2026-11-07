@@ -46,10 +46,14 @@ const isEdit = (request) => (request.images?.length ?? 0) > 0;
 const reference = (asset) => Effect.map(ProviderShared.mediaReference(asset, undefined, route.name), (item) => ({ image_url: item.value }));
 const fromRequest = (request) => Effect_1.suspend({ fromRequest: () => { return withSpan(Effect_1.gen(runtime.$joinedFrame(function* () {
         const images = yield* Effect.forEach(request.images ?? [], reference);
-        const { outputFormat, responseFormat, reasoningStrength, toolEnablement, ...native } = request.providerOptions ?? {};
-        if (native.size !== undefined && request.aspect !== undefined)
+        const { outputFormat, responseFormat, reasoningStrength, toolEnablement, ...native } = request.providerOptions
+            ?? {};
+        if (native.size !== undefined && request.aspect !== undefined) {
             return yield* Effect_1.fail(ProviderShared.invalidRequest("Meta providerOptions.size replaces aspect; set one or the other"));
-        const hint = request.aspect === undefined ? undefined : ImageSizing.fit({ aspect: request.aspect }, { multiple: 16 });
+        }
+        const hint = request.aspect === undefined
+            ? undefined
+            : ImageSizing.fit({ aspect: request.aspect }, { multiple: 16 });
         const payload = yield* ProviderShared.validateWith(Schema.decodeUnknownEffect(Body))(mergeJsonRecords({
             model: request.model.id,
             prompt: request.prompt,
@@ -76,8 +80,9 @@ const decodeResponse = (response, context) => Effect_1.suspend({ decodeResponse:
         const images = yield* Effect.forEach(decoded.data, (item, index) => MediaInput.imageOutput(output.invalid, `${route.name} result ${index}`, item, mediaType, {
             info: { format },
         }));
-        if (images.length === 0)
+        if (images.length === 0) {
             return yield* output.invalid(`${route.name} returned no images`);
+        }
         return new ImageResponse({
             images,
             usage: decoded.usage === undefined

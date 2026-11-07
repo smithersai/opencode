@@ -45,7 +45,11 @@ const nativeOptions = (options) => {
 };
 const fromRequest = (request) => Effect_1.suspend({ fromRequest: () => { return withSpan(Effect_1.gen(runtime.$joinedFrame(function* () {
         const images = yield* Effect.forEach(request.images ?? [], (image) => Effect.map(ProviderShared.mediaReference(image, undefined, `${route.name} input`), (item) => ({ image: item.value })));
-        const size = yield* ImageSizing.exact(route, request, { multiple: 16, minPixels: 512 * 512, maxPixels: 2048 * 2048 });
+        const size = yield* ImageSizing.exact(route, request, {
+            multiple: 16,
+            minPixels: 512 * 512,
+            maxPixels: 2048 * 2048,
+        });
         return MediaProtocol.json(mergeJsonRecords({
             model: request.model.id,
             input: { messages: [{ role: "user", content: [...images, { text: request.prompt }] }] },

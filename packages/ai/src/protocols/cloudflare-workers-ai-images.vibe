@@ -1,6 +1,6 @@
 import { ImageModel, ImageResponse, type ImageRequestFor } from "../image.js"
 import { Media } from "../media.js"
-import { MediaProtocol } from "../route/media-protocol.js"
+import { MediaProtocol } from "../route/media-protocol.vibe"
 import type { MediaRoute } from "../route/media.vibe"
 import { mergeJsonRecords } from "../schema/index.js"
 import { ProviderShared } from "./shared.js"

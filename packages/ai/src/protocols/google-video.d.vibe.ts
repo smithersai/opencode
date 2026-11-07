@@ -1,5 +1,5 @@
 import { Schema } from "effect";
-import { MediaProtocol } from "../route/media-protocol.js";
+import { MediaProtocol } from "../route/media-protocol.vibe";
 import { MediaRoute } from "../route/media.vibe";
 import { type OpenString } from "../schema/index.js";
 import { VideoModel, VideoResponse, type VideoRequestFor } from "../video.js";

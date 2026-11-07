@@ -3,7 +3,7 @@ import { LocationServiceMap } from "../location-service-map.js"
 import { LayerNode } from "@opencode/util/effect/layer-node"
 import { makeGlobalNode } from "@opencode/util/effect/app-node"
 import { Effect, Layer, RcMap } from "effect"
-import { Instance } from "../instance/service.js"
+import { Instance } from "../instance/service.vibe"
 
 const instances = makeGlobalNode({
   service: Instance.Service,

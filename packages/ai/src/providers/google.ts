@@ -1,5 +1,5 @@
 import type { RouteDefaultsInput } from "../route/client.js"
-import { Auth } from "../route/auth.js"
+import { Auth } from "../route/auth.vibe"
 import type { ProviderAuthOption } from "../route/auth-options.vibe"
 import { MediaRoute } from "../route/media.vibe"
 import type { ProviderPackage } from "../provider-package.js"

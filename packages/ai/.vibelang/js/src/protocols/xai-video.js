@@ -103,13 +103,15 @@ const decodeResult = (response, context) => Effect_1.suspend({ decodeResult: () 
             const message = decoded.error?.message ?? undefined;
             return yield* output.ended("failed", `${route.name} generation failed${code === undefined ? "" : ` (${code})`}${message === undefined ? "" : `: ${message}`}`, MediaProtocol.failure(FAILURE, code));
         }
-        if (status !== "completed")
+        if (status !== "completed") {
             return yield* output.ended("expired", `${route.name} request ${context.token.requestID} expired`);
+        }
         // `respect_moderation: false` marks a filtered result; a URL may still be present, so only a missing one fails.
         const moderated = decoded.video?.respect_moderation === false;
         const url = decoded.video?.url ?? undefined;
-        if (url === undefined && moderated)
+        if (url === undefined && moderated) {
             return yield* output.contentPolicy(`${route.name} withheld the video for moderation`);
+        }
         if (url === undefined)
             return yield* output.invalid(`${route.name} completed without a video URL`);
         const duration = decoded.video?.duration ?? undefined;

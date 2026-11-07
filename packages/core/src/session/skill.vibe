@@ -1,7 +1,7 @@
 export * as SessionSkill from "./skill.vibe"
 
 import type { Session } from "@opencode/schema/session"
-import { Instance } from "../instance/service.ts"
+import { Instance } from "../instance/service.vibe"
 import { Plugin } from "../plugin/service.vibe"
 import { Skill } from "../skill.ts"
 import { SkillNotFoundError } from "./error.vibe"

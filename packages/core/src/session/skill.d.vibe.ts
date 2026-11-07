@@ -1,7 +1,7 @@
 import { Effect } from "effect";
 export * as SessionSkill from "./skill.vibe";
 import type { Session } from "@opencode/schema/session";
-import { Instance } from "../instance/service.ts";
+import { Instance } from "../instance/service.vibe";
 import { Skill } from "../skill.ts";
 import { SkillNotFoundError } from "./error.vibe";
 export declare const get: (input: {

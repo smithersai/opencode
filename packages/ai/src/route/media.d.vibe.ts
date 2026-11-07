@@ -1,8 +1,8 @@
 import { Effect, Stream } from "effect";
-import { Auth } from "./auth.ts";
+import { Auth } from "./auth.vibe";
 import { Endpoint } from "./endpoint.ts";
 import { type Interface } from "./executor-service.vibe";
-import { MediaProtocol } from "./media-protocol.ts";
+import { MediaProtocol } from "./media-protocol.vibe";
 import { Generation } from "../generation.vibe";
 import { AIError, HttpOptions, ProviderID, type ProviderOptions } from "../schema/index.ts";
 export type Execute = Interface["execute"];

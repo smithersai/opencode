@@ -4,7 +4,7 @@ import { app } from "electron"
 import { Context, Effect, Layer } from "effect"
 import type { PluginEndpoint } from "../../shared/ipc-rpc/plugins.vibe"
 import { ApplicationLifecycle } from "../lifecycle"
-import { Shutdown } from "../lifecycle/shutdown"
+import { Shutdown } from "../lifecycle/shutdown.vibe"
 
 const LEVELS = { debug: "Debug", info: "Info", warn: "Warn", error: "Error" } as const
 

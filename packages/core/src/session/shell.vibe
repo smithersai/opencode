@@ -1,7 +1,7 @@
 export * as SessionShell from "./shell.vibe"
 
 import type { Session } from "@opencode/schema/session"
-import { Instance } from "../instance/service.ts"
+import { Instance } from "../instance/service.vibe"
 import { Plugin } from "../plugin/service.vibe"
 import { Shell } from "../shell.ts"
 import { ShellResult } from "../shell/result.ts"

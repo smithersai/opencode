@@ -55,12 +55,15 @@ const FAILURE = {
 // Veo takes inline media only; a prior Veo output is `Media.url` with transient auth, so materialize it first.
 const inlineMedia = (asset) => Effect.map(ProviderShared.requireInlineMedia(route.name, asset), (inline) => ({ inlineData: { mimeType: inline.mime, data: inline.base64 } }));
 const fromRequest = (request) => Effect_1.suspend({ fromRequest: () => { return withSpan(Effect_1.gen(runtime.$joinedFrame(function* () {
-        if (request.n !== undefined && request.n > 1)
+        if (request.n !== undefined && request.n > 1) {
             return yield* Effect_1.fail(route.unsupported("video.n", `${route.name} generates one video per request; call it once per video instead of n=${request.n}`));
-        if (request.audio === false)
+        }
+        if (request.audio === false) {
             return yield* Effect_1.fail(route.unsupported("video.audio", `${route.name} always generates audio; audio: false cannot be honored`));
-        if (request.frames?.last !== undefined && request.frames.first === undefined)
+        }
+        if (request.frames?.last !== undefined && request.frames.first === undefined) {
             return yield* Effect_1.fail(ProviderShared.invalidRequest(`${route.name} requires frames.first when frames.last is set`));
+        }
         const image = request.frames?.first === undefined ? undefined : yield* inlineMedia(request.frames.first);
         const lastFrame = request.frames?.last === undefined ? undefined : yield* inlineMedia(request.frames.last);
         const video = request.video === undefined ? undefined : yield* inlineMedia(request.video);
@@ -108,8 +111,9 @@ const decodeResult = (response, context) => Effect_1.suspend({ decodeResult: () 
         const status = statusOf(operation);
         if (status === "running")
             return yield* output.pending(context.token.operation);
-        if (status === "failed")
+        if (status === "failed") {
             return yield* output.ended("failed", `${route.name} operation failed${operation.error?.message === undefined ? "" : `: ${operation.error.message}`}`, MediaProtocol.failure(FAILURE, operation.error?.code));
+        }
         const generated = operation.response?.generateVideoResponse;
         // Downloads require the same API key as the poll; the asset carries it transiently and follows the redirect.
         const videos = yield* Effect.forEach((generated?.generatedSamples ?? []).flatMap((sample) => sample.video?.uri === undefined ? [] : [{ uri: sample.video.uri, mimeType: sample.video.mimeType }]), (video) => MediaProtocol.expiringUrl(video.uri, FILE_RETENTION, {
@@ -117,8 +121,9 @@ const decodeResult = (response, context) => Effect_1.suspend({ decodeResult: () 
             headers: context.auth,
         }));
         const reasons = generated?.raiMediaFilteredReasons ?? [];
-        if (videos.length === 0 && (reasons.length > 0 || (generated?.raiMediaFilteredCount ?? 0) > 0))
+        if (videos.length === 0 && (reasons.length > 0 || (generated?.raiMediaFilteredCount ?? 0) > 0)) {
             return yield* output.contentPolicy(`${route.name} filtered every video${reasons.length === 0 ? "" : `: ${reasons.join("; ")}`}`);
+        }
         if (videos.length === 0)
             return yield* output.invalid(`${route.name} operation completed without any video`);
         return new VideoResponse({

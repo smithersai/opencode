@@ -3,8 +3,8 @@ export * as SessionCommand from "./command.vibe";
 import type { PromptInput } from "@opencode/schema/prompt-input";
 import type { Session } from "@opencode/schema/session";
 import type { SessionInbox } from "@opencode/schema/session-inbox";
-import { Command } from "../command.ts";
-import { Instance } from "../instance/service.ts";
+import { Command } from "../command.vibe";
+import { Instance } from "../instance/service.vibe";
 export declare const execute: (input: {
     session: Session.Info;
     command: string;

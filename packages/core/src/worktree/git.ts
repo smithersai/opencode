@@ -4,7 +4,7 @@ import { Effect } from "effect"
 import { Worktree } from "@opencode/schema/worktree"
 import { FSUtil } from "@opencode/util/fs-util"
 import { Git } from "../git.js"
-import { canonical, DirectoryUnavailableError } from "./directory.js"
+import { canonical, DirectoryUnavailableError } from "./directory.vibe"
 import type { Strategy } from "./strategies.js"
 
 export const make = Effect.gen(function* () {

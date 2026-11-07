@@ -1,4 +1,4 @@
-import { Auth } from "../auth.ts"
+import { Auth } from "../auth.vibe"
 import { render as renderEndpoint } from "../endpoint.ts"
 import { Framing } from "../framing.vibe"
 import type { HttpMiddleware, Transport, TransportPrepareInput } from "./index.vibe"

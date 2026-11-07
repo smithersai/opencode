@@ -6,7 +6,7 @@ import path from "path"
 import { makeLocationNode } from "@opencode/util/effect/app-node"
 import { AppProcess } from "@opencode/util/process"
 import { Location } from "./location.js"
-import type { Info } from "./formatter/builtins.js"
+import type { Info } from "./formatter/builtins.vibe"
 import { State } from "./state.js"
 
 type Data = {

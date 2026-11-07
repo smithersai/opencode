@@ -1,6 +1,6 @@
 import { ImageModel, type ImageRequestFor, ImageResponse } from "../image.ts"
 import { Media } from "../media.ts"
-import { MediaProtocol } from "../route/media-protocol.ts"
+import { MediaProtocol } from "../route/media-protocol.vibe"
 import { MediaRoute } from "../route/media.vibe"
 import { mergeJsonRecords, type OpenString } from "../schema/index.ts"
 import { optionalNull } from "./shared.ts"

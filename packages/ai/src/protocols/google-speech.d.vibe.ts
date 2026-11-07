@@ -1,4 +1,4 @@
-import { MediaProtocol } from "../route/media-protocol.ts";
+import { MediaProtocol } from "../route/media-protocol.vibe";
 import { MediaRoute } from "../route/media.vibe";
 import { SpeechModel, type SpeechRequestFor } from "../speech.ts";
 import { GeminiGenerateContent } from "./utils/gemini-generate-content.vibe";

@@ -1,5 +1,5 @@
 import { Media } from "../../media.ts"
-import type { MediaProtocol } from "../../route/media-protocol.ts"
+import type { MediaProtocol } from "../../route/media-protocol.vibe"
 import { mergeJsonRecords, type AIError, type ProviderID } from "../../schema/index.ts"
 import { encodeJson } from "../../utils/json.vibe"
 import { ProviderShared } from "../shared.ts"

@@ -792,20 +792,20 @@ export declare const routes: Route<{
 export declare const configure: (input?: LanguageModelOptions) => {
     id: string & import("effect/Brand").Brand<"AI.ProviderID">;
     model: (modelID: string | ModelID) => import("../schema/options.vibe").LanguageModel<OpenRouterOptions, import("../route/client.ts").CompactionOperations | undefined>;
-    image: (modelID: string | ModelID, providerOptions?: ProviderOptions) => import("../image.ts").ImageModel<import("../protocols/openai-images.ts").OpenAIImageOptions>;
+    image: (modelID: string | ModelID, providerOptions?: ProviderOptions) => import("../image.ts").ImageModel<import("../protocols/openai-images.vibe").OpenAIImageOptions>;
     decision: (modelID: string | ModelID, providerOptions?: ProviderOptions) => import("../decision.vibe").DecisionModel<OpenRouterDecisionOptions>;
     configure: typeof configure;
 };
 export declare const provider: {
     id: string & import("effect/Brand").Brand<"AI.ProviderID">;
     model: (modelID: string | ModelID) => import("../schema/options.vibe").LanguageModel<OpenRouterOptions, import("../route/client.ts").CompactionOperations | undefined>;
-    image: (modelID: string | ModelID, providerOptions?: ProviderOptions) => import("../image.ts").ImageModel<import("../protocols/openai-images.ts").OpenAIImageOptions>;
+    image: (modelID: string | ModelID, providerOptions?: ProviderOptions) => import("../image.ts").ImageModel<import("../protocols/openai-images.vibe").OpenAIImageOptions>;
     decision: (modelID: string | ModelID, providerOptions?: ProviderOptions) => import("../decision.vibe").DecisionModel<OpenRouterDecisionOptions>;
     configure: typeof configure;
 };
 export declare const decision: (modelID: string | ModelID, providerOptions?: ProviderOptions) => import("../decision.vibe").DecisionModel<OpenRouterDecisionOptions>;
-export declare const image: (modelID: string | ModelID, providerOptions?: ProviderOptions) => import("../image.ts").ImageModel<import("../protocols/openai-images.ts").OpenAIImageOptions>;
+export declare const image: (modelID: string | ModelID, providerOptions?: ProviderOptions) => import("../image.ts").ImageModel<import("../protocols/openai-images.vibe").OpenAIImageOptions>;
 export declare const model: ProviderPackage.Definition<Settings, OpenRouterProviderOptionsInput>["model"];
-export declare const imageModel: (modelID: string, settings: Settings) => import("../image.ts").ImageModel<import("../protocols/openai-images.ts").OpenAIImageOptions>;
+export declare const imageModel: (modelID: string, settings: Settings) => import("../image.ts").ImageModel<import("../protocols/openai-images.vibe").OpenAIImageOptions>;
 export declare const decisionModel: (modelID: string, settings: Settings) => import("../decision.vibe").DecisionModel<OpenRouterDecisionOptions>;
 export {};

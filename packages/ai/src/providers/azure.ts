@@ -1,4 +1,4 @@
-import { Auth } from "../route/auth.js"
+import { Auth } from "../route/auth.vibe"
 import { type AtLeastOne, type ProviderAuthOption } from "../route/auth-options.vibe"
 import type { Route, RouteDefaultsInput, CompactionOperations } from "../route/client.js"
 import { Endpoint } from "../route/endpoint.js"
@@ -12,7 +12,7 @@ import {
   type ModelID,
   type ProviderOptions,
 } from "../schema/index.js"
-import { OpenAIImages } from "../protocols/openai-images.js"
+import { OpenAIImages } from "../protocols/openai-images.vibe"
 import * as OpenAIChat from "../protocols/openai-chat.js"
 import * as OpenAIResponses from "../protocols/openai-responses.vibe"
 import { withOpenAIOptions, type OpenAIProviderOptionsInput } from "./openai-options.js"

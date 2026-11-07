@@ -1,7 +1,7 @@
 import { Effect, Schema, type Stream } from "effect";
 import type { Tool } from "@opencode/schema/tool";
 import { Media } from "../../media.js";
-import type { MediaProtocol } from "../../route/media-protocol.js";
+import type { MediaProtocol } from "../../route/media-protocol.vibe";
 import { AIError, type MediaUsage, type ProviderMetadata } from "../../schema/index.js";
 declare const UsageMetadata: Schema.Struct<{
     readonly promptTokenCount: Schema.optional<Schema.Number>;

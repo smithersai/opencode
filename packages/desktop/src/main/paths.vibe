@@ -1,0 +1,20 @@
+export * as DesktopPaths from "./paths.vibe"
+
+import { Effect, Path } from "effect"
+
+export interface Resolved {
+  readonly developmentResourcesRoot: string
+  readonly preloadPath: string
+  readonly rendererRoot: string
+}
+
+export const resolve = effect {
+  const path = try Path.Path
+  const root = path.dirname(try path.fromFileUrl(new URL(import.meta.url)))
+
+  return {
+    developmentResourcesRoot: path.join(root, "../../resources"),
+    preloadPath: path.join(root, "../preload/index.cjs"),
+    rendererRoot: path.join(root, "../renderer"),
+  } satisfies Resolved
+} |> Effect.orDie(%)

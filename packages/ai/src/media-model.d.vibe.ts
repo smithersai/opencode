@@ -1,7 +1,7 @@
 import { Effect } from "effect";
 import { Endpoint } from "./route/endpoint.ts";
 import { MediaRoute } from "./route/media.vibe";
-import type { MediaProtocol } from "./route/media-protocol.ts";
+import type { MediaProtocol } from "./route/media-protocol.vibe";
 import { AIError, HttpOptions, ModelID, ProviderID, type ProviderOptions } from "./schema/index.ts";
 /**
  * What every media model carries: ids, the configured route, and deployment `http` overlays. Modality classes

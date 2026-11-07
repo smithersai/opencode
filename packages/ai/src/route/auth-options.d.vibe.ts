@@ -1,5 +1,5 @@
 import type { Config, Redacted } from "effect";
-import { Auth } from "./auth.ts";
+import { Auth } from "./auth.vibe";
 export type ApiKeyMode = "optional" | "required";
 export type AuthOverride = {
     readonly auth: Auth.Definition;

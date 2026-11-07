@@ -17,7 +17,7 @@ import { LocationServiceMap } from "./location-service-map.js"
 import { Project } from "./project.js"
 import { Worktree } from "@opencode/schema/worktree"
 import { WorktreeTable } from "./worktree/sql.js"
-import { canonical, DirectoryUnavailableError } from "./worktree/directory.js"
+import { canonical, DirectoryUnavailableError } from "./worktree/directory.vibe"
 import type { EffectDrizzleSqlite } from "./database/drizzle.js"
 import { ProjectTable } from "./project/sql.js"
 import { AppProcess } from "@opencode/util/process"
@@ -26,7 +26,7 @@ import { WorktreeStrategies } from "./worktree/strategies.js"
 
 export type { Strategy, Editor } from "./worktree/strategies.js"
 
-export { DirectoryUnavailableError } from "./worktree/directory.js"
+export { DirectoryUnavailableError } from "./worktree/directory.vibe"
 export { OperationError } from "@opencode/schema/worktree"
 
 export const StrategyID = Worktree.StrategyID

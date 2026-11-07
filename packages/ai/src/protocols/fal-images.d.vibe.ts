@@ -1,6 +1,6 @@
 import { ImageModel, type ImageRequestFor, ImageResponse } from "../image.ts";
 import { Media } from "../media.ts";
-import { MediaProtocol } from "../route/media-protocol.ts";
+import { MediaProtocol } from "../route/media-protocol.vibe";
 import { MediaRoute } from "../route/media.vibe";
 import { type OpenString } from "../schema/index.ts";
 /** Model-defined `input` fields; `aspect` and `resolution` lower to `image_size` or `aspect_ratio` per model. */

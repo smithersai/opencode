@@ -8,10 +8,10 @@ import {
   type DecisionResponse,
 } from "../decision.vibe"
 import { HttpOptions, ProviderID, type AIError, type ProviderOptions } from "../schema/index.ts"
-import { Auth } from "./auth.ts"
+import { Auth } from "./auth.vibe"
 import { Endpoint } from "./endpoint.ts"
 import { RequestExecutorService } from "./executor-service.vibe"
-import { MediaProtocol } from "./media-protocol.ts"
+import { MediaProtocol } from "./media-protocol.vibe"
 import { MediaRoute, type Execute } from "./media.vibe"
 
 /** One decision API: how a request becomes its JSON body and how its response becomes a `DecisionResponse`. */

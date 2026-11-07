@@ -1,5 +1,5 @@
 import { ImageModel, ImageResponse, type ImageRequestFor } from "../image.js";
-import { MediaProtocol } from "../route/media-protocol.js";
+import { MediaProtocol } from "../route/media-protocol.vibe";
 import { MediaRoute } from "../route/media.vibe";
 export declare const PATH = "/services/aigc/multimodal-generation/generation";
 /** Provider-native `parameters`. Common fields (`n`, `aspect`, `resolution`, `images`) live on the request. */

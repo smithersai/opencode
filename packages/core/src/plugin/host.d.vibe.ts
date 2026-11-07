@@ -3,7 +3,7 @@ import { Plugin } from "@opencode/plugin/effect";
 import { Effect } from "effect";
 import { Agent } from "../agent.vibe";
 import { AISDK } from "../aisdk.ts";
-import { Command } from "../command.ts";
+import { Command } from "../command.vibe";
 import { Bus } from "../bus.ts";
 import { Integration } from "../integration.ts";
 import { KV } from "../kv.vibe";

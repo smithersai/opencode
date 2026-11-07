@@ -66,8 +66,9 @@ const generationConfig = (request) => {
     }, native) ?? { responseModalities: ["IMAGE"] });
 };
 const fromRequest = (request) => Effect_1.suspend({ fromRequest: () => { return withSpan(Effect_1.gen(runtime.$joinedFrame(function* () {
-        if (request.n !== undefined && request.n > 1)
+        if (request.n !== undefined && request.n > 1) {
             return yield* Effect_1.fail(route.unsupported("media.n", `${route.name} generates one image per request; call it once per image instead of n=${request.n}`));
+        }
         const parts = yield* Effect.forEach(request.images ?? [], (image) => GeminiGenerateContent.mediaPart(route.name, image));
         return MediaProtocol.json(mergeJsonRecords({
             contents: [{ role: "user", parts: [{ text: request.prompt }, ...parts] }],
@@ -126,12 +127,15 @@ const decodeResponse = (response) => Effect_1.suspend({ decodeResponse: () => { 
         if (images.length === 0) {
             const finishReasons = candidates.flatMap((candidate) => candidate.finishReason === undefined ? [] : [candidate.finishReason]);
             // Safety and recitation stops are Google refusing the prompt, not a malformed response.
-            if (finishReasons.some(GeminiGenerateContent.contentFiltered))
+            if (finishReasons.some(GeminiGenerateContent.contentFiltered)) {
                 return yield* output.contentPolicy(`${route.name} withheld its images (finish reasons: ${finishReasons.join(", ")})`);
+            }
             return yield* output.invalid(`${route.name} returned no final images${finishReasons.length === 0 ? "" : ` (finish reasons: ${finishReasons.join(", ")})`}; inspect body for prompt feedback and candidate details`);
         }
         const usage = decoded.usageMetadata;
-        const outputTokens = usage?.candidatesTokenCount === undefined ? undefined : usage.candidatesTokenCount + (usage.thoughtsTokenCount ?? 0);
+        const outputTokens = usage?.candidatesTokenCount === undefined
+            ? undefined
+            : usage.candidatesTokenCount + (usage.thoughtsTokenCount ?? 0);
         return new ImageResponse({
             images,
             usage: usage === undefined

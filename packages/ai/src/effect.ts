@@ -1,7 +1,7 @@
 export { AIClient } from "./ai-client.vibe"
 export { LLMClient } from "./route/client.js"
 export { ImageClient } from "./image-client.vibe"
-export { Auth } from "./route/auth.js"
+export { Auth } from "./route/auth.vibe"
 export { ProviderPackage } from "./provider-package.js"
 export { isContextOverflow, isContextOverflowFailure, isRetryable } from "./provider-error.vibe"
 export type { Interface as LLMClientShape, LLMClientService } from "./route/client.js"

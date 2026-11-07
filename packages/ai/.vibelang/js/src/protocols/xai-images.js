@@ -70,8 +70,9 @@ const decodeResponse = (response) => Effect_1.suspend({ decodeResponse: () => { 
                 ? undefined
                 : { xai: { revisedPrompt: item.revised_prompt } },
         }));
-        if (images.length === 0)
+        if (images.length === 0) {
             return yield* output.invalid(`${route.name} returned no images`);
+        }
         // xAI reports a USD cost (`cost_in_usd_ticks`) rather than tokens, seconds, or credits; the raw record stays in
         // provider metadata.
         return new ImageResponse({

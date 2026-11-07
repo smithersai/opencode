@@ -100,8 +100,9 @@ export const appendOrStart = (route, tools, key, delta, missingToolMessage) => {
         providerExecuted: current?.providerExecuted,
         providerMetadata: current?.providerMetadata ?? delta.providerMetadata,
     };
-    if (current && delta.text.length === 0 && current.id === id && current.name === name)
+    if (current && delta.text.length === 0 && current.id === id && current.name === name) {
         return { tools, tool: current, events: [] };
+    }
     return appendTool(tools, key, tool, delta.text);
 };
 /**

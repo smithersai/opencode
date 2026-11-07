@@ -1,4 +1,4 @@
-import { MediaProtocol } from "../route/media-protocol.ts";
+import { MediaProtocol } from "../route/media-protocol.vibe";
 import { MediaRoute } from "../route/media.vibe";
 import { type OpenString } from "../schema/index.ts";
 import { VideoModel, type VideoRequestFor, VideoResponse } from "../video.ts";

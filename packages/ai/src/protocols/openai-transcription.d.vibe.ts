@@ -1,5 +1,5 @@
 import { Schema } from "effect";
-import { MediaProtocol } from "../route/media-protocol.ts";
+import { MediaProtocol } from "../route/media-protocol.vibe";
 import { MediaRoute } from "../route/media.vibe";
 import { TranscriptionModel, type TranscriptionRequestFor, type TranscriptionSegment } from "../transcription.ts";
 export declare const DEFAULT_BASE_URL = "https://api.openai.com/v1";

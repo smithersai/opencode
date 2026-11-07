@@ -1,6 +1,6 @@
 import type { ProviderPackage } from "../provider-package.js"
 import { GoogleInteractions } from "../protocols/google-interactions.js"
-import { Auth } from "../route/auth.js"
+import { Auth } from "../route/auth.vibe"
 import { Route, type RouteDefaultsInput } from "../route/client.js"
 import { Endpoint } from "../route/endpoint.js"
 import { Framing } from "../route/framing.vibe"

@@ -1,7 +1,7 @@
 import { Effect, Option, Schema, Stream } from "effect"
 import { Tool } from "@opencode/schema/tool"
 import { Route } from "../route/client.js"
-import { Auth } from "../route/auth.js"
+import { Auth } from "../route/auth.vibe"
 import { Endpoint } from "../route/endpoint.js"
 import { Protocol } from "../route/protocol.vibe"
 import {

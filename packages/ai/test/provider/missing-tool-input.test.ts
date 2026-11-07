@@ -3,7 +3,7 @@ import { Effect, Schema } from "effect"
 import { LLM, Message, ToolCallPart } from "../../src/effect.js"
 import { OpenAIChat } from "../../src/protocols/openai-chat.js"
 import { OpenAIResponses } from "../../src/protocols/openai-responses.vibe"
-import { Auth } from "../../src/route/auth.js"
+import { Auth } from "../../src/route/auth.vibe"
 import { compileRequest } from "../../src/route/client.js"
 import { it } from "../lib/effect.js"
 

@@ -1,6 +1,6 @@
 import type { AnyAuthClient, GoogleAuthOptions } from "google-auth-library"
 import { Effect, Redacted } from "effect"
-import { Auth, MissingCredentialError } from "../route/auth.js"
+import { Auth, MissingCredentialError } from "../route/auth.vibe"
 import { ProviderConfigurationError, ProviderID } from "../schema/index.js"
 
 const SCOPE = "https://www.googleapis.com/auth/cloud-platform"

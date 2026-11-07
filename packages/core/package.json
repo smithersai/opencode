@@ -510,6 +510,31 @@
       "vibelang-source": "./src/tool/plugin/write.vibe",
       "default": "./.vibelang/js/src/tool/plugin/write.js"
     },
+    "./command": {
+      "types": "./src/command.d.vibe.ts",
+      "vibelang-source": "./src/command.vibe",
+      "default": "./.vibelang/js/src/command.js"
+    },
+    "./formatter/builtins": {
+      "types": "./src/formatter/builtins.d.vibe.ts",
+      "vibelang-source": "./src/formatter/builtins.vibe",
+      "default": "./.vibelang/js/src/formatter/builtins.js"
+    },
+    "./instance/service": {
+      "types": "./src/instance/service.d.vibe.ts",
+      "vibelang-source": "./src/instance/service.vibe",
+      "default": "./.vibelang/js/src/instance/service.js"
+    },
+    "./reference/instructions": {
+      "types": "./src/reference/instructions.d.vibe.ts",
+      "vibelang-source": "./src/reference/instructions.vibe",
+      "default": "./.vibelang/js/src/reference/instructions.js"
+    },
+    "./worktree/directory": {
+      "types": "./src/worktree/directory.d.vibe.ts",
+      "vibelang-source": "./src/worktree/directory.vibe",
+      "default": "./.vibelang/js/src/worktree/directory.js"
+    },
     "./*": {
       "types": "./src/*.ts",
       "vibelang-source": "./src/*.ts",

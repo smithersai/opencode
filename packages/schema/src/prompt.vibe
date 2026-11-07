@@ -1,6 +1,6 @@
 import { optional } from "./schema.vibe"
 import { statics } from "./schema.vibe"
-import { Skill } from "./skill.ts"
+import { Skill } from "./skill.vibe"
 
 export interface PromptMention extends Schema.Schema.Type<typeof PromptMention> {}
 export const PromptMention = Schema.Struct({

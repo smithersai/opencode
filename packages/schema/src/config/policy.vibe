@@ -1,0 +1,9 @@
+export * as ConfigPolicy from "./policy.vibe"
+
+export schema Effect = "allow" | "deny"
+
+export schema Info {
+  action: "provider.use" | "tool.use" | "integration.use"
+  resource: string
+  effect: Effect
+}

@@ -1,1 +1,1 @@
-export * from "./v1/filesystem.js"
+export * from "./v1/filesystem.vibe"

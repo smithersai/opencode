@@ -1,13 +1,13 @@
 import { describe, expect, test } from "bun:test"
 import { Schema } from "effect"
-import { Config } from "../src/config.js"
-import { ConfigAgent } from "../src/config/agent.js"
-import { ConfigMCP } from "../src/config/mcp.js"
-import { ConfigProvider } from "../src/config/provider.js"
-import { Mcp } from "../src/mcp.js"
+import { Config } from "../src/config.vibe"
+import { ConfigAgent } from "../src/config/agent.vibe"
+import { ConfigMCP } from "../src/config/mcp.vibe"
+import { ConfigProvider } from "../src/config/provider.vibe"
+import { Mcp } from "../src/mcp.vibe"
 import { Provider } from "../src/provider.js"
 import { AbsolutePath } from "../src/schema.vibe"
-import { WebSearch } from "../src/websearch.js"
+import { WebSearch } from "../src/websearch.vibe"
 
 describe("Config.Entry", () => {
   test("round-trips tool.use and rejects unsupported action spellings", () => {

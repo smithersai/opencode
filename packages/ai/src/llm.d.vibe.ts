@@ -203,7 +203,7 @@ export declare class GenerateObjectResponse<T> {
             readonly category?: string | undefined;
             readonly explanation?: string | undefined;
         };
-        readonly usage?: import("./schema/events.vibe").Usage | undefined;
+        readonly usage?: import("./effect.ts").Usage | undefined;
         readonly providerMetadata?: {
             readonly [x: string]: {
                 readonly [x: string]: unknown;
@@ -217,7 +217,7 @@ export declare class GenerateObjectResponse<T> {
             readonly category?: string | undefined;
             readonly explanation?: string | undefined;
         };
-        readonly usage?: import("./schema/events.vibe").Usage | undefined;
+        readonly usage?: import("./effect.ts").Usage | undefined;
         readonly providerMetadata?: {
             readonly [x: string]: {
                 readonly [x: string]: unknown;
@@ -253,7 +253,7 @@ export declare class GenerateObjectResponse<T> {
         readonly text: string | null;
         readonly encrypted?: never;
     })))[];
-    get usage(): import("./schema/events.vibe").Usage | undefined;
+    get usage(): import("./effect.ts").Usage | undefined;
 }
 export interface GenerateObjectOptions<S extends ToolSchema<any>, SelectedLanguageModel extends LanguageModel = LanguageModel> extends GenerateObjectBase<SelectedLanguageModel> {
     readonly schema: S;

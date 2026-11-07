@@ -3,11 +3,11 @@ export * as Integration from "./integration.js"
 import { Schema } from "effect"
 import { optional } from "./schema.vibe"
 import { ephemeral, inventory } from "./event.js"
-import { Connection } from "./connection.js"
+import { Connection } from "./connection.vibe"
 import { ascending } from "./identifier.js"
 import { statics } from "./schema.vibe"
 import { IntegrationID, IntegrationMethodID } from "./integration-id.vibe"
-import { Form } from "./form.js"
+import { Form } from "./form.vibe"
 
 export const ID = IntegrationID
 export type ID = typeof ID.Type

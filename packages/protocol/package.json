@@ -13,7 +13,8 @@
     "access": "public"
   },
   "files": [
-    "dist"
+    "dist",
+    ".vibelang/js"
   ],
   "exports": {
     "./simulation": {
@@ -151,10 +152,73 @@
       "vibelang-source": "./src/errors.vibe",
       "default": "./.vibelang/js/src/errors.js"
     },
-    "./*": {
-      "types": "./src/*.ts",
-      "vibelang-source": "./src/*.ts",
-      "default": "./.vibelang/js/src/*.js"
+    "./client": {
+      "types": "./src/client.d.vibe.ts",
+      "vibelang-source": "./src/client.vibe",
+      "default": "./.vibelang/js/src/client.js"
+    },
+    "./groups/agent": {
+      "types": "./src/groups/agent.d.vibe.ts",
+      "vibelang-source": "./src/groups/agent.vibe",
+      "default": "./.vibelang/js/src/groups/agent.js"
+    },
+    "./groups/config": {
+      "types": "./src/groups/config.d.vibe.ts",
+      "vibelang-source": "./src/groups/config.vibe",
+      "default": "./.vibelang/js/src/groups/config.js"
+    },
+    "./groups/event": {
+      "types": "./src/groups/event.d.vibe.ts",
+      "vibelang-source": "./src/groups/event.vibe",
+      "default": "./.vibelang/js/src/groups/event.js"
+    },
+    "./groups/generate": {
+      "types": "./src/groups/generate.d.vibe.ts",
+      "vibelang-source": "./src/groups/generate.vibe",
+      "default": "./.vibelang/js/src/groups/generate.js"
+    },
+    "./groups/integration": {
+      "types": "./src/groups/integration.d.vibe.ts",
+      "vibelang-source": "./src/groups/integration.vibe",
+      "default": "./.vibelang/js/src/groups/integration.js"
+    },
+    "./groups/mcp": {
+      "types": "./src/groups/mcp.d.vibe.ts",
+      "vibelang-source": "./src/groups/mcp.vibe",
+      "default": "./.vibelang/js/src/groups/mcp.js"
+    },
+    "./groups/message": {
+      "types": "./src/groups/message.d.vibe.ts",
+      "vibelang-source": "./src/groups/message.vibe",
+      "default": "./.vibelang/js/src/groups/message.js"
+    },
+    "./groups/model": {
+      "types": "./src/groups/model.d.vibe.ts",
+      "vibelang-source": "./src/groups/model.vibe",
+      "default": "./.vibelang/js/src/groups/model.js"
+    },
+    "./groups/provider": {
+      "types": "./src/groups/provider.d.vibe.ts",
+      "vibelang-source": "./src/groups/provider.vibe",
+      "default": "./.vibelang/js/src/groups/provider.js"
+    },
+    "./groups/session": {
+      "types": "./src/groups/session.d.vibe.ts",
+      "vibelang-source": "./src/groups/session.vibe",
+      "default": "./.vibelang/js/src/groups/session.js"
+    },
+    "./groups/websearch": {
+      "types": "./src/groups/websearch.d.vibe.ts",
+      "vibelang-source": "./src/groups/websearch.vibe",
+      "default": "./.vibelang/js/src/groups/websearch.js"
+    },
+    "./*": "./src/*.ts",
+    "./groups/experimental": {
+      "types": {
+        "default": "./src/groups/experimental.ts"
+      },
+      "vibelang-source": "./src/groups/experimental.ts",
+      "default": "./.vibelang/js/src/groups/experimental.js"
     }
   },
   "scripts": {

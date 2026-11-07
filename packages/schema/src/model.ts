@@ -4,7 +4,7 @@ import { Schema, Struct } from "effect"
 import { optional, statics } from "./schema.vibe"
 import { Provider } from "./provider.js"
 import { Compatibility, MaxTokensField, MediaInput, ReasoningField } from "./model-compatibility.vibe"
-import { Money } from "./money.js"
+import { Money } from "./money.vibe"
 import { ephemeral, inventory } from "./event.js"
 
 export const ID = Schema.String.pipe(Schema.brand("Model.ID"))

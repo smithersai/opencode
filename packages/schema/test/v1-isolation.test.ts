@@ -3,9 +3,9 @@ import path from "node:path"
 import { LegacyEventV1 } from "../src/legacy-event.js"
 import { PermissionV1 } from "../src/permission-v1.js"
 import { SessionV1 } from "../src/session-v1.js"
-const isolatedLegacyEvent = await import("../src/v1/legacy-event.js")
-const isolatedPermission = await import("../src/v1/permission.js")
-const isolatedSession = await import("../src/v1/session.js")
+const isolatedLegacyEvent = await import("../src/v1/legacy-event.vibe")
+const isolatedPermission = await import("../src/v1/permission.vibe")
+const isolatedSession = await import("../src/v1/session.vibe")
 
 test("compatibility entrypoints preserve isolated V1 schema identity", () => {
   expect(LegacyEventV1).toBe(isolatedLegacyEvent.LegacyEventV1)

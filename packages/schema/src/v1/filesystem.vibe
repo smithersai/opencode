@@ -1,0 +1,10 @@
+export * as FileSystemV1 from "./filesystem.vibe"
+
+import { ephemeral, inventory } from "../event.ts"
+
+const Edited = ephemeral({
+  type: "file.edited",
+  schema: { file: Schema.String },
+})
+
+export const Event = { Edited, Definitions: inventory(Edited) }

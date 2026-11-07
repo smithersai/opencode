@@ -3,7 +3,7 @@ export * as Event from "./event.js"
 import { Schema, SchemaTransformation } from "effect"
 import { optional } from "./schema.vibe"
 import { ascending } from "./identifier.js"
-import { Location } from "./location.js"
+import { Location } from "./location.vibe"
 import { statics } from "./schema.vibe"
 
 export const ID = Schema.String.check(Schema.isStartingWith("evt_")).pipe(

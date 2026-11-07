@@ -46,3 +46,11 @@ tsconfig.tsbuildinfo
 /.claude/skills/vibelang/SKILL.md
 /.claude/skills/vibelang-lsp/.claude-plugin/plugin.json
 /.opencode/plugins/vibelang.js
+
+# Non-runtime output copied by workspace compilation
+**/.vibelang/js/bin/
+**/.vibelang/js/component-tests/
+**/.vibelang/js/dev/
+**/.vibelang/js/performance/
+**/.vibelang/js/script/
+**/.vibelang/js/*.config.js

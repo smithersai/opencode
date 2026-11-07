@@ -8,11 +8,11 @@ import { AbsolutePath, PositiveInt, RelativePath } from "@opencode/schema/schema
 import { Database } from "../database/database.js"
 import { makeGlobalNode } from "@opencode/util/effect/app-node"
 import { SessionHistory } from "./history.js"
-import { MessageDecodeError } from "./error.js"
+import { MessageDecodeError } from "./error.vibe"
 import { SessionMessage } from "./message.js"
 import { Session } from "@opencode/schema/session"
 import { SessionMessageTable, SessionTable } from "./sql.js"
-import { fromRow } from "./info.js"
+import { fromRow } from "./info.vibe"
 
 const ListInputBase = {
   workspaceID: Workspace.ID.pipe(Schema.optional),

@@ -1,0 +1,34 @@
+export * as SessionShell from "./shell.vibe"
+
+import type { Session } from "@opencode/schema/session"
+import { Instance } from "../instance/service.ts"
+import { Plugin } from "../plugin/service.vibe"
+import { Shell } from "../shell.ts"
+import { ShellResult } from "../shell/result.ts"
+
+export const start = effect (input: { session: Session.Info; command: string }) =>
+  try withSpan(
+    effect {
+      const instances = try Instance.Service
+      const shell =
+        try (Plugin.awaitActivation |> Effect.andThen(%, Shell.Service) |> (try Effect.orDie(Effect.try({
+          try: () => instances.provide(input.session),
+          catch: (error) => error,
+        })))(%))
+      const info = try shell.create({
+        command: input.command,
+        cwd: input.session.location.directory,
+        timeout: 0,
+        metadata: { sessionID: input.session.id, background: true },
+      })
+      // Keep completion tied to the original shell even if the Session moves.
+      return {
+        info,
+        result: shell.result(info),
+        output: shell
+          .output(info.id, { limit: 1024 * 1024 })
+          |> Effect.catchTag(%, "Shell.NotFoundError", () => Effect.succeed(ShellResult.unavailable)),
+      }
+    },
+    "SessionShell.start",
+  )

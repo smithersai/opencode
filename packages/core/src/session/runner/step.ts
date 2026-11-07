@@ -18,7 +18,7 @@ import { Snapshot } from "../../snapshot.js"
 import { Tool } from "../../tool.vibe"
 import { ToolOutput } from "../../tool-output.js"
 import { QuestionTool } from "../../tool/plugin/question.vibe"
-import { StepFailedError } from "../error.js"
+import { StepFailedError } from "../error.vibe"
 import { SessionEvent } from "../event.js"
 import { SessionMessage } from "../message.js"
 import { SessionModelRequest } from "../model-request.js"
@@ -27,7 +27,7 @@ import { toSessionError } from "../to-session-error.js"
 import { SessionUsage } from "../usage.js"
 import { SessionRunnerModel } from "./model.js"
 import { createLLMEventPublisher } from "./publish-llm-event.js"
-import { SessionRunnerRetry } from "./retry.js"
+import { SessionRunnerRetry } from "./retry.vibe"
 
 export type Outcome = Data.TaggedEnum<{
   Completed: { readonly needsContinuation: boolean }

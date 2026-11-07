@@ -5,7 +5,7 @@ export type { Context, Metadata, Namespace, Options, Result } from "@opencode/sc
 import { ToolDefinition, type ToolCall } from "@opencode/ai/effect";
 import { Tool } from "@opencode/schema/tool";
 import type { Agent } from "./agent.vibe";
-import { CodeModeCatalog } from "./codemode/catalog.js";
+import { CodeModeCatalog } from "./codemode/catalog.vibe";
 import { Permission } from "./permission.js";
 import { SessionMessage } from "./session/message.js";
 import { SessionSchema } from "./session/schema.js";

@@ -1,0 +1,23 @@
+export * as SessionSkill from "./skill.vibe"
+
+import type { Session } from "@opencode/schema/session"
+import { Instance } from "../instance/service.ts"
+import { Plugin } from "../plugin/service.vibe"
+import { Skill } from "../skill.ts"
+import { SkillNotFoundError } from "./error.vibe"
+
+export const get = effect (input: { session: Session.Info; skill: Skill.ID }) =>
+  try withSpan(
+    effect {
+      const instances = try Instance.Service
+      const skills =
+        try (Plugin.awaitActivation |> Effect.andThen(%, Skill.Service) |> (try Effect.orDie(Effect.try({
+          try: () => instances.provide(input.session),
+          catch: (error) => error,
+        })))(%))
+      const skill = try skills.get(input.skill)
+      if (!skill) throw new SkillNotFoundError({ skill: input.skill })
+      return skill
+    },
+    "SessionSkill.get",
+  )

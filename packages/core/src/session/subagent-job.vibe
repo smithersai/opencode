@@ -1,0 +1,86 @@
+export * as SubagentJob from "./subagent-job.vibe"
+
+import { Node } from "@opencode/util/effect/app-node"
+import type { LayerNode } from "@opencode/util/effect/layer-node"
+import { Job } from "../job.ts"
+import { Session } from "../session.ts"
+import { SubagentCompletion } from "./subagent-completion.vibe"
+
+type Recovery = Extract<Job.Recovery, { kind: "subagent" }>
+
+export interface Interface {
+  start: (recovery: Recovery) => Job.Info!!
+  background: (recovery: Recovery) => void!!
+  notify: (recovery: Recovery, startedAt: number) => void!!
+}
+
+export class Service extends Context.Service<Service, Interface>()("@opencode/SubagentJob") {}
+
+const make: Interface!!Session.Service | Job.Service | Scope = effect {
+  const sessions = try Session.Service
+  const jobs = try Job.Service
+  const scope = try Scope.Scope
+  // Jobs and their completion observers outlive the plugin that launched them.
+  // Fork with the global context too, rather than retaining the caller's location.
+  const context = try Effect.context<never>()
+  // One observer per job generation, including continuations of the same child.
+  const notifications = new Set<string>()
+
+  const notify = effect (recovery: Recovery, startedAt: number) =>
+    try withSpan(
+      effect {
+        const key = `${recovery.childSessionID}:${startedAt}`
+        if (notifications.has(key)) return
+        notifications.add(key)
+        try (effect {
+          const info = (try jobs.wait({ id: recovery.childSessionID })).info
+          if (info) try SubagentCompletion.deliver(sessions, jobs, { ...info, recovery })
+        }
+          |> Effect.ensuring(
+            %,
+            effect {
+              return notifications.delete(key)
+            },
+          )
+          |> Effect.forkIn(%, scope, { startImmediately: true })
+          |> Effect.setContext(%, context))
+      },
+      "SubagentJob.notify",
+    )
+
+  return Service.of({
+    start: (recovery: Recovery) =>
+      jobs
+        .start({
+          id: recovery.childSessionID,
+          type: "subagent",
+          title: recovery.description,
+          metadata: {},
+          recovery,
+          run: effect {
+            try sessions.resume(recovery.childSessionID)
+            const messages = try sessions.messages({ sessionID: recovery.childSessionID, order: "desc", limit: 20 })
+            const assistant = messages.find(
+              (message) =>
+                message.type === "assistant" && message.time.completed !== undefined && message.error === undefined,
+            )
+            return SubagentCompletion.text(assistant)
+          },
+        }) |> Effect.setContext(%, context),
+    background: effect (recovery: Recovery) =>
+      try withSpan(
+        effect {
+          const info = try jobs.background(recovery.childSessionID)
+          if (info) try notify(recovery, info.started_at)
+        },
+        "SubagentJob.background",
+      ),
+    notify,
+  })
+}
+
+export const node: LayerNode.Provider<Service, never, typeof Node.tags.values.global> = Node.makeGlobalNode({
+  service: Service,
+  layer: Layer.effect(Service, make),
+  deps: [Session.node, Job.node],
+})

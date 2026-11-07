@@ -11,8 +11,8 @@ import { Model } from "../../model.js"
 import { Permission } from "../../permission.js"
 import { Session } from "../../session.js"
 import { SessionSchema } from "../../session/schema.js"
-import { SubagentCompletion } from "../../session/subagent-completion.js"
-import { SubagentJob } from "../../session/subagent-job.js"
+import { SubagentCompletion } from "../../session/subagent-completion.vibe"
+import { SubagentJob } from "../../session/subagent-job.vibe"
 
 export const name = "subagent"
 

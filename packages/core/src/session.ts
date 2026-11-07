@@ -24,7 +24,7 @@ import type { Permission } from "@opencode/schema/permission"
 import { App } from "./app.vibe"
 import { Slug } from "./util/slug.js"
 import path from "path"
-import { SessionRunner } from "./session/runner/index.js"
+import { SessionRunner } from "./session/runner/index.vibe"
 import { SessionStore } from "./session/store.js"
 import { SessionExecution } from "./session/execution.js"
 import {
@@ -40,14 +40,14 @@ import {
   PromptConflictError,
   SkillNotFoundError,
   SyntheticConflictError,
-} from "./session/error.js"
+} from "./session/error.vibe"
 import { Node } from "@opencode/util/effect/app-node"
 import { LayerNode } from "@opencode/util/effect/layer-node"
 import { SessionEvent } from "./session/event.js"
 import { SessionInbox } from "./session/inbox.js"
 import { InstructionState } from "./session/instruction-state.js"
 import { SessionGenerate } from "./session/generate.js"
-import { SessionCommand } from "./session/command.js"
+import { SessionCommand } from "./session/command.vibe"
 import {
   SessionMove,
   DestinationNotFoundError,
@@ -65,7 +65,7 @@ import type { EventLog } from "@opencode/schema/event-log"
 import type { FileDiff } from "@opencode/schema/file-diff"
 import { Job } from "./job.js"
 import type { Command } from "./command.js"
-import { SessionEnvironment } from "./session/environment.js"
+import { SessionEnvironment } from "./session/environment.vibe"
 import { InstructionEntry } from "./session/instruction-entry.js"
 
 // get project -> project.locations

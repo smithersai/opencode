@@ -245,7 +245,7 @@ export declare const finish: <K extends StreamKey>(route: string, tools: State<K
             readonly category?: string | undefined;
             readonly explanation?: string | undefined;
         };
-        readonly usage?: import("../../effect.ts").Usage | undefined;
+        readonly usage?: import("../../schema/events.vibe").Usage | undefined;
         readonly providerMetadata?: {
             readonly [x: string]: {
                 readonly [x: string]: unknown;
@@ -259,7 +259,7 @@ export declare const finish: <K extends StreamKey>(route: string, tools: State<K
             readonly category?: string | undefined;
             readonly explanation?: string | undefined;
         };
-        readonly usage?: import("../../effect.ts").Usage | undefined;
+        readonly usage?: import("../../schema/events.vibe").Usage | undefined;
         readonly providerMetadata?: {
             readonly [x: string]: {
                 readonly [x: string]: unknown;
@@ -475,7 +475,7 @@ export declare const finishWithInput: <K extends StreamKey>(route: string, tools
             readonly category?: string | undefined;
             readonly explanation?: string | undefined;
         };
-        readonly usage?: import("../../effect.ts").Usage | undefined;
+        readonly usage?: import("../../schema/events.vibe").Usage | undefined;
         readonly providerMetadata?: {
             readonly [x: string]: {
                 readonly [x: string]: unknown;
@@ -489,7 +489,7 @@ export declare const finishWithInput: <K extends StreamKey>(route: string, tools
             readonly category?: string | undefined;
             readonly explanation?: string | undefined;
         };
-        readonly usage?: import("../../effect.ts").Usage | undefined;
+        readonly usage?: import("../../schema/events.vibe").Usage | undefined;
         readonly providerMetadata?: {
             readonly [x: string]: {
                 readonly [x: string]: unknown;
@@ -702,7 +702,7 @@ export declare const finishAll: <K extends StreamKey>(route: string, tools: Stat
             readonly category?: string | undefined;
             readonly explanation?: string | undefined;
         };
-        readonly usage?: import("../../effect.ts").Usage | undefined;
+        readonly usage?: import("../../schema/events.vibe").Usage | undefined;
         readonly providerMetadata?: {
             readonly [x: string]: {
                 readonly [x: string]: unknown;
@@ -716,7 +716,7 @@ export declare const finishAll: <K extends StreamKey>(route: string, tools: Stat
             readonly category?: string | undefined;
             readonly explanation?: string | undefined;
         };
-        readonly usage?: import("../../effect.ts").Usage | undefined;
+        readonly usage?: import("../../schema/events.vibe").Usage | undefined;
         readonly providerMetadata?: {
             readonly [x: string]: {
                 readonly [x: string]: unknown;

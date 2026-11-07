@@ -11,7 +11,7 @@ import type { Database } from "../database/database.js"
 import type { SessionMessage } from "./message.js"
 import type { SessionSchema } from "./schema.js"
 import { BlobRefTable, BlobTable, SessionInboxTable, SessionMessageTable } from "./sql.js"
-import { SessionStored } from "./stored.js"
+import { SessionStored } from "./stored.vibe"
 
 type DatabaseService = Database.Interface["db"]
 type MessageRow = typeof SessionMessageTable.$inferSelect

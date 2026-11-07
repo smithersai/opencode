@@ -10,14 +10,14 @@ import { Effect, Option, Schema } from "effect"
 import path from "path"
 import { fileURLToPath } from "url"
 import { Database } from "../database/database.js"
-import { Image } from "../image.js"
+import { Image } from "../image.vibe"
 import { Mime } from "../mime.js"
 import { Plugin } from "../plugin/service.vibe"
 import { PluginHooks } from "../plugin/hooks.js"
 import { Skill } from "../skill.js"
 import { SessionBlob } from "./blob.js"
-import { AttachmentError, SkillNotFoundError } from "./error.js"
-import { SessionStored } from "./stored.js"
+import { AttachmentError, SkillNotFoundError } from "./error.vibe"
+import { SessionStored } from "./stored.vibe"
 
 // Image types the resizer can decode; others such as HEIC and AVIF go to the provider unchanged.
 const RESIZABLE_IMAGE_MIMES = new Set(["image/png", "image/jpeg", "image/gif", "image/webp", "image/bmp"])

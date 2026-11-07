@@ -2,7 +2,7 @@ export * as ConfigCompactionPlugin from "./compaction.vibe"
 
 import { define } from "@opencode/plugin/effect/plugin"
 import { Config } from "../../config.js"
-import { SessionCompaction } from "../../session/compaction.js"
+import { SessionCompaction } from "../../session/compaction.vibe"
 import { ConfigEntryObserver } from "./entry-observer.js"
 
 export const Plugin = define({

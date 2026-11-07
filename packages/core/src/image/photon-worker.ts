@@ -1,5 +1,5 @@
 import { parentPort } from "node:worker_threads"
-import type { Limits } from "../image.js"
+import type { Limits } from "../image.vibe"
 import { PhotonNormalize } from "./photon-normalize.js"
 
 export type Request = {

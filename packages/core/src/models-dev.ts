@@ -16,7 +16,7 @@ import { Provider } from "./provider.js"
 import { Variant } from "./variant.js"
 import { KV } from "./kv.vibe"
 import snapshotText from "./models-dev/snapshot.txt" with { type: "text" }
-import { isV1, toV2 } from "./models-dev/v1.js"
+import { isV1, toV2 } from "./models-dev/v1.vibe"
 
 // Only the fields opencode reads are decoded. Unknown keys are ignored, and a model that
 // doesn't match is skipped rather than failing the whole catalog.

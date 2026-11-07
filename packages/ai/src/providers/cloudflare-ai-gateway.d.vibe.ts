@@ -697,148 +697,6 @@ export declare const route: import("../route/client.ts").Route<{
     readonly stop?: readonly string[] | undefined;
 }, import("../route/transport/http.vibe").HttpPrepared<string>, import("../route/client.ts").CompactionOperations | undefined>;
 export declare const routes: (import("../route/client.ts").Route<{
-    readonly model: string;
-    readonly messages: readonly ({
-        readonly role: "system";
-        readonly content: string | readonly ({
-            readonly type: "image_url";
-            readonly image_url: {
-                readonly url: string;
-            };
-        } | {
-            readonly type: "video_url";
-            readonly video_url: {
-                readonly url: string;
-            };
-        } | {
-            readonly type: "file";
-            readonly file: {
-                readonly filename: string;
-                readonly file_data: string;
-            };
-        } | {
-            readonly type: "text";
-            readonly text: string;
-            readonly cache_control?: {
-                readonly type: "ephemeral";
-                readonly ttl?: string | undefined;
-            } | undefined;
-        })[];
-    } | {
-        readonly role: "user";
-        readonly content: string | readonly ({
-            readonly type: "image_url";
-            readonly image_url: {
-                readonly url: string;
-            };
-        } | {
-            readonly type: "video_url";
-            readonly video_url: {
-                readonly url: string;
-            };
-        } | {
-            readonly type: "file";
-            readonly file: {
-                readonly filename: string;
-                readonly file_data: string;
-            };
-        } | {
-            readonly type: "text";
-            readonly text: string;
-            readonly cache_control?: {
-                readonly type: "ephemeral";
-                readonly ttl?: string | undefined;
-            } | undefined;
-        })[];
-    } | {
-        readonly role: "tool";
-        readonly tool_call_id: string;
-        readonly content: string | readonly {
-            readonly type: "text";
-            readonly text: string;
-            readonly cache_control?: {
-                readonly type: "ephemeral";
-                readonly ttl?: string | undefined;
-            } | undefined;
-        }[];
-    } | {
-        readonly [x: string]: unknown;
-        readonly role: "assistant";
-        readonly content: string | readonly {
-            readonly type: "text";
-            readonly text: string;
-            readonly cache_control?: {
-                readonly type: "ephemeral";
-                readonly ttl?: string | undefined;
-            } | undefined;
-        }[] | null;
-        readonly tool_calls?: readonly {
-            readonly id: string;
-            readonly type: "function";
-            readonly function: {
-                readonly name: string;
-                readonly arguments: string;
-            };
-            readonly extra_content?: {
-                readonly google: {
-                    readonly thought_signature: string;
-                };
-            } | undefined;
-        }[] | undefined;
-        readonly reasoning_content?: string | undefined;
-        readonly reasoning?: string | undefined;
-        readonly reasoning_text?: string | undefined;
-        readonly reasoning_details?: unknown;
-    })[];
-    readonly tools?: readonly {
-        readonly type: "function";
-        readonly function: {
-            readonly name: string;
-            readonly description: string;
-            readonly parameters: {
-                readonly [x: string]: unknown;
-            };
-            readonly strict?: boolean | undefined;
-        };
-        readonly cache_control?: {
-            readonly type: "ephemeral";
-            readonly ttl?: string | undefined;
-        } | undefined;
-    }[] | undefined;
-    readonly tool_choice?: "auto" | "none" | "required" | {
-        readonly type: "function";
-        readonly function: {
-            readonly name: string;
-        };
-    } | undefined;
-    readonly stream: true;
-    readonly stream_options?: {
-        readonly include_usage: boolean;
-    } | undefined;
-    readonly store?: boolean | undefined;
-    readonly prompt_cache_key?: string | undefined;
-    readonly prompt_cache_retention?: string | undefined;
-    readonly prompt_cache_options?: {
-        readonly ttl?: string | undefined;
-    } | undefined;
-    readonly reasoning_effort?: import("../schema/options.vibe").ReasoningEffort | undefined;
-    readonly verbosity?: import("../schema/options.vibe").OpenString<"high" | "low" | "medium"> | undefined;
-    readonly service_tier?: import("../schema/options.vibe").OpenString<"auto" | "default" | "flex" | "priority"> | undefined;
-    readonly parallel_tool_calls?: boolean | undefined;
-    readonly metadata?: {
-        readonly [x: string]: string;
-    } | undefined;
-    readonly safety_identifier?: string | undefined;
-    readonly tool_stream?: boolean | undefined;
-    readonly max_completion_tokens?: number | undefined;
-    readonly max_tokens?: number | undefined;
-    readonly temperature?: number | undefined;
-    readonly top_p?: number | undefined;
-    readonly frequency_penalty?: number | undefined;
-    readonly presence_penalty?: number | undefined;
-    readonly seed?: number | undefined;
-    readonly stop?: readonly string[] | undefined;
-}, import("../route/transport/http.vibe").HttpPrepared<string>, import("../route/client.ts").CompactionOperations | undefined> | import("../route/client.ts").Route<{
     readonly context_management?: {
         readonly edits: readonly {
             readonly type: "compact_20260112";
@@ -1147,6 +1005,148 @@ export declare const routes: (import("../route/client.ts").Route<{
     readonly speed?: import("../schema/options.vibe").OpenString<"fast" | "standard"> | undefined;
 }, import("../route/transport/http.vibe").HttpPrepared<string>, import("../route/client.ts").CompactionOperations | undefined> | import("../route/client.ts").Route<{
     readonly model: string;
+    readonly messages: readonly ({
+        readonly role: "system";
+        readonly content: string | readonly ({
+            readonly type: "image_url";
+            readonly image_url: {
+                readonly url: string;
+            };
+        } | {
+            readonly type: "video_url";
+            readonly video_url: {
+                readonly url: string;
+            };
+        } | {
+            readonly type: "file";
+            readonly file: {
+                readonly filename: string;
+                readonly file_data: string;
+            };
+        } | {
+            readonly type: "text";
+            readonly text: string;
+            readonly cache_control?: {
+                readonly type: "ephemeral";
+                readonly ttl?: string | undefined;
+            } | undefined;
+        })[];
+    } | {
+        readonly role: "user";
+        readonly content: string | readonly ({
+            readonly type: "image_url";
+            readonly image_url: {
+                readonly url: string;
+            };
+        } | {
+            readonly type: "video_url";
+            readonly video_url: {
+                readonly url: string;
+            };
+        } | {
+            readonly type: "file";
+            readonly file: {
+                readonly filename: string;
+                readonly file_data: string;
+            };
+        } | {
+            readonly type: "text";
+            readonly text: string;
+            readonly cache_control?: {
+                readonly type: "ephemeral";
+                readonly ttl?: string | undefined;
+            } | undefined;
+        })[];
+    } | {
+        readonly role: "tool";
+        readonly tool_call_id: string;
+        readonly content: string | readonly {
+            readonly type: "text";
+            readonly text: string;
+            readonly cache_control?: {
+                readonly type: "ephemeral";
+                readonly ttl?: string | undefined;
+            } | undefined;
+        }[];
+    } | {
+        readonly [x: string]: unknown;
+        readonly role: "assistant";
+        readonly content: string | readonly {
+            readonly type: "text";
+            readonly text: string;
+            readonly cache_control?: {
+                readonly type: "ephemeral";
+                readonly ttl?: string | undefined;
+            } | undefined;
+        }[] | null;
+        readonly tool_calls?: readonly {
+            readonly id: string;
+            readonly type: "function";
+            readonly function: {
+                readonly name: string;
+                readonly arguments: string;
+            };
+            readonly extra_content?: {
+                readonly google: {
+                    readonly thought_signature: string;
+                };
+            } | undefined;
+        }[] | undefined;
+        readonly reasoning_content?: string | undefined;
+        readonly reasoning?: string | undefined;
+        readonly reasoning_text?: string | undefined;
+        readonly reasoning_details?: unknown;
+    })[];
+    readonly tools?: readonly {
+        readonly type: "function";
+        readonly function: {
+            readonly name: string;
+            readonly description: string;
+            readonly parameters: {
+                readonly [x: string]: unknown;
+            };
+            readonly strict?: boolean | undefined;
+        };
+        readonly cache_control?: {
+            readonly type: "ephemeral";
+            readonly ttl?: string | undefined;
+        } | undefined;
+    }[] | undefined;
+    readonly tool_choice?: "auto" | "none" | "required" | {
+        readonly type: "function";
+        readonly function: {
+            readonly name: string;
+        };
+    } | undefined;
+    readonly stream: true;
+    readonly stream_options?: {
+        readonly include_usage: boolean;
+    } | undefined;
+    readonly store?: boolean | undefined;
+    readonly prompt_cache_key?: string | undefined;
+    readonly prompt_cache_retention?: string | undefined;
+    readonly prompt_cache_options?: {
+        readonly ttl?: string | undefined;
+    } | undefined;
+    readonly reasoning_effort?: import("../schema/options.vibe").ReasoningEffort | undefined;
+    readonly verbosity?: import("../schema/options.vibe").OpenString<"high" | "low" | "medium"> | undefined;
+    readonly service_tier?: import("../schema/options.vibe").OpenString<"auto" | "default" | "flex" | "priority"> | undefined;
+    readonly parallel_tool_calls?: boolean | undefined;
+    readonly metadata?: {
+        readonly [x: string]: string;
+    } | undefined;
+    readonly safety_identifier?: string | undefined;
+    readonly tool_stream?: boolean | undefined;
+    readonly max_completion_tokens?: number | undefined;
+    readonly max_tokens?: number | undefined;
+    readonly temperature?: number | undefined;
+    readonly top_p?: number | undefined;
+    readonly frequency_penalty?: number | undefined;
+    readonly presence_penalty?: number | undefined;
+    readonly seed?: number | undefined;
+    readonly stop?: readonly string[] | undefined;
+}, import("../route/transport/http.vibe").HttpPrepared<string>, import("../route/client.ts").CompactionOperations | undefined> | import("../route/client.ts").Route<{
+    readonly model: string;
     readonly input: readonly ({
         readonly type: "configuration_update";
         readonly reasoning: {
@@ -1363,7 +1363,10 @@ export declare const routes: (import("../route/client.ts").Route<{
 }>)[];
 export declare const configure: (input: LanguageModelOptions) => {
     id: string & import("effect/Brand").Brand<"AI.ProviderID">;
-    model: (value: string | ModelID) => import("../schema/options.vibe").LanguageModel<import("./openai-options.ts").OpenAIOptionsInput, import("../route/client.ts").CompactionOperations | undefined>;
+    model: (value: string | ModelID) => import("../schema/options.vibe").LanguageModel<import("./openai-options.ts").OpenAIOptionsInput, {
+        endpoint: import("../route/client.ts").CompactOperation;
+        trigger: import("../route/client.ts").TriggerCompactOperation;
+    }>;
     decision: (value: string | ModelID, providerOptions?: ProviderOptions) => import("../decision.vibe").DecisionModel<import("../decision.vibe").DecisionOptions>;
     configure: typeof configure;
 };

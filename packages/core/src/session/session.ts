@@ -18,15 +18,15 @@ import {
   NotFoundError,
   PromptConflictError,
   SyntheticConflictError,
-} from "./error.js"
+} from "./error.vibe"
 import { SessionEvent } from "./event.js"
 import { SessionExecution } from "./execution.js"
 import { SessionInbox } from "./inbox.js"
 import { SessionMessage } from "./message.js"
 import { SessionPrompt } from "./prompt.js"
 import { SessionRevert } from "./revert.js"
-import { SessionShell } from "./shell.js"
-import { SessionSkill } from "./skill.js"
+import { SessionShell } from "./shell.vibe"
+import { SessionSkill } from "./skill.vibe"
 import { SessionSchema } from "./schema.js"
 import { SessionStore } from "./store.js"
 

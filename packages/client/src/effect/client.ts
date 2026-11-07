@@ -5,7 +5,7 @@ import { HttpClient, HttpClientRequest } from "effect/http"
 import { SharedEvents } from "../shared-events.js"
 import { ClientError, OpenCode } from "./generated/index.js"
 import type { EventSubscribeInput } from "./api.js"
-import { RpcClientRuntime } from "./rpc.js"
+import { RpcClientRuntime } from "./rpc.vibe"
 import type { RpcCallOptions } from "../promise/rpc.js"
 
 type EventType = NonNullable<EventSubscribeInput["types"]>[number]

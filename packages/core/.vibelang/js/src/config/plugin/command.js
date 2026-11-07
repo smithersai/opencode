@@ -12,7 +12,7 @@ import { Config } from "../../config.js";
 import { Location } from "../../location.js";
 import { Session } from "../../session.js";
 import { SubagentJob } from "../../session/subagent-job.js";
-import { ShellSelect } from "#vibelang/emitted/src/shell/select";
+import { ShellSelect } from "../../shell/select.js";
 import { FSUtil } from "@opencode/util/fs-util";
 import { ConfigMarkdown } from "../markdown.js";
 const decodeCommand = Schema.decodeUnknownOption(ConfigCommand.Info);

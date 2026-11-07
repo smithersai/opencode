@@ -5,7 +5,7 @@ import { Context, Effect, Layer, Schema, Types } from "effect";
 import { Pty } from "@opencode/schema/pty";
 import { Bus } from "./bus.js";
 import { Location } from "./location.js";
-import { ShellSelect } from "#vibelang/emitted/src/shell/select";
+import { ShellSelect } from "./shell/select.js";
 import { lazy } from "./util/lazy.js";
 const BUFFER_LIMIT = 1024 * 1024 * 2;
 // Exited sessions stay observable (status, exit code, retained output) until removed explicitly.

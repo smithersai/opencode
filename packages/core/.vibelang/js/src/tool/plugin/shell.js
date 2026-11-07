@@ -13,7 +13,7 @@ import { SessionSchema } from "../../session/schema.js";
 import { Shell } from "../../shell.js";
 import { shellParserWasm } from "#shell-parser-wasm";
 import { ShellParse } from "../../shell/parse.js";
-import { ShellSelect } from "#vibelang/emitted/src/shell/select";
+import { ShellSelect } from "../../shell/select.js";
 import { ShellResult } from "../../shell/result.js";
 export const name = "shell";
 export const DEFAULT_TIMEOUT_MS = 2 * 60 * 1_000;

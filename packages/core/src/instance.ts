@@ -1,3 +1,4 @@
+import { Context, Effect, Layer } from "effect"
 import { Agent } from "./agent.vibe"
 import { AISDK } from "./aisdk.js"
 import { Model } from "./model.js"
@@ -31,7 +32,7 @@ import { PluginSupervisor } from "./plugin/supervisor.js"
 import { WorktreeStrategies } from "./worktree/strategies.js"
 import { Pty } from "./pty.js"
 import { Shell } from "./shell.js"
-import { ShellSelect } from "./shell/select.vibe"
+import { ShellSelect } from "./shell/select.js"
 import { Reference } from "./reference.js"
 import { Rpc } from "./rpc.js"
 import { WebSearch } from "./websearch.js"
@@ -53,16 +54,9 @@ import { Tool } from "./tool.vibe"
 import { ToolOutput } from "./tool-output.js"
 import { Vcs } from "./vcs.js"
 
-module platform {
-  export function $performance_now(...args: Parameters<typeof performance.now>): ReturnType<typeof performance.now> {
-    return performance.now(...args)
-  }
-}
-
-import { $performance_now } from platform
-
-export * as Instance from "./instance.vibe"
+export * as Instance from "./instance.js"
 export { Service, node, type Interface } from "./instance/service.vibe"
+
 const nodes = [
   Location.node,
   LocationLifecycle.node,
@@ -118,9 +112,12 @@ const nodes = [
   // Start repository watches only after boot-critical filesystem and Git work.
   LocationWatcher.node,
 ] as const satisfies readonly Node.LocationGraph<never, unknown>[]
+
 export const graph = LayerNode.group(nodes)
+
 export type Services = LayerNode.Output<typeof graph>
 export type Error = FileSystem.DirectoryNotFoundError
+
 export interface Options {
   // Plugins this instance is born with; empty and absent are equivalent.
   readonly plugins?: InstancePlugins.List
@@ -136,6 +133,7 @@ export interface Options {
   readonly discovery?: boolean
   readonly replacements?: LayerNode.Replacements
 }
+
 // Vanilla neutralizes the discovery inputs; the plugin list stays untouched.
 // These are defaults ahead of caller replacements: a host that replaces a
 // gated node itself owns that node's discovery flags. Plugin-directory
@@ -147,9 +145,10 @@ const vanillaReplacements: LayerNode.Replacements = [
   Config.node.replace(Config.configured({ project: false, global: false })),
   InstructionDiscovery.node.replace(InstructionDiscovery.configured({ project: false, global: false })),
 ]
+
 // One instance is one compiled, fresh copy of the graph standing on a directory.
-export function layer(ref: Location.Ref, options: Options = {}): Layer<Services, Error> {
-  const startedAt = $performance_now()
+export function layer(ref: Location.Ref, options: Options = {}): Layer.Layer<Services, Error> {
+  const startedAt = performance.now()
   // Ordered: vanilla defaults, then caller replacements (which win over the
   // defaults), then instance bindings (which win over everything).
   const replacements: LayerNode.Replacements = [
@@ -162,14 +161,14 @@ export function layer(ref: Location.Ref, options: Options = {}): Layer<Services,
   return LayerNode.compile(graph, { replacements, shared: Node.tags.values.global }).pipe(
     // A missing directory is expected; other instance boot failures remain defects.
     Layer.catchCause(
-      (cause): Layer<Services, Error> =>
+      (cause): Layer.Layer<Services, Error> =>
         Layer.unwrap(
-          Effect.failCause(cause)
-            |> Effect.catch(
-              %,
-              (error): never!Error =>
+          Effect.failCause(cause).pipe(
+            Effect.catch(
+              (error): Effect.Effect<never, Error> =>
                 error instanceof FileSystem.DirectoryNotFoundError ? Effect.fail(error) : Effect.die(error),
             ),
+          ),
         ),
     ),
     Layer.tap((context) => Effect.addFinalizer(() => Context.get(context, LocationLifecycle.Service).shutdown)),
@@ -177,8 +176,8 @@ export function layer(ref: Location.Ref, options: Options = {}): Layer<Services,
       Effect.logInfo("location services booted", {
         directory: ref.directory,
         workspaceID: ref.workspaceID,
-        durationMs: Math.round($performance_now() - startedAt),
-      })
+        durationMs: Math.round(performance.now() - startedAt),
+      }),
     ),
   )
 }

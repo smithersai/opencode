@@ -4,7 +4,7 @@ import { Node } from "@opencode/util/effect/app-node"
 import { AbsolutePath } from "@opencode/schema/schema"
 import path from "path"
 import { Location } from "./location.js"
-import type { Instance } from "./instance.vibe"
+import type { Instance } from "./instance.js"
 
 export class Service extends Context.Service<
   Service,

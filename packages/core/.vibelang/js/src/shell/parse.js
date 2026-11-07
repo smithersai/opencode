@@ -5,7 +5,7 @@ import { fileURLToPath } from "url";
 import os from "os";
 import path from "path";
 import { shellParserWasm } from "#shell-parser-wasm";
-import { ShellSelect } from "#vibelang/emitted/src/shell/select";
+import { ShellSelect } from "./select.js";
 import { lazy } from "../util/lazy.js";
 import { Wildcard } from "../util/wildcard.js";
 const CWD = new Set(["cd", "chdir", "popd", "pushd", "push-location", "set-location"]);

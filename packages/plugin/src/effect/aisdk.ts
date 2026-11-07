@@ -1,6 +1,6 @@
 import type { LanguageModelV3 } from "@ai-sdk/provider"
 import type { Model } from "@opencode/schema/model"
-import type { ModelHooks } from "./registration.js"
+import type { ModelHooks } from "./registration.vibe"
 
 export interface AISDKHooks {
   sdk: {

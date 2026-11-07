@@ -21,7 +21,7 @@ const problems: string[] = []
 const counts = { declarations: 0, members: 0, parameters: 0, blocks: 0 }
 
 const files = [...new Glob("**/*.{ts,tsx}").scanSync(sdk)]
-  .filter((file) => !/\.(test|typecheck)\.tsx?$/.test(file))
+  .filter((file) => !/\.(test|typecheck)(\.d\.vibe)?\.tsx?$/.test(file))
   .toSorted()
   .map((file) => path.join(sdk, file))
 

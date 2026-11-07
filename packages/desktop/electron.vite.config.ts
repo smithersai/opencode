@@ -113,6 +113,7 @@ const require = __cjs_mod__.createRequire(import.meta.url);
       },
     },
     renderer: {
+      worker: { plugins: () => [vibelang()] },
       experimental: {
         bundledDev: true,
       },

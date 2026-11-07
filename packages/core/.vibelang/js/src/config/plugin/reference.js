@@ -10,7 +10,7 @@ import { Reference } from "../../reference.js";
 import { AbsolutePath } from "../../schema.js";
 import { Global } from "@opencode/util/global";
 import { Location } from "../../location.js";
-import { ConfigEntryObserver } from "./entry-observer.js";
+import { ConfigEntryObserver } from "#vibelang/emitted/src/config/plugin/entry-observer";
 export const Plugin = define({
     id: "opencode.config.reference",
     effect: Effect.fn(function* (ctx) {

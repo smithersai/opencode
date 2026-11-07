@@ -1,5 +1,5 @@
 import { make, type Tool } from "../tool.vibe"
-import { invoke } from "./runtime.ts"
+import { invoke } from "./runtime.vibe"
 import {
   componentDefinitions,
   hasDirectionalSchemas,

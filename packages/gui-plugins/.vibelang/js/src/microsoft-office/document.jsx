@@ -7,7 +7,7 @@ import { OfficePages } from "./pages";
 import { layerFont, lineHeight, } from "./word-protocol";
 import { createWorkerClient, movableBuffer } from "./worker-rpc";
 /**
- * A read-only, paginated Word document. Its engine runs in a worker of its own (`document.worker.ts`), which opens the
+ * A read-only, paginated Word document. Its engine runs in a worker of its own (`document.worker.vibe`), which opens the
  * file, lays it out, builds and paints its pages and computes their text; the window only shows the bitmaps and the text
  * layer, so no engine work holds it. The worker loads only the Yrs engine: the parse and layout engines and the
  * collaboration code stay unloaded, and embedded fonts give way to the bundled metric-compatible faces. The first pages
@@ -20,7 +20,7 @@ export default function OfficeDocument(props) {
     // Syncs one document worker with the loaded bytes. Terminating it is what frees the engine's memory.
     createKeyed(() => props.bytes, (bytes) => {
         const controller = new AbortController();
-        const worker = new Worker(new URL("./document.worker.ts", import.meta.url), { type: "module" });
+        const worker = new Worker(new URL("./document.worker.vibe", import.meta.url), { type: "module" });
         const client = createWorkerClient(worker);
         const fail = () => {
             if (controller.signal.aborted)

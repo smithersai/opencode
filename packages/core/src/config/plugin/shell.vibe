@@ -2,7 +2,7 @@ export * as ConfigShellPlugin from "./shell.vibe"
 
 import { define } from "@opencode/plugin/effect/plugin"
 import { Config } from "../../config.js"
-import { ShellSelect } from "../../shell/select.js"
+import { ShellSelect } from "../../shell/select.vibe"
 import { ConfigEntryObserver } from "./entry-observer.vibe"
 
 export const Plugin = define({

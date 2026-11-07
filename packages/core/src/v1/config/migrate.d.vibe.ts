@@ -28,6 +28,7 @@ export declare function migrateMcpTimeout(timeout: number): {
     execution: number;
 };
 export declare function migrateMcp(info: ConfigMCPV1.Info): {
+    url?: undefined;
     type: "local";
     command: string[];
     cwd: string | undefined;
@@ -41,7 +42,6 @@ export declare function migrateMcp(info: ConfigMCPV1.Info): {
         catalog: number;
         execution: number;
     } | undefined;
-    url?: undefined;
     headers?: undefined;
     oauth?: undefined;
 } | {

@@ -535,6 +535,16 @@
       "vibelang-source": "./src/worktree/directory.vibe",
       "default": "./.vibelang/js/src/worktree/directory.js"
     },
+    "./instance": {
+      "types": "./src/instance.d.vibe.ts",
+      "vibelang-source": "./src/instance.vibe",
+      "default": "./.vibelang/js/src/instance.js"
+    },
+    "./shell/select": {
+      "types": "./src/shell/select.d.vibe.ts",
+      "vibelang-source": "./src/shell/select.vibe",
+      "default": "./.vibelang/js/src/shell/select.js"
+    },
     "./*": {
       "types": "./src/*.ts",
       "vibelang-source": "./src/*.ts",
@@ -776,6 +786,11 @@
       "types": "./src/config/plugin/mcp.d.vibe.ts",
       "vibelang-source": "./src/config/plugin/mcp.vibe",
       "default": "./.vibelang/js/src/config/plugin/mcp.js"
+    },
+    "#vibelang/emitted/src/shell/select": {
+      "types": "./src/shell/select.d.vibe.ts",
+      "vibelang-source": "./src/shell/select.vibe",
+      "default": "./.vibelang/js/src/shell/select.js"
     }
   },
   "devDependencies": {

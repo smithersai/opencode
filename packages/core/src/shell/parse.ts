@@ -6,7 +6,7 @@ import os from "os"
 import path from "path"
 import type { Node } from "web-tree-sitter"
 import { shellParserWasm } from "#shell-parser-wasm"
-import { ShellSelect } from "./select.js"
+import { ShellSelect } from "#vibelang/emitted/src/shell/select"
 import { lazy } from "../util/lazy.js"
 import { Wildcard } from "../util/wildcard.js"
 

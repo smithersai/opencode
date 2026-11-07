@@ -243,7 +243,7 @@ Cassettes are readable JSON files intended to be committed with your tests. HTTP
 
 ## Development
 
-Run `bun test test/package-verification-script.test.ts` from this directory to check the package verification program, frozen command arguments, and child-process failure reporting.
+Run `bun run test test/package-verification-script.test.ts` from this directory to check the package verification program, frozen command arguments, and child-process failure reporting.
 
 ## License
 

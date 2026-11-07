@@ -29,6 +29,10 @@
     "typecheck:tsc": "vibelang -b tsconfig.json tsconfig.tests.json"
   },
   "exports": {
+    "./aisdk-native": {
+      "types": "./src/aisdk-native.d.vibe.ts",
+      "default": "./src/aisdk-native.vibe"
+    },
     "./*": "./src/*.ts"
   },
   "imports": {

@@ -7,7 +7,7 @@ import { Bus } from "./bus.js"
 import { State } from "./state.js"
 import { Location } from "./location.js"
 import { freeze } from "immer"
-import { AISDKNative } from "./aisdk-native.js"
+import { AISDKNative } from "./aisdk-native.vibe"
 
 export const ID = Model.ID
 export type ID = typeof ID.Type

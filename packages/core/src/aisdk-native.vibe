@@ -1,7 +1,6 @@
-export * as AISDKNative from "./aisdk-native.js"
+export * as AISDKNative from "./aisdk-native.vibe"
 
-import { Effect, Option, Schema, Struct } from "effect"
-import { Provider } from "./provider.js"
+import { Provider } from "./provider.ts"
 
 type Overlays = {
   settings?: Provider.Settings
@@ -147,16 +146,21 @@ const LEGACY_VERTEX: Readonly<Record<string, string>> = {
 
 function resolve(specifier: string, context: Context & { readonly settings?: Provider.Settings }): string | undefined {
   const npm = Provider.packageName(specifier)
-  if (Provider.isAISDK(specifier) || npm in PACKAGES || npm in (HOSTS[context.providerID] ?? {}))
+  if (Provider.isAISDK(specifier) || npm in PACKAGES || npm in (HOSTS[context.providerID] ?? {})) {
     return native(npm, context)
-  if (npm === "@opencode/ai/providers/amazon-bedrock/mantle" || npm === "@opencode/ai/providers/amazon-bedrock-mantle")
+  }
+  if (
+    npm === "@opencode/ai/providers/amazon-bedrock/mantle" || npm === "@opencode/ai/providers/amazon-bedrock-mantle"
+  ) {
     return mantle(context.modelID)
+  }
   if (npm in LEGACY_VERTEX) return LEGACY_VERTEX[npm]
   if (
-    (npm === "@opencode/ai/providers/azure" || npm === "@opencode/ai/providers/azure/responses") &&
-    azureChat(context)
-  )
+    (npm === "@opencode/ai/providers/azure" || npm === "@opencode/ai/providers/azure/responses")
+    && azureChat(context)
+  ) {
     return "@opencode/ai/providers/azure/chat"
+  }
   return Provider.builtinPackages.has(npm) ? npm : undefined
 }
 
@@ -208,13 +212,13 @@ function bedrockSettings(settings: Legacy, converse: boolean) {
     ...(credentials.accessKeyId === undefined || credentials.secretAccessKey === undefined
       ? {}
       : {
-          credentials: {
-            ...(region === undefined ? {} : { region }),
-            accessKeyId: credentials.accessKeyId,
-            secretAccessKey: credentials.secretAccessKey,
-            ...(credentials.sessionToken === undefined ? {} : { sessionToken: credentials.sessionToken }),
-          },
-        }),
+        credentials: {
+          ...(region === undefined ? {} : { region }),
+          accessKeyId: credentials.accessKeyId,
+          secretAccessKey: credentials.secretAccessKey,
+          ...(credentials.sessionToken === undefined ? {} : { sessionToken: credentials.sessionToken }),
+        },
+      }),
   }
 }
 
@@ -249,12 +253,12 @@ function bedrockRequest(modelID: string | undefined, settings: Legacy): Pick<Ove
       : {}),
     ...(!anthropic && !openai && effort !== undefined
       ? {
-          reasoningConfig: {
-            ...(type === undefined || type === "adaptive" ? {} : { type }),
-            ...(budget === undefined ? {} : { budgetTokens: budget }),
-            maxReasoningEffort: effort,
-          },
-        }
+        reasoningConfig: {
+          ...(type === undefined || type === "adaptive" ? {} : { type }),
+          ...(budget === undefined ? {} : { budgetTokens: budget }),
+          maxReasoningEffort: effort,
+        },
+      }
       : {}),
   })
   const body = {
@@ -269,17 +273,16 @@ function bedrockRequest(modelID: string | undefined, settings: Legacy): Pick<Ove
 const OPENROUTER_KEYS = ["appName", "appUrl", "api_keys", "compatibility"] as const
 
 function openRouterRequest(settings: Legacy): Pick<Overlay, "headers"> {
-  const headers =
-    Provider.mergeHeaders(
-      {
-        ...(settings.appName === undefined ? {} : { "X-OpenRouter-Title": settings.appName }),
-        ...(settings.appUrl === undefined ? {} : { "HTTP-Referer": settings.appUrl }),
-        ...(settings.api_keys === undefined || Object.keys(settings.api_keys).length === 0
-          ? {}
-          : { "X-Provider-API-Keys": JSON.stringify(settings.api_keys) }),
-      },
-      settings.headers,
-    ) ?? {}
+  const headers = Provider.mergeHeaders(
+    {
+      ...(settings.appName === undefined ? {} : { "X-OpenRouter-Title": settings.appName }),
+      ...(settings.appUrl === undefined ? {} : { "HTTP-Referer": settings.appUrl }),
+      ...(settings.api_keys === undefined || Object.keys(settings.api_keys).length === 0
+        ? {}
+        : { "X-Provider-API-Keys": JSON.stringify(settings.api_keys) }),
+    },
+    settings.headers,
+  ) ?? {}
   return Object.keys(headers).length === 0 ? {} : { headers }
 }
 

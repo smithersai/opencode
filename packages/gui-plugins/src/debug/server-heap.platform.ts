@@ -16,6 +16,7 @@ type Memory = Readonly<Record<"rss" | "heapTotal" | "heapUsed" | "external" | "a
  * `memory` is the server's `process.memoryUsage()` in bytes just before the snapshot; servers released before it was
  * added leave it out.
  */
+
 type ServerSnapshot =
   | { readonly process: "server"; readonly pid: number; readonly file: string; readonly memory?: Memory }
   | { readonly process: "server"; readonly pid: number; readonly path: string; readonly memory?: Memory }
@@ -28,6 +29,7 @@ type ServerSnapshot =
  * @param directory - An absolute folder on this machine; the server creates it when missing.
  * @param signal - Aborts the request; the server still finishes the file it started.
  */
+
 export async function captureServer(
   endpoint: ServerEndpoint | undefined,
   directory: string,
@@ -52,6 +54,7 @@ export async function captureServer(
     )
 }
 // Servers released before the endpoint answer 404.
+
 function unsupported(error: Error) {
   return (
     error instanceof ClientError &&

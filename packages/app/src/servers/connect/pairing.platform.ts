@@ -32,6 +32,7 @@ export function redeemPairingLink(link: { urls: ReadonlyArray<string>; code: str
 // The token works on every address of the server, so keep the first one (the address the user chose in Pairing) when it
 // answers, even if a nearer address answered sooner: a local network address stops working away from that network. An
 // address that has not answered within a second, such as a local one seen from elsewhere, is not waited for.
+
 async function preferFirst(
   urls: ReadonlyArray<string>,
   pairing: Pairing,

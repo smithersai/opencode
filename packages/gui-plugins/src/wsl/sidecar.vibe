@@ -8,6 +8,7 @@ export type WslSidecar = {
   url: string
   password: string
 }
+
 export async function spawnWslSidecar(distro: string, opts: {
   runtime: WslRuntime
   t: MainContext["t"]

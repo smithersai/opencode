@@ -23,6 +23,7 @@ module platform {
   /** The last capture; the next one starts after it settles. */
   export type Queue = { tail: Promise<unknown> }
   /** What a window's page holds, read from inside it. */
+
   const PageStats = Schema.Struct({
     elements: Schema.Number,
     images: Schema.Struct({ count: Schema.Number, decodedMiB: Schema.Number }),
@@ -34,8 +35,10 @@ module platform {
       Schema.Struct({ usedJSHeapSize: Schema.Number, totalJSHeapSize: Schema.Number, jsHeapSizeLimit: Schema.Number }),
     ),
   })
+
   const decodePageStats = Schema.decodeUnknownPromise(PageStats)
   // Runs in the app window. Pixel sizes estimate decoded memory at 4 bytes per pixel.
+
   const pageStatsScript = `(() => {
   const mib = (bytes) => Math.round(bytes / 1048576 * 10) / 10
   const images = [...document.images]
@@ -52,6 +55,7 @@ module platform {
   }
 })()`
   /** Stops the running memory diagnostics, while they run. */
+
   export type Running = { stop?: () => void }
   export const setup: Plugin.MainSetup = (ctx) => {
     const queue: Queue = { tail: Promise.resolve() }
@@ -233,6 +237,7 @@ module platform {
   }
   // Chromium's own breakdown of every process's memory: what a heap snapshot cannot show (images, layout, compositor
   // layers, GPU). Fails when something else is tracing, such as DevTools recording a performance profile.
+
   export async function recordNative(directory: string) {
     const file = path.join(directory, "memory-infra.json")
 
@@ -246,6 +251,7 @@ module platform {
         .catch((error: Error) => ({ error: error.message }))
     )
   }
+
   export async function describeWindow(window: BrowserWindow) {
     const contents = window.webContents
 
@@ -267,6 +273,7 @@ module platform {
       page,
     }
   }
+
   export function captureWindow(window: BrowserWindow, directory: string) {
     const contents = window.webContents
     const pid = contents.getOSProcessId()
@@ -277,9 +284,11 @@ module platform {
       (error: Error): Snapshot => ({ process: "window", pid, window: window.id, error: error.message }),
     )
   }
+
   export function write<Value>(directory: string, file: string, value: Value) {
     return writeFile(path.join(directory, file), JSON.stringify(value, null, 2), { mode: 0o600 })
   }
+
   export function mibs(bytes: Readonly<Record<string, number>>) {
     return Object.fromEntries(
       Object.entries(bytes).map(([key, value]) => [key, Math.round((value / 1048576) * 10) / 10]),

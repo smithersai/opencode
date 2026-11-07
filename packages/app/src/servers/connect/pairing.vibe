@@ -14,12 +14,15 @@ export function serverAddress(value: string) {
 
   return normalized
 }
+
 const CODE = /^[A-Za-z0-9_-]+$/
+
 const decodePayload = Schema.decodeUnknownOption(
   Schema.fromJsonString(Schema.Struct({ code: Schema.String, urls: Schema.Array(Schema.String) })),
 )
 // `opencode pair` prints links carrying a single-use code that the server exchanges for a session token.
 // Its QR code carries the same code with every reachable server address as {"code","urls"} JSON.
+
 export function pairingLink(value: string) {
   const trimmed = value.trim()
 
@@ -46,6 +49,7 @@ export function pairingLink(value: string) {
 }
 // A server address typed where a pairing link was expected: a host with no path, so a bare code or a cut-off link
 // is not mistaken for a server. Paths stay allowed in the password form, where servers behind a proxy prefix live.
+
 export function bareServerAddress(value: string) {
   const address = serverAddress(value)
 
@@ -59,6 +63,7 @@ export function bareServerAddress(value: string) {
   return address
 }
 // Servers before one-time links paired with `/connect#<credentials>` or `/connect?data=<credentials>`.
+
 export function legacyPairingLink(value: string) {
   const url = URL.parse(value.trim())
 
@@ -66,12 +71,15 @@ export function legacyPairingLink(value: string) {
 
   return url.pathname === "/connect" && (url.hash.length > 1 || url.searchParams.has("data"))
 }
+
 export type Pairing = { readonly url: string; readonly password: string }
+
 export type Redeemed =
   | { readonly type: "paired"; readonly pairing: Pairing }
   | { readonly type: "expired" }
   | { readonly type: "unreachable" }
 // Every address may reach the same server, but the code is single-use, so at most one attempt succeeds.
+
 export function redeemPairingLink(link: { urls: ReadonlyArray<string>; code: string }) {
   return $platform.redeemPairingLink(link)
 }

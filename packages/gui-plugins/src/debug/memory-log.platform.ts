@@ -16,6 +16,7 @@ const probe = `(() => {
   };
 })()`
 /** Appends a sample every `interval` ms to a new JSONL file in the desktop logs, which exported debug logs include. */
+
 export function startMemoryLog(interval: number, log: Log) {
   const file = path.join(
     app.getPath("userData"),

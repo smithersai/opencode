@@ -6,6 +6,7 @@ export const RendererMemory = Schema.Struct({
   jsHeap: Schema.NullOr(Schema.Struct({ used: Schema.Number, total: Schema.Number, limit: Schema.Number })),
   domElements: Schema.Number,
 })
+
 export type RendererRecord = {
   id: number
   pid: number
@@ -13,6 +14,7 @@ export type RendererRecord = {
   sample?: typeof RendererMemory.Type
   error?: string
 }
+
 export function memoryRecord(metrics: ProcessMetric[], renderers: RendererRecord[], preciseJsHeap: boolean) {
   return $platform.memoryRecord(metrics, renderers, preciseJsHeap)
 }

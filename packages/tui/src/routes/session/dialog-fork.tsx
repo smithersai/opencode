@@ -8,7 +8,7 @@ import { DIALOG_LIST_INSET, DialogHeader, DialogLayout, useDialog } from "../../
 import { useToast } from "../../ui/toast"
 import { errorMessage } from "../../util/error"
 import { Locale } from "../../util/locale"
-import { projectedPromptInput } from "../../prompt/codec"
+import { projectedPromptInput } from "../../prompt/codec.vibe"
 
 export function DialogFork(props: { sessionID: string; messageID?: string; onMove?: (messageID?: string) => void }) {
   const data = useData()

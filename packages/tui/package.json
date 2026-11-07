@@ -11,41 +11,145 @@
     "typecheck:tsc": "vibelang -b"
   },
   "exports": {
-    ".": "./src/index.tsx",
-    "./config": "./src/config/index.tsx",
-    "./config/keybind": "./src/config/keybind.ts",
-    "./config/v1": "./src/config/v1/index.tsx",
-    "./config/v1/keybind": "./src/config/v1/keybind.ts",
-    "./plugin/discovery": "./src/plugin/discovery.ts",
-    "./editor": "./src/editor.ts",
-    "./mini": "./src/mini/index.ts",
-    "./mini/tool": "./src/mini/tool.public.ts",
-    "./model-preference": "./src/model-preference.ts",
-    "./util/form": "./src/util/form.ts",
-    "./logo": "./src/logo.ts",
-    "./component/spinner": "./src/component/spinner.tsx",
-    "./component/spinner-renderable": "./src/component/spinner-renderable.ts"
+    ".": {
+      "types": "./src/index.tsx",
+      "vibelang-source": "./src/index.tsx",
+      "default": "./.vibelang/js/src/index.jsx"
+    },
+    "./config": {
+      "types": "./src/config/index.tsx",
+      "vibelang-source": "./src/config/index.tsx",
+      "default": "./.vibelang/js/src/config/index.jsx"
+    },
+    "./config/keybind": {
+      "types": "./src/config/keybind.d.vibe.ts",
+      "vibelang-source": "./src/config/keybind.vibe",
+      "default": "./.vibelang/js/src/config/keybind.js"
+    },
+    "./config/v1": {
+      "types": "./src/config/v1/index.tsx",
+      "vibelang-source": "./src/config/v1/index.tsx",
+      "default": "./.vibelang/js/src/config/v1/index.jsx"
+    },
+    "./config/v1/keybind": {
+      "types": "./src/config/v1/keybind.d.vibe.ts",
+      "vibelang-source": "./src/config/v1/keybind.vibe",
+      "default": "./.vibelang/js/src/config/v1/keybind.js"
+    },
+    "./plugin/discovery": {
+      "types": "./src/plugin/discovery.ts",
+      "vibelang-source": "./src/plugin/discovery.ts",
+      "default": "./.vibelang/js/src/plugin/discovery.js"
+    },
+    "./editor": {
+      "types": "./src/editor.ts",
+      "vibelang-source": "./src/editor.ts",
+      "default": "./.vibelang/js/src/editor.js"
+    },
+    "./mini": {
+      "types": "./src/mini/index.ts",
+      "vibelang-source": "./src/mini/index.ts",
+      "default": "./.vibelang/js/src/mini/index.js"
+    },
+    "./mini/tool": {
+      "types": "./src/mini/tool.public.ts",
+      "vibelang-source": "./src/mini/tool.public.ts",
+      "default": "./.vibelang/js/src/mini/tool.public.js"
+    },
+    "./model-preference": {
+      "types": "./src/model-preference.ts",
+      "vibelang-source": "./src/model-preference.ts",
+      "default": "./.vibelang/js/src/model-preference.js"
+    },
+    "./util/form": {
+      "types": "./src/util/form.ts",
+      "vibelang-source": "./src/util/form.ts",
+      "default": "./.vibelang/js/src/util/form.js"
+    },
+    "./logo": {
+      "types": "./src/logo.ts",
+      "vibelang-source": "./src/logo.ts",
+      "default": "./.vibelang/js/src/logo.js"
+    },
+    "./component/spinner": {
+      "types": "./src/component/spinner.tsx",
+      "vibelang-source": "./src/component/spinner.tsx",
+      "default": "./.vibelang/js/src/component/spinner.jsx"
+    },
+    "./component/spinner-renderable": {
+      "types": "./src/component/spinner-renderable.ts",
+      "vibelang-source": "./src/component/spinner-renderable.ts",
+      "default": "./.vibelang/js/src/component/spinner-renderable.js"
+    }
   },
   "imports": {
     "#attention-sounds": {
-      "bun": "./src/attention-sounds.bun.ts",
-      "node": "./src/attention-sounds.node.ts",
-      "default": "./src/attention-sounds.bun.ts"
+      "bun": {
+        "types": "./src/attention-sounds.bun.ts",
+        "vibelang-source": "./src/attention-sounds.bun.ts",
+        "default": "./.vibelang/js/src/attention-sounds.bun.js"
+      },
+      "node": {
+        "types": "./src/attention-sounds.node.ts",
+        "vibelang-source": "./src/attention-sounds.node.ts",
+        "default": "./.vibelang/js/src/attention-sounds.node.js"
+      },
+      "default": {
+        "types": "./src/attention-sounds.bun.ts",
+        "vibelang-source": "./src/attention-sounds.bun.ts",
+        "default": "./.vibelang/js/src/attention-sounds.bun.js"
+      }
     },
     "#string-width": {
-      "bun": "./src/util/string-width.bun.ts",
-      "node": "./src/util/string-width.node.ts",
-      "default": "./src/util/string-width.bun.ts"
+      "bun": {
+        "types": "./src/util/string-width.bun.ts",
+        "vibelang-source": "./src/util/string-width.bun.ts",
+        "default": "./.vibelang/js/src/util/string-width.bun.js"
+      },
+      "node": {
+        "types": "./src/util/string-width.node.ts",
+        "vibelang-source": "./src/util/string-width.node.ts",
+        "default": "./.vibelang/js/src/util/string-width.node.js"
+      },
+      "default": {
+        "types": "./src/util/string-width.bun.ts",
+        "vibelang-source": "./src/util/string-width.bun.ts",
+        "default": "./.vibelang/js/src/util/string-width.bun.js"
+      }
     },
     "#zed-sqlite": {
-      "bun": "./src/editor-zed-sqlite.bun.ts",
-      "node": "./src/editor-zed-sqlite.node.ts",
-      "default": "./src/editor-zed-sqlite.bun.ts"
+      "bun": {
+        "types": "./src/editor-zed-sqlite.bun.ts",
+        "vibelang-source": "./src/editor-zed-sqlite.bun.ts",
+        "default": "./.vibelang/js/src/editor-zed-sqlite.bun.js"
+      },
+      "node": {
+        "types": "./src/editor-zed-sqlite.node.ts",
+        "vibelang-source": "./src/editor-zed-sqlite.node.ts",
+        "default": "./.vibelang/js/src/editor-zed-sqlite.node.js"
+      },
+      "default": {
+        "types": "./src/editor-zed-sqlite.bun.ts",
+        "vibelang-source": "./src/editor-zed-sqlite.bun.ts",
+        "default": "./.vibelang/js/src/editor-zed-sqlite.bun.js"
+      }
     },
     "#runtime-plugin-support": {
-      "bun": "./src/plugin/runtime-plugin-support.bun.ts",
-      "node": "./src/plugin/runtime-plugin-support.node.ts",
-      "default": "./src/plugin/runtime-plugin-support.node.ts"
+      "bun": {
+        "types": "./src/plugin/runtime-plugin-support.bun.ts",
+        "vibelang-source": "./src/plugin/runtime-plugin-support.bun.ts",
+        "default": "./.vibelang/js/src/plugin/runtime-plugin-support.bun.js"
+      },
+      "node": {
+        "types": "./src/plugin/runtime-plugin-support.node.ts",
+        "vibelang-source": "./src/plugin/runtime-plugin-support.node.ts",
+        "default": "./.vibelang/js/src/plugin/runtime-plugin-support.node.js"
+      },
+      "default": {
+        "types": "./src/plugin/runtime-plugin-support.node.ts",
+        "vibelang-source": "./src/plugin/runtime-plugin-support.node.ts",
+        "default": "./.vibelang/js/src/plugin/runtime-plugin-support.node.js"
+      }
     }
   },
   "dependencies": {

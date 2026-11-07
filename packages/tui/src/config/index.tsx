@@ -7,7 +7,7 @@ import { createContext, onCleanup, type JSX, useContext } from "solid-js"
 import { createStore, reconcile } from "solid-js/store"
 import { safeWatch } from "../util/watch"
 import path from "path"
-import { TuiKeybind } from "./keybind"
+import { TuiKeybind } from "./keybind.vibe"
 
 export interface Interface {
   readonly path?: string

@@ -24,7 +24,7 @@ import {
   type ParentProps,
 } from "solid-js"
 import { useConfig } from "../config"
-import { TuiKeybind } from "../config/keybind"
+import { TuiKeybind } from "../config/keybind.vibe"
 import { resolveInteractivity, useInteractivity } from "./interactivity"
 
 declare module "@opentui/keymap" {

@@ -3,7 +3,7 @@ export * as TuiConfigV1 from ".";
 import { createBindingLookup } from "@opentui/keymap/extras";
 import { Schema } from "effect";
 import { createContext, useContext } from "solid-js";
-import { TuiKeybind } from "./keybind";
+import { TuiKeybind } from "./keybind.js";
 export const AttentionSoundName = Schema.Literals([
     "default",
     "question",

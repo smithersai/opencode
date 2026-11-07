@@ -450,6 +450,7 @@
         "devtools-protocol": "0.0.1687809",
         "electron": "44.9.1",
         "electron-updater": "6.8.9",
+        "fast-check": "catalog:",
         "lighthouse": "13.4.1",
         "vibelang": "file:../../.vibelang-toolchain/vibelang-0.0.11-1ded989eae73.tgz",
         "vibelang-vite": "file:../../.vibelang-toolchain/vibelang-vite-0.0.11-5223c46c8aba.tgz",

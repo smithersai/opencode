@@ -1,4 +1,5 @@
 import { builtinCatalog } from "@opencode/plugin/gui/builtin"
+import { Schema } from "effect"
 import { Plugin, Store } from "@opencode/plugin/gui"
 import en from "./i18n/en"
 

@@ -56,8 +56,8 @@
     "typecheck": "bun check --no-script -b",
     "typecheck:tsc": "vibelang -b",
     "test": "bun test src --only-failures",
-    "test:components": "playwright test --config playwright.components.config.ts",
-    "test:components:ui": "playwright test --config playwright.components.config.ts --ui"
+    "test:components": "NODE_OPTIONS=\"${NODE_OPTIONS:+$NODE_OPTIONS }--import=vibelang/register\" playwright test --config playwright.components.config.ts",
+    "test:components:ui": "NODE_OPTIONS=\"${NODE_OPTIONS:+$NODE_OPTIONS }--import=vibelang/register\" playwright test --config playwright.components.config.ts --ui"
   },
   "devDependencies": {
     "@happy-dom/global-registrator": "20.0.11",

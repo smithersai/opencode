@@ -124,3 +124,5 @@ need AWS credentials.
 
 SST manages the beta site's custom domain. The first deployment creates its DNS record and TLS certificate.
 Do not create a CNAME for `beta.opencode.ai` first, because it would conflict with the Workers custom domain.
+
+The browser test scripts load VibeLang helpers in their Node process. Use `bun run test:e2e:built --list` to check test collection without opening a browser.

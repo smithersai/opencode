@@ -10,4 +10,4 @@ Fix the emitter or retain the native source boundary when a migrated module intr
 
 Run `bun test` in `packages/script` to check the pack rejection regression and declaration-route properties.
 
-The helper is also checked by packages using `NodeNext`. Keep explicit `.js` extensions on its relative ECMAScript imports. The test suite compiles the actual helper from generated consumers under both `Node16` and `NodeNext` resolution.
+The helper is also checked by packages using `NodeNext`. Keep explicit `.js` extensions on its relative ECMAScript imports. The test suite compiles a real `NodeNext` consumer and checks the helper’s imports from generated package locations under both `Node16` and `NodeNext` resolution.

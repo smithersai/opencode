@@ -15,7 +15,7 @@ import { OauthCallbackPage } from "../../oauth/page.js"
 import { Provider } from "../../provider.js"
 import { SessionAffinity } from "../../session/affinity.js"
 import type { PluginInternal } from "../internal.js"
-import { configuredSettings } from "./configured.js"
+import { configuredSettings } from "./configured.vibe"
 
 // First-time sign-in registers a user-owned client; OpenAI returns its issued client ID on the callback.
 const registrationClientID = "dynamic_agent_client"

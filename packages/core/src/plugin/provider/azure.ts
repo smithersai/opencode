@@ -13,7 +13,7 @@ import { Model } from "../../model.js"
 import { Provider } from "../../provider.js"
 import { which } from "../../util/which.js"
 import type { PluginInternal } from "../internal.js"
-import { configuredSettings } from "./configured.js"
+import { configuredSettings } from "./configured.vibe"
 
 const cognitiveScope = "https://cognitiveservices.azure.com/.default"
 const foundryScope = "https://ai.azure.com/.default"

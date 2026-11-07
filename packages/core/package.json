@@ -420,6 +420,56 @@
       "vibelang-source": "./src/session/compaction.vibe",
       "default": "./.vibelang/js/src/session/compaction.js"
     },
+    "./generate": {
+      "types": "./src/generate.d.vibe.ts",
+      "vibelang-source": "./src/generate.vibe",
+      "default": "./.vibelang/js/src/generate.js"
+    },
+    "./plugin/hooks": {
+      "types": "./src/plugin/hooks.d.vibe.ts",
+      "vibelang-source": "./src/plugin/hooks.vibe",
+      "default": "./.vibelang/js/src/plugin/hooks.js"
+    },
+    "./plugin/instance": {
+      "types": "./src/plugin/instance.d.vibe.ts",
+      "vibelang-source": "./src/plugin/instance.vibe",
+      "default": "./.vibelang/js/src/plugin/instance.js"
+    },
+    "./plugin/models-dev": {
+      "types": "./src/plugin/models-dev.d.vibe.ts",
+      "vibelang-source": "./src/plugin/models-dev.vibe",
+      "default": "./.vibelang/js/src/plugin/models-dev.js"
+    },
+    "./plugin/provider/configured": {
+      "types": "./src/plugin/provider/configured.d.vibe.ts",
+      "vibelang-source": "./src/plugin/provider/configured.vibe",
+      "default": "./.vibelang/js/src/plugin/provider/configured.js"
+    },
+    "./plugin/provider/dynamic": {
+      "types": "./src/plugin/provider/dynamic.d.vibe.ts",
+      "vibelang-source": "./src/plugin/provider/dynamic.vibe",
+      "default": "./.vibelang/js/src/plugin/provider/dynamic.js"
+    },
+    "./plugin/provider/openai-context-caps": {
+      "types": "./src/plugin/provider/openai-context-caps.d.vibe.ts",
+      "vibelang-source": "./src/plugin/provider/openai-context-caps.vibe",
+      "default": "./.vibelang/js/src/plugin/provider/openai-context-caps.js"
+    },
+    "./plugin/update": {
+      "types": "./src/plugin/update.d.vibe.ts",
+      "vibelang-source": "./src/plugin/update.vibe",
+      "default": "./.vibelang/js/src/plugin/update.js"
+    },
+    "./tool/runtime": {
+      "types": "./src/tool/runtime.d.vibe.ts",
+      "vibelang-source": "./src/tool/runtime.vibe",
+      "default": "./.vibelang/js/src/tool/runtime.js"
+    },
+    "./wellknown/plugin": {
+      "types": "./src/wellknown/plugin.d.vibe.ts",
+      "vibelang-source": "./src/wellknown/plugin.vibe",
+      "default": "./.vibelang/js/src/wellknown/plugin.js"
+    },
     "./*": {
       "types": "./src/*.ts",
       "vibelang-source": "./src/*.ts",

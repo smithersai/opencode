@@ -91,7 +91,7 @@ import BrowserPlugin from "@opencode/plugin-browser"
 import { CommandPlugin } from "./command.js"
 import { IdentityPlugin } from "./identity.js"
 import { PlanPlugin } from "./plan.js"
-import { ModelsDevPlugin } from "./models-dev.js"
+import { ModelsDevPlugin } from "./models-dev.vibe"
 import { McpCodeModeDefaultsPlugin } from "./mcp-codemode-defaults.vibe"
 import { ProviderPlugins } from "./provider.js"
 import { OpencodePlugin } from "./provider/opencode.js"
@@ -103,7 +103,7 @@ import { OptimizePlugin } from "./optimize.js"
 import { VcsGitPlugin } from "./vcs/git.js"
 import { VerbosityPlugin } from "./verbosity.js"
 import { WarmingPlugin } from "./warming.js"
-import { WellKnownPlugin } from "../wellknown/plugin.js"
+import { WellKnownPlugin } from "../wellknown/plugin.vibe"
 
 const services = [
   Agent.Service,

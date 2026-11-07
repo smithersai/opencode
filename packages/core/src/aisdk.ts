@@ -39,7 +39,7 @@ import { AsyncLocalStorage } from "node:async_hooks"
 import type { ID, RuntimeInfo } from "./model.js"
 import { Provider } from "./provider.js"
 import { State } from "./state.js"
-import { stringify } from "./tool/runtime.js"
+import { stringify } from "./tool/runtime.vibe"
 
 type SDK = any
 type UserContent = Extract<LanguageModelV3Message, { role: "user" }>["content"]

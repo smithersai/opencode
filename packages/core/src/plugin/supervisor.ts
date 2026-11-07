@@ -8,11 +8,11 @@ import { makeLocationNode } from "@opencode/util/effect/app-node"
 import { Bus } from "../bus.js"
 import { Npm } from "@opencode/util/npm"
 import { Plugin } from "../plugin.js"
-import { InstancePlugins } from "./instance.js"
+import { InstancePlugins } from "./instance.vibe"
 import { PluginInternal } from "./internal.js"
 import { PluginModule } from "./module.js"
 import { SdkPlugins } from "./sdk.vibe"
-import { PluginUpdate } from "./update.js"
+import { PluginUpdate } from "./update.vibe"
 import { Watcher } from "../filesystem/watcher.js"
 
 const resolve = Effect.fn("PluginSupervisor.resolve")(function* (

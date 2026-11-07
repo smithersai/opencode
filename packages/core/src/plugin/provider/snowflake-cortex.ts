@@ -8,7 +8,7 @@ import { Credential } from "../../credential.js"
 import { Integration } from "../../integration.js"
 import { OauthCallbackPage } from "../../oauth/page.js"
 import { Provider } from "../../provider.js"
-import { configuredSettings } from "./configured.js"
+import { configuredSettings } from "./configured.vibe"
 
 const providerID = Provider.ID.make("snowflake-cortex")
 const integrationID = Integration.ID.make(providerID)

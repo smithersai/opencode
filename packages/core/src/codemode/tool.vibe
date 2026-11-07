@@ -10,7 +10,7 @@ import type {
   Namespace as ToolNamespace,
   Result,
 } from "@opencode/schema/tool"
-import { definition, normalizedName } from "../tool/runtime.ts"
+import { definition, normalizedName } from "../tool/runtime.vibe"
 import { CodeModeCatalog } from "./catalog.vibe"
 import { CodeModeWeb } from "./web.ts"
 

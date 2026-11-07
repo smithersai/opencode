@@ -1,7 +1,6 @@
-export * as InstancePlugins from "./instance.js"
+export * as InstancePlugins from "./instance.vibe"
 
 import type { Plugin } from "@opencode/plugin/effect/plugin"
-import { Context, Layer } from "effect"
 import { makeLocationNode } from "@opencode/util/effect/app-node"
 import type { Generation } from "../plugin.js"
 

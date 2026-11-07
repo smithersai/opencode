@@ -1,17 +1,16 @@
-export * as WellKnownPlugin from "./plugin.js"
+export * as WellKnownPlugin from "./plugin.vibe"
 
 import { define } from "@opencode/plugin/effect/plugin"
-import { Effect, Stream } from "effect"
 import { Bus } from "../bus.js"
 import { WellKnown } from "../wellknown.js"
 
 export const Plugin = define({
   id: "opencode.wellknown",
-  effect: Effect.fn(function* (ctx) {
-    const bus = yield* Bus.Service
-    const wellknown = yield* WellKnown.Service
-    yield* wellknown.entries().pipe(Effect.orDie)
-    yield* ctx.integration.transform((editor) => {
+  effect: effect (ctx) => {
+    const bus = try Bus.Service
+    const wellknown = try WellKnown.Service
+    try (wellknown.entries() |> Effect.orDie(%))
+    try ctx.integration.transform((editor) => {
       wellknown.snapshot().forEach((entry) => {
         if (!entry.manifest.auth) return
         editor.update(entry.integrationID, (integration) => {
@@ -28,9 +27,8 @@ export const Plugin = define({
         })
       })
     })
-    yield* bus.subscribe(WellKnown.Event.Updated).pipe(
-      Stream.runForEach(() => ctx.integration.reload()),
-      Effect.forkScoped({ startImmediately: true }),
-    )
-  }),
+    try (bus.subscribe(WellKnown.Event.Updated)
+      |> Stream.runForEach(%, () => ctx.integration.reload())
+      |> Effect.forkScoped({ startImmediately: true })(%))
+  },
 })

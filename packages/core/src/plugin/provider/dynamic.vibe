@@ -1,19 +1,18 @@
-import { Effect } from "effect"
 import { define } from "@opencode/plugin/effect/plugin"
 import { Npm } from "@opencode/util/npm"
 import { loadSDKFactory } from "./sdk-factory.vibe"
 
 export const DynamicProviderPlugin = define({
   id: "opencode.provider.dynamic",
-  effect: Effect.fn(function* (ctx) {
-    const npm = yield* Npm.Service
-    yield* ctx.aisdk.hook(
+  effect: effect (ctx) => {
+    const npm = try Npm.Service
+    try ctx.aisdk.hook(
       "sdk",
-      Effect.fn(function* (evt) {
+      effect (evt) => {
         if (evt.sdk) return
 
-        evt.sdk = ((yield* loadSDKFactory(npm, evt.package)) as (options: any) => any)(evt.options)
-      }),
+        evt.sdk = ((try loadSDKFactory(npm, evt.package)) as (options: any) => any)(evt.options)
+      },
     )
-  }),
+  },
 })

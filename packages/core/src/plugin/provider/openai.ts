@@ -11,7 +11,7 @@ import { OauthCallbackPage } from "../../oauth/page.js"
 import { Provider } from "../../provider.js"
 import { SessionAffinity } from "../../session/affinity.js"
 import type { PluginInternal } from "../internal.js"
-import { configuredSettings } from "./configured.js"
+import { configuredSettings } from "./configured.vibe"
 
 const clientID = "app_EMoamEEZ73f0CkXaXp7hrann"
 const issuer = "https://auth.openai.com"

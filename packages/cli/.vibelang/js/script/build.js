@@ -7,7 +7,7 @@ import path from "path";
 import { Script } from "@opencode/script";
 import { embed } from "@opencode/script/highlights";
 import { createSolidTransformPlugin } from "@opentui/solid/bun-plugin";
-import pkg from "../package.json";
+import pkg from "../../../package.json";
 import { discoverPluginRuntimeSpecifiers, pluginRuntimeLoaderCode } from "@opencode/plugin/runtime-modules";
 import { buildAppArchive } from "./app-assets";
 import { verifyArtifact, verifySimulationGraph } from "./verify-artifact";

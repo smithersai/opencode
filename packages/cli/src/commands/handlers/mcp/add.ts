@@ -4,7 +4,7 @@ import { readFile, stat, writeFile } from "node:fs/promises"
 import { Effect, Option } from "effect"
 import { applyEdits, modify } from "jsonc-parser"
 import { Global } from "@opencode/util/global"
-import { Commands } from "../../commands"
+import { Commands } from "../../commands.vibe"
 import { Runtime } from "../../../framework/runtime"
 
 export default Runtime.handler(

@@ -5,7 +5,7 @@ import { Effect, Option, Schedule } from "effect";
 import { Service } from "@opencode/client/effect/service";
 import { OpenCode } from "@opencode/client/promise";
 import { renderUnicodeCompact } from "@opencode/util/qr";
-import { Commands } from "../commands";
+import { Commands } from "../commands.js";
 import { Runtime } from "../../framework/runtime";
 import { RemoteTunnel } from "../../services/remote-tunnel";
 import { ServiceConfig } from "../../services/service-config";

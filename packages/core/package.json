@@ -270,6 +270,21 @@
       "vibelang-source": "./src/environment/unavailable.vibe",
       "default": "./.vibelang/js/src/environment/unavailable.js"
     },
+    "./app": {
+      "types": "./src/app.d.vibe.ts",
+      "vibelang-source": "./src/app.vibe",
+      "default": "./.vibelang/js/src/app.js"
+    },
+    "./file-retention": {
+      "types": "./src/file-retention.d.vibe.ts",
+      "vibelang-source": "./src/file-retention.vibe",
+      "default": "./.vibelang/js/src/file-retention.js"
+    },
+    "./usage-limits": {
+      "types": "./src/usage-limits.d.vibe.ts",
+      "vibelang-source": "./src/usage-limits.vibe",
+      "default": "./.vibelang/js/src/usage-limits.js"
+    },
     "./*": {
       "types": "./src/*.ts",
       "vibelang-source": "./src/*.ts",

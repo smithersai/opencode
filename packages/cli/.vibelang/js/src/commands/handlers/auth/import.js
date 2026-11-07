@@ -3,7 +3,7 @@ import { EOL } from "node:os";
 import { isConflictError } from "@opencode/client";
 import { CredentialLegacy } from "@opencode/schema/credential-legacy";
 import { Effect, Option, Schema } from "effect";
-import { Commands } from "../../commands";
+import { Commands } from "../../commands.js";
 import { Runtime } from "../../../framework/runtime";
 import { createClient, request } from "./shared";
 import { errorMessage } from "../../../util/error";

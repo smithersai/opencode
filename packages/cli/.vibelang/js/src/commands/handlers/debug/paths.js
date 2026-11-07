@@ -2,7 +2,7 @@
 import { EOL } from "os";
 import { Effect, Option } from "effect";
 import { Global } from "@opencode/util/global";
-import { Commands } from "../../commands";
+import { Commands } from "../../commands.js";
 import { Runtime } from "../../../framework/runtime";
 import { databasePath } from "../../../database-path";
 export default Runtime.handler(Commands.commands.debug.commands.paths, Effect.fn("cli.debug.paths")(function* (input) {

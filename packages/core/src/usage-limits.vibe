@@ -1,0 +1,187 @@
+export * as UsageLimits from "./usage-limits.vibe"
+
+import { Model } from "@opencode/schema/model"
+import { Money } from "@opencode/schema/money"
+import { Provider } from "@opencode/schema/provider"
+import { UsageLimits } from "@opencode/schema/usage-limits"
+import { makeLocationNode } from "@opencode/util/effect/app-node"
+import { httpClient } from "@opencode/util/effect/app-node-platform"
+import { ConsoleAccess } from "./console-access.ts"
+import type { Credential } from "./credential.ts"
+import { Integration } from "./integration.ts"
+
+export const Info = UsageLimits.Info
+export type Info = UsageLimits.Info
+
+export class UnavailableError extends Schema.TaggedError<UnavailableError>()("UsageLimits.UnavailableError", {
+  message: Schema.String,
+}) {}
+
+export interface Interface {
+  /** The usage limits of the OpenCode Console workspace this location is signed in to, if it is. */
+  readonly get: () => Info | undefined!UnavailableError
+}
+
+export class Service extends Context.Service<Service, Interface>()("@opencode/UsageLimits") {}
+
+export const layer = Layer.effect(
+  Service,
+  effect {
+    const integrations = try Integration.Service
+    const http = try HttpClient.HttpClient
+
+    const get = effect () =>
+      try withSpan(
+        effect {
+          const connection = try integrations.connection.active(Integration.ID.make("opencode"))
+          if (!connection) return undefined
+          const credential = integrations.connection
+            .resolve(connection) catch effect (error) => {
+              throw new UnavailableError({ message: error.message })
+            }
+          if (!credential || credential.type === "external") return undefined
+          const workspaceID = credential.metadata?.orgID
+          if (typeof workspaceID !== "string") return undefined
+          const server = try Effect.orDie(
+            Effect.try({ try: () => ConsoleAccess.server(credential), catch: (error) => error }),
+          )
+          const [budgets, go] = try (Effect.all(
+            [readBudgets(http, server, credential), readGo(http, server, credential, workspaceID)],
+            { concurrency: 2 },
+          )
+            |> Effect.timeoutOrElse(%, {
+              duration: Duration.seconds(15),
+              orElse: () => Effect.fail(new UnavailableError({ message: "OpenCode Console usage limits timed out" })),
+            }))
+          return {
+            workspace: {
+              id: workspaceID,
+              ...(typeof credential.metadata?.orgName === "string" ? { name: credential.metadata.orgName } : {}),
+              usageURL: `${server}/${workspaceID}/activity/overview`,
+            },
+            ...(go === undefined ? {} : { go }),
+            budgets,
+          }
+        },
+        "UsageLimits.get",
+      )
+
+    return Service.of({ get })
+  },
+)
+
+export const node = makeLocationNode({
+  service: Service,
+  layer,
+  deps: [Integration.node, httpClient],
+})
+
+// One budget as `GET /api/policies/current-budgets` describes it.
+schema ConsoleBudget {
+  ruleID: string
+  limitDollars: Schema.Finite
+  spentDollars: Schema.Finite
+  scope: UsageLimits.Budget.fields.scope
+  per: UsageLimits.Budget.fields.per
+  coverage: UsageLimits.Budget.fields.coverage
+  models: ReadonlyArray<{
+    providerID: string
+    modelID: string
+    name: string
+    spentDollars?: Schema.Finite
+  }>
+  vendors: ReadonlyArray<{ id: string; name: string }>
+  inputPriceAtLeast?: Schema.Finite
+  picked: boolean
+  shared: boolean
+  resetsAt: Schema.DateFromString
+}
+
+schema GoMeter {
+  status: "ok" | "rate-limited"
+  percent: Schema.Finite
+  resetsAt: Schema.DateFromString
+}
+schema GoUsage { usage: { rolling: GoMeter; weekly: GoMeter; monthly: GoMeter } }
+
+/** Every budget covering the member. Console refuses a service account's key with 403, and it has no budgets. */
+function readBudgets(http: HttpClient, server: string, credential: Credential.Key | Credential.OAuth) {
+  return HttpClient.withScope(http)
+    .execute(
+      HttpClientRequest.get(`${server}/api/policies/current-budgets`).pipe(
+        HttpClientRequest.acceptJson,
+        HttpClientRequest.setHeaders(ConsoleAccess.headers(credential)),
+      ),
+    )
+    |> Effect.flatMap(%, (response) =>
+      response.status === 403
+        ? Effect.succeed([])
+        : (HttpClientResponse.filterStatusOk(response)
+          |> Effect.flatMap(%, HttpClientResponse.schemaBodyJson(Schema.Array(ConsoleBudget)))
+          |> Effect.map(%, (budgets) =>
+            budgets.map((budget) => ({
+              id: budget.ruleID,
+              limit: Money.USD.make(budget.limitDollars),
+              spent: Money.USD.make(budget.spentDollars),
+              scope: budget.scope,
+              per: budget.per,
+              coverage: budget.coverage,
+              models: budget.models.map((model) => ({
+                providerID: Provider.ID.make(model.providerID),
+                modelID: Model.ID.make(model.modelID),
+                name: model.name,
+                ...(model.spentDollars === undefined ? {} : { spent: Money.USD.make(model.spentDollars) }),
+              })),
+              vendors: budget.vendors.map((vendor) => vendor.name),
+              ...(budget.inputPriceAtLeast === undefined
+                ? {}
+                : { inputPriceAtLeast: Money.USDPerMillionTokens.make(budget.inputPriceAtLeast) }),
+              picked: budget.picked,
+              shared: budget.shared,
+              resetsAt: budget.resetsAt.getTime(),
+            })))))
+    |> Effect.scoped(%)
+    |> Effect.mapError(
+      %,
+      (error) => new UnavailableError({ message: `OpenCode Console budgets are unavailable: ${error.message}` }),
+    )
+}
+
+/**
+ * The Go allowance, from the inference API that shares the Console's origin. Go refuses (403) a workspace the member
+ * doesn't subscribe to Go in, which has no allowance to show.
+ */
+function readGo(
+  http: HttpClient,
+  server: string,
+  credential: Credential.Key | Credential.OAuth,
+  workspaceID: string,
+) {
+  return HttpClient.withScope(http)
+    .execute(
+      HttpClientRequest.get(`${new URL(server).origin}/zen/go/v1/usage`).pipe(
+        HttpClientRequest.acceptJson,
+        HttpClientRequest.bearerToken(credential.type === "oauth" ? credential.access : credential.key),
+        HttpClientRequest.setHeader("x-opencode-org-id", workspaceID),
+      ),
+    )
+    |> Effect.flatMap(%, (response) =>
+      response.status === 403
+        ? Effect.succeed(undefined)
+        : (HttpClientResponse.filterStatusOk(response)
+          |> Effect.flatMap(%, HttpClientResponse.schemaBodyJson(GoUsage))
+          |> Effect.map(%, (body) => ({
+            rolling: meter(body.usage.rolling),
+            weekly: meter(body.usage.weekly),
+            monthly: meter(body.usage.monthly),
+          }))))
+    |> Effect.scoped(%)
+    |> Effect.mapError(
+      %,
+      (error) => new UnavailableError({ message: `OpenCode Go usage is unavailable: ${error.message}` }),
+    )
+}
+
+function meter(value: typeof GoMeter.Type) {
+  return { percent: value.percent, limited: value.status === "rate-limited", resetsAt: value.resetsAt.getTime() }
+}

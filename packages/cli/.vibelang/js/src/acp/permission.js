@@ -4,7 +4,7 @@ import { Patch } from "@opencode/util/patch";
 import { applyPatch, parsePatch, reversePatch, structuredPatch } from "diff";
 import { Effect, Option, Schema } from "effect";
 import { ACPChild } from "./child";
-import { ACPClient } from "./client";
+import { ACPClient } from "./client.js";
 import { absolutePath, canonicalName, filePath, patchHunks, pendingToolCall, stringValue, toLocations, } from "./tool";
 const options = [
     { optionId: "once", kind: "allow_once", name: "Allow once" },

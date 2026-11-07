@@ -1,0 +1,18 @@
+import { Service } from "@opencode/client/effect/service"
+import { Commands } from "../../commands.vibe"
+import { Runtime } from "../../../framework/runtime.ts"
+import { ServiceConfig } from "../../../services/service-config.ts"
+import { ServerConnection } from "../../../services/server-connection.ts"
+
+export default Runtime.handler(
+  Commands.commands.service.commands.stop,
+  effect () =>
+    try withSpan(
+      effect {
+        const options = try ServiceConfig.options()
+        try (ServerConnection.shutdownPersistentPty(options) |> Effect.ignore(%))
+        try Service.stop(options)
+      },
+      "cli.service.stop",
+    ),
+)

@@ -2,7 +2,7 @@
 import { EOL } from "os";
 import { Effect } from "effect";
 import { Service } from "@opencode/client/effect/service";
-import { Commands } from "../../commands";
+import { Commands } from "../../commands.js";
 import { Runtime } from "../../../framework/runtime";
 import { ServiceConfig } from "../../../services/service-config";
 export default Runtime.handler(Commands.commands.service.commands.start, Effect.fn("cli.service.start")(function* () {

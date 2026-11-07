@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test"
 import { ClientError, OpenCode } from "@opencode/client/promise"
-import { OPENCODE_VERSION } from "../src/version"
+import { OPENCODE_VERSION } from "../src/version.vibe"
 import path from "node:path"
 import { createMiniConnection, mergeInput as mergeInteractiveInput, resolveMiniTarget } from "../src/mini"
 import { mergeInput as mergeNonInteractiveInput, parseRunModel } from "../src/run/run"

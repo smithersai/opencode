@@ -1,6 +1,6 @@
 import { EOL } from "os"
 import { Effect, Option } from "effect"
-import { Commands } from "../../commands"
+import { Commands } from "../../commands.vibe"
 import { Runtime } from "../../../framework/runtime"
 import { ServiceConfig } from "../../../services/service-config"
 

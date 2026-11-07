@@ -7,7 +7,7 @@ import { Effect, Option } from "effect";
 import { FetchHttpClient, HttpClient, HttpClientRequest } from "effect/http";
 import { Writable } from "node:stream";
 import { ACP } from "../../acp/agent";
-import { Commands } from "../commands";
+import { Commands } from "../commands.js";
 import { Runtime } from "../../framework/runtime";
 import { Standalone } from "../../services/standalone";
 export default Runtime.handler(Commands.commands.acp, Effect.fn("cli.acp")(function* (input) {

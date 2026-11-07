@@ -7,7 +7,7 @@ import { makeGlobalNode, makeLocationNode } from "@opencode/util/effect/app-node
 import { FSUtil } from "@opencode/util/fs-util"
 import { Global } from "@opencode/util/global"
 import { Identifier } from "@opencode/schema/identifier"
-import { FileRetention } from "./file-retention.js"
+import { FileRetention } from "./file-retention.vibe"
 import { State } from "./state.js"
 
 export const MAX_LINES = 2_000

@@ -2,7 +2,7 @@
 import { isDeepStrictEqual } from "node:util";
 import { Mcp } from "@opencode/schema/mcp";
 import { Cause, Deferred, Effect, Exit, Queue, Ref, Scope, Stream } from "effect";
-import { ACPClient } from "./client";
+import { ACPClient } from "./client.js";
 import { availableCommands, configOptions } from "./config-option";
 import { ACPConnection } from "./connection";
 import { ACPError } from "./error.js";

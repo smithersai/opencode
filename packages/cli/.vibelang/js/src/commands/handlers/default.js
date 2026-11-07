@@ -2,7 +2,7 @@
 import { LayerNode } from "@opencode/util/effect/layer-node";
 import { Global } from "@opencode/util/global";
 import { run } from "@opencode/tui";
-import { Commands } from "../commands";
+import { Commands } from "../commands.js";
 import { Runtime } from "../../framework/runtime";
 import { Config } from "../../config";
 import { Context, Effect, FileSystem, Option, Queue, Schedule, Semaphore } from "effect";
@@ -10,7 +10,7 @@ import { ServerConnection } from "../../services/server-connection";
 import { Updater } from "../../services/updater";
 import { UpdatePreflight } from "../../services/update-preflight";
 import { Npm } from "@opencode/util/npm";
-import { OPENCODE_ARTIFACT, OPENCODE_CHANNEL, OPENCODE_HIGHLIGHTS, OPENCODE_VERSION } from "../../version";
+import { OPENCODE_ARTIFACT, OPENCODE_CHANNEL, OPENCODE_HIGHLIGHTS, OPENCODE_VERSION } from "../../version.js";
 import { Env } from "../../env";
 import { Service } from "@opencode/client/effect/service";
 import { OpenCode } from "@opencode/client/promise";

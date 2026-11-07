@@ -1,0 +1,16 @@
+import { Commands } from "../commands.vibe"
+import { Runtime } from "../../framework/runtime.ts"
+import { ServerProcess } from "../../server-process.ts"
+
+export default Runtime.handler(
+  Commands.commands.serve,
+  effect (input) => {
+    if (input.service && input.stdio) throw new Error("--service and --stdio cannot be combined")
+    return try ServerProcess.run({
+      mode: input.service ? "service" : input.stdio ? "stdio" : "default",
+      hostname: Option.getOrUndefined(input.hostname),
+      port: Option.getOrUndefined(input.port),
+      cors: input.cors.length > 0 ? input.cors : undefined,
+    })
+  },
+)

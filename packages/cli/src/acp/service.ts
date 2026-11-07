@@ -33,15 +33,15 @@ import type {
   SetSessionModeRequest,
   SetSessionModeResponse,
 } from "@agentclientprotocol/sdk"
-import { OPENCODE_VERSION } from "../version"
+import { OPENCODE_VERSION } from "../version.vibe"
 import { ACPCapabilities, type Capabilities } from "./capabilities"
 import type { ACPCatalog } from "./catalog"
-import { ACPClient } from "./client"
+import { ACPClient } from "./client.vibe"
 import { configOptions, resolveChange } from "./config-option"
 import type { ACPConnection } from "./connection"
 import { ACPDirectories } from "./directories"
 import { ACPError } from "./error.vibe"
-import { ACPReplay } from "./replay"
+import { ACPReplay } from "./replay.vibe"
 import type { ACPSessions, Attached, SupportedMcpServer } from "./sessions"
 import type { ACPTurn } from "./turn"
 

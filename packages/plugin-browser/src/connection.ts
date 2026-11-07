@@ -5,7 +5,7 @@ import type { RpcRegistration } from "@opencode/plugin/effect/rpc"
 import type { Session } from "@opencode/schema/session"
 import { Tool } from "@opencode/schema/tool"
 import { Deferred, Effect, Schema, Stream } from "effect"
-import { Browser } from "./rpc.js"
+import { Browser } from "./rpc.vibe"
 import { BrowserSkill } from "./skill.js"
 import { BrowserTunnel } from "./tunnel.js"
 

@@ -4,7 +4,7 @@ import { Service } from "@opencode/client/effect/service";
 import { Global } from "@opencode/util/global";
 import { Effect, FileSystem, Schedule } from "effect";
 import path from "node:path";
-import { Commands } from "../commands";
+import { Commands } from "../commands.js";
 import { Runtime } from "../../framework/runtime";
 import { ServerConnection } from "../../services/server-connection";
 import { RetainedImage } from "../../services/retained-image";

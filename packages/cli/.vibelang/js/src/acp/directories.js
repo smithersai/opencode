@@ -4,7 +4,7 @@ import { isDeepStrictEqual } from "node:util";
 import { AbsolutePath } from "@opencode/schema/schema";
 import { FSUtil } from "@opencode/util/fs-util";
 import { Effect, Option, Schema } from "effect";
-import { ACPClient } from "./client";
+import { ACPClient } from "./client.js";
 import { ACPError } from "./error.js";
 const key = "opencode.acp.additionalDirectories";
 const decodeStored = Schema.decodeUnknownOption(Schema.Array(Schema.String));

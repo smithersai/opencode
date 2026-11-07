@@ -1,10 +1,10 @@
 import { intro, outro, spinner } from "@clack/prompts"
 import { Effect, Option } from "effect"
-import { Commands } from "../../commands"
+import { Commands } from "../../commands.vibe"
 import { Runtime } from "../../../framework/runtime"
 import { handlePromptErrors, requireInteractive } from "../../../ui/prompt"
 import { createClient, loadIntegrations, request } from "./shared"
-import { chooseCredential, chooseIntegration } from "./account"
+import { chooseCredential, chooseIntegration } from "./account.vibe"
 
 export default Runtime.handler(
   Commands.commands.auth.commands.logout,

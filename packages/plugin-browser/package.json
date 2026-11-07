@@ -14,12 +14,25 @@
     "access": "public"
   },
   "files": [
-    "dist"
+    "dist",
+    ".vibelang/js"
   ],
   "exports": {
-    ".": "./src/index.ts",
-    "./rpc": "./src/rpc.ts",
-    "./proxy": "./src/proxy.ts"
+    ".": {
+      "types": "./src/index.ts",
+      "vibelang-source": "./src/index.ts",
+      "default": "./.vibelang/js/src/index.js"
+    },
+    "./rpc": {
+      "types": "./src/rpc.d.vibe.ts",
+      "vibelang-source": "./src/rpc.vibe",
+      "default": "./.vibelang/js/src/rpc.js"
+    },
+    "./proxy": {
+      "types": "./src/proxy.ts",
+      "vibelang-source": "./src/proxy.ts",
+      "default": "./.vibelang/js/src/proxy.js"
+    }
   },
   "scripts": {
     "build": "vibelang -p tsconfig.build.json",

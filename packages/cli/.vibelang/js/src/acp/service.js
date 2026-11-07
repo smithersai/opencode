@@ -4,13 +4,13 @@ import { Session } from "@opencode/schema/session";
 import { FSUtil } from "@opencode/util/fs-util";
 import { DateTime, Effect, Ref, Schema } from "effect";
 import { withTimestampedFallback } from "@opencode/util/session-title-fallback";
-import { OPENCODE_VERSION } from "../version";
+import { OPENCODE_VERSION } from "../version.js";
 import { ACPCapabilities } from "./capabilities";
-import { ACPClient } from "./client";
+import { ACPClient } from "./client.js";
 import { configOptions, resolveChange } from "./config-option";
 import { ACPDirectories } from "./directories";
 import { ACPError } from "./error.js";
-import { ACPReplay } from "./replay";
+import { ACPReplay } from "./replay.js";
 const AuthMethodID = "opencode-login";
 export function make(input) {
     const currentOptions = Effect.fnUntraced(function* (attached) {

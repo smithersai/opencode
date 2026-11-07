@@ -4,11 +4,11 @@ import { ensurePluginRuntime } from "@opencode/plugin/runtime";
 import { NodeRuntime, NodeServices } from "@effect/platform-node";
 import { Cause, Effect } from "effect";
 import { getErrorReported } from "effect/Runtime";
-import { Commands } from "./commands/commands";
+import { Commands } from "./commands/commands.js";
 import { Runtime } from "./framework/runtime";
 import { Observability } from "@opencode/util/observability";
 import { Updater } from "./services/updater";
-import { OPENCODE_ARTIFACT, OPENCODE_CHANNEL, OPENCODE_LOCAL, OPENCODE_VERSION } from "./version";
+import { OPENCODE_ARTIFACT, OPENCODE_CHANNEL, OPENCODE_LOCAL, OPENCODE_VERSION } from "./version.js";
 import { LayerNode } from "@opencode/util/effect/layer-node";
 import { Global } from "@opencode/util/global";
 import { AppProcess } from "@opencode/util/process";
@@ -72,12 +72,12 @@ const Handlers = Runtime.handlers(Commands, {
         start: () => import("./commands/handlers/service/start"),
         restart: () => import("./commands/handlers/service/restart"),
         status: () => import("./commands/handlers/service/status"),
-        stop: () => import("./commands/handlers/service/stop"),
+        stop: () => import("./commands/handlers/service/stop.js"),
         get: () => import("./commands/handlers/service/get"),
-        set: () => import("./commands/handlers/service/set"),
-        unset: () => import("./commands/handlers/service/unset"),
+        set: () => import("./commands/handlers/service/set.js"),
+        unset: () => import("./commands/handlers/service/unset.js"),
     },
-    serve: () => import("./commands/handlers/serve"),
+    serve: () => import("./commands/handlers/serve.js"),
 });
 Effect.gen(function* () {
     yield* Heap.listen;

@@ -4,7 +4,7 @@ import fs from "node:fs";
 import { readFile } from "node:fs/promises";
 import path from "node:path";
 import { ReadStream } from "node:tty";
-import { OPENCODE_VERSION } from "./version";
+import { OPENCODE_VERSION } from "./version.js";
 export const INTERACTIVE_INPUT_ERROR = "opencode mini requires a controlling terminal for input";
 function preferences(statePath) {
     const repository = createModelPreferenceRepository(path.join(statePath, "model.json"));

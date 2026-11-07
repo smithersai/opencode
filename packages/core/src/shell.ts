@@ -11,7 +11,7 @@ import { makeGlobalNode, makeLocationNode } from "@opencode/util/effect/app-node
 import { FSUtil } from "@opencode/util/fs-util"
 import { Bus } from "./bus.js"
 import { Environment } from "./environment/index.js"
-import { FileRetention } from "./file-retention.js"
+import { FileRetention } from "./file-retention.vibe"
 import { Location } from "./location.js"
 import { Global } from "@opencode/util/global"
 import { ShellSelect } from "./shell/select.js"

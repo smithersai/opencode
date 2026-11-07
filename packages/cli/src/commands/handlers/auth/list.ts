@@ -1,6 +1,6 @@
 import { EOL } from "node:os"
 import { Effect } from "effect"
-import { Commands } from "../../commands"
+import { Commands } from "../../commands.vibe"
 import { Runtime } from "../../../framework/runtime"
 import { createClient, loadIntegrations } from "./shared"
 import { errorMessage } from "../../../util/error"

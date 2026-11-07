@@ -2,7 +2,7 @@
 import { EOL } from "node:os";
 import { Effect } from "effect";
 import { OpenCode } from "@opencode/client";
-import { Commands } from "../../commands";
+import { Commands } from "../../commands.js";
 import { Runtime } from "../../../framework/runtime";
 import { Service } from "@opencode/client/effect/service";
 import { ServerConnection } from "../../../services/server-connection";

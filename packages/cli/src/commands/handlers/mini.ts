@@ -1,5 +1,5 @@
 import { Context, Effect, FileSystem, Option } from "effect"
-import { Commands } from "../commands"
+import { Commands } from "../commands.vibe"
 import { Runtime } from "../../framework/runtime"
 import { ServerConnection } from "../../services/server-connection"
 import { Config } from "../../config"

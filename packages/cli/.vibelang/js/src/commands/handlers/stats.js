@@ -5,7 +5,7 @@ import { TokenUsage } from "@opencode/schema/token-usage";
 import { activityCalendar } from "@opencode/util/activity-calendar";
 import { Effect, Option } from "effect";
 import { EOL } from "node:os";
-import { Commands } from "../commands";
+import { Commands } from "../commands.js";
 import { Runtime } from "../../framework/runtime";
 import { ServerConnection } from "../../services/server-connection";
 import { errorMessage } from "../../util/error";

@@ -4,7 +4,7 @@ import { readFile, rename, writeFile } from "node:fs/promises";
 import { Effect } from "effect";
 import { applyEdits, modify, parse } from "jsonc-parser";
 import { Global } from "@opencode/util/global";
-import { Commands } from "../../commands";
+import { Commands } from "../../commands.js";
 import { Runtime } from "../../../framework/runtime";
 import { Config } from "../../../config";
 import { resolveConfigPath } from "../mcp/add";

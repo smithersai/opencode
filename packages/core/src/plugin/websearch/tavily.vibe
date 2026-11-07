@@ -3,7 +3,7 @@ export * as WebSearchTavily from "./tavily.vibe"
 import { define } from "@opencode/plugin/effect/plugin"
 import { Scope } from "effect"
 import { HttpClient } from "effect/http"
-import { App } from "../../app.ts"
+import { App } from "../../app.vibe"
 
 import { trusted } from "vibelang-runtime"
 

@@ -8,7 +8,7 @@ import path from "node:path";
 import { build } from "vite";
 import { Script } from "@opencode/script";
 import { embed } from "@opencode/script/highlights";
-import pkg from "../package.json";
+import pkg from "../../../package.json";
 import { collectNodeAssets, copyNodeAssets, hashNodeAssets, seaAssetMap } from "./node-assets";
 import { appArchiveAsset, mainConfig } from "../vite.node.config";
 import { nodeExecArgv, nodeTarget } from "../src/node/target";

@@ -7,7 +7,7 @@ import { Effect, FileSystem, Option, Schema } from "effect";
 import { randomUUID } from "crypto";
 import { applyEdits, createScanner, modify, parse, parseTree } from "jsonc-parser";
 import path from "path";
-import { Info, SchemaURL } from "./schema";
+import { Info, SchemaURL } from "./schema.js";
 const decodeV1 = Schema.decodeUnknownOption(TuiConfigV1.Info);
 const decodeInfo = Schema.decodeUnknownOption(Info);
 const decodeRecord = Schema.decodeUnknownOption(Schema.Record(Schema.String, Schema.Any));

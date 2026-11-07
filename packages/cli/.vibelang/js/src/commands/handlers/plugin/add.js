@@ -7,7 +7,7 @@ import { applyEdits, modify, parse } from "jsonc-parser";
 import { Global } from "@opencode/util/global";
 import { Npm } from "@opencode/util/npm";
 import { Host } from "@opencode/plugin/host";
-import { Commands } from "../../commands";
+import { Commands } from "../../commands.js";
 import { Runtime } from "../../../framework/runtime";
 import { resolveConfigPath } from "../mcp/add";
 import { Config } from "../../../config";

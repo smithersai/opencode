@@ -3,7 +3,7 @@ import { agent, RequestError, } from "@agentclientprotocol/sdk";
 import { Cause, Deferred, Effect, Ref } from "effect";
 import { ACPCapabilities } from "./capabilities";
 import { ACPCatalog } from "./catalog";
-import { ACPClient } from "./client";
+import { ACPClient } from "./client.js";
 import { ACPConnection } from "./connection";
 import { ACPError } from "./error.js";
 import { ACPService } from "./service";

@@ -3,7 +3,7 @@ export * as WebSearchTinyFish from "./tinyfish.vibe"
 import { define } from "@opencode/plugin/effect/plugin"
 import { Scope } from "effect"
 import { HttpClient } from "effect/http"
-import { App } from "../../app.ts"
+import { App } from "../../app.vibe"
 import { collectBoundedResponseBody } from "../../tool/http-body.ts"
 import { WebSearchMcp } from "./mcp.ts"
 

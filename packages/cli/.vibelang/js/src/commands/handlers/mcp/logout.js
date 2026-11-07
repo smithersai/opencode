@@ -2,11 +2,11 @@
 import { EOL } from "node:os";
 import { Effect } from "effect";
 import { OpenCode } from "@opencode/client";
-import { Commands } from "../../commands";
+import { Commands } from "../../commands.js";
 import { Runtime } from "../../../framework/runtime";
 import { Service } from "@opencode/client/effect/service";
 import { ServerConnection } from "../../../services/server-connection";
-import { resolveIntegration } from "./resolve";
+import { resolveIntegration } from "./resolve.js";
 const location = { directory: process.cwd() };
 export default Runtime.handler(Commands.commands.mcp.commands.logout, Effect.fn("cli.mcp.logout")(function* (input) {
     const { endpoint } = yield* ServerConnection.resolve();

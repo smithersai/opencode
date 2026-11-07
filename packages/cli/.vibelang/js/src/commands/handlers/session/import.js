@@ -5,7 +5,7 @@ import { Session } from "@opencode/schema/session";
 import { Effect, Option, Schema } from "effect";
 import { EOL } from "node:os";
 import path from "node:path";
-import { Commands } from "../../commands";
+import { Commands } from "../../commands.js";
 import { Runtime } from "../../../framework/runtime";
 import { ServerConnection } from "../../../services/server-connection";
 export default Runtime.handler(Commands.commands.session.commands.import, Effect.fn("cli.session.import")(function* (input) {

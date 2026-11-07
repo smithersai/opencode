@@ -7,8 +7,8 @@ import { produce } from "immer";
 import { applyEdits, modify, parse } from "jsonc-parser";
 import path from "path";
 import { ConfigMigration } from "./migrate";
-import { Info, normalizeLegacyTabs, SchemaURL } from "./schema";
-export * from "./schema";
+import { Info, normalizeLegacyTabs, SchemaURL } from "./schema.js";
+export * from "./schema.js";
 export class Service extends Context.Service()("@opencode/cli/config/Config") {
 }
 const decode = Schema.decodeUnknownOption(Info);

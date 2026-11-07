@@ -2,7 +2,7 @@ export * as BrowserSkill from "./skill.js"
 
 import { AbsolutePath } from "@opencode/schema/schema"
 import { Skill } from "@opencode/schema/skill"
-import { Browser } from "./rpc.js"
+import { Browser } from "./rpc.vibe"
 
 export const id = Skill.ID.make("browser")
 

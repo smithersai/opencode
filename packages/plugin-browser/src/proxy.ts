@@ -11,7 +11,7 @@ import {
 } from "node:http"
 import { Duplex } from "node:stream"
 import { Schema } from "effect"
-import { Browser } from "./rpc.js"
+import { Browser } from "./rpc.vibe"
 
 export type Transport = {
   open(target: Browser.TunnelTarget, signal: AbortSignal): Promise<string>

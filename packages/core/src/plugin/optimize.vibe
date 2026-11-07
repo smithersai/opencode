@@ -1,4 +1,4 @@
-export * as OptimizePlugin from "./optimize.js"
+export * as OptimizePlugin from "./optimize.vibe"
 
 import { define, type Context } from "@opencode/plugin/effect/plugin"
 import type { SessionHooks } from "@opencode/plugin/effect/session"
@@ -48,11 +48,13 @@ export const AnthropicToolsPlugin = make("opencode.optimize.anthropic.tools", (m
   return undefined
 })
 
-export const KimiPlugin = make("opencode.prompt.kimi", (model) =>
-  model.id.toLowerCase().includes("kimi") ? PROMPT_KIMI : undefined,
+export const KimiPlugin = make(
+  "opencode.prompt.kimi",
+  (model) => model.id.toLowerCase().includes("kimi") ? PROMPT_KIMI : undefined,
 )
-export const ArceePlugin = make("opencode.prompt.arcee", (model) =>
-  model.id.toLowerCase().includes("trinity") ? PROMPT_TRINITY : undefined,
+export const ArceePlugin = make(
+  "opencode.prompt.arcee",
+  (model) => model.id.toLowerCase().includes("trinity") ? PROMPT_TRINITY : undefined,
 )
 export const MetaPlugin = make("opencode.prompt.meta", (model) => {
   if (!model.id.toLowerCase().includes("muse")) return undefined
@@ -63,17 +65,18 @@ export const Plugins = [OpenAIPlugin, AnthropicPlugin, KimiPlugin, ArceePlugin, 
 
 const models = new WeakMap<SessionHooks["context"], Model.Info>()
 
-export const resolveModel = (ctx: Context, event: SessionHooks["context"]) =>
-  Effect.gen(function* () {
-    const cached = models.get(event)
-    if (cached?.providerID === event.model.providerID && cached.id === event.model.id) return cached
-    const model =
-      (yield* ctx.model.list()).data.find(
-        (model) => model.providerID === event.model.providerID && model.id === event.model.id,
-      ) ?? Model.Info.default(event.model.providerID, event.model.id)
-    models.set(event, model)
-    return model
-  })
+export const resolveModel = effect (ctx: Context, event: SessionHooks["context"]) => {
+  const cached = models.get(event)
+  if (cached?.providerID === event.model.providerID && cached.id === event.model.id) return cached
+  const model = (try ctx.model.list()).data.find(
+    (model) => model.providerID === event.model.providerID && model.id === event.model.id,
+  ) ?? (try Effect.orDie(Effect.try({
+    try: () => Model.Info.default(event.model.providerID, event.model.id),
+    catch: (e) => e,
+  })))
+  models.set(event, model)
+  return model
+}
 
 function make(
   id: string,
@@ -82,23 +85,37 @@ function make(
 ) {
   return define({
     id,
-    effect: Effect.fn(`OptimizePlugin.${id}`)(function* (ctx) {
-      const hook = (event: SessionHooks["context"]) =>
-        Effect.gen(function* () {
-          const model = yield* resolveModel(ctx, event)
-          // Curate tools before rendering their guidance, including for agents with a custom system prompt.
-          const template = optimize(model, event.tools)
-          if (!template) return
-          if ((yield* ctx.agent.get({ agentID: event.agent })).data.system) return
-          const system = event.system[0]
-          if (!system) return
-          const rendered = SessionSystemPrompt.render(template, Object.keys(event.tools))
-          const text = mode === "append" ? `${system.text}\n\n${rendered}` : rendered
-          event.system[0] = { ...system, text }
-        }).pipe(Effect.catch(() => Effect.void))
-      yield* ctx.session.hook("context", hook)
-      yield* ctx.session.hook("compaction", hook)
-      yield* ctx.session.hook("generate", hook)
-    }),
+    effect: effect (ctx): void!!import("effect/Scope").Scope =>
+      try withSpan(
+        (effect (): void!!import("effect/Scope").Scope => {
+          const hook = (event: SessionHooks["context"]) =>
+            do {
+              const catchProgram = effect {
+                const model = try resolveModel(ctx, event)
+                // Curate tools before rendering their guidance, including for agents with a custom system prompt.
+                const template = optimize(model, event.tools)
+                if (!template) return
+                if ((try ctx.agent.get({ agentID: event.agent })).data.system) return
+                const system = event.system[0]
+                if (!system) return
+                const rendered = try Effect.orDie(
+                  Effect.try({
+                    try: () => SessionSystemPrompt.render(template, Object.keys(event.tools)),
+                    catch: (e) => e,
+                  }),
+                )
+                const text = mode === "append" ? `${system.text}\n\n${rendered}` : rendered
+                event.system[0] = { ...system, text }
+              }
+              effect {
+                return catchProgram catch effect () => (undefined as void)
+              }
+            }
+          try ctx.session.hook("context", hook)
+          try ctx.session.hook("compaction", hook)
+          try ctx.session.hook("generate", hook)
+        })(),
+        `OptimizePlugin.${id}`,
+      ),
   })
 }

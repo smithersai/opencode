@@ -5,7 +5,7 @@ import { Agent } from "@opencode/schema/agent";
 import { Model } from "@opencode/schema/model";
 import { SessionError } from "@opencode/schema/session-error";
 import { Bus } from "../../bus.ts";
-import type { PluginHooks } from "../../plugin/hooks.ts";
+import type { PluginHooks } from "../../plugin/hooks.vibe";
 import { SessionMessage } from "../message.ts";
 import { SessionSchema } from "../schema.ts";
 export { isRetryable };

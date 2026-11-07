@@ -61,7 +61,7 @@ function search(tool) {
     };
 }
 // The websearch tool keeps its structured results out of the message and writes each one as a `## [title](url)`
-// heading in its text content (packages/core/src/tool/plugin/websearch.ts); a result without a title repeats its URL.
+// heading in its text content (packages/core/src/tool/plugin/websearch.vibe); a result without a title repeats its URL.
 function results(text) {
     return text.split("\n").flatMap((line) => {
         if (!line.startsWith("## [") || !line.endsWith(")"))

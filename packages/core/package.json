@@ -470,6 +470,46 @@
       "vibelang-source": "./src/wellknown/plugin.vibe",
       "default": "./.vibelang/js/src/wellknown/plugin.js"
     },
+    "./plugin/identity": {
+      "types": "./src/plugin/identity.d.vibe.ts",
+      "vibelang-source": "./src/plugin/identity.vibe",
+      "default": "./.vibelang/js/src/plugin/identity.js"
+    },
+    "./plugin/optimize": {
+      "types": "./src/plugin/optimize.d.vibe.ts",
+      "vibelang-source": "./src/plugin/optimize.vibe",
+      "default": "./.vibelang/js/src/plugin/optimize.js"
+    },
+    "./tool/plugin/edit": {
+      "types": "./src/tool/plugin/edit.d.vibe.ts",
+      "vibelang-source": "./src/tool/plugin/edit.vibe",
+      "default": "./.vibelang/js/src/tool/plugin/edit.js"
+    },
+    "./tool/plugin/mcp-resource": {
+      "types": "./src/tool/plugin/mcp-resource.d.vibe.ts",
+      "vibelang-source": "./src/tool/plugin/mcp-resource.vibe",
+      "default": "./.vibelang/js/src/tool/plugin/mcp-resource.js"
+    },
+    "./tool/plugin/patch": {
+      "types": "./src/tool/plugin/patch.d.vibe.ts",
+      "vibelang-source": "./src/tool/plugin/patch.vibe",
+      "default": "./.vibelang/js/src/tool/plugin/patch.js"
+    },
+    "./tool/plugin/skill": {
+      "types": "./src/tool/plugin/skill.d.vibe.ts",
+      "vibelang-source": "./src/tool/plugin/skill.vibe",
+      "default": "./.vibelang/js/src/tool/plugin/skill.js"
+    },
+    "./tool/plugin/websearch": {
+      "types": "./src/tool/plugin/websearch.d.vibe.ts",
+      "vibelang-source": "./src/tool/plugin/websearch.vibe",
+      "default": "./.vibelang/js/src/tool/plugin/websearch.js"
+    },
+    "./tool/plugin/write": {
+      "types": "./src/tool/plugin/write.d.vibe.ts",
+      "vibelang-source": "./src/tool/plugin/write.vibe",
+      "default": "./.vibelang/js/src/tool/plugin/write.js"
+    },
     "./*": {
       "types": "./src/*.ts",
       "vibelang-source": "./src/*.ts",

@@ -15,7 +15,7 @@ import { Global } from "@opencode/util/global"
 import { Permission } from "../../permission.js"
 import type { FileAccess } from "../../file-access.js"
 import type { ReadTool } from "../../tool/plugin/read.js"
-import type { EditTool } from "../../tool/plugin/edit.js"
+import type { EditTool } from "../../tool/plugin/edit.vibe"
 import { AbsolutePath } from "../../schema.js"
 
 const legacySources = [

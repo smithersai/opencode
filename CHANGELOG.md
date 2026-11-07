@@ -2,6 +2,12 @@
 
 Release notes for OpenCode V2, newest first.
 
+## Unreleased
+
+### Bugs fixed
+
+- Package verification rejected readonly command arguments; it now accepts them without changing their contents.
+
 ## v2.2.0 — 2026-10-27
 
 ### Highlights

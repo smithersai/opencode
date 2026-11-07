@@ -467,6 +467,7 @@
         "@types/node": "catalog:",
         "@typescript/native": "catalog:",
         "effect": "catalog:",
+        "fast-check": "catalog:",
         "typescript": "catalog:",
         "vibelang": "file:../../.vibelang-toolchain/vibelang-0.0.11-1ded989eae73.tgz",
         "vibelang-unplugin": "file:../../.vibelang-toolchain/vibelang-unplugin-0.0.11-0cd78f8e2c0c.tgz",

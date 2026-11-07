@@ -4,8 +4,8 @@ import { tmpdir } from "node:os"
 import path from "node:path"
 import { withPackedArchive } from "./pack.ts"
 
-const run = async (command: ReadonlyArray<string>, cwd: string) => {
-  const process = Bun.spawn(command, { cwd, env: globalThis.process.env, stdout: "inherit", stderr: "inherit" })
+export const run = async (command: ReadonlyArray<string>, cwd: string) => {
+  const process = Bun.spawn([...command], { cwd, env: globalThis.process.env, stdout: "inherit", stderr: "inherit" })
   const exitCode = await process.exited
   if (exitCode !== 0) throw new Error(`${command.join(" ")} exited with code ${exitCode}`)
 }

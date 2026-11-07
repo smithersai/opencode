@@ -10,7 +10,7 @@ import { DesktopStorage } from "../storage"
 import { safeWebContentsURL } from "../windows/state"
 import { getLastFocusedWindow, getWindowByID, mainWindows, setAppQuitting, setRelaunchHandler } from "../windows"
 import { marks } from "./marks"
-import { initializeFirstLaunchOnboarding } from "./onboarding"
+import { initializeFirstLaunchOnboarding } from "./onboarding.vibe"
 import { Shutdown } from "./shutdown.vibe"
 import { consoleReturnWindow } from "./deep-link"
 

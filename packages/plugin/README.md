@@ -16,3 +16,5 @@ When the OpenCode CLI loads server or TUI plugins, it resolves imports of `effec
 - Plugins and their `node_modules` dependencies always receive OpenCode's host `effect` instance. Use `effect` APIs and module paths compatible with the OpenCode release you target; dependencies built on another `effect` major (such as Effect 3) are not supported.
 - Only public `effect` subpaths are provided. A plugin that imports one of Effect's private `internal` modules fails to load with an error naming the path.
 - The compiled OpenCode binary does not include the Scalar and Swagger UI assets used by Effect's HTTP API docs pages; serving those pages from a plugin shows a notice instead.
+
+Compiled workspace exports preserve their declaration and VibeLang source routes while ordinary Bun and Node consumers resolve emitted JavaScript. Run the export routing regression with `bun run test test/migrated-export-routes.test.ts`.

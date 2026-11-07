@@ -560,6 +560,7 @@
         "@types/node": "catalog:",
         "@typescript/native": "catalog:",
         "electron": "44.9.1",
+        "fast-check": "catalog:",
         "solid-js": "catalog:",
         "typescript": "catalog:",
         "vibelang": "file:../../.vibelang-toolchain/vibelang-0.0.11-1ded989eae73.tgz",

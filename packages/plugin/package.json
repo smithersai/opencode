@@ -45,7 +45,8 @@
     },
     "./gui/main": {
       "types": "./src/gui/main.d.vibe.ts",
-      "default": "./src/gui/main.vibe"
+      "vibelang-source": "./src/gui/main.vibe",
+      "default": "./.vibelang/js/src/gui/main.js"
     },
     "./gui/host": {
       "types": "./src/gui/host.ts",
@@ -85,131 +86,163 @@
     "./gui/*": null,
     "./effect/agent": {
       "types": "./src/effect/agent.d.vibe.ts",
-      "default": "./src/effect/agent.vibe"
+      "vibelang-source": "./src/effect/agent.vibe",
+      "default": "./.vibelang/js/src/effect/agent.js"
     },
     "./effect/command": {
       "types": "./src/effect/command.d.vibe.ts",
-      "default": "./src/effect/command.vibe"
+      "vibelang-source": "./src/effect/command.vibe",
+      "default": "./.vibelang/js/src/effect/command.js"
     },
     "./effect/event": {
       "types": "./src/effect/event.d.vibe.ts",
-      "default": "./src/effect/event.vibe"
+      "vibelang-source": "./src/effect/event.vibe",
+      "default": "./.vibelang/js/src/effect/event.js"
     },
     "./effect/integration": {
       "types": "./src/effect/integration.d.vibe.ts",
-      "default": "./src/effect/integration.vibe"
+      "vibelang-source": "./src/effect/integration.vibe",
+      "default": "./.vibelang/js/src/effect/integration.js"
     },
     "./effect/mcp": {
       "types": "./src/effect/mcp.d.vibe.ts",
-      "default": "./src/effect/mcp.vibe"
+      "vibelang-source": "./src/effect/mcp.vibe",
+      "default": "./.vibelang/js/src/effect/mcp.js"
     },
     "./effect/model": {
       "types": "./src/effect/model.d.vibe.ts",
-      "default": "./src/effect/model.vibe"
+      "vibelang-source": "./src/effect/model.vibe",
+      "default": "./.vibelang/js/src/effect/model.js"
     },
     "./effect/permission": {
       "types": "./src/effect/permission.d.vibe.ts",
-      "default": "./src/effect/permission.vibe"
+      "vibelang-source": "./src/effect/permission.vibe",
+      "default": "./.vibelang/js/src/effect/permission.js"
     },
     "./effect/plugin": {
       "types": "./src/effect/plugin.d.vibe.ts",
-      "default": "./src/effect/plugin.vibe"
+      "vibelang-source": "./src/effect/plugin.vibe",
+      "default": "./.vibelang/js/src/effect/plugin.js"
     },
     "./effect/provider": {
       "types": "./src/effect/provider.d.vibe.ts",
-      "default": "./src/effect/provider.vibe"
+      "vibelang-source": "./src/effect/provider.vibe",
+      "default": "./.vibelang/js/src/effect/provider.js"
     },
     "./effect/reference": {
       "types": "./src/effect/reference.d.vibe.ts",
-      "default": "./src/effect/reference.vibe"
+      "vibelang-source": "./src/effect/reference.vibe",
+      "default": "./.vibelang/js/src/effect/reference.js"
     },
     "./effect/registration": {
       "types": "./src/effect/registration.d.vibe.ts",
-      "default": "./src/effect/registration.vibe"
+      "vibelang-source": "./src/effect/registration.vibe",
+      "default": "./.vibelang/js/src/effect/registration.js"
     },
     "./effect/rpc": {
       "types": "./src/effect/rpc.d.vibe.ts",
-      "default": "./src/effect/rpc.vibe"
+      "vibelang-source": "./src/effect/rpc.vibe",
+      "default": "./.vibelang/js/src/effect/rpc.js"
     },
     "./effect/session": {
       "types": "./src/effect/session.d.vibe.ts",
-      "default": "./src/effect/session.vibe"
+      "vibelang-source": "./src/effect/session.vibe",
+      "default": "./.vibelang/js/src/effect/session.js"
     },
     "./effect/skill": {
       "types": "./src/effect/skill.d.vibe.ts",
-      "default": "./src/effect/skill.vibe"
+      "vibelang-source": "./src/effect/skill.vibe",
+      "default": "./.vibelang/js/src/effect/skill.js"
     },
     "./effect/storage": {
       "types": "./src/effect/storage.d.vibe.ts",
-      "default": "./src/effect/storage.vibe"
+      "vibelang-source": "./src/effect/storage.vibe",
+      "default": "./.vibelang/js/src/effect/storage.js"
     },
     "./effect/tool": {
       "types": "./src/effect/tool.d.vibe.ts",
-      "default": "./src/effect/tool.vibe"
+      "vibelang-source": "./src/effect/tool.vibe",
+      "default": "./.vibelang/js/src/effect/tool.js"
     },
     "./effect/vcs": {
       "types": "./src/effect/vcs.d.vibe.ts",
-      "default": "./src/effect/vcs.vibe"
+      "vibelang-source": "./src/effect/vcs.vibe",
+      "default": "./.vibelang/js/src/effect/vcs.js"
     },
     "./effect/websearch": {
       "types": "./src/effect/websearch.d.vibe.ts",
-      "default": "./src/effect/websearch.vibe"
+      "vibelang-source": "./src/effect/websearch.vibe",
+      "default": "./.vibelang/js/src/effect/websearch.js"
     },
     "./effect/worktree": {
       "types": "./src/effect/worktree.d.vibe.ts",
-      "default": "./src/effect/worktree.vibe"
+      "vibelang-source": "./src/effect/worktree.vibe",
+      "default": "./.vibelang/js/src/effect/worktree.js"
     },
     "./gui/context.typecheck": {
       "types": "./src/gui/context.typecheck.d.vibe.ts",
-      "default": "./src/gui/context.typecheck.vibe"
+      "vibelang-source": "./src/gui/context.typecheck.vibe",
+      "default": "./.vibelang/js/src/gui/context.typecheck.js"
     },
     "./gui/host-apis": {
       "types": "./src/gui/host-apis.d.vibe.ts",
-      "default": "./src/gui/host-apis.vibe"
+      "vibelang-source": "./src/gui/host-apis.vibe",
+      "default": "./.vibelang/js/src/gui/host-apis.js"
     },
     "./gui/plugin.typecheck": {
       "types": "./src/gui/plugin.typecheck.d.vibe.ts",
-      "default": "./src/gui/plugin.typecheck.vibe"
+      "vibelang-source": "./src/gui/plugin.typecheck.vibe",
+      "default": "./.vibelang/js/src/gui/plugin.typecheck.js"
     },
     "./permission": {
       "types": "./src/permission.d.vibe.ts",
-      "default": "./src/permission.vibe"
+      "vibelang-source": "./src/permission.vibe",
+      "default": "./.vibelang/js/src/permission.js"
     },
     "./promise/agent": {
       "types": "./src/promise/agent.d.vibe.ts",
-      "default": "./src/promise/agent.vibe"
+      "vibelang-source": "./src/promise/agent.vibe",
+      "default": "./.vibelang/js/src/promise/agent.js"
     },
     "./promise/mcp": {
       "types": "./src/promise/mcp.d.vibe.ts",
-      "default": "./src/promise/mcp.vibe"
+      "vibelang-source": "./src/promise/mcp.vibe",
+      "default": "./.vibelang/js/src/promise/mcp.js"
     },
     "./promise/model": {
       "types": "./src/promise/model.d.vibe.ts",
-      "default": "./src/promise/model.vibe"
+      "vibelang-source": "./src/promise/model.vibe",
+      "default": "./.vibelang/js/src/promise/model.js"
     },
     "./promise/provider": {
       "types": "./src/promise/provider.d.vibe.ts",
-      "default": "./src/promise/provider.vibe"
+      "vibelang-source": "./src/promise/provider.vibe",
+      "default": "./.vibelang/js/src/promise/provider.js"
     },
     "./promise/session": {
       "types": "./src/promise/session.d.vibe.ts",
-      "default": "./src/promise/session.vibe"
+      "vibelang-source": "./src/promise/session.vibe",
+      "default": "./.vibelang/js/src/promise/session.js"
     },
     "./promise/skill": {
       "types": "./src/promise/skill.d.vibe.ts",
-      "default": "./src/promise/skill.vibe"
+      "vibelang-source": "./src/promise/skill.vibe",
+      "default": "./.vibelang/js/src/promise/skill.js"
     },
     "./promise/storage": {
       "types": "./src/promise/storage.d.vibe.ts",
-      "default": "./src/promise/storage.vibe"
+      "vibelang-source": "./src/promise/storage.vibe",
+      "default": "./.vibelang/js/src/promise/storage.js"
     },
     "./promise/tool": {
       "types": "./src/promise/tool.d.vibe.ts",
-      "default": "./src/promise/tool.vibe"
+      "vibelang-source": "./src/promise/tool.vibe",
+      "default": "./.vibelang/js/src/promise/tool.js"
     },
     "./storage": {
       "types": "./src/storage.d.vibe.ts",
-      "default": "./src/storage.vibe"
+      "vibelang-source": "./src/storage.vibe",
+      "default": "./.vibelang/js/src/storage.js"
     },
     "./*": {
       "types": "./src/*.ts",
@@ -296,7 +329,8 @@
     "vite-plugin-solid": "catalog:",
     "@typescript/native": "catalog:",
     "vibelang": "file:../../.vibelang-toolchain/vibelang-0.0.11-1ded989eae73.tgz",
-    "vibelang-vite": "file:../../.vibelang-toolchain/vibelang-vite-0.0.11-5223c46c8aba.tgz"
+    "vibelang-vite": "file:../../.vibelang-toolchain/vibelang-vite-0.0.11-5223c46c8aba.tgz",
+    "fast-check": "catalog:"
   },
   "repository": {
     "type": "git",

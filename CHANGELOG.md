@@ -6,6 +6,7 @@ Release notes for OpenCode V2, newest first.
 
 ### Bugs fixed
 
+- SDK bundles could read migrated plugin sources as assets; plugin exports now provide emitted JavaScript to ordinary bundlers.
 - Fresh checkout typechecks could reject a valid server command; its generated declaration now retains the checked service requirements.
 - AI examples and recording setup failed standalone checks; their native scripts now check successfully with supported gateway URL options.
 - Package verification rejected readonly command arguments; it now accepts them without changing their contents.

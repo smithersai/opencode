@@ -41,7 +41,7 @@ import { HttpApiBuilder } from "effect/http-api";
 import { Context, Effect, Layer, Option } from "effect";
 import { Api } from "./api";
 import { ServerAuth } from "./auth";
-import { CorsConfig } from "./cors";
+import { CorsConfig } from "./cors.js";
 import { handlers } from "./handlers";
 import { authorizationLayer } from "./middleware/authorization";
 import { schemaErrorLayer } from "./middleware/schema-error";

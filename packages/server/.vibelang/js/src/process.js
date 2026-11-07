@@ -14,7 +14,7 @@ import { HttpMiddleware, HttpRouter, HttpServerRequest, HttpServerResponse } fro
 import { NetAddress } from "effect/net";
 import { createServer } from "node:http";
 import { ServerAuth } from "./auth";
-import { isAllowedCorsOrigin } from "./cors";
+import { isAllowedCorsOrigin } from "./cors.js";
 import { authorizedRequest, unauthorizedResponse } from "./middleware/authorization";
 import { withoutParentSpan } from "./request-tracing.js";
 import { createRoutes } from "./routes";

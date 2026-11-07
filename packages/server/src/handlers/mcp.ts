@@ -9,9 +9,9 @@ import { HttpServerResponse } from "effect/http"
 import { HttpApiBuilder, HttpApiSchema } from "effect/http-api"
 import { Socket } from "effect/socket"
 import { Api } from "../api"
-import { CorsConfig, isAllowedRequestOrigin } from "../cors"
+import { CorsConfig, isAllowedRequestOrigin } from "../cors.vibe"
 import { locationErrors, requestRef, response } from "../location"
-import { type Outbound, runPtySocket } from "./pty-socket"
+import { type Outbound, runPtySocket } from "./pty-socket.vibe"
 
 const notFound = <A, R>(effect: Effect.Effect<A, Mcp.NotFoundError, R>) =>
   effect.pipe(Effect.mapError((error) => new McpServerNotFoundError({ server: error.server, message: error.message })))

@@ -3,7 +3,7 @@ export * as ServerFetch from "./fetch";
 import { Context, Effect, Layer } from "effect";
 import { HttpEffect, HttpMiddleware, HttpRouter, HttpServer } from "effect/http";
 import { SessionRestart } from "@opencode/core/session/execution/restart";
-import { isAllowedCorsOrigin } from "./cors";
+import { isAllowedCorsOrigin } from "./cors.js";
 import { createRoutes } from "./routes";
 /**
  * Builds a web-standard fetch handler — `(request: Request) => Promise<Response>` — serving the

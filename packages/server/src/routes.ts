@@ -40,7 +40,7 @@ import { HttpApiBuilder } from "effect/http-api"
 import { Context, Effect, Layer, Option } from "effect"
 import { Api } from "./api"
 import { ServerAuth } from "./auth"
-import { CorsConfig } from "./cors"
+import { CorsConfig } from "./cors.vibe"
 import { handlers } from "./handlers"
 import { authorizationLayer } from "./middleware/authorization"
 import { schemaErrorLayer } from "./middleware/schema-error"
@@ -49,7 +49,7 @@ import { layer } from "./location"
 import { formLocationLayer } from "./middleware/form-location"
 import { sessionLocationLayer } from "./middleware/session-location"
 import { ServerInfo } from "./server-info"
-import type { ServerOptions } from "./options"
+import type { ServerOptions } from "./options.vibe"
 
 const applicationServiceNodes = [
   Global.node,

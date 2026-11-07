@@ -9,11 +9,11 @@ import { HttpServerRequest, HttpServerResponse } from "effect/http";
 import { HttpApiBuilder, HttpApiSchema } from "effect/http-api";
 import { Socket } from "effect/socket";
 import { Api } from "../api";
-import { CorsConfig, isAllowedRequestOrigin } from "../cors";
+import { CorsConfig, isAllowedRequestOrigin } from "../cors.js";
 import { ForbiddenError, PtyNotFoundError } from "@opencode/protocol/errors";
 import { PTY_CONNECT_TICKET_QUERY, PTY_CONNECT_TOKEN_HEADER, PTY_CONNECT_TOKEN_HEADER_VALUE, } from "@opencode/protocol/groups/pty";
 import { locationErrors, requestRef, response } from "../location";
-import { runPtySocket } from "./pty-socket";
+import { runPtySocket } from "./pty-socket.js";
 const notFound = (ptyID) => new PtyNotFoundError({ ptyID, message: `PTY session not found: ${ptyID}` });
 export const PtyHandler = HttpApiBuilder.group(Api, "server.pty", (handlers) => Effect.gen(function* () {
     const locations = yield* LocationServiceMap.Service;

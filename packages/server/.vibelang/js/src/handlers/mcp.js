@@ -10,9 +10,9 @@ import { HttpServerResponse } from "effect/http";
 import { HttpApiBuilder, HttpApiSchema } from "effect/http-api";
 import { Socket } from "effect/socket";
 import { Api } from "../api";
-import { CorsConfig, isAllowedRequestOrigin } from "../cors";
+import { CorsConfig, isAllowedRequestOrigin } from "../cors.js";
 import { locationErrors, requestRef, response } from "../location";
-import { runPtySocket } from "./pty-socket";
+import { runPtySocket } from "./pty-socket.js";
 const notFound = (effect) => effect.pipe(Effect.mapError((error) => new McpServerNotFoundError({ server: error.server, message: error.message })));
 export const McpHandler = HttpApiBuilder.group(Api, "server.mcp", (handlers) => Effect.gen(function* () {
     const locations = yield* LocationServiceMap.Service;

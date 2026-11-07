@@ -1,6 +1,6 @@
 import type { Extension } from "./extension.ts"
 import { executeProgram } from "./interpreter/execute.ts"
-import { extensionGlobals } from "./interpreter/extensions.ts"
+import { extensionGlobals } from "./interpreter/extensions.vibe"
 import { globalNames } from "./interpreter/globals.ts"
 import { type Services, type ToolDescription, ToolRuntime } from "./tool-runtime.vibe"
 import type { Tools } from "./tools.ts"

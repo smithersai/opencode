@@ -1,3 +1,5 @@
+// The platform code of extensions.vibe, which a .vibe file does not import as a value (EK4402).
+
 import { Effect } from "effect"
 import type { Extension } from "../extension.js"
 import { type ExtensionInvocation, hooked } from "../tool-runtime.vibe"
@@ -173,12 +175,10 @@ export const extensionGlobals = <R>(
     ),
   )
 }
-
 // A synchronous host call: its hooks run before any other job, as the call itself did.
 function* blocking(host: Host) {
   return (yield host) as Value
 }
-
 /**
  * An error crosses as its name, message, `cause`, and own enumerable fields, such as Node's `code`, `errno`,
  * `syscall`, and `path`. `stack` stays on its own side, and no field may shadow an Error method. A field that cannot
@@ -194,7 +194,6 @@ const crossing = <T>(convert: () => T): T | typeof left => {
     throw reason
   }
 }
-
 const hostErrors = new Map<string, ErrorConstructor>([
   ["TypeError", TypeError],
   ["RangeError", RangeError],
@@ -203,7 +202,6 @@ const hostErrors = new Map<string, ErrorConstructor>([
   ["EvalError", EvalError],
   ["URIError", URIError],
 ])
-
 // The primitives the interpreter operates on; symbols and BigInts are not among them.
 const isPrimitive = (value: unknown): value is string | number | boolean | null | undefined =>
   value === null ||
@@ -211,7 +209,6 @@ const isPrimitive = (value: unknown): value is string | number | boolean | null 
   typeof value === "string" ||
   typeof value === "number" ||
   typeof value === "boolean"
-
 const describeHost = (value: unknown): string => {
   if (typeof value !== "object" || value === null) return `a ${typeof value}`
   const name = (value as { constructor?: { name?: string } }).constructor?.name

@@ -1,18 +1,17 @@
-export * as ConfigImagePlugin from "./image.js"
+export * as ConfigImagePlugin from "./image.vibe"
 
 import { define } from "@opencode/plugin/effect/plugin"
-import { Effect } from "effect"
 import { Config } from "../../config.js"
 import { Image } from "../../image.js"
 import { ConfigEntryObserver } from "./entry-observer.js"
 
 export const Plugin = define({
   id: "opencode.config.image",
-  effect: Effect.fn(function* (ctx) {
-    const config = yield* Config.Service
-    const image = yield* Image.Service
-    const loaded = yield* ConfigEntryObserver.observe(config, ctx.event, image.reload())
-    yield* image.transform((editor) => {
+  effect: effect (ctx) => {
+    const config = try Config.Service
+    const image = try Image.Service
+    const loaded = try ConfigEntryObserver.observe(config, ctx.event, image.reload())
+    try image.transform((editor) => {
       for (const entry of loaded.entries) {
         if (entry.type !== "document") continue
         const configured = entry.info.media?.image
@@ -25,5 +24,5 @@ export const Plugin = define({
         })
       }
     })
-  }),
+  },
 })

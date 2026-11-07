@@ -6,4 +6,4 @@ export interface Driver {
   readonly overrides?: Partial<FilesImpl>
 }
 
-export * as EnvironmentDriver from "./driver.js"
+export * as EnvironmentDriver from "./driver.vibe"

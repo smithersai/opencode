@@ -1,4 +1,4 @@
-export * as ConfigFormatterPlugin from "./formatter.js"
+export * as ConfigFormatterPlugin from "./formatter.vibe"
 
 import { define } from "@opencode/plugin/effect/plugin"
 import type { Entry } from "@opencode/schema/config"
@@ -16,17 +16,17 @@ import { ConfigEntryObserver } from "./entry-observer.js"
 
 export const Plugin = define({
   id: "opencode.config.formatter",
-  effect: Effect.fn(function* (ctx) {
-    const config = yield* Config.Service
-    const formatter = yield* Formatter.Service
-    const fs = yield* FSUtil.Service
-    const global = yield* Global.Service
-    const location = yield* Location.Service
-    const npm = yield* Npm.Service
-    const processes = yield* AppProcess.Service
-    const loaded = yield* ConfigEntryObserver.observe(config, ctx.event, formatter.reload())
+  effect: effect (ctx) => {
+    const config = try Config.Service
+    const formatter = try Formatter.Service
+    const fs = try FSUtil.Service
+    const global = try Global.Service
+    const location = try Location.Service
+    const npm = try Npm.Service
+    const processes = try AppProcess.Service
+    const loaded = try ConfigEntryObserver.observe(config, ctx.event, formatter.reload())
 
-    yield* formatter.transform((editor) => {
+    try formatter.transform((editor) => {
       const configured = resolve(loaded.entries)
       if (!configured) return
       const builtIns = make({
@@ -50,13 +50,14 @@ export const Plugin = define({
           name,
           extensions: entry.extensions ?? builtIn?.extensions ?? [],
           environment: { ...builtIn?.environment, ...entry.environment },
-          enabled:
-            builtIn && !entry.command ? builtIn.enabled : Effect.succeed(entry.command ? [...entry.command] : false),
+          enabled: builtIn && !entry.command
+            ? builtIn.enabled
+            : Effect.succeed(entry.command ? [...entry.command] : false),
         }
         editor.set(current)
       }
     })
-  }),
+  },
 })
 
 // Documents apply from lowest to highest priority. A boolean resets everything before it; an object

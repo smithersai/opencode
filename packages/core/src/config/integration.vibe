@@ -1,4 +1,4 @@
-export * as ConfigIntegration from "./integration.js"
+export * as ConfigIntegration from "./integration.vibe"
 
 import { Option, Schema, SchemaGetter } from "effect"
 import { Config } from "@opencode/schema/config"
@@ -18,7 +18,7 @@ export const Policies = Schema.Array(Schema.Unknown).pipe(
         if (Option.isSome(action) && !Schema.is(ConfigPolicy.Info.fields.action)(action.value.action)) return false
         const effect = Schema.decodeUnknownOption(Schema.Struct({ effect: Schema.String }))(policy)
         return Option.isNone(effect) || Schema.is(ConfigPolicy.Effect)(effect.value.effect)
-      }),
+      })
     ),
     encode: SchemaGetter.passthrough({ strict: false }),
   }),
@@ -67,9 +67,8 @@ export function make(input: {
     connection: input.connection,
     organization: input.organization,
     info: new Config.Info({
-      providers:
-        input.info.providers &&
-        Object.fromEntries(
+      providers: input.info.providers
+        && Object.fromEntries(
           Object.entries(input.info.providers).map(([id, provider]) => [
             id,
             new ConfigProvider.Info({
@@ -77,9 +76,8 @@ export function make(input: {
               // The connection supplies credentials; `env` would read local variables as this provider's key.
               env: undefined,
               settings: withoutCredentials(provider.settings),
-              models:
-                provider.models &&
-                Object.fromEntries(
+              models: provider.models
+                && Object.fromEntries(
                   Object.entries(provider.models).map(([modelID, model]) => [
                     modelID,
                     {
@@ -96,9 +94,8 @@ export function make(input: {
           ]),
         ),
       // Local servers would run a command on this machine.
-      mcp:
-        servers &&
-        new ConfigMCP.Info({
+      mcp: servers
+        && new ConfigMCP.Info({
           servers: Object.fromEntries(Object.entries(servers).filter(([, server]) => server.type === "remote")),
         }),
       policies: input.info.policies,
@@ -109,8 +106,8 @@ export function make(input: {
 
 function withoutCredentials<Value>(settings: Readonly<Record<string, Value>> | undefined) {
   return (
-    settings &&
-    Object.fromEntries(
+    settings
+    && Object.fromEntries(
       Object.entries(settings).filter(([key]) => !["apiKey", "authToken", "accessToken"].includes(key)),
     )
   )

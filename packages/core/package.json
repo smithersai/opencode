@@ -177,6 +177,66 @@
       "types": "./src/voice.d.vibe.ts",
       "default": "./src/voice.vibe"
     },
+    "./config/integration": {
+      "types": "./src/config/integration.d.vibe.ts",
+      "vibelang-source": "./src/config/integration.vibe",
+      "default": "./.vibelang/js/src/config/integration.js"
+    },
+    "./config/plugin/compaction": {
+      "types": "./src/config/plugin/compaction.d.vibe.ts",
+      "vibelang-source": "./src/config/plugin/compaction.vibe",
+      "default": "./.vibelang/js/src/config/plugin/compaction.js"
+    },
+    "./config/plugin/formatter": {
+      "types": "./src/config/plugin/formatter.d.vibe.ts",
+      "vibelang-source": "./src/config/plugin/formatter.vibe",
+      "default": "./.vibelang/js/src/config/plugin/formatter.js"
+    },
+    "./config/plugin/image": {
+      "types": "./src/config/plugin/image.d.vibe.ts",
+      "vibelang-source": "./src/config/plugin/image.vibe",
+      "default": "./.vibelang/js/src/config/plugin/image.js"
+    },
+    "./config/plugin/location-watcher": {
+      "types": "./src/config/plugin/location-watcher.d.vibe.ts",
+      "vibelang-source": "./src/config/plugin/location-watcher.vibe",
+      "default": "./.vibelang/js/src/config/plugin/location-watcher.js"
+    },
+    "./config/plugin/provider": {
+      "types": "./src/config/plugin/provider.d.vibe.ts",
+      "vibelang-source": "./src/config/plugin/provider.vibe",
+      "default": "./.vibelang/js/src/config/plugin/provider.js"
+    },
+    "./config/plugin/shell": {
+      "types": "./src/config/plugin/shell.d.vibe.ts",
+      "vibelang-source": "./src/config/plugin/shell.vibe",
+      "default": "./.vibelang/js/src/config/plugin/shell.js"
+    },
+    "./config/plugin/snapshot": {
+      "types": "./src/config/plugin/snapshot.d.vibe.ts",
+      "vibelang-source": "./src/config/plugin/snapshot.vibe",
+      "default": "./.vibelang/js/src/config/plugin/snapshot.js"
+    },
+    "./config/plugin/tool-output": {
+      "types": "./src/config/plugin/tool-output.d.vibe.ts",
+      "vibelang-source": "./src/config/plugin/tool-output.vibe",
+      "default": "./.vibelang/js/src/config/plugin/tool-output.js"
+    },
+    "./config/plugin/websearch": {
+      "types": "./src/config/plugin/websearch.d.vibe.ts",
+      "vibelang-source": "./src/config/plugin/websearch.vibe",
+      "default": "./.vibelang/js/src/config/plugin/websearch.js"
+    },
+    "./environment/driver": {
+      "types": "./src/environment/driver.d.vibe.ts",
+      "vibelang-source": "./src/environment/driver.vibe",
+      "default": "./.vibelang/js/src/environment/driver.js"
+    },
+    "./environment/unavailable": {
+      "types": "./src/environment/unavailable.d.vibe.ts",
+      "vibelang-source": "./src/environment/unavailable.vibe",
+      "default": "./.vibelang/js/src/environment/unavailable.js"
+    },
     "./*": {
       "types": "./src/*.ts",
       "vibelang-source": "./src/*.ts",

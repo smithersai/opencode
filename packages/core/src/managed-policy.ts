@@ -1,7 +1,7 @@
 export * as ManagedPolicy from "./managed-policy.js"
 
 import { Document, type Entry } from "@opencode/schema/config"
-import { ConfigIntegration } from "./config/integration.js"
+import { ConfigIntegration } from "./config/integration.vibe"
 import { Wildcard } from "./util/wildcard.js"
 import { ConfigPolicy } from "@opencode/schema/config/policy"
 

@@ -1,4 +1,4 @@
-export * as ConfigProviderPlugin from "./provider.js"
+export * as ConfigProviderPlugin from "./provider.vibe"
 
 import type { ModelEditor } from "@opencode/plugin/effect/model"
 import type { ProviderEditor } from "@opencode/plugin/effect/provider"
@@ -11,19 +11,19 @@ import { Config } from "../../config.js"
 import { Model } from "../../model.js"
 import { Provider } from "../../provider.js"
 import { Variant } from "../../variant.js"
-import { ConfigIntegration } from "../integration.js"
+import { ConfigIntegration } from "../integration.vibe"
 import { ConfigEntryObserver } from "./entry-observer.js"
 
 export const Plugin = define({
   id: "opencode.config.provider",
-  effect: Effect.fn(function* (ctx) {
-    const config = yield* Config.Service
-    const loaded = yield* ConfigEntryObserver.observe(
+  effect: effect (ctx) => {
+    const config = try Config.Service
+    const loaded = try ConfigEntryObserver.observe(
       config,
       ctx.event,
-      ctx.integration.reload().pipe(Effect.andThen(ctx.provider.reload())),
+      ctx.integration.reload() |> Effect.andThen(%, ctx.provider.reload()),
     )
-    yield* ctx.integration.transform((integrations) => {
+    try ctx.integration.transform((integrations) => {
       for (const [id, provider] of configuredProviders(loaded.entries)) {
         const integrationID = id
         if (!integrations.get(integrationID)) {
@@ -54,7 +54,7 @@ export const Plugin = define({
         }
       >(),
     }
-    yield* ctx.provider.transform((providers) => {
+    try ctx.provider.transform((providers) => {
       const next: typeof sources.models = new Map()
       for (const [id, item] of configuredProviders(loaded.entries)) {
         const providerID = id
@@ -74,12 +74,15 @@ export const Plugin = define({
         }
         // A configured provider baseURL replaces every catalog per-model endpoint, not only those of configured
         // models. Configured per-model settings are applied later and still win.
-        if (item.settings?.baseURL !== undefined)
-          for (const [id, model] of providers.get(providerID)?.models ?? [])
-            if (model.settings?.baseURL !== undefined)
+        if (item.settings?.baseURL !== undefined) {
+          for (const [id, model] of providers.get(providerID)?.models ?? []) {
+            if (model.settings?.baseURL !== undefined) {
               providers.models.update(providerID, id, (model) => {
                 delete model.settings?.baseURL
               })
+            }
+          }
+        }
         next.set(item, { providerID, models: definitions })
       }
       for (const [item, definition] of next) {
@@ -96,7 +99,7 @@ export const Plugin = define({
 
     // Keep explicit model overrides in their late registration position, after external
     // model transforms. They can recreate or re-enable a model within an available provider.
-    yield* ctx.model.transform((models) => {
+    try ctx.model.transform((models) => {
       const configuredDefault = sources.defaultModel
       if (configuredDefault !== undefined) models.default.set(configuredDefault.providerID, configuredDefault.model)
       for (const [item, definition] of sources.models) {
@@ -115,15 +118,14 @@ export const Plugin = define({
           )
           // Inherited variants are spelled for the base model's package, so a package override needs fresh ones.
           // A base without variants has no reasoning support to respell.
-          const repackaged =
-            source?.base !== undefined &&
-            source.base.variants.length > 0 &&
-            models.get(providerID, id)?.package !== source.base.package
+          const repackaged = source?.base !== undefined
+            && source.base.variants.length > 0
+            && models.get(providerID, id)?.package !== source.base.package
           if (
-            config.variants === undefined &&
-            config.capabilities?.reasoning === undefined &&
-            (!source?.base || repackaged)
-          )
+            config.variants === undefined
+            && config.capabilities?.reasoning === undefined
+            && (!source?.base || repackaged)
+          ) {
             models.update(providerID, id, (model) => {
               model.variants = [
                 ...Variant.resolve({
@@ -132,10 +134,11 @@ export const Plugin = define({
                 }),
               ]
             })
+          }
         }
       }
     })
-  }),
+  },
 })
 
 // Integration documents are left out: their providers authenticate with the integration's connection, so they add no
@@ -163,12 +166,13 @@ export function integrate(providers: ProviderEditor, document: ConfigIntegration
     }
     const configured = providers.get(providerID)
     // Bound to the connection so its providers disappear as soon as the account changes or signs out.
-    if (configured)
+    if (configured) {
       providers.add({
         info: configured.provider,
         models: Array.from(configured.models.values()),
         sourceConnection: document.connection,
       })
+    }
   }
 }
 
@@ -183,11 +187,12 @@ function overlayProvider(
   const source = providers.get(item.canonical ?? current?.provider.canonical ?? providerID)
   const changed = item.canonical !== undefined && item.canonical !== current?.provider.canonical
   providers.update(providerID, (provider) => {
-    if (changed && source && source.provider !== provider)
+    if (changed && source && source.provider !== provider) {
       Object.assign(provider, structuredClone(source.provider), {
         id: provider.id,
         integrationID: provider.integrationID,
       })
+    }
     if (integrationID) provider.integrationID = integrationID
     provider.activation = "enabled"
     if (item.canonical !== undefined) provider.canonical = item.canonical
@@ -227,20 +232,22 @@ function overlay(
     if (config.settings !== undefined) model.settings = Provider.mergeOverlay(model.settings, config.settings)
     if (config.headers !== undefined) model.headers = Provider.mergeHeaders(model.headers, config.headers)
     if (config.body !== undefined) model.body = Provider.mergeOverlay(model.body, config.body)
-    if (config.capabilities !== undefined)
+    if (config.capabilities !== undefined) {
       model.capabilities = Model.mergeCapabilities(config.capabilities, model.capabilities)
+    }
     if (config.limit !== undefined) model.limit = { ...model.limit, ...config.limit }
   })
   // Variants are spelled for the final package, which the update above normalizes from `aisdk:*`.
   models.update(providerID, id, (model) => {
     // Configured reasoning replaces the base variants; configured variants still overlay them below.
-    if (config.capabilities?.reasoning !== undefined)
+    if (config.capabilities?.reasoning !== undefined) {
       model.variants = [
         ...Variant.resolve(
           { ...model, package: model.package ?? providerPackage },
           Variant.supports(config.capabilities.reasoning),
         ),
       ]
+    }
     if (config.variants !== undefined) {
       model.variants ??= []
       for (const variant of config.variants) {
@@ -249,8 +256,9 @@ function overlay(
           existing = { id: variant.id }
           model.variants.push(existing)
         }
-        if (variant.settings !== undefined)
+        if (variant.settings !== undefined) {
           existing.settings = Provider.mergeOverlay(existing.settings, variant.settings)
+        }
         if (variant.headers !== undefined) existing.headers = Provider.mergeHeaders(existing.headers, variant.headers)
         if (variant.body !== undefined) existing.body = Provider.mergeOverlay(existing.body, variant.body)
       }

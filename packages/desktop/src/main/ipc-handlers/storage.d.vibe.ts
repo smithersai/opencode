@@ -1,3 +1,0 @@
-import { IpcPortHandoff } from "../ipc-transport.ts";
-import { DesktopStorage } from "../storage/index.ts";
-export declare const storageHandlers: import("effect/Layer").Layer<import("effect/rpc/Rpc").Handler<"DraftsDelete"> | import("effect/rpc/Rpc").Handler<"DraftsGet"> | import("effect/rpc/Rpc").Handler<"DraftsGetBlob"> | import("effect/rpc/Rpc").Handler<"DraftsPutBlob"> | import("effect/rpc/Rpc").Handler<"DraftsSet"> | import("effect/rpc/Rpc").Handler<"StorageClear"> | import("effect/rpc/Rpc").Handler<"StorageItems"> | import("effect/rpc/Rpc").Handler<"StorageUpdate">, never, IpcPortHandoff | DesktopStorage.Service>;

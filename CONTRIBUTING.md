@@ -61,6 +61,12 @@ bun run dev:www
 
 ### Verification
 
+VibeLang declaration sidecars are generated files. After installing dependencies, run
+`bun run sidecars` from the root before package-local checks, builds, or editor typechecking.
+The root `check`, `lint`, `typecheck`, and `typecheck:tsc` scripts and CI setup generate them automatically.
+Generation checks dependencies before consumers and stops on compiler errors. Do not commit
+`*.d.vibe.ts` or `*.d.vibex.ts`; runtime JavaScript under `.vibelang/js/src` still backs package entry routes.
+
 Run typechecks, and tests where defined, from the affected package rather than the repository root:
 
 ```bash

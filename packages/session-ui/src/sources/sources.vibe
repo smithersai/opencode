@@ -1,5 +1,5 @@
 import type { SessionMessageAssistant, SessionMessageAssistantTool, SessionMessageInfo } from "@opencode/client/promise"
-import { currentToolError, currentToolInput, currentToolOutput } from "../message/current-tool-state.ts"
+import { currentToolError, currentToolInput, currentToolOutput } from "../message/current-tool-state.vibe"
 
 const decodeQuery = Schema.decodeUnknownOption(Schema.Struct({ query: Schema.String }))
 

@@ -2,7 +2,7 @@
 import { FileIcon } from "@opencode/ui/file-icon";
 import { useI18n } from "@opencode/ui/context/i18n";
 import { Button } from "@opencode/ui/button";
-import "./session-review-v2.css";
+import "../../../../../src/v2/components/session-review-v2.css";
 export function SessionReviewEmptyNoGitV2(props) {
     const i18n = useI18n();
     return (<div data-slot="session-review-v2-empty-no-git">

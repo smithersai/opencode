@@ -6,7 +6,7 @@ import { MenuItem, Server } from "@opencode/plugin/gui";
 import { Persistence } from "@/runtime/persistence/schema";
 import { Persist, persisted } from "@/runtime/persistence/storage";
 import { usePluginHost } from "./host";
-import { renamedFrom } from "./stores";
+import { renamedFrom } from "./stores.js";
 // Endpoint of a contributed server before its plugin reports one.
 const offline = { url: "http://127.0.0.1:0" };
 // The last complete inventory of each plugin that contributes servers, without endpoints or credentials.

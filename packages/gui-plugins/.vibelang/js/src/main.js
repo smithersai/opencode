@@ -2,10 +2,10 @@
 import { compose } from "@opencode/plugin/gui/host";
 import context from "./context";
 import btw from "./btw/index.js";
-import debug from "./debug";
+import debug from "./debug/index.js";
 import terminal from "./terminal";
 import file from "./file";
-import review from "./review";
+import review from "./review/index.js";
 import details from "./details";
 import browser from "./browser";
 import pairing from "./pairing";

@@ -1,7 +1,7 @@
 import type { SessionInfo, SessionMessageInfo } from "@opencode/client/promise"
 import { SessionMessage } from "@opencode/schema/session-message"
 import type { ServerCtx } from "@/runtime/server/runtime"
-import { decodeArguments, type ToolCall } from "./protocol"
+import { decodeArguments, type ToolCall } from "./protocol.vibe"
 import { ReplyWatch } from "./replies"
 import { messageExcerpts } from "./messages"
 import { formatHandoff, headerLapse } from "./handoff"

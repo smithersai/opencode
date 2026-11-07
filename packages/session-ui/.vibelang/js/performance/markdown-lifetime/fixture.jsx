@@ -5,7 +5,7 @@ import { Markdown } from "../../src/components/markdown";
 import { getCachedMarkdown } from "../../src/components/markdown-cache";
 import "@opencode/ui/styles";
 import "@opencode/ui/styles/tokens";
-import "../../src/components/markdown.css";
+import "../../../../src/components/markdown.css";
 const scenario = new URLSearchParams(location.search).get("scenario") ?? "mounted";
 const sections = Array.from({ length: 36 }, (_, index) => {
     const service = ["catalog", "billing", "delivery", "inventory", "accounts", "notifications"][index % 6];

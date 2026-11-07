@@ -24,7 +24,7 @@ import { readSessionTabsRemovedDetail, SESSION_TABS_REMOVED_EVENT } from "@/shel
 import { useGlobal } from "@/runtime/server/runtime";
 import { ServerConnection } from "@/runtime/server/registry";
 import { tabKey, useTabs } from "@/shell/tabs/tabs";
-import "./titlebar.css";
+import "../../../../../src/shell/titlebar/titlebar.css";
 import { MobileDrawer, MobileDrawerContent, MobileDrawerLabel, MobileDrawerTrigger } from "@/shell/mobile-drawer";
 import { sessionTabTitle } from "./tab-title";
 import { SessionTabAvatar } from "@/shell/layout/session-tab-avatar";

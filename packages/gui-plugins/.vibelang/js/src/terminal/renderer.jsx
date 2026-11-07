@@ -8,7 +8,7 @@ import { createTerminalModel } from "./model";
 import { terminalTab } from "./state.js";
 import { terminalTabLabel } from "./title";
 import { TerminalTabLabel } from "./label";
-import quoteStyles from "./quote.css?inline";
+import quoteStyles from "../../../../src/terminal/quote.css?inline";
 import { onIdle, BuiltinCommand, BuiltinSlot } from "@opencode/plugin/gui/builtin";
 const setup = (ctx) => {
     const sessions = ctx.sessions;

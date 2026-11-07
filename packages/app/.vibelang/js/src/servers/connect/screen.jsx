@@ -14,7 +14,7 @@ import { useRedeemPairing } from "./redeem";
 import { isMixedContent } from "./browser";
 import { cameraHint, createCameraAvailability } from "./camera";
 import { ConnectMethodSwitch } from "./method";
-import "./screen.css";
+import "../../../../../src/servers/connect/screen.css";
 const PairingScanner = lazy(() => import("./scanner").then((module) => ({ default: module.PairingScanner })));
 export function ConnectServerScreen(props = {}) {
     const language = useLanguage();

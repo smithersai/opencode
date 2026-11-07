@@ -7,7 +7,7 @@ import { canDisposeDirectory, pickDirectoriesToEvict } from "./eviction";
 import { useQuery } from "@tanstack/solid-query";
 import { directoryKey } from "./utils";
 import { normalizeAgentList, normalizeProviderList } from "./utils";
-import { ProjectState, VcsState } from "../persistence";
+import { ProjectState, VcsState } from "../persistence.js";
 export function createChildStoreManager(input) {
     const children = {};
     const metaCache = new Map();

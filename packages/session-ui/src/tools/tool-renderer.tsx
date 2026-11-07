@@ -61,7 +61,7 @@ import {
   executeToolSubtitle,
   readImagePath,
   type ExecuteToolCall,
-} from "../message/current-tool-state"
+} from "../message/current-tool-state.vibe"
 import { AssistantReasoningContent, writeClipboard } from "../message/message-content"
 import { stripAnsi } from "./ansi"
 import { followShellOutput } from "./shell-output"

@@ -7,7 +7,7 @@ import { PluginGuiLoader } from "./plugins";
 import { createMenubarItems, MenubarItemsProvider } from "./menubar-items";
 import { usePlatform } from "@/runtime/platform/platform";
 import { PluginHostProvider, usePluginHost } from "./host";
-import { createIpcClients } from "./ipc";
+import { createIpcClients } from "./ipc.js";
 import { createPluginAttachment, createHostApis, PluginAttachmentProvider } from "./host-apis";
 import { PluginCommands } from "./commands";
 import { PluginStyles } from "./render";

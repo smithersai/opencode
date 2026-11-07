@@ -1,10 +1,9 @@
-import { Schema, SchemaGetter, Struct } from "effect"
 import { checksum } from "@opencode/util/encode"
 import { SessionMessage } from "@opencode/schema/session-message"
 import { Skill } from "@opencode/schema/skill"
 import { Session } from "@opencode/schema/session"
 import { Persistence } from "@/runtime/persistence/schema"
-import { FileSelection, SelectedLineRange } from "@/workspaces/files/types"
+import { FileSelection, SelectedLineRange } from "../workspaces/files/types.vibe"
 
 const PartBase = {
   content: Schema.String,
@@ -12,7 +11,7 @@ const PartBase = {
   end: Schema.Number,
 }
 
-const SourceText = Schema.Struct({ value: Schema.String, start: Schema.Number, end: Schema.Number })
+schema SourceText { value: string; start: number; end: number }
 
 const Position = Schema.Struct({ line: Schema.Number, character: Schema.Number })
 
@@ -125,17 +124,14 @@ export const PathAttachmentPart = Persistence.struct({
 
 export type PathAttachmentPart = typeof PathAttachmentPart.Type
 
-export const ContentPart = Schema.Union([
-  TextPart,
-  FileAttachmentPart,
-  AgentPart,
-  SkillPart,
-  SessionPart,
-  ImageAttachmentPart,
-  PathAttachmentPart,
-])
-
-export type ContentPart = typeof ContentPart.Type
+export schema ContentPart =
+  | TextPart
+  | FileAttachmentPart
+  | AgentPart
+  | SkillPart
+  | SessionPart
+  | ImageAttachmentPart
+  | PathAttachmentPart
 
 export const Prompt = Persistence.array(ContentPart)
 
@@ -253,7 +249,9 @@ function legacyBrowserNote(item: typeof LegacyBrowserComment.Type): NoteComment 
     element.name ? `accessible name ${JSON.stringify(element.name)}` : undefined,
     element.text && element.text !== element.name ? `text ${JSON.stringify(element.text.slice(0, 80))}` : undefined,
     element.selector
-      ? `selector ${JSON.stringify(element.selector)}${element.selector.includes(" >>> ") ? ' (">>>" enters a shadow root)' : ""}`
+      ? `selector ${JSON.stringify(element.selector)}${
+        element.selector.includes(" >>> ") ? ' (">>>" enters a shadow root)' : ""
+      }`
       : undefined,
   ].filter((detail) => detail !== undefined)
 
@@ -262,7 +260,9 @@ function legacyBrowserNote(item: typeof LegacyBrowserComment.Type): NoteComment 
     origin: "browser",
     label: element.label,
     icon: "select-element",
-    subject: `the ${JSON.stringify(element.label)} element in browser tab ${item.tabID} at ${item.url}${details.length ? ` (${details.join("; ")})` : ""}`,
+    subject: `the ${JSON.stringify(element.label)} element in browser tab ${item.tabID} at ${item.url}${
+      details.length ? ` (${details.join("; ")})` : ""
+    }`,
     href: item.tabID,
     comment: item.comment,
   }
@@ -333,9 +333,7 @@ export const DEFAULT_PROMPT: Prompt = [{ type: "text", content: "", start: 0, en
 export const ComposerStore = Persistence.struct({
   prompt: Prompt.pipe(
     Schema.decode({
-      decode: SchemaGetter.transform((prompt) =>
-        prompt.length ? prompt : DEFAULT_PROMPT.map((part) => ({ ...part })),
-      ),
+      decode: SchemaGetter.transform((prompt) => prompt.length ? prompt : DEFAULT_PROMPT.map((part) => ({ ...part }))),
       encode: SchemaGetter.transform((prompt) => prompt),
     }),
   ),

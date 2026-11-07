@@ -2,7 +2,7 @@
 import { Effect, Option, Schema } from "effect";
 import { HttpClient } from "effect/http";
 import { quote, runSsh, sshArgs, SshFailure } from "./command";
-import { RemoteCli } from "./remote-cli";
+import { RemoteCli } from "./remote-cli.js";
 // Use commands supported by released V2 CLIs. The registration is the service's
 // complete private discovery contract; no remote Python/Node runtime is needed.
 const registrationScript = `status=$("$cli" service status) || exit 0

@@ -5,7 +5,7 @@ import { frameLoop, prefersReducedMotion, Spring } from "@opencode/ui/motion";
 import { createSignal, For, Match, onCleanup, Show, Switch } from "solid-js";
 import { sourcesExpand } from "./experiment";
 import { SiteIcon } from "./site-icon";
-import "./sources.css";
+import "../../../../src/sources/sources.css";
 /** A turn's searches and opened pages in the order they ran. `onOpen` opens a result's or page's URL. */
 export function SourcesPanel(props) {
     return (<div data-component="sources-panel">

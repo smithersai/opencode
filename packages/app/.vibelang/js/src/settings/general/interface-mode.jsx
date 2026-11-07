@@ -2,7 +2,7 @@
 import { For, Match, Show, Switch, createUniqueId } from "solid-js";
 import { useLanguage } from "@/runtime/i18n/language";
 import { useSettings } from "@/settings/model";
-import "./interface-mode.css";
+import "../../../../../src/settings/general/interface-mode.css";
 const modes = [
     { id: "top", layout: "horizontal" },
     { id: "side", layout: "vertical" },

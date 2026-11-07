@@ -15,7 +15,7 @@ import { displayName } from "@opencode/ui/project-avatar";
 import { SessionTabAvatarView } from "@/shell/layout/session-tab-avatar";
 import { sessionTabTitle } from "./tab-title";
 import { TabPreviewPopover } from "./tab-popover";
-import "./tab-nav.css";
+import "../../../../../src/shell/titlebar/tab-nav.css";
 // MouseEvent.button uses 1 for the middle/wheel button.
 const MIDDLE_MOUSE_BUTTON = 1;
 export function TabNavItem(props) {

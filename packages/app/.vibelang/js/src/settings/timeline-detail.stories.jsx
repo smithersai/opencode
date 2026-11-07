@@ -5,7 +5,7 @@ import { Button } from "@opencode/ui/button";
 import { timelinePresets } from "@opencode/session-ui/timeline/detail";
 import { SettingsList } from "./list";
 import { TimelineDetailControl } from "./timeline-detail";
-import "./settings.css";
+import "../../../../src/settings/settings.css";
 export default {
     title: "OpenCode/Settings/Timeline detail",
     id: "settings-timeline-detail",

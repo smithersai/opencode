@@ -385,7 +385,7 @@ A public `from` names older keys of the same storage. Built-ins also import part
 
 Review imports one session's slice of an app key that holds every session:
 
-<!-- source: src/review/index.ts#session -->
+<!-- source: src/review/index.vibe#session -->
 
 ```ts
 // The mode, selected file and open files of each session.

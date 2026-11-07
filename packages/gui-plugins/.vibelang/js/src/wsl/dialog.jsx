@@ -12,7 +12,7 @@ import { showToast } from "@opencode/ui/toast";
 import { usePlugin } from "@opencode/plugin/gui";
 import { useWslAddServerProbes } from "./probes";
 import { addServerViewModel } from "./model";
-export { default as css } from "./dialog.css?inline";
+export { default as css } from "../../../../src/wsl/dialog.css?inline";
 function isWslRuntimeMissing(error) {
     if (!error)
         return true;

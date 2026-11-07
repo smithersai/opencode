@@ -4,7 +4,7 @@ import { Button } from "@opencode/ui/button";
 import { Select } from "@opencode/ui/select";
 import { useLanguage } from "@/runtime/i18n/language";
 import { SettingsRow } from "@/settings/row";
-import "./session-websearch-dock.css";
+import "../../../../../src/session/requests/session-websearch-dock.css";
 export function SessionWebSearchDock(props) {
     const language = useLanguage();
     const options = createMemo(() => [

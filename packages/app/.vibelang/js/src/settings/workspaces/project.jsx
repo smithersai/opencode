@@ -16,7 +16,7 @@ import { ProjectOptions } from "./project-options";
 import { SettingsList } from "@/settings/list";
 import { SettingsRow } from "@/settings/row";
 import { createEditProjectModel } from "./project-model";
-import "./project.css";
+import "../../../../../src/settings/workspaces/project.css";
 export const SettingsProjectGeneral = (props) => {
     const language = useLanguage();
     const model = createEditProjectModel(props);

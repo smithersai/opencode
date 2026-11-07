@@ -19,7 +19,7 @@ import { useServerSDK } from "@/runtime/server/client";
 import { useData } from "@/runtime/server/current";
 import { useGlobal } from "@/runtime/server/runtime";
 import { ServerConnection } from "@/runtime/server/registry";
-import { useProviders } from "@/providers/catalog/providers";
+import { useProviders } from "../catalog/providers.js";
 import { consoleProviderGroup, consoleProviderName } from "@/providers/catalog/console";
 import { useIntegrations } from "@/providers/catalog/integrations";
 import { ProviderModelGroup, ProviderModelIcon } from "@/providers/models/provider-group";
@@ -38,7 +38,7 @@ import { AccountNameInput } from "@/settings/providers/account-name";
 import { useProviderAccountActions } from "@/settings/providers/account-actions";
 import { IconButton } from "@opencode/ui/icon-button";
 import { Menu } from "@opencode/ui/menu";
-import "./models.css";
+import "../../../../../src/providers/connect/models.css";
 export function useProviderConnectController() {
     const [store, setStore] = createStore({});
     const reset = () => setStore("selected", undefined);

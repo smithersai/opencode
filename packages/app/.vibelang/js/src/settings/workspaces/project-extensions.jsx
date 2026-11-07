@@ -15,7 +15,7 @@ import { ExternalLink } from "@/runtime/platform/external-link";
 import { ProjectFolderMissing } from "./project-folder-missing";
 import { configuredLanguageServers } from "./project-lsp";
 import { SettingsList } from "@/settings/list";
-import "./project.css";
+import "../../../../../src/settings/workspaces/project.css";
 const skillKey = (item) => `${item.name}\n${item.path}`;
 const ExtensionCard = (props) => (<SettingsList variant="catalog">{props.children}</SettingsList>);
 const ExtensionRow = (props) => (<div class="settings-extension-row project-settings-extension-row">

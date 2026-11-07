@@ -13,7 +13,7 @@ import { showToast } from "@/shell/notifications/toast";
 import { useLanguage } from "@/runtime/i18n/language";
 import { usePlatform } from "@/runtime/platform/platform";
 import { useData } from "@/runtime/server/current";
-import "./session-elicitation-dock.css";
+import "../../../../../src/session/requests/session-elicitation-dock.css";
 const decodeMessage = Schema.decodeUnknownOption(Schema.String);
 const inputTypes = { email: "email", uri: "url", date: "text", "date-time": "text" };
 export function SessionElicitationDock(props) {

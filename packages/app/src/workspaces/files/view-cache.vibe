@@ -1,10 +1,9 @@
 import { createEffect, createRoot } from "solid-js"
 import { produce } from "solid-js/store"
-import { Schema } from "effect"
 import { Persist, persisted } from "@/runtime/persistence/storage"
 import { Persistence } from "@/runtime/persistence/schema"
 import { createScopedCache } from "@/runtime/server/scoped-cache"
-import { SelectedLineRange } from "./types"
+import { SelectedLineRange } from "./types.vibe"
 import type { ServerScope } from "@/runtime/server/scope"
 
 const WORKSPACE_KEY = "__workspace__"

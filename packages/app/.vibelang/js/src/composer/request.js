@@ -2,7 +2,7 @@
 import { encodeFilePath, getFilename } from "@opencode/util/path";
 import { parseSessionMention } from "@opencode/util/session-mention";
 import { serializePrompt } from "./prompt-parts";
-import { formatAttachmentReference, formatCommentNote, formatNoteComment, formatQuoteComment, } from "@/composer/comment-note";
+import { formatAttachmentReference, formatCommentNote, formatNoteComment, formatQuoteComment, } from "./comment-note.js";
 const absolute = (directory, path) => {
     if (path.startsWith("/"))
         return path;

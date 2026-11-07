@@ -27,7 +27,7 @@ import {
 } from "@opencode/plugin/gui"
 import { BuiltinPanel, onIdle, type BuiltinPanelTab } from "@opencode/plugin/gui/builtin"
 import { Changes, type ChangeKind } from "@opencode/plugin/gui/review"
-import type Review from "./index"
+import type Review from "./index.vibe"
 import { createReviewModel, type Demand, type ReviewModel } from "./model"
 
 const TAB = "changes"

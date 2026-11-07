@@ -4,7 +4,7 @@ import { MarkdownProvider } from "@opencode/session-ui/context/markdown";
 import { useNavigate, useParams } from "@solidjs/router";
 import { useQuery } from "@tanstack/solid-query";
 import { createMemo, onCleanup } from "solid-js";
-import { useProviders } from "@/providers/catalog/providers";
+import { useProviders } from "../../providers/catalog/providers.js";
 import { LocalProvider } from "@/providers/models/selection";
 import { sessionHref } from "@/shell/routes/session";
 import { useData } from "@/runtime/server/current";

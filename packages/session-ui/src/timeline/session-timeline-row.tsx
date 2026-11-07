@@ -47,7 +47,7 @@ import { GenericTool } from "../components/basic-tool"
 import { SessionRetry } from "../components/session-retry"
 import { SessionError } from "../components/session-error"
 import { timelineCategory, type TimelineDetail } from "./detail"
-import { currentToolFailed } from "../message/current-tool-state"
+import { currentToolFailed } from "../message/current-tool-state.vibe"
 import { userMessageRuns, userRunSpring } from "./user-runs.vibe"
 import { attached } from "../components/message-file"
 import {

@@ -5,8 +5,8 @@ import { useLanguage } from "@/runtime/i18n/language";
 import { usePlatform } from "@/runtime/platform/platform";
 import { ExternalLink } from "@/runtime/platform/external-link";
 import { showToast } from "@/shell/notifications/toast";
-import legal from "./legal.svg";
-import anomalyBrush from "./anomaly-brush.svg";
+import legal from "../../../../../src/settings/about/legal.svg";
+import anomalyBrush from "../../../../../src/settings/about/anomaly-brush.svg";
 import { AnimatedWordmark } from "./animated-wordmark";
 import { FALLBACK_OTHER_CONTRIBUTORS, loadOtherContributorCount } from "./contributors";
 const writers = [

@@ -9,7 +9,7 @@ import { ErrorPage } from "@/shell/errors/error";
 import { CollapsedSidebarToggleSpace } from "@/shell/sidebar-toggle";
 import { useSettingsSurface } from "./surface";
 import { SettingsSearch } from "./search";
-import "./search.css";
+import "../../../../src/settings/search.css";
 export function SettingsNavigation(props) {
     const surface = useSettingsSurface();
     const searchable = () => surface.view().type === "root";

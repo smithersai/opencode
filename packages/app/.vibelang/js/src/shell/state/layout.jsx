@@ -9,7 +9,7 @@ import { ServerConnection, useServers } from "@/runtime/server/registry";
 import { usePlatform } from "@/runtime/platform/platform";
 import { Persist, persisted, removePersisted } from "@/runtime/persistence/storage";
 import { Persistence } from "@/runtime/persistence/schema";
-import { TabStorage } from "@/shell/tabs/schema";
+import { TabStorage } from "../tabs/schema.js";
 import { createScrollPersistence } from "./scroll";
 import { SessionStateKey } from "@/runtime/server/scope";
 import { createSessionKeyReader, ensureSessionKey, pruneSessionKeys } from "./helpers";

@@ -15,7 +15,7 @@ import { useData, useServer } from "@/runtime/server/current";
 import { showToast } from "@/shell/notifications/toast";
 import { createWorktree } from "@/workspaces/create";
 import { useDirectoryPicker } from "@/workspaces/selection/picker";
-import "./location-missing.css";
+import "../../../../../src/session/composer/location-missing.css";
 export function SessionLocationMissing(props) {
     const language = useLanguage();
     const server = useServer();

@@ -10,7 +10,7 @@ import type { ContextItem, ImageAttachmentPart, PathAttachmentPart, Prompt } fro
 import { appendPrompt, clonePrompt, isAttachment, promptLength } from "@/composer/prompt-parts"
 import { buildPromptRequest } from "@/composer/request"
 import { blobDataUrl, createLegacyBlobReference } from "@/runtime/persistence/drafts"
-import { readPromptPresentation } from "@/composer/comment-note"
+import { readPromptPresentation } from "../../composer/comment-note.vibe"
 import { extractPromptContext, extractPromptFromMessage } from "@/composer/prompt"
 import { useData } from "@/runtime/server/current"
 import { useServerSDK } from "@/runtime/server/client"

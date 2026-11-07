@@ -15,7 +15,7 @@ import { ServerRowMenuView, serverMenuLabels } from "@/servers/registry/row-menu
 import { ServerHealthIndicator } from "@/servers/registry/row";
 import { fileManagerApp } from "@/home/projects/file-manager";
 import { CollapsedSidebarToggleSpace } from "@/shell/sidebar-toggle";
-import "./view.css";
+import "../../../../../src/home/projects/view.css";
 const HOME_PROJECT_NAV_LABEL = "min-w-0 flex-1 overflow-hidden text-ellipsis whitespace-nowrap";
 const serverContextMenuID = (server) => `server:${ServerConnection.key(server)}`;
 // Plugin servers ask for sign-in themselves; an HTTP server that rejects its saved credentials needs a new

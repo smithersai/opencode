@@ -6,7 +6,7 @@ import { BuiltinSlot, onIdle } from "@opencode/plugin/gui/builtin";
 const setup = (ctx) => {
     const sessions = ctx.sessions;
     const menus = new Set();
-    const DetailsPanel = lazy(() => Promise.all([import("./panel"), import("./details.css?inline")]).then(([panel, css]) => {
+    const DetailsPanel = lazy(() => Promise.all([import("./panel"), import("../../../../src/details/details.css?inline")]).then(([panel, css]) => {
         ctx.add(Style, css.default);
         return panel;
     }));

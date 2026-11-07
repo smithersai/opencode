@@ -5,7 +5,7 @@ import { batch, createSignal, For, Show, } from "solid-js";
 import { createStore, produce, reconcile } from "solid-js/store";
 import { Portal, render } from "solid-js/web";
 import { liveAccessor, PanelContext, PluginContext, } from "@opencode/plugin/gui/host";
-import barStyles from "./bar.css?inline";
+import barStyles from "../../../../src/browser/bar.css?inline";
 import browserEn from "./i18n/en";
 import { createModel } from "./model";
 import SessionBrowserPane from "./panel";

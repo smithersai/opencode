@@ -14,7 +14,7 @@ import { Persist, persisted } from "@/runtime/persistence/storage";
 import { Persistence } from "@/runtime/persistence/schema";
 import en from "@/runtime/i18n/en";
 import { useVoice } from "./context";
-import "./voice.css";
+import "../../../../src/voice/voice.css";
 const toggle = motionTuning.toggle("voice.calls", {
     label: en["experiment.voiceCalls"],
     group: "Voice",

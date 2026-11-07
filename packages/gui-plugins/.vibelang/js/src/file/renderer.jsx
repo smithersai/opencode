@@ -10,7 +10,7 @@ import { FileContext } from "./context";
 import { FileTree, OpenInApp, } from "@opencode/plugin/gui/file";
 import { FileVisual } from "./label";
 import { fileTabId, fileTabPath, isFileTab, workspaceFileUrl } from "./path";
-import tabStyles from "./tabs.css?inline";
+import tabStyles from "../../../../src/file/tabs.css?inline";
 import { onIdle, BuiltinPanel, BuiltinSlot } from "@opencode/plugin/gui/builtin";
 import { Browser } from "@opencode/plugin/gui/browser";
 import { Changes } from "@opencode/plugin/gui/review";

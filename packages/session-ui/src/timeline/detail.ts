@@ -1,5 +1,5 @@
 import type { SessionMessageAssistant, SessionMessageInfo } from "@opencode/client/promise"
-import { shellResultFailed } from "../message/current-tool-state"
+import { shellResultFailed } from "../message/current-tool-state.vibe"
 
 export const timelineCategories = ["shell", "edit", "thinking", "subagents", "notices", "tools", "commentary"] as const
 

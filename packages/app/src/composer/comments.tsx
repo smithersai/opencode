@@ -10,9 +10,9 @@ import { createScopedCache } from "@/runtime/server/scoped-cache"
 import { uuid } from "@/runtime/persistence/uuid"
 import type { SelectedLineRange } from "@/workspaces/files/model"
 import { useWorkspaceLocation } from "@/workspaces/location"
-import { CommentStore, type LineComment } from "./schema"
+import { CommentStore, type LineComment } from "./schema.vibe"
 
-export type { LineComment } from "./schema"
+export type { LineComment } from "./schema.vibe"
 
 type CommentFocus = { file: string; id: string }
 

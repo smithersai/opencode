@@ -5,7 +5,7 @@ import { Button } from "@opencode/ui/button";
 import { DrawerContext } from "@opencode/plugin/gui/host";
 import { useLanguage } from "@/runtime/i18n/language";
 import { MobileDrawer, MobileDrawerClose, MobileDrawerContent, MobileDrawerLabel } from "./mobile-drawer";
-import "./mobile-panel-drawer.css";
+import "../../../../src/shell/mobile-panel-drawer.css";
 export function MobilePanelDrawer(props) {
     const language = useLanguage();
     const [store, setStore] = createStore({});

@@ -3,7 +3,7 @@ import { Icon } from "@opencode/ui/icon";
 import { Show } from "solid-js";
 import { useLanguage } from "@/runtime/i18n/language";
 import { useWorkspaceLocation } from "@/workspaces/location";
-import "./project.css";
+import "../../../../../src/settings/workspaces/project.css";
 export function ProjectFolderMissing() {
     const language = useLanguage();
     const location = useWorkspaceLocation();

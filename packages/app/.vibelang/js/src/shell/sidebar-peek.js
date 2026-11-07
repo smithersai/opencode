@@ -3,7 +3,7 @@ import { createEffect, createSignal, on, onCleanup } from "solid-js";
 import { makeEventListener } from "@solid-primitives/event-listener";
 import { frameLoop, prefersReducedMotion, Spring } from "@opencode/ui/motion";
 import { motionTimeScale } from "@opencode/ui/motion-tuning";
-import "./sidebar-peek.css";
+import "../../../../src/shell/sidebar-peek.css";
 // The peek's own spring, quicker than the docked sidebar's.
 const spring = { duration: 0.18, bounce: 0 };
 // How long the pointer rests before the sidebar peeks, in ms. The edge stays quick: it's crossed in a frame or two and

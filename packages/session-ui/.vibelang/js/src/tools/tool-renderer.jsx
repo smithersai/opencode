@@ -29,7 +29,7 @@ import { AnimatedNumber } from "@opencode/ui/animated-number";
 import { changedFileDiff, patchFileGroups } from "../components/apply-patch-file";
 import { animate } from "@kitlangton/solid-motion";
 import { SessionProgressIndicatorV2 } from "../v2/components/session-progress-indicator-v2";
-import { currentToolError, currentToolGroupedRead, currentToolInput, currentToolMetadata, currentToolOutput, executeToolCallArgs, executeToolCalls, executeToolSubtitle, readImagePath, } from "../message/current-tool-state";
+import { currentToolError, currentToolGroupedRead, currentToolInput, currentToolMetadata, currentToolOutput, executeToolCallArgs, executeToolCalls, executeToolSubtitle, readImagePath, } from "../message/current-tool-state.js";
 import { AssistantReasoningContent, writeClipboard } from "../message/message-content";
 import { stripAnsi } from "./ansi";
 import { followShellOutput } from "./shell-output";

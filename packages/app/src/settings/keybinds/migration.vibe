@@ -1,5 +1,4 @@
 import { batch, createEffect, untrack } from "solid-js"
-import { Predicate } from "effect"
 import type { useSettings } from "@/settings/model"
 
 /**
@@ -35,8 +34,8 @@ export function migrateKeybinds(settings: Pick<ReturnType<typeof useSettings>, "
 
           if (settings.keybinds.get(to) === undefined) settings.keybinds.set(to, value)
           settings.keybinds.reset(from)
-        }),
-      ),
+        })
+      )
     )
   })
 }

@@ -19,7 +19,7 @@ import { useCommand } from "@/shell/commands/command";
 import { workspaceSelectionDirectories } from "@/workspaces/paths";
 import "@/shell/commands/dialog.css";
 import "@/shell/palette-menu.css";
-import "./dialog.css";
+import "../../../../../src/new-session/location/dialog.css";
 /**
  * Opens the new-session location dialog: added projects across ready servers, a separate list of other server projects,
  * and the worktree destinations for each Git project. Adding a project picks the server when there are several.

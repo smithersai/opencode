@@ -4,9 +4,9 @@ import { Command, createKeyed, LinkHandler, MenuItem, Style } from "@opencode/pl
 import { BuiltinCommand, BuiltinPanel, onIdle } from "@opencode/plugin/gui/builtin";
 import { Browser } from "@opencode/plugin/gui/browser";
 import { PageIcon } from "./page-icon";
-import barStyles from "./bar.css?inline";
-import commentStyles from "./comment.css?inline";
-import tabStyles from "./tabs.css?inline";
+import barStyles from "../../../../src/browser/bar.css?inline";
+import commentStyles from "../../../../src/browser/comment.css?inline";
+import tabStyles from "../../../../src/browser/tabs.css?inline";
 const setup = (ctx) => {
     const sessions = ctx.sessions;
     const [model, setModel] = createSignal();

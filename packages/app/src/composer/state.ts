@@ -12,9 +12,9 @@ import {
   type ContextItem,
   type Prompt,
   type PromptModel,
-} from "./schema"
+} from "./schema.vibe"
 
-export { DEFAULT_PROMPT } from "./schema"
+export { DEFAULT_PROMPT } from "./schema.vibe"
 
 export type {
   AgentPart,
@@ -34,7 +34,7 @@ export type {
   SkillPart,
   SessionPart,
   TextPart,
-} from "./schema"
+} from "./schema.vibe"
 
 export type PromptScope = { draftID: string } | { dir: string; id?: string }
 

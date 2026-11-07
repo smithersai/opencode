@@ -7,7 +7,7 @@ import { createEffect, createSignal, For, onCleanup, Show } from "solid-js";
 import { useLanguage } from "@/runtime/i18n/language";
 import { useSettings } from "@/settings/model";
 import { useComposerLaneAlignment } from "./composer-lane";
-import "./activity-chips.css";
+import "../../../../../src/session/composer/activity-chips.css";
 // 12s, 1m 05s, 1h 02m: the trailing unit is padded so ticking keeps the same digit count.
 export function formatElapsed(ms, t) {
     const total = Math.max(0, Math.floor(ms / 1000));

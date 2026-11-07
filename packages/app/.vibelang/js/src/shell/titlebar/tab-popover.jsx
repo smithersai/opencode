@@ -4,7 +4,7 @@ import { prefersReducedMotion } from "@opencode/ui/motion";
 import { createEffect, createSignal, on, onCleanup, Show } from "solid-js";
 import { useLanguage } from "@/runtime/i18n/language";
 import { createMediaQuery } from "@solid-primitives/media";
-import "./tab-popover.css";
+import "../../../../../src/shell/titlebar/tab-popover.css";
 // Initial hover delay before the preview appears, per design.
 const OPEN_DELAY = 750;
 const CLOSE_DELAY = 0;

@@ -8,7 +8,7 @@ import { Switch } from "@opencode/ui/switch";
 import { Tooltip } from "@opencode/ui/tooltip";
 import { timelineCategories, timelinePreset, timelinePresets, } from "@opencode/session-ui/timeline/detail";
 import { useLanguage } from "@/runtime/i18n/language";
-import "./timeline-detail.css";
+import "../../../../src/settings/timeline-detail.css";
 const presets = timelinePresets.toReversed();
 export function TimelineDetailControl(props) {
     const language = useLanguage();

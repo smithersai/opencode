@@ -1,9 +1,6 @@
-import { Schema } from "effect"
 import { Ipc } from "@opencode/plugin/gui"
 
-export const WslServerConfig = Schema.Struct({ id: Schema.String, distro: Schema.String })
-
-export type WslServerConfig = typeof WslServerConfig.Type
+export schema WslServerConfig { id: string; distro: string }
 
 export const WslServerRuntime = Schema.Union([
   Schema.Struct({ kind: Schema.Literal("starting") }),
@@ -18,20 +15,17 @@ export const WslServerRuntime = Schema.Union([
 
 export type WslServerRuntime = typeof WslServerRuntime.Type
 
-export const WslJob = Schema.Union([
-  Schema.Struct({ kind: Schema.Literal("runtime"), startedAt: Schema.Number }),
-  Schema.Struct({ kind: Schema.Literal("distros"), startedAt: Schema.Number }),
-  Schema.Struct({ kind: Schema.Literal("install-wsl"), startedAt: Schema.Number }),
-  Schema.Struct({ kind: Schema.Literal("install-distro"), distro: Schema.String, startedAt: Schema.Number }),
-  Schema.Struct({
-    kind: Schema.Literal("probe-addable"),
-    distros: Schema.Array(Schema.String),
-    startedAt: Schema.Number,
-  }),
-  Schema.Struct({ kind: Schema.Literal("install-opencode"), distro: Schema.String, startedAt: Schema.Number }),
-])
-
-export type WslJob = typeof WslJob.Type
+export schema WslJob =
+  | { kind: "runtime"; startedAt: number }
+  | { kind: "distros"; startedAt: number }
+  | { kind: "install-wsl"; startedAt: number }
+  | { kind: "install-distro"; distro: string; startedAt: number }
+  | {
+    kind: "probe-addable"
+    distros: ReadonlyArray<string>
+    startedAt: number
+  }
+  | { kind: "install-opencode"; distro: string; startedAt: number }
 
 export const WslRuntimeCheck = Schema.Struct({
   available: Schema.Boolean,
@@ -49,9 +43,7 @@ export const WslInstalledDistro = Schema.Struct({
 
 export type WslInstalledDistro = typeof WslInstalledDistro.Type
 
-export const WslOnlineDistro = Schema.Struct({ name: Schema.String, label: Schema.String })
-
-export type WslOnlineDistro = typeof WslOnlineDistro.Type
+export schema WslOnlineDistro { name: string; label: string }
 
 export const WslDistroProbe = Schema.Struct({
   name: Schema.String,
@@ -74,9 +66,7 @@ export const WslOpencodeCheck = Schema.Struct({
 
 export type WslOpencodeCheck = typeof WslOpencodeCheck.Type
 
-export const WslServerItem = Schema.Struct({ config: WslServerConfig, runtime: WslServerRuntime })
-
-export type WslServerItem = typeof WslServerItem.Type
+export schema WslServerItem { config: WslServerConfig; runtime: WslServerRuntime }
 
 export const WslServersState = Schema.Struct({
   runtime: Schema.NullOr(WslRuntimeCheck),
@@ -91,9 +81,9 @@ export const WslServersState = Schema.Struct({
 
 export type WslServersState = typeof WslServersState.Type
 
-const Name = Schema.Struct({ name: Schema.NonEmptyString })
+schema Name { name: Schema.NonEmptyString }
 
-const Id = Schema.Struct({ id: Schema.NonEmptyString })
+schema Id { id: Schema.NonEmptyString }
 
 /** WSL runtime, distros, and the OpenCode servers the main process runs inside them. */
 export const Wsl = Ipc.define({

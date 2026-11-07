@@ -1,4 +1,3 @@
-import { Predicate } from "effect"
 import { base64Encode } from "@opencode/util/encode"
 import { Session } from "@opencode/schema/session"
 import { startTransition } from "solid-js"
@@ -48,18 +47,17 @@ export function createNewSessionComposerAdapter(props: {
       const draftID = props.draftID
       const currentDirectory = location().directory
 
-      const projectDirectory =
-        data.location.info({ directory: currentDirectory })?.project.canonical ?? currentDirectory
+      const projectDirectory = data.location.info({ directory: currentDirectory })?.project.canonical
+        ?? currentDirectory
 
       const worktree = props.worktree()
       const branch = props.branch()
       const mcp = props.mcp.capture()
       const id = Session.ID.create()
 
-      const pending =
-        worktree === "create"
-          ? tabs.prepareSession(draftID, { server: server.key, sessionId: id }, { message, selection })
-          : undefined
+      const pending = worktree === "create"
+        ? tabs.prepareSession(draftID, { server: server.key, sessionId: id }, { message, selection })
+        : undefined
 
       await pending?.ready
 
@@ -225,12 +223,13 @@ function errorMessage(language: ReturnType<typeof useLanguage>, cause: unknown) 
   if (Predicate.hasProperty(cause, "message") && Predicate.isString(cause.message)) return cause.message
 
   if (
-    Predicate.hasProperty(cause, "data") &&
-    Predicate.hasProperty(cause.data, "message") &&
-    Predicate.isString(cause.data.message) &&
-    cause.data.message
-  )
+    Predicate.hasProperty(cause, "data")
+    && Predicate.hasProperty(cause.data, "message")
+    && Predicate.isString(cause.data.message)
+    && cause.data.message
+  ) {
     return cause.data.message
+  }
 
   return language.t("common.requestFailed")
 }

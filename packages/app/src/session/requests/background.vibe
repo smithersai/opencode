@@ -5,7 +5,6 @@ import type {
   SessionMessageInfo,
   ShellInfo,
 } from "@opencode/client/promise"
-import { Option, Schema } from "effect"
 import { createMemo } from "solid-js"
 
 // `started` is when the work began running: the latest call's run time, the child session's creation, or the shell's
@@ -60,24 +59,23 @@ export function createSessionBackground(input: {
 
     return {
       calls,
-      blocking:
-        assistant?.content.flatMap((part) => {
-          if (part.type !== "tool" || part.state.status !== "running") return []
+      blocking: assistant?.content.flatMap((part) => {
+        if (part.type !== "tool" || part.state.status !== "running") return []
 
-          if (part.name !== "shell" && part.name !== "subagent") return []
-          const shell = part.name === "shell"
+        if (part.name !== "shell" && part.name !== "subagent") return []
+        const shell = part.name === "shell"
 
-          return [
-            {
-              type: shell ? ("shell" as const) : ("subagent" as const),
-              partID: part.id,
-              id: text(shell ? part.state.metadata.shellID : part.state.metadata.sessionID),
-              label: text(shell ? part.state.input.command : part.state.input.description),
-              agent: shell ? undefined : text(part.state.input.agent),
-              started: part.time.ran ?? part.time.created,
-            },
-          ]
-        }) ?? [],
+        return [
+          {
+            type: shell ? ("shell" as const) : ("subagent" as const),
+            partID: part.id,
+            id: text(shell ? part.state.metadata.shellID : part.state.metadata.sessionID),
+            label: text(shell ? part.state.input.command : part.state.input.description),
+            agent: shell ? undefined : text(part.state.input.agent),
+            started: part.time.ran ?? part.time.created,
+          },
+        ]
+      }) ?? [],
     }
   })
 
@@ -133,16 +131,16 @@ export function createSessionBackground(input: {
       sessions.some((info) => child(item, info))
         ? []
         : [
-            {
-              id: item.id ?? item.partID,
-              type: "subagent",
-              sessionID: item.id,
-              partID: item.partID,
-              label: item.label,
-              agent: item.agent,
-              started: item.started,
-            },
-          ],
+          {
+            id: item.id ?? item.partID,
+            type: "subagent",
+            sessionID: item.id,
+            partID: item.partID,
+            label: item.label,
+            agent: item.agent,
+            started: item.started,
+          },
+        ]
     )
 
     // Work that blocks the run comes before work already in the background.
@@ -164,8 +162,9 @@ export function createSessionBackground(input: {
         current.blocking.some(
           (item) => item.type === "shell" && (item.id === shell.id || (!!item.label && shell.command === item.label)),
         )
-      )
+      ) {
         return []
+      }
 
       return [{ id: shell.id, type: "shell" as const, label: shell.command, started: shell.time.started }]
     })

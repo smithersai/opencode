@@ -1,7 +1,6 @@
-export * as TabStorage from "./schema"
+export * as TabStorage from "./schema.vibe"
 
-import { Schema, SchemaGetter } from "effect"
-import { ServerKey } from "@/runtime/server/persistence"
+import { ServerKey } from "../../runtime/server/persistence.vibe"
 import { Persistence } from "@/runtime/persistence/schema"
 
 export { ServerKey }

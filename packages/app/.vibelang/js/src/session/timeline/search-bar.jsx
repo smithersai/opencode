@@ -2,7 +2,7 @@
 import { Icon } from "@opencode/ui/icon";
 import "@opencode/ui/text-input.css";
 import { Show } from "solid-js";
-import "./search-bar.css";
+import "../../../../../src/session/timeline/search-bar.css";
 export function TimelineSearchBar(props) {
     const c = props.controller;
     return (<Show when={c.visible()}>

@@ -9,7 +9,7 @@ import { useServerSDK } from "@/runtime/server/client";
 import { createScopedCache } from "@/runtime/server/scoped-cache";
 import { uuid } from "@/runtime/persistence/uuid";
 import { useWorkspaceLocation } from "@/workspaces/location";
-import { CommentStore } from "./schema";
+import { CommentStore } from "./schema.js";
 const WORKSPACE_KEY = "__workspace__";
 const MAX_COMMENT_SESSIONS = 20;
 function sessionKey(dir, id) {

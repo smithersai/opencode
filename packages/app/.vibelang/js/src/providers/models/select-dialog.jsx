@@ -4,7 +4,7 @@ import { createStore } from "solid-js/store";
 import { useLocal } from "@/providers/models/selection";
 import { isFreeModel } from "@/providers/models/models";
 import { useDialog } from "@opencode/ui/context/dialog";
-import { popularProviders } from "@/providers/catalog/providers";
+import { popularProviders } from "../catalog/providers.js";
 import { Button } from "@opencode/ui/button";
 import { Badge } from "@opencode/ui/badge";
 import { Dialog, DialogBody, DialogTitle } from "@opencode/ui/dialog";
@@ -30,7 +30,7 @@ import { CONSOLE_GROUP_KEY, consoleModelGroup, ProviderModelIcon, ProviderModelS
 import { consoleProviderName } from "@/providers/catalog/console";
 import "@/settings/settings.css";
 import "@/shell/commands/dialog.css";
-import "./select-dialog.css";
+import "../../../../../src/providers/models/select-dialog.css";
 const MobilePanelDrawer = lazy(async () => {
     const { MobilePanelDrawer } = await import("@/shell/mobile-panel-drawer");
     return { default: MobilePanelDrawer };

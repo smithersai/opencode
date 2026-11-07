@@ -1,5 +1,3 @@
-import { Data, Equal, Match } from "effect"
-
 export type PartRef = {
   messageID: string
   partID: string
@@ -7,20 +5,20 @@ export type PartRef = {
 
 export type PartGroup =
   | {
-      key: string
-      type: "part"
-      ref: PartRef
-    }
+    key: string
+    type: "part"
+    ref: PartRef
+  }
   | {
-      key: string
-      type: "context"
-      refs: PartRef[]
-    }
+    key: string
+    type: "context"
+    refs: PartRef[]
+  }
   | {
-      key: string
-      type: "file" | "read"
-      refs: PartRef[]
-    }
+    key: string
+    type: "file" | "read"
+    refs: PartRef[]
+  }
 
 export namespace TimelineRow {
   export class TurnGap extends Data.TaggedClass("TurnGap")<{

@@ -7,7 +7,7 @@ import { Persistence } from "@/runtime/persistence/schema"
 import { makeEventListener } from "@solid-primitives/event-listener"
 import { useLanguage } from "@/runtime/i18n/language"
 import { useSettings } from "@/settings/model"
-import { keybindRenames } from "@/settings/keybinds/migration"
+import { keybindRenames } from "../../settings/keybinds/migration.vibe"
 import en from "@/runtime/i18n/en"
 import { Persist, persisted } from "@/runtime/persistence/storage"
 

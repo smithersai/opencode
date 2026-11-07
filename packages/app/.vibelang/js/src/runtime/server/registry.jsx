@@ -5,7 +5,7 @@ import { batch, createMemo } from "solid-js";
 import { reconcile } from "solid-js/store";
 import { Persist, persisted } from "@/runtime/persistence/storage";
 import { ServerScope } from "@/runtime/server/scope";
-import { ServerKey, ServerState } from "./persistence";
+import { ServerKey, ServerState } from "./persistence.js";
 export function normalizeServerUrl(input) {
     const trimmed = input.trim();
     if (!trimmed)

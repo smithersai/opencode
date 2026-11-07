@@ -10,7 +10,7 @@ import { LinkHandler, } from "@opencode/plugin/gui";
 import { OpenCode } from "@opencode/client/promise";
 import { useLanguage } from "@/runtime/i18n/language";
 import { PluginAlertDialog, PluginConfirmDialog, PluginPromptDialog, PluginSelectDialog } from "./dialogs";
-import { createSessionStore, whenLoaded } from "./stores";
+import { createSessionStore, whenLoaded } from "./stores.js";
 const pending = { status: "pending" };
 const inactive = {
     disabled: { status: "inactive", reason: "disabled" },

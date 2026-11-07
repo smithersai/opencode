@@ -2,9 +2,9 @@
 import { Match, Switch } from "solid-js";
 import { AssistantReasoningContent, AssistantTextContent, CurrentUserMessageDisplay } from "./message-content";
 import { CurrentContextToolGroup, CurrentFileToolGroup, CurrentReadToolGroup, ToolDisplay, } from "../tools/tool-renderer";
-import { currentToolError, currentToolInput, currentToolMetadata, currentToolOutput } from "./current-tool-state";
+import { currentToolError, currentToolInput, currentToolMetadata, currentToolOutput } from "./current-tool-state.js";
 export { SessionShellMessage } from "../tools/tool-renderer";
-export { currentContentDefaultOpen } from "./current-tool-state";
+export { currentContentDefaultOpen } from "./current-tool-state.js";
 export function SessionUserMessage(props) {
     return (<CurrentUserMessageDisplay sessionID={props.sessionID} message={props.message} text={props.displayText ?? props.message.text} comments={props.comments} references={props.references} voice={props.voice} agent={props.historicalAgent} model={props.historicalModel} actions={props.actions} run={props.run}/>);
 }

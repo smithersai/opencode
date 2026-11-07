@@ -14,7 +14,7 @@ import { SessionTabAvatarView } from "@/shell/layout/session-tab-avatar";
 import { sessionLabel } from "@/session/title";
 import { shouldOpenSessionInBackground } from "./open";
 import { createAltHold } from "./alt-hold";
-import "./view.css";
+import "../../../../../src/home/sessions/view.css";
 import { HomeSessionStatusController, homeSessionSearchKey, } from "./controller";
 const SHOW_HOME_SESSION_ARCHIVE = false;
 const HOME_SECTION_LABEL = "text-v2-text-text-muted [font-weight:440]";

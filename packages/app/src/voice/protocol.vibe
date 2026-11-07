@@ -1,11 +1,9 @@
-import { Option, Schema } from "effect"
-
-const Item = Schema.Struct({
-  type: Schema.String,
-  call_id: Schema.optional(Schema.String),
-  name: Schema.optional(Schema.String),
-  arguments: Schema.optional(Schema.String),
-})
+schema Item {
+  type: string
+  call_id?: string
+  name?: string
+  arguments?: string
+}
 
 const Envelope = Schema.Struct({
   type: Schema.String,

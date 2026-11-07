@@ -2,7 +2,7 @@
 import { registerCustomTheme, } from "@pierre/diffs";
 import { OpenCodeTheme } from "@opencode/ui/context/highlight-theme";
 import { lineCommentStyles } from "../components/line-comment-styles";
-import quoteHighlightStyles from "../components/quote-highlight.css?inline";
+import quoteHighlightStyles from "../../../../src/components/quote-highlight.css?inline";
 // Pierre resolves themes on the main thread and hands them to its workers, so register before any viewer renders.
 registerCustomTheme(OpenCodeTheme.name, () => Promise.resolve(OpenCodeTheme), "zed");
 // Viewers and worker pools must agree: the pool's options win whenever it renders.

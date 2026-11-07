@@ -1,9 +1,8 @@
 import type { SessionMessageUser } from "@opencode/client/promise"
-import { Option, Schema } from "effect"
 import { Persistence } from "@/runtime/persistence/schema"
 import { uuid } from "@/runtime/persistence/uuid"
-import { FileSelection } from "@/workspaces/files/types"
-import { durableNote, LegacyBrowserNote, NoteComment, QuoteComment, type ContextItem } from "./schema"
+import { FileSelection } from "../workspaces/files/types.vibe"
+import { durableNote, LegacyBrowserNote, NoteComment, QuoteComment, type ContextItem } from "./schema.vibe"
 
 const PromptFileComment = Persistence.struct({
   type: Schema.optional(Schema.Literal("file")),
@@ -62,10 +61,12 @@ export function formatNoteComment(input: NoteComment) {
 
 /** Each quoted line is prefixed, so quoted text cannot end the quote early and read as the user's own words. */
 export function formatQuoteComment(input: QuoteComment) {
-  const quote = `The user quoted the following from ${input.source?.subject ?? "earlier in the conversation"}:\n${input.text
-    .split("\n")
-    .map((line) => `> ${line}`)
-    .join("\n")}`
+  const quote = `The user quoted the following from ${input.source?.subject ?? "earlier in the conversation"}:\n${
+    input.text
+      .split("\n")
+      .map((line) => `> ${line}`)
+      .join("\n")
+  }`
 
   if (!input.comment) return quote
 
@@ -93,12 +94,11 @@ export function formatCommentNote(input: { path: string; selection?: FileSelecti
   const start = input.selection ? Math.min(input.selection.startLine, input.selection.endLine) : undefined
   const end = input.selection ? Math.max(input.selection.startLine, input.selection.endLine) : undefined
 
-  const range =
-    start === undefined || end === undefined
-      ? "this file"
-      : start === end
-        ? `line ${start}`
-        : `lines ${start} through ${end}`
+  const range = start === undefined || end === undefined
+    ? "this file"
+    : start === end
+    ? `line ${start}`
+    : `lines ${start} through ${end}`
 
   return `The user made the following comment regarding ${range} of ${input.path}: ${input.comment}`
 }
@@ -114,15 +114,14 @@ export function parseCommentNote(text: string) {
 
   return {
     path: match[5],
-    selection:
-      start !== undefined && end !== undefined
-        ? {
-            startLine: start,
-            startChar: 0,
-            endLine: end,
-            endChar: 0,
-          }
-        : undefined,
+    selection: start !== undefined && end !== undefined
+      ? {
+        startLine: start,
+        startChar: 0,
+        endLine: end,
+        endChar: 0,
+      }
+      : undefined,
     comment: match[6],
   } satisfies PromptComment
 }

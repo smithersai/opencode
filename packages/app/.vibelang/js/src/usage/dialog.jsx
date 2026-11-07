@@ -10,7 +10,7 @@ import { usePlatform } from "@/runtime/platform/platform";
 import { useData } from "@/runtime/server/current";
 import { useUsageFormat } from "./format";
 import { usageView, } from "./limits";
-import "./dialog.css";
+import "../../../../src/usage/dialog.css";
 /** The Usage dialog: the location's OpenCode Go allowance and Console budgets, refreshed when it opens. */
 export function DialogUsage(props) {
     const data = useData();

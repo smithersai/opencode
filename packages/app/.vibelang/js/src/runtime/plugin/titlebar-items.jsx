@@ -4,7 +4,7 @@ import { syncSpinPhase } from "@opencode/ui/hooks";
 import { Icon } from "@opencode/ui/icon";
 import { TitlebarItem } from "@opencode/plugin/gui";
 import { usePluginHost } from "./host";
-import "./titlebar-items.css";
+import "../../../../../src/runtime/plugin/titlebar-items.css";
 /** TitlebarItem contributions shown in the titlebar. */
 export function useTitlebarItems() {
     const host = usePluginHost();

@@ -1,6 +1,6 @@
 import { Effect, PlatformError, Predicate, Schema, Stream } from "effect"
 import { ChildProcess, ChildProcessSpawner } from "effect/process"
-import { RemoteCli } from "./remote-cli"
+import { RemoteCli } from "./remote-cli.vibe"
 
 export class SshFailure extends Schema.TaggedError<SshFailure>()("SshFailure", {
   code: Schema.Literals([

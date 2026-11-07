@@ -3,7 +3,7 @@ import { batch, createEffect, createMemo, on } from "solid-js";
 import { createStore } from "solid-js/store";
 import { useLocal } from "@/providers/models/selection";
 import { useWorkspaceLocation } from "@/workspaces/location";
-import { useProviders } from "@/providers/catalog/providers";
+import { useProviders } from "../providers/catalog/providers.js";
 import { useData } from "@/runtime/server/current";
 import { normalizeAgentList, normalizeProviderList } from "@/runtime/server/global-sync/utils";
 import { useModels } from "@/providers/models/models";

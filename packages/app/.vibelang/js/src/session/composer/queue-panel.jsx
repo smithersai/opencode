@@ -14,7 +14,7 @@ import { Tooltip } from "@opencode/ui/tooltip";
 import { prefersReducedMotion } from "@opencode/ui/motion";
 import { useLanguage } from "@/runtime/i18n/language";
 import { cascade, Grow, queueStagger } from "./spring-height";
-import "./queue-panel.css";
+import "../../../../../src/session/composer/queue-panel.css";
 // Pullout above the composer listing the prompts queued behind the current
 // turn. The panel slides under the composer card (negative margin, opaque
 // composer background) so the two read as one attached surface.

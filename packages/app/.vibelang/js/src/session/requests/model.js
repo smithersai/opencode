@@ -9,7 +9,7 @@ import { projectSettingsKey, useSettings } from "@/settings/model";
 import { useWorkspaceLocation } from "@/workspaces/location";
 import { sessionPermissionRequest, sessionFormRequest, sessionTreeIDs } from "@/session/requests/session-request-tree";
 import { createWebSearchRequest } from "./websearch";
-import { createSessionBackground } from "@/session/requests/background";
+import { createSessionBackground } from "./background.js";
 import { createSteerBackground } from "@/session/requests/steer-background";
 import { useData } from "@/runtime/server/current";
 export function createSessionRequestModel() {

@@ -7,7 +7,7 @@ import { useSearchParams } from "@solidjs/router";
 import { createEffect, createMemo, createResource, on, untrack } from "solid-js";
 import { createComposerModel } from "@/composer/model";
 import { useComposerCommands } from "@/composer/commands";
-import { createNewSessionComposerAdapter } from "./composer-adapter";
+import { createNewSessionComposerAdapter } from "./composer-adapter.js";
 import { NewSessionView } from "./view";
 import { createNewSessionWorkspaceController } from "./workspace/controller";
 import { useNewSessionCommands } from "./commands";

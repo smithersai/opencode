@@ -2,7 +2,7 @@
 import { Persist, persisted } from "@/runtime/persistence/storage";
 import { clonePromptHistoryComments, prependHistoryEntry, removeHistoryEntry, } from "./entry";
 import { clonePrompt } from "../prompt-parts";
-import { PromptHistoryState } from "../schema";
+import { PromptHistoryState } from "../schema.js";
 function createComposerHistoryStore(normal, setNormal, shell, setShell) {
     return {
         entries: (mode) => (mode === "shell" ? shell.entries : normal.entries),

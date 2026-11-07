@@ -10,7 +10,6 @@ import {
   type Owner,
 } from "solid-js"
 import { produce, reconcile, type SetStoreFunction } from "solid-js/store"
-import { Predicate } from "effect"
 import type { Mutable, Persisted, SessionRef } from "@opencode/plugin/gui"
 import type { BuiltinStoreFrom } from "@opencode/plugin/gui/builtin"
 import { Persist, type persisted } from "@/runtime/persistence/storage"
@@ -108,7 +107,7 @@ export function persistedHandle<T extends object>(input: {
     batch(() => {
       queue.splice(0).forEach((apply) => apply())
       setLoaded(true)
-    }),
+    })
   )
 
   // Runtime-key stores have no setup awaiter: a failed queued mutation must still report its contract error.
@@ -126,10 +125,11 @@ export function persistedHandle<T extends object>(input: {
             // SAFETY: Solid's produce draft is writable recursively; schema readonly fields constrain readers, not drafts.
             const returned = mutate(draft as Mutable<T>)
 
-            if (returned !== undefined)
+            if (returned !== undefined) {
               throw new Error("Persisted.update must not return a value. Use set(next) to replace the value.")
+            }
           }),
-        ),
+        )
       )
     },
     set(next) {
@@ -224,7 +224,7 @@ export function createSessionStore<T extends object>(input: {
         entry.dispose()
         entries.delete(key)
         listed.delete(key)
-      }),
+      })
     )
   })
 

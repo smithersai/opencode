@@ -7,7 +7,7 @@ import { useFilteredList } from "@opencode/ui/hooks";
 import { createMemo, For, Show } from "solid-js";
 import { createStore } from "solid-js/store";
 import { useLocal } from "@/providers/models/selection";
-import { popularProviders } from "@/providers/catalog/providers";
+import { popularProviders } from "../catalog/providers.js";
 import { useLanguage } from "@/runtime/i18n/language";
 import { useDialog } from "@opencode/ui/context/dialog";
 import { DialogConnectProvider } from "@/providers/connect/dialog";
@@ -15,7 +15,7 @@ import { decode64 } from "@/runtime/persistence/base64";
 import { consoleModelGroup, ProviderModelSections } from "@/providers/models/provider-group";
 import "@/settings/settings.css";
 import "@/shell/search-list.css";
-import "./manage.css";
+import "../../../../../src/providers/models/manage.css";
 export const DialogManageModels = () => {
     const local = useLocal();
     const language = useLanguage();

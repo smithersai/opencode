@@ -1,5 +1,4 @@
 import type { SessionMessageAssistant, SessionMessageAssistantTool } from "@opencode/client/promise"
-import { Option, Schema } from "effect"
 
 const decodeInput = Schema.decodeUnknownOption(Schema.fromJsonString(Schema.Record(Schema.String, Schema.Unknown)))
 
@@ -38,9 +37,9 @@ export function currentToolError(tool: SessionMessageAssistantTool) {
 
 export function currentToolFailed(tool: SessionMessageAssistantTool) {
   return (
-    tool.state.status === "error" ||
-    (tool.name === "execute" && executeToolFailed(currentToolMetadata(tool))) ||
-    (tool.name === "shell" && tool.state.status === "completed" && shellResultFailed(currentToolMetadata(tool)))
+    tool.state.status === "error"
+    || (tool.name === "execute" && executeToolFailed(currentToolMetadata(tool)))
+    || (tool.name === "shell" && tool.state.status === "completed" && shellResultFailed(currentToolMetadata(tool)))
   )
 }
 
@@ -105,10 +104,10 @@ export function readImagePath(input: Record<string, unknown>) {
 // Plain file reads render as one comma-separated row; images and loaded instructions keep their own rows.
 export function currentToolGroupedRead(tool: SessionMessageAssistantTool) {
   return (
-    tool.name === "read" &&
-    tool.state.status !== "error" &&
-    !readImagePath(currentToolInput(tool)) &&
-    !currentToolHasLoadedFiles(tool)
+    tool.name === "read"
+    && tool.state.status !== "error"
+    && !readImagePath(currentToolInput(tool))
+    && !currentToolHasLoadedFiles(tool)
   )
 }
 

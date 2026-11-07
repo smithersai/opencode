@@ -13,7 +13,7 @@ import { createTabMemory } from "./memory";
 import { nextTabAfterClose, pushClosedTab, removeClosedTabs, takeClosedTab } from "./closed";
 import { createDraftComposerState, createMemoryComposerState, } from "@/composer/state";
 import { appendPrompt, promptLength } from "@/composer/prompt-parts";
-import { TabStorage } from "./schema";
+import { TabStorage } from "./schema.js";
 import { useCurrentRoute } from "@/shell/state/layout";
 export const draftHref = (draftID) => `/new-session?draftId=${encodeURIComponent(draftID)}`;
 export const tabHref = (tab) => tab.type === "draft" ? draftHref(tab.draftID) : sessionHref(tab.server, tab.routeSessionId ?? tab.sessionId);

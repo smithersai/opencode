@@ -1,7 +1,7 @@
 import { expect, test } from "bun:test"
 import { canRemoveServer, createServerProjects, resolveServerList, ServerConnection, serverLabel } from "./registry"
 import { Schema } from "effect"
-import { ServerState } from "./persistence"
+import { ServerState } from "./persistence.vibe"
 import { createStore } from "solid-js/store"
 import { ServerScope } from "./scope"
 import { Persistence } from "@/runtime/persistence/schema"

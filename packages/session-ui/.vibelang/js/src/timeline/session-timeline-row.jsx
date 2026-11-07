@@ -18,7 +18,7 @@ import { GenericTool } from "../components/basic-tool";
 import { SessionRetry } from "../components/session-retry";
 import { SessionError } from "../components/session-error";
 import { timelineCategory } from "./detail";
-import { currentToolFailed } from "../message/current-tool-state";
+import { currentToolFailed } from "../message/current-tool-state.js";
 import { userMessageRuns, userRunSpring } from "./user-runs.js";
 import { attached } from "../components/message-file";
 import { Timeline, TimelineRow, unwrapErrorMessage, } from "./projection";

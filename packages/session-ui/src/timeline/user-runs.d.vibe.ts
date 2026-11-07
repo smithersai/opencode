@@ -1,5 +1,5 @@
 import type { SessionMessageAssistant, SessionMessageInfo } from "@opencode/client/promise";
-import type { TimelineRow } from "./timeline-row.ts";
+import type { TimelineRow } from "./timeline-row.vibe";
 /** A user message's place in a run of consecutive user messages: joined to the one above, below, or both. */
 export type UserRun = {
     above: boolean;

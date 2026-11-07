@@ -5,7 +5,7 @@ import { createStore } from "solid-js/store";
 import { Button } from "@opencode/ui/button";
 import { useLanguage } from "@/runtime/i18n/language";
 import { pairingLink } from "./pairing";
-import "./scanner.css";
+import "../../../../../src/servers/connect/scanner.css";
 // Redeems with the form's own redeem, so the form keeps the token and a failed connection check retries without the
 // spent code; the form gets back a link it can show, and fills it in.
 export function PairingScanner(props) {

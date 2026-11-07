@@ -15,12 +15,12 @@ import { usePlatform } from "@/runtime/platform/platform";
 import { fileStreamUrl } from "@/runtime/server/api";
 import { fileContentFromBytes, streamedFileContent, streamedKinds } from "./artifact";
 import { approxBytes, evictContentLru, hasFileContent, removeFileContentBytes, resetFileContentLru, touchFileContent, } from "./content-cache";
-import { createFileViewCache } from "./view-cache";
+import { createFileViewCache } from "./view-cache.js";
 import { useServerSDK } from "@/runtime/server/client";
 import { formatServerError } from "@/runtime/server/errors";
 import { createFileTreeStore } from "./tree-store";
 import { invalidateFromWatcher } from "./watcher";
-import { selectionFromLines } from "./types";
+import { selectionFromLines } from "./types.js";
 export { selectionFromLines };
 export const { use: useFile, provider: FileProvider } = createSimpleContext({
     name: "File",

@@ -27,7 +27,7 @@ import { SessionHeaderSeparator } from "./header/separator";
 import { createSessionHeaderFit } from "./header/fit";
 import { SessionWorkingIndicator } from "./header/session-working-indicator";
 import { CollapsedSidebarToggleSpace } from "@/shell/sidebar-toggle";
-import "./session-identity-header.css";
+import "../../../../src/session/session-identity-header.css";
 const SessionHeaderCollapse = createContext(() => 0);
 export function SessionTitleHeader(props) {
     return (<>

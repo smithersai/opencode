@@ -1,5 +1,5 @@
 import { expect, test } from "bun:test"
-import { parseVoiceDelegation } from "@/session/timeline/voice-delegation"
+import { parseVoiceDelegation } from "../session/timeline/voice-delegation.vibe"
 import { continuedHeader, formatHandoff, header } from "./handoff"
 
 const input = {

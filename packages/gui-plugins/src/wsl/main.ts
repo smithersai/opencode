@@ -1,7 +1,7 @@
 import { Option, Schema } from "effect"
 import { builtinMainContext } from "@opencode/plugin/gui/builtin"
 import type { Plugin } from "@opencode/plugin/gui/main"
-import { Wsl } from "./contract"
+import { Wsl } from "./contract.vibe"
 import { createWslRuntime } from "./runtime"
 import { createWslServersController, wslServerIdForDistro } from "./servers"
 import { spawnWslSidecar } from "./sidecar"

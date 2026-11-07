@@ -1,6 +1,5 @@
 import { batch } from "solid-js"
 import { createStore, reconcile } from "solid-js/store"
-import { Schema } from "effect"
 import type { Ipc, IpcCallOptions, IpcClient, IpcSpec } from "@opencode/plugin/gui"
 import type { Bridge } from "@opencode/plugin/gui/host"
 
@@ -106,8 +105,9 @@ export function createIpcClients(bridge: Bridge | undefined) {
         batch(() => {
           if (after.available === before.available) setAvailable(token.id, result.available)
 
-          if (after.state === before.state && result.state !== undefined)
+          if (after.state === before.state && result.state !== undefined) {
             setState("values", token.id, decodeState(token.id, result.state))
+          }
         })
       })
       .catch((cause: unknown) => console.error(`[plugin] ${token.id}`, cause))

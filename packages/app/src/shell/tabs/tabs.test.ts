@@ -11,7 +11,7 @@ import {
 } from "./closed"
 import { findSessionTab, sessionIDHasOpenTab, tabHref, tabKey, type SessionTab, type Tab } from "./tabs"
 import { Schema } from "effect"
-import { TabStorage } from "./schema"
+import { TabStorage } from "./schema.vibe"
 import { ServerConnection } from "@/runtime/server/registry"
 import { Persistence } from "@/runtime/persistence/schema"
 

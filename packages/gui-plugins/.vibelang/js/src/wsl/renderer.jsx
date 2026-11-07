@@ -4,7 +4,7 @@ import { lazy, onCleanup, Suspense } from "solid-js";
 import { createStore } from "solid-js/store";
 import { MenuItem, Server, Style } from "@opencode/plugin/gui";
 import { onIdle } from "@opencode/plugin/gui/builtin";
-import { Wsl } from "./contract";
+import { Wsl } from "./contract.js";
 const loadDialog = () => import("./dialog");
 const setup = (ctx) => {
     if (ctx.app.platform !== "desktop")

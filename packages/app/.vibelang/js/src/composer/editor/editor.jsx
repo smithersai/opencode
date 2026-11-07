@@ -21,8 +21,8 @@ import { getFilename } from "@opencode/util/path";
 import { Skill } from "@opencode/schema/skill";
 import { isAttachment } from "../prompt-parts";
 import { QuoteCommentEditor } from "./quote-comment";
-import "../attachments/attachments.css";
-import "./editor.css";
+import "../../../../../src/composer/attachments/attachments.css";
+import "../../../../../src/composer/editor/editor.css";
 import "@/shell/palette-menu.css";
 const MobilePanelDrawer = lazy(async () => {
     const { MobilePanelDrawer } = await import("@/shell/mobile-panel-drawer");

@@ -14,7 +14,7 @@ import { createLineCommentControllerV2 } from "./line-comment-annotations-v2";
 import { shouldVirtualizeReviewDiff } from "./session-review-file-preview-v2-virtualize";
 import { LineCommentOverflowIcon } from "@opencode/ui/line-comment";
 import { Menu } from "@opencode/ui/menu";
-import "./session-review-v2.css";
+import "../../../../../src/v2/components/session-review-v2.css";
 function statusLabel(status) {
     if (status === "added")
         return "A";

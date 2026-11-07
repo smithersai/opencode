@@ -1,6 +1,6 @@
 import { expect, test } from "bun:test"
 import { binaryPath, parseRegistration } from "./bootstrap"
-import { RemoteCli } from "./remote-cli"
+import { RemoteCli } from "./remote-cli.vibe"
 
 test("ignores stopped services and registrations that do not match the healthy endpoint", () => {
   const registration = { url: "http://127.0.0.1:1234", password: "secret", version: "2.0.0", pid: 42 }

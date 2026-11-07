@@ -5,7 +5,7 @@ import { reconcile, type SetStoreFunction, type Store } from "solid-js/store"
 import { Persist, persisted } from "@/runtime/persistence/storage"
 import { ServerScope } from "@/runtime/server/scope"
 import type { ServerEntry } from "@opencode/plugin/gui"
-import { ServerHttp, ServerHttpBase, ServerKey, ServerState } from "./persistence"
+import { ServerHttp, ServerHttpBase, ServerKey, ServerState } from "./persistence.vibe"
 
 type StoredState = typeof ServerState.Type
 

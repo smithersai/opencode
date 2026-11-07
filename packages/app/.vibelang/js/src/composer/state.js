@@ -5,8 +5,8 @@ import { Persist, persisted } from "@/runtime/persistence/storage";
 import { ServerScope } from "@/runtime/server/scope";
 import { clonePrompt } from "./prompt-parts";
 import { createComposerQuoteSource } from "./quote-source";
-import { ComposerStore, DEFAULT_PROMPT, contextItemKey, } from "./schema";
-export { DEFAULT_PROMPT } from "./schema";
+import { ComposerStore, DEFAULT_PROMPT, contextItemKey, } from "./schema.js";
+export { DEFAULT_PROMPT } from "./schema.js";
 export function isCommentItem(item) {
     return item.type === "quote" || !!item.comment?.trim();
 }

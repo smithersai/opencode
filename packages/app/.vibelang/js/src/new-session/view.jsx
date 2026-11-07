@@ -17,7 +17,7 @@ import { ComposerDropzone } from "@/composer/dropzone";
 import { PromptProjectAddButton, } from "@/new-session/project/selector";
 import { useLanguage } from "@/runtime/i18n/language";
 import { useWorkspaceLocation } from "@/workspaces/location";
-import { useProviders } from "@/providers/catalog/providers";
+import { useProviders } from "../providers/catalog/providers.js";
 import { NEW_SESSION_CONTENT_WIDTH } from "@/new-session/layout";
 import { Persist, persisted } from "@/runtime/persistence/storage";
 import { Persistence } from "@/runtime/persistence/schema";

@@ -1,7 +1,7 @@
 import { afterEach, describe, expect, setSystemTime, test } from "bun:test"
 import type { SessionInfo } from "@opencode/client/promise"
 import type { ServerCtx } from "@/runtime/server/runtime"
-import { parseVoiceDelegation } from "@/session/timeline/voice-delegation"
+import { parseVoiceDelegation } from "../session/timeline/voice-delegation.vibe"
 import { continuedHeader, header, headerLapse } from "./handoff"
 import { VoiceTools } from "./tools"
 

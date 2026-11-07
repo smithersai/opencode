@@ -3,11 +3,11 @@ import { Schema } from "effect"
 import { WorkspaceOnboardingSchema, ProviderTipSchema } from "@/new-session/view"
 import { ModelSelectionSchema } from "@/providers/models/selection"
 import { Persistence } from "@/runtime/persistence/schema"
-import { FileViewsSchema } from "@/workspaces/files/view-cache"
+import { FileViewsSchema } from "../../workspaces/files/view-cache.vibe"
 import { languageSchema } from "@/runtime/i18n/language"
 import { HomeServersSchema } from "@/home/projects/controller"
 import { ModelProvidersSchema } from "@/settings/models/models"
-import { ProjectState, VcsState } from "@/runtime/server/persistence"
+import { ProjectState, VcsState } from "../server/persistence.vibe"
 
 function stored<S extends Schema.ConstraintCodec<object, unknown>>(
   name: string,

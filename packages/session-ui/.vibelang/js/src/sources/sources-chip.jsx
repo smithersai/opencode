@@ -5,7 +5,7 @@ import { frameLoop, prefersReducedMotion, Spring } from "@opencode/ui/motion";
 import { createMemo, For, onCleanup, onMount, Show } from "solid-js";
 import { sourcesFade } from "./experiment";
 import { SiteIcon } from "./site-icon";
-import "./sources.css";
+import "../../../../src/sources/sources.css";
 /**
  * "N sources" under a reply, with the first three sites stacked. `appear` fades it in, for a turn that finished while
  * it was on screen; a turn that was already done shows it at rest.

@@ -1,7 +1,7 @@
 import { Effect, Option, Schema } from "effect"
 import { HttpClient } from "effect/http"
 import { parseTarget, quote, runSsh, sshArgs, SshFailure } from "./command"
-import { RemoteCli } from "./remote-cli"
+import { RemoteCli } from "./remote-cli.vibe"
 
 // Use commands supported by released V2 CLIs. The registration is the service's
 // complete private discovery contract; no remote Python/Node runtime is needed.

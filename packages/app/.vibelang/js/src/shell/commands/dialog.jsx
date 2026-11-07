@@ -13,8 +13,8 @@ import { SessionTabAvatar } from "@/shell/layout/session-tab-avatar";
 import { getRelativeTime } from "@/shell/time";
 import { createCommandPaletteFileEntry, createCommandPaletteModel } from "./palette";
 import { createCommandPaletteSearch, matchesCommandPaletteEntry } from "./search";
-import "./dialog.css";
-import "../palette-menu.css";
+import "../../../../../src/shell/commands/dialog.css";
+import "../../../../../src/shell/palette-menu.css";
 export { matchesCommandPaletteEntry };
 function groupKey(entry) {
     return entry.type === "session" ? "session" : `${entry.type}:${entry.category}`;

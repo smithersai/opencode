@@ -31,7 +31,7 @@ import { createEmbeds } from "./embeds";
 import { usePluginHost } from "./host";
 import { createLocatedWrites } from "./located";
 import { createSessionPanelMenu } from "./panel-menu";
-import { deferredHandle, globalStoreTarget, persistedHandle, renamedFrom, renamedStoreName, storeImports, storeName, } from "./stores";
+import { deferredHandle, globalStoreTarget, persistedHandle, renamedFrom, renamedStoreName, storeImports, storeName, } from "./stores.js";
 import { ui } from "./ui";
 /**
  * HostApis the host owns. Session and layout attach once the app interface mounts; until then their reads return

@@ -4,7 +4,7 @@ import { createPatch } from "diff";
 import { File } from "../../src/components/file";
 import { normalize, text } from "../../src/components/session-diff";
 import { getWorkerPool } from "../../src/pierre/worker";
-import "../../../ui/src/styles/theme.css";
+import "../../../../../ui/src/styles/theme.css";
 // This fixture uses the production component, normalizer, pool, and worker bundle.
 // Observe messages without replacing the worker or its implementation.
 const messages = [];

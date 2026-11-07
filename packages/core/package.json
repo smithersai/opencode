@@ -167,15 +167,48 @@
     },
     "./location-services": {
       "types": "./src/location-services.d.vibe.ts",
-      "default": "./src/location-services.vibe"
+      "vibelang-source": "./src/location-services.vibe",
+      "default": "./.vibelang/js/src/location-services.js"
     },
     "./permission/saved": {
       "types": "./src/permission/saved.d.vibe.ts",
-      "default": "./src/permission/saved.vibe"
+      "vibelang-source": "./src/permission/saved.vibe",
+      "default": "./.vibelang/js/src/permission/saved.js"
     },
     "./voice": {
       "types": "./src/voice.d.vibe.ts",
-      "default": "./src/voice.vibe"
+      "vibelang-source": "./src/voice.vibe",
+      "default": "./.vibelang/js/src/voice.js"
+    },
+    "./mcp/instructions": {
+      "types": "./src/mcp/instructions.d.vibe.ts",
+      "vibelang-source": "./src/mcp/instructions.vibe",
+      "default": "./.vibelang/js/src/mcp/instructions.js"
+    },
+    "./plugin/websearch/firecrawl": {
+      "types": "./src/plugin/websearch/firecrawl.d.vibe.ts",
+      "vibelang-source": "./src/plugin/websearch/firecrawl.vibe",
+      "default": "./.vibelang/js/src/plugin/websearch/firecrawl.js"
+    },
+    "./plugin/websearch/parallel": {
+      "types": "./src/plugin/websearch/parallel.d.vibe.ts",
+      "vibelang-source": "./src/plugin/websearch/parallel.vibe",
+      "default": "./.vibelang/js/src/plugin/websearch/parallel.js"
+    },
+    "./plugin/websearch/tavily": {
+      "types": "./src/plugin/websearch/tavily.d.vibe.ts",
+      "vibelang-source": "./src/plugin/websearch/tavily.vibe",
+      "default": "./.vibelang/js/src/plugin/websearch/tavily.js"
+    },
+    "./plugin/websearch/tinyfish": {
+      "types": "./src/plugin/websearch/tinyfish.d.vibe.ts",
+      "vibelang-source": "./src/plugin/websearch/tinyfish.vibe",
+      "default": "./.vibelang/js/src/plugin/websearch/tinyfish.js"
+    },
+    "./plugin/tool-input-repair": {
+      "types": "./src/plugin/tool-input-repair.d.vibe.ts",
+      "vibelang-source": "./src/plugin/tool-input-repair.vibe",
+      "default": "./.vibelang/js/src/plugin/tool-input-repair.js"
     },
     "./config/integration": {
       "types": "./src/config/integration.d.vibe.ts",

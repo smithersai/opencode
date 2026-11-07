@@ -1,0 +1,90 @@
+export * as WebSearchTavily from "./tavily.vibe"
+
+import { define } from "@opencode/plugin/effect/plugin"
+import { Scope } from "effect"
+import { HttpClient } from "effect/http"
+import { App } from "../../app.ts"
+
+import { trusted } from "vibelang-runtime"
+
+// App.useragent is plain TypeScript that throws only programmer errors.
+const userAgentOf = trusted(App.useragent, [])
+
+export const endpoint = "https://api.tavily.com/search"
+
+schema SearchRequest {
+  readonly query: string
+  readonly search_depth: "basic"
+  readonly chunks_per_source: number
+  readonly max_results: number
+}
+
+schema SearchResponse {
+  readonly results: ReadonlyArray<{
+    readonly title: string
+    readonly url: string
+    readonly content: string
+  }>
+}
+
+export const Plugin = define<HttpClient.HttpClient | Scope.Scope>({
+  id: "opencode.websearch.tavily",
+  effect: effect (ctx): void!never!(HttpClient.HttpClient | Scope.Scope) =>
+    try withSpan(
+      (effect (): void!never!(HttpClient.HttpClient | Scope.Scope) => {
+        const http = try HttpClient.HttpClient
+        try ctx.integration.transform((editor) => {
+          editor.update("tavily", (integration) => (integration.name = "Tavily"))
+          editor.method.update({
+            integrationID: "tavily",
+            method: { type: "key" },
+          })
+          editor.method.update({
+            integrationID: "tavily",
+            method: { type: "env", names: ["TAVILY_API_KEY"] },
+          })
+        })
+        try ctx.websearch.transform((editor) => {
+          editor.add({
+            id: "tavily",
+            name: "Tavily",
+            execute: effect (input) => {
+              const connection = try ctx.integration.connection.active("tavily")
+              const credential = connection ? try ctx.integration.connection.resolve(connection) : undefined
+              const request = try HttpClientRequest.post(endpoint).pipe(
+                HttpClientRequest.acceptJson,
+                HttpClientRequest.setHeaders({
+                  "User-Agent": userAgentOf(ctx.app),
+                  "X-Client-Name": "opencode2",
+                  ...(credential?.type === "key"
+                    ? { Authorization: `Bearer ${credential.key}` }
+                    : { "X-Tavily-Access-Mode": "keyless" }),
+                }),
+                HttpClientRequest.schemaBodyJson(SearchRequest)({
+                  query: input.query,
+                  search_depth: "basic",
+                  chunks_per_source: 3,
+                  max_results: 8,
+                }),
+              )
+              const response = try (HttpClient.withScope(HttpClient.filterStatusOk(http))
+                .execute(request)
+                |> Effect.flatMap(%, HttpClientResponse.schemaBodyJson(SearchResponse))
+                |> Effect.scoped(%)
+                |> Effect.timeoutOrElse(%, {
+                  duration: Duration.seconds(25),
+                  orElse: () => Effect.fail(new Error("Tavily web search request timed out")),
+                }))
+              return response.results.map((item) => ({
+                url: item.url,
+                title: item.title,
+                ...(item.content ? { content: item.content } : {}),
+                time: {},
+              }))
+            },
+          })
+        })
+      })(),
+      "WebSearchTavily.Plugin",
+    ),
+})

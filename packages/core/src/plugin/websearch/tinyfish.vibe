@@ -1,0 +1,154 @@
+export * as WebSearchTinyFish from "./tinyfish.vibe"
+
+import { define } from "@opencode/plugin/effect/plugin"
+import { Scope } from "effect"
+import { HttpClient } from "effect/http"
+import { App } from "../../app.ts"
+import { collectBoundedResponseBody } from "../../tool/http-body.ts"
+import { WebSearchMcp } from "./mcp.ts"
+
+import { trusted } from "vibelang-runtime"
+
+// App.useragent is plain TypeScript that throws only programmer errors.
+const userAgentOf = trusted(App.useragent, [])
+
+export const endpoint = "https://agent.tinyfish.ai/mcp"
+
+schema McpInput {
+  readonly query: string
+}
+
+schema McpOutput {
+  readonly content: ReadonlyArray<{ readonly type: "text"; readonly text: string }>
+}
+
+const SearchResponse = Schema.fromJsonString(
+  Schema.Struct({
+    results: Schema.Array(
+      Schema.Struct({
+        url: Schema.String,
+        title: Schema.String,
+        snippet: Schema.String,
+      }),
+    ),
+  }),
+)
+const decodeSearchResponse = Schema.decodeUnknownOption(SearchResponse)
+
+schema InitializeRequest {
+  readonly jsonrpc: "2.0"
+  readonly id: 1
+  readonly method: "initialize"
+  readonly params: {
+    readonly protocolVersion: string
+    readonly capabilities: {}
+    readonly clientInfo: { readonly name: string; readonly version: string }
+  }
+}
+
+schema InitializedNotification {
+  readonly jsonrpc: "2.0"
+  readonly method: "notifications/initialized"
+}
+
+export const Plugin = define<HttpClient.HttpClient | Scope.Scope>({
+  id: "opencode.websearch.tinyfish",
+  effect: effect (ctx): void!never!(HttpClient.HttpClient | Scope.Scope) =>
+    try withSpan(
+      (effect (): void!never!(HttpClient.HttpClient | Scope.Scope) => {
+        const http = try HttpClient.HttpClient
+        try ctx.integration.transform((editor) => {
+          editor.update("tinyfish", (integration) => (integration.name = "TinyFish"))
+          editor.method.update({
+            integrationID: "tinyfish",
+            method: { type: "key" },
+          })
+          editor.method.update({
+            integrationID: "tinyfish",
+            method: { type: "env", names: ["TINYFISH_API_KEY"] },
+          })
+        })
+        try ctx.websearch.transform((editor) => {
+          editor.add({
+            id: "tinyfish",
+            name: "TinyFish",
+            execute: effect (input) => {
+              const connection = try ctx.integration.connection.active("tinyfish")
+              const credential = connection ? try ctx.integration.connection.resolve(connection) : undefined
+              const headers = {
+                "User-Agent": userAgentOf(ctx.app),
+                ...(credential?.type === "key"
+                  ? { "X-API-Key": credential.key }
+                  : { "X-TinyFish-Access-Mode": "keyless" }),
+              }
+              // Keyed requests are rejected without the `Mcp-Session-Id` returned by `initialize`; keyless ones are not.
+              const session = credential?.type === "key" ? try initialize(http, headers) : undefined
+              const result = try WebSearchMcp.call(
+                http,
+                endpoint,
+                "search",
+                { input: McpInput, output: McpOutput },
+                { query: input.query },
+                { ...headers, ...(session === undefined ? {} : { "Mcp-Session-Id": session }) },
+              )
+              const content = result?.content.find((item) => item.text)
+              const response = content ? Option.getOrUndefined(decodeSearchResponse(content.text)) : undefined
+              return (
+                response?.results.map((item) => ({
+                  url: item.url,
+                  title: item.title,
+                  ...(item.snippet ? { content: item.snippet } : {}),
+                  time: {},
+                })) ?? []
+              )
+            },
+          })
+        })
+      })(),
+      "WebSearchTinyFish.Plugin",
+    ),
+})
+
+const initialize = (http: HttpClient.HttpClient, headers: Record<string, string>) =>
+  effect {
+    const client = HttpClient.withScope(HttpClient.filterStatusOk(http))
+    const request = try HttpClientRequest.post(endpoint).pipe(
+      HttpClientRequest.accept("application/json, text/event-stream"),
+      HttpClientRequest.setHeaders(headers),
+      HttpClientRequest.schemaBodyJson(InitializeRequest)({
+        jsonrpc: "2.0",
+        id: 1,
+        method: "initialize",
+        params: {
+          protocolVersion: "2025-06-18",
+          capabilities: {},
+          clientInfo: { name: "opencode", version: "1.0" },
+        },
+      }),
+    )
+    const response = try client.execute(request)
+    try collectBoundedResponseBody(
+      response,
+      WebSearchMcp.MAX_RESPONSE_BYTES,
+      () => new Error(`initialize response exceeded ${WebSearchMcp.MAX_RESPONSE_BYTES} bytes`),
+    )
+    const session = response.headers["mcp-session-id"]
+    if (session === undefined) {
+      throw new Error("TinyFish MCP initialize did not return an Mcp-Session-Id header")
+    }
+    const notification = try HttpClientRequest.post(endpoint).pipe(
+      HttpClientRequest.accept("application/json, text/event-stream"),
+      HttpClientRequest.setHeaders({ ...headers, "Mcp-Session-Id": session }),
+      HttpClientRequest.schemaBodyJson(InitializedNotification)({
+        jsonrpc: "2.0",
+        method: "notifications/initialized",
+      }),
+    )
+    try client.execute(notification)
+    return session
+  }
+  |> Effect.scoped(%)
+  |> Effect.timeoutOrElse(%, {
+    duration: Duration.seconds(25),
+    orElse: () => Effect.fail(new Error("TinyFish initialize request timed out")),
+  })

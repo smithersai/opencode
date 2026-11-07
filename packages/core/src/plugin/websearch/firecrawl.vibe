@@ -1,0 +1,92 @@
+export * as WebSearchFirecrawl from "./firecrawl.vibe"
+
+import { define } from "@opencode/plugin/effect/plugin"
+import { Scope } from "effect"
+import { HttpClient } from "effect/http"
+import { App } from "../../app.ts"
+import { WebSearchMcp } from "./mcp.ts"
+
+import { trusted } from "vibelang-runtime"
+
+// App.useragent is plain TypeScript that throws only programmer errors.
+const userAgentOf = trusted(App.useragent, [])
+
+export const endpoint = "https://mcp.firecrawl.dev/v2/mcp"
+
+const McpInput = Schema.Struct({
+  query: Schema.String,
+  limit: Schema.Number.pipe(Schema.optional),
+})
+
+schema McpOutput {
+  readonly content: ReadonlyArray<{ readonly type: "text"; readonly text: string }>
+}
+
+const SearchResponse = Schema.fromJsonString(
+  Schema.Struct({
+    success: Schema.Boolean,
+    data: Schema.Struct({
+      web: Schema.Array(
+        Schema.Struct({
+          url: Schema.String,
+          title: Schema.NullOr(Schema.String).pipe(Schema.optional),
+          description: Schema.NullOr(Schema.String).pipe(Schema.optional),
+        }),
+      ),
+    }),
+  }),
+)
+const decodeSearchResponse = Schema.decodeUnknownOption(SearchResponse)
+
+export const Plugin = define<HttpClient.HttpClient | Scope.Scope>({
+  id: "opencode.websearch.firecrawl",
+  effect: effect (ctx): void!never!(HttpClient.HttpClient | Scope.Scope) =>
+    try withSpan(
+      (effect (): void!never!(HttpClient.HttpClient | Scope.Scope) => {
+        const http = try HttpClient.HttpClient
+        try ctx.integration.transform((editor) => {
+          editor.update("firecrawl", (integration) => (integration.name = "Firecrawl"))
+          editor.method.update({
+            integrationID: "firecrawl",
+            method: { type: "key" },
+          })
+          editor.method.update({
+            integrationID: "firecrawl",
+            method: { type: "env", names: ["FIRECRAWL_API_KEY"] },
+          })
+        })
+        try ctx.websearch.transform((editor) => {
+          editor.add({
+            id: "firecrawl",
+            name: "Firecrawl",
+            execute: effect (input) => {
+              const connection = try ctx.integration.connection.active("firecrawl")
+              const credential = connection ? try ctx.integration.connection.resolve(connection) : undefined
+              const result = try WebSearchMcp.call(
+                http,
+                endpoint,
+                "firecrawl_search",
+                { input: McpInput, output: McpOutput },
+                { query: input.query, limit: 8 },
+                {
+                  "User-Agent": userAgentOf(ctx.app),
+                  ...(credential?.type === "key" ? { Authorization: `Bearer ${credential.key}` } : {}),
+                },
+              )
+              const content = result?.content.find((item) => item.text)
+              const response = content ? Option.getOrUndefined(decodeSearchResponse(content.text)) : undefined
+              return (
+                response?.data.web.map((item) => ({
+                  url: item.url,
+                  ...(item.title ? { title: item.title } : {}),
+                  ...(item.description ? { content: item.description } : {}),
+                  time: {},
+                })) ?? []
+              )
+            },
+          })
+        })
+      })(),
+      "WebSearchFirecrawl.Plugin",
+    ),
+})

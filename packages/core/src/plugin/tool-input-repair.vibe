@@ -1,8 +1,12 @@
-export * as ToolInputRepairPlugin from "./tool-input-repair.js"
+export * as ToolInputRepairPlugin from "./tool-input-repair.vibe"
 
 import { define } from "@opencode/plugin/effect/plugin"
-import { Effect, JsonSchema, Option, Predicate, Schema } from "effect"
-import { definition } from "../tool/runtime.js"
+import { definition } from "../tool/runtime.ts"
+
+import { trusted } from "vibelang-runtime"
+
+// definition is plain TypeScript that throws only programmer errors.
+const toolDefinition = trusted(definition, [])
 
 // Repairs apply only when the input schema unambiguously supports them:
 // - Stringified root or nested object: '{"limit":"20"}' -> { limit: 20 }
@@ -21,18 +25,16 @@ const maxDepth = 6
 export const Plugin = define({
   id: "opencode.tool.input.repair",
   effect: (ctx) =>
-    ctx.tool.hook("execute.before", (event) =>
-      Effect.gen(function* () {
-        // The outer Code Mode tool is built per snapshot rather than registered, so it cannot be
-        // looked up here. Its `{ code }` input is trivial; the tools it calls are repaired normally.
-        if (event.tool === "execute") return
-        const tool = (yield* ctx.tool.list()).find((tool) => tool.id === event.tool)
-        if (!tool) return
-        const schema = definition(tool).inputSchema
-        if (schema.type !== "object") return
-        event.input = repair(event.input, schema, schema, 0)
-      }),
-    ),
+    ctx.tool.hook("execute.before", effect (event) => {
+      // The outer Code Mode tool is built per snapshot rather than registered, so it cannot be
+      // looked up here. Its `{ code }` input is trivial; the tools it calls are repaired normally.
+      if (event.tool === "execute") return
+      const tool = (try ctx.tool.list()).find((tool) => tool.id === event.tool)
+      if (!tool) return
+      const schema = toolDefinition(tool).inputSchema
+      if (schema.type !== "object") return
+      event.input = repair(event.input, schema, schema, 0)
+    }),
 })
 
 function repair(value: unknown, schema: JsonSchema.JsonSchema, root: JsonSchema.JsonSchema, depth: number): unknown {
@@ -42,12 +44,12 @@ function repair(value: unknown, schema: JsonSchema.JsonSchema, root: JsonSchema.
     const definitions = /^#\/\$defs\/[^/]+$/.test(schema.$ref)
       ? root.$defs
       : /^#\/definitions\/[^/]+$/.test(schema.$ref)
-        ? root.definitions
-        : undefined
+      ? root.definitions
+      : undefined
     if (!Predicate.isObject(definitions)) return value
     const target = Object.fromEntries(
       Object.entries(definitions).filter((entry): entry is [string, JsonSchema.JsonSchema] =>
-        Predicate.isObject(entry[1]),
+        Predicate.isObject(entry[1])
       ),
     )[
       schema.$ref
@@ -113,11 +115,10 @@ function repairObject(
 
     // Only a bare single-type property provably rejects null and `{}`. Compositions, enums,
     // constants, references and nullable flags may accept them, so those are left alone.
-    const plain =
-      typeof property.type === "string" &&
-      property.type !== "null" &&
-      !composed &&
-      ["anyOf", "oneOf", "allOf", "enum", "const", "$ref", "nullable"].every((keyword) => !(keyword in property))
+    const plain = typeof property.type === "string"
+      && property.type !== "null"
+      && !composed
+      && ["anyOf", "oneOf", "allOf", "enum", "const", "$ref", "nullable"].every((keyword) => !(keyword in property))
     const placeholder = Predicate.isObject(current) && Object.keys(current).length === 0 && property.type !== "object"
     if (declared && !required.includes(key) && plain && (current === null || placeholder)) {
       const next = { ...result }
@@ -140,8 +141,8 @@ function repairArray(
   const tuple = Array.isArray(schema.prefixItems)
     ? schema.prefixItems
     : Array.isArray(schema.items)
-      ? schema.items
-      : undefined
+    ? schema.items
+    : undefined
 
   if (Array.isArray(parsed)) {
     const repaired = parsed.map((item, index) => {
@@ -156,15 +157,14 @@ function repairArray(
   if (tuple || !Predicate.isObject(schema.items)) return value
   const repaired = repair(value, schema.items, root, depth + 1)
   const type = schema.items.type
-  const compatible =
-    type === "object"
-      ? Predicate.isObject(repaired)
-      : type === "array"
-        ? Array.isArray(repaired)
-        : type === "integer"
-          ? typeof repaired === "number" && Number.isSafeInteger(repaired)
-          : type === "number"
-            ? typeof repaired === "number" && Number.isFinite(repaired)
-            : (type === "string" || type === "boolean") && typeof repaired === type
+  const compatible = type === "object"
+    ? Predicate.isObject(repaired)
+    : type === "array"
+    ? Array.isArray(repaired)
+    : type === "integer"
+    ? typeof repaired === "number" && Number.isSafeInteger(repaired)
+    : type === "number"
+    ? typeof repaired === "number" && Number.isFinite(repaired)
+    : (type === "string" || type === "boolean") && typeof repaired === type
   return compatible ? [repaired] : value
 }

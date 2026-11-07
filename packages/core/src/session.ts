@@ -55,7 +55,7 @@ import {
   DestinationUnavailableError,
 } from "./session/move.js"
 import { SessionModelTransport } from "./session/model-transport.js"
-import { llmClient } from "./effect/app-node-platform.js"
+import { llmClient } from "./effect/app-node-platform.vibe"
 import { Snapshot } from "./snapshot.js"
 import { Session } from "./session/session.js"
 import { SessionDiff, TurnRangeError } from "./session/diff.js"

@@ -1,4 +1,4 @@
-export * as ConfigPluginV1 from "./plugin.js"
+export * as ConfigPluginV1 from "./plugin.vibe"
 
 import { Schema } from "effect"
 

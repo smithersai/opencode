@@ -1,6 +1,6 @@
 import path from "path"
 import { Effect, Logger } from "effect"
-import { AppNodeBuilder } from "../src/effect/app-node-builder"
+import { AppNodeBuilder } from "../src/effect/app-node-builder.vibe"
 import { LayerNode } from "@opencode/util/effect/layer-node"
 import { Database } from "../src/database/database"
 import { Bus } from "../src/bus"

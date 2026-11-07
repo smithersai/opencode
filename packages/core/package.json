@@ -535,15 +535,15 @@
       "vibelang-source": "./src/worktree/directory.vibe",
       "default": "./.vibelang/js/src/worktree/directory.js"
     },
-    "./plugin/command": {
-      "types": "./src/plugin/command.d.vibe.ts",
-      "vibelang-source": "./src/plugin/command.vibe",
-      "default": "./.vibelang/js/src/plugin/command.js"
-    },
     "./*": {
       "types": "./src/*.ts",
       "vibelang-source": "./src/*.ts",
       "default": "./.vibelang/js/src/*.js"
+    },
+    "./plugin/command": {
+      "types": "./src/plugin/command.d.vibe.ts",
+      "vibelang-source": "./src/plugin/command.vibe",
+      "default": "./.vibelang/js/src/plugin/command.js"
     },
     "./config/plugin/entry-observer": {
       "types": "./src/config/plugin/entry-observer.d.vibe.ts",
@@ -554,6 +554,61 @@
       "types": "./src/config/plugin/mcp.d.vibe.ts",
       "vibelang-source": "./src/config/plugin/mcp.vibe",
       "default": "./.vibelang/js/src/config/plugin/mcp.js"
+    },
+    "./database/sqlite": {
+      "types": "./src/database/sqlite.d.vibe.ts",
+      "vibelang-source": "./src/database/sqlite.vibe",
+      "default": "./.vibelang/js/src/database/sqlite.js"
+    },
+    "./database/v1-migration.noop": {
+      "types": "./src/database/v1-migration.noop.d.vibe.ts",
+      "vibelang-source": "./src/database/v1-migration.noop.vibe",
+      "default": "./.vibelang/js/src/database/v1-migration.noop.js"
+    },
+    "./effect/app-node-builder": {
+      "types": "./src/effect/app-node-builder.d.vibe.ts",
+      "vibelang-source": "./src/effect/app-node-builder.vibe",
+      "default": "./.vibelang/js/src/effect/app-node-builder.js"
+    },
+    "./v1/config/agent": {
+      "types": "./src/v1/config/agent.d.vibe.ts",
+      "vibelang-source": "./src/v1/config/agent.vibe",
+      "default": "./.vibelang/js/src/v1/config/agent.js"
+    },
+    "./v1/config/command": {
+      "types": "./src/v1/config/command.d.vibe.ts",
+      "vibelang-source": "./src/v1/config/command.vibe",
+      "default": "./.vibelang/js/src/v1/config/command.js"
+    },
+    "./v1/config/mcp": {
+      "types": "./src/v1/config/mcp.d.vibe.ts",
+      "vibelang-source": "./src/v1/config/mcp.vibe",
+      "default": "./.vibelang/js/src/v1/config/mcp.js"
+    },
+    "./v1/config/migrate": {
+      "types": "./src/v1/config/migrate.d.vibe.ts",
+      "vibelang-source": "./src/v1/config/migrate.vibe",
+      "default": "./.vibelang/js/src/v1/config/migrate.js"
+    },
+    "./v1/config/plugin": {
+      "types": "./src/v1/config/plugin.d.vibe.ts",
+      "vibelang-source": "./src/v1/config/plugin.vibe",
+      "default": "./.vibelang/js/src/v1/config/plugin.js"
+    },
+    "./v1/config/provider": {
+      "types": "./src/v1/config/provider.d.vibe.ts",
+      "vibelang-source": "./src/v1/config/provider.vibe",
+      "default": "./.vibelang/js/src/v1/config/provider.js"
+    },
+    "./effect/app-node-platform": {
+      "types": "./src/effect/app-node-platform.d.vibe.ts",
+      "vibelang-source": "./src/effect/app-node-platform.vibe",
+      "default": "./.vibelang/js/src/effect/app-node-platform.js"
+    },
+    "./v1/config/permission": {
+      "types": "./src/v1/config/permission.d.vibe.ts",
+      "vibelang-source": "./src/v1/config/permission.vibe",
+      "default": "./.vibelang/js/src/v1/config/permission.js"
     }
   },
   "imports": {
@@ -697,18 +752,18 @@
         "default": "./.vibelang/js/src/database/v1-migration.bun.js"
       },
       "node": {
-        "types": "./src/database/v1-migration.noop.ts",
-        "vibelang-source": "./src/database/v1-migration.noop.ts",
+        "types": "./src/database/v1-migration.noop.d.vibe.ts",
+        "vibelang-source": "./src/database/v1-migration.noop.vibe",
         "default": "./.vibelang/js/src/database/v1-migration.noop.js"
       },
       "workerd": {
-        "types": "./src/database/v1-migration.noop.ts",
-        "vibelang-source": "./src/database/v1-migration.noop.ts",
+        "types": "./src/database/v1-migration.noop.d.vibe.ts",
+        "vibelang-source": "./src/database/v1-migration.noop.vibe",
         "default": "./.vibelang/js/src/database/v1-migration.noop.js"
       },
       "default": {
-        "types": "./src/database/v1-migration.noop.ts",
-        "vibelang-source": "./src/database/v1-migration.noop.ts",
+        "types": "./src/database/v1-migration.noop.d.vibe.ts",
+        "vibelang-source": "./src/database/v1-migration.noop.vibe",
         "default": "./.vibelang/js/src/database/v1-migration.noop.js"
       }
     },

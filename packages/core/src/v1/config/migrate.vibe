@@ -1,15 +1,14 @@
-export * as ConfigMigrateV1 from "./migrate.js"
+export * as ConfigMigrateV1 from "./migrate.vibe"
 
 import { ConfigAgent } from "@opencode/schema/config/agent"
-import { Schema } from "effect"
-import { ConfigAgentV1 } from "./agent.js"
-import { ConfigCommandV1 } from "./command.js"
-import { ConfigMCPV1 } from "./mcp.js"
-import { ConfigPermissionV1 } from "./permission.js"
-import { ConfigProviderV1 } from "./provider.js"
-import { ConfigProviderOptionsV1 } from "./provider-options.js"
-import { Provider } from "../../provider.js"
-import { Model } from "../../model.js"
+import { ConfigAgentV1 } from "./agent.vibe"
+import { ConfigCommandV1 } from "./command.vibe"
+import { ConfigMCPV1 } from "./mcp.vibe"
+import { ConfigPermissionV1 } from "./permission.vibe"
+import { ConfigProviderV1 } from "./provider.vibe"
+import { ConfigProviderOptionsV1 } from "./provider-options.ts"
+import { Provider } from "../../provider.ts"
+import { Model } from "../../model.ts"
 
 const decodeOptions = { errors: "all", onExcessProperty: "ignore" } as const
 const decodeAgent = Schema.decodeUnknownSync(Schema.fromJsonString(ConfigAgent.Info), decodeOptions)
@@ -80,7 +79,7 @@ export function migrateMcpTimeout(timeout: number) {
 
 export function migrateMcp(info: ConfigMCPV1.Info) {
   const disabled = info.enabled === undefined ? undefined : !info.enabled
-  if (info.type === "local")
+  if (info.type === "local") {
     return {
       type: info.type,
       command: info.command,
@@ -90,6 +89,7 @@ export function migrateMcp(info: ConfigMCPV1.Info) {
       codemode: info.codemode,
       timeout: info.timeout === undefined ? undefined : migrateMcpTimeout(info.timeout),
     }
+  }
   return {
     type: info.type,
     url: info.url,
@@ -125,9 +125,8 @@ function migrateStandardProvider(info: ConfigProviderV1.Info) {
     settings: info.api ? { ...options.settings, baseURL: info.api } : info.options ? options.settings : undefined,
     headers: info.options && options.headers,
     body: info.options && options.body,
-    models:
-      info.models &&
-      Object.fromEntries(Object.entries(info.models).map(([name, model]) => [name, migrateModel(model, info.npm)])),
+    models: info.models
+      && Object.fromEntries(Object.entries(info.models).map(([name, model]) => [name, migrateModel(model, info.npm)])),
   }
 }
 
@@ -155,9 +154,8 @@ function migrateGoogleVertexAnthropicProvider(info: ConfigProviderV1.Info) {
     // The current Google Vertex provider includes Gemini and Claude. Keep the Anthropic SDK on Claude models
     // instead of changing the package inherited by every model on the provider.
     package: undefined,
-    models:
-      migrated.models &&
-      Object.fromEntries(
+    models: migrated.models
+      && Object.fromEntries(
         Object.entries(migrated.models).map(([name, model]) => [
           name,
           model.package ? model : { ...model, package: packageName },
@@ -180,8 +178,8 @@ export function providerID(input: string) {
 }
 
 function migrateModel(info: typeof ConfigProviderV1.Model.Type, npm: string | undefined) {
-  const disableThinkingBlockBinding =
-    info.options?.thinking?.blockBinding === false || info.options?.reasoningConfig?.blockBinding === false
+  const disableThinkingBlockBinding = info.options?.thinking?.blockBinding === false
+    || info.options?.reasoningConfig?.blockBinding === false
   const options = info.options && { ...info.options }
 
   // Move the legacy opt-out to compatibility without mutating the input.
@@ -214,23 +212,23 @@ function migrateModel(info: typeof ConfigProviderV1.Model.Type, npm: string | un
     },
     ...(info.cost.context_over_200k
       ? [
-          {
-            tier: { type: "context" as const, size: 200_000 },
-            input: info.cost.context_over_200k.input,
-            output: info.cost.context_over_200k.output,
-            cache: { read: info.cost.context_over_200k.cache_read, write: info.cost.context_over_200k.cache_write },
-          },
-        ]
+        {
+          tier: { type: "context" as const, size: 200_000 },
+          input: info.cost.context_over_200k.input,
+          output: info.cost.context_over_200k.output,
+          cache: { read: info.cost.context_over_200k.cache_read, write: info.cost.context_over_200k.cache_write },
+        },
+      ]
       : []),
   ]
   const defaults = Model.Capabilities.default()
   const capabilities =
     info.tool_call !== undefined || info.modalities?.input !== undefined || info.modalities?.output !== undefined
       ? {
-          tools: info.tool_call ?? defaults.tools,
-          input: info.modalities?.input ?? defaults.input,
-          output: info.modalities?.output ?? defaults.output,
-        }
+        tools: info.tool_call ?? defaults.tools,
+        input: info.modalities?.input ?? defaults.input,
+        output: info.modalities?.output ?? defaults.output,
+      }
       : undefined
   return {
     modelID: info.id,
@@ -244,9 +242,8 @@ function migrateModel(info: typeof ConfigProviderV1.Model.Type, npm: string | un
     capabilities,
     headers: info.headers,
     body: migrated?.body,
-    variants:
-      info.variants &&
-      Object.entries(info.variants).map(([id, options]) => ({ id, ...split(options) })),
+    variants: info.variants
+      && Object.entries(info.variants).map(([id, options]) => ({ id, ...split(options) })),
     cost: costs,
     disabled: info.status === "deprecated" ? true : undefined,
     limit: info.limit && {

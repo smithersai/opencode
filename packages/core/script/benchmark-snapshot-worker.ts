@@ -2,7 +2,7 @@
 // printing the number of failed captures.
 import path from "path"
 import { Effect, Logger } from "effect"
-import { AppNodeBuilder } from "../src/effect/app-node-builder"
+import { AppNodeBuilder } from "../src/effect/app-node-builder.vibe"
 import { Location } from "../src/location"
 import { AbsolutePath } from "../src/schema"
 import { Snapshot } from "../src/snapshot"

@@ -102,7 +102,7 @@ export const Plugin = {
                                     try {
                                         {
                                             ;
-                                            yield* $catchExpression(() => (Effect_1.gen(function* () {
+                                            yield* $catchExpression(() => (Effect_1.gen(runtime.$joinedFrame(function* () {
                                                 const target = yield* resolveTarget(hunk.path);
                                                 if (hunk.type === "add") {
                                                     const content = hunk.contents.endsWith("\n") || hunk.contents === ""
@@ -176,7 +176,7 @@ export const Plugin = {
                                                 else {
                                                     updates.set(target.absolute, next);
                                                 }
-                                            })), (error) => Effect_1.suspend(() => { return Effect_1.fail(error instanceof ToolFailure
+                                            }))), (error) => Effect_1.suspend(() => { return Effect_1.fail(error instanceof ToolFailure
                                                 ? error
                                                 : new ToolFailure({ message: `Unable to prepare patch at ${hunk.path}`, error })); }));
                                         }

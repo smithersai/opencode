@@ -1,21 +1,21 @@
 import { buildLocationServiceMap } from "../location-services.vibe"
-import { LocationServiceMap } from "../location-service-map.js"
+import { LocationServiceMap } from "../location-service-map.ts"
 import { LayerNode } from "@opencode/util/effect/layer-node"
 import { makeGlobalNode } from "@opencode/util/effect/app-node"
-import { Effect, Layer, RcMap } from "effect"
+import { Layer } from "effect"
 import { Instance } from "../instance/service.vibe"
 
 const instances = makeGlobalNode({
   service: Instance.Service,
   layer: Layer.effect(
     Instance.Service,
-    Effect.gen(function* () {
-      const locations = yield* LocationServiceMap.Service
+    effect {
+      const locations = try LocationServiceMap.Service
       return Instance.Service.of({
         provide: (session) => Effect.provide(locations.get(session.location)),
         live: (session) => RcMap.has(locations.rcMap, LocationServiceMap.canonical(session.location)),
       })
-    }),
+    },
   ),
   deps: [LocationServiceMap.node],
 })
@@ -27,4 +27,4 @@ export function build<A, E>(root: LayerNode.Graph<A, E>, replacements: LayerNode
   })
 }
 
-export * as AppNodeBuilder from "./app-node-builder.js"
+export * as AppNodeBuilder from "./app-node-builder.vibe"

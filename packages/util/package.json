@@ -32,6 +32,11 @@
       "vibelang-source": "./src/patch.vibe",
       "default": "./.vibelang/js/src/patch.js"
     },
+    "./effect/app-node-platform": {
+      "types": "./src/effect/app-node-platform.d.vibe.ts",
+      "vibelang-source": "./src/effect/app-node-platform.vibe",
+      "default": "./.vibelang/js/src/effect/app-node-platform.js"
+    },
     "./*": {
       "types": "./src/*.ts",
       "vibelang-source": "./src/*.ts",
@@ -74,6 +79,11 @@
         "vibelang-source": "./src/runtime/import.bun.ts",
         "default": "./.vibelang/js/src/runtime/import.bun.js"
       }
+    },
+    "#vibelang/emitted/src/effect/app-node-platform": {
+      "types": "./src/effect/app-node-platform.d.vibe.ts",
+      "vibelang-source": "./src/effect/app-node-platform.vibe",
+      "default": "./.vibelang/js/src/effect/app-node-platform.js"
     }
   },
   "scripts": {

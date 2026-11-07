@@ -6,7 +6,7 @@ import { lookup } from "mime-types";
 import { Context, Effect, FileSystem, Layer, Schema } from "effect";
 import { Glob } from "./glob.js";
 import { makeGlobalNode } from "./effect/app-node.js";
-import { filesystem } from "./effect/app-node-platform.js";
+import { filesystem } from "#vibelang/emitted/src/effect/app-node-platform";
 import { sameDirectory } from "./path.js";
 export var FSUtil;
 (function (FSUtil) {

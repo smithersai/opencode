@@ -1,6 +1,4 @@
 import { LLMClient, RequestExecutor } from "@opencode/ai/route"
-import { Effect, Layer } from "effect"
-import { FetchHttpClient, HttpClient } from "effect/http"
 import { Socket } from "effect/socket"
 import { makeGlobalNode } from "@opencode/util/effect/app-node"
 import { httpClient } from "@opencode/util/effect/app-node-platform"
@@ -9,13 +7,13 @@ import { WebSocketConstructor } from "./websocket-constructor.js"
 // Bun's fetch ends a request after five quiet minutes, before provider routes' own header and chunk timeouts.
 const withoutBunTimeout = Layer.effect(
   HttpClient.HttpClient,
-  Effect.gen(function* () {
-    const client = yield* HttpClient.HttpClient
+  effect {
+    const client = try HttpClient.HttpClient
     return HttpClient.transformResponse(
       client,
       Effect.provideService(FetchHttpClient.RequestInit, { timeout: false } as BunFetchRequestInit),
     )
-  }),
+  },
 )
 
 export const requestExecutor = makeGlobalNode({
@@ -32,4 +30,4 @@ export const webSocketConstructor = makeGlobalNode({
   deps: [],
 })
 
-export * as LayerNodePlatform from "./app-node-platform.js"
+export * as LayerNodePlatform from "./app-node-platform.vibe"

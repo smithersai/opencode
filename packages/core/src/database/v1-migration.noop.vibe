@@ -1,5 +1,3 @@
-import { Effect, Layer } from "effect"
-
 export type Status = { readonly status: "completed" }
 
 export const layer = Layer.empty

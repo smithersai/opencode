@@ -11,7 +11,7 @@ import {
 import { RequestExecutor } from "@opencode/ai/route"
 import { makeLocationNode } from "@opencode/util/effect/app-node"
 import { Credential } from "./credential.js"
-import { requestExecutor } from "./effect/app-node-platform.js"
+import { requestExecutor } from "./effect/app-node-platform.vibe"
 import { Integration } from "./integration.js"
 
 export interface ModelInfo {

@@ -1,7 +1,7 @@
-export * as ConfigProviderV1 from "./provider.js"
+export * as ConfigProviderV1 from "./provider.vibe"
 
 import { Schema } from "effect"
-import { PositiveInt } from "../../schema.js"
+import { PositiveInt } from "../../schema.ts"
 
 export const ModelStatus = Schema.Literals(["alpha", "beta", "deprecated", "active"])
 

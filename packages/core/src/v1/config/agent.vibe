@@ -1,8 +1,8 @@
-export * as ConfigAgentV1 from "./agent.js"
+export * as ConfigAgentV1 from "./agent.vibe"
 
-import { Schema, SchemaGetter } from "effect"
-import { PositiveInt } from "../../schema.js"
-import { ConfigPermissionV1 } from "./permission.js"
+import { Schema } from "effect"
+import { PositiveInt } from "../../schema.ts"
+import { ConfigPermissionV1 } from "./permission.vibe"
 
 const Color = Schema.Union([
   Schema.String.check(Schema.isPattern(/^#[0-9a-fA-F]{6}$/)),

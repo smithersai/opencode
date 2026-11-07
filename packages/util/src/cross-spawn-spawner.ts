@@ -29,7 +29,7 @@ import * as NodeChildProcess from "node:child_process"
 import { PassThrough } from "node:stream"
 import launch from "cross-spawn"
 import { makeGlobalNode } from "./effect/app-node.js"
-import { filesystem, path } from "./effect/app-node-platform.js"
+import { filesystem, path } from "#vibelang/emitted/src/effect/app-node-platform"
 import { Teardown } from "./teardown.js"
 
 /** Closing a child's scope escalates to SIGKILL after this, unless the command sets its own `forceKillAfter`. */

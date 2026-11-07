@@ -7,7 +7,7 @@ import { FSUtil } from "./fs-util.js"
 import { Global } from "./global.js"
 import { EffectFlock } from "./effect-flock.js"
 import { makeGlobalNode } from "./effect/app-node.js"
-import { filesystem } from "./effect/app-node-platform.js"
+import { filesystem } from "#vibelang/emitted/src/effect/app-node-platform"
 import { NpmConfig } from "./npm-config.js"
 
 export class InstallFailedError extends Schema.TaggedError<InstallFailedError>()("NpmInstallFailedError", {

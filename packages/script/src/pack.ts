@@ -70,10 +70,31 @@ export async function pack(
         Object.entries(pkg.imports).map(([key, conditions]) => [
           key,
           Object.fromEntries(
-            Object.entries(conditions).map(([condition, value]) => [
-              condition,
-              condition === "types" ? declaration(value) : output(value),
-            ]),
+            Object.entries(
+              Object.fromEntries(
+                Object.entries(conditions).map(([__vibelangKey, __vibelangTarget]: [string, unknown]) => [
+                  __vibelangKey,
+                  (__vibelangKey === "types" ||
+                    (__vibelangKey === "default" && typeof key === "string" && key.startsWith("#vibelang/source/"))) &&
+                  typeof conditions["vibelang-source"] === "string"
+                    ? conditions["vibelang-source"]
+                    : __vibelangTarget !== null &&
+                        typeof __vibelangTarget === "object" &&
+                        "vibelang-source" in __vibelangTarget &&
+                        typeof __vibelangTarget["vibelang-source"] === "string"
+                      ? __vibelangTarget["vibelang-source"]
+                      : __vibelangTarget !== null &&
+                          typeof __vibelangTarget === "object" &&
+                          "default" in __vibelangTarget &&
+                          typeof __vibelangTarget.default === "string" &&
+                          /\.vibex?$/.test(__vibelangTarget.default) &&
+                          "types" in __vibelangTarget &&
+                          __vibelangTarget.types === __vibelangTarget.default.slice(0, -5) + ".d.vibe.ts"
+                        ? __vibelangTarget.default
+                        : __vibelangTarget,
+                ]),
+              ) as typeof conditions,
+            ).map(([condition, value]) => [condition, condition === "types" ? declaration(value) : output(value)]),
           ),
         ]),
       )

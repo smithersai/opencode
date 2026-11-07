@@ -1,3 +1,4 @@
+import { assertPublishableDeclarations } from "./declaration-routes"
 import { $ } from "bun"
 import { mkdir, rm } from "node:fs/promises"
 import path from "node:path"
@@ -35,6 +36,7 @@ export async function pack(
   const tarball = path.join(npmDir, `${pkg.name.replace("@", "").replace("/", "-")}-${pkg.version}.tgz`)
 
   await $`bun run build`.cwd(directory)
+  await assertPublishableDeclarations(path.resolve(directory, types))
 
   const exports = Object.fromEntries(
     Object.entries(

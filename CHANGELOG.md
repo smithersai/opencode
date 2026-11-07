@@ -6,6 +6,7 @@ Release notes for OpenCode V2, newest first.
 
 ### Bugs fixed
 
+- Package archives could expose internal compiler routes in their declarations; packing now rejects those unresolved routes before creating an archive.
 - Browser tests could fail while importing VibeLang helpers; test collection now loads those helpers correctly.
 - SDK bundles could read migrated plugin sources as assets; plugin exports now provide emitted JavaScript to ordinary bundlers.
 - Fresh checkout typechecks could reject a valid server command; its generated declaration now retains the checked service requirements.

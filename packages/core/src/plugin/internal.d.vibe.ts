@@ -40,7 +40,7 @@ import { SessionCompaction } from "../session/compaction.vibe";
 import { SessionInstructions } from "../session/instructions.js";
 import { SubagentJob } from "../session/subagent-job.vibe";
 import { Shell } from "../shell.js";
-import { ShellSelect } from "#vibelang/emitted/src/shell/select";
+import { ShellSelect } from "../shell/select.js";
 import { Snapshot } from "../snapshot.js";
 import { Skill } from "../skill.js";
 import { SkillDiscovery } from "../skill/discovery.js";

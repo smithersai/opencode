@@ -2,7 +2,7 @@ import { intro, outro, spinner } from "@clack/prompts"
 import { Commands } from "../../commands.ts"
 import { Runtime } from "../../../framework/runtime.ts"
 import { handlePromptErrors, requireInteractive } from "../../../ui/prompt.ts"
-import { createClient, loadIntegrations, request } from "./shared.ts"
+import { createClient, loadIntegrations, request } from "./shared.vibe"
 import { chooseCredential, chooseIntegration } from "./account.vibe"
 
 export default Runtime.handler(

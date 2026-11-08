@@ -8,7 +8,7 @@ Release notes for OpenCode V2, newest first.
 
 - Server handler implementations now use VibeLang while preserving the existing native declaration boundaries.
 
-- Command helper implementations now use VibeLang while preserving the existing command behavior.
+- Command helpers and additional handlers now use VibeLang while preserving existing command behavior.
 
 ### Bugs fixed
 

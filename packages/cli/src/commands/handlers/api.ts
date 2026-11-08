@@ -1,9 +1,9 @@
 import { EOL } from "node:os"
 import { Effect, Option } from "effect"
 import { Commands } from "../commands.ts"
-import { Runtime } from "../../framework/runtime"
+import { Runtime } from "../../framework/runtime.ts"
 import { Service, type Endpoint } from "@opencode/client/effect/service"
-import { ServerConnection } from "../../services/server-connection"
+import { ServerConnection } from "../../services/server-connection.ts"
 
 const methods = new Set(["delete", "get", "head", "options", "patch", "post", "put"])
 

@@ -1,0 +1,62 @@
+import { currentDirectory, writeOutput } from "./list.platform"
+import { EOL } from "./list.platform"
+import { Effect } from "effect"
+import { OpenCode, type McpServer } from "@opencode/client"
+import { Commands } from "../../commands.ts"
+import { Runtime } from "../../../framework/runtime"
+import { Service } from "@opencode/client/effect/service"
+import { ServerConnection } from "../../../services/server-connection"
+
+export default Runtime.handler(
+  Commands.commands.mcp.commands.list,
+  Effect.fn("cli.mcp.list")(effect function() {
+    const { endpoint } = try ServerConnection.resolve()
+    const client = try ((args: Parameters<typeof OpenCode.make>) =>
+      Effect.try(() => OpenCode.make(...args)).pipe(Effect.orDie))([{
+        baseUrl: endpoint.url,
+        headers: (try ((args: Parameters<typeof Service.headers>) =>
+          Effect.try(() =>
+            Service.headers(...args)
+          ).pipe(Effect.orDie))([endpoint])),
+      }])
+    const response = try Effect.promise(() => client.mcp.list({ location: { directory: currentDirectory() } }))
+    const servers = response.data.toSorted((a, b) => a.name.localeCompare(b.name))
+    if (servers.length === 0) {
+      void (try ((args: Parameters<typeof writeOutput>) => Effect.try(() => writeOutput(...args)).pipe(Effect.orDie))([
+        "No MCP servers configured" + EOL,
+      ]))
+      return
+    }
+    const width = Math.max(...servers.map((server) => server.name.length))
+    const lines = servers.map(
+      (server) => `${icon(server.status)} ${server.name.padEnd(width)}  ${describe(server.status)}`,
+    )
+    void (try ((args: Parameters<typeof writeOutput>) => Effect.try(() => writeOutput(...args)).pipe(Effect.orDie))([
+      lines.join(EOL) + EOL,
+    ]))
+  }),
+)
+
+function icon(status: McpServer["status"]) {
+  switch (status.status) {
+    case "connected":
+      return "✓"
+    case "needs_auth":
+      return "⚠"
+    case "failed":
+      return "✗"
+    default:
+      return "○"
+  }
+}
+
+function describe(status: McpServer["status"]) {
+  switch (status.status) {
+    case "needs_auth":
+      return "needs authentication"
+    case "failed":
+      return `failed: ${status.error}`
+    default:
+      return status.status
+  }
+}

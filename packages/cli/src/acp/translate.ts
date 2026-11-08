@@ -14,7 +14,7 @@ import {
   runningToolUpdate,
   type DiffSource,
   type ToolInput,
-} from "./tool"
+} from "./tool.ts"
 
 const RetryMeta = "opencode/retry"
 

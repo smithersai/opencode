@@ -1,0 +1,21 @@
+import { setExitCode, writeOutput } from "./check.platform"
+import { EOL } from "./check.platform"
+import { Effect, Option } from "effect"
+import { Commands } from "../../commands.ts"
+import { Runtime } from "../../../framework/runtime"
+import { format, inspect } from "./inventory"
+
+export default Runtime.handler(
+  Commands.commands.plugin.commands.check,
+  Effect.fn("cli.plugin.check")(effect function(input) {
+    const result = try inspect(Option.getOrUndefined(input.target))
+    void (try ((args: Parameters<typeof writeOutput>) => Effect.try(() => writeOutput(...args)).pipe(Effect.orDie))([
+      (format(result.items) || "No package plugins found") + EOL,
+    ]))
+    if (result.items.some((item) => item.error)) {
+      void (try ((args: Parameters<typeof setExitCode>) => Effect.try(() => setExitCode(...args)).pipe(Effect.orDie))([
+        1,
+      ]))
+    }
+  }),
+)

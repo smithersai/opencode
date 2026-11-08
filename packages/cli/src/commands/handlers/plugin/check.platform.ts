@@ -1,0 +1,5 @@
+export { EOL } from "node:os"
+
+export const writeOutput = (...args: Parameters<typeof process.stdout.write>) => process.stdout.write(...args)
+
+export const setExitCode = (code: typeof process.exitCode) => (process.exitCode = code)

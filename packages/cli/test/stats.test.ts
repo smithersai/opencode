@@ -1,7 +1,7 @@
 import { describe, expect, test } from "bun:test"
 import { ClientError, type SessionStatsInfo } from "@opencode/client"
 import { Effect } from "effect"
-import { renderStats, request } from "../src/commands/handlers/stats"
+import { renderStats, request } from "../src/commands/handlers/stats.vibe"
 
 const tools = {
   mode: "detail",

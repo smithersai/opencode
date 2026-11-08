@@ -5,7 +5,7 @@ import { NodeRuntime, NodeServices } from "@effect/platform-node"
 import { Cause, Effect } from "effect"
 import { getErrorReported } from "effect/Runtime"
 import { Commands } from "./commands/commands.ts"
-import { Runtime } from "./framework/runtime"
+import { Runtime } from "./framework/runtime.ts"
 import { Observability } from "@opencode/util/observability"
 import { Updater } from "./services/updater"
 import { OPENCODE_ARTIFACT, OPENCODE_CHANNEL, OPENCODE_LOCAL, OPENCODE_VERSION } from "./version.ts"
@@ -22,59 +22,59 @@ import { ShutdownDeadline } from "./shutdown-deadline"
 ensurePluginRuntime()
 
 if (process.env.OPENCODE_SSH_ASKPASS_PORT) {
-  const { askpass } = await import("./ssh-askpass")
+  const { askpass } = await import("./ssh-askpass.vibe")
   process.exit(await Effect.runPromise(askpass.pipe(Effect.provide(NodeServices.layer))))
 }
 
 const Handlers = Runtime.handlers(Commands, {
-  $: () => import("./commands/handlers/default"),
-  upgrade: () => import("./commands/handlers/upgrade"),
+  $: () => import("./commands/handlers/default.vibe"),
+  upgrade: () => import("./commands/handlers/upgrade.vibe"),
   uninstall: () => import("./commands/handlers/uninstall"),
   acp: () => import("./commands/handlers/acp"),
   api: () => import("./commands/handlers/api"),
   auth: {
-    list: () => import("./commands/handlers/auth/list"),
-    login: () => import("./commands/handlers/auth/login"),
+    list: () => import("./commands/handlers/auth/list.vibe"),
+    login: () => import("./commands/handlers/auth/login.vibe"),
     logout: () => import("./commands/handlers/auth/logout.vibe"),
-    export: () => import("./commands/handlers/auth/export"),
+    export: () => import("./commands/handlers/auth/export.vibe"),
     import: () => import("./commands/handlers/auth/import"),
     switch: () => import("./commands/handlers/auth/switch.vibe"),
   },
   debug: {
     agents: () => import("./commands/handlers/debug/agents.vibe"),
     config: () => import("./commands/handlers/debug/config.vibe"),
-    "heap-dump": () => import("./commands/handlers/debug/heap-dump"),
+    "heap-dump": () => import("./commands/handlers/debug/heap-dump.vibe"),
     paths: () => import("./commands/handlers/debug/paths.vibe"),
   },
   mcp: {
-    list: () => import("./commands/handlers/mcp/list"),
+    list: () => import("./commands/handlers/mcp/list.vibe"),
     add: () => import("./commands/handlers/mcp/add"),
-    auth: () => import("./commands/handlers/mcp/auth"),
-    logout: () => import("./commands/handlers/mcp/logout"),
+    auth: () => import("./commands/handlers/mcp/auth.vibe"),
+    logout: () => import("./commands/handlers/mcp/logout.vibe"),
   },
   plugin: {
     list: () => import("./commands/handlers/plugin/list"),
     add: () => import("./commands/handlers/plugin/add"),
-    check: () => import("./commands/handlers/plugin/check"),
-    update: () => import("./commands/handlers/plugin/update"),
+    check: () => import("./commands/handlers/plugin/check.vibe"),
+    update: () => import("./commands/handlers/plugin/update.vibe"),
     remove: () => import("./commands/handlers/plugin/remove"),
   },
   models: () => import("./commands/handlers/models.vibe"),
-  stats: () => import("./commands/handlers/stats"),
-  mini: () => import("./commands/handlers/mini"),
-  run: () => import("./commands/handlers/run"),
-  pair: () => import("./commands/handlers/pair"),
-  reload: () => import("./commands/handlers/reload"),
+  stats: () => import("./commands/handlers/stats.vibe"),
+  mini: () => import("./commands/handlers/mini.ts"),
+  run: () => import("./commands/handlers/run.ts"),
+  pair: () => import("./commands/handlers/pair.vibe"),
+  reload: () => import("./commands/handlers/reload.vibe"),
   session: {
     list: () => import("./commands/handlers/session/list"),
-    delete: () => import("./commands/handlers/session/delete"),
+    delete: () => import("./commands/handlers/session/delete.vibe"),
     export: () => import("./commands/handlers/session/export"),
     import: () => import("./commands/handlers/session/import"),
   },
   service: {
-    start: () => import("./commands/handlers/service/start"),
-    restart: () => import("./commands/handlers/service/restart"),
-    status: () => import("./commands/handlers/service/status"),
+    start: () => import("./commands/handlers/service/start.vibe"),
+    restart: () => import("./commands/handlers/service/restart.vibe"),
+    status: () => import("./commands/handlers/service/status.vibe"),
     stop: () => import("./commands/handlers/service/stop.vibe"),
     get: () => import("./commands/handlers/service/get.vibe"),
     set: () => import("./commands/handlers/service/set.vibe"),

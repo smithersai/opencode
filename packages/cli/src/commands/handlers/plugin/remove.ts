@@ -4,7 +4,7 @@ import { Effect } from "effect"
 import { applyEdits, modify, parse, type ParseError } from "jsonc-parser"
 import { Global } from "@opencode/util/global"
 import { Commands } from "../../commands.ts"
-import { Runtime } from "../../../framework/runtime"
+import { Runtime } from "../../../framework/runtime.ts"
 import { Config } from "../../../config"
 import { resolveConfigPath } from "../mcp/add"
 

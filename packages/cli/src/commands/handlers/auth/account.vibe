@@ -1,7 +1,7 @@
 import { autocomplete } from "@clack/prompts"
 import type { IntegrationInfo } from "@opencode/client"
 import { prompt } from "../../../ui/prompt.ts"
-import { resolveIntegration } from "./shared.ts"
+import { resolveIntegration } from "./shared.vibe"
 
 export const chooseIntegration = effect (
   integrations: IntegrationInfo[],

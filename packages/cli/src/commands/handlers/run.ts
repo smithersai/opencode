@@ -1,7 +1,7 @@
 import { Effect, Option } from "effect"
 import { Commands } from "../commands.ts"
-import { Runtime } from "../../framework/runtime"
-import { ServerConnection } from "../../services/server-connection"
+import { Runtime } from "../../framework/runtime.ts"
+import { ServerConnection } from "../../services/server-connection.ts"
 
 export default Runtime.handler(Commands.commands.run, (input) =>
   Effect.gen(function* () {

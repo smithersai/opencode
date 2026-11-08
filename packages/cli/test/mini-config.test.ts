@@ -31,7 +31,7 @@ test("mini handler passes resolved CLI keybinds to the runtime", async () => {
       return Promise.resolve()
     },
   }))
-  const handler = (await import("../src/commands/handlers/mini")).default
+  const handler = (await import("../src/commands/handlers/mini.ts")).default
   const server = Bun.serve({
     port: 0,
     fetch: () => Response.json({ version: OPENCODE_VERSION, pid: process.pid, urls: [] }),

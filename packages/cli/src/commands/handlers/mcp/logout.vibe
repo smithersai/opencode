@@ -1,0 +1,51 @@
+import { currentDirectory, writeOutput } from "./logout.platform"
+import { EOL } from "./logout.platform"
+import { Effect } from "effect"
+import { OpenCode } from "@opencode/client"
+import { Commands } from "../../commands.ts"
+import { Runtime } from "../../../framework/runtime"
+import { Service } from "@opencode/client/effect/service"
+import { ServerConnection } from "../../../services/server-connection"
+import { resolveIntegration } from "./resolve.vibe"
+
+const location = { directory: currentDirectory() }
+
+export default Runtime.handler(
+  Commands.commands.mcp.commands.logout,
+  Effect.fn("cli.mcp.logout")(effect function(input) {
+    const { endpoint } = try ServerConnection.resolve()
+    const client = try ((args: Parameters<typeof OpenCode.make>) =>
+      Effect.try(() => OpenCode.make(...args)).pipe(Effect.orDie))([{
+        baseUrl: endpoint.url,
+        headers: (try ((args: Parameters<typeof Service.headers>) =>
+          Effect.try(() =>
+            Service.headers(...args)
+          ).pipe(Effect.orDie))([endpoint])),
+      }])
+
+    const integration = try resolveIntegration(client, input.name, location)
+    if (!integration) {
+      void (try ((args: Parameters<typeof writeOutput>) => Effect.try(() => writeOutput(...args)).pipe(Effect.orDie))([
+        `No stored credentials for ${input.name}` + EOL,
+      ]))
+      return
+    }
+
+    const credentials = integration.connections.filter((connection) => connection.type === "credential")
+    if (credentials.length === 0) {
+      void (try ((args: Parameters<typeof writeOutput>) => Effect.try(() => writeOutput(...args)).pipe(Effect.orDie))([
+        `No stored credentials for ${input.name}` + EOL,
+      ]))
+      return
+    }
+
+    try Effect.forEach(
+      credentials,
+      (connection) => Effect.promise(() => client.credential.remove({ credentialID: connection.id })),
+      { discard: true },
+    )
+    void (try ((args: Parameters<typeof writeOutput>) => Effect.try(() => writeOutput(...args)).pipe(Effect.orDie))([
+      `Removed OAuth credentials for ${input.name}` + EOL,
+    ]))
+  }),
+)

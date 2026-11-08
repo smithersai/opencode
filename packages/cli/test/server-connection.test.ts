@@ -9,7 +9,7 @@ import os from "node:os"
 import path from "node:path"
 import { Commands, PrintLogs, Server, Standalone } from "../src/commands/commands.ts"
 import { Spec } from "../src/framework/spec.ts"
-import { ServerConnection } from "../src/services/server-connection"
+import { ServerConnection } from "../src/services/server-connection.ts"
 import { ServiceConfig } from "../src/services/service-config"
 import { isolatedEnv } from "./fixture/environment"
 

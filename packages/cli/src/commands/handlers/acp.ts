@@ -7,14 +7,14 @@ import { FetchHttpClient, HttpClient, HttpClientRequest } from "effect/http"
 import { Writable } from "node:stream"
 import { ACP } from "../../acp/agent"
 import { Commands } from "../commands.ts"
-import { Runtime } from "../../framework/runtime"
+import { Runtime } from "../../framework/runtime.ts"
 import { Standalone } from "../../services/standalone"
 
 export default Runtime.handler(
   Commands.commands.acp,
   Effect.fn("cli.acp")(function* (input) {
     if (input.login) {
-      const login = yield* Effect.promise(() => import("./auth/login"))
+      const login = yield* Effect.promise(() => import("./auth/login.vibe"))
       return yield* login.default({
         target: Option.none(),
         method: Option.none(),

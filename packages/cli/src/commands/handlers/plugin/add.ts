@@ -7,7 +7,7 @@ import { Global } from "@opencode/util/global"
 import { Npm } from "@opencode/util/npm"
 import { Host } from "@opencode/plugin/host"
 import { Commands } from "../../commands.ts"
-import { Runtime } from "../../../framework/runtime"
+import { Runtime } from "../../../framework/runtime.ts"
 import { resolveConfigPath } from "../mcp/add"
 import { Config } from "../../../config"
 

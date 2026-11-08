@@ -1,0 +1,17 @@
+import { writeOutput } from "./start.platform"
+import { EOL } from "./start.platform"
+import { Effect } from "effect"
+import { Service } from "@opencode/client/effect/service"
+import { Commands } from "../../commands.ts"
+import { Runtime } from "../../../framework/runtime"
+import { ServiceConfig } from "../../../services/service-config"
+
+export default Runtime.handler(
+  Commands.commands.service.commands.start,
+  Effect.fn("cli.service.start")(effect function() {
+    const transport = try Service.ensure(try ServiceConfig.options())
+    void (try ((args: Parameters<typeof writeOutput>) => Effect.try(() => writeOutput(...args)).pipe(Effect.orDie))([
+      transport.url + EOL,
+    ]))
+  }),
+)

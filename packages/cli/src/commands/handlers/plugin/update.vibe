@@ -1,0 +1,59 @@
+import { setExitCode, writeError, writeOutput } from "./update.platform"
+import { EOL } from "./update.platform"
+import { Cause, Effect, Exit, Option } from "effect"
+import { Npm } from "@opencode/util/npm"
+import { Commands } from "../../commands.ts"
+import { Runtime } from "../../../framework/runtime"
+import { inspect } from "./inventory"
+
+export default Runtime.handler(
+  Commands.commands.plugin.commands.update,
+  Effect.fn("cli.plugin.update")(effect function(input) {
+    const result = try inspect(Option.getOrUndefined(input.target))
+    for (const item of result.items) {
+      if (!item.error) continue
+      void (try ((args: Parameters<typeof writeError>) => Effect.try(() => writeError(...args)).pipe(Effect.orDie))([
+        `Failed to check ${item.runtime} plugin "${item.name}": ${item.error}${EOL}`,
+      ]))
+    }
+    const selected = result.items.filter((item) => item.outdated)
+    if (!selected.length) {
+      void (try ((args: Parameters<typeof writeOutput>) => Effect.try(() => writeOutput(...args)).pipe(Effect.orDie))([
+        "No plugin updates available" + EOL,
+      ]))
+      if (result.items.some((item) => item.error)) {
+        void (try ((args: Parameters<typeof setExitCode>) =>
+          Effect.try(() => setExitCode(...args)).pipe(Effect.orDie))([1]))
+      }
+      return
+    }
+
+    const npm = try Npm.Service
+    const updated = try Effect.forEach(
+      selected,
+      (item) =>
+        (item.runtime === "Server"
+          ? Effect.promise(() => result.client.plugin.update({ location: result.location, targets: [item.target] }))
+          : npm.update(item.target).pipe(Effect.asVoid)).pipe(
+            Effect.exit,
+            Effect.map((result) => ({ item, result })),
+          ),
+      { concurrency: "unbounded" },
+    )
+    for (const item of updated) {
+      if (Exit.isSuccess(item.result)) {
+        void (try ((args: Parameters<typeof writeOutput>) =>
+          Effect.try(() => writeOutput(...args)).pipe(Effect.orDie))([
+            `Updated ${item.item.runtime} plugin "${item.item.name}"${EOL}`,
+          ]))
+        continue
+      }
+      void (try ((args: Parameters<typeof writeError>) => Effect.try(() => writeError(...args)).pipe(Effect.orDie))([
+        `Failed to update ${item.item.runtime} plugin "${item.item.name}": ${Cause.pretty(item.result.cause)}${EOL}`,
+      ]))
+      void (try ((args: Parameters<typeof setExitCode>) => Effect.try(() => setExitCode(...args)).pipe(Effect.orDie))([
+        1,
+      ]))
+    }
+  }),
+)

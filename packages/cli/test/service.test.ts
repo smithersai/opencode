@@ -14,7 +14,7 @@ import { LayerNode } from "@opencode/util/effect/layer-node"
 import { AppProcess } from "@opencode/util/process"
 import { PortOwner } from "../src/services/port-owner"
 import { ServiceConfig } from "../src/services/service-config"
-import { ServiceRegistration } from "../src/services/service-registration"
+import { ServiceRegistration } from "../src/services/service-registration.ts"
 import { isolatedEnv, transpilerCache } from "./fixture/environment"
 import { testEffect } from "../../core/test/lib/effect"
 

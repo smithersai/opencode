@@ -6,7 +6,7 @@ import { Effect, FileSystem, Option, Schedule, Schema } from "effect"
 import { randomBytes } from "crypto"
 import path from "path"
 import { selfCommand } from "../util/process"
-import { RemoteTunnel } from "./remote-tunnel"
+import { RemoteTunnel } from "./remote-tunnel.ts"
 
 // The CLI's service configuration file, plus the Service.EnsureOptions binding that
 // points the client package's service operations at this CLI: which

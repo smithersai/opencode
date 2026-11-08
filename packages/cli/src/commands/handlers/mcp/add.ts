@@ -5,7 +5,7 @@ import { Effect, Option } from "effect"
 import { applyEdits, modify } from "jsonc-parser"
 import { Global } from "@opencode/util/global"
 import { Commands } from "../../commands.ts"
-import { Runtime } from "../../../framework/runtime"
+import { Runtime } from "../../../framework/runtime.ts"
 
 export default Runtime.handler(
   Commands.commands.mcp.commands.add,

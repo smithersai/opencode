@@ -4,8 +4,8 @@ import { Service } from "@opencode/client/effect/service"
 import { Effect, Option } from "effect"
 import { EOL } from "node:os"
 import { Commands } from "../../commands.ts"
-import { Runtime } from "../../../framework/runtime"
-import { ServerConnection } from "../../../services/server-connection"
+import { Runtime } from "../../../framework/runtime.ts"
+import { ServerConnection } from "../../../services/server-connection.ts"
 import { errorMessage } from "../../../util/error"
 
 export default Runtime.handler(

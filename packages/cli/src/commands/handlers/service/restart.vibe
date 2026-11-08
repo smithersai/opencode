@@ -1,0 +1,22 @@
+import { writeOutput } from "./restart.platform"
+import { EOL } from "./restart.platform"
+import { Effect } from "effect"
+import { Service } from "@opencode/client/effect/service"
+import { Commands } from "../../commands.ts"
+import { Runtime } from "../../../framework/runtime"
+import { ServiceConfig } from "../../../services/service-config"
+import { ServerConnection } from "../../../services/server-connection"
+
+export default Runtime.handler(
+  Commands.commands.service.commands.restart,
+  Effect.fn("cli.service.restart")(effect function() {
+    const options = try ServiceConfig.options()
+    // Keep this explicit: automatic service replacement must preserve terminals.
+    try ServerConnection.shutdownPersistentPty(options).pipe(Effect.ignore)
+    try Service.stop(options)
+    const transport = try Service.ensure(options)
+    void (try ((args: Parameters<typeof writeOutput>) => Effect.try(() => writeOutput(...args)).pipe(Effect.orDie))([
+      transport.url + EOL,
+    ]))
+  }),
+)

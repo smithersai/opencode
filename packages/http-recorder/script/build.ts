@@ -8,7 +8,7 @@ await $`bunx vibelang --emitDeclarationOnly`
 
 const build = await Bun.build({
   plugins: [vibelang()],
-  entrypoints: ["src/index.vibe"],
+  entrypoints: ["src/index.ts"],
   outdir: "dist",
   target: "node",
   format: "esm",

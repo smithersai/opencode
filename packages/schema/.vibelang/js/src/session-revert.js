@@ -13,11 +13,11 @@ export const Revert = Schema.Struct({
     files: Schema.Array(FileDiff.Info).pipe(optional),
 }).annotate({ identifier: "Session.Revert" });
 const FileDiffV1 = Schema.Struct({
-    path: Schema.mutableKey(Schema.String),
-    status: Schema.mutableKey(Schema.Literals(["added", "modified", "deleted"])),
-    additions: Schema.mutableKey(Schema.Finite),
-    deletions: Schema.mutableKey(Schema.Finite),
-    patch: Schema.mutableKey(Schema.String),
+    path: Schema.String,
+    status: Schema.Literals(["added", "modified", "deleted"]),
+    additions: Schema.Finite,
+    deletions: Schema.Finite,
+    patch: Schema.String,
 });
 export const RevertV1 = Schema.Struct({
     messageID: SessionMessage.ID,

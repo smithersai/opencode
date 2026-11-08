@@ -13,11 +13,11 @@ export const Revert = Schema.Struct({
 }).annotate({ identifier: "Session.Revert" })
 
 schema FileDiffV1 {
-  path: string
-  status: "added" | "modified" | "deleted"
-  additions: Schema.Finite
-  deletions: Schema.Finite
-  patch: string
+  readonly path: string
+  readonly status: "added" | "modified" | "deleted"
+  readonly additions: Schema.Finite
+  readonly deletions: Schema.Finite
+  readonly patch: string
 }
 
 export interface RevertV1 extends Schema.Schema.Type<typeof RevertV1> {}

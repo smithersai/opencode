@@ -1,0 +1,29 @@
+{
+  "pattern": "Native struct fields remain readonly after schema migration.",
+  "sources": [
+    {
+      "file": "packages/schema/src/config/policy.vibe",
+      "definitions": ["Info"]
+    },
+    {
+      "file": "packages/schema/src/session-revert.vibe",
+      "definitions": ["FileDiffV1"]
+    },
+    {
+      "file": "packages/schema/src/v1/session.vibe",
+      "definitions": ["SessionTokens", "SessionShare"]
+    }
+  ],
+  "policy": {
+    "action": "tool.use",
+    "resource": "tool:*",
+    "effect": "allow"
+  },
+  "legacyFile": {
+    "path": "old.txt",
+    "status": "modified",
+    "additions": 1,
+    "deletions": 0,
+    "patch": ""
+  }
+}

@@ -28,6 +28,8 @@
 
 ## Module Shape
 
+- Preserve the original `readonly` fields when migrating `Schema.Struct` codecs, including nested and private shapes used by public contracts.
+
 - Use one canonical exported value for each contract. Avoid bridge aliases such as `PluginID`, `PluginEvent`, `PtyInfo`, and `PtyEvent`.
 - Prefer importing the schema module namespace and reading canonical members, for example `Plugin.ID` or `Question.Info`.
 - Core may compose Schema contracts with runtime behavior into a deliberate domain facade, but the facade must re-export the exact canonical Schema value. Do not create a second schema identity.

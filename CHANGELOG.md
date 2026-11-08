@@ -6,6 +6,8 @@ Release notes for OpenCode V2, newest first.
 
 ### Bugs fixed
 
+- Some migrated policy and session contracts became mutable; their fields now retain their original readonly types.
+
 - The LSP disabled codec exposed an extra type name after migration; it now preserves its original value-only API.
 
 - Declaration generation could fail on standalone VibeLang fixtures excluded from a project; it now checks the files the project actually compiles.

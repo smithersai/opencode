@@ -1,0 +1,7 @@
+[
+  { "mode": "include", "kind": "vibe", "imported": false, "dotted": false, "empty": false },
+  { "mode": "files", "kind": "vibex", "imported": true, "dotted": true, "empty": false },
+  { "mode": "extends", "kind": "vibe", "imported": true, "dotted": false, "empty": false },
+  { "mode": "references", "kind": "vibex", "imported": false, "dotted": false, "empty": false },
+  { "mode": "include", "kind": "vibe", "imported": false, "dotted": false, "empty": true }
+]

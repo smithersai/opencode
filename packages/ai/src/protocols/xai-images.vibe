@@ -5,7 +5,7 @@ import { MediaRoute } from "../route/media.vibe"
 import { mergeJsonRecords, type OpenString } from "../schema/index.js"
 import { JsonObject, ProviderShared, lenient, optionalNull } from "./shared.js"
 import { ImageSizing } from "./utils/image-sizing.vibe"
-import { MediaInput } from "./utils/media-input.js"
+import { MediaInput } from "./utils/media-input.vibe"
 
 const route = MediaProtocol.identity({ id: "xai-images", name: "xAI Images", provider: "xai" })
 export const DEFAULT_BASE_URL = "https://api.x.ai/v1"

@@ -1,6 +1,6 @@
 import type { ProviderPackage } from "../provider-package.js"
 import { OpenAIChat } from "../protocols/openai-chat.js"
-import { OpenAIImages } from "../protocols/openai-images.js"
+import { OpenAIImages } from "../protocols/openai-images.vibe"
 import { SystemOne } from "../protocols/system-one.vibe"
 import { cacheControl } from "../protocols/utils/cache.js"
 import { AuthOptions, type ProviderAuthOption } from "../route/auth-options.vibe"

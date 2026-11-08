@@ -35,35 +35,39 @@ export const policy = Effect_1.gen(function* policy() {
     const step = yield* Schedule.toStep(schedule);
     let attempt = 1;
     let timeouts = 0;
-    return Effect_1.fnUntraced(function* (input) {
-        const now = yield* Clock.currentTimeMillis;
-        const next = yield* step(now, input).pipe(Pull.catchDone(() => Effect.succeed(undefined)));
-        if (!next)
-            return undefined;
-        const [, duration] = next;
-        attempt++;
-        if (input.cause.reason._tag === "Transport" && input.cause.reason.code === "Timeout")
-            timeouts++;
-        return {
-            attempt,
-            delay: Math.ceil(Duration.toMillis(duration)),
-            retry: input.retry && timeouts <= MAX_TIMEOUT_RETRIES,
-        };
-    });
+    return (input) => {
+        return Effect_1.gen(function* () {
+            const now = yield* Clock.currentTimeMillis;
+            const next = yield* step(now, input).pipe(Pull.catchDone(() => Effect.succeed(undefined)));
+            if (!next)
+                return undefined;
+            const [, duration] = next;
+            attempt++;
+            if (input.cause.reason._tag === "Transport" && input.cause.reason.code === "Timeout")
+                timeouts++;
+            return {
+                attempt,
+                delay: Math.ceil(Duration.toMillis(duration)),
+                retry: input.retry && timeouts <= MAX_TIMEOUT_RETRIES,
+            };
+        });
+    };
 });
 /** Retry a buffered model call from scratch; failed attempts never contribute to its returned output. */
-export const retry = Effect_1.fnUntraced({ *retry(effect) {
-        const decide = yield* policy;
-        while (true) {
-            const result = yield* Effect.result(effect);
-            if (result._tag === "Success")
-                return result.success;
-            const decision = yield* decide({ cause: result.failure, retry: isRetryable(result.failure) });
-            if (!decision?.retry)
-                return yield* Effect_1.fail(result.failure);
-            yield* Effect.sleep(Duration.millis(decision.delay));
-        }
-    } }.retry);
+export const retry = (effect) => {
+    return Effect_1.gen({ *retry() {
+            const decide = yield* policy;
+            while (true) {
+                const result = yield* Effect.result(effect);
+                if (result._tag === "Success")
+                    return result.success;
+                const decision = yield* decide({ cause: result.failure, retry: isRetryable(result.failure) });
+                if (!decision?.retry)
+                    return yield* Effect_1.fail(result.failure);
+                yield* Effect.sleep(Duration.millis(decision.delay));
+            }
+        } }.retry);
+};
 // One-shot generations (stateless text, images, decisions) can be billed per attempt, so they retry only failures
 // the provider never ran, a few times, with the same backoff and retry-after handling.
 const ONE_SHOT_RETRIES = 3;
@@ -85,16 +89,18 @@ const notRun = (error) => {
     return false;
 };
 /** Retry a one-shot call only when the provider clearly didn't run it: rate limits, overload, unreachable hosts. */
-export const retryOneShot = Effect_1.fnUntraced(function* retryOneShot(effect) {
-    const decide = yield* policy;
-    let retries = 0;
-    while (true) {
-        const result = yield* Effect.result(effect);
-        if (result._tag === "Success")
-            return result.success;
-        const decision = yield* decide({ cause: result.failure, retry: notRun(result.failure) });
-        if (!decision?.retry || retries++ >= ONE_SHOT_RETRIES)
-            return yield* Effect_1.fail(result.failure);
-        yield* Effect.sleep(Duration.millis(decision.delay));
-    }
-});
+export const retryOneShot = (effect) => {
+    return Effect_1.gen(function* retryOneShot() {
+        const decide = yield* policy;
+        let retries = 0;
+        while (true) {
+            const result = yield* Effect.result(effect);
+            if (result._tag === "Success")
+                return result.success;
+            const decision = yield* decide({ cause: result.failure, retry: notRun(result.failure) });
+            if (!decision?.retry || retries++ >= ONE_SHOT_RETRIES)
+                return yield* Effect_1.fail(result.failure);
+            yield* Effect.sleep(Duration.millis(decision.delay));
+        }
+    });
+};

@@ -12,33 +12,43 @@ import { chunks, collapseRows, DATA_SITE_TIERS, inserted, omitUniqueUsers, rankR
 export class ProviderStatRepo extends Context.Service()("@opencode/stats/ProviderStatRepo") {
     static layer = Layer.effect(ProviderStatRepo, Effect_1.gen(function* () {
         const db = yield* DrizzleClient;
-        const listDaily = () => Effect_1.suspend({ listDaily: () => { return withSpan(Effect_1.suspend(() => Effect.tryPromise({
-                try: () => db
-                    .select({
-                    periodKey: providerStat.period_key,
-                    updatedAt: providerStat.updated_at,
-                    tier: providerStat.tier,
-                    provider: providerStat.provider,
-                    totalTokens: providerStat.total_tokens,
-                })
-                    .from(providerStat)
-                    .where(and(eq(providerStat.grain, "day"), eq(providerStat.client, "all"), eq(providerStat.source, "all"), inArray(providerStat.tier, DATA_SITE_TIERS)))
-                    .orderBy(asc(providerStat.period_key)),
-                catch: (cause) => DatabaseError.make({ cause }),
-            })), "ProviderStatRepo.listDaily"); } }.listDaily);
-        const listByPeriod = (opts) => Effect_1.suspend({ listByPeriod: () => { return withSpan(Effect_1.suspend(() => Effect.tryPromise({
-                try: () => db
-                    .select()
-                    .from(providerStat)
-                    .where(and(eq(providerStat.grain, opts.grain), eq(providerStat.period_key, opts.periodKey), eq(providerStat.dataset, opts.dataset ?? "zen"), eq(providerStat.tier, opts.tier ?? "all"), eq(providerStat.client, opts.client ?? "all"), eq(providerStat.source, opts.source ?? "all"))),
-                catch: (cause) => DatabaseError.make({ cause }),
-            })), "ProviderStatRepo.listByPeriod"); } }.listByPeriod);
-        const upsert = (rows) => Effect_1.suspend({ upsert: () => { return withSpan(Effect_1.gen(function* () {
-                yield* Effect.forEach(chunks(rows, UPSERT_CHUNK_SIZE), (chunk) => Effect.tryPromise({
+        const listDaily = () => {
+            return Effect_1.gen(function* listDaily() { return yield* withSpan(Effect_1.gen(function* () {
+                return yield* Effect.tryPromise({
+                    try: () => db
+                        .select({
+                        periodKey: providerStat.period_key,
+                        updatedAt: providerStat.updated_at,
+                        tier: providerStat.tier,
+                        provider: providerStat.provider,
+                        totalTokens: providerStat.total_tokens,
+                    })
+                        .from(providerStat)
+                        .where(and(eq(providerStat.grain, "day"), eq(providerStat.client, "all"), eq(providerStat.source, "all"), inArray(providerStat.tier, DATA_SITE_TIERS)))
+                        .orderBy(asc(providerStat.period_key)),
+                    catch: (cause) => DatabaseError.make({ cause }),
+                });
+            }), "ProviderStatRepo.listDaily"); });
+        };
+        const listByPeriod = (opts) => {
+            return Effect_1.gen(function* listByPeriod() { return yield* withSpan(Effect_1.gen(function* () {
+                return yield* Effect.tryPromise({
+                    try: () => db
+                        .select()
+                        .from(providerStat)
+                        .where(and(eq(providerStat.grain, opts.grain), eq(providerStat.period_key, opts.periodKey), eq(providerStat.dataset, opts.dataset ?? "zen"), eq(providerStat.tier, opts.tier ?? "all"), eq(providerStat.client, opts.client ?? "all"), eq(providerStat.source, opts.source ?? "all"))),
+                    catch: (cause) => DatabaseError.make({ cause }),
+                });
+            }), "ProviderStatRepo.listByPeriod"); });
+        };
+        const upsert = (rows) => {
+            return Effect_1.gen(function* upsert() { return yield* withSpan(Effect_1.gen(function* () {
+                yield* Effect.forEach(yield* Effect.orDie(Effect.try({ try: () => chunks(rows, UPSERT_CHUNK_SIZE), catch: (e) => e })), (chunk) => Effect.tryPromise({
                     try: () => withUniqueUsersFallback((includeUniqueUsers) => upsertProviderChunk(chunk, includeUniqueUsers)),
                     catch: (cause) => DatabaseError.make({ cause }),
                 }), { discard: true });
-            }), "ProviderStatRepo.upsert"); } }.upsert);
+            }), "ProviderStatRepo.upsert"); });
+        };
         function upsertProviderChunk(chunk, includeUniqueUsers) {
             return db
                 .insert(providerStat)
@@ -76,8 +86,9 @@ export class ProviderStatRepo extends Context.Service()("@opencode/stats/Provide
                 },
             });
         }
-        const deleteRetiredDimensions = (rows) => Effect_1.suspend({ deleteRetiredDimensions: () => { return withSpan(Effect_1.gen(function* () {
-                const scope = statRowScope(rows);
+        const deleteRetiredDimensions = (rows) => {
+            return Effect_1.gen(function* deleteRetiredDimensions() { return yield* withSpan(Effect_1.gen(function* () {
+                const scope = yield* Effect.orDie(Effect.try({ try: () => statRowScope(rows), catch: (e) => e }));
                 if (!scope)
                     return;
                 yield* Effect.tryPromise({
@@ -86,7 +97,8 @@ export class ProviderStatRepo extends Context.Service()("@opencode/stats/Provide
                         .where(and(inArray(providerStat.grain, scope.grains), inArray(providerStat.period_key, scope.periodKeys), inArray(providerStat.dataset, scope.datasets), inArray(providerStat.client, scope.clients), inArray(providerStat.source, scope.sources), inArray(providerStat.provider, RETIRED_STAT_PROVIDERS))),
                     catch: (cause) => DatabaseError.make({ cause }),
                 });
-            }), "ProviderStatRepo.deleteRetiredDimensions"); } }.deleteRetiredDimensions);
+            }), "ProviderStatRepo.deleteRetiredDimensions"); });
+        };
         return ProviderStatRepo.of({ listDaily, listByPeriod, upsert, deleteRetiredDimensions });
     }));
 }

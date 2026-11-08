@@ -22,22 +22,22 @@ const Cpu = Schema.Struct({
     timeDeltas: Schema.optionalKey(Schema.Array(number)),
 });
 const Heap = Schema.Struct({
-    snapshot: Schema.Struct({
-        meta: Schema.Struct({
-            node_fields: Schema.Array(Schema.String),
-            node_types: Schema.Array(Schema.Union([Schema.String, Schema.Array(Schema.String),])),
-            edge_fields: Schema.Array(Schema.String),
-            edge_types: Schema.Array(Schema.Union([Schema.String, Schema.Array(Schema.String),])),
-        }),
-    }),
-    nodes: Schema.Array(Schema.Number),
-    edges: Schema.Array(Schema.Number),
-    strings: Schema.Array(Schema.String),
+    snapshot: Schema.mutableKey(Schema.Struct({
+        meta: Schema.mutableKey(Schema.Struct({
+            node_fields: Schema.mutableKey(Schema.Array(Schema.String)),
+            node_types: Schema.mutableKey(Schema.Array(Schema.Union([Schema.String, Schema.Array(Schema.String),]))),
+            edge_fields: Schema.mutableKey(Schema.Array(Schema.String)),
+            edge_types: Schema.mutableKey(Schema.Array(Schema.Union([Schema.String, Schema.Array(Schema.String),]))),
+        })),
+    })),
+    nodes: Schema.mutableKey(Schema.Array(Schema.Number)),
+    edges: Schema.mutableKey(Schema.Array(Schema.Number)),
+    strings: Schema.mutableKey(Schema.Array(Schema.String)),
 });
 export function analyzeTrace(value, limit = 100) {
     const decoded = Schema.decodeUnknownOption(Trace)(value);
     if (decoded._tag === "None") {
-        throw new Error("Selected file is not a Chromium performance trace. Use a fileID returned by browser.trace.stop for this tab; CPU profiles and heap snapshots use their own analysis tools.");
+        $raise(new Error("Selected file is not a Chromium performance trace. Use a fileID returned by browser.trace.stop for this tab; CPU profiles and heap snapshots use their own analysis tools."));
     }
     const trace = decoded.value;
     const events = new Map();
@@ -76,7 +76,7 @@ export function analyzeTrace(value, limit = 100) {
 export function analyzeCpu(value, limit = 100) {
     const decoded = Schema.decodeUnknownOption(Cpu)(value);
     if (decoded._tag === "None") {
-        throw new Error("Selected file is not a CPU profile. Use a fileID returned by browser.cpu.stop for this tab, not a trace or heap snapshot.");
+        $raise(new Error("Selected file is not a CPU profile. Use a fileID returned by browser.cpu.stop for this tab, not a trace or heap snapshot."));
     }
     const profile = decoded.value;
     const times = new Map();
@@ -99,7 +99,7 @@ const malformedHeap = () => new Error("Heap snapshot layout is unsupported or in
 export function parseHeap(value) {
     const decoded = Schema.decodeUnknownOption(Heap)(value);
     if (decoded._tag === "None") {
-        throw new Error("Selected file is not a V8 heap snapshot. Use a fileID returned by browser.heap.snapshot for this tab, not a trace or CPU profile.");
+        $raise(new Error("Selected file is not a V8 heap snapshot. Use a fileID returned by browser.heap.snapshot for this tab, not a trace or CPU profile."));
     }
     const heap = decoded.value;
     const fields = heap.snapshot.meta.node_fields;
@@ -121,12 +121,12 @@ export function parseHeap(value) {
         || Object.values(indexes).some((index) => index < 0)
         || heap.nodes.length % width
         || heap.edges.length % edgeWidth) {
-        throw malformedHeap();
+        $raise(malformedHeap());
     }
     const types = heap.snapshot.meta.node_types[indexes.type];
     const edgeTypes = heap.snapshot.meta.edge_types[indexes.edgeType];
     if (!Array.isArray(types) || !Array.isArray(edgeTypes)) {
-        throw new Error("Heap snapshot type tables are unsupported. Use a complete capture from browser.heap.snapshot and report the compatibility issue if it persists.");
+        $raise(new Error("Heap snapshot type tables are unsupported. Use a complete capture from browser.heap.snapshot and report the compatibility issue if it persists."));
     }
     const node = (offset) => ({
         id: heap.nodes[offset + indexes.id],
@@ -141,7 +141,7 @@ export function parseHeap(value) {
     for (let offset = 0; offset < heap.nodes.length; offset += width) {
         const item = node(offset);
         if (!Number.isSafeInteger(item.edgeCount) || item.edgeCount < 0)
-            throw malformedHeap();
+            $raise(malformedHeap());
         edgeTotal += item.edgeCount;
         const name = item.name.slice(0, 2_048);
         const entry = classes.get(name) ?? { name, count: 0, bytes: 0 };
@@ -152,11 +152,11 @@ export function parseHeap(value) {
     }
     // Edge counts drive the traversal below; a downloaded file can claim trillions of edges it does not carry.
     if (edgeTotal * edgeWidth !== heap.edges.length)
-        throw malformedHeap();
+        $raise(malformedHeap());
     for (let offset = indexes.to; offset < heap.edges.length; offset += edgeWidth) {
         const to = heap.edges[offset];
         if (!Number.isSafeInteger(to) || to < 0 || to >= heap.nodes.length || to % width)
-            throw malformedHeap();
+            $raise(malformedHeap());
     }
     return {
         summary(limit = 100) {
@@ -182,7 +182,7 @@ export function parseHeap(value) {
         object(id, limit = 100) {
             const target = heap.nodes.findIndex((value, index) => index % width === indexes.id && value === id) - indexes.id;
             if (target < 0) {
-                throw new Error("Object ID was not found in this heap snapshot. Call browser.heap.query with the same tabID and fileID, then copy an exact returned object id. Object IDs cannot be reused across snapshots.");
+                $raise(new Error("Object ID was not found in this heap snapshot. Call browser.heap.query with the same tabID and fileID, then copy an exact returned object id. Object IDs cannot be reused across snapshots."));
             }
             const references = [];
             const retainers = [];
@@ -216,3 +216,4 @@ export function parseHeap(value) {
         },
     };
 }
+import { raise as $raise } from "./analysis.vibe.-24-throw-24-ts.js";

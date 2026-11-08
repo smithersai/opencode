@@ -7,20 +7,20 @@ import * as Option from "effect/Option";
 import * as Schema from "effect/Schema";
 const Price = Schema.Finite;
 const Cost = Schema.Struct({
-    input: Schema.optional(Price),
-    output: Schema.optional(Price),
-    cache_read: Schema.optional(Price),
-    cache_write: Schema.optional(Price),
-    tiers: Schema.optional(Schema.Array(Schema
+    input: Schema.mutableKey(Schema.optional(Price)),
+    output: Schema.mutableKey(Schema.optional(Price)),
+    cache_read: Schema.mutableKey(Schema.optional(Price)),
+    cache_write: Schema.mutableKey(Schema.optional(Price)),
+    tiers: Schema.mutableKey(Schema.optional(Schema.Array(Schema
         .Struct({
-        tier: Schema.Struct({
-            size: Schema.Finite,
-        }),
-        input: Schema.optional(Price),
-        output: Schema.optional(Price),
-        cache_read: Schema.optional(Price),
-        cache_write: Schema.optional(Price),
-    }))),
+        tier: Schema.mutableKey(Schema.Struct({
+            size: Schema.mutableKey(Schema.Finite),
+        })),
+        input: Schema.mutableKey(Schema.optional(Price)),
+        output: Schema.mutableKey(Schema.optional(Price)),
+        cache_read: Schema.mutableKey(Schema.optional(Price)),
+        cache_write: Schema.mutableKey(Schema.optional(Price)),
+    })))),
 });
 const Model = Schema.Struct({
     id: Schema.String,
@@ -58,12 +58,12 @@ const Model = Schema.Struct({
     })),
 });
 const Provider = Schema.Struct({
-    id: Schema.String,
-    name: Schema.String,
-    env: Schema.Array(Schema.String),
-    npm: Schema.String,
-    api: Schema.optional(Schema.String),
-    models: Schema.Record(Schema.String, Schema.Unknown),
+    id: Schema.mutableKey(Schema.String),
+    name: Schema.mutableKey(Schema.String),
+    env: Schema.mutableKey(Schema.Array(Schema.String)),
+    npm: Schema.mutableKey(Schema.String),
+    api: Schema.mutableKey(Schema.optional(Schema.String)),
+    models: Schema.mutableKey(Schema.Record(Schema.String, Schema.Unknown)),
 });
 const decodeProvider = Schema.decodeUnknownOption(Provider);
 const decodeModel = Schema.decodeUnknownOption(Model);

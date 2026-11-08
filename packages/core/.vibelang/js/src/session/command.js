@@ -6,7 +6,8 @@ export * as SessionCommand from "./command.js";
 import { Command } from "../command.js";
 import { Instance } from "../instance/service.js";
 import { Plugin } from "../plugin/service.js";
-export const execute = (input) => Effect_1.suspend({ execute: () => { return withSpan(Effect_1.gen(function* () {
+export const execute = (input) => {
+    return Effect_1.gen(function* execute() { return yield* withSpan(Effect_1.gen(function* () {
         var topic_1;
         const instances = yield* Instance.Service;
         yield* ((topic_1 = Effect_1.gen(function* () {
@@ -29,4 +30,5 @@ export const execute = (input) => Effect_1.suspend({ execute: () => { return wit
             try: () => instances.provide(input.session),
             catch: (error) => error,
         })))(topic_1)));
-    }), "SessionCommand.execute"); } }.execute);
+    }), "SessionCommand.execute"); });
+};

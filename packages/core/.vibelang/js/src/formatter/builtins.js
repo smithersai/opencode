@@ -2,7 +2,6 @@
 import * as ChildProcess from "effect/process/ChildProcess";
 import * as Effect from "effect/Effect";
 import * as Effect_1 from "effect/Effect";
-import * as runtime from "vibelang-runtime";
 import { isRecord } from "@opencode/util/record";
 import { FSUtil } from "@opencode/util/fs-util";
 import { Npm } from "@opencode/util/npm";
@@ -52,67 +51,31 @@ export function make(input) {
             ".graphql",
             ".gql",
         ],
-        enabled: Effect.orElseSucceed(Effect_1.gen(runtime.$iteratorFrame(runtime.$joinedFrame(function* () {
-            {
-                let pending_1 = runtime.$normal;
-                try {
-                    for (const file of yield* findUp("package.json")) {
-                        try {
-                            {
-                                if (!hasDependency(yield* input.fs.readJson(file), "prettier"))
-                                    continue;
-                                const bin = yield* input.npm.which("prettier");
-                                if (bin)
-                                    return [bin, "--write", "$FILE"];
-                            }
-                        }
-                        catch (thrown_1) {
-                            pending_1 = thrown_1;
-                            break;
-                        }
-                    }
-                }
-                catch (thrown_2) {
-                    throw runtime.$finallyFailure(pending_1, thrown_2);
-                }
-                if (pending_1 !== runtime.$normal)
-                    throw pending_1;
+        enabled: Effect.orElseSucceed(Effect_1.gen(function* () {
+            for (const file of yield* findUp("package.json")) {
+                if (!hasDependency(yield* input.fs.readJson(file), "prettier"))
+                    continue;
+                const bin = yield* input.npm.which("prettier");
+                if (bin)
+                    return [bin, "--write", "$FILE"];
             }
             return disabled;
-        }))), () => disabled),
+        }), () => disabled),
     };
     const oxfmt = {
         name: "oxfmt",
         environment: { BUN_BE_BUN: "1" },
         extensions: [".js", ".jsx", ".mjs", ".cjs", ".ts", ".tsx", ".mts", ".cts"],
-        enabled: Effect.orElseSucceed(Effect_1.gen(runtime.$iteratorFrame(runtime.$joinedFrame(function* () {
-            {
-                let pending_2 = runtime.$normal;
-                try {
-                    for (const file of yield* findUp("package.json")) {
-                        try {
-                            {
-                                if (!hasDependency(yield* input.fs.readJson(file), "oxfmt"))
-                                    continue;
-                                const bin = yield* input.npm.which("oxfmt");
-                                if (bin)
-                                    return [bin, "$FILE"];
-                            }
-                        }
-                        catch (thrown_3) {
-                            pending_2 = thrown_3;
-                            break;
-                        }
-                    }
-                }
-                catch (thrown_4) {
-                    throw runtime.$finallyFailure(pending_2, thrown_4);
-                }
-                if (pending_2 !== runtime.$normal)
-                    throw pending_2;
+        enabled: Effect.orElseSucceed(Effect_1.gen(function* () {
+            for (const file of yield* findUp("package.json")) {
+                if (!hasDependency(yield* input.fs.readJson(file), "oxfmt"))
+                    continue;
+                const bin = yield* input.npm.which("oxfmt");
+                if (bin)
+                    return [bin, "$FILE"];
             }
             return disabled;
-        }))), () => disabled),
+        }), () => disabled),
     };
     const biome = {
         name: "biome",
@@ -168,61 +131,25 @@ export function make(input) {
     const ruff = {
         name: "ruff",
         extensions: [".py", ".pyi"],
-        enabled: Effect.orElseSucceed(Effect_1.gen(runtime.$iteratorFrame(runtime.$joinedFrame(function* () {
+        enabled: Effect.orElseSucceed(Effect_1.gen(function* () {
             const bin = findExecutable("ruff");
             if (!bin)
                 return disabled;
-            {
-                let pending_3 = runtime.$normal;
-                try {
-                    for (const config of ["pyproject.toml", "ruff.toml", ".ruff.toml"]) {
-                        try {
-                            {
-                                const found = yield* findUp(config);
-                                if (!found.length)
-                                    continue;
-                                if (config !== "pyproject.toml" || (yield* readText(found[0])).includes("[tool.ruff]")) {
-                                    return [bin, "format", "$FILE"];
-                                }
-                            }
-                        }
-                        catch (thrown_5) {
-                            pending_3 = thrown_5;
-                            break;
-                        }
-                    }
+            for (const config of ["pyproject.toml", "ruff.toml", ".ruff.toml"]) {
+                const found = yield* findUp(config);
+                if (!found.length)
+                    continue;
+                if (config !== "pyproject.toml" || (yield* readText(found[0])).includes("[tool.ruff]")) {
+                    return [bin, "format", "$FILE"];
                 }
-                catch (thrown_6) {
-                    throw runtime.$finallyFailure(pending_3, thrown_6);
-                }
-                if (pending_3 !== runtime.$normal)
-                    throw pending_3;
             }
-            {
-                let pending_4 = runtime.$normal;
-                try {
-                    for (const dependency of ["requirements.txt", "pyproject.toml", "Pipfile"]) {
-                        try {
-                            {
-                                const found = yield* findUp(dependency);
-                                if (found.length && (yield* readText(found[0])).includes("ruff"))
-                                    return [bin, "format", "$FILE"];
-                            }
-                        }
-                        catch (thrown_7) {
-                            pending_4 = thrown_7;
-                            break;
-                        }
-                    }
-                }
-                catch (thrown_8) {
-                    throw runtime.$finallyFailure(pending_4, thrown_8);
-                }
-                if (pending_4 !== runtime.$normal)
-                    throw pending_4;
+            for (const dependency of ["requirements.txt", "pyproject.toml", "Pipfile"]) {
+                const found = yield* findUp(dependency);
+                if (found.length && (yield* readText(found[0])).includes("ruff"))
+                    return [bin, "format", "$FILE"];
             }
             return disabled;
-        }))), () => disabled),
+        }), () => disabled),
     };
     const air = {
         name: "air",
@@ -272,33 +199,15 @@ export function make(input) {
     const pint = {
         name: "pint",
         extensions: [".php"],
-        enabled: Effect.orElseSucceed(Effect_1.gen(runtime.$iteratorFrame(runtime.$joinedFrame(function* () {
-            {
-                let pending_5 = runtime.$normal;
-                try {
-                    for (const file of yield* findUp("composer.json")) {
-                        try {
-                            {
-                                const json = yield* input.fs.readJson(file);
-                                if (hasRecordKey(json, "require", "laravel/pint") || hasRecordKey(json, "require-dev", "laravel/pint")) {
-                                    return ["./vendor/bin/pint", "$FILE"];
-                                }
-                            }
-                        }
-                        catch (thrown_9) {
-                            pending_5 = thrown_9;
-                            break;
-                        }
-                    }
+        enabled: Effect.orElseSucceed(Effect_1.gen(function* () {
+            for (const file of yield* findUp("composer.json")) {
+                const json = yield* input.fs.readJson(file);
+                if (hasRecordKey(json, "require", "laravel/pint") || hasRecordKey(json, "require-dev", "laravel/pint")) {
+                    return ["./vendor/bin/pint", "$FILE"];
                 }
-                catch (thrown_10) {
-                    throw runtime.$finallyFailure(pending_5, thrown_10);
-                }
-                if (pending_5 !== runtime.$normal)
-                    throw pending_5;
             }
             return disabled;
-        }))), () => disabled),
+        }), () => disabled),
     };
     const ormolu = executable("ormolu", [".hs"], ["-i", "$FILE"], findExecutable);
     const cljfmt = executable("cljfmt", [".clj", ".cljs", ".cljc", ".edn"], ["fix", "--quiet", "$FILE"], findExecutable);
@@ -336,7 +245,7 @@ function executable(name, extensions, args, findExecutable) {
     return {
         name,
         extensions,
-        enabled: Effect.sync(() => {
+        enabled: Effect_1.gen(function* enabled() {
             const match = findExecutable(name);
             return match ? [match, ...args] : false;
         }),

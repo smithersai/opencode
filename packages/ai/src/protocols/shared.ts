@@ -398,6 +398,7 @@ export const supportsContent = <const Type extends ContentType>(
   types: ReadonlyArray<Type>,
 ): part is Extract<ContentPart, { readonly type: Type }> => (types as ReadonlyArray<ContentType>).includes(part.type)
 
+/** @throws {never} */
 export const unsupportedContent = (
   route: string,
   role: LLMRequest["messages"][number]["role"],

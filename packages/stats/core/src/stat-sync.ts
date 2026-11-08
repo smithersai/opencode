@@ -16,7 +16,7 @@ import { ModelStatRepo, rowsFromAggregates as modelRowsFromAggregates } from "./
 import { statProvider } from "./domain/model-normalization"
 import { ProviderStatRepo, rowsFromAggregates as providerRowsFromAggregates } from "./domain/provider.vibe"
 import { RetentionStatRepo, rowsFromAggregates as retentionRowsFromAggregates } from "./domain/retention.vibe"
-import { R2Sql, R2SqlQueryError } from "./r2-sql.js"
+import { R2Sql, R2SqlQueryError } from "./r2-sql.vibe"
 import { syncRange } from "./sync-range"
 
 export type SyncStatsResult = { ok: true; rows: number; startedAt: string; periodStart: string; periodEnd: string }

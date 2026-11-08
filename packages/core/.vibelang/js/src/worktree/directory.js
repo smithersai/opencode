@@ -6,9 +6,11 @@ import { FSUtil } from "@opencode/util/fs-util";
 import { AbsolutePath } from "../schema.js";
 export class DirectoryUnavailableError extends Schema.TaggedError()("Worktree.DirectoryUnavailableError", { directory: AbsolutePath }) {
 }
-export const canonical = Effect.fnUntraced(function* canonical(fs, input) {
-    const resolved = AbsolutePath.make(yield* fs.resolve(input));
-    if (!(yield* fs.isDir(resolved)))
-        return yield* Effect.fail(new DirectoryUnavailableError({ directory: input }));
-    return resolved;
-});
+export const canonical = (fs, input) => {
+    return Effect.gen(function* canonical() {
+        const resolved = AbsolutePath.make(yield* fs.resolve(input));
+        if (!(yield* fs.isDir(resolved)))
+            return yield* Effect.fail(new DirectoryUnavailableError({ directory: input }));
+        return resolved;
+    });
+};

@@ -5,6 +5,8 @@ import * as Effect from "effect/Effect";
 import { Commands } from "../../commands.js";
 import { Runtime } from "../../../framework/runtime.js";
 import { ServiceConfig } from "../../../services/service-config.js";
-export default Runtime.handler(Commands.commands.service.commands.unset, (input) => Effect.suspend(() => { return withSpan(Effect.gen(function* () {
-    yield* ServiceConfig.unset(input.key, Option.getOrUndefined(input.name));
-}), "cli.service.unset"); }));
+export default Runtime.handler(Commands.commands.service.commands.unset, (input) => {
+    return Effect.gen(function* () { return yield* withSpan(Effect.gen(function* () {
+        yield* ServiceConfig.unset(input.key, Option.getOrUndefined(input.name));
+    }), "cli.service.unset"); });
+});

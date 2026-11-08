@@ -7,18 +7,20 @@ import { ToolOutput } from "../../tool-output.js";
 import { ConfigEntryObserver } from "./entry-observer.js";
 export const Plugin = define({
     id: "opencode.config.tool-output",
-    effect: Effect.fnUntraced(function* effect(ctx) {
-        const config = yield* Config.Service;
-        const output = yield* ToolOutput.Service;
-        const loaded = yield* ConfigEntryObserver.observe(config, ctx.event, output.reload());
-        yield* output.transform((editor) => {
-            const configured = Config.latest(loaded.entries, "tool_output");
-            if (!configured)
-                return;
-            editor.configure({
-                ...(configured.max_lines === undefined ? {} : { maxLines: configured.max_lines }),
-                ...(configured.max_bytes === undefined ? {} : { maxBytes: configured.max_bytes }),
+    effect: (ctx) => {
+        return Effect.gen(function* effect() {
+            const config = yield* Config.Service;
+            const output = yield* ToolOutput.Service;
+            const loaded = yield* ConfigEntryObserver.observe(config, ctx.event, output.reload());
+            yield* output.transform((editor) => {
+                const configured = Config.latest(loaded.entries, "tool_output");
+                if (!configured)
+                    return;
+                editor.configure({
+                    ...(configured.max_lines === undefined ? {} : { maxLines: configured.max_lines }),
+                    ...(configured.max_bytes === undefined ? {} : { maxBytes: configured.max_bytes }),
+                });
             });
         });
-    }),
+    },
 });

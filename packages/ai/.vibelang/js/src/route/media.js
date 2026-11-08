@@ -7,8 +7,9 @@ import * as Schedule from "effect/Schedule";
 import * as Schema from "effect/Schema";
 import * as Stream from "effect/Stream";
 import { withSpan } from "effect/Effect";
+import { $catchExpression } from "vibelang-runtime/internal";
 import * as Effect_1 from "effect/Effect";
-import * as runtime from "vibelang-runtime";
+import * as runtime from "vibelang-runtime/internal";
 import { Auth } from "./auth.js";
 import { Endpoint } from "./endpoint.js";
 import { RequestExecutorService } from "./executor-service.js";
@@ -39,10 +40,12 @@ export const inline = (input) => {
         id: input.protocol.id,
         provider: input.protocol.provider,
         protocol: input.protocol.id,
-        generate: (request, execute) => Effect_1.suspend({ generate: () => { return withSpan(Effect_1.gen(function* () {
+        generate: (request, execute) => {
+            return Effect_1.gen(function* generate() { return yield* withSpan(Effect_1.gen(function* () {
                 const submitted = yield* transport.submit(request, { unsupported: input.protocol.unsupported, from: input.protocol.body.from }, execute);
                 return yield* input.protocol.response.decode(submitted.response, submitted.context);
-            }), `MediaRoute.generate`); } }.generate),
+            }), `MediaRoute.generate`); });
+        },
     };
 };
 const READ_RETRY_MAX_DELAY = Duration.seconds(30);
@@ -87,22 +90,29 @@ export const queued = (input) => {
                 : send,
         };
     };
-    const start = (request, execute) => Effect_1.suspend({ start: () => { return withSpan(Effect_1.gen(function* () {
+    const start = (request, execute) => {
+        return Effect_1.gen(function* start() { return yield* withSpan(Effect_1.gen(function* () {
             const submitted = yield* transport.submit(request, { unsupported: protocol.unsupported, prepare: protocol.start.prepare, from: protocol.start.body.from }, execute);
             const started = yield* protocol.start.decode(submitted.response, submitted.context);
             const route = generationRoute(started.token, submitted.context.request.http, execute);
             return new Generation(route, encodeToken(started.token), started.snapshot);
-        }), "MediaRoute.start"); } }.start);
-    const resume = (model, raw, execute) => Effect_1.suspend({ resume: () => { return withSpan(Effect_1.gen(function* () {
-            const token = yield* (Effect.mapError(decodeToken(raw), (cause) => new AIError({
-                reason: new InvalidRequestError({
-                    message: `${protocol.id} cannot resume a generation from this token`,
-                    cause,
-                }),
-            })));
+        }), "MediaRoute.start"); });
+    };
+    const resume = (model, raw, execute) => {
+        return Effect_1.gen(function* resume() { return yield* withSpan(Effect_1.gen(function* () {
+            const token = yield* runtime.$catch(yield* (() => { return Effect_1.sync(() => { return decodeToken(raw); }); })(), (cause) => (_tail_1 => { return Effect_1.gen(function* () {
+                const _completion_1 = _tail_1(), _value_1 = _completion_1[1];
+                return _completion_1[0] ? yield* _value_1 : _value_1;
+            }); })(() => { return [true, Effect_1.fail(new AIError({
+                    reason: new InvalidRequestError({
+                        message: `${protocol.id} cannot resume a generation from this token`,
+                        cause,
+                    }),
+                }))]; }));
             const route = generationRoute(token, transport.http(model), execute);
             return new Generation(route, encodeToken(token), yield* route.status);
-        }), "MediaRoute.resume"); } }.resume);
+        }), "MediaRoute.resume"); });
+    };
     return { kind: "queued", id: protocol.id, provider: protocol.provider, protocol: protocol.id, start, resume };
 };
 /** Compose a streaming media protocol; `generate` runs the same stream in `generate` mode and folds it with `collect`. */
@@ -147,7 +157,8 @@ const makeTransport = (input) => {
     const authorize = Auth.toEffect(input.auth);
     const baseURL = (path) => new URL(`${Endpoint.trimBaseUrl(input.endpoint.baseURL ?? "")}${path}`);
     /** `auth` is only what `Auth` added or changed, never untouched deployment headers. */
-    const send = (call, execute) => Effect_1.suspend({ send: () => { return withSpan(Effect_1.gen(function* () {
+    const send = (call, execute) => {
+        return Effect_1.gen(function* send() { return yield* withSpan(Effect_1.gen(function* () {
             const encoded = encode(call.body, call.headers);
             const url = call.url.toString();
             const headers = yield* authorize({
@@ -162,12 +173,14 @@ const makeTransport = (input) => {
                 response,
                 auth: Object.fromEntries(Object.entries(headers).filter(([key, value]) => encoded.headers[key] !== value)),
             };
-        }), "MediaRoute.send"); } }.send);
+        }), "MediaRoute.send"); });
+    };
     return {
         /** Route and model overlays; `start` additionally merges the request's own `http`. */
         http: (model) => mergeHttpOptions(routeHttp, model.http),
         /** POST the protocol body to the route endpoint. */
-        submit: (request, protocol, execute) => Effect_1.suspend({ submit: () => { return withSpan(Effect_1.gen(runtime.$joinedFrame(function* () {
+        submit: (request, protocol, execute) => {
+            return Effect_1.gen(function* submit() { return yield* withSpan(Effect_1.gen(function* () {
                 yield* rejectUnsupported(input.protocol.id, input.protocol.provider, request, protocol.unsupported);
                 const http = mergeHttpOptions(routeHttp, request.model.http, request.http);
                 const providerOptions = mergeProviderOptions(request.model.providerOptions, request.providerOptions);
@@ -181,79 +194,26 @@ const makeTransport = (input) => {
                     model: request.model,
                 };
                 const body = yield* protocol.from(resolved);
-                const url = withQuery(withQuery(Endpoint.render(input.endpoint, { request: resolved, body }), body.type === "multipart" ? undefined : body.query), http?.query);
+                const url = withQuery(withQuery(yield* Effect.orDie(Effect.try({ try: () => Endpoint.render(input.endpoint, { request: resolved, body }), catch: (e) => e })), body.type === "multipart" ? undefined : body.query), http?.query);
                 const sent = yield* send({ method: "POST", url, headers, request: resolved, body }, execute);
                 return { response: sent.response, context: { request: resolved, body } };
-            })), "MediaRoute.submit"); } }.submit),
+            }), "MediaRoute.submit"); });
+        },
         /** Bodiless follow-up call (status, result, cancel) with the same auth and headers as `submit`. */
         call: (method, path, http, execute) => {
             // Provider-issued absolute URLs (fal `status_url`) are used as-is; everything else resolves against the base.
             const url = withQuery(/^https?:\/\//.test(path) ? new URL(path) : baseURL(path), http?.query);
-            {
-                let pending_1 = runtime.$normal;
-                try {
-                    for (const value_1 of Object.entries(input.endpoint.query ?? {})) {
-                        try {
-                            const [key, value] = value_1;
-                            url.searchParams.set(key, value);
-                        }
-                        catch (thrown_1) {
-                            pending_1 = thrown_1;
-                            break;
-                        }
-                    }
-                }
-                catch (thrown_2) {
-                    throw runtime.$finallyFailure(pending_1, thrown_2);
-                }
-                if (pending_1 !== runtime.$normal)
-                    throw pending_1;
-            }
+            for (const [key, value] of Object.entries(input.endpoint.query ?? {}))
+                url.searchParams.set(key, value);
             return send({ method, url, headers: Headers.fromInput(http?.headers), request: { http } }, execute);
         },
     };
 };
 const withQuery = (url, query) => {
-    {
-        let pending_2 = runtime.$normal;
-        try {
-            for (const value_2 of Object.entries(query ?? {})) {
-                try {
-                    const [key, value] = value_2;
-                    {
-                        url.searchParams.delete(key);
-                        {
-                            let pending_3 = runtime.$normal;
-                            try {
-                                for (const item of typeof value === "string" ? [value] : value) {
-                                    try {
-                                        url.searchParams.append(key, item);
-                                    }
-                                    catch (thrown_3) {
-                                        pending_3 = thrown_3;
-                                        break;
-                                    }
-                                }
-                            }
-                            catch (thrown_4) {
-                                throw runtime.$finallyFailure(pending_3, thrown_4);
-                            }
-                            if (pending_3 !== runtime.$normal)
-                                throw pending_3;
-                        }
-                    }
-                }
-                catch (thrown_5) {
-                    pending_2 = thrown_5;
-                    break;
-                }
-            }
-        }
-        catch (thrown_6) {
-            throw runtime.$finallyFailure(pending_2, thrown_6);
-        }
-        if (pending_2 !== runtime.$normal)
-            throw pending_2;
+    for (const [key, value] of Object.entries(query ?? {})) {
+        url.searchParams.delete(key);
+        for (const item of typeof value === "string" ? [value] : value)
+            url.searchParams.append(key, item);
     }
     return url;
 };

@@ -3,11 +3,12 @@ import * as Effect from "effect/Effect";
 import * as Option from "effect/Option";
 import * as Schema from "effect/Schema";
 import * as SchemaGetter from "effect/SchemaGetter";
+import * as Effect_1 from "effect/Effect";
 import { titleNumber } from "./title.js";
 // Same recovery rules as the host's persistence schema helpers, so stored terminals decode as before.
 function fallback(schema, value) {
     const defaulted = Schema.withDecodingDefaultType(Effect.sync(value))(schema);
-    return Schema.catchDecoding(() => Effect.sync(() => Option.some(value())))(defaulted);
+    return Schema.catchDecoding(() => Effect_1.sync(() => { return Option.some(value()); }))(defaulted);
 }
 function optional(schema) {
     const field = Schema.optional(schema);

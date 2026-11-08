@@ -16,10 +16,10 @@ export const baseURL = (input) => {
 export const runBaseURL = (input) => {
     const url = Endpoint.trimBaseUrl(baseURL(input));
     if (!url.endsWith("/ai/v1")) {
-        throw new ProviderConfigurationError({
+        $raise(new ProviderConfigurationError({
             provider: id,
             message: "CloudflareAIGateway needs accountId or a baseURL ending in /ai/v1 to derive the Run API base",
-        });
+        }));
     }
     return `${url.slice(0, -"/v1".length)}/run`;
 };
@@ -29,10 +29,10 @@ const passthroughURL = (input, provider) => `https://gateway.ai.cloudflare.com/v
 const requireAccountId = (input) => {
     if (input.accountId)
         return input.accountId;
-    throw new ProviderConfigurationError({
+    $raise(new ProviderConfigurationError({
         provider: id,
         message: "CloudflareAIGateway.configure requires accountId unless baseURL is supplied",
-    });
+    }));
 };
 const gatewayId = (input) => input.gatewayId?.trim() || "default";
 export const responsesRoute = OpenAIResponses.route.with({
@@ -138,3 +138,4 @@ function config({ accountId, apiKey, baseURL: configuredBaseURL, body, cacheKey,
     };
 }
 export * as CloudflareAIGateway from "./cloudflare-ai-gateway.js";
+import { raise as $raise } from "./cloudflare-ai-gateway.vibe.-24-throw-24-ts.js";

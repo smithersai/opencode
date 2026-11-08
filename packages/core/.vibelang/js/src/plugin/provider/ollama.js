@@ -43,26 +43,28 @@ export const make = createLocalProviderPlugin({
     name: "Ollama",
     origin: "http://127.0.0.1:11434",
     stripPathSuffix: /\/(?:v1|api)$/,
-    discover: Effect_1.fnUntraced(function* discover(client) {
-        const cached = shows.get(client.root);
-        const previous = cached && cached.apiKey === client.apiKey ? cached.entries : new Map();
-        shows.set(client.root, { apiKey: client.apiKey, entries: previous });
-        const response = yield* client.getJson("/api/tags", TagsResponse);
-        const summaries = response.models
-            .filter((model) => model.model.length > 0)
-            .toSorted((a, b) => a.model.localeCompare(b.model));
-        const entries = new Map();
-        const models = yield* Effect.forEach(summaries, (model) => Effect.orElseSucceed(Effect_1.gen(function* () {
-            const saved = previous.get(model.model);
-            const info = saved?.digest === model.digest
-                ? saved.info
-                : yield* client.postJson("/api/show", ShowRequest, { model: model.model }, ShowResponse);
-            entries.set(model.model, { digest: model.digest, info });
-            return { ...model, show: info };
-        }), () => undefined), { concurrency: 4 });
-        shows.set(client.root, { apiKey: client.apiKey, entries });
-        return models.filter((model) => model !== undefined && (model.show.capabilities?.includes("completion") ?? false));
-    }),
+    discover: (client) => {
+        return Effect_1.gen(function* discover() {
+            const cached = shows.get(client.root);
+            const previous = cached && cached.apiKey === client.apiKey ? cached.entries : new Map();
+            shows.set(client.root, { apiKey: client.apiKey, entries: previous });
+            const response = yield* client.getJson("/api/tags", TagsResponse);
+            const summaries = response.models
+                .filter((model) => model.model.length > 0)
+                .toSorted((a, b) => a.model.localeCompare(b.model));
+            const entries = new Map();
+            const models = yield* Effect.forEach(summaries, (model) => Effect.orElseSucceed(Effect_1.gen(function* () {
+                const saved = previous.get(model.model);
+                const info = saved?.digest === model.digest
+                    ? saved.info
+                    : yield* client.postJson("/api/show", ShowRequest, { model: model.model }, ShowResponse);
+                entries.set(model.model, { digest: model.digest, info });
+                return { ...model, show: info };
+            }), () => undefined), { concurrency: 4 });
+            shows.set(client.root, { apiKey: client.apiKey, entries });
+            return models.filter((model) => model !== undefined && (model.show.capabilities?.includes("completion") ?? false));
+        });
+    },
     model: (item) => ({
         id: item.model,
         name: item.name || item.model,

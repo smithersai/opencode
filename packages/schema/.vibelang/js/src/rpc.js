@@ -5,6 +5,7 @@ export function define(definition) {
         .flatMap((method) => Object.keys(method.errors ?? {}))
         .find((name) => name.startsWith("rpc."));
     if (reserved)
-        throw new Error(`RPC error names starting with "rpc." are reserved: ${reserved}`);
+        $raise(new Error(`RPC error names starting with "rpc." are reserved: ${reserved}`));
     return definition;
 }
+import { raise as $raise } from "./rpc.vibe.-24-throw-24-ts.js";

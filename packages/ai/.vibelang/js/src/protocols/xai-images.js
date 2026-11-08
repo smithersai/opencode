@@ -3,7 +3,6 @@ import * as Effect from "effect/Effect";
 import * as Schema from "effect/Schema";
 import { withSpan } from "effect/Effect";
 import * as Effect_1 from "effect/Effect";
-import * as runtime from "vibelang-runtime";
 import { ImageModel, ImageResponse } from "../image.js";
 import { Media } from "../media.js";
 import { MediaProtocol } from "../route/media-protocol.js";
@@ -45,7 +44,8 @@ const resolution = (request) => {
 };
 const isEdit = (request) => (request.images?.length ?? 0) > 0;
 const reference = (asset) => Effect.map(ProviderShared.mediaReference(asset, route.provider, route.name), (item) => item.type === "ref" ? { file_id: item.value } : { url: item.value, type: "image_url" });
-const fromRequest = (request) => Effect_1.suspend({ fromRequest: () => { return withSpan(Effect_1.gen(runtime.$joinedFrame(function* () {
+const fromRequest = (request) => {
+    return Effect_1.gen(function* fromRequest() { return yield* withSpan(Effect_1.gen(function* () {
         const references = yield* Effect.forEach(request.images ?? [], reference);
         return MediaProtocol.json(mergeJsonRecords({
             model: request.model.id,
@@ -57,12 +57,14 @@ const fromRequest = (request) => Effect_1.suspend({ fromRequest: () => { return 
             aspect_ratio: request.aspect,
             resolution: resolution(request),
         }, nativeOptions(request.providerOptions), request.http?.body) ?? {});
-    })), "XAIImages.fromRequest"); } }.fromRequest);
+    }), "XAIImages.fromRequest"); });
+};
 // ---------------------------------------------------------------------------
 // 6. Response decoding
 // ---------------------------------------------------------------------------
 const decodeDocument = route.decodeJson(XAIImageResponse);
-const decodeResponse = (response) => Effect_1.suspend({ decodeResponse: () => { return withSpan(Effect_1.gen(function* () {
+const decodeResponse = (response) => {
+    return Effect_1.gen(function* decodeResponse() { return yield* withSpan(Effect_1.gen(function* () {
         const output = yield* decodeDocument(response);
         const decoded = output.value;
         const images = yield* Effect.forEach(decoded.data, (item, index) => MediaInput.imageOutput(output.invalid, `${route.name} result ${index}`, item, item.mime_type ?? undefined, {
@@ -79,7 +81,8 @@ const decodeResponse = (response) => Effect_1.suspend({ decodeResponse: () => { 
             images,
             providerMetadata: decoded.usage === undefined ? undefined : { xai: { usage: decoded.usage } },
         });
-    }), "XAIImages.decodeResponse"); } }.decodeResponse);
+    }), "XAIImages.decodeResponse"); });
+};
 // ---------------------------------------------------------------------------
 // 7. Protocol and route
 // ---------------------------------------------------------------------------

@@ -41,7 +41,7 @@ import { errorMessage } from "../../util/error";
 import { useToast } from "../../ui/toast";
 import stripAnsi from "strip-ansi";
 import { usePromptRef } from "../../context/prompt";
-import { projectedPromptInput } from "../../prompt/codec.js";
+import { projectedPromptInput } from "#vibelang/emitted/src/prompt/codec";
 import { appendPrompt } from "../../prompt/history";
 import { deduplicateVisibleImages } from "../../prompt/attachment";
 import { useEpilogue } from "../../context/epilogue";

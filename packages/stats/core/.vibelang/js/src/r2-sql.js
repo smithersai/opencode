@@ -5,8 +5,10 @@ import * as Layer from "effect/Layer";
 import * as Schedule from "effect/Schedule";
 import * as Schema from "effect/Schema";
 import { withSpan } from "effect/Effect";
-import { $catchExpression } from "vibelang-runtime";
+import { $catchExpression } from "vibelang-runtime/internal";
 import * as Effect_1 from "effect/Effect";
+import * as runtime from "vibelang-runtime/internal";
+import * as $platform from "./r2-sql.platform.js";
 import { Resource } from "sst/resource";
 const R2_SQL_MAX_ROWS = 10_000;
 const R2_SQL_TIMEOUT_MS = 15 * 60_000;
@@ -20,7 +22,7 @@ const R2SqlResponse = Schema.Struct({
     errors: Schema.Array(Schema.Unknown),
 });
 const R2SqlApiError = Schema.Struct({
-    code: Schema.Number, message: Schema.String,
+    code: Schema.mutableKey(Schema.Number), message: Schema.mutableKey(Schema.String),
 });
 const decodeResponse = Schema.decodeUnknownEffect(Schema.fromJsonString(R2SqlResponse));
 export class R2SqlQueryError extends Error {
@@ -45,11 +47,14 @@ export class R2Sql extends Context.Service()("@opencode/stats/R2Sql") {
 }
 // Cursor columns must uniquely identify an aggregate row. Page after aggregation
 // so distinct counts, averages, and country totals retain their original scope.
-export const queryR2SqlPages = (query, columns, fetchRows) => Effect_1.suspend({ queryR2SqlPages: () => { return withSpan(Effect_1.gen(function* () {
+export const queryR2SqlPages = (query, columns, fetchRows) => {
+    return Effect_1.gen(function* queryR2SqlPages() { return yield* withSpan(Effect_1.gen(function* () {
         const rows = [];
         let cursor;
         while (true) {
-            const page = yield* (Effect.retry(Effect_1.suspend(() => fetchRows(columns?.length ? pageQuery(query, columns, cursor) : query))
+            const page = yield* (Effect.retry(Effect_1.gen(function* () {
+                return yield* fetchRows(columns?.length ? pageQuery(query, columns, cursor) : query);
+            })
             // Retry only this page; a transient R2 failure must not discard the whole
             // pass. 40005 is a query timeout, 60104 an intermittent "Unprocessable
             // Entity", and fetch rejects with a TypeError when the connection drops.
@@ -71,7 +76,8 @@ export const queryR2SqlPages = (query, columns, fetchRows) => Effect_1.suspend({
                 return rows;
             cursor = page.at(-1);
         }
-    }), "R2Sql.query"); } }.queryR2SqlPages);
+    }), "R2Sql.query"); });
+};
 function pageQuery(query, columns, cursor) {
     const keys = columns.map((column) => `COALESCE("${column.replace(/"/g, '""')}", '')`);
     const values = columns.map((column) => `'${(cursor?.[column] ?? "").replace(/'/g, "''")}'`);
@@ -84,7 +90,8 @@ ${cursor ? `WHERE ${after.map((condition) => `(${condition})`).join(" OR ")}` : 
 ORDER BY ${keys.join(", ")}
 LIMIT ${R2_SQL_MAX_ROWS}`;
 }
-const fetchRows = (query) => Effect_1.suspend({ fetchRows: () => { return withSpan(Effect_1.gen(function* () {
+const fetchRows = (query) => {
+    return Effect_1.gen(function* fetchRows() { return yield* withSpan(Effect_1.gen(function* () {
         const startedAt = Date.now();
         const response = yield* Effect.tryPromise({
             try: (signal) => {
@@ -93,7 +100,7 @@ const fetchRows = (query) => Effect_1.suspend({ fetchRows: () => { return withSp
                     // Analytical queries can exceed Bun's default five-minute idle timer.
                     // Bound the whole request and cancel it when the sync is interrupted.
                     timeout: false,
-                    signal: AbortSignal.any([signal, AbortSignal.timeout(R2_SQL_TIMEOUT_MS)]),
+                    signal: $platform.boundedSignal(signal, R2_SQL_TIMEOUT_MS),
                     headers: {
                         Authorization: `Bearer ${Resource.R2SqlAuthToken.value}`,
                         "Content-Type": "application/json",
@@ -111,11 +118,14 @@ const fetchRows = (query) => Effect_1.suspend({ fetchRows: () => { return withSp
             try: () => response.text(),
             catch: (cause) => new R2SqlQueryError({ message: "Failed to read R2 SQL stats response", status: response.status, cause }),
         });
-        const decoded = yield* $catchExpression(() => decodeResponse(body), (cause) => Effect_1.suspend(() => { return Effect_1.fail(new R2SqlQueryError({
-            message: "R2 SQL returned an invalid stats response",
-            status: response.status,
-            cause,
-        })); }));
+        const decoded = yield* runtime.$catch(yield* (() => { return Effect_1.sync(() => { return decodeResponse(body); }); })(), (cause) => (_tail_1 => { return Effect_1.gen(function* () {
+            const _completion_1 = _tail_1(), _value_1 = _completion_1[1];
+            return _completion_1[0] ? yield* _value_1 : _value_1;
+        }); })(() => { return [true, Effect_1.fail(new R2SqlQueryError({
+                message: "R2 SQL returned an invalid stats response",
+                status: response.status,
+                cause,
+            }))]; }));
         if (!response.ok || !decoded.success || !decoded.result) {
             return yield* Effect_1.fail(new R2SqlQueryError({
                 message: `R2 SQL stats query failed: ${JSON.stringify(decoded.errors)}`,
@@ -125,4 +135,5 @@ const fetchRows = (query) => Effect_1.suspend({ fetchRows: () => { return withSp
             }));
         }
         return decoded.result.rows.map((row) => Object.fromEntries(Object.entries(row).flatMap(([key, value]) => (value === null ? [] : [[key, String(value)]]))));
-    }), "R2Sql.fetchRows"); } }.fetchRows);
+    }), "R2Sql.fetchRows"); });
+};

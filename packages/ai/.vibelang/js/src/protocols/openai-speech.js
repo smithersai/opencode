@@ -4,7 +4,6 @@ import * as Schema from "effect/Schema";
 import * as SchemaGetter from "effect/SchemaGetter";
 import { withSpan } from "effect/Effect";
 import * as Effect_1 from "effect/Effect";
-import * as runtime from "vibelang-runtime";
 import { Framing } from "../route/framing.js";
 import { MediaProtocol } from "../route/media-protocol.js";
 import { MediaRoute } from "../route/media.js";
@@ -46,7 +45,8 @@ const decodeEvent = route.decodeFrame(SpeechStreamEvent);
 // `sse` is not supported for `tts-1` or `tts-1-hd`; those models stream the raw audio body instead.
 const supportsSse = (model) => !/^tts-1(-hd)?(-|$)/.test(model);
 const FORMATS = new Set(["mp3", "opus", "aac", "flac", "wav", "pcm"]);
-const fromRequest = (request) => Effect_1.suspend({ fromRequest: () => { return withSpan(Effect_1.gen(runtime.$joinedFrame(function* () {
+const fromRequest = (request) => {
+    return Effect_1.gen(function* fromRequest() { return yield* withSpan(Effect_1.gen(function* () {
         // Not in `unsupported`: that list would also reject `timestamps: false`, which asks for nothing.
         if (request.timestamps === true) {
             return yield* Effect_1.fail(route.unsupported("media.timestamps", `${route.name} does not return timestamps`));
@@ -63,34 +63,37 @@ const fromRequest = (request) => Effect_1.suspend({ fromRequest: () => { return 
             speed: request.speed,
             stream_format: request.mode === "stream" && supportsSse(request.model.id) ? "sse" : undefined,
         }, request.providerOptions, request.http?.body) ?? {});
-    })), "OpenAISpeech.fromRequest"); } }.fromRequest);
+    }), "OpenAISpeech.fromRequest"); });
+};
 // ---------------------------------------------------------------------------
 // 6. Stream parsing
 // ---------------------------------------------------------------------------
 const isSse = (body) => body.type === "json" && body.value.stream_format === "sse";
-const onEvent = Effect_1.fnUntraced(function* onEvent(state, frame) {
-    const event = yield* decodeEvent(frame);
-    if (event.type === "unknown")
-        return [state, []];
-    if (event.type === "speech.audio.delta")
-        return SpeechStream.delta(state, event.audio);
-    const usage = event.usage;
-    return [
-        {
-            ...state,
-            done: true,
-            usage: usage === undefined
-                ? undefined
-                : tokenUsage({
-                    input: usage.input_tokens,
-                    output: usage.output_tokens,
-                    total: usage.total_tokens,
-                    details: { openai: usage },
-                }),
-        },
-        [],
-    ];
-});
+const onEvent = (state, frame) => {
+    return Effect_1.gen(function* onEvent() {
+        const event = yield* decodeEvent(frame);
+        if (event.type === "unknown")
+            return [state, []];
+        if (event.type === "speech.audio.delta")
+            return SpeechStream.delta(state, event.audio);
+        const usage = event.usage;
+        return [
+            {
+                ...state,
+                done: true,
+                usage: usage === undefined
+                    ? undefined
+                    : yield* Effect.orDie(Effect.try({ try: () => tokenUsage({
+                            input: usage.input_tokens,
+                            output: usage.output_tokens,
+                            total: usage.total_tokens,
+                            details: { openai: usage },
+                        }), catch: (e) => e })),
+            },
+            [],
+        ];
+    });
+};
 const finish = (state, context) => {
     if (isSse(context.body) && !state.done)
         return Effect.fail(route.incomplete());

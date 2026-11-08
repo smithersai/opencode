@@ -5,7 +5,6 @@ import * as SchemaGetter from "effect/SchemaGetter";
 import * as Stream from "effect/Stream";
 import { withSpan } from "effect/Effect";
 import * as Effect_1 from "effect/Effect";
-import * as runtime from "vibelang-runtime";
 import { classifyProviderFailure } from "../provider-error.js";
 import { Framing } from "../route/framing.js";
 import { MediaProtocol } from "../route/media-protocol.js";
@@ -22,10 +21,10 @@ export const PATH = "/audio/transcriptions";
 // 3. Streaming event schema
 // ---------------------------------------------------------------------------
 const Segment = Schema.Struct({
-    text: Schema.String,
-    start: Schema.Number,
-    end: Schema.Number,
-    speaker: Schema.optional(Schema.String),
+    text: Schema.mutableKey(Schema.String),
+    start: Schema.mutableKey(Schema.Number),
+    end: Schema.mutableKey(Schema.Number),
+    speaker: Schema.mutableKey(Schema.optional(Schema.String)),
 });
 const Usage = Schema.Union([
     Schema.Struct({
@@ -105,13 +104,14 @@ const RESERVED_FORM_FIELDS = new Set([
     "timestamp_granularities",
     "stream",
 ]);
-const fromRequest = (request) => Effect_1.suspend({ fromRequest: () => { return withSpan(Effect_1.gen(runtime.$joinedFrame(function* () {
+const fromRequest = (request) => {
+    return Effect_1.gen(function* fromRequest() { return yield* withSpan(Effect_1.gen(function* () {
         const model = capabilities(request.model.id);
         yield* validate(request, model);
         // The API detects the audio format from the upload's filename extension.
-        const extension = mediaTypeExtension(request.audio.mediaType);
+        const extension = yield* Effect.orDie(Effect.try({ try: () => mediaTypeExtension(request.audio.mediaType), catch: (e) => e }));
         if (extension === undefined) {
-            return yield* Effect_1.fail(ProviderShared.invalidRequest(`${route.name} cannot name a ${request.audio.mediaType} upload; send mp3, mp4, m4a, wav, webm, ogg, or flac audio`));
+            return yield* Effect_1.fail(yield* Effect.orDie(Effect.try({ try: () => ProviderShared.invalidRequest(`${route.name} cannot name a ${request.audio.mediaType} upload; send mp3, mp4, m4a, wav, webm, ogg, or flac audio`), catch: (e) => e })));
         }
         const audio = yield* MediaInput.inlineBytes(route.id, request.audio);
         const responseFormat = model.diarize
@@ -119,7 +119,7 @@ const fromRequest = (request) => Effect_1.suspend({ fromRequest: () => { return 
             : request.timestamps === undefined || request.timestamps === "none"
                 ? undefined
                 : "verbose_json";
-        const form = new FormData();
+        const form = MediaInput.formData();
         form.append("file", MediaInput.blob(audio, request.audio.mediaType), `audio.${extension}`);
         MediaInput.appendFields(form, {
             model: request.model.id,
@@ -139,7 +139,8 @@ const fromRequest = (request) => Effect_1.suspend({ fromRequest: () => { return 
             repeatArrays: "key[]",
         });
         return MediaProtocol.multipart(form);
-    })), "OpenAITranscription.fromRequest"); } }.fromRequest);
+    }), "OpenAITranscription.fromRequest"); });
+};
 // ---------------------------------------------------------------------------
 // 6. Stream parsing
 // ---------------------------------------------------------------------------
@@ -149,27 +150,29 @@ const segment = (value) => ({
     endSeconds: value.end,
     speaker: value.speaker,
 });
-const onEvent = Effect_1.fnUntraced(function* onEvent(state, frame) {
-    const event = yield* decodeEvent(frame);
-    if (event.type === "unknown")
-        return [state, []];
-    if (event.type === "error") {
-        return yield* Effect_1.fail(new AIError({
-            reason: classifyProviderFailure({
-                message: `${route.name} stream failed: ${event.message ?? event.error?.message ?? "unknown error"}`,
-                rawBody: frame,
-            }),
-        }));
-    }
-    if (event.type === "transcript.text.done")
-        return [{ ...state, transcript: event }, []];
-    if (event.type === "transcript.text.delta") {
-        return [state, event.delta.length === 0 ? [] : [TranscriptionTextDeltaEvent.make({ delta: event.delta })]];
-    }
-    const next = segment(event);
-    state.segments.push(next);
-    return [state, [TranscriptionSegmentEvent.make({ segment: next })]];
-});
+const onEvent = (state, frame) => {
+    return Effect_1.gen(function* onEvent() {
+        const event = yield* decodeEvent(frame);
+        if (event.type === "unknown")
+            return [state, []];
+        if (event.type === "error") {
+            return yield* Effect_1.fail(new AIError({
+                reason: classifyProviderFailure({
+                    message: `${route.name} stream failed: ${event.message ?? event.error?.message ?? "unknown error"}`,
+                    rawBody: frame,
+                }),
+            }));
+        }
+        if (event.type === "transcript.text.done")
+            return [{ ...state, transcript: event }, []];
+        if (event.type === "transcript.text.delta") {
+            return [state, event.delta.length === 0 ? [] : [TranscriptionTextDeltaEvent.make({ delta: event.delta })]];
+        }
+        const next = segment(event);
+        state.segments.push(next);
+        return [state, [TranscriptionSegmentEvent.make({ segment: next })]];
+    });
+};
 const step = (state, frame) => typeof frame === "string"
     ? onEvent(state, frame)
     : (Effect.map(decodeTranscript(frame.document), (transcript) => [{ ...state, transcript }, []]));

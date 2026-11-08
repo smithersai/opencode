@@ -39,7 +39,7 @@ const route = Route.make({
 export const routes = [route];
 const configuredRoute = (input) => {
     if ("apiKey" in input && input.apiKey !== undefined) {
-        throw new ProviderConfigurationError({ provider: id, message: "Google Vertex Messages does not support API keys" });
+        $raise(new ProviderConfigurationError({ provider: id, message: "Google Vertex Messages does not support API keys" }));
     }
     const { accessToken: _accessToken, auth: _auth, baseURL, location: inputLocation, project: inputProject, ...rest } = input;
     const location = GoogleVertexShared.location(inputLocation);
@@ -67,7 +67,7 @@ export const provider = {
 };
 export const model = (modelID, { accessToken, apiKey, baseURL, body, headers, location, project, ...providerOptions }) => {
     if (apiKey !== undefined) {
-        throw new ProviderConfigurationError({ provider: id, message: "Google Vertex Messages does not support API keys" });
+        $raise(new ProviderConfigurationError({ provider: id, message: "Google Vertex Messages does not support API keys" }));
     }
     return configure({
         accessToken,
@@ -79,3 +79,4 @@ export const model = (modelID, { accessToken, apiKey, baseURL, body, headers, lo
         providerOptions,
     }).model(modelID);
 };
+import { raise as $raise } from "./google-vertex-messages.vibe.-24-throw-24-ts.js";

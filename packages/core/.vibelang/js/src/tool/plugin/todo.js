@@ -35,7 +35,8 @@ export const summarize = (todos) => {
 };
 export const Plugin = {
     id: "opencode.tool.todo",
-    effect: (ctx) => Effect_1.suspend({ effect: () => { return withSpan(Effect_1.gen(function* () {
+    effect: (ctx) => {
+        return Effect_1.gen(function* effect() { return yield* withSpan(Effect_1.gen(function* () {
             const config = yield* Config.Service;
             const permission = yield* Permission.Service;
             // Internal plugins are not re-run on config changes, so reload the tool transform instead.
@@ -66,5 +67,6 @@ export const Plugin = {
                     }),
                 });
             })));
-        }), "TodoTool.Plugin"); } }.effect),
+        }), "TodoTool.Plugin"); });
+    },
 };

@@ -10,7 +10,8 @@ import { Permission } from "../../permission.js";
 import { ReadToolFileSystem } from "../read-filesystem.js";
 export const Plugin = {
     id: "opencode.tools.mcp-resources",
-    effect: (ctx) => Effect_1.suspend({ effect: () => { return withSpan(Effect_1.gen(function* () {
+    effect: (ctx) => {
+        return Effect_1.gen(function* effect() { return yield* withSpan(Effect_1.gen(function* () {
             const mcp = yield* Mcp.Service;
             const permission = yield* Permission.Service;
             yield* (Effect.orDie(ctx.tool
@@ -94,5 +95,6 @@ export const Plugin = {
                         })),
                 });
             })));
-        }), "McpResourceTools.Plugin"); } }.effect),
+        }), "McpResourceTools.Plugin"); });
+    },
 };

@@ -10,9 +10,9 @@ const NAME = "Cloudflare Run";
 // Workers AI models answer with the System One response; third-party models such as TypeSafe Jev wrap it in a
 // completed run record.
 const Envelope = Schema.Struct({
-    result: Schema.Union([SystemOne.Response, Schema.Struct({
-            state: Schema.Literal("Completed"), result: SystemOne.Response,
-        })]),
+    result: Schema.mutableKey(Schema.Union([SystemOne.Response, Schema.Struct({
+            state: Schema.mutableKey(Schema.Literal("Completed")), result: Schema.mutableKey(SystemOne.Response),
+        })])),
 });
 const decodeEnvelope = MediaProtocol.identity({ id: ID, name: NAME, provider: "cloudflare-workers-ai" }).decodeJson(Envelope);
 /** Posts `{ model, input }` to Cloudflare's `/ai/run` with the System One body as `input`; media defaults to Clef's top-level lists. */

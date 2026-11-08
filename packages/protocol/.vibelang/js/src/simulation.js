@@ -4,7 +4,6 @@ import * as Rpc from "effect/rpc/Rpc";
 import * as RpcGroup from "effect/rpc/RpcGroup";
 import * as Schema from "effect/Schema";
 import * as Effect_1 from "effect/Effect";
-import * as runtime from "vibelang-runtime";
 const JsonRpcID = Schema.Union([Schema.String, Schema.Number, Schema.Null]);
 const decodeJson = Schema.decodeUnknownSync(Schema.Json);
 export var JsonRpc;
@@ -111,8 +110,8 @@ export var Handshake;
     }) {
     }
     Handshake.MissingCapabilityError = MissingCapabilityError;
-    function dispatch(arg_1, arg_2) {
-        return Effect_1.fnUntraced(function* dispatch(action, params) {
+    function dispatch(action, params) {
+        return Effect_1.gen(function* dispatch() {
             if (params.expectedRole !== action.role) {
                 return yield* Effect_1.fail(new RoleMismatchError({
                     expected: params.expectedRole,
@@ -141,7 +140,7 @@ export var Handshake;
                 server: action.server,
                 capabilities: Array.from(installed),
             };
-        }).apply(this, arguments);
+        });
     }
     Handshake.dispatch = dispatch;
 })(Handshake || (Handshake = {}));
@@ -258,33 +257,15 @@ export var Frontend;
                 return "semantic node parents must reference another node";
             }
             const parents = new Map(nodes.map((node) => [node.id, node.parent]));
-            {
-                let pending_1 = runtime.$normal;
-                try {
-                    for (const node of nodes) {
-                        try {
-                            {
-                                const visited = new Set();
-                                let current = node.id;
-                                while (current !== undefined) {
-                                    if (visited.has(current))
-                                        return "semantic node hierarchy must be acyclic";
-                                    visited.add(current);
-                                    current = parents.get(current);
-                                }
-                            }
-                        }
-                        catch (thrown_1) {
-                            pending_1 = thrown_1;
-                            break;
-                        }
-                    }
+            for (const node of nodes) {
+                const visited = new Set();
+                let current = node.id;
+                while (current !== undefined) {
+                    if (visited.has(current))
+                        return "semantic node hierarchy must be acyclic";
+                    visited.add(current);
+                    current = parents.get(current);
                 }
-                catch (thrown_2) {
-                    throw runtime.$finallyFailure(pending_1, thrown_2);
-                }
-                if (pending_1 !== runtime.$normal)
-                    throw pending_1;
             }
             return undefined;
         })),
@@ -316,22 +297,34 @@ export var Frontend;
     });
     Frontend.RecordingFinish = Schema.String;
     Frontend.Matches = Schema.Boolean;
-    Frontend.TypeParams = Schema.Struct({ text: Schema.String });
-    Frontend.MatchesParams = Schema.Struct({ text: Schema.String });
-    Frontend.PressParams = Schema.Struct({ key: Schema.String, modifiers: Schema.optional(Frontend.KeyModifiers) });
+    Frontend.TypeParams = Schema.Struct({
+        text: Schema.String,
+    });
+    Frontend.MatchesParams = Schema.Struct({
+        text: Schema.String,
+    });
+    Frontend.PressParams = Schema.Struct({
+        key: Schema.String, modifiers: Schema.optional(Frontend.KeyModifiers),
+    });
     Frontend.pressParams = (key, modifiers) => ({
         key,
         ...(modifiers === undefined ? {} : { modifiers }),
     });
-    Frontend.ArrowParams = Schema.Struct({ direction: Schema.Literals(["up", "down", "left", "right"]) });
-    Frontend.FocusParams = Schema.Struct({ target: Schema.Number });
+    Frontend.ArrowParams = Schema.Struct({
+        direction: Schema.Literals(["up", "down", "left", "right"]),
+    });
+    Frontend.FocusParams = Schema.Struct({
+        target: Schema.Number,
+    });
     Frontend.ClickParams = Schema.Struct({
         target: Schema.Number,
         x: Schema.Number,
         y: Schema.Number,
         semantic: Schema.optionalKey(Frontend.SemanticClickTarget),
     });
-    Frontend.ResizeParams = Schema.Struct({ cols: Schema.Number, rows: Schema.Number });
+    Frontend.ResizeParams = Schema.Struct({
+        cols: Schema.Number, rows: Schema.Number,
+    });
     Frontend.Request = Schema.Union([
         Handshake.Request,
         Schema.Struct({ ...JsonRpc.RequestFields, method: Schema.Literal("ui.type"), params: Frontend.TypeParams }),
@@ -447,8 +440,12 @@ export var Backend;
         sequence: Schema.Int.check(Schema.isGreaterThanOrEqualTo(0)),
         update: Backend.ToolProgress,
     });
-    Backend.ToolFinishParams = Schema.Struct({ id: Schema.String, output: Backend.ToolOutput });
-    Backend.ToolFailParams = Schema.Struct({ id: Schema.String, message: Schema.String });
+    Backend.ToolFinishParams = Schema.Struct({
+        id: Schema.String, output: Backend.ToolOutput,
+    });
+    Backend.ToolFailParams = Schema.Struct({
+        id: Schema.String, message: Schema.String,
+    });
     Backend.ToolInvocation = Schema.Struct({
         id: Schema.String,
         name: Schema.String,
@@ -464,9 +461,15 @@ export var Backend;
         id: Schema.String,
         reason: Schema.Literal("interrupted"),
     });
-    Backend.Attached = Schema.Struct({ attached: Schema.Literal(true) });
-    Backend.Ok = Schema.Struct({ ok: Schema.Literal(true) });
-    Backend.ChunkParams = Schema.Struct({ id: Schema.String, items: Schema.Array(Backend.Item) });
+    Backend.Attached = Schema.Struct({
+        attached: Schema.Literal(true),
+    });
+    Backend.Ok = Schema.Struct({
+        ok: Schema.Literal(true),
+    });
+    Backend.ChunkParams = Schema.Struct({
+        id: Schema.String, items: Schema.Array(Backend.Item),
+    });
     Backend.FinishParams = Schema.Struct({
         id: Schema.String,
         reason: Backend.FinishReason.pipe(Schema.withDecodingDefault(Effect.succeed("stop"))),
@@ -475,7 +478,9 @@ export var Backend;
         id: Schema.String,
         reason: Schema.optionalKey(Backend.FinishReason),
     });
-    Backend.DisconnectParams = Schema.Struct({ id: Schema.String });
+    Backend.DisconnectParams = Schema.Struct({
+        id: Schema.String,
+    });
     Backend.Request = Schema.Union([
         Handshake.Request,
         Schema.Struct({ ...JsonRpc.RequestFields, method: Schema.Literal("llm.chunk"), params: Backend.ChunkParams }),
@@ -493,7 +498,9 @@ export var Backend;
     Backend.decodeRequest = Schema.decodeUnknownSync(Backend.Request);
     Backend.decodeRequestEffect = Schema.decodeUnknownEffect(Schema.fromJsonString(Backend.Request));
     Backend.ProviderInvocation = Schema.Struct({ id: Schema.String, url: Schema.String, body: Schema.Json });
-    Backend.Pending = Schema.Struct({ invocations: Schema.Array(Backend.ProviderInvocation) });
+    Backend.Pending = Schema.Struct({
+        invocations: Schema.Array(Backend.ProviderInvocation),
+    });
     Backend.NetworkLogEntry = Schema.Struct({
         time: Schema.Number,
         method: Schema.String,

@@ -2,10 +2,10 @@
 import * as Schema from "effect/Schema";
 import { Ipc } from "@opencode/plugin/gui";
 export const SshConfig = Schema.Struct({
-    id: Schema.String, target: Schema.String, name: Schema.String,
+    id: Schema.mutableKey(Schema.String), target: Schema.mutableKey(Schema.String), name: Schema.mutableKey(Schema.String),
 });
 export const SshHttp = Schema.Struct({
-    url: Schema.String, password: Schema.String,
+    url: Schema.mutableKey(Schema.String), password: Schema.mutableKey(Schema.String),
 });
 export const SshStage = Schema.Literals([
     "disconnected",
@@ -25,15 +25,15 @@ export const SshPrompt = Schema.Struct({
     confirm: Schema.Boolean,
 });
 export const SshItem = Schema.Struct({
-    config: SshConfig,
-    saved: Schema.Boolean,
-    destination: Schema.optional(Schema.String),
-    stage: SshStage,
-    http: Schema.optional(SshHttp),
-    prompt: Schema.optional(SshPrompt),
-    authenticatingElsewhere: Schema.optional(Schema.Boolean),
-    detail: Schema.String,
-    error: Schema.optional(Schema.Literals(["connection",
+    config: Schema.mutableKey(SshConfig),
+    saved: Schema.mutableKey(Schema.Boolean),
+    destination: Schema.mutableKey(Schema.optional(Schema.String)),
+    stage: Schema.mutableKey(SshStage),
+    http: Schema.mutableKey(Schema.optional(SshHttp)),
+    prompt: Schema.mutableKey(Schema.optional(SshPrompt)),
+    authenticatingElsewhere: Schema.mutableKey(Schema.optional(Schema.Boolean)),
+    detail: Schema.mutableKey(Schema.String),
+    error: Schema.mutableKey(Schema.optional(Schema.Literals(["connection",
         "input",
         "platform",
         "version",
@@ -41,21 +41,21 @@ export const SshItem = Schema.Struct({
         "service",
         "host-key",
         "ssh-missing",
-        "unpublished"])),
+        "unpublished"]))),
 });
 /** `revision` grows with every push, so a caller can wait for the state that follows its request. */
 export const SshState = Schema.Struct({
-    servers: Schema.Array(SshItem), revision: Schema.Number,
+    servers: Schema.mutableKey(Schema.Array(SshItem)), revision: Schema.mutableKey(Schema.Number),
 });
 export const SshStart = Schema.Struct({
-    id: Schema.String,
-    target: Schema.String,
-    name: Schema.String,
-    replace: Schema.optional(Schema.Boolean),
-    background: Schema.optional(Schema.Boolean),
+    id: Schema.mutableKey(Schema.String),
+    target: Schema.mutableKey(Schema.String),
+    name: Schema.mutableKey(Schema.String),
+    replace: Schema.mutableKey(Schema.optional(Schema.Boolean)),
+    background: Schema.mutableKey(Schema.optional(Schema.Boolean)),
 });
 const Id = Schema.Struct({
-    id: Schema.String,
+    id: Schema.mutableKey(Schema.String),
 });
 /** SSH connections, owned by the main process. Prompts reach only the window that started the attempt. */
 export const Ssh = Ipc.define({

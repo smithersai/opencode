@@ -91,12 +91,12 @@ export function request(input) {
         return input;
     return new ExtractionRequest({ ...input, http: HttpOptions.make(input.http) });
 }
-export function generate(arg_1) {
-    return Effect_1.fnUntraced(function* generate(input) {
+export function generate(input) {
+    return Effect_1.gen(function* generate() {
         const executor = yield* RequestExecutor.Service;
         const built = yield* tryRequest(() => request(input));
         return yield* built.model.route.generate(built, executor.execute);
-    }).apply(this, arguments);
+    });
 }
 export const Extraction = {
     request,

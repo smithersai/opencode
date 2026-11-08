@@ -11,23 +11,25 @@ export function text(message) {
         .filter((text) => text.length > 0)
         .join("\n\n") || NO_TEXT);
 }
-export const deliver = Effect.fnUntraced(function* deliver(sessions, jobs, input) {
-    if (input.status === "running")
-        return;
-    const recovery = input.recovery;
-    const text = input.status === "completed"
-        ? (input.output ?? NO_TEXT)
-        : input.status === "error"
-            ? (input.error ?? "Subagent failed")
-            : "Subagent cancelled";
-    yield* sessions.synthetic({
-        ...(input.notificationID ? { id: input.notificationID } : {}),
-        sessionID: recovery.parentSessionID,
-        ...(input.resume === false ? { resume: false } : {}),
-        description: recovery.description,
-        text: `<subagent sessionID="${recovery.childSessionID}" state="${input.status}" description="${recovery.description}">\n${text}\n</subagent>`,
-        metadata: { source: "subagent", childID: recovery.childSessionID, agent: recovery.agent, state: input.status },
+export const deliver = (sessions, jobs, input) => {
+    return Effect.gen(function* deliver() {
+        if (input.status === "running")
+            return;
+        const recovery = input.recovery;
+        const text = input.status === "completed"
+            ? (input.output ?? NO_TEXT)
+            : input.status === "error"
+                ? (input.error ?? "Subagent failed")
+                : "Subagent cancelled";
+        yield* sessions.synthetic({
+            ...(input.notificationID ? { id: input.notificationID } : {}),
+            sessionID: recovery.parentSessionID,
+            ...(input.resume === false ? { resume: false } : {}),
+            description: recovery.description,
+            text: `<subagent sessionID="${recovery.childSessionID}" state="${input.status}" description="${recovery.description}">\n${text}\n</subagent>`,
+            metadata: { source: "subagent", childID: recovery.childSessionID, agent: recovery.agent, state: input.status },
+        });
+        if (input.notificationID)
+            yield* jobs.completeBackground(input.notificationID);
     });
-    if (input.notificationID)
-        yield* jobs.completeBackground(input.notificationID);
-});
+};

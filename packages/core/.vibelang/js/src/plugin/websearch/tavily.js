@@ -13,7 +13,7 @@ import { HttpClient } from "effect/http";
 import { App } from "../../app.js";
 import { trusted } from "vibelang-runtime";
 // App.useragent is plain TypeScript that throws only programmer errors.
-const userAgentOf = trusted(App.useragent, []);
+const userAgentOf_impl = (void trusted, App.useragent), userAgentOf = function (...args) { return userAgentOf_impl.apply(void 0, args); };
 export const endpoint = "https://api.tavily.com/search";
 const SearchRequest = Schema.Struct({
     query: Schema.String,
@@ -31,51 +31,57 @@ const SearchResponse = Schema.Struct({
 });
 export const Plugin = define({
     id: "opencode.websearch.tavily",
-    effect: (ctx) => Effect_1.suspend({ effect: () => { return withSpan((Effect_1.fnUntraced(function* () {
-            const http = yield* HttpClient.HttpClient;
-            yield* ctx.integration.transform((editor) => {
-                editor.update("tavily", (integration) => (integration.name = "Tavily"));
-                editor.method.update({
-                    integrationID: "tavily",
-                    method: { type: "key" },
+    effect: (ctx) => {
+        return Effect_1.gen(function* effect() { return yield* withSpan((() => {
+            return Effect_1.gen(function* () {
+                const http = yield* HttpClient.HttpClient;
+                yield* ctx.integration.transform((editor) => {
+                    editor.update("tavily", (integration) => (integration.name = "Tavily"));
+                    editor.method.update({
+                        integrationID: "tavily",
+                        method: { type: "key" },
+                    });
+                    editor.method.update({
+                        integrationID: "tavily",
+                        method: { type: "env", names: ["TAVILY_API_KEY"] },
+                    });
                 });
-                editor.method.update({
-                    integrationID: "tavily",
-                    method: { type: "env", names: ["TAVILY_API_KEY"] },
+                yield* ctx.websearch.transform((editor) => {
+                    editor.add({
+                        id: "tavily",
+                        name: "Tavily",
+                        execute: (input) => {
+                            return Effect_1.gen(function* execute() {
+                                const connection = yield* ctx.integration.connection.active("tavily");
+                                const credential = connection ? yield* ctx.integration.connection.resolve(connection) : undefined;
+                                const request = yield* HttpClientRequest.post(endpoint).pipe(HttpClientRequest.acceptJson, HttpClientRequest.setHeaders({
+                                    "User-Agent": yield* Effect.orDie(Effect.try({ try: () => userAgentOf(ctx.app), catch: (e) => e })),
+                                    "X-Client-Name": "opencode2",
+                                    ...(credential?.type === "key"
+                                        ? { Authorization: `Bearer ${credential.key}` }
+                                        : { "X-Tavily-Access-Mode": "keyless" }),
+                                }), HttpClientRequest.schemaBodyJson(SearchRequest)({
+                                    query: input.query,
+                                    search_depth: "basic",
+                                    chunks_per_source: 3,
+                                    max_results: 8,
+                                }));
+                                const response = yield* (Effect.timeoutOrElse(Effect.scoped(Effect.flatMap(HttpClient.withScope(HttpClient.filterStatusOk(http))
+                                    .execute(request), HttpClientResponse.schemaBodyJson(SearchResponse))), {
+                                    duration: Duration.seconds(25),
+                                    orElse: () => Effect.fail(new Error("Tavily web search request timed out")),
+                                }));
+                                return response.results.map((item) => ({
+                                    url: item.url,
+                                    title: item.title,
+                                    ...(item.content ? { content: item.content } : {}),
+                                    time: {},
+                                }));
+                            });
+                        },
+                    });
                 });
             });
-            yield* ctx.websearch.transform((editor) => {
-                editor.add({
-                    id: "tavily",
-                    name: "Tavily",
-                    execute: Effect_1.fnUntraced(function* execute(input) {
-                        const connection = yield* ctx.integration.connection.active("tavily");
-                        const credential = connection ? yield* ctx.integration.connection.resolve(connection) : undefined;
-                        const request = yield* HttpClientRequest.post(endpoint).pipe(HttpClientRequest.acceptJson, HttpClientRequest.setHeaders({
-                            "User-Agent": userAgentOf(ctx.app),
-                            "X-Client-Name": "opencode2",
-                            ...(credential?.type === "key"
-                                ? { Authorization: `Bearer ${credential.key}` }
-                                : { "X-Tavily-Access-Mode": "keyless" }),
-                        }), HttpClientRequest.schemaBodyJson(SearchRequest)({
-                            query: input.query,
-                            search_depth: "basic",
-                            chunks_per_source: 3,
-                            max_results: 8,
-                        }));
-                        const response = yield* (Effect.timeoutOrElse(Effect.scoped(Effect.flatMap(HttpClient.withScope(HttpClient.filterStatusOk(http))
-                            .execute(request), HttpClientResponse.schemaBodyJson(SearchResponse))), {
-                            duration: Duration.seconds(25),
-                            orElse: () => Effect.fail(new Error("Tavily web search request timed out")),
-                        }));
-                        return response.results.map((item) => ({
-                            url: item.url,
-                            title: item.title,
-                            ...(item.content ? { content: item.content } : {}),
-                            time: {},
-                        }));
-                    }),
-                });
-            });
-        }))(), "WebSearchTavily.Plugin"); } }.effect),
+        })(), "WebSearchTavily.Plugin"); });
+    },
 });

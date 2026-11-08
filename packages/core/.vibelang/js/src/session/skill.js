@@ -7,15 +7,17 @@ import { Instance } from "../instance/service.js";
 import { Plugin } from "../plugin/service.js";
 import { Skill } from "../skill.js";
 import { SkillNotFoundError } from "./error.js";
-export const get = (input) => Effect_1.suspend({ get: () => { return withSpan(Effect_1.gen(function* () {
-        var topic_1;
-        const instances = yield* Instance.Service;
-        const skills = yield* ((topic_1 = Effect.andThen(Plugin.awaitActivation, Skill.Service), (yield* Effect.orDie(Effect.try({
-            try: () => instances.provide(input.session),
-            catch: (error) => error,
-        })))(topic_1)));
-        const skill = yield* skills.get(input.skill);
-        if (!skill)
-            return yield* Effect_1.fail(new SkillNotFoundError({ skill: input.skill }));
-        return skill;
-    }), "SessionSkill.get"); } }.get);
+export const get = (input) => {
+    return Effect_1.gen({ *"get"() { return yield* withSpan(Effect_1.gen(function* () {
+            var topic_1;
+            const instances = yield* Instance.Service;
+            const skills = yield* ((topic_1 = Effect.andThen(Plugin.awaitActivation, Skill.Service), (yield* Effect.orDie(Effect.try({
+                try: () => instances.provide(input.session),
+                catch: (error) => error,
+            })))(topic_1)));
+            const skill = yield* skills.get(input.skill);
+            if (!skill)
+                return yield* Effect_1.fail(new SkillNotFoundError({ skill: input.skill }));
+            return skill;
+        }), "SessionSkill.get"); } }["get"]);
+};

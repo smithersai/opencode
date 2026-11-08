@@ -119,10 +119,10 @@ export const ConsoleEntry = Schema.Struct({
 }).annotate({ identifier: "Browser.ConsoleEntry" });
 const snapshot = Schema.Struct({ ...page, content: text, truncated: Schema.Boolean });
 const entry = Schema.Struct({
-    name: short, count: count, bytes: Schema.Finite,
+    name: Schema.mutableKey(short), count: Schema.mutableKey(count), bytes: Schema.mutableKey(Schema.Finite),
 });
 const node = Schema.Struct({
-    id: Schema.Finite, name: text, type: short, selfBytes: count, edgeCount: count,
+    id: Schema.mutableKey(Schema.Finite), name: Schema.mutableKey(text), type: Schema.mutableKey(short), selfBytes: Schema.mutableKey(count), edgeCount: Schema.mutableKey(count),
 });
 const metrics = Schema.Array(Schema.Struct({ name: short, value: Schema.Finite, unit: short }));
 const profiled = Schema.Struct({ ...page, ...files, durationMs: Schema.Finite });
@@ -280,7 +280,7 @@ export const Action = Schema.Union(Operations.map((operation) => operation.actio
 });
 // Metadata only: never page content, headers, bodies, or file bytes.
 export const Target = Schema.Struct({
-    resources: Schema.Array(text), key: text,
+    resources: Schema.mutableKey(Schema.Array(text)), key: Schema.mutableKey(text),
 });
 export const Command = Schema.Struct({
     action: Action,
@@ -307,7 +307,7 @@ export const TunnelTarget = Schema.Struct({
 const tunnel = { ...attachment, tunnelID: short };
 const bytes = Schema.Uint8ArrayFromBase64.check(Schema.isMaxLength(TUNNEL_CHUNK_BYTES));
 export const TunnelRead = Schema.Struct({
-    data: bytes, eof: Schema.Boolean,
+    data: Schema.mutableKey(bytes), eof: Schema.mutableKey(Schema.Boolean),
 });
 const errors = { unavailable: Schema.Struct({}) };
 export const Control = Schema.Union([

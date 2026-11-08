@@ -67,12 +67,14 @@ const transport = (route) => {
         auth: route.auth,
         headers: route.headers,
     });
-    return Effect_1.fnUntraced(function* (request, execute) {
-        if (!route.protocol.inlineMedia)
-            return yield* composed.generate(request, execute);
-        const input = yield* Effect.forEach(request.input, (part) => materialize(part, execute));
-        return yield* composed.generate({ ...request, input }, execute);
-    });
+    return (request, execute) => {
+        return Effect_1.gen(function* () {
+            if (!route.protocol.inlineMedia)
+                return yield* composed.generate(request, execute);
+            const input = yield* Effect.forEach(request.input, (part) => materialize(part, execute));
+            return yield* composed.generate({ ...request, input }, execute);
+        });
+    };
 };
 const materialize = (part, execute) => part.type === "media" && part.media.source.type === "url"
     ? (Effect.map(Effect.provideService(part.media.materialize(), RequestExecutorService, { execute }), (media) => ({ ...part, media })))

@@ -12,7 +12,7 @@ import { HttpApiBuilder, HttpApiSchema } from "effect/http-api";
 import { SessionMediaMessageResponse } from "@opencode/protocol/groups/message";
 import { SessionMediaInboxResponse } from "@opencode/protocol/groups/session";
 import { Api } from "../api";
-import { wantsMediaRefs } from "../media-uri.js";
+import { wantsMediaRefs } from "#vibelang/emitted/src/media-uri";
 import { ConflictError, CommandExecutionError, CommandNotFoundError, FormAlreadySettledError, FormInvalidAnswerError, FormNotFoundError, InvalidRequestError, InvalidCursorError, MessageNotFoundError, ServiceUnavailableError, SessionBusyError, SkillNotFoundError, } from "@opencode/protocol/errors";
 import { AbsolutePath } from "@opencode/core/schema";
 import { locationErrors } from "../location";

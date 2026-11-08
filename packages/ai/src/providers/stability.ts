@@ -1,9 +1,9 @@
 import { AuthOptions, type ProviderAuthOption } from "../route/auth-options.vibe"
 import { MediaRoute } from "../route/media.vibe"
 import { type HttpOptions, ProviderID, type ModelID } from "../schema/index.js"
-import { StabilityImages } from "../protocols/stability-images.js"
+import { StabilityImages } from "../protocols/stability-images.vibe"
 
-export type { StabilityImageOptions, StabilityUpscaleOptions } from "../protocols/stability-images.js"
+export type { StabilityImageOptions, StabilityUpscaleOptions } from "../protocols/stability-images.vibe"
 
 export const id = ProviderID.make("stability")
 

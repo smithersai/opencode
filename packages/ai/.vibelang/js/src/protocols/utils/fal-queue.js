@@ -30,7 +30,9 @@ const STATUS = {
     COMPLETED: "completed",
 };
 // fal accepts public URLs and data URIs; there is no provider file handle to forward.
-export const mediaUrl = Effect_1.fnUntraced(function* mediaUrl(asset, name) { return (yield* ProviderShared.mediaReference(asset, undefined, name)).value; });
+export const mediaUrl = (asset, name) => {
+    return Effect_1.gen(function* mediaUrl() { return (yield* ProviderShared.mediaReference(asset, undefined, name)).value; });
+};
 export const protocol = (route, input) => {
     const decodeQueueStatus = route.decodeJson(QueueStatus);
     return MediaProtocol.queued(route, {
@@ -50,7 +52,8 @@ export const protocol = (route, input) => {
         },
         status: {
             path: (token) => token.statusURL,
-            decode: (response, context) => Effect_1.suspend({ decode: () => { return withSpan(Effect_1.gen(function* () {
+            decode: (response, context) => {
+                return Effect_1.gen(function* decode() { return yield* withSpan(Effect_1.gen(function* () {
                     const output = yield* decodeQueueStatus(response);
                     const decoded = output.value;
                     const status = yield* MediaProtocol.status(STATUS, decoded.status, output);
@@ -61,7 +64,8 @@ export const protocol = (route, input) => {
                         status: failed ? "failed" : status,
                         position: status === "queued" ? (decoded.queue_position ?? undefined) : undefined,
                     };
-                }), "FalQueue.decodeStatus"); } }.decode),
+                }), "FalQueue.decodeStatus"); });
+            },
         },
         result: { path: (token) => token.responseURL, decode: input.decodeResult },
         cancel: { method: "PUT", path: (token) => token.cancelURL },

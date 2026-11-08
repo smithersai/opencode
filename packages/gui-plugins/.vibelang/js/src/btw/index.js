@@ -3,21 +3,21 @@ import * as Schema from "effect/Schema";
 import { Plugin, Store } from "@opencode/plugin/gui";
 import en from "./i18n/en.js";
 const ChatModel = Schema.Struct({
-    providerID: Schema.String,
-    id: Schema.String,
-    variant: Schema.optional(Schema.String),
+    providerID: Schema.mutableKey(Schema.String),
+    id: Schema.mutableKey(Schema.String),
+    variant: Schema.mutableKey(Schema.optional(Schema.String)),
 });
 const Chats = Schema.Struct({
-    chats: Schema.Array(Schema
+    chats: Schema.mutableKey(Schema.Array(Schema
         .Struct({
-        id: Schema.String,
-        question: Schema.String,
-        answer: Schema.optional(Schema.String),
-        agent: Schema.optional(Schema.String),
-        model: Schema.optional(ChatModel),
-        created: Schema.optional(Schema.Number),
-        duration: Schema.optional(Schema.Number),
-    })),
+        id: Schema.mutableKey(Schema.String),
+        question: Schema.mutableKey(Schema.String),
+        answer: Schema.mutableKey(Schema.optional(Schema.String)),
+        agent: Schema.mutableKey(Schema.optional(Schema.String)),
+        model: Schema.mutableKey(Schema.optional(ChatModel)),
+        created: Schema.mutableKey(Schema.optional(Schema.Number)),
+        duration: Schema.mutableKey(Schema.optional(Schema.Number)),
+    }))),
 });
 export default Plugin.define({
     stores: {

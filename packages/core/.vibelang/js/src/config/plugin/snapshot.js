@@ -7,15 +7,17 @@ import { Snapshot } from "../../snapshot.js";
 import { ConfigEntryObserver } from "./entry-observer.js";
 export const Plugin = define({
     id: "opencode.config.snapshot",
-    effect: Effect.fnUntraced(function* effect(ctx) {
-        const config = yield* Config.Service;
-        const snapshot = yield* Snapshot.Service;
-        const loaded = yield* ConfigEntryObserver.observe(config, ctx.event, snapshot.reload());
-        yield* snapshot.transform((editor) => {
-            const configured = Config.latest(loaded.entries, "snapshots");
-            if (configured === undefined)
-                return;
-            editor.configure(configured);
+    effect: (ctx) => {
+        return Effect.gen(function* effect() {
+            const config = yield* Config.Service;
+            const snapshot = yield* Snapshot.Service;
+            const loaded = yield* ConfigEntryObserver.observe(config, ctx.event, snapshot.reload());
+            yield* snapshot.transform((editor) => {
+                const configured = Config.latest(loaded.entries, "snapshots");
+                if (configured === undefined)
+                    return;
+                editor.configure(configured);
+            });
         });
-    }),
+    },
 });

@@ -37,10 +37,10 @@ const decodeJsonString = Schema.decodeUnknownSync(Schema.fromJsonString(Schema.S
 /** Parse complete or incomplete JSON, restricted by the supplied partial-value flags. */
 export function parseJSON(jsonString, allowPartial = Allow.ALL) {
     if (typeof jsonString !== "string")
-        throw new TypeError(`expecting str, got ${typeof jsonString}`);
+        $raise(new TypeError(`expecting str, got ${typeof jsonString}`));
     const input = jsonString.trim();
     if (!input)
-        throw new Error(`${jsonString} is empty`);
+        $raise(new Error(`${jsonString} is empty`));
     try {
         return decodeJson(input);
     }
@@ -58,7 +58,7 @@ export function parseJSON(jsonString, allowPartial = Allow.ALL) {
     catch (error) {
         if (repaired !== input)
             return _parseJSON(repaired, allowPartial);
-        throw error;
+        $raise(error);
     }
 }
 const repairJSON = (input) => {
@@ -101,10 +101,10 @@ const _parseJSON = (jsonString, allow) => {
     const length = jsonString.length;
     let index = 0;
     const markPartialJSON = (message) => {
-        throw new PartialJSON(`${message} at position ${index}`);
+        $raise(new PartialJSON(`${message} at position ${index}`));
     };
     const throwMalformedError = (message) => {
-        throw new MalformedJSON(`${message} at position ${index}`);
+        $raise(new MalformedJSON(`${message} at position ${index}`));
     };
     const parseAny = () => {
         skipBlank();
@@ -200,7 +200,7 @@ const _parseJSON = (jsonString, allow) => {
                 catch (error) {
                     if (Allow.OBJ & allow)
                         return object;
-                    throw error;
+                    $raise(error);
                 }
                 skipBlank();
                 if (jsonString[index] === ",")
@@ -279,3 +279,4 @@ const _parseJSON = (jsonString, allow) => {
     return parseAny();
 };
 export const parse = parseJSON;
+import { raise as $raise } from "./partial-json.vibe.-24-throw-24-ts.js";

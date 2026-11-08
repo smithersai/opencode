@@ -3,7 +3,7 @@ import * as Deferred from "effect/Deferred";
 import * as Layer from "effect/Layer";
 import * as Schema from "effect/Schema";
 import * as Effect_1 from "effect/Effect";
-import * as runtime from "vibelang-runtime";
+import * as runtime from "vibelang-runtime/internal";
 export * as LocationLifecycle from "./location-lifecycle.js";
 import { Effect } from "effect";
 import { makeLocationNode } from "@opencode/util/effect/app-node";

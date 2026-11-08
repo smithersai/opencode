@@ -12,7 +12,7 @@ import {
   type ProviderMetadata,
 } from "../../schema/index.js"
 import { ProviderShared } from "../shared.js"
-import { MediaInput } from "./media-input.js"
+import { MediaInput } from "./media-input.vibe"
 
 const PROVIDER = ProviderID.make("google")
 

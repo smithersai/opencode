@@ -77,7 +77,7 @@ export function latest(definitions) {
             return result;
         }
         if (definition !== existing)
-            throw new Error(`Duplicate latest event definition for ${definition.type}`);
+            $raise(new Error(`Duplicate latest event definition for ${definition.type}`));
         return result;
     }, new Map()));
 }
@@ -90,7 +90,7 @@ export function durableMap(definitions) {
             return result;
         const key = versionedType(definition.type, definition.durable.version);
         if (result.has(key))
-            throw new Error(`Duplicate durable event definition for ${key}`);
+            $raise(new Error(`Duplicate durable event definition for ${key}`));
         result.set(key, definition);
         return result;
     }, new Map()));
@@ -110,3 +110,4 @@ function readonlyMap(map) {
     });
     return result;
 }
+import { raise as $raise } from "./event.vibe.-24-throw-24-ts.js";

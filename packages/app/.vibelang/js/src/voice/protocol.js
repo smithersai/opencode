@@ -2,10 +2,10 @@
 import * as Option from "effect/Option";
 import * as Schema from "effect/Schema";
 const Item = Schema.Struct({
-    type: Schema.String,
-    call_id: Schema.optional(Schema.String),
-    name: Schema.optional(Schema.String),
-    arguments: Schema.optional(Schema.String),
+    type: Schema.mutableKey(Schema.String),
+    call_id: Schema.mutableKey(Schema.optional(Schema.String)),
+    name: Schema.mutableKey(Schema.optional(Schema.String)),
+    arguments: Schema.mutableKey(Schema.optional(Schema.String)),
 });
 const Envelope = Schema.Struct({
     type: Schema.String,

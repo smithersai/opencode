@@ -2,7 +2,9 @@
 import * as Effect from "effect/Effect";
 import * as Option from "effect/Option";
 import * as Schema from "effect/Schema";
+import { $catchExpression } from "vibelang-runtime/internal";
 import * as Effect_1 from "effect/Effect";
+import * as runtime from "vibelang-runtime/internal";
 import { Form } from "@opencode/schema/form";
 import { ACPChild } from "./child.js";
 import { ACPClient } from "./client.js";
@@ -11,13 +13,24 @@ const QuestionKind = "question";
 const ElicitedKind = Schema.Struct({ kind: Schema.Literals([QuestionKind, "websearch.provider"]) });
 const Credential = /password|passphrase|secret|token|api[_ -]?key|credential|private[_ -]?key/i;
 const ToolSource = Schema.Struct({
-    tool: Schema.Struct({
-        id: Schema.String,
-    }),
+    tool: Schema.mutableKey(Schema.Struct({
+        id: Schema.mutableKey(Schema.String),
+    })),
 });
 export const UnshownQuestionMessage = "The question couldn't be shown to the user in this client. Continue without an answer: make reasonable assumptions and state them, or ask the user in your reply if you can't proceed.";
 function cancel(client, form, message) {
-    return client.session.form.cancel({ sessionID: form.sessionID, formID: form.id, message }).pipe(Effect.catchTag(["FormAlreadySettledError", "FormNotFoundError"], () => Effect.void), Effect.catch(() => Effect.ignore(Effect.flatMap(ACPClient.decodeSessionID(form.sessionID), (sessionID) => client.session.interrupt({ sessionID })))));
+    let $do1;
+    {
+        const catchProgram = (Effect.catchTag(client.session.form.cancel({ sessionID: form.sessionID, formID: form.id, message }), ["FormAlreadySettledError", "FormNotFoundError"], () => Effect.void));
+        $do1
+            =
+                Effect_1.gen(function* () {
+                    return yield* runtime.$catch(yield* (() => { return Effect_1.sync(() => { return catchProgram; }); })(), () => {
+                        return Effect_1.gen(function* () { return yield* (Effect.ignore(Effect.flatMap(ACPClient.decodeSessionID(form.sessionID), (sessionID) => client.session.interrupt({ sessionID })))); });
+                    });
+                });
+    }
+    return $do1;
 }
 export function requestedSchema(form, capabilities) {
     if (!capabilities.formElicitation)
@@ -56,31 +69,39 @@ function answer(form, response) {
         return value === undefined ? [] : [[field.key, value]];
     }));
 }
-export const ask = Effect_1.fnUntraced(function* ask(input) {
-    const source = input.toolCallSent ? Schema.decodeUnknownOption(ToolSource)(input.form.metadata) : Option.none();
-    const toolCallID = Option.getOrUndefined(Option.map(source, (metadata) => metadata.tool.id));
-    const response = yield* input.connection.createElicitation({
-        mode: "form",
-        sessionId: input.clientSessionID,
-        ...(toolCallID
-            ? {
-                toolCallId: yield* Effect.orDie(Effect.try({
-                    try: () => ACPChild.toolCallID(input.child, toolCallID),
-                    catch: (error) => error,
-                })),
-            }
-            : {}),
-        message: yield* Effect.orDie(Effect.try({ try: () => ACPChild.prefixTitle(input.child, input.form.title), catch: (error) => error })),
-        requestedSchema: input.requestedSchema,
+export const ask = (input) => {
+    return Effect_1.gen(function* ask() {
+        const source = input.toolCallSent ? Schema.decodeUnknownOption(ToolSource)(input.form.metadata) : Option.none();
+        const toolCallID = Option.getOrUndefined(Option.map(source, (metadata) => metadata.tool.id));
+        const response = yield* input.connection.createElicitation({
+            mode: "form",
+            sessionId: input.clientSessionID,
+            ...(toolCallID
+                ? {
+                    toolCallId: yield* Effect.orDie(Effect.try({
+                        try: () => ACPChild.toolCallID(input.child, toolCallID),
+                        catch: (error) => error,
+                    })),
+                }
+                : {}),
+            message: yield* Effect.orDie(Effect.try({ try: () => ACPChild.prefixTitle(input.child, input.form.title), catch: (error) => error })),
+            requestedSchema: input.requestedSchema,
+        });
+        return answer(input.form, response) ?? "cancel";
     });
-    return answer(input.form, response) ?? "cancel";
-});
+};
 export function respond(input, outcome) {
     if (outcome === "cancel")
         return cancel(input.client, input.form);
-    return input.client.session.form
-        .reply({ sessionID: input.form.sessionID, formID: input.form.id, answer: outcome })
-        .pipe(Effect.catchTag(["FormAlreadySettledError", "FormNotFoundError"], () => Effect.void), Effect.catch((cause) => Effect.andThen(Effect.logWarning("ACP form reply failed", cause), cancel(input.client, input.form))));
+    let $do2;
+    {
+        const catchProgram = (Effect.catchTag(input.client.session.form
+            .reply({ sessionID: input.form.sessionID, formID: input.form.id, answer: outcome }), ["FormAlreadySettledError", "FormNotFoundError"], () => Effect.void));
+        $do2 = Effect_1.gen(function* () { return yield* runtime.$catch(yield* (() => { return Effect_1.sync(() => { return catchProgram; }); })(), (cause) => {
+            return Effect_1.gen(function* () { return yield* (Effect.andThen(Effect.logWarning("ACP form reply failed", cause), cancel(input.client, input.form))); });
+        }); });
+    }
+    return $do2;
 }
 function credentialLike(field) {
     const labels = field.type === "string" || field.type === "multiselect"

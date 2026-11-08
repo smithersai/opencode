@@ -263,7 +263,8 @@ const post = [
 // Repository config must not switch off policy enforcement or the Console connection that delivers
 // organization statements, so plugin remove operations skip these IDs.
 export const guarded = new Set([OpencodePlugin.id, ConfigPolicyPlugin.Plugin.id]);
-export const list = () => Effect_1.suspend({ list: () => { return withSpan(Effect_1.gen(function* () {
+export const list = () => {
+    return Effect_1.gen(function* list() { return yield* withSpan(Effect_1.gen(function* () {
         // Capture only services; activation supplies the child Scope and batching context.
         const context = Context.pick(...services)(yield* Effect.context());
         const resolve = (plugins) => plugins.map((plugin) => ({
@@ -274,4 +275,5 @@ export const list = () => Effect_1.suspend({ list: () => { return withSpan(Effec
             pre: resolve(pre),
             post: resolve(post),
         };
-    }), "PluginInternal.list"); } }.list);
+    }), "PluginInternal.list"); });
+};

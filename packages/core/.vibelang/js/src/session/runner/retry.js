@@ -14,42 +14,50 @@ import { SessionEvent } from "../event.js";
 import { SessionMessage } from "../message.js";
 import { SessionSchema } from "../schema.js";
 export { isRetryable };
-export const policy = Effect_1.fnUntraced(function* policy(sessionID) {
-    const decide = yield* ModelRetry.policy;
-    return Effect_1.fnUntraced(function* (input) {
-        const next = yield* decide(input);
-        if (!next)
-            return { retry: false };
-        const event = {
-            sessionID,
-            agent: input.agent,
-            model: input.model,
-            error: input.error,
-            attempt: next.attempt,
-            decision: next.retry ? { retry: true, delay: next.delay } : { retry: false },
+export const policy = (sessionID) => {
+    return Effect_1.gen(function* policy() {
+        const decide = yield* ModelRetry.policy;
+        return (input) => {
+            return Effect_1.gen(function* () {
+                const next = yield* decide(input);
+                if (!next)
+                    return { retry: false };
+                const event = {
+                    sessionID,
+                    agent: input.agent,
+                    model: input.model,
+                    error: input.error,
+                    attempt: next.attempt,
+                    decision: next.retry ? { retry: true, delay: next.delay } : { retry: false },
+                };
+                yield* input.hook(event);
+                if (!event.decision.retry)
+                    return event.decision;
+                const normalized = Number.isFinite(event.decision.delay) && event.decision.delay >= 0
+                    ? Math.ceil(event.decision.delay)
+                    : next.delay;
+                return { retry: true, attempt: next.attempt, delay: normalized };
+            });
         };
-        yield* input.hook(event);
-        if (!event.decision.retry)
-            return event.decision;
-        const normalized = Number.isFinite(event.decision.delay) && event.decision.delay >= 0
-            ? Math.ceil(event.decision.delay)
-            : next.delay;
-        return { retry: true, attempt: next.attempt, delay: normalized };
     });
-});
-export const make = Effect_1.fnUntraced(function* make(bus, sessionID) {
-    const decide = yield* policy(sessionID);
-    const wait = Effect_1.fnUntraced(function* wait(input) {
-        const scheduled = yield* Clock.currentTimeMillis;
-        yield* bus.publish(SessionEvent.RetryScheduled, {
-            sessionID,
-            assistantMessageID: input.assistantMessageID,
-            attempt: input.decision.attempt,
-            at: scheduled + input.decision.delay,
-            error: input.error,
-        });
-        const remaining = Math.max(0, scheduled + input.decision.delay - (yield* Clock.currentTimeMillis));
-        yield* Effect.sleep(Duration.millis(remaining));
+};
+export const make = (bus, sessionID) => {
+    return Effect_1.gen(function* make() {
+        const decide = yield* policy(sessionID);
+        const wait = (input) => {
+            return Effect_1.gen(function* wait() {
+                const scheduled = yield* Clock.currentTimeMillis;
+                yield* bus.publish(SessionEvent.RetryScheduled, {
+                    sessionID,
+                    assistantMessageID: input.assistantMessageID,
+                    attempt: input.decision.attempt,
+                    at: scheduled + input.decision.delay,
+                    error: input.error,
+                });
+                const remaining = Math.max(0, scheduled + input.decision.delay - (yield* Clock.currentTimeMillis));
+                yield* Effect.sleep(Duration.millis(remaining));
+            });
+        };
+        return { decide, wait };
     });
-    return { decide, wait };
-});
+};

@@ -3,7 +3,6 @@ import * as Effect from "effect/Effect";
 import * as Schema from "effect/Schema";
 import { withSpan } from "effect/Effect";
 import * as Effect_1 from "effect/Effect";
-import * as runtime from "vibelang-runtime";
 import { MediaProtocol } from "../route/media-protocol.js";
 import { MediaRoute } from "../route/media.js";
 import { mergeJsonRecords } from "../schema/index.js";
@@ -24,7 +23,8 @@ const decodeChunk = route.decodeFrame(GenerateContentChunk);
 // ---------------------------------------------------------------------------
 // 5. Request body construction
 // ---------------------------------------------------------------------------
-const fromRequest = (request) => Effect_1.suspend({ fromRequest: () => { return withSpan(Effect_1.gen(runtime.$joinedFrame(function* () {
+const fromRequest = (request) => {
+    return Effect_1.gen(function* fromRequest() { return yield* withSpan(Effect_1.gen(function* () {
         // Not in `unsupported`: that list would also reject `timestamps: false`, which asks for nothing.
         if (request.timestamps === true) {
             return yield* Effect_1.fail(route.unsupported("media.timestamps", `${route.name} does not return timestamps`));
@@ -46,23 +46,26 @@ const fromRequest = (request) => Effect_1.suspend({ fromRequest: () => { return 
                 },
             }, request.providerOptions),
         }, request.http?.body) ?? {});
-    })), "GoogleSpeech.fromRequest"); } }.fromRequest);
+    }), "GoogleSpeech.fromRequest"); });
+};
 // ---------------------------------------------------------------------------
 // 6. Stream parsing
 // ---------------------------------------------------------------------------
-const step = Effect_1.fnUntraced(function* step(state, frame) {
-    const chunk = yield* decodeChunk(frame);
-    const blocked = GeminiGenerateContent.blocked(route.name, chunk, frame);
-    if (blocked !== undefined)
-        return yield* Effect_1.fail(blocked);
-    const audio = (chunk.candidates?.[0]?.content?.parts ?? []).flatMap((part) => part.inlineData === undefined ? [] : [part.inlineData]);
-    const next = { ...GeminiGenerateContent.track(state, chunk), mimeType: state.mimeType ?? audio[0]?.mimeType };
-    const events = audio.flatMap((part) => SpeechStream.delta(next, part.data)[1]);
-    const withheld = next.chunks.length === 0 ? GeminiGenerateContent.withheld(route.name, chunk, frame) : undefined;
-    if (withheld !== undefined)
-        return yield* Effect_1.fail(withheld);
-    return [next, events];
-});
+const step = (state, frame) => {
+    return Effect_1.gen(function* step() {
+        const chunk = yield* decodeChunk(frame);
+        const blocked = GeminiGenerateContent.blocked(route.name, chunk, frame);
+        if (blocked !== undefined)
+            return yield* Effect_1.fail(blocked);
+        const audio = (chunk.candidates?.[0]?.content?.parts ?? []).flatMap((part) => part.inlineData === undefined ? [] : [part.inlineData]);
+        const next = { ...GeminiGenerateContent.track(state, chunk), mimeType: state.mimeType ?? audio[0]?.mimeType };
+        const events = audio.flatMap((part) => SpeechStream.delta(next, part.data)[1]);
+        const withheld = next.chunks.length === 0 ? GeminiGenerateContent.withheld(route.name, chunk, frame) : undefined;
+        if (withheld !== undefined)
+            return yield* Effect_1.fail(withheld);
+        return [next, events];
+    });
+};
 const finish = (state, context) => {
     if (state.finishReason === undefined)
         return Effect.fail(route.incomplete());

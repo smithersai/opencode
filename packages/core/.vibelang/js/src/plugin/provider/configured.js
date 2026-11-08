@@ -5,13 +5,15 @@ import { withSpan } from "effect/Effect";
 import * as Effect_1 from "effect/Effect";
 import { Config } from "../../config.js";
 import { Provider } from "../../provider.js";
-export const configuredSettings = (id) => Effect_1.suspend({ configuredSettings: () => { return withSpan(Effect_1.gen(function* () {
+export const configuredSettings = (id) => {
+    return Effect_1.gen(function* configuredSettings() { return yield* withSpan(Effect_1.gen(function* () {
         const providers = yield* Provider.Service;
         const current = (yield* providers.get(id))?.settings;
         const service = yield* Effect.serviceOption(Config.Service);
         const entries = Option.isSome(service) ? yield* service.value.entries() : [];
         return foldSettings(entries, id, current);
-    }), "ProviderPlugin.configuredSettings"); } }.configuredSettings);
+    }), "ProviderPlugin.configuredSettings"); });
+};
 export function foldSettings(entries, id, initial) {
     return entries
         .filter((entry) => entry.type === "document")

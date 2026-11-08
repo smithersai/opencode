@@ -4,7 +4,6 @@ import * as Schema from "effect/Schema";
 import * as SchemaGetter from "effect/SchemaGetter";
 import { withSpan } from "effect/Effect";
 import * as Effect_1 from "effect/Effect";
-import * as runtime from "vibelang-runtime";
 import { MediaProtocol } from "../route/media-protocol.js";
 import { MediaRoute } from "../route/media.js";
 import { mergeJsonRecords } from "../schema/index.js";
@@ -20,21 +19,22 @@ const Seconds = Schema.String.check(Schema.isPattern(/^\d+(\.\d+)?s$/)).pipe(Sch
     encode: SchemaGetter.transform((value) => `${value}s`),
 }));
 const AudioTranscription = Schema.Struct({
-    text: Schema.String,
-    speakerLabel: Schema.optional(Schema.String),
-    words: Schema.optional(Schema.Array(Schema
+    text: Schema.mutableKey(Schema.String),
+    speakerLabel: Schema.mutableKey(Schema.optional(Schema.String)),
+    words: Schema.mutableKey(Schema.optional(Schema.Array(Schema
         .Struct({
-        word: Schema.String,
-        startOffset: Seconds,
-        endOffset: Seconds,
-        speakerLabel: Schema.optional(Schema.String),
-    }))),
+        word: Schema.mutableKey(Schema.String),
+        startOffset: Schema.mutableKey(Seconds),
+        endOffset: Schema.mutableKey(Seconds),
+        speakerLabel: Schema.mutableKey(Schema.optional(Schema.String)),
+    })))),
 });
 const decodeChunk = route.decodeFrame(GeminiGenerateContent.chunk(Schema.Struct({ audioTranscription: Schema.optional(AudioTranscription) })));
 // ---------------------------------------------------------------------------
 // 5. Request body construction
 // ---------------------------------------------------------------------------
-const fromRequest = (request) => Effect_1.suspend({ fromRequest: () => { return withSpan(Effect_1.gen(runtime.$joinedFrame(function* () {
+const fromRequest = (request) => {
+    return Effect_1.gen(function* fromRequest() { return yield* withSpan(Effect_1.gen(function* () {
         // General Gemini models ignore `audioTranscriptionConfig` and answer the audio conversationally.
         if (!request.model.id.includes("transcribe")) {
             return yield* Effect_1.fail(route.unsupported("transcription.model", `${request.model.id} is not a transcription model; use a transcribe model such as gemini-3.5-transcribe`));
@@ -52,7 +52,8 @@ const fromRequest = (request) => Effect_1.suspend({ fromRequest: () => { return 
                 },
             }, request.providerOptions),
         }, request.http?.body) ?? {});
-    })), "GoogleTranscription.fromRequest"); } }.fromRequest);
+    }), "GoogleTranscription.fromRequest"); });
+};
 // ---------------------------------------------------------------------------
 // 6. Stream parsing
 // ---------------------------------------------------------------------------
@@ -78,32 +79,34 @@ const turn = (part) => {
             },
     };
 };
-const step = Effect_1.fnUntraced(function* step(state, frame) {
-    const chunk = yield* decodeChunk(frame);
-    const blocked = GeminiGenerateContent.blocked(route.name, chunk, frame);
-    if (blocked !== undefined)
-        return yield* Effect_1.fail(blocked);
-    const turns = (chunk.candidates?.[0]?.content?.parts ?? []).flatMap((part) => part.audioTranscription === undefined ? [] : [turn(part.audioTranscription)]);
-    const segments = turns.flatMap((item) => (item.segment === undefined ? [] : [item.segment]));
-    state.words.push(...turns.flatMap((item) => item.words));
-    state.segments.push(...segments);
-    // Each part is one whole speaker turn without surrounding whitespace, so turns join with a space.
-    const text = turns
-        .map((item) => item.text)
-        .filter((item) => item.length > 0)
-        .join(" ");
-    const delta = text.length === 0 || state.text.length === 0 ? text : ` ${text}`;
-    const withheld = state.text.length + delta.length === 0
-        ? GeminiGenerateContent.withheld(route.name, chunk, frame)
-        : undefined;
-    if (withheld !== undefined)
-        return yield* Effect_1.fail(withheld);
-    const events = [
-        ...(delta.length === 0 ? [] : [TranscriptionTextDeltaEvent.make({ delta })]),
-        ...segments.map((segment) => TranscriptionSegmentEvent.make({ segment })),
-    ];
-    return [{ ...GeminiGenerateContent.track(state, chunk), text: state.text + delta }, events];
-});
+const step = (state, frame) => {
+    return Effect_1.gen(function* step() {
+        const chunk = yield* decodeChunk(frame);
+        const blocked = GeminiGenerateContent.blocked(route.name, chunk, frame);
+        if (blocked !== undefined)
+            return yield* Effect_1.fail(blocked);
+        const turns = (chunk.candidates?.[0]?.content?.parts ?? []).flatMap((part) => part.audioTranscription === undefined ? [] : [turn(part.audioTranscription)]);
+        const segments = turns.flatMap((item) => (item.segment === undefined ? [] : [item.segment]));
+        state.words.push(...turns.flatMap((item) => item.words));
+        state.segments.push(...segments);
+        // Each part is one whole speaker turn without surrounding whitespace, so turns join with a space.
+        const text = turns
+            .map((item) => item.text)
+            .filter((item) => item.length > 0)
+            .join(" ");
+        const delta = text.length === 0 || state.text.length === 0 ? text : ` ${text}`;
+        const withheld = state.text.length + delta.length === 0
+            ? GeminiGenerateContent.withheld(route.name, chunk, frame)
+            : undefined;
+        if (withheld !== undefined)
+            return yield* Effect_1.fail(withheld);
+        const events = [
+            ...(delta.length === 0 ? [] : [TranscriptionTextDeltaEvent.make({ delta })]),
+            ...segments.map((segment) => TranscriptionSegmentEvent.make({ segment })),
+        ];
+        return [{ ...GeminiGenerateContent.track(state, chunk), text: state.text + delta }, events];
+    });
+};
 const finish = (state) => {
     if (state.finishReason === undefined)
         return Effect.fail(route.incomplete());

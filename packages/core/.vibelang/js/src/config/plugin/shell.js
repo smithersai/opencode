@@ -7,14 +7,16 @@ import { ShellSelect } from "../../shell/select.js";
 import { ConfigEntryObserver } from "./entry-observer.js";
 export const Plugin = define({
     id: "opencode.config.shell",
-    effect: Effect.fnUntraced(function* effect(ctx) {
-        const config = yield* Config.Service;
-        const shell = yield* ShellSelect.Service;
-        const loaded = yield* ConfigEntryObserver.observe(config, ctx.event, shell.reload());
-        yield* shell.transform((editor) => {
-            const configured = Config.latest(loaded.entries, "shell");
-            if (configured)
-                editor.configure(configured);
+    effect: (ctx) => {
+        return Effect.gen(function* effect() {
+            const config = yield* Config.Service;
+            const shell = yield* ShellSelect.Service;
+            const loaded = yield* ConfigEntryObserver.observe(config, ctx.event, shell.reload());
+            yield* shell.transform((editor) => {
+                const configured = Config.latest(loaded.entries, "shell");
+                if (configured)
+                    editor.configure(configured);
+            });
         });
-    }),
+    },
 });

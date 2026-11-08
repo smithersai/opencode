@@ -17,63 +17,65 @@ import { LLMRequest, ModelID, ProviderID, ProviderMetadata, ReasoningEffort, } f
 export const id = ProviderID.make("vercel-ai-gateway");
 const baseURL = "https://ai-gateway.vercel.sh/v1";
 const GatewayOptionsSchema = Schema.Struct({
-    gateway: Schema.optional(Schema.Record(Schema.String, Schema.Unknown)),
-    upstream: Schema.optional(ProviderMetadata),
-    reasoningEffort: Schema.optional(ReasoningEffort),
-    thinking: Schema.optional(Schema.Struct({
-        type: Schema.String,
-        budgetTokens: Schema.optional(Schema.Number),
-        budget_tokens: Schema.optional(Schema.Number),
-    })),
-    cacheTTL: Schema.optional(Schema.String),
-    cacheAnchorItems: Schema.optional(Schema.Number),
+    gateway: Schema.mutableKey(Schema.optional(Schema.Record(Schema.String, Schema.Unknown))),
+    upstream: Schema.mutableKey(Schema.optional(ProviderMetadata)),
+    reasoningEffort: Schema.mutableKey(Schema.optional(ReasoningEffort)),
+    thinking: Schema.mutableKey(Schema.optional(Schema.Struct({
+        type: Schema.mutableKey(Schema.String),
+        budgetTokens: Schema.mutableKey(Schema.optional(Schema.Number)),
+        budget_tokens: Schema.mutableKey(Schema.optional(Schema.Number)),
+    }))),
+    cacheTTL: Schema.mutableKey(Schema.optional(Schema.String)),
+    cacheAnchorItems: Schema.mutableKey(Schema.optional(Schema.Number)),
 });
 const decodeOptions = ProviderShared.validateWith(Schema.decodeUnknownEffect(GatewayOptionsSchema));
-const prepare = (api) => Effect.fnUntraced(function* (request) {
-    const options = yield* decodeOptions(request.providerOptions ?? {});
-    const providerOptions = (() => {
-        if (!options.upstream && !options.gateway)
-            return undefined;
-        if (!options.gateway)
-            return options.upstream;
-        return { ...options.upstream, gateway: options.gateway };
-    })();
-    switch (api) {
-        case "messages": {
-            const effort = options.reasoningEffort;
-            if (effort === undefined)
-                return { request, body: { providerOptions } };
-            const enabled = effort !== "none";
-            const thinking = request.providerOptions?.thinking ?? { type: enabled ? "adaptive" : "disabled" };
-            const next = LLMRequest.update(request, {
-                providerOptions: {
-                    ...request.providerOptions,
-                    effort: enabled ? effort : undefined,
-                    thinking,
-                },
-            });
-            return { request: next, body: { providerOptions } };
+const prepare = (api) => (request) => {
+    return Effect.gen(function* () {
+        const options = yield* decodeOptions(request.providerOptions ?? {});
+        const providerOptions = (() => {
+            if (!options.upstream && !options.gateway)
+                return undefined;
+            if (!options.gateway)
+                return options.upstream;
+            return { ...options.upstream, gateway: options.gateway };
+        })();
+        switch (api) {
+            case "messages": {
+                const effort = options.reasoningEffort;
+                if (effort === undefined)
+                    return { request, body: { providerOptions } };
+                const enabled = effort !== "none";
+                const thinking = request.providerOptions?.thinking ?? { type: enabled ? "adaptive" : "disabled" };
+                const next = LLMRequest.update(request, {
+                    providerOptions: {
+                        ...request.providerOptions,
+                        effort: enabled ? effort : undefined,
+                        thinking,
+                    },
+                });
+                return { request: next, body: { providerOptions } };
+            }
+            case "responses":
+                return {
+                    request,
+                    body: {
+                        providerOptions,
+                        cache_ttl: options.cacheTTL,
+                        cache_anchor_items: options.cacheAnchorItems,
+                    },
+                };
+            case "chat": {
+                if (!options.thinking)
+                    return { request, body: { providerOptions } };
+                const reasoning = {
+                    enabled: options.thinking.type !== "disabled",
+                    max_tokens: options.thinking.budgetTokens ?? options.thinking.budget_tokens,
+                };
+                return { request, body: { providerOptions, reasoning } };
+            }
         }
-        case "responses":
-            return {
-                request,
-                body: {
-                    providerOptions,
-                    cache_ttl: options.cacheTTL,
-                    cache_anchor_items: options.cacheAnchorItems,
-                },
-            };
-        case "chat": {
-            if (!options.thinking)
-                return { request, body: { providerOptions } };
-            const reasoning = {
-                enabled: options.thinking.type !== "disabled",
-                max_tokens: options.thinking.budgetTokens ?? options.thinking.budget_tokens,
-            };
-            return { request, body: { providerOptions, reasoning } };
-        }
-    }
-});
+    });
+};
 const route = (input) => Route.make({
     id: input.id,
     provider: id,

@@ -5,12 +5,16 @@ import { define } from "@opencode/plugin/effect/plugin";
 export function createProviderPlugin(input) {
     return define({
         id: input.id,
-        effect: Effect_1.fnUntraced(function* effect(ctx) {
-            yield* ctx.aisdk.hook("sdk", Effect_1.fnUntraced(function* (evt) {
-                if (evt.package !== input.package)
-                    return;
-                evt.sdk = yield* Effect.promise(() => input.load(evt.options));
-            }));
-        }),
+        effect: (ctx) => {
+            return Effect_1.gen(function* effect() {
+                yield* ctx.aisdk.hook("sdk", (evt) => {
+                    return Effect_1.gen(function* () {
+                        if (evt.package !== input.package)
+                            return;
+                        evt.sdk = yield* Effect.promise(() => input.load(evt.options));
+                    });
+                });
+            });
+        },
     });
 }

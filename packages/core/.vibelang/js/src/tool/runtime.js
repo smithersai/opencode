@@ -6,8 +6,9 @@ import * as JsonSchema from "effect/JsonSchema";
 import * as Schema from "effect/Schema";
 import * as SchemaIssue from "effect/SchemaIssue";
 import * as SchemaRepresentation from "effect/SchemaRepresentation";
-import { $catchExpression } from "vibelang-runtime";
+import { $catchExpression } from "vibelang-runtime/internal";
 import * as Effect_1 from "effect/Effect";
+import * as runtime from "vibelang-runtime/internal";
 import { emptyInputJsonSchema } from "@opencode/ai/effect";
 import { isRecord } from "@opencode/util/record";
 import { Tool } from "@opencode/schema/tool";
@@ -15,10 +16,12 @@ import { $ZodType, toJSONSchema } from "zod/v4/core";
 const formatEffectIssues = SchemaIssue.makeFormatterStandardSchemaV1();
 const jsonSchemas = Effect.runSync(Cache.make({
     capacity: 100,
-    lookup: (schema) => Effect_1.suspend({ lookup: () => { return $catchExpression(() => Effect.try({
+    lookup: (schema) => {
+        return Effect_1.gen(function* lookup() { return yield* runtime.$catch(yield* (() => { return Effect_1.sync(() => { return Effect.try({
             try: () => jsonSchema(schema),
             catch: () => undefined,
-        }), () => Effect_1.sync(() => { return undefined; })); } }.lookup),
+        }); }); })(), () => Effect_1.sync(() => { return undefined; })); });
+    },
 }));
 export const definition = (tool) => ({
     type: "tool",
@@ -27,43 +30,47 @@ export const definition = (tool) => ({
     inputSchema: inputJsonSchema(tool.input),
     ...(tool.output === undefined ? {} : { outputSchema: outputJsonSchema(tool.output) }),
 });
-export const execute = Effect_1.fnUntraced(function* execute(tool, input, context) {
-    const decoded = yield* decodeInput(tool, input);
-    // Tool implementations declare `Tool.Error` but plugins can fail with anything at
-    // runtime. A foreign typed failure would slip past every `catchTag("Tool.Error")`
-    // downstream and leave its call permanently unsettled, so the declared contract is
-    // enforced here at the untrusted boundary. Declines tunnel through as defects and
-    // interrupts are not errors; neither is touched.
-    const result = yield* (Effect.mapError(tool.execute(decoded, context), (error) => error instanceof Tool.Error
-        ? error
-        : new Tool.Error({
-            message: error instanceof globalThis.Error ? error.message : String(error),
-        })));
-    if (tool.output === undefined) {
-        if ("output" in result)
-            return yield* Effect.die("Tool result declared output without an output schema");
+export const execute = (tool, input, context) => {
+    return Effect_1.gen(function* execute() {
+        const decoded = yield* decodeInput(tool, input);
+        // Tool implementations declare `Tool.Error` but plugins can fail with anything at
+        // runtime. A foreign typed failure would slip past every `catchTag("Tool.Error")`
+        // downstream and leave its call permanently unsettled, so the declared contract is
+        // enforced here at the untrusted boundary. Declines tunnel through as defects and
+        // interrupts are not errors; neither is touched.
+        const result = yield* (Effect.mapError(tool.execute(decoded, context), (error) => error instanceof Tool.Error
+            ? error
+            : new Tool.Error({
+                message: error instanceof globalThis.Error ? error.message : String(error),
+            })));
+        if (tool.output === undefined) {
+            if ("output" in result)
+                return yield* Effect.die("Tool result declared output without an output schema");
+            return {
+                output: undefined,
+                content: normalizeContent(result.content),
+                ...(result.metadata === undefined ? {} : { metadata: result.metadata }),
+            };
+        }
+        if (!("output" in result))
+            return yield* Effect_1.fail(new Tool.Error({ message: "Tool did not return its declared output" }));
+        const output = yield* encodeOutput(tool.output, result.output);
         return {
-            output: undefined,
-            content: normalizeContent(result.content),
+            output,
+            content: normalizeContent(result.content, output),
             ...(result.metadata === undefined ? {} : { metadata: result.metadata }),
         };
-    }
-    if (!("output" in result))
-        return yield* Effect_1.fail(new Tool.Error({ message: "Tool did not return its declared output" }));
-    const output = yield* encodeOutput(tool.output, result.output);
-    return {
-        output,
-        content: normalizeContent(result.content, output),
-        ...(result.metadata === undefined ? {} : { metadata: result.metadata }),
-    };
-});
-const decodeInput = Effect_1.fnUntraced(function* decodeInput(tool, value) {
-    const result = yield* validateInput(tool.input, value);
-    if (result.issues) {
-        return yield* Effect_1.fail(new Tool.Error({ message: formatInputIssues(effectiveName(tool), result.issues, value) }));
-    }
-    return result.value;
-});
+    });
+};
+const decodeInput = (tool, value) => {
+    return Effect_1.gen(function* decodeInput() {
+        const result = yield* validateInput(tool.input, value);
+        if (result.issues) {
+            return yield* Effect_1.fail(new Tool.Error({ message: formatInputIssues(effectiveName(tool), result.issues, value) }));
+        }
+        return result.value;
+    });
+};
 const validateInput = (schema, value) => {
     if (isStandardSchema(schema))
         return validateStandard(schema, value);
@@ -138,7 +145,7 @@ const standardJsonSchema = (schema, io) => {
         return schema["~standard"].jsonSchema[io]({ target: "draft-2020-12" });
     if (schema instanceof $ZodType)
         return toJSONSchema(schema, { target: "draft-2020-12", io });
-    throw new Error(`Schema vendor "${schema["~standard"].vendor}" does not support JSON Schema conversion`);
+    $raise(new Error(`Schema vendor "${schema["~standard"].vendor}" does not support JSON Schema conversion`));
 };
 const toJsonSchema = (schema) => {
     const document = Schema.toJsonSchemaDocument(schema, { onExcessProperty: "error" });
@@ -252,3 +259,4 @@ export const normalizedName = (tool) => tool.name.replace(/[^a-zA-Z0-9_-]/g, "_"
 export const effectiveName = (tool) => tool.options?.namespace === undefined
     ? normalizedName(tool)
     : `${tool.options.namespace.replaceAll(".", "_")}_${normalizedName(tool)}`;
+import { raise as $raise } from "./runtime.vibe.-24-throw-24-ts.js";

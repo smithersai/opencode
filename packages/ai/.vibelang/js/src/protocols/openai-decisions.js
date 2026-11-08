@@ -3,7 +3,6 @@ import * as Effect from "effect/Effect";
 import * as Schema from "effect/Schema";
 import { withSpan } from "effect/Effect";
 import * as Effect_1 from "effect/Effect";
-import * as runtime from "vibelang-runtime";
 import { DecisionResponse, DecisionUsage, } from "../decision.js";
 import { DecisionRoute } from "../route/decision.js";
 import { Endpoint } from "../route/endpoint.js";
@@ -18,7 +17,9 @@ export const DEFAULT_BASE_URL = "https://api.openai.com/v1";
 export const PATH = "/decisions";
 const Options = Schema.Struct({
     promptCacheKey: Schema.optional(Schema.String),
-    promptCacheOptions: Schema.optional(Schema.Struct({ mode: Schema.optional(Schema.String), ttl: Schema.optional(Schema.String) })),
+    promptCacheOptions: Schema.optional(Schema.Struct({
+        mode: Schema.optional(Schema.String), ttl: Schema.optional(Schema.String),
+    })),
     safetyIdentifier: Schema.optional(Schema.String),
 });
 const Probability = Schema.Number.check(Schema.isBetween({ minimum: 0, maximum: 1 }));
@@ -47,7 +48,8 @@ const Response = Schema.Struct({
     usage: Schema.optional(OpenResponses.OpenResponsesUsage),
 });
 const decodeOptions = ProviderShared.validateWith(Schema.decodeUnknownEffect(Options));
-const fromRequest = (request) => Effect_1.suspend({ fromRequest: () => { return withSpan(Effect_1.gen(runtime.$joinedFrame(function* () {
+const fromRequest = (request) => {
+    return Effect_1.gen(function* fromRequest() { return yield* withSpan(Effect_1.gen(function* () {
         const options = yield* decodeOptions(request.providerOptions ?? {});
         const { promptCacheKey: _, promptCacheOptions: __, safetyIdentifier: ___, ...native } = request.providerOptions
             ?? {};
@@ -62,7 +64,8 @@ const fromRequest = (request) => Effect_1.suspend({ fromRequest: () => { return 
             input: [{ role: "user", content: yield* Effect.forEach(request.input, (part) => inputPart(request, part)) }],
             questions: request.questions,
         };
-    })), "OpenAIDecisions.fromRequest"); } }.fromRequest);
+    }), "OpenAIDecisions.fromRequest"); });
+};
 // `input_json` takes an object or a list of objects; other JSON values go as text.
 const inputPart = (request, part) => {
     if (part.type === "text")
@@ -91,37 +94,41 @@ export const protocol = DecisionRoute.protocol({
     name: NAME,
     body: { from: fromRequest },
     response: {
-        decode: (response, context) => Effect_1.suspend({ decode: () => { return withSpan((Effect_1.fnUntraced(function* () {
-                const output = yield* decodeDocument(response);
-                const answers = output.value.answers.map((answer) => answer.type === "refusal"
-                    ? {
-                        name: answer.name,
-                        type: "error",
-                        reason: "refusal",
-                        ...(answer.message === undefined ? {} : { message: answer.message }),
-                    }
-                    : answer);
-                const byName = new Map(answers.map((answer) => [answer.name, answer]));
-                const ordered = context.request.questions.flatMap((question) => byName.get(question.name) ?? []);
-                const usage = OpenResponses.mapUsage(output.value.usage, context.providerMetadataKey);
-                return new DecisionResponse({
-                    answers: ordered.length === answers.length ? ordered : answers,
-                    usage: usage === undefined
-                        ? undefined
-                        : new DecisionUsage({
-                            inputTokens: usage.inputTokens,
-                            outputTokens: usage.outputTokens,
-                            totalTokens: usage.totalTokens,
-                            cost: usage.cost,
-                        }),
-                    providerMetadata: {
-                        [context.providerMetadataKey]: {
-                            model: output.value.model,
-                            ...(output.value.usage === undefined ? {} : { usage: output.value.usage }),
+        decode: (response, context) => {
+            return Effect_1.gen(function* decode() { return yield* withSpan((() => {
+                return Effect_1.gen(function* () {
+                    const output = yield* decodeDocument(response);
+                    const answers = output.value.answers.map((answer) => answer.type === "refusal"
+                        ? {
+                            name: answer.name,
+                            type: "error",
+                            reason: "refusal",
+                            ...(answer.message === undefined ? {} : { message: answer.message }),
+                        }
+                        : answer);
+                    const byName = new Map(answers.map((answer) => [answer.name, answer]));
+                    const ordered = context.request.questions.flatMap((question) => byName.get(question.name) ?? []);
+                    const usage = yield* Effect.orDie(Effect.try({ try: () => OpenResponses.mapUsage(output.value.usage, context.providerMetadataKey), catch: (e) => e }));
+                    return new DecisionResponse({
+                        answers: ordered.length === answers.length ? ordered : answers,
+                        usage: usage === undefined
+                            ? undefined
+                            : new DecisionUsage({
+                                inputTokens: usage.inputTokens,
+                                outputTokens: usage.outputTokens,
+                                totalTokens: usage.totalTokens,
+                                cost: usage.cost,
+                            }),
+                        providerMetadata: {
+                            [context.providerMetadataKey]: {
+                                model: output.value.model,
+                                ...(output.value.usage === undefined ? {} : { usage: output.value.usage }),
+                            },
                         },
-                    },
+                    });
                 });
-            }))(), "OpenAIDecisions.decodeResponse"); } }.decode),
+            })(), "OpenAIDecisions.decodeResponse"); });
+        },
     },
 });
 export const route = DecisionRoute.make({

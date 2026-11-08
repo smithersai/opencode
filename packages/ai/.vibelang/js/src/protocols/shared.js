@@ -296,6 +296,7 @@ const formatContentTypes = (types) => {
     return `${types.slice(0, -1).join(", ")}, and ${types.at(-1)}`;
 };
 export const supportsContent = (part, types) => types.includes(part.type);
+/** @throws {never} */
 export const unsupportedContent = (route, role, types) => invalidRequest(`${route} ${role} messages only support ${formatContentTypes(types)} content for now`);
 /**
  * Build a `validate` step from a Schema decoder. Replaces the per-route

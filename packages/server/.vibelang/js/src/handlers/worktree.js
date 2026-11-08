@@ -9,16 +9,28 @@ import { Project } from "@opencode/core/project";
 import { ProjectNotFoundError } from "@opencode/protocol/errors";
 import { WorktreeError } from "@opencode/protocol/groups/worktree";
 import { Api } from "../api";
-export const WorktreeHandler = HttpApiBuilder.group(Api, "server.worktree", Effect_1.fnUntraced(function* (handlers) {
-    const worktrees = yield* Worktree.Service;
-    return handlers
-        .handle("worktree.list", (ctx) => worktrees.list(ctx.query).pipe(Effect.catchTag("Project.NotFoundError", missingProject)))
-        .handle("worktree.create", (ctx) => worktrees.create(ctx.payload).pipe(badRequest))
-        .handle("worktree.remove", (ctx) => worktrees.remove(ctx.payload).pipe(badRequest, Effect.as(HttpApiSchema.NoContent.make())))
-        .handle("worktree.refresh", (ctx) => worktrees.refresh(ctx.payload).pipe(badRequest, Effect.as(HttpApiSchema.NoContent.make())));
-}));
+export const WorktreeHandler = HttpApiBuilder.group(Api, "server.worktree", (handlers) => {
+    return Effect_1.gen(function* () {
+        const worktrees = yield* Worktree.Service;
+        return handlers
+            .handle("worktree.list", (ctx) => Effect.catchTag(worktrees.list(ctx.query), "Project.NotFoundError", missingProject))
+            .handle("worktree.create", (ctx) => badRequest(worktrees.create(ctx.payload)))
+            .handle("worktree.remove", (ctx) => (() => {
+            const pipe$program = worktrees.remove(ctx.payload);
+            const pipe$stage0 = badRequest;
+            const pipe$stage1 = Effect.as(HttpApiSchema.NoContent.make());
+            return pipe$stage1(pipe$stage0(pipe$program));
+        })())
+            .handle("worktree.refresh", (ctx) => (() => {
+            const pipe$program = worktrees.refresh(ctx.payload);
+            const pipe$stage0 = badRequest;
+            const pipe$stage1 = Effect.as(HttpApiSchema.NoContent.make());
+            return pipe$stage1(pipe$stage0(pipe$program));
+        })());
+    });
+});
 function badRequest(effect) {
-    return effect.pipe(Effect.mapError((error) => error._tag === "Project.NotFoundError"
+    return Effect.mapError(effect, (error) => error._tag === "Project.NotFoundError"
         ? missingProject(error)
         : new WorktreeError({
             name: "WorktreeError",
@@ -28,7 +40,7 @@ function badRequest(effect) {
                     ? error.forceRequired
                     : undefined,
             },
-        })));
+        }));
 }
 function missingProject(error) {
     return new ProjectNotFoundError({ projectID: error.projectID, message: `Project not found: ${error.projectID}` });

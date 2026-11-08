@@ -2,7 +2,7 @@
 import * as Schema from "effect/Schema";
 import { Ipc } from "@opencode/plugin/gui";
 export const WslServerConfig = Schema.Struct({
-    id: Schema.String, distro: Schema.String,
+    id: Schema.mutableKey(Schema.String), distro: Schema.mutableKey(Schema.String),
 });
 export const WslServerRuntime = Schema.Union([
     Schema.Struct({ kind: Schema.Literal("starting") }),
@@ -15,24 +15,24 @@ export const WslServerRuntime = Schema.Union([
     Schema.Struct({ kind: Schema.Literal("stopped") }),
 ]);
 export const WslJob = Schema.Union([Schema.Struct({
-        kind: Schema.Literal("runtime"), startedAt: Schema.Number,
+        kind: Schema.mutableKey(Schema.Literal("runtime")), startedAt: Schema.mutableKey(Schema.Number),
     }),
     Schema.Struct({
-        kind: Schema.Literal("distros"), startedAt: Schema.Number,
+        kind: Schema.mutableKey(Schema.Literal("distros")), startedAt: Schema.mutableKey(Schema.Number),
     }),
     Schema.Struct({
-        kind: Schema.Literal("install-wsl"), startedAt: Schema.Number,
+        kind: Schema.mutableKey(Schema.Literal("install-wsl")), startedAt: Schema.mutableKey(Schema.Number),
     }),
     Schema.Struct({
-        kind: Schema.Literal("install-distro"), distro: Schema.String, startedAt: Schema.Number,
+        kind: Schema.mutableKey(Schema.Literal("install-distro")), distro: Schema.mutableKey(Schema.String), startedAt: Schema.mutableKey(Schema.Number),
     }),
     Schema.Struct({
-        kind: Schema.Literal("probe-addable"),
-        distros: Schema.Array(Schema.String),
-        startedAt: Schema.Number,
+        kind: Schema.mutableKey(Schema.Literal("probe-addable")),
+        distros: Schema.mutableKey(Schema.Array(Schema.String)),
+        startedAt: Schema.mutableKey(Schema.Number),
     }),
     Schema.Struct({
-        kind: Schema.Literal("install-opencode"), distro: Schema.String, startedAt: Schema.Number,
+        kind: Schema.mutableKey(Schema.Literal("install-opencode")), distro: Schema.mutableKey(Schema.String), startedAt: Schema.mutableKey(Schema.Number),
     })]);
 export const WslRuntimeCheck = Schema.Struct({
     available: Schema.Boolean,
@@ -45,7 +45,7 @@ export const WslInstalledDistro = Schema.Struct({
     isDefault: Schema.Boolean,
 });
 export const WslOnlineDistro = Schema.Struct({
-    name: Schema.String, label: Schema.String,
+    name: Schema.mutableKey(Schema.String), label: Schema.mutableKey(Schema.String),
 });
 export const WslDistroProbe = Schema.Struct({
     name: Schema.String,
@@ -63,7 +63,7 @@ export const WslOpencodeCheck = Schema.Struct({
     error: Schema.NullOr(Schema.String),
 });
 export const WslServerItem = Schema.Struct({
-    config: WslServerConfig, runtime: WslServerRuntime,
+    config: Schema.mutableKey(WslServerConfig), runtime: Schema.mutableKey(WslServerRuntime),
 });
 export const WslServersState = Schema.Struct({
     runtime: Schema.NullOr(WslRuntimeCheck),
@@ -76,10 +76,10 @@ export const WslServersState = Schema.Struct({
     job: Schema.NullOr(WslJob),
 });
 const Name = Schema.Struct({
-    name: Schema.NonEmptyString,
+    name: Schema.mutableKey(Schema.NonEmptyString),
 });
 const Id = Schema.Struct({
-    id: Schema.NonEmptyString,
+    id: Schema.mutableKey(Schema.NonEmptyString),
 });
 /** WSL runtime, distros, and the OpenCode servers the main process runs inside them. */
 export const Wsl = Ipc.define({

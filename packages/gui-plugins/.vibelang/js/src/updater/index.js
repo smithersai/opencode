@@ -5,10 +5,10 @@ import { Plugin, Store } from "@opencode/plugin/gui";
 import { BuiltinStore } from "@opencode/plugin/gui/builtin";
 import en from "./i18n/en.js";
 const ReleaseNotes = Schema.Struct({
-    enabled: Schema.Boolean,
+    enabled: Schema.mutableKey(Schema.Boolean),
 });
 const Seen = Schema.Struct({
-    version: Schema.optional(Schema.String), commit: Schema.optional(Schema.String),
+    version: Schema.mutableKey(Schema.optional(Schema.String)), commit: Schema.mutableKey(Schema.optional(Schema.String)),
 });
 export default Plugin.define({
     stores: {

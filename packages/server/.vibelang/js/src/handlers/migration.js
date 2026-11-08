@@ -3,4 +3,8 @@ import * as HttpApiBuilder from "effect/http-api/HttpApiBuilder";
 import * as Effect from "effect/Effect";
 import { V1Migration } from "@opencode/core/database/v1-migration";
 import { Api } from "../api";
-export const MigrationHandler = HttpApiBuilder.group(Api, "server.migration", (handlers) => handlers.handle("migration.v1.status", () => Effect.suspend(() => { return V1Migration.status(); })));
+export const MigrationHandler = HttpApiBuilder.group(Api, "server.migration", (handlers) => handlers.handle("migration.v1.status", () => {
+    return Effect.gen(function* () {
+        return yield* V1Migration.status();
+    });
+}));

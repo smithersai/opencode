@@ -2,8 +2,9 @@
 import * as Base64 from "effect/encoding/Base64";
 import * as Effect from "effect/Effect";
 import * as Schema from "effect/Schema";
-import { $catchExpression } from "vibelang-runtime";
+import { $catchExpression } from "vibelang-runtime/internal";
 import * as Effect_1 from "effect/Effect";
+import * as runtime from "vibelang-runtime/internal";
 import { ProviderShared } from "../shared.js";
 // Bedrock Converse accepts image `format` as the file extension and
 // `source.bytes` as base64 in the JSON wire format.
@@ -66,38 +67,46 @@ function documentName(filename, names) {
     names.add(name);
     return name;
 }
-const mediaBase64 = Effect_1.fnUntraced(function* mediaBase64(part) {
-    const media = yield* ProviderShared.requireInlineMedia("Bedrock Converse", part.media);
-    const bytes = yield* $catchExpression(() => Effect.fromResult(Base64.decode(media.base64)), (cause) => Effect_1.suspend(() => { return Effect_1.fail(ProviderShared.invalidRequest("Bedrock Converse media data must be valid base64", cause)); }));
-    return Base64.encode(bytes);
-});
+const mediaBase64 = (part) => {
+    return Effect_1.gen(function* mediaBase64() {
+        const media = yield* ProviderShared.requireInlineMedia("Bedrock Converse", part.media);
+        const bytes = yield* runtime.$catch(yield* (() => { return Effect_1.sync(() => { return Effect.fromResult(Base64.decode(media.base64)); }); })(), (cause) => {
+            return Effect_1.gen(function* () {
+                return yield* Effect_1.fail(yield* Effect.orDie(Effect.try({ try: () => ProviderShared.invalidRequest("Bedrock Converse media data must be valid base64", cause), catch: (e) => e })));
+            });
+        });
+        return Base64.encode(bytes);
+    });
+};
 // Route by MIME. Known image/document formats lower into a typed block; anything
 // else fails with a clear error instead of silently degrading to a malformed
 // document block. Image MIME types not in `IMAGE_FORMATS` (e.g. `image/svg+xml`)
 // get an image-specific error so the caller knows it's a format-support issue,
 // not a kind-detection issue.
-export const lower = Effect_1.fnUntraced(function* lower(part, documentNames) {
-    const mime = part.media.mediaType.toLowerCase();
-    const imageFormat = IMAGE_FORMATS[mime];
-    if (imageFormat) {
-        return [{ image: { format: imageFormat, source: { bytes: yield* mediaBase64(part) } } }];
-    }
-    if (mime.startsWith("image/")) {
-        return yield* Effect_1.fail(ProviderShared.invalidRequest(`Bedrock Converse does not support image media type ${part.media.mediaType}`));
-    }
-    const documentFormat = DOCUMENT_FORMATS[mime];
-    if (documentFormat) {
-        const name = documentName(part.filename, documentNames);
-        const block = documentBlock(name, documentFormat, yield* mediaBase64(part));
-        return part.filename !== undefined && part.filename !== name
-            ? [
-                {
-                    text: `Attached file ${ProviderShared.encodeJson(part.filename)} has document label ${ProviderShared.encodeJson(name)}.`,
-                },
-                block,
-            ]
-            : [block];
-    }
-    return yield* Effect_1.fail(ProviderShared.invalidRequest(`Bedrock Converse does not support media type ${part.media.mediaType}`));
-});
+export const lower = (part, documentNames) => {
+    return Effect_1.gen(function* lower() {
+        const mime = part.media.mediaType.toLowerCase();
+        const imageFormat = IMAGE_FORMATS[mime];
+        if (imageFormat) {
+            return [{ image: { format: imageFormat, source: { bytes: yield* mediaBase64(part) } } }];
+        }
+        if (mime.startsWith("image/")) {
+            return yield* Effect_1.fail(yield* Effect.orDie(Effect.try({ try: () => ProviderShared.invalidRequest(`Bedrock Converse does not support image media type ${part.media.mediaType}`), catch: (e) => e })));
+        }
+        const documentFormat = DOCUMENT_FORMATS[mime];
+        if (documentFormat) {
+            const name = documentName(part.filename, documentNames);
+            const block = documentBlock(name, documentFormat, yield* mediaBase64(part));
+            return part.filename !== undefined && part.filename !== name
+                ? [
+                    {
+                        text: `Attached file ${ProviderShared.encodeJson(part.filename)} has document label ${ProviderShared.encodeJson(name)}.`,
+                    },
+                    block,
+                ]
+                : [block];
+        }
+        return yield* Effect_1.fail(yield* Effect.orDie(Effect.try({ try: () => ProviderShared.invalidRequest(`Bedrock Converse does not support media type ${part.media.mediaType}`), catch: (e) => e })));
+    });
+};
 export * as BedrockMedia from "./bedrock-media.js";

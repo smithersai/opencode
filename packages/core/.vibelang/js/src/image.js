@@ -2,7 +2,7 @@
 import * as Layer from "effect/Layer";
 import { withSpan } from "effect/Effect";
 import * as Effect_1 from "effect/Effect";
-import * as runtime from "vibelang-runtime";
+import * as runtime from "vibelang-runtime/internal";
 export * as Image from "./image.js";
 import { makeLocationNode } from "@opencode/util/effect/app-node";
 import { Effect, Schema } from "effect";
@@ -61,10 +61,12 @@ const layer = Layer.effect(Service, Effect_1.gen(function* () {
         try: () => import("./image/photon.js"),
         catch: () => new ResizerUnavailableError(),
     }), (adapter) => adapter.make));
-    const normalize = (resource, content) => Effect_1.suspend({ normalize: () => { return withSpan(Effect_1.gen(function* () {
-            const normalize = yield* loadAdapter;
-            return yield* normalize(resource, content, yield* Effect.orDie(Effect.try({ try: () => state.get(), catch: (e) => e })));
-        }), "Image.normalize"); } }.normalize);
+    const normalize = (resource, content) => {
+        return Effect_1.gen({ *normalize() { return yield* withSpan(Effect_1.gen(function* () {
+                const normalize = yield* loadAdapter;
+                return yield* normalize(resource, content, yield* Effect.orDie(Effect.try({ try: () => state.get(), catch: (e) => e })));
+            }), "Image.normalize"); } }.normalize);
+    };
     return Service.of({ transform: state.transform, reload: state.reload, normalize });
 }));
 export const node = makeLocationNode({ service: Service, layer, deps: [] });

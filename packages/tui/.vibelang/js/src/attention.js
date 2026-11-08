@@ -3,6 +3,7 @@ import * as Schema from "effect/Schema";
 import { Config } from "./config/index.jsx";
 import stripAnsi from "strip-ansi";
 import * as TuiAudio from "./audio.js";
+import * as $platform from "./attention.platform.js";
 import { defaultSoundPath, questionSoundPath, permissionSoundPath, errorSoundPath, subagentDoneSoundPath, } from "#attention-sounds";
 const DEFAULT_TITLE = "OpenCode";
 const TITLE_LIMIT = 80;
@@ -76,7 +77,7 @@ export function createTuiAttention(input) {
         try {
             for (const file of soundCandidates(name)) {
                 const current = await audio.loadSoundFile(file).catch((error) => {
-                    console.debug("failed to load attention sound", { file, error });
+                    $platform.debug("failed to load attention sound", { file, error });
                     return null;
                 });
                 if (disposed)
@@ -89,7 +90,7 @@ export function createTuiAttention(input) {
             return false;
         }
         catch (error) {
-            console.debug("failed to play attention sound", { error });
+            $platform.debug("failed to play attention sound", { error });
             return false;
         }
     }
@@ -113,7 +114,7 @@ export function createTuiAttention(input) {
                             return input.renderer.triggerNotification(message, normalizeText(request.title, DEFAULT_TITLE, TITLE_LIMIT));
                         }
                         catch (error) {
-                            console.debug("failed to trigger attention notification", { error });
+                            $platform.debug("failed to trigger attention notification", { error });
                             return false;
                         }
                     })()
@@ -138,7 +139,7 @@ export function createTuiAttention(input) {
                 };
             }
             catch (error) {
-                console.debug("failed to handle attention notification", { error });
+                $platform.debug("failed to handle attention notification", { error });
                 return {
                     ok: false,
                     notification: false,

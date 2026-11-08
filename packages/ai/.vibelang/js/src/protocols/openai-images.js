@@ -4,9 +4,9 @@ import * as Schema from "effect/Schema";
 import * as SchemaGetter from "effect/SchemaGetter";
 import * as Stream from "effect/Stream";
 import { withSpan } from "effect/Effect";
-import { $catchExpression } from "vibelang-runtime";
+import { $catchExpression } from "vibelang-runtime/internal";
 import * as Effect_1 from "effect/Effect";
-import * as runtime from "vibelang-runtime";
+import * as runtime from "vibelang-runtime/internal";
 import { ImageFinishEvent, ImageModel, ImageOutputEvent, ImagePartialEvent, } from "../image.js";
 import { Media } from "../media.js";
 import { classifyProviderFailure } from "../provider-error.js";
@@ -139,14 +139,15 @@ const streamOptions = (request) => {
 const isEdit = (request) => (request.images?.length ?? 0) > 0;
 const isInline = (asset) => asset.source.type === "bytes" || asset.source.type === "base64";
 const reference = (asset, provider) => Effect.map(ProviderShared.mediaReference(asset, provider, route.name), (item) => (item.type === "ref" ? { file_id: item.value } : { image_url: item.value }));
-const fromRequest = (request) => Effect_1.suspend({ fromRequest: () => { return withSpan(Effect_1.gen(runtime.$joinedFrame(function* () {
+const fromRequest = (request) => {
+    return Effect_1.gen(function* fromRequest() { return yield* withSpan(Effect_1.gen(function* () {
         const images = request.images ?? [];
         const mask = request.providerOptions?.mask;
         if (mask !== undefined && images.length === 0) {
-            return yield* Effect_1.fail(ProviderShared.invalidRequest("An OpenAI image mask requires at least one input image"));
+            return yield* Effect_1.fail(yield* Effect.orDie(Effect.try({ try: () => ProviderShared.invalidRequest("An OpenAI image mask requires at least one input image"), catch: (e) => e })));
         }
         if (request.providerOptions?.size !== undefined && ImageSizing.isRequested(request)) {
-            return yield* Effect_1.fail(ProviderShared.invalidRequest("OpenAI providerOptions.size replaces aspect and resolution; set one or the other"));
+            return yield* Effect_1.fail(yield* Effect.orDie(Effect.try({ try: () => ProviderShared.invalidRequest("OpenAI providerOptions.size replaces aspect and resolution; set one or the other"), catch: (e) => e })));
         }
         const chosen = size(request);
         const fields = mergeJsonRecords({
@@ -156,7 +157,7 @@ const fromRequest = (request) => Effect_1.suspend({ fromRequest: () => { return 
         }, nativeOptions(request.providerOptions), request.http?.body);
         // Owned bytes go through multipart edits; remote URLs and file IDs use the JSON edits body instead.
         if (images.length > 0 && images.every(isInline) && (mask === undefined || isInline(mask))) {
-            const form = new FormData();
+            const form = MediaInput.formData();
             MediaInput.appendFields(form, { model: request.model.id, prompt: request.prompt }, { overlay: fields, reserved: RESERVED_FORM_FIELDS });
             const uploads = yield* Effect.forEach(images, (image) => MediaInput.inlineBytes(route.id, image));
             uploads.forEach((data, index) => form.append("image[]", MediaInput.blob(data, images[index].mediaType), `image-${index}`));
@@ -173,7 +174,8 @@ const fromRequest = (request) => Effect_1.suspend({ fromRequest: () => { return 
             images: references.length === 0 ? undefined : references,
             mask: maskReference,
         }, fields) ?? {});
-    })), "OpenAIImages.fromRequest"); } }.fromRequest);
+    }), "OpenAIImages.fromRequest"); });
+};
 // ---------------------------------------------------------------------------
 // 6. Stream parsing
 // ---------------------------------------------------------------------------
@@ -193,57 +195,66 @@ const info = (format, size) => {
 const eventImage = (frame, label, data, format, size) => MediaInput.decodedAsset((message, cause) => route.frameError(message, frame, cause), label, data, `image/${format}`, {
     info: info(format, size),
 });
-const onEvent = Effect_1.fnUntraced(function* onEvent(state, frame) {
-    const event = yield* decodeEvent(frame);
-    if (event.type === "unknown")
-        return [state, []];
-    if (event.type === "error") {
-        return yield* Effect_1.fail(new AIError({
-            reason: classifyProviderFailure({
-                message: `${route.name} stream failed: ${event.error?.message ?? "unknown error"}`,
-                rawBody: frame,
-            }),
+const onEvent = (state, frame) => {
+    return Effect_1.gen(function* onEvent() {
+        const event = yield* decodeEvent(frame);
+        if (event.type === "unknown")
+            return [state, []];
+        if (event.type === "error") {
+            return yield* Effect_1.fail(new AIError({
+                reason: classifyProviderFailure({
+                    message: `${route.name} stream failed: ${event.error?.message ?? "unknown error"}`,
+                    rawBody: frame,
+                }),
+            }));
+        }
+        const format = event.output_format;
+        if ("partial_image_index" in event) {
+            const image = yield* eventImage(frame, `${route.name} partial image`, event.b64_json, format, event.size);
+            return [state, [ImagePartialEvent.make({ index: event.partial_image_index, image })]];
+        }
+        const image = yield* eventImage(frame, `${route.name} result ${state.completed}`, event.b64_json, format, event.size);
+        return [
+            {
+                completed: state.completed + 1,
+                format,
+                size: event.size,
+                quality: event.quality,
+                background: event.background,
+                usage: event.usage,
+            },
+            [ImageOutputEvent.make({ index: state.completed, image })],
+        ];
+    });
+};
+const onDocument = (frame) => {
+    return Effect_1.gen(function* onDocument() {
+        const invalid = (message, cause) => route.frameError(message, frame.document, cause);
+        const decoded = yield* runtime.$catch(yield* (() => { return Effect_1.sync(() => { return decodeDocument(frame.document); }); })(), (cause) => (_tail_1 => { return Effect_1.gen(function* () {
+            const _completion_1 = _tail_1(), _value_1 = _completion_1[1];
+            return _completion_1[0] ? yield* _value_1 : _value_1;
+        }); })(() => { return [true, Effect_1.fail(invalid(`${route.name} returned an invalid response`, cause))]; })
+        // Compatible hosts may omit `output_format` and ignore the requested one, so the bytes decide unreported types.
+        );
+        // Compatible hosts may omit `output_format` and ignore the requested one, so the bytes decide unreported types.
+        const format = decoded.output_format;
+        const mediaType = format === undefined ? undefined : `image/${format}`;
+        const images = yield* Effect.forEach(decoded.data, (item, index) => MediaInput.imageOutput(invalid, `${route.name} result ${index}`, item, mediaType, {
+            info: info(format, decoded.size),
         }));
-    }
-    const format = event.output_format;
-    if ("partial_image_index" in event) {
-        const image = yield* eventImage(frame, `${route.name} partial image`, event.b64_json, format, event.size);
-        return [state, [ImagePartialEvent.make({ index: event.partial_image_index, image })]];
-    }
-    const image = yield* eventImage(frame, `${route.name} result ${state.completed}`, event.b64_json, format, event.size);
-    return [
-        {
-            completed: state.completed + 1,
+        if (images.length === 0)
+            return yield* Effect_1.fail(invalid(`${route.name} returned no images`));
+        const state = {
+            completed: images.length,
             format,
-            size: event.size,
-            quality: event.quality,
-            background: event.background,
-            usage: event.usage,
-        },
-        [ImageOutputEvent.make({ index: state.completed, image })],
-    ];
-});
-const onDocument = Effect_1.fnUntraced(function* onDocument(frame) {
-    const invalid = (message, cause) => route.frameError(message, frame.document, cause);
-    const decoded = yield* $catchExpression(() => decodeDocument(frame.document), (cause) => Effect_1.suspend(() => { return Effect_1.fail(invalid(`${route.name} returned an invalid response`, cause)); }));
-    // Compatible hosts may omit `output_format` and ignore the requested one, so the bytes decide unreported types.
-    const format = decoded.output_format;
-    const mediaType = format === undefined ? undefined : `image/${format}`;
-    const images = yield* Effect.forEach(decoded.data, (item, index) => MediaInput.imageOutput(invalid, `${route.name} result ${index}`, item, mediaType, {
-        info: info(format, decoded.size),
-    }));
-    if (images.length === 0)
-        return yield* Effect_1.fail(invalid(`${route.name} returned no images`));
-    const state = {
-        completed: images.length,
-        format,
-        size: decoded.size,
-        quality: decoded.quality,
-        background: decoded.background,
-        usage: decoded.usage,
-    };
-    return [state, images.map((image, index) => ImageOutputEvent.make({ index, image }))];
-});
+            size: decoded.size,
+            quality: decoded.quality,
+            background: decoded.background,
+            usage: decoded.usage,
+        };
+        return [state, images.map((image, index) => ImageOutputEvent.make({ index, image }))];
+    });
+};
 const step = (state, frame) => (typeof frame === "string" ? onEvent(state, frame) : onDocument(frame));
 const finish = (state, context) => {
     if (state.completed === 0)

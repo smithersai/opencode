@@ -5,12 +5,16 @@ import { Npm } from "@opencode/util/npm";
 import { loadSDKFactory } from "./sdk-factory.js";
 export const DynamicProviderPlugin = define({
     id: "opencode.provider.dynamic",
-    effect: Effect.fnUntraced(function* effect(ctx) {
-        const npm = yield* Npm.Service;
-        yield* ctx.aisdk.hook("sdk", Effect.fnUntraced(function* (evt) {
-            if (evt.sdk)
-                return;
-            evt.sdk = (yield* loadSDKFactory(npm, evt.package))(evt.options);
-        }));
-    }),
+    effect: (ctx) => {
+        return Effect.gen(function* effect() {
+            const npm = yield* Npm.Service;
+            yield* ctx.aisdk.hook("sdk", (evt) => {
+                return Effect.gen(function* () {
+                    if (evt.sdk)
+                        return;
+                    evt.sdk = (yield* loadSDKFactory(npm, evt.package))(evt.options);
+                });
+            });
+        });
+    },
 });

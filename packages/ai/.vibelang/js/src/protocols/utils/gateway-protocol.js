@@ -3,7 +3,6 @@ import * as Effect from "effect/Effect";
 import * as Option from "effect/Option";
 import * as Schema from "effect/Schema";
 import * as Effect_1 from "effect/Effect";
-import * as runtime from "vibelang-runtime";
 import { Protocol } from "../../route/protocol.js";
 import { LLMEvent, mergeJsonRecords } from "../../schema/index.js";
 import { JsonObject, lenient } from "../shared.js";
@@ -34,25 +33,29 @@ export function gatewayProtocol(protocol, input) {
         id: input.id,
         body: {
             schema: JsonObject,
-            from: Effect_1.fnUntraced({ *"from"(request) {
-                    const prepared = yield* input.prepare(request);
-                    const body = yield* protocol.body.from(prepared.request);
-                    return { ...body, ...prepared.body };
-                } }["from"]),
+            from: (request) => {
+                return Effect_1.gen({ *"from"() {
+                        const prepared = yield* input.prepare(request);
+                        const body = yield* protocol.body.from(prepared.request);
+                        return { ...body, ...prepared.body };
+                    } }["from"]);
+            },
         },
         supportsEffortUpdates: protocol.supportsEffortUpdates,
         sanitizer: protocol.sanitizer,
         stream: {
             event: protocol.stream.event,
             initial,
-            step: Effect_1.fnUntraced(runtime.$joinedFrame(function* step(state, event) {
-                const decoded = Option.getOrUndefined(decodeGatewayEvent(event));
-                const gateway = decoded
-                    ? mergeJsonRecords(state.gateway, decoded.provider_metadata?.gateway, decoded.response?.provider_metadata?.gateway, ...(decoded.choices ?? []).map((choice) => choice.delta?.provider_metadata?.gateway))
-                    : state.gateway;
-                const [inner, events] = yield* protocol.stream.step(state.inner, event);
-                return [{ inner, gateway }, attachGatewayMetadata(events, gateway)];
-            })),
+            step: (state, event) => {
+                return Effect_1.gen(function* step() {
+                    const decoded = Option.getOrUndefined(decodeGatewayEvent(event));
+                    const gateway = decoded
+                        ? mergeJsonRecords(state.gateway, decoded.provider_metadata?.gateway, decoded.response?.provider_metadata?.gateway, ...(decoded.choices ?? []).map((choice) => choice.delta?.provider_metadata?.gateway))
+                        : state.gateway;
+                    const [inner, events] = yield* protocol.stream.step(state.inner, event);
+                    return [{ inner, gateway }, attachGatewayMetadata(events, gateway)];
+                });
+            },
             terminal: protocol.stream.terminal,
             onHalt: onHalt
                 ? (state) => Effect.map(onHalt(state.inner), (events) => attachGatewayMetadata(events, state.gateway))

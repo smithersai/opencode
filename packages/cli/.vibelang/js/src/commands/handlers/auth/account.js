@@ -4,7 +4,8 @@ import * as Effect from "effect/Effect";
 import { autocomplete } from "@clack/prompts";
 import { prompt } from "../../../ui/prompt.js";
 import { resolveIntegration } from "./shared.js";
-export const chooseIntegration = (integrations, target) => Effect.suspend({ chooseIntegration: () => { return withSpan(Effect.gen(function* () {
+export const chooseIntegration = (integrations, target) => {
+    return Effect.gen(function* chooseIntegration() { return yield* withSpan(Effect.gen(function* () {
         if (target)
             return yield* resolveIntegration(integrations, target);
         const configured = integrations.filter((integration) => integration.connections.some((connection) => connection.type === "credential"));
@@ -23,8 +24,10 @@ export const chooseIntegration = (integrations, target) => Effect.suspend({ choo
             })),
         }));
         return yield* resolveIntegration(configured, id);
-    }), "cli.auth.account.integration"); } }.chooseIntegration);
-export const chooseCredential = (integration, action, target) => Effect.suspend({ chooseCredential: () => { return withSpan(Effect.gen(function* () {
+    }), "cli.auth.account.integration"); });
+};
+export const chooseCredential = (integration, action, target) => {
+    return Effect.gen(function* chooseCredential() { return yield* withSpan(Effect.gen(function* () {
         const credentials = integration.connections.filter((connection) => connection.type === "credential");
         if (credentials.length === 0) {
             const environment = integration.connections
@@ -56,4 +59,5 @@ export const chooseCredential = (integration, action, target) => Effect.suspend(
                 hint: credential.id,
             })),
         }));
-    }), "cli.auth.account.credential"); } }.chooseCredential);
+    }), "cli.auth.account.credential"); });
+};

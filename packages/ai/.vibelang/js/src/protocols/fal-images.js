@@ -2,7 +2,6 @@
 import * as Schema from "effect/Schema";
 import { forEach, withSpan } from "effect/Effect";
 import * as Effect from "effect/Effect";
-import * as runtime from "vibelang-runtime";
 import { ImageModel, ImageResponse } from "../image.js";
 import { Media } from "../media.js";
 import { MediaProtocol } from "../route/media-protocol.js";
@@ -38,21 +37,26 @@ const sizing = (model) => {
         return "image_size";
     return undefined;
 };
-const validate = Effect.fnUntraced(function* validate(request) {
-    const id = request.model.id;
-    if (request.resolution !== undefined && sizing(id) === "aspect_ratio") {
-        return yield* Effect.fail(route.unsupported("media.resolution", `${id} sizes by aspect only`));
-    }
-    if ((request.images?.length ?? 0) > 1 && !takesImageList(id)) {
-        return yield* Effect.fail(route.unsupported("media.images", `${id} takes one image_url; use an /edit or /multi endpoint for several images`));
-    }
-});
+const validate = (request) => {
+    return Effect.gen(function* validate() {
+        const id = request.model.id;
+        if (request.resolution !== undefined && sizing(id) === "aspect_ratio") {
+            return yield* Effect.fail(route.unsupported("media.resolution", `${id} sizes by aspect only`));
+        }
+        if ((request.images?.length ?? 0) > 1 && !takesImageList(id)) {
+            return yield* Effect.fail(route.unsupported("media.images", `${id} takes one image_url; use an /edit or /multi endpoint for several images`));
+        }
+    });
+};
 // `/edit` and `/multi` (Kontext) endpoints take an `image_urls` list; image-to-image, fill, and Ultra take one
 // `image_url` (beside `mask_url`).
 const takesImageList = (model) => model.endsWith("/edit") || model.endsWith("/multi");
-const fromRequest = (request) => Effect.suspend({ fromRequest: () => { return withSpan(Effect.gen(runtime.$joinedFrame(function* () {
+const fromRequest = (request) => {
+    return Effect.gen(function* fromRequest() { return yield* withSpan(Effect.gen(function* () {
         yield* validate(request);
-        const images = yield* forEach(request.images ?? [], (image) => Effect.suspend(() => { return FalQueue.mediaUrl(image, route.name); }));
+        const images = yield* forEach(request.images ?? [], (image) => {
+            return Effect.gen(function* () { return yield* FalQueue.mediaUrl(image, route.name); });
+        });
         const list = takesImageList(request.model.id);
         const { mask, ...native } = request.providerOptions ?? {};
         const field = sizing(request.model.id);
@@ -66,12 +70,14 @@ const fromRequest = (request) => Effect.suspend({ fromRequest: () => { return wi
             image_url: list ? undefined : images[0],
             mask_url: mask === undefined ? undefined : yield* FalQueue.mediaUrl(mask, route.name),
         }, native, request.http?.body) ?? {});
-    })), "FalImages.fromRequest"); } }.fromRequest);
+    }), "FalImages.fromRequest"); });
+};
 // ---------------------------------------------------------------------------
 // 6. Response decoding
 // ---------------------------------------------------------------------------
 const decodeQueueResult = route.decodeJson(QueueResult);
-const decodeResult = (response, context) => Effect.suspend({ decodeResult: () => { return withSpan(Effect.gen(function* () {
+const decodeResult = (response, context) => {
+    return Effect.gen(function* decodeResult() { return yield* withSpan(Effect.gen(function* () {
         const output = yield* decodeQueueResult(response);
         const { images, seed, ...rest } = output.value;
         if (images.length === 0)
@@ -85,7 +91,8 @@ const decodeResult = (response, context) => Effect.suspend({ decodeResult: () =>
             }),
             providerMetadata: { fal: { requestId: context.token.requestID, seed: seed ?? undefined, ...rest } },
         });
-    }), "FalImages.decodeResult"); } }.decodeResult);
+    }), "FalImages.decodeResult"); });
+};
 // ---------------------------------------------------------------------------
 // 7. Protocol and route
 // ---------------------------------------------------------------------------

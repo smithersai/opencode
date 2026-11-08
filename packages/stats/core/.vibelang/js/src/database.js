@@ -50,7 +50,8 @@ export class MigrationError extends Error {
         this.name = "MigrationError";
     }
 }
-export const migrate = () => Effect_1.suspend({ migrate: () => { return withSpan(Effect_1.gen(function* () {
+export const migrate = () => {
+    return Effect_1.gen(function* migrate() { return yield* withSpan(Effect_1.gen(function* () {
         var topic_1, topic_2;
         const settings = yield* DatabaseConfig;
         yield* ((topic_1 = Effect.logInfo("applying database migrations"), Effect.annotateLogs({ migrationsDir: settings.migrationsDir })(topic_1)));
@@ -66,5 +67,6 @@ export const migrate = () => Effect_1.suspend({ migrate: () => { return withSpan
             }));
         }
         yield* ((topic_2 = Effect.logInfo("database migrations complete"), Effect.annotateLogs({ migrationsDir: settings.migrationsDir })(topic_2)));
-    }), "Database.migrate"); } }.migrate);
+    }), "Database.migrate"); });
+};
 export const layer = Layer.mergeAll(DatabaseConfig.layer, DrizzleClient.layer.pipe(Layer.provide(DatabaseConfig.layer)));

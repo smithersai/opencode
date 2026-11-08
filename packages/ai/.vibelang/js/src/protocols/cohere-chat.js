@@ -4,7 +4,6 @@ import * as Schema from "effect/Schema";
 import * as SchemaGetter from "effect/SchemaGetter";
 import { withSpan } from "effect/Effect";
 import * as Effect_1 from "effect/Effect";
-import * as runtime from "vibelang-runtime";
 import { Route } from "../route/client.js";
 import { Endpoint } from "../route/endpoint.js";
 import { Framing } from "../route/framing.js";
@@ -29,11 +28,13 @@ const Content = Schema.Union([
 const ToolCall = Schema.Struct({
     id: Schema.String,
     type: Schema.Literal("function"),
-    function: Schema.Struct({ name: Schema.String, arguments: Schema.String }),
+    function: Schema.Struct({
+        name: Schema.String, arguments: Schema.String,
+    }),
 });
 const Message = Schema.Struct({
     role: Schema.Literals(["system", "user", "assistant", "tool"]),
-    content: Schema.optional(Schema.Union([Schema.String, Schema.Array(Content)])),
+    content: Schema.optional(Schema.Union([Schema.String, Schema.Array(Content),])),
     tool_calls: Schema.optional(Schema.Array(ToolCall)),
     tool_call_id: Schema.optional(Schema.String),
     tool_plan: Schema.optional(Schema.String),
@@ -129,9 +130,10 @@ const Event = Schema.Union([
     UnknownEvent,
 ]);
 const TOOL_CHOICE = { auto: undefined, none: "NONE", required: "REQUIRED", tool: "REQUIRED" };
-const fromRequest = (request) => Effect_1.suspend({ fromRequest: () => { return withSpan(Effect_1.gen(runtime.$iteratorFrame(runtime.$joinedFrame(function* () {
-        const options = yield* ProviderShared.validateWith(Schema.decodeUnknownEffect(Options))(request.providerOptions ?? {});
-        const flattened = ProviderShared.flattenToolRequest(request);
+const fromRequest = (request) => {
+    return Effect_1.gen(function* fromRequest() { return yield* withSpan(Effect_1.gen(function* () {
+        const options = yield* (yield* Effect.orDie(Effect.try({ try: () => ProviderShared.validateWith(Schema.decodeUnknownEffect(Options)), catch: (e) => e })))(request.providerOptions ?? {});
+        const flattened = yield* Effect.orDie(Effect.try({ try: () => ProviderShared.flattenToolRequest(request), catch: (e) => e }));
         const messages = request.system.length
             ? [
                 {
@@ -142,122 +144,68 @@ const fromRequest = (request) => Effect_1.suspend({ fromRequest: () => { return 
                 },
             ]
             : [];
-        {
-            let pending_1 = runtime.$normal;
-            try {
-                for (const message of flattened.request.messages) {
-                    try {
-                        {
-                            if (message.role === "system") {
-                                messages.push({
-                                    role: "user",
-                                    content: (yield* ProviderShared.wrappedSystemUpdate("Cohere Chat", message)).text,
-                                });
-                                continue;
-                            }
-                            if (message.role === "tool") {
-                                {
-                                    let pending_2 = runtime.$normal;
-                                    try {
-                                        for (const part of message.content) {
-                                            try {
-                                                {
-                                                    if (part.type !== "tool-result") {
-                                                        return yield* Effect_1.fail(ProviderShared.unsupportedContent("Cohere Chat", "tool", ["tool-result"]));
-                                                    }
-                                                    if (part.result.type === "content" && part.result.value.some((item) => item.type === "file")) {
-                                                        return yield* Effect_1.fail(ProviderShared.invalidRequest("Cohere Chat does not support file content in tool results"));
-                                                    }
-                                                    messages.push({ role: "tool", tool_call_id: part.id, content: ProviderShared.toolResultText(part) });
-                                                }
-                                            }
-                                            catch (thrown_1) {
-                                                pending_2 = thrown_1;
-                                                break;
-                                            }
-                                        }
-                                    }
-                                    catch (thrown_2) {
-                                        throw runtime.$finallyFailure(pending_2, thrown_2);
-                                    }
-                                    if (pending_2 !== runtime.$normal)
-                                        throw pending_2;
-                                }
-                                continue;
-                            }
-                            const content = [];
-                            const calls = [];
-                            const plans = [];
-                            {
-                                let pending_3 = runtime.$normal;
-                                try {
-                                    for (const part of message.content) {
-                                        try {
-                                            {
-                                                if (part.type === "text") {
-                                                    content.push({ type: "text", text: part.text });
-                                                    continue;
-                                                }
-                                                if (message.role === "assistant" && part.type === "reasoning") {
-                                                    if (part.providerMetadata?.cohere?.toolPlan === true)
-                                                        plans.push(part.text);
-                                                    else
-                                                        content.push({ type: "thinking", thinking: part.text });
-                                                    continue;
-                                                }
-                                                if (message.role === "assistant" && part.type === "tool-call") {
-                                                    const args = ProviderShared.encodeJson(part.input);
-                                                    calls.push({ id: part.id, type: "function", function: { name: part.name, arguments: args } });
-                                                    continue;
-                                                }
-                                                if (message.role === "user" && part.type === "media" && part.media.mediaType.startsWith("image/")) {
-                                                    const url = ProviderShared.mediaUrl(part.media)
-                                                        ?? (yield* ProviderShared.requireInlineMedia("Cohere Chat", part.media)).dataUrl;
-                                                    content.push({ type: "image_url", image_url: { url } });
-                                                    continue;
-                                                }
-                                                return yield* Effect_1.fail(ProviderShared.unsupportedContent("Cohere Chat", message.role, message.role === "user" ? ["text", "media"] : ["text", "reasoning", "tool-call"]));
-                                            }
-                                        }
-                                        catch (thrown_3) {
-                                            pending_3 = thrown_3;
-                                            break;
-                                        }
-                                    }
-                                }
-                                catch (thrown_4) {
-                                    throw runtime.$finallyFailure(pending_3, thrown_4);
-                                }
-                                if (pending_3 !== runtime.$normal)
-                                    throw pending_3;
-                            }
-                            messages.push({
-                                role: message.role,
-                                content: content.length ? content : undefined,
-                                tool_calls: calls.length ? calls : undefined,
-                                tool_plan: plans.length ? plans.join("") : undefined,
-                            });
-                        }
+        for (const message of flattened.request.messages) {
+            if (message.role === "system") {
+                messages.push({
+                    role: "user",
+                    content: (yield* ProviderShared.wrappedSystemUpdate("Cohere Chat", message)).text,
+                });
+                continue;
+            }
+            if (message.role === "tool") {
+                for (const part of message.content) {
+                    if (part.type !== "tool-result") {
+                        return yield* Effect_1.fail(ProviderShared.unsupportedContent("Cohere Chat", "tool", ["tool-result"]));
                     }
-                    catch (thrown_5) {
-                        pending_1 = thrown_5;
-                        break;
+                    if (part.result.type === "content" && part.result.value.some((item) => item.type === "file")) {
+                        return yield* Effect_1.fail(yield* Effect.orDie(Effect.try({ try: () => ProviderShared.invalidRequest("Cohere Chat does not support file content in tool results"), catch: (e) => e })));
                     }
+                    messages.push({ role: "tool", tool_call_id: part.id, content: yield* Effect.orDie(Effect.try({ try: () => ProviderShared.toolResultText(part), catch: (e) => e })) });
                 }
+                continue;
             }
-            catch (thrown_6) {
-                throw runtime.$finallyFailure(pending_1, thrown_6);
+            const content = [];
+            const calls = [];
+            const plans = [];
+            for (const part of message.content) {
+                if (part.type === "text") {
+                    content.push({ type: "text", text: part.text });
+                    continue;
+                }
+                if (message.role === "assistant" && part.type === "reasoning") {
+                    if (part.providerMetadata?.cohere?.toolPlan === true)
+                        plans.push(part.text);
+                    else
+                        content.push({ type: "thinking", thinking: part.text });
+                    continue;
+                }
+                if (message.role === "assistant" && part.type === "tool-call") {
+                    const args = ProviderShared.encodeJson(part.input);
+                    calls.push({ id: part.id, type: "function", function: { name: part.name, arguments: args } });
+                    continue;
+                }
+                if (message.role === "user" && part.type === "media" && part.media.mediaType.startsWith("image/")) {
+                    const url = (yield* Effect.orDie(Effect.try({ try: () => ProviderShared.mediaUrl(part.media), catch: (e) => e })))
+                        ?? (yield* ProviderShared.requireInlineMedia("Cohere Chat", part.media)).dataUrl;
+                    content.push({ type: "image_url", image_url: { url } });
+                    continue;
+                }
+                return yield* Effect_1.fail(ProviderShared.unsupportedContent("Cohere Chat", message.role, message.role === "user" ? ["text", "media"] : ["text", "reasoning", "tool-call"]));
             }
-            if (pending_1 !== runtime.$normal)
-                throw pending_1;
+            messages.push({
+                role: message.role,
+                content: content.length ? content : undefined,
+                tool_calls: calls.length ? calls : undefined,
+                tool_plan: plans.length ? plans.join("") : undefined,
+            });
         }
         const selected = request.toolChoice?.type === "tool" ? request.toolChoice.name : undefined;
         const tools = selected === undefined ? flattened.tools : flattened.tools.filter((tool) => tool.name === selected);
         if (selected !== undefined && tools.length === 0) {
-            return yield* Effect_1.fail(ProviderShared.invalidRequest("Cohere Chat tool choice must name an available tool"));
+            return yield* Effect_1.fail(yield* Effect.orDie(Effect.try({ try: () => ProviderShared.invalidRequest("Cohere Chat tool choice must name an available tool"), catch: (e) => e })));
         }
         if (tools.some((tool) => tool.native !== undefined)) {
-            return yield* Effect_1.fail(ProviderShared.invalidRequest("Cohere Chat does not support provider-defined tools"));
+            return yield* Effect_1.fail(yield* Effect.orDie(Effect.try({ try: () => ProviderShared.invalidRequest("Cohere Chat does not support provider-defined tools"), catch: (e) => e })));
         }
         return {
             model: request.model.id,
@@ -270,13 +218,13 @@ const fromRequest = (request) => Effect_1.suspend({ fromRequest: () => { return 
                 }))
                 : undefined,
             tool_choice: TOOL_CHOICE[request.toolChoice?.type ?? "auto"],
-            thinking: options.thinking && {
-                type: options.thinking.type ?? "enabled",
-                // Cohere rejects budgets above max_tokens; fitting also leaves room for the answer.
-                token_budget: options.thinking.tokenBudget === undefined
-                    ? undefined
-                    : ProviderShared.fitThinkingBudget(options.thinking.tokenBudget, request.generation?.maxTokens),
-            },
+            thinking: yield* Effect.orDie(Effect.try({ try: () => options.thinking && {
+                    type: options.thinking.type ?? "enabled",
+                    // Cohere rejects budgets above max_tokens; fitting also leaves room for the answer.
+                    token_budget: options.thinking.tokenBudget === undefined
+                        ? undefined
+                        : ProviderShared.fitThinkingBudget(options.thinking.tokenBudget, request.generation?.maxTokens),
+                }, catch: (e) => e })),
             max_tokens: request.generation?.maxTokens,
             temperature: request.generation?.temperature,
             p: request.generation?.topP,
@@ -286,7 +234,8 @@ const fromRequest = (request) => Effect_1.suspend({ fromRequest: () => { return 
             frequency_penalty: request.generation?.frequencyPenalty,
             presence_penalty: request.generation?.presencePenalty,
         };
-    }))), "CohereChat.fromRequest"); } }.fromRequest);
+    }), "CohereChat.fromRequest"); });
+};
 const finishReason = (raw) => {
     switch (raw) {
         case "COMPLETE":
@@ -313,71 +262,73 @@ const mapUsage = (usage) => new Usage({
     providerMetadata: { cohere: usage },
 });
 // Lifecycle deltas open blocks on demand and ends are no-ops for closed blocks, so content-start needs no handling.
-const step = Effect_1.fnUntraced(function* step(state, event) {
-    const events = [];
-    switch (event.type) {
-        case "message-start":
-            return [{
-                    ...state,
-                    lifecycle: yield* Effect.orDie(Effect.try({ try: () => Lifecycle.stepStart(state.lifecycle, events), catch: (e) => e })),
-                }, events];
-        case "content-delta": {
-            const id = String(event.index);
-            const content = event.delta.message.content;
-            const lifecycle = yield* Effect.orDie(Effect.try({
-                try: () => content.thinking !== undefined
-                    ? Lifecycle.reasoningDelta(state.lifecycle, events, id, content.thinking)
-                    : Lifecycle.textDelta(state.lifecycle, events, id, content.text ?? ""),
-                catch: (e) => e,
-            }));
-            return [{ ...state, lifecycle }, events];
+const step = (state, event) => {
+    return Effect_1.gen(function* step() {
+        const events = [];
+        switch (event.type) {
+            case "message-start":
+                return [{
+                        ...state,
+                        lifecycle: yield* Effect.orDie(Effect.try({ try: () => Lifecycle.stepStart(state.lifecycle, events), catch: (e) => e })),
+                    }, events];
+            case "content-delta": {
+                const id = String(event.index);
+                const content = event.delta.message.content;
+                const lifecycle = yield* Effect.orDie(Effect.try({
+                    try: () => content.thinking !== undefined
+                        ? Lifecycle.reasoningDelta(state.lifecycle, events, id, content.thinking)
+                        : Lifecycle.textDelta(state.lifecycle, events, id, content.text ?? ""),
+                    catch: (e) => e,
+                }));
+                return [{ ...state, lifecycle }, events];
+            }
+            case "content-end": {
+                const id = String(event.index);
+                const lifecycle = yield* Effect.orDie(Effect.try({
+                    try: () => Lifecycle.textEnd(Lifecycle.reasoningEnd(state.lifecycle, events, id), events, id),
+                    catch: (e) => e,
+                }));
+                return [{ ...state, lifecycle }, events];
+            }
+            case "tool-plan-delta": {
+                const plan = event.delta.message.tool_plan;
+                const lifecycle = yield* Effect.orDie(Effect.try({
+                    try: () => Lifecycle.reasoningDelta(state.lifecycle, events, "tool-plan", plan, {
+                        cohere: { toolPlan: true },
+                    }),
+                    catch: (e) => e,
+                }));
+                return [{ ...state, lifecycle }, events];
+            }
+            case "tool-call-start":
+            case "tool-call-delta": {
+                const call = event.delta.message.tool_calls;
+                const result = ToolStream.appendOrStart(ADAPTER, state.tools, event.index, { id: call.id, name: call.function.name, text: call.function.arguments ?? "" }, "Cohere tool call is missing id or name");
+                if (ToolStream.isError(result))
+                    return yield* Effect_1.fail(result);
+                return [{ ...state, tools: result.tools }, result.events];
+            }
+            case "tool-call-end": {
+                const result = yield* ToolStream.finish(ADAPTER, state.tools, event.index);
+                return [{ ...state, tools: result.tools }, result.events ?? []];
+            }
+            case "message-end": {
+                const pending = yield* ToolStream.finishAll(ADAPTER, state.tools);
+                events.push(...pending.events);
+                const lifecycle = yield* Effect.orDie(Effect.try({
+                    try: () => Lifecycle.finish(state.lifecycle, events, {
+                        reason: finishReason(event.delta.finish_reason),
+                        usage: event.delta.usage && mapUsage(event.delta.usage),
+                    }),
+                    catch: (e) => e,
+                }));
+                return [{ tools: pending.tools, lifecycle, finished: true }, events];
+            }
+            default:
+                return [state, events];
         }
-        case "content-end": {
-            const id = String(event.index);
-            const lifecycle = yield* Effect.orDie(Effect.try({
-                try: () => Lifecycle.textEnd(Lifecycle.reasoningEnd(state.lifecycle, events, id), events, id),
-                catch: (e) => e,
-            }));
-            return [{ ...state, lifecycle }, events];
-        }
-        case "tool-plan-delta": {
-            const plan = event.delta.message.tool_plan;
-            const lifecycle = yield* Effect.orDie(Effect.try({
-                try: () => Lifecycle.reasoningDelta(state.lifecycle, events, "tool-plan", plan, {
-                    cohere: { toolPlan: true },
-                }),
-                catch: (e) => e,
-            }));
-            return [{ ...state, lifecycle }, events];
-        }
-        case "tool-call-start":
-        case "tool-call-delta": {
-            const call = event.delta.message.tool_calls;
-            const result = ToolStream.appendOrStart(ADAPTER, state.tools, event.index, { id: call.id, name: call.function.name, text: call.function.arguments ?? "" }, "Cohere tool call is missing id or name");
-            if (ToolStream.isError(result))
-                return yield* Effect_1.fail(result);
-            return [{ ...state, tools: result.tools }, result.events];
-        }
-        case "tool-call-end": {
-            const result = yield* ToolStream.finish(ADAPTER, state.tools, event.index);
-            return [{ ...state, tools: result.tools }, result.events ?? []];
-        }
-        case "message-end": {
-            const pending = yield* ToolStream.finishAll(ADAPTER, state.tools);
-            events.push(...pending.events);
-            const lifecycle = yield* Effect.orDie(Effect.try({
-                try: () => Lifecycle.finish(state.lifecycle, events, {
-                    reason: finishReason(event.delta.finish_reason),
-                    usage: event.delta.usage && mapUsage(event.delta.usage),
-                }),
-                catch: (e) => e,
-            }));
-            return [{ tools: pending.tools, lifecycle, finished: true }, events];
-        }
-        default:
-            return [state, events];
-    }
-});
+    });
+};
 export const protocol = Protocol.make({
     id: ADAPTER,
     body: { schema: Body, from: fromRequest },

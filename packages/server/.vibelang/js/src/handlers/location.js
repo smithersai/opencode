@@ -7,17 +7,21 @@ import { Location } from "@opencode/core/location";
 import { LocationServiceMap } from "@opencode/core/location-service-map";
 import { ServiceUnavailableError } from "@opencode/protocol/errors";
 import { Api } from "../api";
-export const LocationHandler = HttpApiBuilder.group(Api, "server.location", Effect_1.fnUntraced(function* (handlers) {
-    const locations = yield* LocationServiceMap.Service;
-    return handlers
-        .handle("location.get", Effect_1.fnUntraced(function* () {
-        const location = yield* Location.Service;
-        return new Location.Info({
-            directory: location.directory,
-            project: location.project,
-        });
-    }))
-        .handle("location.reload", () => LocationServiceMap.reload().pipe(Effect.provideService(LocationServiceMap.Service, locations), Effect.catchCause((cause) => Cause.hasInterruptsOnly(cause)
-        ? Effect.failCause(Cause.fromReasons(cause.reasons.filter(Cause.isInterruptReason)))
-        : Effect.fail(new ServiceUnavailableError({ message: Cause.pretty(cause), service: "location" })))));
-}));
+export const LocationHandler = HttpApiBuilder.group(Api, "server.location", (handlers) => {
+    return Effect_1.gen(function* () {
+        const locations = yield* LocationServiceMap.Service;
+        return handlers
+            .handle("location.get", () => {
+            return Effect_1.gen(function* () {
+                const location = yield* Location.Service;
+                return new Location.Info({
+                    directory: location.directory,
+                    project: location.project,
+                });
+            });
+        })
+            .handle("location.reload", () => Effect.catchCause(Effect.provideService(LocationServiceMap.reload(), LocationServiceMap.Service, locations), (cause) => Cause.hasInterruptsOnly(cause)
+            ? Effect.failCause(Cause.fromReasons(cause.reasons.filter(Cause.isInterruptReason)))
+            : Effect.fail(new ServiceUnavailableError({ message: Cause.pretty(cause), service: "location" }))));
+    });
+});

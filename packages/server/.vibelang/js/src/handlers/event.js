@@ -7,24 +7,28 @@ import * as Effect_1 from "effect/Effect";
 import { Event } from "@opencode/schema/event";
 import { Api } from "../api";
 import { EventFeed } from "../event-feed.js";
-export const EventHandler = HttpApiBuilder.group(Api, "server.event", Effect_1.fnUntraced(function* (handlers) {
-    const feed = yield* EventFeed.Service;
-    return handlers.handleRaw("event.subscribe", Effect_1.fnUntraced(function* (ctx) {
-        const connected = {
-            id: Event.ID.create(),
-            type: "server.connected",
-            data: {},
-        };
-        const output = Stream.unwrap(Effect.map(feed
-            .subscribe(ctx.query.types), (live) => Stream.make(EventFeed.frame(connected)).pipe(Stream.concat(live))));
-        const heartbeat = Stream.tick("15 seconds").pipe(Stream.map(() => ": heartbeat\n\n"));
-        return HttpServerResponse.stream(output.pipe(Stream.merge(heartbeat, { haltStrategy: "left" }), Stream.encodeText), {
-            contentType: "text/event-stream",
-            headers: {
-                "Cache-Control": "no-cache, no-transform",
-                "X-Accel-Buffering": "no",
-                "X-Content-Type-Options": "nosniff",
-            },
+export const EventHandler = HttpApiBuilder.group(Api, "server.event", (handlers) => {
+    return Effect_1.gen(function* () {
+        const feed = yield* EventFeed.Service;
+        return handlers.handleRaw("event.subscribe", (ctx) => {
+            return Effect_1.gen(function* () {
+                const connected = {
+                    id: Event.ID.create(),
+                    type: "server.connected",
+                    data: {},
+                };
+                const output = Stream.unwrap(Effect.map(feed
+                    .subscribe(ctx.query.types), (live) => Stream.make(EventFeed.frame(connected)).pipe(Stream.concat(live))));
+                const heartbeat = Stream.tick("15 seconds").pipe(Stream.map(() => ": heartbeat\n\n"));
+                return HttpServerResponse.stream(output.pipe(Stream.merge(heartbeat, { haltStrategy: "left" }), Stream.encodeText), {
+                    contentType: "text/event-stream",
+                    headers: {
+                        "Cache-Control": "no-cache, no-transform",
+                        "X-Accel-Buffering": "no",
+                        "X-Content-Type-Options": "nosniff",
+                    },
+                });
+            });
         });
-    }));
-}));
+    });
+});

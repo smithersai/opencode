@@ -23,12 +23,14 @@ export function update(adapter, event) {
     const latestTool = (assistant, id) => assistant.content.findLast((item) => item.type === "tool" && item.id === id);
     const latestText = (assistant) => assistant.content.findLast((item) => item.type === "text");
     const latestReasoning = (assistant) => assistant.content.findLast((item) => item.type === "reasoning" && !item.time?.completed);
-    const updateOwnedAssistant = Effect_1.fnUntraced(function* updateOwnedAssistant(messageID, recipe) {
-        const assistant = yield* adapter.getAssistant(messageID);
-        if (!assistant)
-            return;
-        yield* adapter.updateAssistant(yield* Effect.orDie(Effect.try({ try: () => produce(assistant, recipe), catch: (error) => error })));
-    });
+    const updateOwnedAssistant = (messageID, recipe) => {
+        return Effect_1.gen(function* updateOwnedAssistant() {
+            const assistant = yield* adapter.getAssistant(messageID);
+            if (!assistant)
+                return;
+            yield* adapter.updateAssistant(yield* Effect.orDie(Effect.try({ try: () => produce(assistant, recipe), catch: (error) => error })));
+        });
+    };
     const clearCurrentRetry = Effect_1.gen(function* clearCurrentRetry() {
         const assistant = yield* adapter.getCurrentAssistant();
         if (!assistant?.retry)
@@ -57,40 +59,46 @@ export function update(adapter, event) {
             draft.content = castDraft(decodeAssistantContent(event.data.content));
         }),
         "session.usage.recorded": () => Effect.void,
-        "session.agent.selected": Effect_1.fnUntraced({ *"session.agent.selected"(event) {
-                const previous = event.data.previous ?? (yield* adapter.getAgent());
-                yield* adapter.appendMessage(SessionMessage.AgentSelected.make({
-                    id: yield* Effect.orDie(Effect.try({ try: () => SessionMessage.ID.fromEvent(event.id), catch: (error) => error })),
-                    type: "agent-switched",
-                    metadata: event.metadata,
-                    agent: event.data.agent,
-                    previous,
-                    time: { created },
-                }));
-            } }["session.agent.selected"]),
-        "session.model.selected": Effect_1.fnUntraced({ *"session.model.selected"(event) {
-                const previous = event.data.previous ?? (yield* adapter.getModel());
-                yield* adapter.appendMessage(SessionMessage.ModelSelected.make({
-                    id: yield* Effect.orDie(Effect.try({ try: () => SessionMessage.ID.fromEvent(event.id), catch: (error) => error })),
-                    type: "model-switched",
-                    metadata: event.metadata,
-                    model: event.data.model,
-                    previous,
-                    time: { created },
-                }));
-            } }["session.model.selected"]),
-        "session.moved": Effect_1.fnUntraced({ *"session.moved"(event) {
-                yield* adapter.appendMessage(SessionMessage.LocationSwitched.make({
-                    id: yield* Effect.orDie(Effect.try({ try: () => SessionMessage.ID.fromEvent(event.id), catch: (error) => error })),
-                    type: "location-switched",
-                    metadata: event.metadata,
-                    location: event.data.location,
-                    projectID: event.data.projectID,
-                    subpath: event.data.subpath,
-                    previous: yield* adapter.getLocation(),
-                    time: { created },
-                }));
-            } }["session.moved"]),
+        "session.agent.selected": (event) => {
+            return Effect_1.gen({ *"session.agent.selected"() {
+                    const previous = event.data.previous ?? (yield* adapter.getAgent());
+                    yield* adapter.appendMessage(SessionMessage.AgentSelected.make({
+                        id: yield* Effect.orDie(Effect.try({ try: () => SessionMessage.ID.fromEvent(event.id), catch: (error) => error })),
+                        type: "agent-switched",
+                        metadata: event.metadata,
+                        agent: event.data.agent,
+                        previous,
+                        time: { created },
+                    }));
+                } }["session.agent.selected"]);
+        },
+        "session.model.selected": (event) => {
+            return Effect_1.gen({ *"session.model.selected"() {
+                    const previous = event.data.previous ?? (yield* adapter.getModel());
+                    yield* adapter.appendMessage(SessionMessage.ModelSelected.make({
+                        id: yield* Effect.orDie(Effect.try({ try: () => SessionMessage.ID.fromEvent(event.id), catch: (error) => error })),
+                        type: "model-switched",
+                        metadata: event.metadata,
+                        model: event.data.model,
+                        previous,
+                        time: { created },
+                    }));
+                } }["session.model.selected"]);
+        },
+        "session.moved": (event) => {
+            return Effect_1.gen({ *"session.moved"() {
+                    yield* adapter.appendMessage(SessionMessage.LocationSwitched.make({
+                        id: yield* Effect.orDie(Effect.try({ try: () => SessionMessage.ID.fromEvent(event.id), catch: (error) => error })),
+                        type: "location-switched",
+                        metadata: event.metadata,
+                        location: event.data.location,
+                        projectID: event.data.projectID,
+                        subpath: event.data.subpath,
+                        previous: yield* adapter.getLocation(),
+                        time: { created },
+                    }));
+                } }["session.moved"]);
+        },
         "session.renamed": () => Effect.void,
         "session.metadata.updated": () => Effect.void,
         "session.permissions": () => Effect.void,
@@ -151,63 +159,67 @@ export function update(adapter, event) {
                 time: { created },
             }));
         },
-        "session.shell.ended": Effect_1.fnUntraced({ *"session.shell.ended"(event) {
-                const currentShell = yield* adapter.getShell(event.data.shell.id);
-                if (currentShell) {
-                    yield* adapter.updateShell(yield* Effect.orDie(Effect.try({
-                        try: () => produce(currentShell, (draft) => {
-                            draft.status = event.data.shell.status;
-                            draft.exit = event.data.shell.exit;
-                            draft.output = event.data.output;
-                            draft.time.completed = created;
-                        }),
-                        catch: (error) => error,
-                    })));
-                }
-            } }["session.shell.ended"]),
-        "session.step.started": Effect_1.fnUntraced({ *"session.step.started"(event) {
-                const existing = yield* adapter.getAssistant(event.data.assistantMessageID);
-                if (existing) {
-                    yield* adapter.updateAssistant(yield* Effect.orDie(Effect.try({
-                        try: () => produce(existing, (draft) => {
-                            draft.agent = event.data.agent;
-                            draft.model = castDraft(event.data.model);
-                            draft.retry = undefined;
-                            draft.error = undefined;
-                            draft.finish = undefined;
-                            draft.rawFinish = undefined;
-                            draft.native = undefined;
-                            draft.time.created = DateTime.makeUnsafe(event.data.started);
-                            draft.time.streamed = undefined;
-                            draft.time.completed = undefined;
-                            if (event.data.snapshot)
-                                draft.snapshot = { ...draft.snapshot, start: event.data.snapshot };
-                        }),
-                        catch: (error) => error,
-                    })));
-                    return;
-                }
-                const currentAssistant = yield* adapter.getCurrentAssistant();
-                if (currentAssistant) {
-                    yield* adapter.updateAssistant(yield* Effect.orDie(Effect.try({
-                        try: () => produce(currentAssistant, (draft) => {
-                            draft.retry = undefined;
-                            draft.time.completed = created;
-                        }),
-                        catch: (error) => error,
-                    })));
-                }
-                yield* adapter.appendMessage(SessionMessage.Assistant.make({
-                    id: event.data.assistantMessageID,
-                    type: "assistant",
-                    agent: event.data.agent,
-                    model: event.data.model,
-                    metadata: event.metadata,
-                    time: { created: DateTime.makeUnsafe(event.data.started) },
-                    content: [],
-                    snapshot: event.data.snapshot ? { start: event.data.snapshot } : undefined,
-                }));
-            } }["session.step.started"]),
+        "session.shell.ended": (event) => {
+            return Effect_1.gen({ *"session.shell.ended"() {
+                    const currentShell = yield* adapter.getShell(event.data.shell.id);
+                    if (currentShell) {
+                        yield* adapter.updateShell(yield* Effect.orDie(Effect.try({
+                            try: () => produce(currentShell, (draft) => {
+                                draft.status = event.data.shell.status;
+                                draft.exit = event.data.shell.exit;
+                                draft.output = event.data.output;
+                                draft.time.completed = created;
+                            }),
+                            catch: (error) => error,
+                        })));
+                    }
+                } }["session.shell.ended"]);
+        },
+        "session.step.started": (event) => {
+            return Effect_1.gen({ *"session.step.started"() {
+                    const existing = yield* adapter.getAssistant(event.data.assistantMessageID);
+                    if (existing) {
+                        yield* adapter.updateAssistant(yield* Effect.orDie(Effect.try({
+                            try: () => produce(existing, (draft) => {
+                                draft.agent = event.data.agent;
+                                draft.model = castDraft(event.data.model);
+                                draft.retry = undefined;
+                                draft.error = undefined;
+                                draft.finish = undefined;
+                                draft.rawFinish = undefined;
+                                draft.native = undefined;
+                                draft.time.created = DateTime.makeUnsafe(event.data.started);
+                                draft.time.streamed = undefined;
+                                draft.time.completed = undefined;
+                                if (event.data.snapshot)
+                                    draft.snapshot = { ...draft.snapshot, start: event.data.snapshot };
+                            }),
+                            catch: (error) => error,
+                        })));
+                        return;
+                    }
+                    const currentAssistant = yield* adapter.getCurrentAssistant();
+                    if (currentAssistant) {
+                        yield* adapter.updateAssistant(yield* Effect.orDie(Effect.try({
+                            try: () => produce(currentAssistant, (draft) => {
+                                draft.retry = undefined;
+                                draft.time.completed = created;
+                            }),
+                            catch: (error) => error,
+                        })));
+                    }
+                    yield* adapter.appendMessage(SessionMessage.Assistant.make({
+                        id: event.data.assistantMessageID,
+                        type: "assistant",
+                        agent: event.data.agent,
+                        model: event.data.model,
+                        metadata: event.metadata,
+                        time: { created: DateTime.makeUnsafe(event.data.started) },
+                        content: [],
+                        snapshot: event.data.snapshot ? { start: event.data.snapshot } : undefined,
+                    }));
+                } }["session.step.started"]);
+        },
         "session.step.streamed": (event) => {
             return updateOwnedAssistant(event.data.assistantMessageID, (draft) => {
                 draft.time.streamed = created;
@@ -362,54 +374,58 @@ export function update(adapter, event) {
             summary: "",
             time: { created },
         })),
-        "session.compaction.ended": Effect_1.fnUntraced({ *"session.compaction.ended"(event) {
-                const current = yield* adapter.getCompaction();
-                if (current?.status === "running") {
-                    yield* adapter.updateCompaction({
-                        ...current,
+        "session.compaction.ended": (event) => {
+            return Effect_1.gen({ *"session.compaction.ended"() {
+                    const current = yield* adapter.getCompaction();
+                    if (current?.status === "running") {
+                        yield* adapter.updateCompaction({
+                            ...current,
+                            status: "completed",
+                            metadata: event.metadata ? { ...current.metadata, ...event.metadata } : current.metadata,
+                            reason: event.data.reason,
+                            model: event.data.model,
+                            native: event.data.native,
+                            summary: event.data.text,
+                            cost: event.data.cost,
+                            tokens: event.data.tokens,
+                        });
+                        return;
+                    }
+                    yield* adapter.appendMessage(SessionMessage.Compaction.make({
+                        id: yield* Effect.orDie(Effect.try({ try: () => SessionMessage.ID.fromEvent(event.id), catch: (error) => error })),
+                        type: "compaction",
                         status: "completed",
-                        metadata: event.metadata ? { ...current.metadata, ...event.metadata } : current.metadata,
+                        metadata: event.metadata,
                         reason: event.data.reason,
                         model: event.data.model,
                         native: event.data.native,
                         summary: event.data.text,
                         cost: event.data.cost,
                         tokens: event.data.tokens,
+                        time: { created },
+                    }));
+                } }["session.compaction.ended"]);
+        },
+        "session.compaction.failed": (event) => {
+            return Effect_1.gen({ *"session.compaction.failed"() {
+                    const current = yield* adapter.getCompaction();
+                    const failed = SessionMessage.CompactionFailed.make({
+                        id: current?.id ?? event.data.inputID
+                            ?? (yield* Effect.orDie(Effect.try({ try: () => SessionMessage.ID.fromEvent(event.id), catch: (error) => error }))),
+                        type: "compaction",
+                        status: "failed",
+                        metadata: current?.metadata ?? event.metadata,
+                        reason: event.data.reason,
+                        error: event.data.error,
+                        cost: event.data.cost,
+                        tokens: event.data.tokens,
+                        time: current?.time ?? { created },
                     });
-                    return;
-                }
-                yield* adapter.appendMessage(SessionMessage.Compaction.make({
-                    id: yield* Effect.orDie(Effect.try({ try: () => SessionMessage.ID.fromEvent(event.id), catch: (error) => error })),
-                    type: "compaction",
-                    status: "completed",
-                    metadata: event.metadata,
-                    reason: event.data.reason,
-                    model: event.data.model,
-                    native: event.data.native,
-                    summary: event.data.text,
-                    cost: event.data.cost,
-                    tokens: event.data.tokens,
-                    time: { created },
-                }));
-            } }["session.compaction.ended"]),
-        "session.compaction.failed": Effect_1.fnUntraced({ *"session.compaction.failed"(event) {
-                const current = yield* adapter.getCompaction();
-                const failed = SessionMessage.CompactionFailed.make({
-                    id: current?.id ?? event.data.inputID
-                        ?? (yield* Effect.orDie(Effect.try({ try: () => SessionMessage.ID.fromEvent(event.id), catch: (error) => error }))),
-                    type: "compaction",
-                    status: "failed",
-                    metadata: current?.metadata ?? event.metadata,
-                    reason: event.data.reason,
-                    error: event.data.error,
-                    cost: event.data.cost,
-                    tokens: event.data.tokens,
-                    time: current?.time ?? { created },
-                });
-                if (current?.status === "running")
-                    return yield* adapter.updateCompaction(failed);
-                yield* adapter.appendMessage(failed);
-            } }["session.compaction.failed"]),
+                    if (current?.status === "running")
+                        return yield* adapter.updateCompaction(failed);
+                    yield* adapter.appendMessage(failed);
+                } }["session.compaction.failed"]);
+        },
         "session.revert.staged": () => Effect.void,
         "session.revert.cleared": () => Effect.void,
         "session.revert.committed": () => Effect.void,

@@ -8,7 +8,7 @@ export const traceConfig = {
     memory_dump_config: { triggers: [{ mode: "detailed", periodic_interval_ms: 1000 }] },
 };
 const Size = Schema.Struct({
-    value: Schema.String,
+    value: Schema.mutableKey(Schema.String),
 });
 const Event = Schema.Struct({
     pid: Schema.Number,

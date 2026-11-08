@@ -2,7 +2,6 @@
 import * as Effect from "effect/Effect";
 import * as Stream from "effect/Stream";
 import * as Effect_1 from "effect/Effect";
-import * as runtime from "vibelang-runtime";
 export * as CommandPlugin from "./command.js";
 import { define } from "@opencode/plugin/effect/plugin";
 import { Bus } from "../bus.js";
@@ -12,82 +11,66 @@ import PROMPT_INITIALIZE from "../../../../src/plugin/command/initialize.txt";
 import PROMPT_REVIEW from "../../../../src/plugin/command/review.txt";
 export const Plugin = define({
     id: "opencode.command",
-    effect: Effect_1.fnUntraced(runtime.$joinedFrame(function* effect(ctx) {
-        var topic_1;
-        const location = yield* Location.Service;
-        const mcp = yield* Mcp.Service;
-        const bus = yield* Bus.Service;
-        const loaded = { prompts: [] };
-        yield* ((topic_1 = Stream.runForEach(bus.subscribe(Mcp.PromptsChanged), () => Effect.andThen(Effect.tap(mcp.prompts(), (prompts) => Effect_1.sync(() => { return (loaded.prompts = prompts); })), ctx.command.reload())), Effect.forkScoped({ startImmediately: true })(topic_1)));
-        loaded.prompts = yield* mcp.prompts();
-        yield* ctx.command.transform((editor) => {
-            editor.add({
-                name: "init",
-                description: "guided AGENTS.md setup",
-                execute: (input) => Effect.asVoid(ctx.session
-                    .prompt({
-                    ...input.prompt,
-                    sessionID: input.sessionID,
-                    text: append(PROMPT_INITIALIZE.replace("${path}", location.project.directory), input.prompt.text),
-                    delivery: input.delivery,
-                })),
-            });
-            editor.add({
-                name: "review",
-                description: "review changes [commit|branch|pr], defaults to uncommitted",
-                execute: (input) => Effect.asVoid(ctx.session
-                    .prompt({
-                    ...input.prompt,
-                    sessionID: input.sessionID,
-                    text: append(PROMPT_REVIEW.replace("${path}", location.project.directory), input.prompt.text),
-                    delivery: input.delivery,
-                })),
-            });
-            {
-                let pending_1 = runtime.$normal;
-                try {
-                    for (const prompt of loaded.prompts) {
-                        try {
-                            {
-                                editor.add({
-                                    name: mcpCommandName(prompt.server, prompt.name),
-                                    description: prompt.description,
-                                    execute: (input) => Effect.asVoid(Effect_1.gen(function* () {
-                                        const args = parseArguments(input.prompt.text);
-                                        const result = yield* mcp.prompt({
-                                            server: prompt.server,
-                                            name: prompt.name,
-                                            args: Object.fromEntries((prompt.arguments ?? []).map((argument, index) => [argument.name, args[index] ?? ""])),
-                                        });
-                                        if (!result)
-                                            return yield* Effect_1.fail(new Error(`MCP prompt not found: ${prompt.server}:${prompt.name}`));
-                                        yield* ctx.session.prompt({
-                                            ...input.prompt,
-                                            sessionID: input.sessionID,
-                                            text: result.messages
-                                                .map((message) => promptMessageText(message.content))
-                                                .join("\n")
-                                                .trim(),
-                                            delivery: input.delivery,
-                                        });
-                                    })),
-                                });
-                            }
-                        }
-                        catch (thrown_1) {
-                            pending_1 = thrown_1;
-                            break;
-                        }
-                    }
+    effect: (ctx) => {
+        return Effect_1.gen(function* effect() {
+            var topic_1;
+            const location = yield* Location.Service;
+            const mcp = yield* Mcp.Service;
+            const bus = yield* Bus.Service;
+            const loaded = { prompts: [] };
+            yield* ((topic_1 = Stream.runForEach(bus.subscribe(Mcp.PromptsChanged), () => Effect.andThen(Effect.tap(mcp.prompts(), (prompts) => Effect_1.sync(() => { return (loaded.prompts = prompts); })), ctx.command.reload())), Effect.forkScoped({ startImmediately: true })(topic_1)));
+            loaded.prompts = yield* mcp.prompts();
+            yield* ctx.command.transform((editor) => {
+                editor.add({
+                    name: "init",
+                    description: "guided AGENTS.md setup",
+                    execute: (input) => Effect.asVoid(ctx.session
+                        .prompt({
+                        ...input.prompt,
+                        sessionID: input.sessionID,
+                        text: append(PROMPT_INITIALIZE.replace("${path}", location.project.directory), input.prompt.text),
+                        delivery: input.delivery,
+                    })),
+                });
+                editor.add({
+                    name: "review",
+                    description: "review changes [commit|branch|pr], defaults to uncommitted",
+                    execute: (input) => Effect.asVoid(ctx.session
+                        .prompt({
+                        ...input.prompt,
+                        sessionID: input.sessionID,
+                        text: append(PROMPT_REVIEW.replace("${path}", location.project.directory), input.prompt.text),
+                        delivery: input.delivery,
+                    })),
+                });
+                for (const prompt of loaded.prompts) {
+                    editor.add({
+                        name: mcpCommandName(prompt.server, prompt.name),
+                        description: prompt.description,
+                        execute: (input) => Effect.asVoid(Effect_1.gen(function* () {
+                            const args = parseArguments(input.prompt.text);
+                            const result = yield* mcp.prompt({
+                                server: prompt.server,
+                                name: prompt.name,
+                                args: Object.fromEntries((prompt.arguments ?? []).map((argument, index) => [argument.name, args[index] ?? ""])),
+                            });
+                            if (!result)
+                                return yield* Effect_1.fail(new Error(`MCP prompt not found: ${prompt.server}:${prompt.name}`));
+                            yield* ctx.session.prompt({
+                                ...input.prompt,
+                                sessionID: input.sessionID,
+                                text: result.messages
+                                    .map((message) => promptMessageText(message.content))
+                                    .join("\n")
+                                    .trim(),
+                                delivery: input.delivery,
+                            });
+                        })),
+                    });
                 }
-                catch (thrown_2) {
-                    throw runtime.$finallyFailure(pending_1, thrown_2);
-                }
-                if (pending_1 !== runtime.$normal)
-                    throw pending_1;
-            }
+            });
         });
-    })),
+    },
 });
 function append(template, input) {
     const value = input.trim();

@@ -3,7 +3,7 @@ import * as Layer from "effect/Layer";
 import * as Schema from "effect/Schema";
 import { withSpan } from "effect/Effect";
 import * as Effect_1 from "effect/Effect";
-import * as runtime from "vibelang-runtime";
+import * as runtime from "vibelang-runtime/internal";
 export * as ReferenceInstructions from "./instructions.js";
 import { makeLocationNode } from "@opencode/util/effect/app-node";
 import { Effect } from "effect";
@@ -58,28 +58,32 @@ export class Service extends runtime.$service("@opencode/ReferenceInstructions")
 const layer = Layer.effect(Service, Effect_1.gen(function* () {
     const references = yield* Reference.Service;
     return Service.of({
-        load: () => Effect_1.suspend({ load: () => { return withSpan((Effect_1.fnUntraced(function* () {
-                const available = (yield* references.list()).filter((reference) => reference.description !== undefined)
-                    .map((reference) => ({
-                    name: reference.name,
-                    path: reference.path,
-                    description: reference.description,
-                }))
-                    .toSorted((a, b) => a.name.localeCompare(b.name));
-                return yield* Effect.orDie(Effect.try({
-                    try: () => Instructions.make({
-                        key: Instructions.Key.make("core/reference-guidance"),
-                        codec: Schema.toCodecJson(Schema.Array(Summary)),
-                        read: Effect.succeed(available.length === 0 ? Instructions.removed : available),
-                        render: {
-                            initial: render,
-                            changed: update,
-                            removed: () => "Project reference guidance is no longer available. Do not use previously listed references.",
-                        },
-                    }),
-                    catch: (e) => e,
-                }));
-            }))(), "ReferenceInstructions.load"); } }.load),
+        load: () => {
+            return Effect_1.gen(function* load() { return yield* withSpan((() => {
+                return Effect_1.gen(function* () {
+                    const available = (yield* references.list()).filter((reference) => reference.description !== undefined)
+                        .map((reference) => ({
+                        name: reference.name,
+                        path: reference.path,
+                        description: reference.description,
+                    }))
+                        .toSorted((a, b) => a.name.localeCompare(b.name));
+                    return yield* Effect.orDie(Effect.try({
+                        try: () => Instructions.make({
+                            key: Instructions.Key.make("core/reference-guidance"),
+                            codec: Schema.toCodecJson(Schema.Array(Summary)),
+                            read: Effect.succeed(available.length === 0 ? Instructions.removed : available),
+                            render: {
+                                initial: render,
+                                changed: update,
+                                removed: () => "Project reference guidance is no longer available. Do not use previously listed references.",
+                            },
+                        }),
+                        catch: (e) => e,
+                    }));
+                });
+            })(), "ReferenceInstructions.load"); });
+        },
     });
 }));
 export const node = makeLocationNode({ service: Service, layer, deps: [Reference.node] });

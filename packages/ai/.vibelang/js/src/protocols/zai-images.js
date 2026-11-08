@@ -4,7 +4,6 @@ import * as Effect from "effect/Effect";
 import * as Schema from "effect/Schema";
 import { withSpan } from "effect/Effect";
 import * as Effect_1 from "effect/Effect";
-import * as runtime from "vibelang-runtime";
 import { ImageModel, ImageResponse } from "../image.js";
 import { MediaProtocol } from "../route/media-protocol.js";
 import { MediaRoute } from "../route/media.js";
@@ -18,17 +17,17 @@ const OUTPUT_RETENTION = Duration.days(30);
 // 2. Response schema
 // ---------------------------------------------------------------------------
 const ZAIImageResponse = Schema.Struct({
-    created: Schema.optional(Schema.Int),
-    id: Schema.optional(Schema.String),
-    request_id: Schema.optional(Schema.String),
-    data: Schema.Array(Schema.Struct({
-        url: Schema.String,
-    })),
-    content_filter: Schema.optional(Schema.Array(Schema
-        .Struct({
-        role: Schema.optional(Schema.String),
-        level: Schema.optional(Schema.Number),
+    created: Schema.mutableKey(Schema.optional(Schema.Int)),
+    id: Schema.mutableKey(Schema.optional(Schema.String)),
+    request_id: Schema.mutableKey(Schema.optional(Schema.String)),
+    data: Schema.mutableKey(Schema.Array(Schema.Struct({
+        url: Schema.mutableKey(Schema.String),
     }))),
+    content_filter: Schema.mutableKey(Schema.optional(Schema.Array(Schema
+        .Struct({
+        role: Schema.mutableKey(Schema.optional(Schema.String)),
+        level: Schema.mutableKey(Schema.optional(Schema.Number)),
+    })))),
 });
 // ---------------------------------------------------------------------------
 // 5. Request body construction
@@ -43,19 +42,22 @@ const nativeOptions = (options) => {
 const limits = (model) => model.startsWith("glm-image")
     ? { multiple: 32, minEdge: 1024, maxEdge: 2048, maxPixels: 2 ** 22 }
     : { multiple: 16, minEdge: 512, maxEdge: 2048, maxPixels: 2 ** 21 };
-const fromRequest = (request) => Effect_1.suspend({ fromRequest: () => { return withSpan(Effect_1.gen(runtime.$joinedFrame(function* () {
+const fromRequest = (request) => {
+    return Effect_1.gen(function* fromRequest() { return yield* withSpan(Effect_1.gen(function* () {
         const size = yield* ImageSizing.exact(route, request, limits(request.model.id));
         return MediaProtocol.json(mergeJsonRecords({
             model: request.model.id,
             prompt: request.prompt,
             size: size === undefined ? undefined : `${size.width}x${size.height}`,
         }, nativeOptions(request.providerOptions), request.http?.body) ?? {});
-    })), "ZAIImages.fromRequest"); } }.fromRequest);
+    }), "ZAIImages.fromRequest"); });
+};
 // ---------------------------------------------------------------------------
 // 6. Response decoding
 // ---------------------------------------------------------------------------
 const decodeDocument = route.decodeJson(ZAIImageResponse);
-const decodeResponse = (response) => Effect_1.suspend({ decodeResponse: () => { return withSpan(Effect_1.gen(function* () {
+const decodeResponse = (response) => {
+    return Effect_1.gen(function* decodeResponse() { return yield* withSpan(Effect_1.gen(function* () {
         const output = yield* decodeDocument(response);
         const decoded = output.value;
         if (decoded.data.length === 0)
@@ -72,7 +74,8 @@ const decodeResponse = (response) => Effect_1.suspend({ decodeResponse: () => { 
                 },
             },
         });
-    }), "ZAIImages.decodeResponse"); } }.decodeResponse);
+    }), "ZAIImages.decodeResponse"); });
+};
 // ---------------------------------------------------------------------------
 // 7. Protocol and route
 // ---------------------------------------------------------------------------

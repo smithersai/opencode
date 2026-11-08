@@ -23,8 +23,8 @@ export const ResponseIncludableSchema = ProviderShared.knownString();
 export const ServiceTierSchema = ServiceTier;
 export const TruncationSchema = Schema.Literals(Truncations);
 export const AllowedTools = Schema.Struct({
-    toolNames: Schema.Array(Schema.String),
-    mode: Schema.optional(Schema.Literals(["auto", "none", "required"])),
+    toolNames: Schema.mutableKey(Schema.Array(Schema.String)),
+    mode: Schema.mutableKey(Schema.optional(Schema.Literals(["auto", "none", "required"]))),
 });
 export const StreamOptions = Schema.Struct({
     includeObfuscation: Schema.optional(Schema.Boolean),

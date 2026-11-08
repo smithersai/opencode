@@ -5,7 +5,6 @@ import * as Exit from "effect/Exit";
 import * as Formatter from "effect/Formatter";
 import * as Schema from "effect/Schema";
 import * as Effect_1 from "effect/Effect";
-import * as runtime from "vibelang-runtime";
 import { toolError } from "./tool-error.js";
 import { decodeInput as decodeToolInput, decodeOutput as decodeToolOutput, identifierSegment, inputProperties, inputTypeScript, isEmptyInput, outputTypeScript, } from "./tool-schema.js";
 import { isNamespace } from "./namespace.js";
@@ -34,9 +33,9 @@ const SearchInput = Schema.Struct({
     offset: Schema.optionalKey(NonNegativeInt),
 });
 const SearchItem = Schema.Struct({
-    path: Schema.String,
-    description: Schema.String,
-    signature: Schema.String,
+    path: Schema.mutableKey(Schema.String),
+    description: Schema.mutableKey(Schema.String),
+    signature: Schema.mutableKey(Schema.String),
 });
 const SearchOutput = Schema.Struct({
     items: Schema.Array(SearchItem),
@@ -57,60 +56,23 @@ export class ToolReference {
 const toolTrie = (tools) => {
     const root = { children: new Map() };
     const insert = (node, group) => {
-        {
-            let pending_1 = runtime.$normal;
-            try {
-                for (const value_1 of Object.entries(group)) {
-                    try {
-                        const [name, value] = value_1;
-                        {
-                            let current = node;
-                            {
-                                let pending_2 = runtime.$normal;
-                                try {
-                                    for (const segment of name.split(".")) {
-                                        try {
-                                            {
-                                                if (segment === "")
-                                                    throw new TypeError(`Tool name '${name}' contains an empty segment.`);
-                                                const child = current.children.get(segment) ?? { children: new Map() };
-                                                current.children.set(segment, child);
-                                                current = child;
-                                            }
-                                        }
-                                        catch (thrown_1) {
-                                            pending_2 = thrown_1;
-                                            break;
-                                        }
-                                    }
-                                }
-                                catch (thrown_2) {
-                                    throw runtime.$finallyFailure(pending_2, thrown_2);
-                                }
-                                if (pending_2 !== runtime.$normal)
-                                    throw pending_2;
-                            }
-                            if (isTool(value))
-                                current.tool = value;
-                            else if (isNamespace(value)) {
-                                current.namespace = value;
-                                insert(current, value.tools);
-                            }
-                            else
-                                insert(current, value);
-                        }
-                    }
-                    catch (thrown_3) {
-                        pending_1 = thrown_3;
-                        break;
-                    }
-                }
+        for (const [name, value] of Object.entries(group)) {
+            let current = node;
+            for (const segment of name.split(".")) {
+                if (segment === "")
+                    $raise(new TypeError(`Tool name '${name}' contains an empty segment.`));
+                const child = current.children.get(segment) ?? { children: new Map() };
+                current.children.set(segment, child);
+                current = child;
             }
-            catch (thrown_4) {
-                throw runtime.$finallyFailure(pending_1, thrown_4);
+            if (isTool(value))
+                current.tool = value;
+            else if (isNamespace(value)) {
+                current.namespace = value;
+                insert(current, value.tools);
             }
-            if (pending_1 !== runtime.$normal)
-                throw pending_1;
+            else
+                insert(current, value);
         }
     };
     insert(root, tools);
@@ -176,37 +138,39 @@ const makeSearchTool = (searchIndex) => ({
     description: "Search available tools",
     input: SearchInput,
     output: SearchOutput,
-    execute: (input) => Effect.sync(() => {
-        const request = input;
-        const query = request.query ?? "";
-        const offset = request.offset ?? 0;
-        let ns = request.namespace;
-        if (ns !== undefined && !searchIndex.some((entry) => entry.description.path.startsWith("tools."))) {
-            if (ns === "tools")
-                ns = undefined;
-            else if (ns.startsWith("tools."))
-                ns = ns.slice("tools.".length);
-        }
-        const scoped = ns === undefined
-            ? searchIndex
-            : searchIndex.filter((entry) => entry.description.path === ns || entry.description.path.startsWith(`${ns}.`));
-        const trimmed = query.trim();
-        const pathQuery = trimmed.startsWith("tools.") ? trimmed.slice("tools.".length) : trimmed;
-        const exact = pathQuery === ""
-            ? undefined
-            : scoped.find((entry) => entry.description.path === pathQuery || toolExpression(entry.description.path) === trimmed);
-        const ranked = exact !== undefined ? [exact] : rank(scoped, query);
-        const items = ranked.slice(offset, offset + (request.limit ?? defaultSearchLimit)).map(({ description }) => ({
-            ...description,
-            path: toolExpression(description.path),
-        }));
-        const remaining = Math.max(0, ranked.length - offset - items.length);
-        return {
-            items,
-            remaining,
-            next: remaining > 0 ? { offset: offset + items.length } : null,
-        };
-    }),
+    execute: (input) => {
+        return Effect_1.gen(function* execute() {
+            const request = input;
+            const query = request.query ?? "";
+            const offset = request.offset ?? 0;
+            let ns = request.namespace;
+            if (ns !== undefined && !searchIndex.some((entry) => entry.description.path.startsWith("tools."))) {
+                if (ns === "tools")
+                    ns = undefined;
+                else if (ns.startsWith("tools."))
+                    ns = ns.slice("tools.".length);
+            }
+            const scoped = ns === undefined
+                ? searchIndex
+                : searchIndex.filter((entry) => entry.description.path === ns || entry.description.path.startsWith(`${ns}.`));
+            const trimmed = query.trim();
+            const pathQuery = trimmed.startsWith("tools.") ? trimmed.slice("tools.".length) : trimmed;
+            const exact = pathQuery === ""
+                ? undefined
+                : scoped.find((entry) => entry.description.path === pathQuery || toolExpression(entry.description.path) === trimmed);
+            const ranked = exact !== undefined ? [exact] : rank(scoped, query);
+            const items = ranked.slice(offset, offset + (request.limit ?? defaultSearchLimit)).map(({ description }) => ({
+                ...description,
+                path: toolExpression(description.path),
+            }));
+            const remaining = Math.max(0, ranked.length - offset - items.length);
+            return {
+                items,
+                remaining,
+                next: remaining > 0 ? { offset: offset + items.length } : null,
+            };
+        });
+    },
 });
 /** Exact callable signature of the built-in `search` function, for host-owned instructions. */
 export const searchSignature = (() => {
@@ -248,7 +212,7 @@ const namespaceKeys = (root, path) => {
     const segments = canonicalSegments(path);
     const node = lookup(root, segments);
     if (node === undefined) {
-        throw new ToolRuntimeError("UnknownTool", `Unknown tool namespace '${segments.join(".")}'.`);
+        $raise(new ToolRuntimeError("UnknownTool", `Unknown tool namespace '${segments.join(".")}'.`));
     }
     return Array.from(node.children.keys());
 };
@@ -259,12 +223,12 @@ const resolve = (root, path, index) => {
         const name = segments.join(".");
         const ns = segments.length > 1 && root.children.has(segments[0]) ? segments[0] : undefined;
         const closest = rank(ns ? index.filter((entry) => entry.description.path.startsWith(`${ns}.`)) : index, ns ? segments.slice(1).join(" ") : name)[0];
-        throw new ToolRuntimeError("UnknownTool", closest
+        $raise(new ToolRuntimeError("UnknownTool", closest
             ? `Unknown tool '${name}'. Did you mean ${toolExpression(closest.description.path)}?`
-            : `Unknown tool '${name}'.`, ["Use search to find available tools."]);
+            : `Unknown tool '${name}'.`, ["Use search to find available tools."]));
     }
     if (node.tool === undefined) {
-        throw new ToolRuntimeError("UnknownTool", `Tool '${segments.join(".")}' is not callable.`);
+        $raise(new ToolRuntimeError("UnknownTool", `Tool '${segments.join(".")}' is not callable.`));
     }
     return node.tool;
 };
@@ -284,43 +248,47 @@ export const make = (prepared, maxToolCalls, hooks = {}) => {
     const root = prepared.root;
     const recordCall = (call) => {
         if (maxToolCalls !== undefined && calls.length >= maxToolCalls) {
-            throw new ToolRuntimeError("ToolCallLimitExceeded", `Execution exceeded its tool-call limit of ${maxToolCalls}.`);
+            $raise(new ToolRuntimeError("ToolCallLimitExceeded", `Execution exceeded its tool-call limit of ${maxToolCalls}.`));
         }
         calls.push(call);
     };
-    const executeTool = Effect_1.fnUntraced(function* executeTool(name, tool, args) {
-        const normalized = args.length === 0 ? [{}] : args;
-        if (normalized.length !== 1) {
-            return yield* Effect.die(new ToolRuntimeError("InvalidToolInput", `Tool '${name}' expects at most one input object.`));
-        }
-        const input = yield* Effect.try({
-            try: () => decodeToolInput(tool, normalized[0]),
-            catch: (cause) => new ToolRuntimeError("InvalidToolInput", `Invalid input for tool '${name}': ${String(cause)}`, name === "search" ? [] : ["The signature may have changed. Use search to get the current signature."]),
-        });
-        yield* Effect.sync(() => recordCall({ name }));
-        return yield* hooked({ name, input }, hooks["tool.before"], hooks["tool.after"], Effect_1.gen(function* () {
-            const raw = yield* (Effect.catchCause(Effect.suspend(() => tool.execute(input)), (cause) => {
-                if (Cause.hasInterruptsOnly(cause))
-                    return Effect.interrupt;
-                return Effect.fail(toolError(Cause.prettyErrors(cause)
-                    .map((error) => (error.cause ? Formatter.format(error) : error.message || error.name))
-                    .join("\n")));
-            }));
-            // The same round trip a tool result would take through text: exact JSON.stringify semantics.
-            return yield* Effect.try({
-                try: () => {
-                    const text = JSON.stringify(decodeToolOutput(tool, raw));
-                    return text === undefined ? undefined : JSON.parse(text);
-                },
-                catch: (cause) => new ToolRuntimeError("InvalidToolOutput", `Invalid output from tool '${name}': ${cause}`),
+    const executeTool = (name, tool, args) => {
+        return Effect_1.gen(function* executeTool() {
+            const normalized = args.length === 0 ? [{}] : args;
+            if (normalized.length !== 1) {
+                return yield* Effect.die(new ToolRuntimeError("InvalidToolInput", `Tool '${name}' expects at most one input object.`));
+            }
+            const input = yield* Effect.try({
+                try: () => decodeToolInput(tool, normalized[0]),
+                catch: (cause) => new ToolRuntimeError("InvalidToolInput", `Invalid input for tool '${name}': ${String(cause)}`, name === "search" ? [] : ["The signature may have changed. Use search to get the current signature."]),
             });
-        }));
-    });
+            recordCall({ name });
+            return yield* hooked({ name, input }, hooks["tool.before"], hooks["tool.after"], Effect_1.gen(function* () {
+                const raw = yield* (Effect.catchCause(Effect_1.gen(function* () { return yield* tool.execute(input); }), (cause) => {
+                    if (Cause.hasInterruptsOnly(cause))
+                        return Effect.interrupt;
+                    return Effect.fail(toolError(Cause.prettyErrors(cause)
+                        .map((error) => (error.cause ? Formatter.format(error) : error.message || error.name))
+                        .join("\n")));
+                }));
+                // The same round trip a tool result would take through text: exact JSON.stringify semantics.
+                return yield* Effect.try({
+                    try: () => {
+                        const text = JSON.stringify(decodeToolOutput(tool, raw));
+                        return text === undefined ? undefined : JSON.parse(text);
+                    },
+                    catch: (cause) => new ToolRuntimeError("InvalidToolOutput", `Invalid output from tool '${name}': ${cause}`),
+                });
+            }));
+        });
+    };
     return {
         calls,
         hooks,
         keys: (path) => namespaceKeys(root, path),
-        search: (args) => Effect.suspend(() => executeTool("search", makeSearchTool(prepared.searchIndex), args)),
+        search: (args) => {
+            return Effect_1.gen(function* search() { return yield* executeTool("search", makeSearchTool(prepared.searchIndex), args); });
+        },
         execute: (path, args) => Effect.suspend(() => {
             const segments = canonicalSegments(path);
             // Models often write `tools.search(...)` for the bare `search(...)`; honor it unless a tool owns that path.
@@ -332,3 +300,4 @@ export const make = (prepared, maxToolCalls, hooks = {}) => {
     };
 };
 export * as ToolRuntime from "./tool-runtime.js";
+import { raise as $raise } from "./tool-runtime.vibe.-24-throw-24-ts.js";

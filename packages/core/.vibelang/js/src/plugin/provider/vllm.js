@@ -14,13 +14,15 @@ export const make = createLocalProviderPlugin({
     providerID,
     name: "vLLM",
     origin: "http://127.0.0.1:8000",
-    discover: Effect.fnUntraced(function* discover(client) {
-        yield* client.get("/health");
-        const response = yield* client.getJson("/v1/models", Response);
-        return response.data
-            .filter((model) => model.owned_by === providerID && model.id.length > 0)
-            .toSorted((a, b) => a.id.localeCompare(b.id));
-    }),
+    discover: (client) => {
+        return Effect.gen(function* discover() {
+            yield* client.get("/health");
+            const response = yield* client.getJson("/v1/models", Response);
+            return response.data
+                .filter((model) => model.owned_by === providerID && model.id.length > 0)
+                .toSorted((a, b) => a.id.localeCompare(b.id));
+        });
+    },
     // Tool calling depends on vLLM server flags and parsers that model discovery does not report.
     model: (item) => ({
         id: item.id,

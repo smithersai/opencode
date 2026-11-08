@@ -2,8 +2,8 @@
 import { migrateV1, parseThemeDocument } from "@opencode/theme/tui";
 import { resolveThemeColors } from "./resolve";
 import { DEFAULT_THEMES } from "./v1";
-import opencode from "./assets/v2/opencode.json" with { type: "json" };
-import opencode2 from "./assets/v2/opencode2.json" with { type: "json" };
+import opencode from "../../../../src/theme/assets/v2/opencode.json" with { type: "json" };
+import opencode2 from "../../../../src/theme/assets/v2/opencode2.json" with { type: "json" };
 export { DEFAULT_THEMES } from "./v1";
 let customThemes = {};
 let systemTheme;

@@ -5,13 +5,15 @@ import * as Effect_1 from "effect/Effect";
 // integration registry also holds provider/plugin integrations, whose names could collide with a server.
 // Fails when the server is unknown; returns undefined when the server has no integration (e.g. a local
 // or anonymous server), leaving that case for the caller to interpret.
-export const resolveIntegration = Effect_1.fnUntraced(function* resolveIntegration(client, name, location) {
-    const servers = yield* Effect.promise(() => client.mcp.list({ location }));
-    const server = servers.data.find((entry) => entry.name === name);
-    if (!server)
-        return yield* Effect_1.fail(new Error(`MCP server not found: ${name}`));
-    const integrationID = server.integrationID;
-    if (!integrationID)
-        return undefined;
-    return yield* (Effect.map(Effect.promise(() => client.integration.get({ integrationID, location })), (result) => result.data ?? undefined));
-});
+export const resolveIntegration = (client, name, location) => {
+    return Effect_1.gen(function* resolveIntegration() {
+        const servers = yield* Effect.promise(() => client.mcp.list({ location }));
+        const server = servers.data.find((entry) => entry.name === name);
+        if (!server)
+            return yield* Effect_1.fail(new Error(`MCP server not found: ${name}`));
+        const integrationID = server.integrationID;
+        if (!integrationID)
+            return undefined;
+        return yield* (Effect.map(Effect.promise(() => client.integration.get({ integrationID, location })), (result) => result.data ?? undefined));
+    });
+};

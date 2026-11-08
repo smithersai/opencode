@@ -11,14 +11,16 @@ import { MediaRoute } from "../route/media.js";
 import { ProviderConfigurationError, ProviderID, } from "../schema/index.js";
 import { GoogleVertexShared } from "./google-vertex-shared.js";
 export const id = ProviderID.make("google-vertex");
-const fromRequest = (request) => Effect.suspend({ fromRequest: () => { return withSpan(Effect.gen(function* () {
+const fromRequest = (request) => {
+    return Effect.gen(function* fromRequest() { return yield* withSpan(Effect.gen(function* () {
         const { serviceTier: _, ...body } = yield* Gemini.protocol.body.from(request);
         const value = request.providerOptions?.labels;
         const labels = ProviderShared.isRecord(value)
             ? Object.fromEntries(Object.entries(value).filter((entry) => typeof entry[1] === "string"))
             : undefined;
         return { ...body, labels };
-    }), "GoogleVertex.fromRequest"); } }.fromRequest);
+    }), "GoogleVertex.fromRequest"); });
+};
 const protocol = {
     ...Gemini.protocol,
     body: {
@@ -51,10 +53,10 @@ const connection = (input, modelID) => {
     const apiKey = GoogleVertexShared.apiKey(input);
     const endpointModel = modelID.startsWith("endpoints/");
     if (apiKey !== undefined && endpointModel) {
-        throw new ProviderConfigurationError({
+        $raise(new ProviderConfigurationError({
             provider: id,
             message: "Google Vertex tuned models do not support Express Mode API keys",
-        });
+        }));
     }
     const location = GoogleVertexShared.location(input.location);
     const project = GoogleVertexShared.project(input.project);
@@ -93,10 +95,10 @@ export const imageModel = (modelID, settings) => {
 };
 function config({ accessToken, apiKey, baseURL, body, headers, location, project, ...providerOptions }) {
     if (apiKey !== undefined && accessToken !== undefined) {
-        throw new ProviderConfigurationError({
+        $raise(new ProviderConfigurationError({
             provider: id,
             message: "Google Vertex apiKey cannot be combined with accessToken or auth",
-        });
+        }));
     }
     return {
         ...(apiKey === undefined ? { accessToken: accessToken } : { apiKey: apiKey }),
@@ -108,3 +110,4 @@ function config({ accessToken, apiKey, baseURL, body, headers, location, project
         providerOptions,
     };
 }
+import { raise as $raise } from "./google-vertex.vibe.-24-throw-24-ts.js";

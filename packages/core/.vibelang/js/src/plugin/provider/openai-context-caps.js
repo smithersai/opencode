@@ -2,9 +2,9 @@
 import * as Effect from "effect/Effect";
 import * as Stream from "effect/Stream";
 import { withSpan } from "effect/Effect";
-import { $catchExpression } from "vibelang-runtime";
+import { $catchExpression } from "vibelang-runtime/internal";
 import * as Effect_1 from "effect/Effect";
-import * as runtime from "vibelang-runtime";
+import * as runtime from "vibelang-runtime/internal";
 import { define } from "@opencode/plugin/effect/plugin";
 import { Bus } from "../../bus.js";
 import { Credential } from "../../credential.js";
@@ -18,50 +18,36 @@ const legacyInput = 272_000;
 const currentInput = 500_000;
 export const OpenAIContextCapsPlugin = define({
     id: "opencode.provider.openai-context-caps",
-    effect: Effect_1.fnUntraced(runtime.$joinedFrame(function* effect(ctx) {
-        var topic_1;
-        const bus = yield* Bus.Service;
-        let signedIn = false;
-        const load = () => Effect_1.suspend({ load: () => { return withSpan(Effect_1.gen(function* () {
-                const connection = yield* ctx.integration.connection.active(integrationID);
-                const credential = connection
-                    ? (yield* $catchExpression(() => ctx.integration.connection.resolve(connection), () => Effect_1.sync(() => { return undefined; })))
-                    : undefined;
-                signedIn = credential?.type === "oauth" && methodIDs.has(credential.methodID);
-            }), "OpenAIContextCapsPlugin.load"); } }.load);
-        yield* load();
-        yield* ctx.model.transform((models) => {
-            if (!signedIn)
-                return;
-            {
-                let pending_1 = runtime.$normal;
-                try {
-                    for (const model of models.list(Provider.ID.openai)) {
-                        try {
-                            {
-                                models.update(model.providerID, model.id, (draft) => {
-                                    const input = cap(draft.modelID ?? draft.id);
-                                    if ((draft.limit.input || draft.limit.context) <= input)
-                                        return;
-                                    draft.limit = { ...draft.limit, input, context: input + draft.limit.output };
-                                });
-                            }
-                        }
-                        catch (thrown_1) {
-                            pending_1 = thrown_1;
-                            break;
-                        }
-                    }
+    effect: (ctx) => {
+        return Effect_1.gen(function* effect() {
+            var topic_1;
+            const bus = yield* Bus.Service;
+            let signedIn = false;
+            const load = () => {
+                return Effect_1.gen(function* load() { return yield* withSpan(Effect_1.gen(function* () {
+                    const connection = yield* ctx.integration.connection.active(integrationID);
+                    const credential = connection
+                        ? (yield* runtime.$catch(yield* (() => { return Effect_1.sync(() => { return ctx.integration.connection.resolve(connection); }); })(), () => Effect_1.sync(() => { return undefined; })))
+                        : undefined;
+                    signedIn = credential?.type === "oauth" && methodIDs.has(credential.methodID);
+                }), "OpenAIContextCapsPlugin.load"); });
+            };
+            yield* load();
+            yield* ctx.model.transform((models) => {
+                if (!signedIn)
+                    return;
+                for (const model of models.list(Provider.ID.openai)) {
+                    models.update(model.providerID, model.id, (draft) => {
+                        const input = cap(draft.modelID ?? draft.id);
+                        if ((draft.limit.input || draft.limit.context) <= input)
+                            return;
+                        draft.limit = { ...draft.limit, input, context: input + draft.limit.output };
+                    });
                 }
-                catch (thrown_2) {
-                    throw runtime.$finallyFailure(pending_1, thrown_2);
-                }
-                if (pending_1 !== runtime.$normal)
-                    throw pending_1;
-            }
+            });
+            yield* ((topic_1 = Stream.runForEach(Stream.filter(bus.subscribe(Credential.Event.Switched), (event) => event.data.integrationID === integrationID), () => Effect.andThen(load(), ctx.provider.reload())), Effect.forkScoped({ startImmediately: true })(topic_1)));
         });
-        yield* ((topic_1 = Stream.runForEach(Stream.filter(bus.subscribe(Credential.Event.Switched), (event) => event.data.integrationID === integrationID), () => Effect.andThen(load(), ctx.provider.reload())), Effect.forkScoped({ startImmediately: true })(topic_1)));
-    })),
+    },
 });
 function cap(apiID) {
     const match = apiID.match(/^gpt-(\d+)(?:\.(\d+))?/);

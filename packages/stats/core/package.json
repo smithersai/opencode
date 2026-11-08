@@ -19,7 +19,7 @@
     "./domain/provider": "./src/domain/provider.vibe",
     "./domain/retention": "./src/domain/retention.vibe",
     "./domain/*": "./src/domain/*.ts",
-    "./r2-sql": "./src/r2-sql.ts",
+    "./r2-sql": "./src/r2-sql.vibe",
     "./runtime": "./src/runtime.vibe",
     "./stat-sync": "./src/stat-sync.ts",
     "./sync-range": {

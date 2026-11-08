@@ -4,12 +4,14 @@ import * as Effect_1 from "effect/Effect";
 export * as ConfigEntryObserver from "./entry-observer.js";
 import { Effect } from "effect";
 import { Config } from "../../config.js";
-export const observe = Effect_1.fnUntraced(function* observe(config, event, reload) {
-    var topic_1;
-    const loaded = { entries: yield* config.entries() };
-    const refresh = Effect.andThen(Effect.tap(config.entries(), (entries) => Effect_1.sync(() => { return (loaded.entries = entries); })), reload);
-    yield* ((topic_1 = Stream.runForEach(event.subscribe({ types: ["config.updated"] }), () => refresh), Effect.forkScoped({ startImmediately: true })(topic_1)));
-    // Close the race between the first read and establishing the subscription.
-    loaded.entries = yield* config.entries();
-    return loaded;
-});
+export const observe = (config, event, reload) => {
+    return Effect_1.gen(function* observe() {
+        var topic_1;
+        const loaded = { entries: yield* config.entries() };
+        const refresh = Effect.andThen(Effect.tap(config.entries(), (entries) => Effect_1.sync(() => { return (loaded.entries = entries); })), reload);
+        yield* ((topic_1 = Stream.runForEach(event.subscribe({ types: ["config.updated"] }), () => refresh), Effect.forkScoped({ startImmediately: true })(topic_1)));
+        // Close the race between the first read and establishing the subscription.
+        loaded.entries = yield* config.entries();
+        return loaded;
+    });
+};

@@ -3,7 +3,9 @@ import * as Effect from "effect/Effect";
 import * as Schema from "effect/Schema";
 import * as Stream from "effect/Stream";
 import { withSpan } from "effect/Effect";
+import { $catchExpression } from "vibelang-runtime/internal";
 import * as Effect_1 from "effect/Effect";
+import * as runtime from "vibelang-runtime/internal";
 import { tryRequest } from "./media-model.js";
 import { LLMClient, Service } from "./route/client.js";
 import { GenerationOptions, HttpOptions, InvalidProviderOutputError, AIError, LLMEvent, LLMRequest, LLMResponse, Message, LanguageModel, SystemPart, ToolChoice, ToolEntry, } from "./schema/index.js";
@@ -19,8 +21,8 @@ export function loop(input, options) {
     const { tools, until, ...rest } = input;
     const step = (request, steps) => Stream.suspend(() => {
         const events = [];
-        return LLMClient.stream(request, options).pipe(Stream.map((event) => event.type === "step-start" || event.type === "step-finish" ? { ...event, index: steps.length } : event), Stream.tap((event) => Effect.sync(() => events.push(event))), Stream.concat(Stream.unwrap(Effect_1.gen(function* () {
-            const response = LLMResponse.fromEvents(events);
+        return LLMClient.stream(request, options).pipe(Stream.map((event) => event.type === "step-start" || event.type === "step-finish" ? { ...event, index: steps.length } : event), Stream.tap((event) => Effect_1.sync(() => { return events.push(event); })), Stream.concat(Stream.unwrap(Effect_1.gen(function* () {
+            const response = yield* Effect.orDie(Effect.try({ try: () => LLMResponse.fromEvents(events), catch: (e) => e }));
             const calls = response?.toolCalls.filter((call) => call.providerExecuted !== true) ?? [];
             if (!response || calls.length === 0 || events.some(LLMEvent.is.providerError))
                 return Stream.empty;
@@ -78,7 +80,8 @@ export class GenerateObjectResponse {
         return this.response.usage;
     }
 }
-const runGenerateObject = (options, tool) => Effect_1.suspend({ runGenerateObject: () => { return withSpan(Effect_1.gen(function* () {
+const runGenerateObject = (options, tool) => {
+    return Effect_1.gen(function* runGenerateObject() { return yield* withSpan(Effect_1.gen(function* () {
         const baseRequest = request(options);
         const generateRequest = LLMRequest.update(baseRequest, {
             tools: toDefinitions({ [GENERATE_OBJECT_TOOL_NAME]: tool }),
@@ -93,14 +96,18 @@ const runGenerateObject = (options, tool) => Effect_1.suspend({ runGenerateObjec
                 }),
             }));
         }
-        const object = yield* (Effect.mapError(tool._decode(call.input), (error) => new AIError({
-            reason: new InvalidProviderOutputError({
-                message: `generateObject: tool input failed schema decode: ${error.message}`,
-                cause: error,
-            }),
-        })));
+        const object = yield* runtime.$catch(yield* (() => { return Effect_1.sync(() => { return tool._decode(call.input); }); })(), (error) => (_tail_1 => { return Effect_1.gen(function* () {
+            const _completion_1 = _tail_1(), _value_1 = _completion_1[1];
+            return _completion_1[0] ? yield* _value_1 : _value_1;
+        }); })(() => { return [true, Effect_1.fail(new AIError({
+                reason: new InvalidProviderOutputError({
+                    message: `generateObject: tool input failed schema decode: ${error.message}`,
+                    cause: error,
+                }),
+            }))]; }));
         return new GenerateObjectResponse(object, response);
-    }), "LLM.generateObject"); } }.runGenerateObject);
+    }), "LLM.generateObject"); });
+};
 export function generateObject(options) {
     if ("schema" in options) {
         const { schema, ...rest } = options;

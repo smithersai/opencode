@@ -3,8 +3,9 @@ import * as Effect from "effect/Effect";
 import * as Ref from "effect/Ref";
 import * as Schema from "effect/Schema";
 import * as Semaphore from "effect/Semaphore";
+import { $provideService } from "vibelang-runtime/internal";
 import * as Effect_1 from "effect/Effect";
-import * as runtime_1 from "vibelang-runtime";
+import * as runtime_1 from "vibelang-runtime/internal";
 export * as CodeModeTool from "./tool.js";
 import { CodeMode, Namespace, Tool } from "@opencode/codemode";
 import { definition, normalizedName } from "../tool/runtime.js";
@@ -44,31 +45,43 @@ export const create = (inventory, executeTool) => {
         description,
         input: CodeMode.Input,
         output: ExecuteOutput,
-        execute: ({ code }, context) => Effect_1.gen(runtime_1.$joinedFrame(function* () {
+        execute: ({ code }, context) => Effect_1.gen(function* () {
             const callIndex = yield* Ref.make(0);
             const files = yield* Ref.make([]);
             const calls = yield* Ref.make([]);
             const lock = Semaphore.makeUnsafe(1);
             const record = (update) => lock.withPermit(Effect.tap(Ref.updateAndGet(calls, update), (toolCalls) => context.progress({ toolCalls })));
-            const result = yield* (Effect.provideService(runtime(inventory)
-                .execute(code), Run, {
-                executeTool: Effect_1.fnUntraced({ *executeTool(name, tool, input) {
-                        const index = yield* Ref.getAndUpdate(callIndex, (index) => index + 1);
-                        const executed = yield* executeTool(name, tool, input, context);
-                        const content = typeof executed.content === "string"
-                            ? [{ type: "text", text: executed.content }]
-                            : (executed.content ?? []);
-                        const outputFileParts = outputFiles(content);
-                        if (outputFileParts.length > 0) {
-                            yield* Ref.update(files, (items) => [...items, { index, files: outputFileParts }]);
-                        }
-                        if (executed.output !== undefined)
-                            return executed.output;
-                        const text = content.flatMap((part) => (part.type === "text" ? [part.text] : [])).join("\n");
-                        return text === "" ? null : text;
-                    } }.executeTool),
-                hooks: progressHooks(record),
-            }));
+            const result = yield* Effect_1.gen(function* () {
+                let completion_1 = runtime_1.$normal;
+                yield* runtime_1.$provideEntries(Effect_1.fnUntraced(function* () {
+                    {
+                        completion_1 = { kind: "return", value: yield* runtime(inventory)
+                                .execute(code) };
+                        return completion_1.value;
+                    }
+                })(), [$provideService(Run, "Run", {
+                        executeTool: (name, tool, input) => {
+                            return Effect_1.gen({ *executeTool() {
+                                    const index = yield* Ref.getAndUpdate(callIndex, (index) => index + 1);
+                                    const executed = yield* executeTool(name, tool, input, context);
+                                    const content = typeof executed.content === "string"
+                                        ? [{ type: "text", text: executed.content }]
+                                        : (executed.content ?? []);
+                                    const outputFileParts = outputFiles(content);
+                                    if (outputFileParts.length > 0) {
+                                        yield* Ref.update(files, (items) => [...items, { index, files: outputFileParts }]);
+                                    }
+                                    if (executed.output !== undefined)
+                                        return executed.output;
+                                    const text = content.flatMap((part) => (part.type === "text" ? [part.text] : [])).join("\n");
+                                    return text === "" ? null : text;
+                                } }.executeTool);
+                        },
+                        hooks: progressHooks(record),
+                    })]);
+                if (completion_1.kind === "return")
+                    return completion_1.value;
+            });
             const toolCalls = yield* Ref.get(calls);
             const collected = (yield* Ref.get(files)).toSorted((left, right) => left.index - right.index)
                 .flatMap((item) => item.files);
@@ -97,7 +110,7 @@ export const create = (inventory, executeTool) => {
                 content,
                 metadata,
             };
-        })),
+        }),
     };
 };
 // Rows appear in start order; the same call object arrives at both hooks, so a call finds its row again.
@@ -140,51 +153,16 @@ export const catalog = (inventory) => {
         .filter((registration) => registration.options?.pinned === true)
         .map(qualifiedName));
     const root = { children: new Map() };
-    {
-        let pending_1 = runtime_1.$normal;
-        try {
-            for (const namespace of inventory.namespaces?.values() ?? []) {
-                try {
-                    getNode(root, namespace.name).namespace = namespace;
-                }
-                catch (thrown_1) {
-                    pending_1 = thrown_1;
-                    break;
-                }
-            }
-        }
-        catch (thrown_2) {
-            throw runtime_1.$finallyFailure(pending_1, thrown_2);
-        }
-        if (pending_1 !== runtime_1.$normal)
-            throw pending_1;
-    }
-    {
-        let pending_2 = runtime_1.$normal;
-        try {
-            for (const tool of runtime(inventory).catalog) {
-                try {
-                    {
-                        getNode(root, tool.path).tool = {
-                            type: "tool",
-                            name: tool.path.split(".").at(-1) ?? tool.path,
-                            description: tool.description,
-                            signature: tool.signature,
-                            pinned: pinned.has(tool.path),
-                        };
-                    }
-                }
-                catch (thrown_3) {
-                    pending_2 = thrown_3;
-                    break;
-                }
-            }
-        }
-        catch (thrown_4) {
-            throw runtime_1.$finallyFailure(pending_2, thrown_4);
-        }
-        if (pending_2 !== runtime_1.$normal)
-            throw pending_2;
+    for (const namespace of inventory.namespaces?.values() ?? [])
+        getNode(root, namespace.name).namespace = namespace;
+    for (const tool of runtime(inventory).catalog) {
+        getNode(root, tool.path).tool = {
+            type: "tool",
+            name: tool.path.split(".").at(-1) ?? tool.path,
+            description: tool.description,
+            signature: tool.signature,
+            pinned: pinned.has(tool.path),
+        };
     }
     return {
         tools: renderCatalog(root),
@@ -219,52 +197,16 @@ function runtime(inventory) {
         return cached;
     // A path may carry namespace metadata, a callable tool, child tools, or all three.
     const root = { children: new Map() };
-    {
-        let pending_3 = runtime_1.$normal;
-        try {
-            for (const namespace of inventory.namespaces?.values() ?? []) {
-                try {
-                    getNode(root, namespace.name).namespace = namespace;
-                }
-                catch (thrown_5) {
-                    pending_3 = thrown_5;
-                    break;
-                }
-            }
-        }
-        catch (thrown_6) {
-            throw runtime_1.$finallyFailure(pending_3, thrown_6);
-        }
-        if (pending_3 !== runtime_1.$normal)
-            throw pending_3;
-    }
-    {
-        let pending_4 = runtime_1.$normal;
-        try {
-            for (const value_1 of inventory.tools) {
-                try {
-                    const [name, registration] = value_1;
-                    {
-                        const child = definition(registration);
-                        getNode(root, qualifiedName(registration)).tool = Tool.make({
-                            description: child.description,
-                            input: child.inputSchema,
-                            output: child.outputSchema ?? Schema.NullOr(Schema.String),
-                            execute: (input) => Run.use((run) => run.executeTool(name, registration, input)),
-                        });
-                    }
-                }
-                catch (thrown_7) {
-                    pending_4 = thrown_7;
-                    break;
-                }
-            }
-        }
-        catch (thrown_8) {
-            throw runtime_1.$finallyFailure(pending_4, thrown_8);
-        }
-        if (pending_4 !== runtime_1.$normal)
-            throw pending_4;
+    for (const namespace of inventory.namespaces?.values() ?? [])
+        getNode(root, namespace.name).namespace = namespace;
+    for (const [name, registration] of inventory.tools) {
+        const child = definition(registration);
+        getNode(root, qualifiedName(registration)).tool = Tool.make({
+            description: child.description,
+            input: child.inputSchema,
+            output: child.outputSchema ?? Schema.NullOr(Schema.String),
+            execute: (input) => Run.use((run) => run.executeTool(name, registration, input)),
+        });
     }
     const tools = renderTools(root);
     const created = CodeMode.make({ tools, extensions: [CodeModeWeb.extension], hooks: runHooks });
@@ -287,26 +229,8 @@ function getNode(root, path) {
 function renderTools(root) {
     const callables = new Map();
     const tools = renderChildren(root, [], callables);
-    {
-        let pending_5 = runtime_1.$normal;
-        try {
-            for (const value_2 of callables) {
-                try {
-                    const [path, tool] = value_2;
-                    tools[path] = tool;
-                }
-                catch (thrown_9) {
-                    pending_5 = thrown_9;
-                    break;
-                }
-            }
-        }
-        catch (thrown_10) {
-            throw runtime_1.$finallyFailure(pending_5, thrown_10);
-        }
-        if (pending_5 !== runtime_1.$normal)
-            throw pending_5;
-    }
+    for (const [path, tool] of callables)
+        tools[path] = tool;
     return tools;
 }
 function renderChildren(node, path, callables) {
@@ -342,26 +266,8 @@ function renderEntry(node, path, callables) {
 function flattenTools(node, path, tools) {
     if (node.tool !== undefined)
         tools[path.join(".")] = node.tool;
-    {
-        let pending_6 = runtime_1.$normal;
-        try {
-            for (const value_3 of node.children) {
-                try {
-                    const [name, child] = value_3;
-                    flattenTools(child, [...path, name], tools);
-                }
-                catch (thrown_11) {
-                    pending_6 = thrown_11;
-                    break;
-                }
-            }
-        }
-        catch (thrown_12) {
-            throw runtime_1.$finallyFailure(pending_6, thrown_12);
-        }
-        if (pending_6 !== runtime_1.$normal)
-            throw pending_6;
-    }
+    for (const [name, child] of node.children)
+        flattenTools(child, [...path, name], tools);
 }
 function qualifiedName(registration) {
     const normalized = normalizedName(registration);

@@ -2,10 +2,10 @@
 import * as Layer from "effect/Layer";
 import { withSpan } from "effect/Effect";
 import * as Effect_1 from "effect/Effect";
-import * as runtime from "vibelang-runtime";
+import * as runtime from "vibelang-runtime/internal";
 export * as Agent from "./agent.js";
 import { makeLocationNode } from "@opencode/util/effect/app-node";
-import { Array, Effect, Types } from "effect";
+import { Array as Arr, Effect, Types } from "effect";
 import { Agent } from "@opencode/schema/agent";
 import { Bus } from "./bus.js";
 import { State } from "./state.js";
@@ -17,7 +17,7 @@ export const Info = Agent.Info;
 export { Event } from "@opencode/schema/agent";
 export class Service extends runtime.$service("@opencode/Agent") {
 }
-const layer = Layer.effect(Service, Effect_1.gen(runtime.$joinedFrame(function* () {
+const layer = Layer.effect(Service, Effect_1.gen(function* () {
     const bus = yield* Bus.Service;
     const selectable = (agent) => agent && agent.mode !== "subagent" && !agent.hidden ? agent : undefined;
     const selectedDefault = (data) => {
@@ -27,32 +27,14 @@ const layer = Layer.effect(Service, Effect_1.gen(runtime.$joinedFrame(function* 
         const build = selectable(data.agents.get(defaultID));
         if (build)
             return build;
-        {
-            let pending_1 = runtime.$normal;
-            try {
-                for (const agent of data.agents.values()) {
-                    try {
-                        {
-                            const fallback = selectable(agent);
-                            if (fallback)
-                                return fallback;
-                        }
-                    }
-                    catch (thrown_1) {
-                        pending_1 = thrown_1;
-                        break;
-                    }
-                }
-            }
-            catch (thrown_2) {
-                throw runtime.$finallyFailure(pending_1, thrown_2);
-            }
-            if (pending_1 !== runtime.$normal)
-                throw pending_1;
+        for (const agent of data.agents.values()) {
+            const fallback = selectable(agent);
+            if (fallback)
+                return fallback;
         }
     };
     const list = (data) => {
-        const agents = Array.fromIterable(data.agents.values());
+        const agents = Arr.fromIterable(data.agents.values());
         const selected = selectedDefault(data);
         if (!selected)
             return agents;
@@ -63,7 +45,7 @@ const layer = Layer.effect(Service, Effect_1.gen(runtime.$joinedFrame(function* 
             name: "agent",
             initial: () => ({ agents: new Map() }),
             editor: (editor) => ({
-                list: () => Array.fromIterable(editor.agents.values()),
+                list: () => Arr.fromIterable(editor.agents.values()),
                 get: (id) => editor.agents.get(id),
                 default: (id) => {
                     editor.default = id;
@@ -86,28 +68,42 @@ const layer = Layer.effect(Service, Effect_1.gen(runtime.$joinedFrame(function* 
     return Service.of({
         transform: state.transform,
         reload: state.reload,
-        get: (id) => Effect_1.suspend({ get: () => { return withSpan((Effect_1.fnUntraced(function* () {
-                return (yield* Effect.orDie(Effect.try({ try: () => state.get(), catch: (e) => e }))).agents.get(id);
-            }))(), "Agent.get"); } }.get),
-        resolve: Effect_1.fnUntraced(runtime.$joinedFrame(function* resolve(id) {
-            if (id !== undefined) {
-                return (yield* Effect.orDie(Effect.try({ try: () => state.get(), catch: (e) => e }))).agents.get(ID.make(id));
-            }
-            return selectedDefault(yield* Effect.orDie(Effect.try({ try: () => state.get(), catch: (e) => e })));
-        })),
-        select: (id) => Effect_1.suspend({ select: () => { return withSpan((Effect_1.fnUntraced(runtime.$joinedFrame(function* () {
+        get: (id) => {
+            return Effect_1.gen({ *"get"() { return yield* withSpan((() => {
+                    return Effect_1.gen(function* () {
+                        return (yield* Effect.orDie(Effect.try({ try: () => state.get(), catch: (e) => e }))).agents.get(id);
+                    });
+                })(), "Agent.get"); } }["get"]);
+        },
+        resolve: (id) => {
+            return Effect_1.gen(function* resolve() {
                 if (id !== undefined) {
-                    return {
-                        id,
-                        info: (yield* Effect.orDie(Effect.try({ try: () => state.get(), catch: (e) => e }))).agents.get(id),
-                    };
+                    return (yield* Effect.orDie(Effect.try({ try: () => state.get(), catch: (e) => e }))).agents.get(ID.make(id));
                 }
-                const info = selectedDefault(yield* Effect.orDie(Effect.try({ try: () => state.get(), catch: (e) => e })));
-                return { id: info?.id ?? defaultID, info };
-            })))(), "Agent.select"); } }.select),
-        list: () => Effect_1.suspend({ list: () => { return withSpan((Effect_1.fnUntraced(runtime.$joinedFrame(function* () {
-                return list(yield* Effect.orDie(Effect.try({ try: () => state.get(), catch: (e) => e })));
-            })))(), "Agent.list"); } }.list),
+                return selectedDefault(yield* Effect.orDie(Effect.try({ try: () => state.get(), catch: (e) => e })));
+            });
+        },
+        select: (id) => {
+            return Effect_1.gen(function* select() { return yield* withSpan((() => {
+                return Effect_1.gen(function* () {
+                    if (id !== undefined) {
+                        return {
+                            id,
+                            info: (yield* Effect.orDie(Effect.try({ try: () => state.get(), catch: (e) => e }))).agents.get(id),
+                        };
+                    }
+                    const info = selectedDefault(yield* Effect.orDie(Effect.try({ try: () => state.get(), catch: (e) => e })));
+                    return { id: info?.id ?? defaultID, info };
+                });
+            })(), "Agent.select"); });
+        },
+        list: () => {
+            return Effect_1.gen({ *list() { return yield* withSpan((() => {
+                    return Effect_1.gen(function* () {
+                        return list(yield* Effect.orDie(Effect.try({ try: () => state.get(), catch: (e) => e })));
+                    });
+                })(), "Agent.list"); } }.list);
+        },
     });
-})));
+}));
 export const node = makeLocationNode({ service: Service, layer, deps: [Bus.node] });

@@ -11,21 +11,26 @@ import { chunks, UPSERT_CHUNK_SIZE } from "./stat";
 export class RetentionStatRepo extends Context.Service()("@opencode/stats/RetentionStatRepo") {
     static layer = Layer.effect(RetentionStatRepo, Effect_1.gen(function* () {
         const db = yield* DrizzleClient;
-        const available = () => Effect_1.suspend({ available: () => { return withSpan(Effect_1.suspend(() => Effect.tryPromise({
-                try: async () => {
-                    try {
-                        await db.select({ id: modelRetention.id }).from(modelRetention).limit(1);
-                        return true;
-                    }
-                    catch (cause) {
-                        if (isMissingRetentionTable(cause))
-                            return false;
-                        throw cause;
-                    }
-                },
-                catch: (cause) => DatabaseError.make({ cause }),
-            })), "RetentionStatRepo.available"); } }.available);
-        const replace = (rows, scope) => Effect_1.suspend({ replace: () => { return withSpan(Effect_1.gen(function* () {
+        const available = () => {
+            return Effect_1.gen(function* available() { return yield* withSpan(Effect_1.gen(function* () {
+                return yield* Effect.tryPromise({
+                    try: async () => {
+                        try {
+                            await db.select({ id: modelRetention.id }).from(modelRetention).limit(1);
+                            return true;
+                        }
+                        catch (cause) {
+                            if (isMissingRetentionTable(cause))
+                                return false;
+                            throw cause;
+                        }
+                    },
+                    catch: (cause) => DatabaseError.make({ cause }),
+                });
+            }), "RetentionStatRepo.available"); });
+        };
+        const replace = (rows, scope) => {
+            return Effect_1.gen(function* replace() { return yield* withSpan(Effect_1.gen(function* () {
                 if (scope.cohortDates.length === 0)
                     return;
                 yield* Effect.tryPromise({
@@ -34,11 +39,12 @@ export class RetentionStatRepo extends Context.Service()("@opencode/stats/Retent
                         .where(and(inArray(modelRetention.cohort_date, scope.cohortDates), eq(modelRetention.dataset, scope.dataset), eq(modelRetention.tier, scope.tier))),
                     catch: (cause) => DatabaseError.make({ cause }),
                 });
-                yield* Effect.forEach(chunks(rows, UPSERT_CHUNK_SIZE), (chunk) => Effect.tryPromise({
+                yield* Effect.forEach(yield* Effect.orDie(Effect.try({ try: () => chunks(rows, UPSERT_CHUNK_SIZE), catch: (e) => e })), (chunk) => Effect.tryPromise({
                     try: () => db.insert(modelRetention).values(chunk),
                     catch: (cause) => DatabaseError.make({ cause }),
                 }), { discard: true });
-            }), "RetentionStatRepo.replace"); } }.replace);
+            }), "RetentionStatRepo.replace"); });
+        };
         return RetentionStatRepo.of({ available, replace });
     }));
 }

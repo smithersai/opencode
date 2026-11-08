@@ -23,12 +23,14 @@ export const make = createLocalProviderPlugin({
     name: "LM Studio",
     origin: "http://127.0.0.1:1234",
     stripPathSuffix: /\/(?:api\/)?v1$/,
-    discover: Effect.fnUntraced(function* discover(client) {
-        const response = yield* client.getJson("/api/v1/models", Response);
-        return response.models
-            .filter((model) => model.type === "llm" && model.key.length > 0)
-            .toSorted((a, b) => a.key.localeCompare(b.key));
-    }),
+    discover: (client) => {
+        return Effect.gen(function* discover() {
+            const response = yield* client.getJson("/api/v1/models", Response);
+            return response.models
+                .filter((model) => model.type === "llm" && model.key.length > 0)
+                .toSorted((a, b) => a.key.localeCompare(b.key));
+        });
+    },
     model: (item) => ({
         id: item.key,
         name: item.display_name || item.key,

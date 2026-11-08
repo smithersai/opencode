@@ -3,7 +3,7 @@ import * as Schema from "effect/Schema";
 export * as ConfigPolicy from "./policy.js";
 export const Effect = Schema.Literals(["allow", "deny"]);
 export const Info = Schema.Struct({
-    action: Schema.Literals(["provider.use", "tool.use", "integration.use"]),
-    resource: Schema.String,
-    effect: Effect,
+    action: Schema.mutableKey(Schema.Literals(["provider.use", "tool.use", "integration.use"])),
+    resource: Schema.mutableKey(Schema.String),
+    effect: Schema.mutableKey(Effect),
 });

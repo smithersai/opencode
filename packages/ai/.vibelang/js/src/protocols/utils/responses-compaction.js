@@ -3,8 +3,9 @@ import * as Effect from "effect/Effect";
 import * as Schema from "effect/Schema";
 import * as Stream from "effect/Stream";
 import { withSpan } from "effect/Effect";
+import { $catchExpression } from "vibelang-runtime/internal";
 import * as Effect_1 from "effect/Effect";
-import * as runtime from "vibelang-runtime";
+import * as runtime from "vibelang-runtime/internal";
 import { AIError, InvalidProviderOutputError, CompactionPart, CompactionResponse, HttpOptions, LLMRequest, Message, mergeJsonRecords, } from "../../schema/index.js";
 import { stripEffortUpdates } from "../../effort-updates.js";
 import { Endpoint } from "../../route/endpoint.js";
@@ -66,58 +67,63 @@ const Response = Schema.Struct({
     ])),
     usage: Schema.optional(Schema.StructWithRest(OpenResponses.OpenResponsesUsage, [JsonObject])),
 });
-export const make = (adapter, lowerTools) => (request, executor, options) => Effect_1.suspend(() => { return withSpan(Effect_1.gen(runtime.$joinedFrame(function* () {
-    const route = request.model.route;
-    // The standalone compaction endpoint rejects histories containing configuration updates.
-    const native = yield* OpenResponses.lowerConversation(stripEffortUpdates(request), adapter);
-    const generation = OpenResponses.lowerGeneration(request);
-    const tools = request.tools.length === 0 ? undefined : yield* lowerTools(request);
-    const body = yield* ProviderShared.validateWith(Schema.decodeUnknownEffect(Body))(mergeJsonRecords({
-        ...native,
-        service_tier: generation.service_tier,
-        reasoning: generation.reasoning,
-        text: generation.text,
-        include: generation.include,
-        parallel_tool_calls: generation.parallel_tool_calls,
-        tools,
-        prompt_cache_key: generation.prompt_cache_key,
-    }, request.http?.body));
-    const url = Endpoint.render(route.endpoint, { request, body: native });
-    url.pathname = `${url.pathname.replace(/\/$/, "")}/compact`;
-    const parts = yield* HttpTransport.jsonRequestParts({
-        request: LLMRequest.update(request, {
-            http: request.http === undefined ? undefined : new HttpOptions({ ...request.http, body: undefined }),
-        }),
-        body,
-        endpoint: Endpoint.path(url.toString()),
-        auth: route.auth,
-        encodeBody: Schema.encodeSync(Schema.fromJsonString(Body)),
-    });
-    const response = yield* executor.execute(ProviderShared.jsonPost({
-        url: parts.url,
-        body: parts.bodyText,
-        headers: parts.headers,
-        encoding: request.http?.encoding,
-    }), options?.http);
-    const text = yield* RequestExecutor.responseStream(response).pipe(Stream.decodeText(), Stream.runFold(() => "", (text, chunk) => text + chunk));
-    const invalid = (message, cause) => new AIError({
-        reason: new InvalidProviderOutputError({
-            route: route.id,
-            message,
-            body: text,
-            cause,
-            http: RequestExecutor.responseHttp(response),
-        }),
-    });
-    const result = yield* (Effect.mapError(Schema.decodeUnknownEffect(Schema.fromJsonString(Response))(text), (cause) => invalid("Invalid compaction response", cause)));
-    if (!result.output.some((item) => item.type === "compaction")) {
-        return yield* Effect_1.fail(invalid("Compaction response did not contain a checkpoint"));
-    }
-    return new CompactionResponse({
-        replacement: result.output.map((item) => toMessage(item, request.model)),
-        usage: OpenResponses.mapUsage(result.usage, OpenResponses.metadataKey(request.model)),
-    });
-})), "ResponsesCompaction.execute"); });
+export const make = (adapter, lowerTools) => (request, executor, options) => {
+    return Effect_1.gen(function* () { return yield* withSpan(Effect_1.gen(function* () {
+        const route = request.model.route;
+        // The standalone compaction endpoint rejects histories containing configuration updates.
+        const native = yield* OpenResponses.lowerConversation(yield* Effect.orDie(Effect.try({ try: () => stripEffortUpdates(request), catch: (e) => e })), adapter);
+        const generation = yield* Effect.orDie(Effect.try({ try: () => OpenResponses.lowerGeneration(request), catch: (e) => e }));
+        const tools = request.tools.length === 0 ? undefined : yield* lowerTools(request);
+        const body = yield* (yield* Effect.orDie(Effect.try({ try: () => ProviderShared.validateWith(Schema.decodeUnknownEffect(Body)), catch: (e) => e })))(mergeJsonRecords({
+            ...native,
+            service_tier: generation.service_tier,
+            reasoning: generation.reasoning,
+            text: generation.text,
+            include: generation.include,
+            parallel_tool_calls: generation.parallel_tool_calls,
+            tools,
+            prompt_cache_key: generation.prompt_cache_key,
+        }, request.http?.body));
+        const url = yield* Effect.orDie(Effect.try({ try: () => Endpoint.render(route.endpoint, { request, body: native }), catch: (e) => e }));
+        url.pathname = `${url.pathname.replace(/\/$/, "")}/compact`;
+        const parts = yield* HttpTransport.jsonRequestParts({
+            request: LLMRequest.update(request, {
+                http: request.http === undefined ? undefined : new HttpOptions({ ...request.http, body: undefined }),
+            }),
+            body,
+            endpoint: yield* Effect.orDie(Effect.try({ try: () => Endpoint.path(url.toString()), catch: (e) => e })),
+            auth: route.auth,
+            encodeBody: Schema.encodeSync(Schema.fromJsonString(Body)),
+        });
+        const response = yield* executor.execute(yield* Effect.orDie(Effect.try({ try: () => ProviderShared.jsonPost({
+                url: parts.url,
+                body: parts.bodyText,
+                headers: parts.headers,
+                encoding: request.http?.encoding,
+            }), catch: (e) => e })), options?.http);
+        const text = yield* RequestExecutor.responseStream(response).pipe(Stream.decodeText(), Stream.runFold(() => "", (text, chunk) => text + chunk));
+        const invalid = (message, cause) => new AIError({
+            reason: new InvalidProviderOutputError({
+                route: route.id,
+                message,
+                body: text,
+                cause,
+                http: RequestExecutor.responseHttp(response),
+            }),
+        });
+        const result = yield* runtime.$catch(yield* (() => { return Effect_1.sync(() => { return Schema.decodeUnknownEffect(Schema.fromJsonString(Response))(text); }); })(), (cause) => (_tail_1 => { return Effect_1.gen(function* () {
+            const _completion_1 = _tail_1(), _value_1 = _completion_1[1];
+            return _completion_1[0] ? yield* _value_1 : _value_1;
+        }); })(() => { return [true, Effect_1.fail(invalid("Invalid compaction response", cause))]; }));
+        if (!result.output.some((item) => item.type === "compaction")) {
+            return yield* Effect_1.fail(invalid("Compaction response did not contain a checkpoint"));
+        }
+        return new CompactionResponse({
+            replacement: result.output.map((item) => toMessage(item, request.model)),
+            usage: yield* Effect.orDie(Effect.try({ try: () => OpenResponses.mapUsage(result.usage, OpenResponses.metadataKey(request.model)), catch: (e) => e })),
+        });
+    }), "ResponsesCompaction.execute"); });
+};
 function toMessage(item, model) {
     if (item.type === "compaction") {
         return Message.assistant(CompactionPart.make({ provider: model.provider, id: item.id ?? undefined, encrypted: item.encrypted_content }));

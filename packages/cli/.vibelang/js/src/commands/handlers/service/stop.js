@@ -7,8 +7,10 @@ import { Commands } from "../../commands.js";
 import { Runtime } from "../../../framework/runtime.js";
 import { ServiceConfig } from "../../../services/service-config.js";
 import { ServerConnection } from "../../../services/server-connection.js";
-export default Runtime.handler(Commands.commands.service.commands.stop, () => Effect_1.suspend(() => { return withSpan(Effect_1.gen(function* () {
-    const options = yield* ServiceConfig.options();
-    yield* (Effect.ignore(ServerConnection.shutdownPersistentPty(options)));
-    yield* Service.stop(options);
-}), "cli.service.stop"); }));
+export default Runtime.handler(Commands.commands.service.commands.stop, () => {
+    return Effect_1.gen(function* () { return yield* withSpan(Effect_1.gen(function* () {
+        const options = yield* ServiceConfig.options();
+        yield* (Effect.ignore(ServerConnection.shutdownPersistentPty(options)));
+        yield* Service.stop(options);
+    }), "cli.service.stop"); });
+});

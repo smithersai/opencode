@@ -4,7 +4,7 @@ import * as Semaphore from "effect/Semaphore";
 import * as Statement from "effect/sql/Statement";
 import * as Stream from "effect/Stream";
 import * as Effect_1 from "effect/Effect";
-import * as runtime from "vibelang-runtime";
+import * as runtime from "vibelang-runtime/internal";
 export * as Sqlite from "./sqlite.js";
 import { Context, Effect, Scope } from "effect";
 import { identity } from "effect/Function";
@@ -32,30 +32,32 @@ export const makeConnection = (run, runValues, extensions) => identity({
     },
     ...extensions,
 });
-export const makeClient = Effect_1.fnUntraced(function* makeClient(options, connection, typeId, extensions) {
-    const semaphore = yield* Semaphore.make(1);
-    const acquirer = semaphore.withPermits(1)(Effect.succeed(connection));
-    const transactionAcquirer = Effect.uninterruptibleMask((restore) => {
-        const fiber = Fiber.getCurrent();
-        const scope = Context.getUnsafe(fiber.context, Scope.Scope);
-        return Effect.as(Effect.tap(restore(semaphore.take(1)), () => Scope.addFinalizer(scope, semaphore.release(1))), connection);
+export const makeClient = (options, connection, typeId, extensions) => {
+    return Effect_1.gen(function* makeClient() {
+        const semaphore = yield* Semaphore.make(1);
+        const acquirer = semaphore.withPermits(1)(Effect.succeed(connection));
+        const transactionAcquirer = Effect.uninterruptibleMask((restore) => {
+            const fiber = Fiber.getCurrent();
+            const scope = Context.getUnsafe(fiber.context, Scope.Scope);
+            return Effect.as(Effect.tap(restore(semaphore.take(1)), () => Scope.addFinalizer(scope, semaphore.release(1))), connection);
+        });
+        const transformRows = options.transformResultNames
+            ? Statement.defaultTransforms(options.transformResultNames).array
+            : undefined;
+        return Object.assign(yield* SqlClient.make({
+            acquirer,
+            compiler: Statement.makeCompilerSqlite(options.transformQueryNames),
+            transactionAcquirer,
+            driver: "opencode-sqlite",
+            spanAttributes: [
+                ...(options.spanAttributes ? Object.entries(options.spanAttributes) : []),
+                ["db.system.name", "sqlite"],
+            ],
+            transformRows,
+        }), {
+            [typeId]: typeId,
+            config: options,
+            ...extensions(acquirer),
+        });
     });
-    const transformRows = options.transformResultNames
-        ? Statement.defaultTransforms(options.transformResultNames).array
-        : undefined;
-    return Object.assign(yield* SqlClient.make({
-        acquirer,
-        compiler: Statement.makeCompilerSqlite(options.transformQueryNames),
-        transactionAcquirer,
-        driver: "opencode-sqlite",
-        spanAttributes: [
-            ...(options.spanAttributes ? Object.entries(options.spanAttributes) : []),
-            ["db.system.name", "sqlite"],
-        ],
-        transformRows,
-    }), {
-        [typeId]: typeId,
-        config: options,
-        ...extensions(acquirer),
-    });
-});
+};

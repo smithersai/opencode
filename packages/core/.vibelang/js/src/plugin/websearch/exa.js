@@ -21,36 +21,42 @@ const McpOutput = Schema.Struct({
 });
 export const Plugin = define({
     id: "opencode.websearch.exa",
-    effect: (ctx) => Effect_1.suspend({ effect: () => { return withSpan((Effect_1.fnUntraced(function* () {
-            const http = yield* HttpClient.HttpClient;
-            yield* ctx.integration.transform((editor) => {
-                editor.update("exa", (integration) => (integration.name = "Exa"));
-                editor.method.update({
-                    integrationID: "exa",
-                    method: { type: "key" },
+    effect: (ctx) => {
+        return Effect_1.gen(function* effect() { return yield* withSpan((() => {
+            return Effect_1.gen(function* () {
+                const http = yield* HttpClient.HttpClient;
+                yield* ctx.integration.transform((editor) => {
+                    editor.update("exa", (integration) => (integration.name = "Exa"));
+                    editor.method.update({
+                        integrationID: "exa",
+                        method: { type: "key" },
+                    });
+                    editor.method.update({
+                        integrationID: "exa",
+                        method: { type: "env", names: ["EXA_API_KEY"] },
+                    });
                 });
-                editor.method.update({
-                    integrationID: "exa",
-                    method: { type: "env", names: ["EXA_API_KEY"] },
+                yield* ctx.websearch.transform((editor) => {
+                    editor.add({
+                        id: "exa",
+                        name: "Exa",
+                        execute: (input) => {
+                            return Effect_1.gen(function* execute() {
+                                const connection = yield* ctx.integration.connection.active("exa");
+                                const credential = connection ? yield* ctx.integration.connection.resolve(connection) : undefined;
+                                const url = new URL(endpoint);
+                                if (credential?.type === "key")
+                                    url.searchParams.set("exaApiKey", credential.key);
+                                const result = yield* WebSearchMcp.call(http, url.toString(), "web_search_exa", { input: McpInput, output: McpOutput }, { query: input.query, numResults: 8 });
+                                const content = result?.content.find((item) => item.text);
+                                return content ? parseResults(content.text) : [];
+                            });
+                        },
+                    });
                 });
             });
-            yield* ctx.websearch.transform((editor) => {
-                editor.add({
-                    id: "exa",
-                    name: "Exa",
-                    execute: Effect_1.fnUntraced(function* execute(input) {
-                        const connection = yield* ctx.integration.connection.active("exa");
-                        const credential = connection ? yield* ctx.integration.connection.resolve(connection) : undefined;
-                        const url = new URL(endpoint);
-                        if (credential?.type === "key")
-                            url.searchParams.set("exaApiKey", credential.key);
-                        const result = yield* WebSearchMcp.call(http, url.toString(), "web_search_exa", { input: McpInput, output: McpOutput }, { query: input.query, numResults: 8 });
-                        const content = result?.content.find((item) => item.text);
-                        return content ? parseResults(content.text) : [];
-                    }),
-                });
-            });
-        }))(), "WebSearchExa.Plugin"); } }.effect),
+        })(), "WebSearchExa.Plugin"); });
+    },
 });
 function parseResults(text) {
     return text.split(/\n\n---\n\n/).flatMap((block) => {

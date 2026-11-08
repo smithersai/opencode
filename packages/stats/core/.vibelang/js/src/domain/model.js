@@ -12,10 +12,34 @@ import { chunks, collapseRows, DATA_SITE_TIERS, inserted, omitUniqueUsers, perio
 export class ModelStatRepo extends Context.Service()("@opencode/stats/ModelStatRepo") {
     static layer = Layer.effect(ModelStatRepo, Effect_1.gen(function* () {
         const db = yield* DrizzleClient;
-        const listDaily = () => Effect_1.suspend({ listDaily: () => { return withSpan(Effect_1.suspend(() => Effect.tryPromise({
-                try: () => withUniqueUsersFallback(async (includeUniqueUsers) => {
-                    if (includeUniqueUsers) {
-                        return await db
+        const listDaily = () => {
+            return Effect_1.gen(function* listDaily() { return yield* withSpan(Effect_1.gen(function* () {
+                return yield* Effect.tryPromise({
+                    try: () => withUniqueUsersFallback(async (includeUniqueUsers) => {
+                        if (includeUniqueUsers) {
+                            return await db
+                                .select({
+                                periodKey: modelStat.period_key,
+                                updatedAt: modelStat.updated_at,
+                                tier: modelStat.tier,
+                                provider: modelStat.provider,
+                                model: modelStat.model,
+                                sessions: modelStat.sessions,
+                                uniqueUsers: modelStat.unique_users,
+                                inputTokens: modelStat.input_tokens,
+                                outputTokens: modelStat.output_tokens,
+                                reasoningTokens: modelStat.reasoning_tokens,
+                                cacheReadTokens: modelStat.cache_read_tokens,
+                                totalTokens: modelStat.total_tokens,
+                                inputCostMicrocents: modelStat.input_cost_microcents,
+                                outputCostMicrocents: modelStat.output_cost_microcents,
+                                totalCostMicrocents: modelStat.total_cost_microcents,
+                            })
+                                .from(modelStat)
+                                .where(modelDailyScope())
+                                .orderBy(asc(modelStat.period_key));
+                        }
+                        return (await db
                             .select({
                             periodKey: modelStat.period_key,
                             updatedAt: modelStat.updated_at,
@@ -23,7 +47,6 @@ export class ModelStatRepo extends Context.Service()("@opencode/stats/ModelStatR
                             provider: modelStat.provider,
                             model: modelStat.model,
                             sessions: modelStat.sessions,
-                            uniqueUsers: modelStat.unique_users,
                             inputTokens: modelStat.input_tokens,
                             outputTokens: modelStat.output_tokens,
                             reasoningTokens: modelStat.reasoning_tokens,
@@ -35,32 +58,14 @@ export class ModelStatRepo extends Context.Service()("@opencode/stats/ModelStatR
                         })
                             .from(modelStat)
                             .where(modelDailyScope())
-                            .orderBy(asc(modelStat.period_key));
-                    }
-                    return (await db
-                        .select({
-                        periodKey: modelStat.period_key,
-                        updatedAt: modelStat.updated_at,
-                        tier: modelStat.tier,
-                        provider: modelStat.provider,
-                        model: modelStat.model,
-                        sessions: modelStat.sessions,
-                        inputTokens: modelStat.input_tokens,
-                        outputTokens: modelStat.output_tokens,
-                        reasoningTokens: modelStat.reasoning_tokens,
-                        cacheReadTokens: modelStat.cache_read_tokens,
-                        totalTokens: modelStat.total_tokens,
-                        inputCostMicrocents: modelStat.input_cost_microcents,
-                        outputCostMicrocents: modelStat.output_cost_microcents,
-                        totalCostMicrocents: modelStat.total_cost_microcents,
-                    })
-                        .from(modelStat)
-                        .where(modelDailyScope())
-                        .orderBy(asc(modelStat.period_key))).map((row) => ({ ...row, uniqueUsers: 0 }));
-                }),
-                catch: (cause) => DatabaseError.make({ cause }),
-            })), "ModelStatRepo.listDaily"); } }.listDaily);
-        const lastSyncedAt = (since) => Effect_1.suspend({ lastSyncedAt: () => { return withSpan(Effect_1.gen(function* () {
+                            .orderBy(asc(modelStat.period_key))).map((row) => ({ ...row, uniqueUsers: 0 }));
+                    }),
+                    catch: (cause) => DatabaseError.make({ cause }),
+                });
+            }), "ModelStatRepo.listDaily"); });
+        };
+        const lastSyncedAt = (since) => {
+            return Effect_1.gen(function* lastSyncedAt() { return yield* withSpan(Effect_1.gen(function* () {
                 const result = yield* Effect.tryPromise({
                     try: () => db
                         .select({ value: max(modelStat.updated_at) })
@@ -69,13 +74,16 @@ export class ModelStatRepo extends Context.Service()("@opencode/stats/ModelStatR
                     catch: (cause) => DatabaseError.make({ cause }),
                 });
                 return result[0]?.value ?? null;
-            }), "ModelStatRepo.lastSyncedAt"); } }.lastSyncedAt);
-        const upsert = (rows) => Effect_1.suspend({ upsert: () => { return withSpan(Effect_1.gen(function* () {
-                yield* Effect.forEach(chunks(rows, UPSERT_CHUNK_SIZE), (chunk) => Effect.tryPromise({
+            }), "ModelStatRepo.lastSyncedAt"); });
+        };
+        const upsert = (rows) => {
+            return Effect_1.gen(function* upsert() { return yield* withSpan(Effect_1.gen(function* () {
+                yield* Effect.forEach(yield* Effect.orDie(Effect.try({ try: () => chunks(rows, UPSERT_CHUNK_SIZE), catch: (e) => e })), (chunk) => Effect.tryPromise({
                     try: () => withUniqueUsersFallback((includeUniqueUsers) => upsertModelChunk(chunk, includeUniqueUsers)),
                     catch: (cause) => DatabaseError.make({ cause }),
                 }), { discard: true });
-            }), "ModelStatRepo.upsert"); } }.upsert);
+            }), "ModelStatRepo.upsert"); });
+        };
         function upsertModelChunk(chunk, includeUniqueUsers) {
             return db
                 .insert(modelStat)
@@ -110,8 +118,9 @@ export class ModelStatRepo extends Context.Service()("@opencode/stats/ModelStatR
                 },
             });
         }
-        const deleteRetiredDimensions = (rows, hiddenModels) => Effect_1.suspend({ deleteRetiredDimensions: () => { return withSpan(Effect_1.gen(function* () {
-                const scope = statRowScope(rows);
+        const deleteRetiredDimensions = (rows, hiddenModels) => {
+            return Effect_1.gen(function* deleteRetiredDimensions() { return yield* withSpan(Effect_1.gen(function* () {
+                const scope = yield* Effect.orDie(Effect.try({ try: () => statRowScope(rows), catch: (e) => e }));
                 if (!scope)
                     return;
                 yield* Effect.tryPromise({
@@ -120,9 +129,11 @@ export class ModelStatRepo extends Context.Service()("@opencode/stats/ModelStatR
                         .where(and(inArray(modelStat.grain, scope.grains), inArray(modelStat.period_key, scope.periodKeys), inArray(modelStat.dataset, scope.datasets), inArray(modelStat.client, scope.clients), inArray(modelStat.source, scope.sources), or(inArray(modelStat.provider, RETIRED_STAT_PROVIDERS), inArray(modelStat.model, [...RETIRED_STAT_MODELS, ...hiddenModels]), and(eq(modelStat.provider, "unknown"), eq(modelStat.model, "hy4-preview"))))),
                     catch: (cause) => DatabaseError.make({ cause }),
                 });
-            }), "ModelStatRepo.deleteRetiredDimensions"); } }.deleteRetiredDimensions);
-        const deleteUnknownDimensions = (rows) => Effect_1.suspend({ deleteUnknownDimensions: () => { return withSpan(Effect_1.gen(function* () {
-                const scope = statRowScope(rows);
+            }), "ModelStatRepo.deleteRetiredDimensions"); });
+        };
+        const deleteUnknownDimensions = (rows) => {
+            return Effect_1.gen(function* deleteUnknownDimensions() { return yield* withSpan(Effect_1.gen(function* () {
+                const scope = yield* Effect.orDie(Effect.try({ try: () => statRowScope(rows), catch: (e) => e }));
                 if (!scope)
                     return;
                 const replacements = new Set(rows.map((row) => [statPeriodKey(row), row.model].join("\u0000")));
@@ -145,11 +156,12 @@ export class ModelStatRepo extends Context.Service()("@opencode/stats/ModelStatR
                 const ids = stale
                     .filter((row) => replacements.has([statPeriodKey(row), row.model].join("\u0000")))
                     .map((row) => row.id);
-                yield* Effect.forEach(chunks(ids, UPSERT_CHUNK_SIZE), (chunk) => Effect.tryPromise({
+                yield* Effect.forEach(yield* Effect.orDie(Effect.try({ try: () => chunks(ids, UPSERT_CHUNK_SIZE), catch: (e) => e })), (chunk) => Effect.tryPromise({
                     try: () => db.delete(modelStat).where(and(eq(modelStat.provider, "unknown"), inArray(modelStat.id, chunk))),
                     catch: (cause) => DatabaseError.make({ cause }),
                 }), { discard: true });
-            }), "ModelStatRepo.deleteUnknownDimensions"); } }.deleteUnknownDimensions);
+            }), "ModelStatRepo.deleteUnknownDimensions"); });
+        };
         return ModelStatRepo.of({ listDaily, lastSyncedAt, upsert, deleteRetiredDimensions, deleteUnknownDimensions });
     }));
 }

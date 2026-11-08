@@ -8,7 +8,9 @@ import { AIError, HttpOptions, ModelID, ProviderID, ProviderMetadata, ProviderOp
 // ---------------------------------------------------------------------------
 // Input
 // ---------------------------------------------------------------------------
-export const DecisionTextPart = Schema.Struct({ type: Schema.Literal("text"), text: Schema.String });
+export const DecisionTextPart = Schema.Struct({
+    type: Schema.Literal("text"), text: Schema.String,
+});
 export const DecisionJsonPart = Schema.Struct({ type: Schema.Literal("json"), value: Schema.Json });
 export const DecisionMediaPart = Schema.Struct({
     type: Schema.Literal("media"),
@@ -30,13 +32,17 @@ export const ChoiceQuestion = Schema.Struct({
     name: Schema.String,
     type: Schema.Literal("choice"),
     instructions: Schema.String,
-    choices: Schema.Array(Schema.Struct({ value: ChoiceValue, description: Schema.optional(Schema.String) })),
+    choices: Schema.Array(Schema.Struct({
+        value: ChoiceValue, description: Schema.optional(Schema.String),
+    })),
 });
 export const ScoreQuestion = Schema.Struct({
     name: Schema.String,
     type: Schema.Literal("score"),
     instructions: Schema.String,
-    levels: Schema.Array(Schema.Struct({ label: Schema.String, description: Schema.optional(Schema.String) })),
+    levels: Schema.Array(Schema.Struct({
+        label: Schema.String, description: Schema.optional(Schema.String),
+    })),
 });
 export const DecisionQuestion = Schema.Union([PredicateQuestion, ChoiceQuestion, ScoreQuestion]).pipe(Schema.toTaggedUnion("type"));
 // Only what makes a request meaningless is checked here; counts and sizes are the host's to enforce.
@@ -56,7 +62,9 @@ export const ChoiceAnswer = Schema.Struct({
     name: Schema.String,
     type: Schema.Literal("choice"),
     choice: ChoiceValue,
-    probabilities: Schema.Array(Schema.Struct({ value: ChoiceValue, probability: Probability })),
+    probabilities: Schema.Array(Schema.Struct({
+        value: ChoiceValue, probability: Probability,
+    })),
     confidence: Probability,
 });
 /** `score` is the probability-weighted level index; `probabilities` has one entry per level. */
@@ -64,7 +72,9 @@ export const ScoreAnswer = Schema.Struct({
     name: Schema.String,
     type: Schema.Literal("score"),
     score: Schema.Number,
-    probabilities: Schema.Array(Schema.Struct({ value: Schema.Int, label: Schema.String, probability: Probability })),
+    probabilities: Schema.Array(Schema.Struct({
+        value: Schema.Int, label: Schema.String, probability: Probability,
+    })),
     confidence: Probability,
 });
 export const ErrorReason = Schema.Union([Schema.Literal("refusal"), Schema.String]);

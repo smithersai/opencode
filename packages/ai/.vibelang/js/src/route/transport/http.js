@@ -5,88 +5,96 @@ import * as Effect from "effect/Effect";
 import * as Headers from "effect/http/Headers";
 import * as Stream from "effect/Stream";
 import * as Effect_1 from "effect/Effect";
-import * as runtime_1 from "vibelang-runtime";
 import { Auth } from "../auth.js";
 import { render as renderEndpoint } from "../endpoint.js";
 import { Framing } from "../framing.js";
 import * as ProviderShared from "../../protocols/shared.js";
 import { AIError, DEFAULT_CHUNK_TIMEOUT_MS, DEFAULT_HTTP_TIMEOUT_MS, mergeJsonRecords, TransportError, } from "../../schema/index.js";
 import { RequestExecutor } from "../executor.js";
-const bodyWithOverlay = Effect_1.fnUntraced(runtime_1.$joinedFrame(function* bodyWithOverlay(body, request, encodeBody) {
-    if (request.http?.body === undefined)
-        return { jsonBody: body, bodyText: encodeBody(body) };
-    if (ProviderShared.isRecord(body)) {
-        const overlaid = mergeJsonRecords(body, request.http.body) ?? {};
-        return { jsonBody: overlaid, bodyText: ProviderShared.encodeJson(overlaid) };
-    }
-    return yield* Effect_1.fail(ProviderShared.invalidRequest("http.body can only overlay JSON object request bodies"));
-}));
-export const jsonRequestParts = Effect_1.fnUntraced(function* jsonRequestParts(input) {
-    const endpoint = renderEndpoint(input.endpoint, { request: input.request, body: input.body });
-    if (input.request.http?.query) {
-        Object.entries(input.request.http.query).forEach(([key, value]) => endpoint.searchParams.set(key, value));
-    }
-    const url = endpoint.toString();
-    const body = yield* bodyWithOverlay(input.body, input.request, input.encodeBody);
-    const headers = yield* Auth.toEffect(input.auth)({
-        request: input.request,
-        method: "POST",
-        url,
-        body: body.bodyText,
-        headers: Headers.fromInput({
-            ...input.headers?.({ request: input.request }),
-            ...input.request.http?.headers,
-        }),
+const bodyWithOverlay = (body, request, encodeBody) => {
+    return Effect_1.gen(function* bodyWithOverlay() {
+        if (request.http?.body === undefined)
+            return { jsonBody: body, bodyText: encodeBody(body) };
+        const record = yield* Effect.orDie(Effect.try({ try: () => ProviderShared.isRecord(body) ? body : undefined, catch: (e) => e }));
+        if (record !== undefined) {
+            const overlaid = mergeJsonRecords(record, request.http.body) ?? {};
+            return { jsonBody: overlaid, bodyText: ProviderShared.encodeJson(overlaid) };
+        }
+        return yield* Effect_1.fail(yield* Effect.orDie(Effect.try({ try: () => ProviderShared.invalidRequest("http.body can only overlay JSON object request bodies"), catch: (e) => e })));
     });
-    return { url, jsonBody: body.jsonBody, bodyText: body.bodyText, headers };
-});
+};
+export const jsonRequestParts = (input) => {
+    return Effect_1.gen(function* jsonRequestParts() {
+        const endpoint = yield* Effect.orDie(Effect.try({ try: () => renderEndpoint(input.endpoint, { request: input.request, body: input.body }), catch: (e) => e }));
+        if (input.request.http?.query) {
+            Object.entries(input.request.http.query).forEach(([key, value]) => endpoint.searchParams.set(key, value));
+        }
+        const url = endpoint.toString();
+        const body = yield* bodyWithOverlay(input.body, input.request, input.encodeBody);
+        const headers = yield* Auth.toEffect(input.auth)({
+            request: input.request,
+            method: "POST",
+            url,
+            body: body.bodyText,
+            headers: Headers.fromInput({
+                ...input.headers?.({ request: input.request }),
+                ...input.request.http?.headers,
+            }),
+        });
+        return { url, jsonBody: body.jsonBody, bodyText: body.bodyText, headers };
+    });
+};
 export const httpJson = (input) => ({
     id: "http-json",
     with: (patch) => httpJson({ ...input, ...patch }),
-    prepare: Effect_1.fnUntraced(function* prepare(prepareInput) {
-        const parts = yield* jsonRequestParts({ ...prepareInput });
-        const request = ProviderShared.jsonPost({
-            url: parts.url,
-            body: parts.bodyText,
-            headers: parts.headers,
-            encoding: prepareInput.request.http?.encoding,
+    prepare: (prepareInput) => {
+        return Effect_1.gen(function* prepare() {
+            const parts = yield* jsonRequestParts({ ...prepareInput });
+            const request = yield* Effect.orDie(Effect.try({ try: () => ProviderShared.jsonPost({
+                    url: parts.url,
+                    body: parts.bodyText,
+                    headers: parts.headers,
+                    encoding: prepareInput.request.http?.encoding,
+                }), catch: (e) => e }));
+            return {
+                request,
+                framing: input.framing,
+                middleware: prepareInput.middleware,
+            };
         });
-        return {
-            request,
-            framing: input.framing,
-            middleware: prepareInput.middleware,
-        };
-    }),
-    execute: Effect_1.fnUntraced(function* execute(prepared, request, runtime) {
-        const timeout = (operation, message, http) => new AIError({
-            reason: new TransportError({
-                message,
-                transport: "http",
-                operation,
-                code: "Timeout",
-                url: prepared.request.url,
+    },
+    execute: (prepared, request, runtime) => {
+        return Effect_1.gen(function* execute() {
+            const timeout = (operation, message, http) => new AIError({
+                reason: new TransportError({
+                    message,
+                    transport: "http",
+                    operation,
+                    code: "Timeout",
+                    url: prepared.request.url,
+                    http,
+                }),
+            });
+            const started = yield* Clock.currentTimeMillis;
+            // Unlike the header and chunk limits, the whole-request budget has no default.
+            const total = request.http?.timeout ? Duration.millis(request.http.timeout) : Duration.infinity;
+            const response = yield* (Effect.timeoutOrElse(runtime.http.execute(prepared.request, prepared.middleware), {
+                duration: Duration.min(timeoutDuration(request.http?.headerTimeout), total),
+                orElse: () => timeout("request", "Timed out waiting for response headers"),
+            }));
+            const http = RequestExecutor.responseHttp(response);
+            const remaining = Duration.subtract(total, Duration.millis((yield* Clock.currentTimeMillis) - started));
+            return {
+                frames: prepared.framing.frame(RequestExecutor.responseStream(response).pipe(Stream.timeoutOrElse({
+                    duration: timeoutDuration(request.http?.chunkTimeout, DEFAULT_CHUNK_TIMEOUT_MS),
+                    orElse: () => Stream.fail(timeout("read", "Timed out waiting for response data", http)),
+                }), Stream.interruptWhen(Effect.andThen(Effect.sleep(remaining), Effect.fail(timeout("read", "Timed out waiting for the response to complete", http)))))),
                 http,
-            }),
+                body: prepared.framing.body,
+                raw: prepared.framing.raw,
+            };
         });
-        const started = yield* Clock.currentTimeMillis;
-        // Unlike the header and chunk limits, the whole-request budget has no default.
-        const total = request.http?.timeout ? Duration.millis(request.http.timeout) : Duration.infinity;
-        const response = yield* (Effect.timeoutOrElse(runtime.http.execute(prepared.request, prepared.middleware), {
-            duration: Duration.min(timeoutDuration(request.http?.headerTimeout), total),
-            orElse: () => timeout("request", "Timed out waiting for response headers"),
-        }));
-        const http = RequestExecutor.responseHttp(response);
-        const remaining = Duration.subtract(total, Duration.millis((yield* Clock.currentTimeMillis) - started));
-        return {
-            frames: prepared.framing.frame(RequestExecutor.responseStream(response).pipe(Stream.timeoutOrElse({
-                duration: timeoutDuration(request.http?.chunkTimeout, DEFAULT_CHUNK_TIMEOUT_MS),
-                orElse: () => Stream.fail(timeout("read", "Timed out waiting for response data", http)),
-            }), Stream.interruptWhen(Effect.andThen(Effect.sleep(remaining), Effect.fail(timeout("read", "Timed out waiting for the response to complete", http)))))),
-            http,
-            body: prepared.framing.body,
-            raw: prepared.framing.raw,
-        };
-    }),
+    },
 });
 const timeoutDuration = (value, fallback = DEFAULT_HTTP_TIMEOUT_MS) => value === false ? Duration.infinity : Duration.millis(value ?? fallback);
 export const sseJson = {

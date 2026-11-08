@@ -12,12 +12,13 @@ import { chunks, collapseRows, DATA_SITE_TIERS, inserted, omitUniqueUsers, rankR
 export class GeoStatRepo extends Context.Service()("@opencode/stats/GeoStatRepo") {
     static layer = Layer.effect(GeoStatRepo, Effect_1.gen(function* () {
         const db = yield* DrizzleClient;
-        const listDaily = (opts) => Effect_1.suspend({ listDaily: () => { return withSpan(Effect_1.gen(function* () {
-                const scope = opts?.model && opts.provider
-                    ? and(eq(geoStat.provider, opts.provider), eq(geoStat.model, opts.model))
-                    : opts?.model
-                        ? eq(geoStat.model, opts.model)
-                        : and(eq(geoStat.provider, "all"), eq(geoStat.model, "all"));
+        const listDaily = (opts) => {
+            return Effect_1.gen(function* listDaily() { return yield* withSpan(Effect_1.gen(function* () {
+                const scope = yield* Effect.orDie(Effect.try({ try: () => opts?.model && opts.provider
+                        ? and(eq(geoStat.provider, opts.provider), eq(geoStat.model, opts.model))
+                        : opts?.model
+                            ? eq(geoStat.model, opts.model)
+                            : and(eq(geoStat.provider, "all"), eq(geoStat.model, "all")), catch: (e) => e }));
                 return yield* Effect.tryPromise({
                     try: () => db
                         .select({
@@ -35,20 +36,27 @@ export class GeoStatRepo extends Context.Service()("@opencode/stats/GeoStatRepo"
                         .orderBy(asc(geoStat.period_key)),
                     catch: (cause) => DatabaseError.make({ cause }),
                 });
-            }), "GeoStatRepo.listDaily"); } }.listDaily);
-        const listByPeriod = (opts) => Effect_1.suspend({ listByPeriod: () => { return withSpan(Effect_1.suspend(() => Effect.tryPromise({
-                try: () => db
-                    .select()
-                    .from(geoStat)
-                    .where(and(eq(geoStat.grain, opts.grain), eq(geoStat.period_key, opts.periodKey), eq(geoStat.dataset, opts.dataset ?? "zen"), eq(geoStat.tier, opts.tier ?? "all"), eq(geoStat.client, opts.client ?? "all"), eq(geoStat.source, opts.source ?? "all"), eq(geoStat.provider, opts.provider ?? "all"), eq(geoStat.model, opts.model ?? "all"))),
-                catch: (cause) => DatabaseError.make({ cause }),
-            })), "GeoStatRepo.listByPeriod"); } }.listByPeriod);
-        const upsert = (rows) => Effect_1.suspend({ upsert: () => { return withSpan(Effect_1.gen(function* () {
-                yield* Effect.forEach(chunks(rows, UPSERT_CHUNK_SIZE), (chunk) => Effect.tryPromise({
+            }), "GeoStatRepo.listDaily"); });
+        };
+        const listByPeriod = (opts) => {
+            return Effect_1.gen(function* listByPeriod() { return yield* withSpan(Effect_1.gen(function* () {
+                return yield* Effect.tryPromise({
+                    try: () => db
+                        .select()
+                        .from(geoStat)
+                        .where(and(eq(geoStat.grain, opts.grain), eq(geoStat.period_key, opts.periodKey), eq(geoStat.dataset, opts.dataset ?? "zen"), eq(geoStat.tier, opts.tier ?? "all"), eq(geoStat.client, opts.client ?? "all"), eq(geoStat.source, opts.source ?? "all"), eq(geoStat.provider, opts.provider ?? "all"), eq(geoStat.model, opts.model ?? "all"))),
+                    catch: (cause) => DatabaseError.make({ cause }),
+                });
+            }), "GeoStatRepo.listByPeriod"); });
+        };
+        const upsert = (rows) => {
+            return Effect_1.gen(function* upsert() { return yield* withSpan(Effect_1.gen(function* () {
+                yield* Effect.forEach(yield* Effect.orDie(Effect.try({ try: () => chunks(rows, UPSERT_CHUNK_SIZE), catch: (e) => e })), (chunk) => Effect.tryPromise({
                     try: () => withUniqueUsersFallback((includeUniqueUsers) => upsertGeoChunk(chunk, includeUniqueUsers)),
                     catch: (cause) => DatabaseError.make({ cause }),
                 }), { discard: true });
-            }), "GeoStatRepo.upsert"); } }.upsert);
+            }), "GeoStatRepo.upsert"); });
+        };
         function upsertGeoChunk(chunk, includeUniqueUsers) {
             return db
                 .insert(geoStat)
@@ -87,8 +95,9 @@ export class GeoStatRepo extends Context.Service()("@opencode/stats/GeoStatRepo"
                 },
             });
         }
-        const deleteRetiredDimensions = (rows, hiddenModels) => Effect_1.suspend({ deleteRetiredDimensions: () => { return withSpan(Effect_1.gen(function* () {
-                const scope = statRowScope(rows);
+        const deleteRetiredDimensions = (rows, hiddenModels) => {
+            return Effect_1.gen(function* deleteRetiredDimensions() { return yield* withSpan(Effect_1.gen(function* () {
+                const scope = yield* Effect.orDie(Effect.try({ try: () => statRowScope(rows), catch: (e) => e }));
                 if (!scope)
                     return;
                 yield* Effect.tryPromise({
@@ -97,9 +106,11 @@ export class GeoStatRepo extends Context.Service()("@opencode/stats/GeoStatRepo"
                         .where(and(inArray(geoStat.grain, scope.grains), inArray(geoStat.period_key, scope.periodKeys), inArray(geoStat.dataset, scope.datasets), inArray(geoStat.client, scope.clients), inArray(geoStat.source, scope.sources), or(inArray(geoStat.provider, RETIRED_STAT_PROVIDERS), inArray(geoStat.model, [...RETIRED_STAT_MODELS, ...hiddenModels]), and(eq(geoStat.provider, "unknown"), eq(geoStat.model, "hy4-preview"))))),
                     catch: (cause) => DatabaseError.make({ cause }),
                 });
-            }), "GeoStatRepo.deleteRetiredDimensions"); } }.deleteRetiredDimensions);
-        const deleteUnknownDimensions = (rows) => Effect_1.suspend({ deleteUnknownDimensions: () => { return withSpan(Effect_1.gen(function* () {
-                const scope = statRowScope(rows);
+            }), "GeoStatRepo.deleteRetiredDimensions"); });
+        };
+        const deleteUnknownDimensions = (rows) => {
+            return Effect_1.gen(function* deleteUnknownDimensions() { return yield* withSpan(Effect_1.gen(function* () {
+                const scope = yield* Effect.orDie(Effect.try({ try: () => statRowScope(rows), catch: (e) => e }));
                 if (!scope)
                     return;
                 const replacements = new Set(rows.map((row) => [statPeriodKey(row), row.model, row.country].join("\u0000")));
@@ -123,11 +134,12 @@ export class GeoStatRepo extends Context.Service()("@opencode/stats/GeoStatRepo"
                 const ids = stale
                     .filter((row) => replacements.has([statPeriodKey(row), row.model, row.country].join("\u0000")))
                     .map((row) => row.id);
-                yield* Effect.forEach(chunks(ids, UPSERT_CHUNK_SIZE), (chunk) => Effect.tryPromise({
+                yield* Effect.forEach(yield* Effect.orDie(Effect.try({ try: () => chunks(ids, UPSERT_CHUNK_SIZE), catch: (e) => e })), (chunk) => Effect.tryPromise({
                     try: () => db.delete(geoStat).where(and(eq(geoStat.provider, "unknown"), inArray(geoStat.id, chunk))),
                     catch: (cause) => DatabaseError.make({ cause }),
                 }), { discard: true });
-            }), "GeoStatRepo.deleteUnknownDimensions"); } }.deleteUnknownDimensions);
+            }), "GeoStatRepo.deleteUnknownDimensions"); });
+        };
         return GeoStatRepo.of({ listDaily, listByPeriod, upsert, deleteRetiredDimensions, deleteUnknownDimensions });
     }));
 }

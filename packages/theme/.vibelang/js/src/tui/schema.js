@@ -38,16 +38,16 @@ const StatefulColorDefinition = Schema.Struct({
     $disabled: Schema.optional(ColorValue),
 });
 const ActionColorDefinition = Schema.Struct({
-    primary: Schema.optional(StatefulColorDefinition),
-    secondary: Schema.optional(StatefulColorDefinition),
-    destructive: Schema.optional(StatefulColorDefinition),
+    primary: Schema.mutableKey(Schema.optional(StatefulColorDefinition)),
+    secondary: Schema.mutableKey(Schema.optional(StatefulColorDefinition)),
+    destructive: Schema.mutableKey(Schema.optional(StatefulColorDefinition)),
 });
 const TextFeedbackDefinition = Schema.Struct({
-    base: Schema.optional(ColorValue),
-    muted: Schema.optional(ColorValue),
+    base: Schema.mutableKey(Schema.optional(ColorValue)),
+    muted: Schema.mutableKey(Schema.optional(ColorValue)),
 });
 const BackgroundFeedbackDefinition = Schema.Struct({
-    base: Schema.optional(ColorValue),
+    base: Schema.mutableKey(Schema.optional(ColorValue)),
 });
 const TextDefinition = Schema.Struct({
     base: Schema.optional(ColorValue),
@@ -135,77 +135,77 @@ const ThemeTokensDefinition = Schema.Struct({
     markdown: Schema.optional(MarkdownDefinition),
 });
 const CompleteStatefulColorDefinition = Schema.Struct({
-    base: ColorValue,
-    $hovered: Schema.optional(ColorValue),
-    $focused: Schema.optional(ColorValue),
-    $pressed: Schema.optional(ColorValue),
-    $selected: Schema.optional(ColorValue),
-    $disabled: Schema.optional(ColorValue),
+    base: Schema.mutableKey(ColorValue),
+    $hovered: Schema.mutableKey(Schema.optional(ColorValue)),
+    $focused: Schema.mutableKey(Schema.optional(ColorValue)),
+    $pressed: Schema.mutableKey(Schema.optional(ColorValue)),
+    $selected: Schema.mutableKey(Schema.optional(ColorValue)),
+    $disabled: Schema.mutableKey(Schema.optional(ColorValue)),
 });
 const CompleteActionColorDefinition = Schema.Struct({
-    primary: CompleteStatefulColorDefinition,
-    secondary: CompleteStatefulColorDefinition,
-    destructive: CompleteStatefulColorDefinition,
+    primary: Schema.mutableKey(CompleteStatefulColorDefinition),
+    secondary: Schema.mutableKey(CompleteStatefulColorDefinition),
+    destructive: Schema.mutableKey(CompleteStatefulColorDefinition),
 });
 const CompleteTextFeedbackDefinition = Schema.Struct({
-    base: ColorValue, muted: Schema.optional(ColorValue),
+    base: Schema.mutableKey(ColorValue), muted: Schema.mutableKey(Schema.optional(ColorValue)),
 });
 const CompleteBackgroundFeedbackDefinition = Schema.Struct({
-    base: ColorValue,
+    base: Schema.mutableKey(ColorValue),
 });
 const CompleteThemeTokensDefinition = Schema.Struct({
-    text: Schema.Struct({
-        base: ColorValue,
-        muted: ColorValue,
-        faint: Schema.optional(ColorValue),
-        action: CompleteActionColorDefinition,
-        formfield: CompleteStatefulColorDefinition,
-        feedback: Schema.Struct({
-            error: CompleteTextFeedbackDefinition,
-            warning: CompleteTextFeedbackDefinition,
-            success: CompleteTextFeedbackDefinition,
-            info: CompleteTextFeedbackDefinition,
-        }),
-    }),
-    background: Schema.Struct({
-        base: ColorValue,
-        raised: Schema.Struct({
-            base: ColorValue, high: ColorValue, max: ColorValue,
-        }),
-        action: CompleteActionColorDefinition,
-        formfield: CompleteStatefulColorDefinition,
-        feedback: Schema.Struct({
-            error: CompleteBackgroundFeedbackDefinition,
-            warning: CompleteBackgroundFeedbackDefinition,
-            success: CompleteBackgroundFeedbackDefinition,
-            info: CompleteBackgroundFeedbackDefinition,
-        }),
-    }),
-    border: Schema.Struct({
-        base: ColorValue,
-    }),
-    scrollbar: Schema.Struct({
-        base: ColorValue,
-    }),
-    diff: Schema.Struct({
-        text: Schema.Struct({
-            added: ColorValue, removed: ColorValue, context: ColorValue, hunkHeader: ColorValue,
-        }),
-        background: Schema.Struct({
-            added: ColorValue, removed: ColorValue, context: ColorValue,
-        }),
-        highlight: Schema.Struct({
-            added: ColorValue, removed: ColorValue,
-        }),
-        lineNumber: Schema.Struct({
-            text: ColorValue,
-            background: Schema.Struct({
-                added: ColorValue, removed: ColorValue,
-            }),
-        }),
-    }),
-    syntax: Schema.Record(SyntaxToken, HueColorValue),
-    markdown: Schema.Record(MarkdownToken, HueColorValue),
+    text: Schema.mutableKey(Schema.Struct({
+        base: Schema.mutableKey(ColorValue),
+        muted: Schema.mutableKey(ColorValue),
+        faint: Schema.mutableKey(Schema.optional(ColorValue)),
+        action: Schema.mutableKey(CompleteActionColorDefinition),
+        formfield: Schema.mutableKey(CompleteStatefulColorDefinition),
+        feedback: Schema.mutableKey(Schema.Struct({
+            error: Schema.mutableKey(CompleteTextFeedbackDefinition),
+            warning: Schema.mutableKey(CompleteTextFeedbackDefinition),
+            success: Schema.mutableKey(CompleteTextFeedbackDefinition),
+            info: Schema.mutableKey(CompleteTextFeedbackDefinition),
+        })),
+    })),
+    background: Schema.mutableKey(Schema.Struct({
+        base: Schema.mutableKey(ColorValue),
+        raised: Schema.mutableKey(Schema.Struct({
+            base: Schema.mutableKey(ColorValue), high: Schema.mutableKey(ColorValue), max: Schema.mutableKey(ColorValue),
+        })),
+        action: Schema.mutableKey(CompleteActionColorDefinition),
+        formfield: Schema.mutableKey(CompleteStatefulColorDefinition),
+        feedback: Schema.mutableKey(Schema.Struct({
+            error: Schema.mutableKey(CompleteBackgroundFeedbackDefinition),
+            warning: Schema.mutableKey(CompleteBackgroundFeedbackDefinition),
+            success: Schema.mutableKey(CompleteBackgroundFeedbackDefinition),
+            info: Schema.mutableKey(CompleteBackgroundFeedbackDefinition),
+        })),
+    })),
+    border: Schema.mutableKey(Schema.Struct({
+        base: Schema.mutableKey(ColorValue),
+    })),
+    scrollbar: Schema.mutableKey(Schema.Struct({
+        base: Schema.mutableKey(ColorValue),
+    })),
+    diff: Schema.mutableKey(Schema.Struct({
+        text: Schema.mutableKey(Schema.Struct({
+            added: Schema.mutableKey(ColorValue), removed: Schema.mutableKey(ColorValue), context: Schema.mutableKey(ColorValue), hunkHeader: Schema.mutableKey(ColorValue),
+        })),
+        background: Schema.mutableKey(Schema.Struct({
+            added: Schema.mutableKey(ColorValue), removed: Schema.mutableKey(ColorValue), context: Schema.mutableKey(ColorValue),
+        })),
+        highlight: Schema.mutableKey(Schema.Struct({
+            added: Schema.mutableKey(ColorValue), removed: Schema.mutableKey(ColorValue),
+        })),
+        lineNumber: Schema.mutableKey(Schema.Struct({
+            text: Schema.mutableKey(ColorValue),
+            background: Schema.mutableKey(Schema.Struct({
+                added: Schema.mutableKey(ColorValue), removed: Schema.mutableKey(ColorValue),
+            })),
+        })),
+    })),
+    syntax: Schema.mutableKey(Schema.Record(SyntaxToken, HueColorValue)),
+    markdown: Schema.mutableKey(Schema.Record(MarkdownToken, HueColorValue)),
 });
 const ThemeDefinitionFields = Schema.Struct({
     hue: HueDefinition,

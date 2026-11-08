@@ -392,16 +392,16 @@ const SessionSummary = Schema.Struct({
     diffs: optional(Schema.Array(FileDiff.LegacyInfo)),
 });
 const SessionTokens = Schema.Struct({
-    input: Schema.Finite,
-    output: Schema.Finite,
-    reasoning: Schema.Finite,
-    cache: Schema.Struct({
-        read: Schema.Finite,
-        write: Schema.Finite,
-    }),
+    input: Schema.mutableKey(Schema.Finite),
+    output: Schema.mutableKey(Schema.Finite),
+    reasoning: Schema.mutableKey(Schema.Finite),
+    cache: Schema.mutableKey(Schema.Struct({
+        read: Schema.mutableKey(Schema.Finite),
+        write: Schema.mutableKey(Schema.Finite),
+    })),
 });
 const SessionShare = Schema.Struct({
-    url: Schema.String,
+    url: Schema.mutableKey(Schema.String),
 });
 const SessionRevert = Schema.Struct({
     messageID: MessageID,

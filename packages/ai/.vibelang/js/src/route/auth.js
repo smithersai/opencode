@@ -4,8 +4,9 @@ import * as Effect from "effect/Effect";
 import * as Headers from "effect/http/Headers";
 import * as Option from "effect/Option";
 import * as Redacted from "effect/Redacted";
-import { $catchExpression } from "vibelang-runtime";
+import { $catchExpression } from "vibelang-runtime/internal";
 import * as Effect_1 from "effect/Effect";
+import * as runtime from "vibelang-runtime/internal";
 import { AuthenticationError, AIError } from "../schema/index.js";
 export class MissingCredentialError extends Error {
     source;
@@ -18,10 +19,21 @@ export class MissingCredentialError extends Error {
 const credential = (load) => {
     const self = {
         load,
-        orElse: (that) => credential((() => {
-            const catchProgram = load;
-            return Effect_1.suspend(() => $catchExpression(() => catchProgram, () => Effect_1.suspend(() => { return that.load; })));
-        })()),
+        orElse: (that) => {
+            const $do_t1 = credential;
+            let $do1;
+            {
+                const catchProgram = load;
+                $do1
+                    =
+                        Effect_1.gen(function* () {
+                            return yield* runtime.$catch(yield* (() => { return Effect_1.sync(() => { return catchProgram; }); })(), () => {
+                                return Effect_1.gen(function* () { return yield* that.load; });
+                            });
+                        });
+            }
+            return $do_t1($do1);
+        },
         bearer: () => fromCredential(self, (secret) => ({ authorization: `Bearer ${secret}` })),
         header: (name) => fromCredential(self, (secret) => ({ [name]: secret })),
         pipe: (f) => f(self),
@@ -32,10 +44,20 @@ const auth = (apply) => {
     const self = {
         apply,
         andThen: (that) => auth((input) => Effect.flatMap(apply(input), (headers) => that.apply({ ...input, headers }))),
-        orElse: (that) => auth((input) => (() => {
-            const catchProgram = apply(input);
-            return Effect_1.suspend(() => $catchExpression(() => catchProgram, () => Effect_1.suspend(() => { return that.apply(input); })));
-        })()),
+        orElse: (that) => auth((input) => {
+            let $do2;
+            {
+                const catchProgram = apply(input);
+                $do2
+                    =
+                        Effect_1.gen(function* () {
+                            return yield* runtime.$catch(yield* (() => { return Effect_1.sync(() => { return catchProgram; }); })(), () => {
+                                return Effect_1.gen(function* () { return yield* that.apply(input); });
+                            });
+                        });
+            }
+            return $do2;
+        }),
         pipe: (f) => f(self),
     };
     return self;

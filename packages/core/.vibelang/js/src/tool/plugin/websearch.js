@@ -2,7 +2,9 @@
 import * as HttpClientError from "effect/http/HttpClientError";
 import * as Semaphore from "effect/Semaphore";
 import { withSpan } from "effect/Effect";
+import { $catchExpression, $matchCache } from "vibelang-runtime/internal";
 import * as Effect_1 from "effect/Effect";
+import * as runtime from "vibelang-runtime/internal";
 import * as Schema_1 from "effect/Schema";
 export * as WebSearchTool from "./websearch.js";
 import { ToolFailure } from "@opencode/ai/effect";
@@ -29,7 +31,8 @@ const Output = Schema_1.Struct({
 });
 export const Plugin = {
     id: "opencode.tool.websearch",
-    effect: (ctx) => Effect_1.suspend({ effect: () => { return withSpan(Effect_1.gen(function* () {
+    effect: (ctx) => {
+        return Effect_1.gen(function* effect() { return yield* withSpan(Effect_1.gen(function* () {
             const permission = yield* Permission.Service;
             const forms = yield* Form.Service;
             const websearch = yield* WebSearch.Service;
@@ -54,84 +57,107 @@ export const Plugin = {
                         sessionID: context.sessionID,
                         onProvider: (provider) => context.progress({ provider: provider.id }),
                     });
-                    const result = yield* (Effect.catchTag(search(), "WebSearch.ProviderRequired", () => {
-                        return Effect.flatMap(Effect.timeoutOrElse(providerSelectionLock
-                            .withPermit(Effect_1.gen(function* () {
-                            if (yield* websearch.default())
-                                return;
-                            const providers = (yield* ctx.websearch.providers()).data;
-                            const defaultProvider = providers[0];
-                            if (!defaultProvider)
-                                return yield* Effect_1.fail(new WebSearch.ProviderRequiredError());
-                            const response = yield* forms.ask({
-                                sessionID: context.sessionID,
-                                title: "Web Search",
-                                metadata: { kind: "websearch.provider" },
-                                fields: [
-                                    {
-                                        key: "choice",
-                                        description: "Allow OpenCode to search the web for up-to-date information?",
-                                        type: "string",
-                                        required: true,
-                                        custom: false,
-                                        options: [
-                                            {
-                                                value: "allow",
-                                                label: `Allow search via ${providers.map((provider) => provider.name).join(", ")}`,
-                                            },
-                                            {
-                                                value: "choose",
-                                                label: "Choose another provider",
-                                            },
-                                            { value: "disable", label: "Disable web search" },
-                                        ],
-                                    },
-                                ],
-                            });
-                            if (response.status === "cancelled") {
-                                return yield* Effect_1.fail(new Error("Web search cancelled"));
+                    const result = yield* runtime.$catch(yield* (() => { return Effect_1.sync(() => { return search(); }); })(), (e) => (_tail_1 => { return Effect_1.gen(function* () {
+                        const _completion_1 = _tail_1(), _value_1 = _completion_1[1];
+                        return _completion_1[0] ? yield* _value_1 : _value_1;
+                    }); })(() => { return [true, (Effect_1.fnUntraced(function* () {
+                            const $matchCache2 = $matchCache();
+                            try {
+                                const $match1 = e;
+                                {
+                                    if ((typeof $match1 === "function" || typeof $match1 === "object") && $match1
+                                        !== null && $matchCache2.propertyHas($match1, "_tag") && $matchCache2.get($match1, "_tag") === "WebSearch.ProviderRequired") {
+                                        return yield* (Effect.flatMap(Effect.timeoutOrElse(providerSelectionLock
+                                            .withPermit(Effect_1.gen(function* () {
+                                            if (yield* websearch.default())
+                                                return;
+                                            const providers = (yield* ctx.websearch.providers()).data;
+                                            const defaultProvider = providers[0];
+                                            if (!defaultProvider)
+                                                return yield* Effect_1.fail(new WebSearch.ProviderRequiredError());
+                                            const response = yield* forms.ask({
+                                                sessionID: context.sessionID,
+                                                title: "Web Search",
+                                                metadata: { kind: "websearch.provider" },
+                                                fields: [
+                                                    {
+                                                        key: "choice",
+                                                        description: "Allow OpenCode to search the web for up-to-date information?",
+                                                        type: "string",
+                                                        required: true,
+                                                        custom: false,
+                                                        options: [
+                                                            {
+                                                                value: "allow",
+                                                                label: `Allow search via ${providers.map((provider) => provider.name).join(", ")}`,
+                                                            },
+                                                            {
+                                                                value: "choose",
+                                                                label: "Choose another provider",
+                                                            },
+                                                            { value: "disable", label: "Disable web search" },
+                                                        ],
+                                                    },
+                                                ],
+                                            });
+                                            if (response.status === "cancelled") {
+                                                return yield* Effect_1.fail(new Error("Web search cancelled"));
+                                            }
+                                            if (response.answer.choice === "disable") {
+                                                yield* websearch.select(false);
+                                                return yield* Effect_1.fail(new WebSearch.DisabledError());
+                                            }
+                                            const selection = response.answer.choice === "choose"
+                                                ? yield* forms.ask({
+                                                    sessionID: context.sessionID,
+                                                    title: "Choose a web search provider",
+                                                    metadata: { kind: "websearch.provider" },
+                                                    fields: [
+                                                        {
+                                                            key: "provider",
+                                                            description: "Choose a provider for web search.",
+                                                            type: "string",
+                                                            required: true,
+                                                            custom: false,
+                                                            options: providers.map((provider) => ({
+                                                                value: provider.id,
+                                                                label: provider.name,
+                                                            })),
+                                                        },
+                                                    ],
+                                                }) : undefined;
+                                            if (selection?.status === "cancelled") {
+                                                return yield* Effect_1.fail(new Error("Web search cancelled"));
+                                            }
+                                            const providerID = selection?.answer.provider ?? "random";
+                                            if (providerID === "random") {
+                                                yield* websearch.select("random");
+                                                return;
+                                            }
+                                            const provider = providers.find((provider) => provider.id === providerID);
+                                            if (!provider)
+                                                return yield* Effect_1.fail(new WebSearch.ProviderRequiredError());
+                                            yield* websearch.select(provider.id);
+                                            return provider.id;
+                                        })), {
+                                            duration: "1 minute",
+                                            orElse: () => Effect.fail(new Error("Web search cancelled")),
+                                        }), search));
+                                    }
+                                }
+                                return yield* (() => { return (_tail_2 => { return Effect_1.gen(function* () {
+                                    const _completion_2 = _tail_2(), _value_2 = _completion_2[1];
+                                    return _completion_2[0] ? yield* _value_2 : _value_2;
+                                }); })(() => { return [true, Effect_1.fail(e)]; }); })();
                             }
-                            if (response.answer.choice === "disable") {
-                                yield* websearch.select(false);
-                                return yield* Effect_1.fail(new WebSearch.DisabledError());
+                            catch (matchError_1) {
+                                $matchCache2.threw(matchError_1);
+                                throw matchError_1;
                             }
-                            const selection = response.answer.choice === "choose"
-                                ? yield* forms.ask({
-                                    sessionID: context.sessionID,
-                                    title: "Choose a web search provider",
-                                    metadata: { kind: "websearch.provider" },
-                                    fields: [
-                                        {
-                                            key: "provider",
-                                            description: "Choose a provider for web search.",
-                                            type: "string",
-                                            required: true,
-                                            custom: false,
-                                            options: providers.map((provider) => ({
-                                                value: provider.id,
-                                                label: provider.name,
-                                            })),
-                                        },
-                                    ],
-                                }) : undefined;
-                            if (selection?.status === "cancelled") {
-                                return yield* Effect_1.fail(new Error("Web search cancelled"));
+                            finally {
+                                $matchCache2.finish();
                             }
-                            const providerID = selection?.answer.provider ?? "random";
-                            if (providerID === "random") {
-                                yield* websearch.select("random");
-                                return;
-                            }
-                            const provider = providers.find((provider) => provider.id === providerID);
-                            if (!provider)
-                                return yield* Effect_1.fail(new WebSearch.ProviderRequiredError());
-                            yield* websearch.select(provider.id);
-                            return provider.id;
-                        })), {
-                            duration: "1 minute",
-                            orElse: () => Effect.fail(new Error("Web search cancelled")),
-                        }), search);
-                    }));
+                        }))()]; }));
                     const output = {
                         provider: result.providerID,
                         results: result.results,
@@ -164,13 +190,35 @@ export const Plugin = {
                     });
                 }),
             }))));
-            const hook = Effect_1.fnUntraced(function* hook(event) {
-                const disabled = yield* (Effect.catchTag(Effect.as(websearch.default(), false), "WebSearch.Disabled", () => Effect.succeed(true)));
-                if (disabled)
-                    delete event.tools[name];
-            });
+            const hook = (event) => {
+                return Effect_1.gen(function* hook() {
+                    const disabled = yield* runtime.$catch(yield* (() => { return Effect_1.sync(() => { return (Effect.as(websearch.default(), false)); }); })(), (e) => Effect_1.sync(() => { return (() => {
+                        const $matchCache4 = $matchCache();
+                        try {
+                            const $match3 = e;
+                            {
+                                {
+                                    runtime.$assertMatch((typeof $match3 === "function" || typeof $match3 === "object") && $match3
+                                        !== null && $matchCache4.propertyHas($match3, "_tag") && $matchCache4.get($match3, "_tag") === "WebSearch.Disabled", $match3);
+                                    return true;
+                                }
+                            }
+                        }
+                        catch (matchError_2) {
+                            $matchCache4.threw(matchError_2);
+                            throw matchError_2;
+                        }
+                        finally {
+                            $matchCache4.finish();
+                        }
+                    })(); }));
+                    if (disabled)
+                        delete event.tools[name];
+                });
+            };
             yield* ctx.session.hook("context", hook);
             yield* ctx.session.hook("compaction", hook);
             yield* ctx.session.hook("generate", hook);
-        }), "WebSearchTool.Plugin"); } }.effect),
+        }), "WebSearchTool.Plugin"); });
+    },
 };

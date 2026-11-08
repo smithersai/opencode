@@ -5,7 +5,6 @@ import * as Option from "effect/Option";
 import * as RcMap from "effect/RcMap";
 import * as Schema from "effect/Schema";
 import * as Effect_1 from "effect/Effect";
-import * as runtime from "vibelang-runtime";
 export * as LocationActivity from "./location-activity.js";
 import { Context, Duration, Layer } from "effect";
 import { Bus } from "./bus.js";
@@ -31,9 +30,11 @@ export function layer(options = {}) {
         const timeToLive = Duration.fromInputUnsafe(options.timeToLive ?? "60 minutes");
         const entries = new Map();
         const key = (ref) => `${LocationServiceMap.canonical(ref).directory}\0${ref.workspaceID ?? ""}`;
-        const touch = (ref) => Effect.sync(() => {
-            entries.set(key(ref), { ref, touchedAt: clock.currentTimeMillisUnsafe() });
-        });
+        const touch = (ref) => {
+            return Effect_1.gen(function* touch() {
+                entries.set(key(ref), { ref, touchedAt: clock.currentTimeMillisUnsafe() });
+            });
+        };
         // Read per location so project config can override the global value.
         const idleTimeout = (ref) => Effect.orElseSucceed(Effect.scoped(Effect_1.gen(function* () {
             const context = yield* locations.contextEffectOption(ref);
@@ -50,32 +51,14 @@ export function layer(options = {}) {
             return Effect.flatMap(RcMap.has(locations.rcMap, location), (active) => (active ? touch(location) : Effect.void));
         });
         yield* Effect.addFinalizer(() => unsubscribe);
-        yield* (Effect.forkScoped(Effect.forever(Effect_1.gen(runtime.$joinedFrame(function* () {
+        yield* (Effect.forkScoped(Effect.forever(Effect_1.gen(function* () {
             yield* Effect.sleep(options.sweepInterval ?? "1 minute");
             const refs = Array.from(yield* RcMap.keys(locations.rcMap));
             const cached = new Set(refs.map(key));
             yield* Effect.forEach(refs, (ref) => (entries.has(key(ref)) ? Effect.void : touch(ref)), { discard: true });
-            {
-                let pending_1 = runtime.$normal;
-                try {
-                    for (const id of entries.keys()) {
-                        try {
-                            {
-                                if (!cached.has(id))
-                                    entries.delete(id);
-                            }
-                        }
-                        catch (thrown_1) {
-                            pending_1 = thrown_1;
-                            break;
-                        }
-                    }
-                }
-                catch (thrown_2) {
-                    throw runtime.$finallyFailure(pending_1, thrown_2);
-                }
-                if (pending_1 !== runtime.$normal)
-                    throw pending_1;
+            for (const id of entries.keys()) {
+                if (!cached.has(id))
+                    entries.delete(id);
             }
             const now = clock.currentTimeMillisUnsafe();
             const expired = yield* Effect.filter(Array.from(entries.values()), (entry) => Effect.map(idleTimeout(entry.ref), (timeout) => timeout !== false && entry.touchedAt + Duration.toMillis(timeout) <= now));
@@ -96,7 +79,7 @@ export function layer(options = {}) {
                     workspaceID: entry.ref.workspaceID,
                 }), locations.invalidate(entry.ref));
             }, { discard: true });
-        })))));
+        }))));
         return Service.of({});
     }));
 }

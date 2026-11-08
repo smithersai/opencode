@@ -18,17 +18,18 @@ const MetaCacheControl = Schema.Struct({
     ttl: Schema.optional(CacheTTL),
 });
 const FunctionTool = Schema.Struct({
-    name: Schema.String,
-    description: Schema.String,
-    input_schema: JsonObject,
-    cache_control: Schema.optional(MetaCacheControl),
+    name: Schema.mutableKey(Schema.String),
+    description: Schema.mutableKey(Schema.String),
+    input_schema: Schema.mutableKey(JsonObject),
+    cache_control: Schema.mutableKey(Schema.optional(MetaCacheControl)),
 });
 const Body = Schema.Struct({
     ...AnthropicMessages.AnthropicMessagesBody.fields,
     tools: optionalArray(Schema.Union([FunctionTool, WebSearch])),
 });
-const fromRequest = (request) => Effect_1.suspend({ fromRequest: () => { return withSpan(Effect_1.gen(function* () {
-        const projected = ProviderShared.flattenToolRequest(request);
+const fromRequest = (request) => {
+    return Effect_1.gen(function* fromRequest() { return yield* withSpan(Effect_1.gen(function* () {
+        const projected = yield* Effect.orDie(Effect.try({ try: () => ProviderShared.flattenToolRequest(request), catch: (e) => e }));
         const body = yield* AnthropicMessages.protocol.body.from(projected.request);
         return {
             ...body,
@@ -46,18 +47,21 @@ const fromRequest = (request) => Effect_1.suspend({ fromRequest: () => { return 
             }),
             tools: body.tools === undefined
                 ? undefined
-                : yield* Effect.forEach(body.tools, Effect_1.fnUntraced(function* (tool, index) {
-                    const native = projected.tools[index]?.native;
-                    if (native === undefined)
-                        return tool;
-                    const search = yield* ProviderShared.validateWith(Schema.decodeUnknownEffect(MetaResponses.WebSearch))(native.meta);
-                    if (search.search_context_size !== undefined) {
-                        return yield* Effect_1.fail(ProviderShared.invalidRequest("Meta Messages does not support searchContextSize"));
-                    }
-                    return { type: "web_search", name: "web_search", user_location: search.user_location };
-                })),
+                : yield* Effect.forEach(body.tools, (tool, index) => {
+                    return Effect_1.gen(function* () {
+                        const native = projected.tools[index]?.native;
+                        if (native === undefined)
+                            return tool;
+                        const search = yield* (yield* Effect.orDie(Effect.try({ try: () => ProviderShared.validateWith(Schema.decodeUnknownEffect(MetaResponses.WebSearch)), catch: (e) => e })))(native.meta);
+                        if (search.search_context_size !== undefined) {
+                            return yield* Effect_1.fail(yield* Effect.orDie(Effect.try({ try: () => ProviderShared.invalidRequest("Meta Messages does not support searchContextSize"), catch: (e) => e })));
+                        }
+                        return { type: "web_search", name: "web_search", user_location: search.user_location };
+                    });
+                }),
         };
-    }), "MetaMessages.fromRequest"); } }.fromRequest);
+    }), "MetaMessages.fromRequest"); });
+};
 export const protocol = Protocol.make({
     id: "meta-messages",
     body: { schema: Body, from: fromRequest },

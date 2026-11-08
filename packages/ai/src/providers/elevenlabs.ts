@@ -3,10 +3,10 @@ import type { ProviderAuthOption } from "../route/auth-options.vibe"
 import { MediaRoute } from "../route/media.vibe"
 import { type HttpOptions, ProviderID, type ModelID } from "../schema/index.js"
 import { ElevenLabsSpeech } from "../protocols/elevenlabs-speech.vibe"
-import { ElevenLabsTranscription } from "../protocols/elevenlabs-transcription.js"
+import { ElevenLabsTranscription } from "../protocols/elevenlabs-transcription.vibe"
 
 export type { ElevenLabsOutputFormat, ElevenLabsSpeechOptions } from "../protocols/elevenlabs-speech.vibe"
-export type { ElevenLabsTranscriptionOptions } from "../protocols/elevenlabs-transcription.js"
+export type { ElevenLabsTranscriptionOptions } from "../protocols/elevenlabs-transcription.vibe"
 
 export const id = ProviderID.make("elevenlabs")
 

@@ -5,8 +5,10 @@ import * as HttpClientRequest from "effect/http/HttpClientRequest";
 import * as Redacted from "effect/Redacted";
 import * as Schema from "effect/Schema";
 import { withSpan } from "effect/Effect";
-import { $catchExpression } from "vibelang-runtime";
+import { $catchExpression } from "vibelang-runtime/internal";
 import * as Effect_1 from "effect/Effect";
+import * as runtime from "vibelang-runtime/internal";
+import { MediaInput } from "../protocols/utils/media-input.js";
 import { RequestExecutor } from "../route/executor.js";
 import { AIError, InvalidProviderOutputError, InvalidRequestError } from "../schema/index.js";
 import { encodeJson } from "../utils/json.js";
@@ -33,7 +35,8 @@ export const engines = [
 ];
 // Matches the bare family name (`gpt-realtime`) and its versions (`gpt-realtime-2.1`, `gpt-realtime-mini`).
 export const engine = (model) => engines.find((item) => model === item.family || model.startsWith(`${item.family}-`));
-export const connect = (input) => Effect_1.suspend({ connect: () => { return withSpan(Effect_1.gen(function* () {
+export const connect = (input) => {
+    return Effect_1.gen(function* connect() { return yield* withSpan(Effect_1.gen(function* () {
         const resolved = engine(input.model);
         if (!resolved)
             return yield* Effect_1.fail(invalidRequest(`Unsupported voice model: ${input.model}`));
@@ -53,7 +56,7 @@ export const connect = (input) => Effect_1.suspend({ connect: () => { return wit
                         session,
                     });
                 }
-                const form = new FormData();
+                const form = MediaInput.formData();
                 form.append("sdp", input.transport.sdp);
                 form.append("session", encodeJson(session));
                 const query = input.transport.dcid === undefined ? "" : `?dcid=${input.transport.dcid}`;
@@ -81,7 +84,8 @@ export const connect = (input) => Effect_1.suspend({ connect: () => { return wit
                 };
             }
         }
-    }), "Realtime.connect"); } }.connect);
+    }), "Realtime.connect"); });
+};
 export const Realtime = {
     engines,
     engine,
@@ -105,13 +109,19 @@ const post = (route, url, apiKey, body, response, options = {}) => Effect_1.gen(
     const executor = yield* RequestExecutor.Service;
     const res = yield* executor.execute(HttpClientRequest.post(url).pipe(HttpClientRequest.setHeaders(options.headers ?? {}), options.authHeader
         ? HttpClientRequest.setHeader(options.authHeader, Redacted.value(apiKey))
-        : HttpClientRequest.bearerToken(apiKey), body instanceof FormData
+        : HttpClientRequest.bearerToken(apiKey), MediaInput.isFormData(body)
         ? HttpClientRequest.bodyFormData(body)
         : HttpClientRequest.bodyText(encodeJson(body), "application/json")));
     const http = RequestExecutor.responseHttp(res);
     const fail = (message, cause, raw) => new AIError({ reason: new InvalidProviderOutputError({ route, message, body: raw, http, cause }) });
-    const text = yield* $catchExpression(() => res.text, (cause) => Effect_1.suspend(() => { return Effect_1.fail(fail(`Failed to read ${route} response`, cause)); }));
-    return yield* $catchExpression(() => Schema.decodeEffect(response)(text), (cause) => Effect_1.suspend(() => { return Effect_1.fail(fail(`${route} returned an invalid response`, cause, text)); }));
+    const text = yield* runtime.$catch(yield* (() => { return Effect_1.sync(() => { return res.text; }); })(), (cause) => (_tail_1 => { return Effect_1.gen(function* () {
+        const _completion_1 = _tail_1(), _value_1 = _completion_1[1];
+        return _completion_1[0] ? yield* _value_1 : _value_1;
+    }); })(() => { return [true, Effect_1.fail(fail(`Failed to read ${route} response`, cause))]; }));
+    return yield* runtime.$catch(yield* (() => { return Effect_1.sync(() => { return Schema.decodeEffect(response)(text); }); })(), (cause) => (_tail_2 => { return Effect_1.gen(function* () {
+        const _completion_2 = _tail_2(), _value_2 = _completion_2[1];
+        return _completion_2[0] ? yield* _value_2 : _value_2;
+    }); })(() => { return [true, Effect_1.fail(fail(`${route} returned an invalid response`, cause, text))]; }));
 });
 const clientSecret = (route, baseURL, model, apiKey, body) => Effect.map(post(route, `${baseURL}/realtime/client_secrets`, apiKey, body, ClientSecretResponse), (data) => ({
     type: "websocket",

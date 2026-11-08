@@ -5,18 +5,18 @@ import { Plugin } from "@opencode/plugin/gui";
 import { BuiltinStore } from "@opencode/plugin/gui/builtin";
 import en from "./i18n/en";
 const DiffState = Schema.Struct({
-    diffStyle: Schema.Literals(["unified", "split"]),
+    diffStyle: Schema.mutableKey(Schema.Literals(["unified", "split"])),
 });
 const PanelState = Schema.Struct({
-    expandMode: Schema.Literals(["expand", "collapse"]),
+    expandMode: Schema.mutableKey(Schema.Literals(["expand", "collapse"])),
 });
 const MobileDiff = Schema.Struct({
-    wrap: Schema.Boolean,
+    wrap: Schema.mutableKey(Schema.Boolean),
 });
 const SessionState = Schema.Struct({
-    mode: Schema.optional(Schema.Literals(["git", "branch", "turn"])),
-    file: Schema.optional(Schema.String),
-    open: Schema.Array(Schema.String),
+    mode: Schema.mutableKey(Schema.optional(Schema.Literals(["git", "branch", "turn"]))),
+    file: Schema.mutableKey(Schema.optional(Schema.String)),
+    open: Schema.mutableKey(Schema.Array(Schema.String)),
 });
 export default Plugin.define({
     stores: {

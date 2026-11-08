@@ -52,13 +52,13 @@ export const configure = (input) => {
             : `${workspaceID}.${region}.maas.aliyuncs.com`;
     if (baseURL === undefined) {
         if (region === undefined) {
-            throw new ProviderConfigurationError({ provider: id, message: "Alibaba requires region or baseURL" });
+            $raise(new ProviderConfigurationError({ provider: id, message: "Alibaba requires region or baseURL" }));
         }
         if (host === undefined) {
-            throw new ProviderConfigurationError({
+            $raise(new ProviderConfigurationError({
                 provider: id,
                 message: `Alibaba region ${region} requires workspaceID or baseURL`,
-            });
+            }));
         }
     }
     const opts = { ...rest, auth: AuthOptions.bearer(input, ["DASHSCOPE_API_KEY", "ALIBABA_API_KEY"]) };
@@ -103,3 +103,4 @@ function hostedTool(type, description) {
     });
 }
 export * as Alibaba from "./alibaba.js";
+import { raise as $raise } from "./alibaba.vibe.-24-throw-24-ts.js";

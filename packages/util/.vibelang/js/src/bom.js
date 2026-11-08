@@ -24,16 +24,20 @@ export function syncBytes(content, bom) {
     const canonical = bom ? value + current.text : current.text;
     return { text: current.text, bytes: decoded === canonical ? undefined : new TextEncoder().encode(canonical) };
 }
-export const readFile = (fs, filepath) => Effect.suspend({ readFile: () => { return withSpan(Effect.gen(function* () {
+export const readFile = (fs, filepath) => {
+    return Effect.gen(function* readFile() { return yield* withSpan(Effect.gen(function* () {
         return decodeBytes(yield* fs.readFile(filepath));
-    }), "Bom.readFile"); } }.readFile);
-export const syncFile = (fs, filepath, bom) => Effect.suspend({ syncFile: () => { return withSpan(Effect.gen(function* () {
+    }), "Bom.readFile"); });
+};
+export const syncFile = (fs, filepath, bom) => {
+    return Effect.gen(function* syncFile() { return yield* withSpan(Effect.gen(function* () {
         const synced = syncBytes(yield* fs.readFile(filepath), bom);
         if (synced.bytes)
             yield* fs.writeWithDirs(filepath, synced.bytes);
         return synced.text;
-    }), "Bom.syncFile"); } }.syncFile);
+    }), "Bom.syncFile"); });
+};
 function decode(content) {
     return $invoke(new TextDecoder("utf-8", { ignoreBOM: true }), () => content);
 }
-import { $invoke } from "./bom.vibe.$call$ts.js";
+import { $invoke } from "./bom.vibe.-24-call-24-ts.js";

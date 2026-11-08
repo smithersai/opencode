@@ -41,7 +41,8 @@ export const protocol = MediaProtocol.inline(route, {
         })),
     },
     response: {
-        decode: (response, context) => Effect_1.suspend({ decode: () => { return withSpan(Effect_1.gen(function* () {
+        decode: (response, context) => {
+            return Effect_1.gen(function* decode() { return yield* withSpan(Effect_1.gen(function* () {
                 const output = yield* decodeEnvelope(response);
                 const result = output.value.result;
                 // Each answer decodes as the field it answers; extra answers are dropped.
@@ -56,14 +57,14 @@ export const protocol = MediaProtocol.inline(route, {
                 });
                 return new ExtractionResponse({
                     answers: Object.fromEntries(answers),
-                    usage: result.usage === undefined
-                        ? undefined
-                        : new Usage({
-                            inputTokens: result.usage.input_tokens,
-                            outputTokens: result.usage.output_tokens,
-                            totalTokens: ProviderShared.totalTokens(result.usage.input_tokens, result.usage.output_tokens, undefined),
-                            providerMetadata: { [route.provider]: result.usage },
-                        }),
+                    usage: yield* Effect.orDie(Effect.try({ try: () => result.usage === undefined
+                            ? undefined
+                            : new Usage({
+                                inputTokens: result.usage.input_tokens,
+                                outputTokens: result.usage.output_tokens,
+                                totalTokens: ProviderShared.totalTokens(result.usage.input_tokens, result.usage.output_tokens, undefined),
+                                providerMetadata: { [route.provider]: result.usage },
+                            }), catch: (e) => e })),
                     providerMetadata: {
                         [route.provider]: {
                             model: result.model,
@@ -72,7 +73,8 @@ export const protocol = MediaProtocol.inline(route, {
                         },
                     },
                 });
-            }), "CloudflareRunExtraction.decodeResponse"); } }.decode),
+            }), "CloudflareRunExtraction.decodeResponse"); });
+        },
     },
 });
 /** `baseURL` is the Run API base, `.../client/v4/accounts/{account}/ai/run`. */

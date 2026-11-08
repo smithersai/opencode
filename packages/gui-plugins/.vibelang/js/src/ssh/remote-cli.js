@@ -4,7 +4,9 @@ import * as HttpClient from "effect/http/HttpClient";
 import * as HttpClientResponse from "effect/http/HttpClientResponse";
 import * as Schema from "effect/Schema";
 import { withSpan } from "effect/Effect";
+import { $catchExpression } from "vibelang-runtime/internal";
 import * as Effect_1 from "effect/Effect";
+import * as runtime from "vibelang-runtime/internal";
 export * as RemoteCli from "./remote-cli.js";
 export class Failure extends Schema.TaggedError()("RemoteCliFailure", {
     code: Schema.Literals(["platform", "version", "install"]),
@@ -19,7 +21,7 @@ export function quote(value) {
 }
 export function requireVersion(version) {
     if (version !== "local" && !/^[0-9][a-zA-Z0-9.+-]*$/.test(version)) {
-        throw new Failure({ code: "version", detail: version });
+        $raise(new Failure({ code: "version", detail: version }));
     }
     return version;
 }
@@ -50,7 +52,7 @@ export function parseVersion(output) {
     const marker = line.lastIndexOf(" v");
     const version = marker === -1 ? line : line.slice(marker + 2);
     if (!version)
-        throw new Error("V2 CLI did not provide a version");
+        $raise(new Error("V2 CLI did not provide a version"));
     return version;
 }
 export const probeScript = `set -eu
@@ -67,7 +69,7 @@ printf 'OPENCODE_REMOTE_TARGET=%s\\n' "$target"
 `;
 export function archiveUrl(target, version) {
     if (!/^(linux|darwin)-(x64-baseline|arm64)(-musl)?$/.test(target)) {
-        throw new Failure({ code: "platform", detail: target });
+        $raise(new Failure({ code: "platform", detail: target }));
     }
     return `https://registry.npmjs.org/@opencode/cli-${target}/-/cli-${target}-${requireVersion(version)}.tgz`;
 }
@@ -108,8 +110,14 @@ function verifyScript(command, version) {
     return `test "$(${command} --version | awk '{print $NF}' | sed 's/^v//')" = ${quote(version)}`;
 }
 const Beta = Schema.Struct({ version: Schema.String.check(Schema.isPattern(/^0\.0\.0-beta-\d+(?:\.\d+)?$/)) });
-export const latestBeta = () => Effect_1.suspend({ latestBeta: () => { return withSpan(Effect_1.gen(function* () {
+export const latestBeta = () => {
+    return Effect_1.gen(function* latestBeta() { return yield* withSpan(Effect_1.gen(function* () {
         const http = yield* HttpClient.HttpClient;
-        const metadata = yield* (Effect.mapError(Effect.timeout(Effect.flatMap(Effect.flatMap(http.get("https://registry.npmjs.org/@opencode%2fcli/beta"), HttpClientResponse.filterStatusOk), HttpClientResponse.schemaBodyJson(Beta)), "30 seconds"), () => new Failure({ code: "install", detail: "https://registry.npmjs.org/@opencode%2fcli/beta" })));
+        const metadata = yield* runtime.$catch(yield* (() => { return Effect_1.sync(() => { return (Effect.timeout(Effect.flatMap(Effect.flatMap(http.get("https://registry.npmjs.org/@opencode%2fcli/beta"), HttpClientResponse.filterStatusOk), HttpClientResponse.schemaBodyJson(Beta)), "30 seconds")); }); })(), () => (_tail_1 => { return Effect_1.gen(function* () {
+            const _completion_1 = _tail_1(), _value_1 = _completion_1[1];
+            return _completion_1[0] ? yield* _value_1 : _value_1;
+        }); })(() => { return [true, Effect_1.fail(new Failure({ code: "install", detail: "https://registry.npmjs.org/@opencode%2fcli/beta" }))]; }));
         return metadata.version;
-    }), "RemoteCli.latestBeta"); } }.latestBeta);
+    }), "RemoteCli.latestBeta"); });
+};
+import { raise as $raise } from "./remote-cli.vibe.-24-throw-24-ts.js";

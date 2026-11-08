@@ -5,8 +5,10 @@ import { BrowserConnection } from "./connection.js";
 import { BrowserTools } from "./tools.js";
 export default Plugin.define({
     id: "opencode.browser",
-    effect: Effect.fnUntraced(function* effect(ctx) {
-        const connection = yield* BrowserConnection.make(ctx);
-        yield* BrowserTools.register(ctx, connection);
-    }),
+    effect: (ctx) => {
+        return Effect.gen(function* effect() {
+            const connection = yield* BrowserConnection.make(ctx);
+            yield* BrowserTools.register(ctx, connection);
+        });
+    },
 });

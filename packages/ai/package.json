@@ -243,8 +243,8 @@
       "default": "./.vibelang/js/src/providers/google.js"
     },
     "./providers/google-vertex": {
-      "types": "./src/providers/google-vertex.ts",
-      "vibelang-source": "./src/providers/google-vertex.ts",
+      "types": "./src/providers/google-vertex.d.vibe.ts",
+      "vibelang-source": "./src/providers/google-vertex.vibe",
       "default": "./.vibelang/js/src/providers/google-vertex.js"
     },
     "./providers/google-vertex-messages": {
@@ -558,8 +558,8 @@
       "default": "./.vibelang/js/src/protocols/cloudflare-run-decisions.js"
     },
     "./protocols/cloudflare-workers-ai-images": {
-      "types": "./src/protocols/cloudflare-workers-ai-images.ts",
-      "vibelang-source": "./src/protocols/cloudflare-workers-ai-images.ts",
+      "types": "./src/protocols/cloudflare-workers-ai-images.d.vibe.ts",
+      "vibelang-source": "./src/protocols/cloudflare-workers-ai-images.vibe",
       "default": "./.vibelang/js/src/protocols/cloudflare-workers-ai-images.js"
     },
     "./protocols/deepgram-transcription": "./src/protocols/deepgram-transcription.vibe",
@@ -589,8 +589,8 @@
       "default": "./.vibelang/js/src/protocols/openai-decisions.js"
     },
     "./protocols/openai-images": {
-      "types": "./src/protocols/openai-images.ts",
-      "vibelang-source": "./src/protocols/openai-images.ts",
+      "types": "./src/protocols/openai-images.d.vibe.ts",
+      "vibelang-source": "./src/protocols/openai-images.vibe",
       "default": "./.vibelang/js/src/protocols/openai-images.js"
     },
     "./protocols/openai-responses": {
@@ -604,8 +604,8 @@
       "default": "./.vibelang/js/src/protocols/openai-speech.js"
     },
     "./protocols/openai-transcription": {
-      "types": "./src/protocols/openai-transcription.ts",
-      "vibelang-source": "./src/protocols/openai-transcription.ts",
+      "types": "./src/protocols/openai-transcription.d.vibe.ts",
+      "vibelang-source": "./src/protocols/openai-transcription.vibe",
       "default": "./.vibelang/js/src/protocols/openai-transcription.js"
     },
     "./protocols/system-one": {

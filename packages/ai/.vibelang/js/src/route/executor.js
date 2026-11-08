@@ -9,7 +9,9 @@ import * as Layer from "effect/Layer";
 import * as Option from "effect/Option";
 import * as Schema from "effect/Schema";
 import * as Stream from "effect/Stream";
+import { $catchExpression } from "vibelang-runtime/internal";
 import * as Effect_1 from "effect/Effect";
+import * as runtime from "vibelang-runtime/internal";
 import { HttpContext, HttpRateLimitDetails, AIError, TransportError } from "../schema/index.js";
 import { classifyProviderFailure, providerErrorMessage } from "../provider-error.js";
 import { headerDetails, responseHttp, Service } from "./executor-service.js";
@@ -84,19 +86,21 @@ const providerMessage = (status, body) => {
         return fallback;
     return `${fallback}: ${text.length > MAX_BODY_CHARS ? `${text.slice(0, MAX_BODY_CHARS)}…` : text}`;
 };
-const statusError = Effect_1.fnUntraced(function* statusError(response) {
-    if (response.status < 400)
-        return response;
-    const result = yield* (Effect.result(response.text));
-    return yield* Effect_1.fail(httpFailure({
-        message: providerMessage(response.status, result._tag === "Success" ? result.success : undefined),
-        url: response.request.url,
-        status: response.status,
-        responseHeaders: headerDetails(response.headers),
-        responseBody: result._tag === "Success" ? result.success : undefined,
-        cause: result._tag === "Failure" ? (result.failure.cause ?? result.failure) : undefined,
-    }));
-});
+const statusError = (response) => {
+    return Effect_1.gen(function* statusError() {
+        if (response.status < 400)
+            return response;
+        const result = yield* (Effect.result(response.text));
+        return yield* Effect_1.fail(httpFailure({
+            message: providerMessage(response.status, result._tag === "Success" ? result.success : undefined),
+            url: response.request.url,
+            status: response.status,
+            responseHeaders: headerDetails(response.headers),
+            responseBody: result._tag === "Success" ? result.success : undefined,
+            cause: result._tag === "Failure" ? (result.failure.cause ?? result.failure) : undefined,
+        }));
+    });
+};
 /** Preserve HTTP diagnostics for executor and externally captured failures alike. */
 export const httpFailure = (input) => {
     const headers = normalizedHeaders(Headers.fromInput(input.responseHeaders));
@@ -189,14 +193,19 @@ export const stream = (executor, request, middleware) => Stream.unwrap(Effect_1.
 }));
 export const layer = Layer.effect(Service, Effect_1.gen(function* () {
     const http = yield* HttpClient.HttpClient;
-    const executeOnce = Effect_1.fnUntraced(function* executeOnce(request, middleware) {
-        if (!middleware) {
-            return yield* (Effect.flatMap(Effect.mapError(http.execute(request), (error) => httpError({ error, request, operation: "request" })), statusError));
-        }
-        const response = yield* (Effect.mapError(middleware(request, (input) => Effect.mapError(http
-            .execute(input), (cause) => (cause instanceof Error ? cause : new Error(String(cause))))), (error) => httpError({ error, request, operation: "request" })));
-        return yield* statusError(response);
-    });
+    const executeOnce = (request, middleware) => {
+        return Effect_1.gen(function* executeOnce() {
+            if (!middleware) {
+                return yield* (Effect.flatMap(Effect.mapError(http.execute(request), (error) => httpError({ error, request, operation: "request" })), statusError));
+            }
+            const response = yield* runtime.$catch(yield* (() => { return Effect_1.sync(() => { return middleware(request, (input) => Effect.mapError(http
+                .execute(input), (cause) => (cause instanceof Error ? cause : new Error(String(cause))))); }); })(), (error) => (_tail_1 => { return Effect_1.gen(function* () {
+                const _completion_1 = _tail_1(), _value_1 = _completion_1[1];
+                return _completion_1[0] ? yield* _value_1 : _value_1;
+            }); })(() => { return [true, Effect_1.fail(httpError({ error, request, operation: "request" }))]; }));
+            return yield* statusError(response);
+        });
+    };
     return Service.of({
         execute: executeOnce,
     });

@@ -15,7 +15,7 @@ import { collectBoundedResponseBody } from "../../tool/http-body.js";
 import { WebSearchMcp } from "./mcp.js";
 import { trusted } from "vibelang-runtime";
 // App.useragent is plain TypeScript that throws only programmer errors.
-const userAgentOf = trusted(App.useragent, []);
+const userAgentOf_impl = (void trusted, App.useragent), userAgentOf = function (...args) { return userAgentOf_impl.apply(void 0, args); };
 export const endpoint = "https://agent.tinyfish.ai/mcp";
 const McpInput = Schema.Struct({
     query: Schema.String,
@@ -51,47 +51,53 @@ const InitializedNotification = Schema.Struct({
 });
 export const Plugin = define({
     id: "opencode.websearch.tinyfish",
-    effect: (ctx) => Effect_1.suspend({ effect: () => { return withSpan((Effect_1.fnUntraced(function* () {
-            const http = yield* HttpClient.HttpClient;
-            yield* ctx.integration.transform((editor) => {
-                editor.update("tinyfish", (integration) => (integration.name = "TinyFish"));
-                editor.method.update({
-                    integrationID: "tinyfish",
-                    method: { type: "key" },
+    effect: (ctx) => {
+        return Effect_1.gen(function* effect() { return yield* withSpan((() => {
+            return Effect_1.gen(function* () {
+                const http = yield* HttpClient.HttpClient;
+                yield* ctx.integration.transform((editor) => {
+                    editor.update("tinyfish", (integration) => (integration.name = "TinyFish"));
+                    editor.method.update({
+                        integrationID: "tinyfish",
+                        method: { type: "key" },
+                    });
+                    editor.method.update({
+                        integrationID: "tinyfish",
+                        method: { type: "env", names: ["TINYFISH_API_KEY"] },
+                    });
                 });
-                editor.method.update({
-                    integrationID: "tinyfish",
-                    method: { type: "env", names: ["TINYFISH_API_KEY"] },
+                yield* ctx.websearch.transform((editor) => {
+                    editor.add({
+                        id: "tinyfish",
+                        name: "TinyFish",
+                        execute: (input) => {
+                            return Effect_1.gen(function* execute() {
+                                const connection = yield* ctx.integration.connection.active("tinyfish");
+                                const credential = connection ? yield* ctx.integration.connection.resolve(connection) : undefined;
+                                const headers = {
+                                    "User-Agent": yield* Effect.orDie(Effect.try({ try: () => userAgentOf(ctx.app), catch: (e) => e })),
+                                    ...(credential?.type === "key"
+                                        ? { "X-API-Key": credential.key }
+                                        : { "X-TinyFish-Access-Mode": "keyless" }),
+                                };
+                                // Keyed requests are rejected without the `Mcp-Session-Id` returned by `initialize`; keyless ones are not.
+                                const session = credential?.type === "key" ? yield* initialize(http, headers) : undefined;
+                                const result = yield* WebSearchMcp.call(http, endpoint, "search", { input: McpInput, output: McpOutput }, { query: input.query }, { ...headers, ...(session === undefined ? {} : { "Mcp-Session-Id": session }) });
+                                const content = result?.content.find((item) => item.text);
+                                const response = content ? Option.getOrUndefined(decodeSearchResponse(content.text)) : undefined;
+                                return (response?.results.map((item) => ({
+                                    url: item.url,
+                                    title: item.title,
+                                    ...(item.snippet ? { content: item.snippet } : {}),
+                                    time: {},
+                                })) ?? []);
+                            });
+                        },
+                    });
                 });
             });
-            yield* ctx.websearch.transform((editor) => {
-                editor.add({
-                    id: "tinyfish",
-                    name: "TinyFish",
-                    execute: Effect_1.fnUntraced(function* execute(input) {
-                        const connection = yield* ctx.integration.connection.active("tinyfish");
-                        const credential = connection ? yield* ctx.integration.connection.resolve(connection) : undefined;
-                        const headers = {
-                            "User-Agent": userAgentOf(ctx.app),
-                            ...(credential?.type === "key"
-                                ? { "X-API-Key": credential.key }
-                                : { "X-TinyFish-Access-Mode": "keyless" }),
-                        };
-                        // Keyed requests are rejected without the `Mcp-Session-Id` returned by `initialize`; keyless ones are not.
-                        const session = credential?.type === "key" ? yield* initialize(http, headers) : undefined;
-                        const result = yield* WebSearchMcp.call(http, endpoint, "search", { input: McpInput, output: McpOutput }, { query: input.query }, { ...headers, ...(session === undefined ? {} : { "Mcp-Session-Id": session }) });
-                        const content = result?.content.find((item) => item.text);
-                        const response = content ? Option.getOrUndefined(decodeSearchResponse(content.text)) : undefined;
-                        return (response?.results.map((item) => ({
-                            url: item.url,
-                            title: item.title,
-                            ...(item.snippet ? { content: item.snippet } : {}),
-                            time: {},
-                        })) ?? []);
-                    }),
-                });
-            });
-        }))(), "WebSearchTinyFish.Plugin"); } }.effect),
+        })(), "WebSearchTinyFish.Plugin"); });
+    },
 });
 const initialize = (http, headers) => Effect.timeoutOrElse(Effect.scoped(Effect_1.gen(function* () {
     const client = HttpClient.withScope(HttpClient.filterStatusOk(http));

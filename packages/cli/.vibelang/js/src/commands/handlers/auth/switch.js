@@ -13,7 +13,8 @@ export default Runtime.handler(Commands.commands.auth.commands.switch, Effect.fn
     target: Option.getOrUndefined(input.target),
     credential: Option.getOrUndefined(input.credential),
 }))));
-const switchAccount = (input) => Effect_1.suspend({ switchAccount: () => { return withSpan(Effect_1.gen(function* () {
+const switchAccount = (input) => {
+    return Effect_1.gen(function* switchAccount() { return yield* withSpan(Effect_1.gen(function* () {
         if (!input.target) {
             yield* requireInteractive("Pass an integration ID or name when running without an interactive terminal");
         }
@@ -29,4 +30,5 @@ const switchAccount = (input) => Effect_1.suspend({ switchAccount: () => { retur
         yield* Effect.orDie(Effect.try({ try: () => progress.start("Switching account..."), catch: (e) => e }));
         yield* (Effect.tapCause(Effect.tap(request((signal) => client.credential.activate({ credentialID }, { signal })), () => Effect_1.sync(() => { return progress.stop(`Switched account for ${integration.name}`); })), () => Effect_1.sync(() => { return progress.stop("Failed to switch account", 1); })));
         yield* Effect.orDie(Effect.try({ try: () => outro("Done"), catch: (e) => e }));
-    }), "cli.auth.switch.run"); } }.switchAccount);
+    }), "cli.auth.switch.run"); });
+};

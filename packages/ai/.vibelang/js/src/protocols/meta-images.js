@@ -3,7 +3,6 @@ import * as Effect from "effect/Effect";
 import * as Schema from "effect/Schema";
 import { withSpan } from "effect/Effect";
 import * as Effect_1 from "effect/Effect";
-import * as runtime from "vibelang-runtime";
 import { ImageModel, ImageResponse } from "../image.js";
 import { Media } from "../media.js";
 import { MediaProtocol } from "../route/media-protocol.js";
@@ -44,17 +43,18 @@ const Response = Schema.Struct({
 const isEdit = (request) => (request.images?.length ?? 0) > 0;
 // Meta has no file handles: refs are rejected even when they name this provider.
 const reference = (asset) => Effect.map(ProviderShared.mediaReference(asset, undefined, route.name), (item) => ({ image_url: item.value }));
-const fromRequest = (request) => Effect_1.suspend({ fromRequest: () => { return withSpan(Effect_1.gen(runtime.$joinedFrame(function* () {
+const fromRequest = (request) => {
+    return Effect_1.gen(function* fromRequest() { return yield* withSpan(Effect_1.gen(function* () {
         const images = yield* Effect.forEach(request.images ?? [], reference);
         const { outputFormat, responseFormat, reasoningStrength, toolEnablement, ...native } = request.providerOptions
             ?? {};
         if (native.size !== undefined && request.aspect !== undefined) {
-            return yield* Effect_1.fail(ProviderShared.invalidRequest("Meta providerOptions.size replaces aspect; set one or the other"));
+            return yield* Effect_1.fail(yield* Effect.orDie(Effect.try({ try: () => ProviderShared.invalidRequest("Meta providerOptions.size replaces aspect; set one or the other"), catch: (e) => e })));
         }
         const hint = request.aspect === undefined
             ? undefined
             : ImageSizing.fit({ aspect: request.aspect }, { multiple: 16 });
-        const payload = yield* ProviderShared.validateWith(Schema.decodeUnknownEffect(Body))(mergeJsonRecords({
+        const payload = yield* (yield* Effect.orDie(Effect.try({ try: () => ProviderShared.validateWith(Schema.decodeUnknownEffect(Body)), catch: (e) => e })))(mergeJsonRecords({
             model: request.model.id,
             prompt: request.prompt,
             images: images.length === 0 ? undefined : images,
@@ -66,12 +66,14 @@ const fromRequest = (request) => Effect_1.suspend({ fromRequest: () => { return 
             tool_enablement: toolEnablement,
         }, native, request.http?.body));
         return MediaProtocol.json(payload);
-    })), "MetaImages.fromRequest"); } }.fromRequest);
+    }), "MetaImages.fromRequest"); });
+};
 // ---------------------------------------------------------------------------
 // 6. Response decoding
 // ---------------------------------------------------------------------------
 const decodeDocument = route.decodeJson(Response);
-const decodeResponse = (response, context) => Effect_1.suspend({ decodeResponse: () => { return withSpan(Effect_1.gen(function* () {
+const decodeResponse = (response, context) => {
+    return Effect_1.gen(function* decodeResponse() { return yield* withSpan(Effect_1.gen(function* () {
         const output = yield* decodeDocument(response);
         const decoded = output.value;
         const requested = context.body.type === "json" ? context.body.value.output_format : undefined;
@@ -85,17 +87,18 @@ const decodeResponse = (response, context) => Effect_1.suspend({ decodeResponse:
         }
         return new ImageResponse({
             images,
-            usage: decoded.usage === undefined
-                ? undefined
-                : tokenUsage({
-                    input: decoded.usage.input_tokens,
-                    output: decoded.usage.output_tokens,
-                    total: decoded.usage.total_tokens,
-                    details: { meta: decoded.usage },
-                }),
+            usage: yield* Effect.orDie(Effect.try({ try: () => decoded.usage === undefined
+                    ? undefined
+                    : tokenUsage({
+                        input: decoded.usage.input_tokens,
+                        output: decoded.usage.output_tokens,
+                        total: decoded.usage.total_tokens,
+                        details: { meta: decoded.usage },
+                    }), catch: (e) => e })),
             providerMetadata: { meta: { outputFormat: format } },
         });
-    }), "MetaImages.decodeResponse"); } }.decodeResponse);
+    }), "MetaImages.decodeResponse"); });
+};
 // ---------------------------------------------------------------------------
 // 7. Protocol and route
 // ---------------------------------------------------------------------------

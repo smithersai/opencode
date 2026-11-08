@@ -4,7 +4,6 @@ import * as Effect from "effect/Effect";
 import * as Schema from "effect/Schema";
 import { withSpan } from "effect/Effect";
 import * as Effect_1 from "effect/Effect";
-import * as runtime from "vibelang-runtime";
 import { ImageModel, ImageResponse } from "../image.js";
 import { MediaProtocol } from "../route/media-protocol.js";
 import { MediaRoute } from "../route/media.js";
@@ -43,7 +42,8 @@ const nativeOptions = (options) => {
         ...native,
     };
 };
-const fromRequest = (request) => Effect_1.suspend({ fromRequest: () => { return withSpan(Effect_1.gen(runtime.$joinedFrame(function* () {
+const fromRequest = (request) => {
+    return Effect_1.gen(function* fromRequest() { return yield* withSpan(Effect_1.gen(function* () {
         const images = yield* Effect.forEach(request.images ?? [], (image) => Effect.map(ProviderShared.mediaReference(image, undefined, `${route.name} input`), (item) => ({ image: item.value })));
         const size = yield* ImageSizing.exact(route, request, {
             multiple: 16,
@@ -55,12 +55,14 @@ const fromRequest = (request) => Effect_1.suspend({ fromRequest: () => { return 
             input: { messages: [{ role: "user", content: [...images, { text: request.prompt }] }] },
             parameters: mergeJsonRecords({ size: size === undefined ? undefined : `${size.width}*${size.height}`, n: request.n }, nativeOptions(request.providerOptions)),
         }, request.http?.body) ?? {});
-    })), "AlibabaImages.fromRequest"); } }.fromRequest);
+    }), "AlibabaImages.fromRequest"); });
+};
 // ---------------------------------------------------------------------------
 // 6. Response decoding
 // ---------------------------------------------------------------------------
 const decodeDocument = route.decodeJson(AlibabaImageResponse);
-const decodeResponse = (response) => Effect_1.suspend({ decodeResponse: () => { return withSpan(Effect_1.gen(function* () {
+const decodeResponse = (response) => {
+    return Effect_1.gen(function* decodeResponse() { return yield* withSpan(Effect_1.gen(function* () {
         const output = yield* decodeDocument(response);
         const decoded = output.value;
         // Qwen-Image returns every image in one choice; Wan returns one choice per image.
@@ -72,7 +74,8 @@ const decodeResponse = (response) => Effect_1.suspend({ decodeResponse: () => { 
             images: yield* Effect.forEach(urls, (url) => MediaProtocol.expiringUrl(url, OUTPUT_RETENTION)),
             providerMetadata: { alibaba: { requestID: decoded.request_id, usage: decoded.usage } },
         });
-    }), "AlibabaImages.decodeResponse"); } }.decodeResponse);
+    }), "AlibabaImages.decodeResponse"); });
+};
 // ---------------------------------------------------------------------------
 // 7. Protocol and route
 // ---------------------------------------------------------------------------

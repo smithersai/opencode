@@ -14,7 +14,7 @@ const PartBase = {
     end: Schema.Number,
 };
 const SourceText = Schema.Struct({
-    value: Schema.String, start: Schema.Number, end: Schema.Number,
+    value: Schema.mutableKey(Schema.String), start: Schema.mutableKey(Schema.Number), end: Schema.mutableKey(Schema.Number),
 });
 const Position = Schema.Struct({ line: Schema.Number, character: Schema.Number });
 const FilePartSource = Schema.Union([

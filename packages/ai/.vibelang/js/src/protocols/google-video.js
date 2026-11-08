@@ -4,7 +4,6 @@ import * as Effect from "effect/Effect";
 import * as Schema from "effect/Schema";
 import { withSpan } from "effect/Effect";
 import * as Effect_1 from "effect/Effect";
-import * as runtime from "vibelang-runtime";
 import { Media } from "../media.js";
 import { MediaProtocol } from "../route/media-protocol.js";
 import { MediaRoute } from "../route/media.js";
@@ -21,7 +20,7 @@ const FILE_RETENTION = Duration.days(2);
 /** The long-running operation name, e.g. `models/veo-3.1-generate-preview/operations/abc123`. */
 export const Token = Schema.Struct({ operation: Schema.String });
 const StartResponse = Schema.Struct({
-    name: Schema.String,
+    name: Schema.mutableKey(Schema.String),
 });
 const Operation = Schema.Struct({
     done: Schema.optional(Schema.Boolean),
@@ -54,7 +53,8 @@ const FAILURE = {
 // ---------------------------------------------------------------------------
 // Veo takes inline media only; a prior Veo output is `Media.url` with transient auth, so materialize it first.
 const inlineMedia = (asset) => Effect.map(ProviderShared.requireInlineMedia(route.name, asset), (inline) => ({ inlineData: { mimeType: inline.mime, data: inline.base64 } }));
-const fromRequest = (request) => Effect_1.suspend({ fromRequest: () => { return withSpan(Effect_1.gen(runtime.$joinedFrame(function* () {
+const fromRequest = (request) => {
+    return Effect_1.gen(function* fromRequest() { return yield* withSpan(Effect_1.gen(function* () {
         if (request.n !== undefined && request.n > 1) {
             return yield* Effect_1.fail(route.unsupported("video.n", `${route.name} generates one video per request; call it once per video instead of n=${request.n}`));
         }
@@ -62,7 +62,7 @@ const fromRequest = (request) => Effect_1.suspend({ fromRequest: () => { return 
             return yield* Effect_1.fail(route.unsupported("video.audio", `${route.name} always generates audio; audio: false cannot be honored`));
         }
         if (request.frames?.last !== undefined && request.frames.first === undefined) {
-            return yield* Effect_1.fail(ProviderShared.invalidRequest(`${route.name} requires frames.first when frames.last is set`));
+            return yield* Effect_1.fail(yield* Effect.orDie(Effect.try({ try: () => ProviderShared.invalidRequest(`${route.name} requires frames.first when frames.last is set`), catch: (e) => e })));
         }
         const image = request.frames?.first === undefined ? undefined : yield* inlineMedia(request.frames.first);
         const lastFrame = request.frames?.last === undefined ? undefined : yield* inlineMedia(request.frames.last);
@@ -86,7 +86,8 @@ const fromRequest = (request) => Effect_1.suspend({ fromRequest: () => { return 
                 seed: request.seed,
             }, request.providerOptions),
         }, request.http?.body) ?? {});
-    })), "GoogleVideo.fromRequest"); } }.fromRequest);
+    }), "GoogleVideo.fromRequest"); });
+};
 // ---------------------------------------------------------------------------
 // 6. Response decoding
 // ---------------------------------------------------------------------------
@@ -101,11 +102,14 @@ const statusOf = (operation) => {
     return operation.error === undefined ? "completed" : "failed";
 };
 const decodeOperation = route.decodeJson(Operation);
-const decodeStatus = (response, context) => Effect_1.suspend({ decodeStatus: () => { return withSpan(Effect_1.gen(function* () {
+const decodeStatus = (response, context) => {
+    return Effect_1.gen(function* decodeStatus() { return yield* withSpan(Effect_1.gen(function* () {
         const output = yield* decodeOperation(response);
         return { id: context.token.operation, status: statusOf(output.value) };
-    }), "GoogleVideo.decodeStatus"); } }.decodeStatus);
-const decodeResult = (response, context) => Effect_1.suspend({ decodeResult: () => { return withSpan(Effect_1.gen(function* () {
+    }), "GoogleVideo.decodeStatus"); });
+};
+const decodeResult = (response, context) => {
+    return Effect_1.gen(function* decodeResult() { return yield* withSpan(Effect_1.gen(function* () {
         const output = yield* decodeOperation(response);
         const operation = output.value;
         const status = statusOf(operation);
@@ -137,7 +141,8 @@ const decodeResult = (response, context) => Effect_1.suspend({ decodeResult: () 
                 },
             },
         });
-    }), "GoogleVideo.decodeResult"); } }.decodeResult);
+    }), "GoogleVideo.decodeResult"); });
+};
 // ---------------------------------------------------------------------------
 // 7. Protocol and route
 // ---------------------------------------------------------------------------

@@ -3,7 +3,6 @@ import * as Effect from "effect/Effect";
 import * as Schema from "effect/Schema";
 import { withSpan } from "effect/Effect";
 import * as Effect_1 from "effect/Effect";
-import * as runtime from "vibelang-runtime";
 import { ImageModel, ImageResponse } from "../image.js";
 import { MediaProtocol } from "../route/media-protocol.js";
 import { MediaRoute } from "../route/media.js";
@@ -26,31 +25,31 @@ const GoogleUsage = Schema.StructWithRest(Schema.Struct({
     candidatesTokensDetails: Schema.optional(Schema.Unknown),
 }), [Schema.Record(Schema.String, Schema.Unknown)]);
 const GoogleImageResponse = Schema.Struct({
-    candidates: Schema.optional(Schema.Array(Schema
+    candidates: Schema.mutableKey(Schema.optional(Schema.Array(Schema
         .Struct({
-        index: Schema.optional(Schema.Number),
-        content: Schema.optional(Schema.Struct({
-            parts: Schema.Array(Schema
+        index: Schema.mutableKey(Schema.optional(Schema.Number)),
+        content: Schema.mutableKey(Schema.optional(Schema.Struct({
+            parts: Schema.mutableKey(Schema.Array(Schema
                 .Struct({
-                text: Schema.optional(Schema.String),
-                thought: Schema.optional(Schema.Boolean),
-                thoughtSignature: Schema.optional(Schema.String),
-                inlineData: Schema.optional(Schema.Struct({
-                    mimeType: Schema.String,
-                    data: Schema.String,
-                })),
-            })),
-        })),
-        finishReason: Schema.optional(Schema.String),
-        finishMessage: Schema.optional(Schema.String),
-        safetyRatings: Schema.optional(Schema.Unknown),
-        citationMetadata: Schema.optional(Schema.Unknown),
-        groundingMetadata: Schema.optional(Schema.Unknown),
-    }))),
-    usageMetadata: Schema.optional(GoogleUsage),
-    modelVersion: Schema.optional(Schema.String),
-    responseId: Schema.optional(Schema.String),
-    promptFeedback: Schema.optional(Schema.Unknown),
+                text: Schema.mutableKey(Schema.optional(Schema.String)),
+                thought: Schema.mutableKey(Schema.optional(Schema.Boolean)),
+                thoughtSignature: Schema.mutableKey(Schema.optional(Schema.String)),
+                inlineData: Schema.mutableKey(Schema.optional(Schema.Struct({
+                    mimeType: Schema.mutableKey(Schema.String),
+                    data: Schema.mutableKey(Schema.String),
+                }))),
+            }))),
+        }))),
+        finishReason: Schema.mutableKey(Schema.optional(Schema.String)),
+        finishMessage: Schema.mutableKey(Schema.optional(Schema.String)),
+        safetyRatings: Schema.mutableKey(Schema.optional(Schema.Unknown)),
+        citationMetadata: Schema.mutableKey(Schema.optional(Schema.Unknown)),
+        groundingMetadata: Schema.mutableKey(Schema.optional(Schema.Unknown)),
+    })))),
+    usageMetadata: Schema.mutableKey(Schema.optional(GoogleUsage)),
+    modelVersion: Schema.mutableKey(Schema.optional(Schema.String)),
+    responseId: Schema.mutableKey(Schema.optional(Schema.String)),
+    promptFeedback: Schema.mutableKey(Schema.optional(Schema.Unknown)),
 });
 // ---------------------------------------------------------------------------
 // 5. Request body construction
@@ -65,7 +64,8 @@ const generationConfig = (request) => {
         thinkingConfig: Object.values(thinkingConfig).some((value) => value !== undefined) ? thinkingConfig : undefined,
     }, native) ?? { responseModalities: ["IMAGE"] });
 };
-const fromRequest = (request) => Effect_1.suspend({ fromRequest: () => { return withSpan(Effect_1.gen(runtime.$joinedFrame(function* () {
+const fromRequest = (request) => {
+    return Effect_1.gen(function* fromRequest() { return yield* withSpan(Effect_1.gen(function* () {
         if (request.n !== undefined && request.n > 1) {
             return yield* Effect_1.fail(route.unsupported("media.n", `${route.name} generates one image per request; call it once per image instead of n=${request.n}`));
         }
@@ -74,12 +74,14 @@ const fromRequest = (request) => Effect_1.suspend({ fromRequest: () => { return 
             contents: [{ role: "user", parts: [{ text: request.prompt }, ...parts] }],
             generationConfig: generationConfig(request),
         }, request.http?.body) ?? {});
-    })), "GoogleImages.fromRequest"); } }.fromRequest);
+    }), "GoogleImages.fromRequest"); });
+};
 // ---------------------------------------------------------------------------
 // 6. Response decoding
 // ---------------------------------------------------------------------------
 const decodeDocument = route.decodeJson(GoogleImageResponse);
-const decodeResponse = (response) => Effect_1.suspend({ decodeResponse: () => { return withSpan(Effect_1.gen(function* () {
+const decodeResponse = (response) => {
+    return Effect_1.gen(function* decodeResponse() { return yield* withSpan(Effect_1.gen(function* () {
         const output = yield* decodeDocument(response);
         const decoded = output.value;
         const candidates = decoded.candidates ?? [];
@@ -136,20 +138,23 @@ const decodeResponse = (response) => Effect_1.suspend({ decodeResponse: () => { 
         const outputTokens = usage?.candidatesTokenCount === undefined
             ? undefined
             : usage.candidatesTokenCount + (usage.thoughtsTokenCount ?? 0);
+        const counts = usage === undefined
+            ? undefined
+            : {
+                input: usage.promptTokenCount,
+                output: outputTokens,
+                total: yield* Effect.orDie(Effect.try({ try: () => ProviderShared.totalTokens(usage.promptTokenCount, outputTokens, usage.totalTokenCount), catch: (e) => e })),
+                details: {
+                    reasoningTokens: usage.thoughtsTokenCount,
+                    cacheReadInputTokens: usage.cachedContentTokenCount,
+                    google: usage,
+                },
+            };
         return new ImageResponse({
             images,
-            usage: usage === undefined
+            usage: counts === undefined
                 ? undefined
-                : tokenUsage({
-                    input: usage.promptTokenCount,
-                    output: outputTokens,
-                    total: ProviderShared.totalTokens(usage.promptTokenCount, outputTokens, usage.totalTokenCount),
-                    details: {
-                        reasoningTokens: usage.thoughtsTokenCount,
-                        cacheReadInputTokens: usage.cachedContentTokenCount,
-                        google: usage,
-                    },
-                }),
+                : yield* Effect.orDie(Effect.try({ try: () => tokenUsage(counts), catch: (e) => e })),
             providerMetadata: {
                 google: {
                     modelVersion: decoded.modelVersion,
@@ -159,7 +164,8 @@ const decodeResponse = (response) => Effect_1.suspend({ decodeResponse: () => { 
                 },
             },
         });
-    }), "GoogleImages.decodeResponse"); } }.decodeResponse);
+    }), "GoogleImages.decodeResponse"); });
+};
 // ---------------------------------------------------------------------------
 // 7. Protocol and route
 // ---------------------------------------------------------------------------

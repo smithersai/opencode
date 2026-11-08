@@ -3,7 +3,6 @@ import * as Duration from "effect/Duration";
 import * as Schema from "effect/Schema";
 import { forEach, withSpan } from "effect/Effect";
 import * as Effect from "effect/Effect";
-import * as runtime from "vibelang-runtime";
 import { Media } from "../media.js";
 import { MediaProtocol } from "../route/media-protocol.js";
 import { MediaRoute } from "../route/media.js";
@@ -25,10 +24,10 @@ const OUTPUT_RETENTION = Duration.hours(24);
 // ---------------------------------------------------------------------------
 export const Token = Schema.Struct({ taskID: Schema.String });
 const Cost = Schema.Struct({
-    credits: Schema.Number,
+    credits: Schema.mutableKey(Schema.Number),
 });
 const StartResponse = Schema.Struct({
-    id: Schema.String,
+    id: Schema.mutableKey(Schema.String),
 });
 const Task = Schema.Struct({
     status: Schema.String,
@@ -51,8 +50,11 @@ const STATUS = {
 // 5. Request body construction
 // ---------------------------------------------------------------------------
 // Runway accepts HTTPS URLs, `runway://` upload URIs, and data URIs, all as one string.
-const mediaUri = Effect.fnUntraced(function* mediaUri(asset) { return (yield* ProviderShared.mediaReference(asset, route.provider, route.name)).value; });
-const fromRequest = (request) => Effect.suspend({ fromRequest: () => { return withSpan(Effect.gen(runtime.$joinedFrame(function* () {
+const mediaUri = (asset) => {
+    return Effect.gen(function* mediaUri() { return (yield* ProviderShared.mediaReference(asset, route.provider, route.name)).value; });
+};
+const fromRequest = (request) => {
+    return Effect.gen(function* fromRequest() { return yield* withSpan(Effect.gen(function* () {
         const first = request.frames?.first === undefined ? undefined : yield* mediaUri(request.frames.first);
         const last = request.frames?.last === undefined ? undefined : yield* mediaUri(request.frames.last);
         const promptImage = [
@@ -60,7 +62,9 @@ const fromRequest = (request) => Effect.suspend({ fromRequest: () => { return wi
             ...(last === undefined ? [] : [{ uri: last, position: "last" }]),
         ];
         const videoUri = request.video === undefined ? undefined : yield* mediaUri(request.video);
-        const references = yield* forEach(request.references ?? [], Effect.fnUntraced(function* (asset) { return ({ uri: yield* mediaUri(asset) }); }));
+        const references = yield* forEach(request.references ?? [], (asset) => {
+            return Effect.gen(function* () { return ({ uri: yield* mediaUri(asset) }); });
+        });
         return MediaProtocol.json(mergeJsonRecords({
             model: request.model.id,
             promptText: request.prompt,
@@ -74,7 +78,8 @@ const fromRequest = (request) => Effect.suspend({ fromRequest: () => { return wi
             negativePrompt: request.negativePrompt,
             seed: request.seed,
         }, request.providerOptions, request.http?.body) ?? {});
-    })), "RunwayVideo.fromRequest"); } }.fromRequest);
+    }), "RunwayVideo.fromRequest"); });
+};
 // ---------------------------------------------------------------------------
 // 6. Response decoding
 // ---------------------------------------------------------------------------
@@ -83,12 +88,15 @@ const decodeStart = route.decodeStarted(StartResponse, (value) => ({
     snapshot: { id: value.id, status: "queued" },
 }));
 const decodeTask = route.decodeJson(Task);
-const decodeStatus = (response, context) => Effect.suspend({ decodeStatus: () => { return withSpan(Effect.gen(function* () {
+const decodeStatus = (response, context) => {
+    return Effect.gen(function* decodeStatus() { return yield* withSpan(Effect.gen(function* () {
         const output = yield* decodeTask(response);
         const status = yield* MediaProtocol.status(STATUS, output.value.status, output);
         return { id: context.token.taskID, status, progress: output.value.progress ?? undefined };
-    }), "RunwayVideo.decodeStatus"); } }.decodeStatus);
-const decodeResult = (response, context) => Effect.suspend({ decodeResult: () => { return withSpan(Effect.gen(function* () {
+    }), "RunwayVideo.decodeStatus"); });
+};
+const decodeResult = (response, context) => {
+    return Effect.gen(function* decodeResult() { return yield* withSpan(Effect.gen(function* () {
         const output = yield* decodeTask(response);
         const task = output.value;
         const status = yield* MediaProtocol.status(STATUS, task.status, output);
@@ -112,7 +120,9 @@ const decodeResult = (response, context) => Effect.suspend({ decodeResult: () =>
         if (urls.length === 0)
             return yield* Effect.fail(output.invalid(`${route.name} task succeeded without any output`));
         return new VideoResponse({
-            videos: yield* forEach(urls, (url) => Effect.suspend(() => { return MediaProtocol.expiringUrl(url, OUTPUT_RETENTION, { mediaType: "video/mp4" }); })),
+            videos: yield* forEach(urls, (url) => {
+                return Effect.gen(function* () { return yield* MediaProtocol.expiringUrl(url, OUTPUT_RETENTION, { mediaType: "video/mp4" }); });
+            }),
             usage: task.cost === undefined ? undefined : { type: "credits", credits: task.cost.credits },
             providerMetadata: {
                 runway: {
@@ -121,7 +131,8 @@ const decodeResult = (response, context) => Effect.suspend({ decodeResult: () =>
                 },
             },
         });
-    }), "RunwayVideo.decodeResult"); } }.decodeResult);
+    }), "RunwayVideo.decodeResult"); });
+};
 // ---------------------------------------------------------------------------
 // 7. Protocol and route
 // ---------------------------------------------------------------------------

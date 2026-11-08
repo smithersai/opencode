@@ -8,7 +8,7 @@ export const Visit = Schema.Struct({
     icon: Schema.optionalKey(Schema.String),
 });
 export const History = Schema.Struct({
-    visits: Schema.Array(Visit),
+    visits: Schema.mutableKey(Schema.Array(Visit)),
 });
 /** Visits the history keeps; the new tab page shows the first few. */
 const MAX_VISITS = 30;

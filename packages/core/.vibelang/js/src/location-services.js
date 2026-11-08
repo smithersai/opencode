@@ -22,7 +22,9 @@ export function buildLocationServiceMap(replacements = []) {
         const inner = yield* LayerMap.make((ref) => {
             const build = {};
             MutableHashMap.set(builds, ref, build);
-            return Layer.fromBuild((memoMap, scope) => Effect.onExit(Effect_1.suspend(() => Layer.buildWithMemoMap(Instance.layer(ref, { replacements: bindings }), memoMap, scope)), (exit) => {
+            return Layer.fromBuild((memoMap, scope) => Effect.onExit(Effect_1.gen(function* () {
+                return yield* Layer.buildWithMemoMap(Instance.layer(ref, { replacements: bindings }), memoMap, scope);
+            }), (exit) => {
                 const finish = Effect.suspend(() => {
                     if (Exit.isSuccess(exit)) {
                         return Effect_1.gen(function* () {
@@ -53,12 +55,14 @@ export function buildLocationServiceMap(replacements = []) {
         { idleTimeToLive: Duration.infinity });
         // RcMap closes entries one at a time on shutdown. Close every Location
         // (borrowed ones too) concurrently first; RcMap then finds them closed.
-        yield* Effect.addFinalizer(() => Effect_1.suspend(() => { return (inner.rcMap.state._tag === "Closed"
-            ? Effect.void
-            : Effect.forEach(inner.rcMap.state.map, ([, entry]) => Effect.exit(Scope.close(entry.scope, Exit.void)), {
-                concurrency: "unbounded",
-                discard: true,
-            })); }));
+        yield* Effect.addFinalizer(() => {
+            return Effect_1.gen(function* () { return yield* (inner.rcMap.state._tag === "Closed"
+                ? Effect.void
+                : Effect.forEach(inner.rcMap.state.map, ([, entry]) => Effect.exit(Scope.close(entry.scope, Exit.void)), {
+                    concurrency: "unbounded",
+                    discard: true,
+                })); });
+        });
         const map = {
             ...inner,
             get: (ref) => inner.get(LocationServiceMap.canonical(ref)),

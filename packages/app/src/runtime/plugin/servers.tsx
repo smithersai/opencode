@@ -6,7 +6,7 @@ import { Persistence } from "@/runtime/persistence/schema"
 import { Persist, persisted } from "@/runtime/persistence/storage"
 import type { ServerConnection } from "@/runtime/server/registry"
 import { usePluginHost } from "./host"
-import { renamedFrom } from "./stores.js"
+import { renamedFrom } from "./stores.vibe"
 
 /** A server a plugin contributes. `key` is `${plugin}:${entry.id}`. */
 export type PluginServer = { readonly key: string; readonly plugin: string; readonly entry: ServerEntry }

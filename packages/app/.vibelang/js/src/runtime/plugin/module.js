@@ -35,7 +35,7 @@ export async function pluginDefinition(id, code) {
                 return module;
             if (mainOnlyModule(name))
                 return inertModule(name);
-            throw new Error(`Plugin GUI bundle requires a module the app does not share: ${name}`);
+            $raise(new Error(`Plugin GUI bundle requires a module the app does not share: ${name}`));
         },
     })).then((value) => ({ ok: true, value }), (cause) => ({ ok: false, cause }));
     if (!bundle.ok)
@@ -44,3 +44,4 @@ export async function pluginDefinition(id, code) {
     // A setup's returned cleanup reaches the host, which runs it when the plugin goes away.
     return { ...bundle.value.definition, id, windowEntry: async () => ({ default: (ctx) => setup?.(ctx) }) };
 }
+import { raise as $raise } from "./module.vibe.-24-throw-24-ts.js";

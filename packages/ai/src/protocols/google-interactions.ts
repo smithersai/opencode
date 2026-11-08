@@ -18,7 +18,7 @@ import { classifyProviderFailure, providerErrorMessage } from "../provider-error
 import { encodeJson } from "../utils/json.vibe"
 import { JsonObject, knownString, lenient, optionalNull, ProviderShared } from "./shared.js"
 import { Lifecycle } from "./utils/lifecycle.js"
-import { MediaInput } from "./utils/media-input.js"
+import { MediaInput } from "./utils/media-input.vibe"
 import { GeminiGenerateContent } from "./utils/gemini-generate-content.vibe"
 import { ToolStream } from "./utils/tool-stream.vibe"
 

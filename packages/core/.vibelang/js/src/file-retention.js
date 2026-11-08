@@ -3,17 +3,22 @@ import * as Duration from "effect/Duration";
 import * as Effect from "effect/Effect";
 import * as Option from "effect/Option";
 import { withSpan } from "effect/Effect";
-import { $catchExpression } from "vibelang-runtime";
+import { $catchExpression } from "vibelang-runtime/internal";
 import * as Effect_1 from "effect/Effect";
+import * as runtime from "vibelang-runtime/internal";
 export * as FileRetention from "./file-retention.js";
 import { FSUtil } from "@opencode/util/fs-util";
-export const cleanup = (fs, files, retention) => Effect_1.suspend({ cleanup: () => { return withSpan(Effect_1.gen(function* () {
+export const cleanup = (fs, files, retention) => {
+    return Effect_1.gen(function* cleanup() { return yield* withSpan(Effect_1.gen(function* () {
         const cutoff = Date.now() - Duration.toMillis(retention);
-        yield* Effect.forEach(files, Effect_1.fnUntraced(function* (file) {
-            const info = yield* $catchExpression(() => fs.stat(file), () => Effect_1.sync(() => { return undefined; }));
-            const mtime = info && Option.getOrUndefined(info.mtime);
-            if (!mtime || mtime.getTime() >= cutoff)
-                return;
-            yield* (Effect.ignore(fs.remove(file)));
-        }), { concurrency: 8, discard: true });
-    }), "FileRetention.cleanup"); } }.cleanup);
+        yield* Effect.forEach(files, (file) => {
+            return Effect_1.gen(function* () {
+                const info = yield* runtime.$catch(yield* (() => { return Effect_1.sync(() => { return fs.stat(file); }); })(), () => Effect_1.sync(() => { return undefined; }));
+                const mtime = info && Option.getOrUndefined(info.mtime);
+                if (!mtime || mtime.getTime() >= cutoff)
+                    return;
+                yield* (Effect.ignore(fs.remove(file)));
+            });
+        }, { concurrency: 8, discard: true });
+    }), "FileRetention.cleanup"); });
+};

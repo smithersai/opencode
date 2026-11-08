@@ -13,7 +13,8 @@ export default Runtime.handler(Commands.commands.auth.commands.logout, Effect.fn
     target: Option.getOrUndefined(input.target),
     credential: Option.getOrUndefined(input.credential),
 }))));
-const logout = (input) => Effect_1.suspend({ logout: () => { return withSpan(Effect_1.gen(function* () {
+const logout = (input) => {
+    return Effect_1.gen(function* logout() { return yield* withSpan(Effect_1.gen(function* () {
         if (!input.target) {
             yield* requireInteractive("Pass an integration ID or name when running without an interactive terminal");
         }
@@ -29,4 +30,5 @@ const logout = (input) => Effect_1.suspend({ logout: () => { return withSpan(Eff
         yield* Effect.orDie(Effect.try({ try: () => progress.start("Removing credential..."), catch: (e) => e }));
         yield* (Effect.tapCause(Effect.tap(request((signal) => client.credential.remove({ credentialID }, { signal })), () => Effect_1.sync(() => { return progress.stop(`Removed account from ${integration.name}`); })), () => Effect_1.sync(() => { return progress.stop("Failed to remove credential", 1); })));
         yield* Effect.orDie(Effect.try({ try: () => outro("Done"), catch: (e) => e }));
-    }), "cli.auth.logout.run"); } }.logout);
+    }), "cli.auth.logout.run"); });
+};

@@ -3,7 +3,6 @@ import * as Effect from "effect/Effect";
 import * as Schema from "effect/Schema";
 import { withSpan } from "effect/Effect";
 import * as Effect_1 from "effect/Effect";
-import * as runtime from "vibelang-runtime";
 import { Media } from "../media.js";
 import { MediaProtocol } from "../route/media-protocol.js";
 import { MediaRoute } from "../route/media.js";
@@ -21,7 +20,7 @@ export const STATUS_PATH = "/videos";
 // ---------------------------------------------------------------------------
 export const Token = Schema.Struct({ requestID: Schema.String });
 const StartResponse = Schema.Struct({
-    request_id: Schema.String,
+    request_id: Schema.mutableKey(Schema.String),
 });
 const VideoStatus = Schema.Struct({
     status: Schema.String,
@@ -59,7 +58,8 @@ const nativeOptions = (options) => {
     const { mode: _mode, ...native } = options;
     return native;
 };
-const fromRequest = (request) => Effect_1.suspend({ fromRequest: () => { return withSpan(Effect_1.gen(runtime.$joinedFrame(function* () {
+const fromRequest = (request) => {
+    return Effect_1.gen(function* fromRequest() { return yield* withSpan(Effect_1.gen(function* () {
         const image = request.frames?.first === undefined ? undefined : yield* mediaInput(request.frames.first);
         const lastFrame = request.frames?.last === undefined ? undefined : yield* mediaInput(request.frames.last);
         const video = request.video === undefined ? undefined : yield* mediaInput(request.video);
@@ -76,7 +76,8 @@ const fromRequest = (request) => Effect_1.suspend({ fromRequest: () => { return 
             resolution: request.resolution,
             generate_audio: request.audio,
         }, nativeOptions(request.providerOptions), request.http?.body) ?? {});
-    })), "XAIVideo.fromRequest"); } }.fromRequest);
+    }), "XAIVideo.fromRequest"); });
+};
 // ---------------------------------------------------------------------------
 // 6. Response decoding
 // ---------------------------------------------------------------------------
@@ -87,12 +88,15 @@ const decodeStart = route.decodeStarted(StartResponse, (value) => ({
 // `progress` is undocumented but observed live as a 0..100 percentage (recorded cassette: 1 → 10 → 37 → 100).
 const fraction = (progress) => progress !== undefined && progress !== null && progress >= 0 && progress <= 100 ? progress / 100 : undefined;
 const decodeVideoStatus = route.decodeJson(VideoStatus);
-const decodeStatus = (response, context) => Effect_1.suspend({ decodeStatus: () => { return withSpan(Effect_1.gen(function* () {
+const decodeStatus = (response, context) => {
+    return Effect_1.gen(function* decodeStatus() { return yield* withSpan(Effect_1.gen(function* () {
         const output = yield* decodeVideoStatus(response);
         const status = yield* MediaProtocol.status(STATUS, output.value.status, output);
         return { id: context.token.requestID, status, progress: fraction(output.value.progress) };
-    }), "XAIVideo.decodeStatus"); } }.decodeStatus);
-const decodeResult = (response, context) => Effect_1.suspend({ decodeResult: () => { return withSpan(Effect_1.gen(function* () {
+    }), "XAIVideo.decodeStatus"); });
+};
+const decodeResult = (response, context) => {
+    return Effect_1.gen(function* decodeResult() { return yield* withSpan(Effect_1.gen(function* () {
         const output = yield* decodeVideoStatus(response);
         const decoded = output.value;
         const status = yield* MediaProtocol.status(STATUS, decoded.status, output);
@@ -117,10 +121,10 @@ const decodeResult = (response, context) => Effect_1.suspend({ decodeResult: () 
         const duration = decoded.video?.duration ?? undefined;
         return new VideoResponse({
             videos: [
-                Media.url(url, {
-                    mediaType: "video/mp4",
-                    info: duration === undefined ? undefined : { durationSeconds: duration },
-                }),
+                yield* Effect.orDie(Effect.try({ try: () => Media.url(url, {
+                        mediaType: "video/mp4",
+                        info: duration === undefined ? undefined : { durationSeconds: duration },
+                    }), catch: (e) => e })),
             ],
             providerMetadata: {
                 xai: {
@@ -130,7 +134,8 @@ const decodeResult = (response, context) => Effect_1.suspend({ decodeResult: () 
                 },
             },
         });
-    }), "XAIVideo.decodeResult"); } }.decodeResult);
+    }), "XAIVideo.decodeResult"); });
+};
 // ---------------------------------------------------------------------------
 // 7. Protocol and route
 // ---------------------------------------------------------------------------

@@ -38,7 +38,8 @@ export const toModelContent = (questions, answers) => {
 };
 export const Plugin = {
     id: "opencode.tool.question",
-    effect: (ctx) => Effect_1.suspend({ effect: () => { return withSpan(Effect_1.gen(function* () {
+    effect: (ctx) => {
+        return Effect_1.gen(function* effect() { return yield* withSpan(Effect_1.gen(function* () {
             const forms = yield* Form.Service;
             const permission = yield* Permission.Service;
             yield* (Effect.orDie(ctx.tool
@@ -95,7 +96,8 @@ export const Plugin = {
                     });
                 }),
             }))));
-        }), "QuestionTool.Plugin"); } }.effect),
+        }), "QuestionTool.Plugin"); });
+    },
 };
 function toField(question, index) {
     return {

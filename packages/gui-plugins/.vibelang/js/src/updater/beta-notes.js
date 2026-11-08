@@ -5,19 +5,19 @@ const REPOSITORY = "https://github.com/anomalyco/opencode";
 /** The dialog lists at most this many changes and links the rest. */
 const SHOWN = 10;
 const Note = Schema.Struct({
-    type: Schema.Literals(["feat", "fix", "perf"]),
-    summary: Schema.String,
-    pr: Schema.optional(Schema.Number),
-    sha: Schema.String,
-    author: Schema.optional(Schema.Struct({
-        name: Schema.String,
-        login: Schema.optional(Schema.String),
-        avatar: Schema.optional(Schema.String),
-    })),
-    description: Schema.optional(Schema.String),
-    visual: Schema.optional(Schema.Struct({
-        animated: Schema.String, still: Schema.String,
-    })),
+    type: Schema.mutableKey(Schema.Literals(["feat", "fix", "perf"])),
+    summary: Schema.mutableKey(Schema.String),
+    pr: Schema.mutableKey(Schema.optional(Schema.Number)),
+    sha: Schema.mutableKey(Schema.String),
+    author: Schema.mutableKey(Schema.optional(Schema.Struct({
+        name: Schema.mutableKey(Schema.String),
+        login: Schema.mutableKey(Schema.optional(Schema.String)),
+        avatar: Schema.mutableKey(Schema.optional(Schema.String)),
+    }))),
+    description: Schema.mutableKey(Schema.optional(Schema.String)),
+    visual: Schema.mutableKey(Schema.optional(Schema.Struct({
+        animated: Schema.mutableKey(Schema.String), still: Schema.mutableKey(Schema.String),
+    }))),
 });
 /** What a beta build embeds (packages/desktop/script/beta-notes.ts), newest first. */
 const Embedded = Schema.Struct({

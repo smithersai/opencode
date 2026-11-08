@@ -6,7 +6,7 @@ import { AuthOptions, type ProviderAuthOption } from "../route/auth-options.vibe
 import { ProviderID, type ModelID, type OpenString, type ProviderOptions } from "../schema/index.js"
 import type { ProviderPackage } from "../provider-package.js"
 import { SystemOne } from "../protocols/system-one.vibe"
-import { OpenAIImages } from "../protocols/openai-images.js"
+import { OpenAIImages } from "../protocols/openai-images.vibe"
 import { MediaRoute } from "../route/media.vibe"
 import { OpenAIChat } from "../protocols/openai-chat.js"
 import { cacheControl } from "../protocols/utils/cache.js"

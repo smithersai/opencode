@@ -2,7 +2,6 @@
 import * as Effect from "effect/Effect";
 import * as Stream from "effect/Stream";
 import * as Effect_1 from "effect/Effect";
-import * as runtime from "vibelang-runtime";
 import { define } from "@opencode/plugin/effect/plugin";
 import { Integration } from "@opencode/schema/integration";
 import { Provider } from "@opencode/schema/provider";
@@ -34,89 +33,55 @@ const BEDROCK_PROFILE_ONLY_IDS = [
 ];
 export const ModelsDevPlugin = define({
     id: "opencode.models.dev",
-    effect: Effect_1.fnUntraced(runtime.$joinedFrame(function* effect(ctx) {
-        var topic_1;
-        const modelsDev = yield* ModelsDev.Service;
-        const bus = yield* Bus.Service;
-        // Filtering and definition indexes are shared across Locations. Only Model materialization
-        // makes mutable copies, after provider configuration and access have been resolved.
-        const loaded = { data: snapshots(yield* modelsDev.get()) };
-        yield* ctx.integration.transform((integrations) => {
-            {
-                let pending_1 = runtime.$normal;
-                try {
-                    for (const provider of loaded.data) {
-                        try {
-                            {
-                                if (provider.environment.length === 0)
-                                    continue;
-                                const integrationID = provider.info.id;
-                                integrations.update(integrationID, (integration) => (integration.name = provider.info.name));
-                                integrations.method.update({
-                                    integrationID,
-                                    method: { type: "key" },
-                                });
-                                integrations.method.update({
-                                    integrationID,
-                                    method: {
-                                        type: "env",
-                                        // Every listed variable is treated as a key; plugins override providers that also list setup values.
-                                        names: [...provider.environment],
-                                    },
-                                });
-                            }
-                        }
-                        catch (thrown_1) {
-                            pending_1 = thrown_1;
-                            break;
-                        }
-                    }
+    effect: (ctx) => {
+        return Effect_1.gen(function* effect() {
+            var topic_1;
+            const modelsDev = yield* ModelsDev.Service;
+            const bus = yield* Bus.Service;
+            // Filtering and definition indexes are shared across Locations. Only Model materialization
+            // makes mutable copies, after provider configuration and access have been resolved.
+            const loaded = { data: snapshots(yield* modelsDev.get()) };
+            yield* ctx.integration.transform((integrations) => {
+                for (const provider of loaded.data) {
+                    if (provider.environment.length === 0)
+                        continue;
+                    const integrationID = provider.info.id;
+                    integrations.update(integrationID, (integration) => (integration.name = provider.info.name));
+                    integrations.method.update({
+                        integrationID,
+                        method: { type: "key" },
+                    });
+                    integrations.method.update({
+                        integrationID,
+                        method: {
+                            type: "env",
+                            // Every listed variable is treated as a key; plugins override providers that also list setup values.
+                            names: [...provider.environment],
+                        },
+                    });
                 }
-                catch (thrown_2) {
-                    throw runtime.$finallyFailure(pending_1, thrown_2);
+            });
+            yield* ctx.provider.transform((providers) => {
+                for (const provider of loaded.data) {
+                    providers.add({
+                        info: { ...provider.info, integrationID: Integration.ID.make(provider.info.id) },
+                        models: provider.models,
+                    });
                 }
-                if (pending_1 !== runtime.$normal)
-                    throw pending_1;
-            }
+            });
+            const apply = (data) => {
+                loaded.data = snapshots(data);
+                return Effect.andThen(ctx.integration.reload(), ctx.provider.reload());
+            };
+            yield* ((topic_1 = Stream.runForEach(bus.subscribe(ModelsDev.Event.Refreshed), () => Effect.flatMap(modelsDev.get(), apply)), Effect.forkScoped({ startImmediately: true })(topic_1)));
+            // A refresh that landed between the initial read and the subscription above published
+            // Refreshed to nobody here. On a cold cache that read served the bundled snapshot, so
+            // re-read now instead of waiting for the next TTL refresh.
+            const latest = yield* modelsDev.get();
+            if (snapshots(latest) !== loaded.data)
+                yield* apply(latest);
         });
-        yield* ctx.provider.transform((providers) => {
-            {
-                let pending_2 = runtime.$normal;
-                try {
-                    for (const provider of loaded.data) {
-                        try {
-                            {
-                                providers.add({
-                                    info: { ...provider.info, integrationID: Integration.ID.make(provider.info.id) },
-                                    models: provider.models,
-                                });
-                            }
-                        }
-                        catch (thrown_3) {
-                            pending_2 = thrown_3;
-                            break;
-                        }
-                    }
-                }
-                catch (thrown_4) {
-                    throw runtime.$finallyFailure(pending_2, thrown_4);
-                }
-                if (pending_2 !== runtime.$normal)
-                    throw pending_2;
-            }
-        });
-        const apply = (data) => {
-            loaded.data = snapshots(data);
-            return Effect.andThen(ctx.integration.reload(), ctx.provider.reload());
-        };
-        yield* ((topic_1 = Stream.runForEach(bus.subscribe(ModelsDev.Event.Refreshed), () => Effect.flatMap(modelsDev.get(), apply)), Effect.forkScoped({ startImmediately: true })(topic_1)));
-        // A refresh that landed between the initial read and the subscription above published
-        // Refreshed to nobody here. On a cold cache that read served the bundled snapshot, so
-        // re-read now instead of waiting for the next TTL refresh.
-        const latest = yield* modelsDev.get();
-        if (snapshots(latest) !== loaded.data)
-            yield* apply(latest);
-    })),
+    },
 });
 const prepared = new WeakMap();
 function snapshots(data) {

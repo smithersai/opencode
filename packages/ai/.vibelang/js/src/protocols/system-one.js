@@ -3,7 +3,6 @@ import * as Effect from "effect/Effect";
 import * as Schema from "effect/Schema";
 import { withSpan } from "effect/Effect";
 import * as Effect_1 from "effect/Effect";
-import * as runtime from "vibelang-runtime";
 import { DecisionResponse, DecisionUsage, } from "../decision.js";
 import { DecisionRoute } from "../route/decision.js";
 import { Endpoint } from "../route/endpoint.js";
@@ -45,11 +44,13 @@ export const Response = Schema.Struct({
 const ID = "system-one";
 const NAME = "System One";
 /** The System One body without `model`; media goes where the model's `mediaInput` says, else `fallback`. */
-export const encodeBody = (request, fallback) => Effect_1.suspend({ encodeBody: () => { return withSpan(Effect_1.gen(runtime.$joinedFrame(function* () {
+export const encodeBody = (request, fallback) => {
+    return Effect_1.gen(function* encodeBody() { return yield* withSpan(Effect_1.gen(function* () {
         const questions = yield* encodeQuestions(request.questions);
         const placed = yield* placeMedia(request, request.model.compatibility?.mediaInput ?? fallback);
         return { ...mergeJsonRecords(request.providerOptions, request.http?.body), ...placed, questions };
-    })), "SystemOne.encodeBody"); } }.encodeBody);
+    }), "SystemOne.encodeBody"); });
+};
 const encodeQuestions = (questions) => Effect.map(Effect.forEach(questions, (question) => {
     if (question.type === "predicate") {
         return Effect.succeed([question.name, { type: "noul", instructions: question.instructions }]);
@@ -78,65 +79,67 @@ const encodeQuestions = (questions) => Effect.map(Effect.forEach(questions, (que
         },
     ]);
 }), Object.fromEntries);
-const placeMedia = Effect_1.fnUntraced(function* placeMedia(request, mediaInput) {
-    const parts = request.input;
-    const unsupported = (asset, accepted) => new AIError({
-        reason: new UnsupportedOperationError({
-            operation: "decision.media",
-            provider: request.model.provider,
-            route: request.model.route.id,
-            message: `${NAME} takes ${accepted} here; got ${asset.mediaType}`,
-        }),
-    });
-    const media = parts.flatMap((part) => (part.type === "media" ? [part.media] : []));
-    if (media.length === 0)
-        return { state: state(parts.map(plain)) };
-    if (mediaInput === "state")
-        return { state: yield* Effect.forEach(parts, (part) => stateItem(part, unsupported)) };
-    // Chat-style content in one user message: text and JSON as text parts, media as in `state`.
-    if (mediaInput === "state.messages") {
-        return {
-            state: {
-                messages: [
-                    {
-                        role: "user",
-                        content: yield* Effect.forEach(parts, (part) => part.type === "media"
-                            ? stateItem(part, unsupported)
-                            : Effect.succeed({ type: "text", text: part.type === "text" ? part.text : encodeJson(part.value) })),
-                    },
-                ],
-            },
-        };
-    }
-    if (mediaInput === "root") {
-        const lists = { image: "images", audio: "audio", video: "videos" };
-        const unplaced = media.find((asset) => !Object.hasOwn(lists, asset.kind));
+const placeMedia = (request, mediaInput) => {
+    return Effect_1.gen(function* placeMedia() {
+        const parts = request.input;
+        const unsupported = (asset, accepted) => new AIError({
+            reason: new UnsupportedOperationError({
+                operation: "decision.media",
+                provider: request.model.provider,
+                route: request.model.route.id,
+                message: `${NAME} takes ${accepted} here; got ${asset.mediaType}`,
+            }),
+        });
+        const media = parts.flatMap((part) => (part.type === "media" ? [part.media] : []));
+        if (media.length === 0)
+            return { state: state(parts.map(plain)) };
+        if (mediaInput === "state")
+            return { state: yield* Effect.forEach(parts, (part) => stateItem(part, unsupported)) };
+        // Chat-style content in one user message: text and JSON as text parts, media as in `state`.
+        if (mediaInput === "state.messages") {
+            return {
+                state: {
+                    messages: [
+                        {
+                            role: "user",
+                            content: yield* Effect.forEach(parts, (part) => part.type === "media"
+                                ? stateItem(part, unsupported)
+                                : Effect.succeed({ type: "text", text: part.type === "text" ? part.text : encodeJson(part.value) })),
+                        },
+                    ],
+                },
+            };
+        }
+        if (mediaInput === "root") {
+            const lists = { image: "images", audio: "audio", video: "videos" };
+            const unplaced = media.find((asset) => !Object.hasOwn(lists, asset.kind));
+            if (unplaced !== undefined)
+                return yield* Effect_1.fail(unsupported(unplaced, "images, audio and video"));
+            const inline = yield* Effect.forEach(media, (asset) => ProviderShared.requireInlineMedia(NAME, asset));
+            const fields = Object.fromEntries(Object.entries(lists).flatMap(([kind, field]) => {
+                const items = inline.filter((_, index) => media[index].kind === kind).map((item) => item.dataUrl);
+                return items.length === 0 ? [] : [[field, items]];
+            }));
+            return { state: state(parts.filter((part) => part.type !== "media").map(plain)), ...fields };
+        }
+        const unplaced = media.find((asset) => asset.kind !== "image");
         if (unplaced !== undefined)
-            return yield* Effect_1.fail(unsupported(unplaced, "images, audio and video"));
+            return yield* Effect_1.fail(unsupported(unplaced, "images"));
         const inline = yield* Effect.forEach(media, (asset) => ProviderShared.requireInlineMedia(NAME, asset));
-        const fields = Object.fromEntries(Object.entries(lists).flatMap(([kind, field]) => {
-            const items = inline.filter((_, index) => media[index].kind === kind).map((item) => item.dataUrl);
-            return items.length === 0 ? [] : [[field, items]];
-        }));
-        return { state: state(parts.filter((part) => part.type !== "media").map(plain)), ...fields };
-    }
-    const unplaced = media.find((asset) => asset.kind !== "image");
-    if (unplaced !== undefined)
-        return yield* Effect_1.fail(unsupported(unplaced, "images"));
-    const inline = yield* Effect.forEach(media, (asset) => ProviderShared.requireInlineMedia(NAME, asset));
-    // Every occurrence of a reference string in the body is replaced with its image, so it must not be ordinary text.
-    const reference = (index) => `<image-${index + 1}>`;
-    const items = parts.reduce((acc, part) => part.type === "media"
-        ? { next: acc.next + 1, values: [...acc.values, reference(acc.next)] }
-        : { next: acc.next, values: [...acc.values, plain(part)] }, { next: 0, values: [] }).values;
-    return {
-        state: items,
-        assets: Object.fromEntries(inline.map((item, index) => [
-            reference(index),
-            { type: "image", format: item.mime.slice("image/".length), data_base64: item.base64 },
-        ])),
-    };
-});
+        // Every occurrence of a reference string in the body is replaced with its image, so it must not be ordinary text.
+        const reference = (index) => `<image-${index + 1}>`;
+        const items = parts.reduce((acc, part) => part.type === "media"
+            ? { next: acc.next + 1, values: [...acc.values, reference(acc.next)] }
+            : { next: acc.next, values: [...acc.values, plain(part)] }, { next: 0, values: [] }).values;
+        return {
+            state: items,
+            assets: Object.fromEntries(inline.map((item, index) => [
+                reference(index),
+                { type: "image", format: item.mime.slice("image/".length), data_base64: item.base64 },
+            ])),
+        };
+    });
+};
 /** A lone text or JSON part is the state itself; several are a list. */
 const state = (items) => (items.length === 1 ? items[0] : items);
 const plain = (part) => {

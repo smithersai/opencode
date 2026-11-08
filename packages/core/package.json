@@ -421,8 +421,8 @@
       "default": "./.vibelang/js/src/session/compaction.js"
     },
     "./generate": {
-      "types": "./src/generate.ts",
-      "vibelang-source": "./src/generate.ts",
+      "types": "./src/generate.d.vibe.ts",
+      "vibelang-source": "./src/generate.vibe",
       "default": "./.vibelang/js/src/generate.js"
     },
     "./plugin/hooks": {
@@ -431,8 +431,8 @@
       "default": "./.vibelang/js/src/plugin/hooks.js"
     },
     "./plugin/instance": {
-      "types": "./src/plugin/instance.ts",
-      "vibelang-source": "./src/plugin/instance.ts",
+      "types": "./src/plugin/instance.d.vibe.ts",
+      "vibelang-source": "./src/plugin/instance.vibe",
       "default": "./.vibelang/js/src/plugin/instance.js"
     },
     "./plugin/models-dev": {

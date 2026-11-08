@@ -46,6 +46,7 @@
     "@types/bun": "catalog:",
     "@types/ws": "8.18.1",
     "@typescript/native": "catalog:",
-    "vibelang": "0.0.12"
+    "vibelang": "0.0.12",
+    "fast-check": "catalog:"
   }
 }

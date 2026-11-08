@@ -788,6 +788,7 @@
         "ws": "8.21.0",
       },
       "devDependencies": {
+        "fast-check": "catalog:",
         "@tsconfig/bun": "catalog:",
         "@types/bun": "catalog:",
         "@types/ws": "8.18.1",

@@ -7,7 +7,7 @@ import { Rpc, RpcGroup, RpcMessage, RpcServer } from "effect/rpc"
 import { Transferable } from "effect/workers"
 import { omitUndefined } from "../shared/ipc-transport"
 import { FilesOpenFilePicker } from "../shared/ipc-rpc/files.vibe"
-import { IpcPortHandoff, IpcServerProtocolLive } from "./ipc-transport"
+import { IpcPortHandoff, IpcServerProtocolLive } from "./ipc-transport.vibe"
 
 describe("desktop RPC transport", () => {
   test("decodes renderer payloads whose optional fields are undefined", async () => {

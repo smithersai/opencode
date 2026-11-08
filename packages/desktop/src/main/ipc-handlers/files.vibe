@@ -1,6 +1,6 @@
 import { FileRpcs } from "../../shared/ipc-rpc.vibe"
-import { DesktopFiles, openExternalURL, openLocalFileURL } from "../files"
-import { IpcPortHandoff } from "../ipc-transport"
+import { DesktopFiles, openExternalURL, openLocalFileURL } from "../files/index.vibe"
+import { IpcPortHandoff } from "../ipc-transport.vibe"
 import { sender } from "./context"
 
 export const fileHandlers = FileRpcs.toLayer(

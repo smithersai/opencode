@@ -1,8 +1,8 @@
+import { currentPlatform } from "./defaults.platform.ts"
 import { resolveThemeVariant } from "@opencode/ui/theme/resolve"
 import type { DesktopTheme } from "@opencode/ui/theme/types"
 import { desktopZoomLevels } from "@opencode/app/desktop-menu"
 import { nativeTheme, type BrowserWindowConstructorOptions } from "electron"
-import { Predicate } from "effect"
 import oc2ThemeJson from "../../../../ui/src/theme/themes/oc-2.json"
 import { BACKGROUND_COLOR_KEY, ZOOM_LEVEL_KEY } from "../storage/keys"
 import { getStore } from "../storage/store"
@@ -58,12 +58,12 @@ export function titlebarOverlay(mode: "light" | "dark" = tone(), zoom = 1) {
 export function platformFrame(mode: "light" | "dark", zoom: number) {
   const frame: BrowserWindowConstructorOptions = {}
 
-  if (process.platform === "darwin") {
+  if (currentPlatform() === "darwin") {
     frame.titleBarStyle = "hidden"
     frame.trafficLightPosition = { x: 14, y: 14 }
   }
 
-  if (process.platform === "win32") {
+  if (currentPlatform() === "win32") {
     frame.frame = false
     frame.titleBarStyle = "hidden"
     frame.titleBarOverlay = titlebarOverlay(mode, zoom)

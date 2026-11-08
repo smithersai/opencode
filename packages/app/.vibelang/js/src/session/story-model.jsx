@@ -10,7 +10,7 @@ import { SubagentBar } from "@/session/composer/subagent-bar";
 import { SessionPanelFrame, SessionRouteFrame } from "@/session/session-frame";
 import { CurrentSessionProviders, STORY_MODEL } from "@opencode/session-ui/storybook";
 import { SessionTimeline } from "@opencode/session-ui/timeline";
-import { createComposerEditor } from "@/composer/editor/interaction";
+import { createComposerEditor } from "../composer/editor/interaction.js";
 import { Button } from "@opencode/ui/button";
 import { Icon } from "@opencode/ui/icon";
 import { QueryClient, QueryClientProvider } from "@tanstack/solid-query";

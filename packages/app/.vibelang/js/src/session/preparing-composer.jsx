@@ -3,7 +3,7 @@ import { createEffect, on, onCleanup } from "solid-js";
 import { useLocation } from "@solidjs/router";
 import { ComposerEditor } from "@/composer/editor/editor";
 import { setCursorPosition } from "@/composer/editor/dom";
-import { createComposerEditor } from "@/composer/editor/interaction";
+import { createComposerEditor } from "../composer/editor/interaction.js";
 export function PreparingComposer(props) {
     const location = useLocation();
     let element;

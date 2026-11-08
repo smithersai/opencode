@@ -1,10 +1,11 @@
-import { randomUUID } from "node:crypto"
+import { createWindowID } from "./index.platform.ts"
+import { currentPlatform,environmentValue } from "./index.platform.ts"
 import { app, BrowserWindow, screen } from "electron"
 import { Effect, FileSystem, Path } from "effect"
-import { openExternalURL } from "../files"
+import { openExternalURL } from "../files/index.vibe"
 import { scoped } from "../native/logging"
 import { DesktopPaths } from "../paths.vibe"
-import { DesktopStorage } from "../storage"
+import { DesktopStorage } from "../storage/index.vibe"
 import { getStore } from "../storage/store"
 import { WINDOW_IDS_KEY } from "../storage/keys"
 import { windowDataFile } from "../../shared/ipc-transport"
@@ -27,8 +28,8 @@ import {
 import { registerRendererProtocol, setProtocolReporter } from "./protocol"
 import { loadWindow } from "./scheme"
 import { createWindowRegistry } from "./registry"
-import { windowRecovery } from "./recovery"
-import { takeEarlyWindow, type EarlyWindow } from "./early"
+import { windowRecovery } from "./recovery.vibe"
+import { takeEarlyWindow, type EarlyWindow } from "./early.vibe"
 import { manageWindowState, readWindowState, resolveWindowState, windowStateFile } from "./window-state"
 import { allowRendererPermissions, wireNavigationPolicy, wireRendererHeaders } from "./security"
 
@@ -117,13 +118,13 @@ export function setWindowThemeReady(win: BrowserWindow) {
   themeReady.get(win)?.()
 }
 
-export const mainWindows = Effect.fn("Window.make")(function* () {
-  const fs = yield* FileSystem.FileSystem
-  const path = yield* Path.Path
-  const paths = yield* DesktopPaths.resolve
-  const storage = yield* DesktopStorage.Service
-  const runFork = Effect.runForkWith(yield* Effect.context())
-  const wireWindowRecovery = yield* windowRecovery
+export const mainWindows = effect () => try withSpan(effect {
+  const fs = try FileSystem.FileSystem
+  const path = try Path.Path
+  const paths = try DesktopPaths.resolve
+  const storage = try DesktopStorage.Service
+  const runFork = Effect.runForkWith(try Effect.context())
+  const wireWindowRecovery = try windowRecovery
 
   const restore = () => {
     // The entry module created and showed the first restored window on ready; it is adopted here,
@@ -131,14 +132,14 @@ export const mainWindows = Effect.fn("Window.make")(function* () {
     const early = takeEarlyWindow()
     const usable = early && !early.win.isDestroyed() ? early : undefined
     const ids = registry.persisted()
-    const list = ids.length ? ids : [usable?.id ?? randomUUID()]
+    const list = ids.length ? ids : [usable?.id ?? createWindowID()]
 
     if (usable && !list.includes(usable.id)) usable.win.destroy()
 
     return list.map((id) => create(id, usable?.id === id ? usable : undefined))
   }
 
-  const create = (id: string = randomUUID(), early?: EarlyWindow) => {
+  const create = (id: string = createWindowID(), early?: EarlyWindow) => {
     const stateFile = path.join(app.getPath("userData"), windowStateFile(id))
     const state = early?.state ?? resolveWindowState(readWindowState(stateFile), { width: 1280, height: 800 }, displays)
     const appearance = windowAppearance(path, paths)
@@ -182,9 +183,9 @@ export const mainWindows = Effect.fn("Window.make")(function* () {
     let revealed = !!early
 
     const focusForTests = () => {
-      if (app.isPackaged || process.env.OPENCODE_TEST_ONBOARDING !== "1") return
+      if (app.isPackaged || environmentValue("OPENCODE_TEST_ONBOARDING") !== "1") return
 
-      if (process.platform === "darwin") app.focus({ steal: true })
+      if (currentPlatform() === "darwin") app.focus({ steal: true })
       win.focus()
     }
 
@@ -212,7 +213,7 @@ export const mainWindows = Effect.fn("Window.make")(function* () {
     })
     win.once("ready-to-show", ready)
 
-    if (process.platform === "linux") win.webContents.once("did-finish-load", ready)
+    if (currentPlatform() === "linux") win.webContents.once("did-finish-load", ready)
     win.once("closed", () => themeReady.delete(win))
 
     return win
@@ -226,18 +227,16 @@ export const mainWindows = Effect.fn("Window.make")(function* () {
     win.on("closed", () => {
       if (!registry.closed(id)) return
       runFork(
-        Effect.gen(function* () {
-          yield* Effect.try(() => storage.state.clear(windowDataFile(id)))
-          yield* fs.remove(path.join(app.getPath("userData"), windowStateFile(id)), { force: true })
-        }).pipe(
-          Effect.catch((error) => scoped("window", Effect.logError("failed to clean window state", { id, error }))),
-        ),
+        do { const catchProgram = (effect {
+          try Effect.try(() => storage.state.clear(windowDataFile(id)))
+          try fs.remove(path.join(try Effect.orDie(Effect.try({ try: () => app.getPath("userData"), catch: (e) => e })), try Effect.orDie(Effect.try({ try: () => windowStateFile(id), catch: (e) => e }))), { force: true })
+        }); effect { return catchProgram catch effect (error) => try scoped("window", Effect.logError("failed to clean window state", { id, error })) } },
       )
     })
     opened.forEach((listener) => listener(win))
   }
 
   return { create, restore }
-})
+}, "Window.make")
 
 

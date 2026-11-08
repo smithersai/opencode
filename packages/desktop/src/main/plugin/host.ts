@@ -58,7 +58,7 @@ import {
 import { SidecarCredentials } from "../service/sidecar-credentials"
 import type { Database } from "../storage/database"
 import type { StateStore } from "../storage/state"
-import { getLastFocusedWindow, getMainWindows, onMainWindow } from "../windows"
+import { getLastFocusedWindow, getMainWindows, onMainWindow } from "../windows/index.vibe"
 import { PluginError } from "./error"
 import { createLifecycle, type ErrorLog, type Instance, type Revision } from "./lifecycle"
 import { createManager } from "./manager"

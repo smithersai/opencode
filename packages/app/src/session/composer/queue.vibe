@@ -1,7 +1,8 @@
+import { cancelTimeout } from "./queue.platform.ts"
+import { scheduleTimeout } from "./queue.platform.ts"
 import { createEffect, createMemo, onCleanup, type Accessor } from "solid-js"
 import { createStore } from "solid-js/store"
 import { useMutation } from "@tanstack/solid-query"
-import { Option, Schema } from "effect"
 import type { SessionInboxInfo } from "@opencode/client/promise"
 import { SessionMessage } from "@opencode/schema/session-message"
 import type { ComposerDelivery, ComposerSession } from "@/composer/adapter"
@@ -71,12 +72,12 @@ export function createSessionQueue(input: {
   // substitute: it drops rows from the pending list but leaves their materialized messages in the
   // timeline as if delivered.
   const expiries = new Set<ReturnType<typeof setTimeout>>()
-  onCleanup(() => expiries.forEach(clearTimeout))
+  onCleanup(() => expiries.forEach(cancelTimeout))
 
   const hide = (ids: string[]) => {
     setState("gone", (gone) => [...gone, ...ids])
 
-    const timer = setTimeout(() => {
+    const timer = scheduleTimeout(() => {
       expiries.delete(timer)
       setState("gone", (gone) => gone.filter((id) => !ids.includes(id)))
     }, 30_000)
@@ -543,10 +544,10 @@ function mergePrompt(draft: Prompt, prompt: Prompt) {
 const decodeDisplayText = Schema.decodeUnknownOption(Schema.Struct({ displayText: Schema.NonEmptyString }))
 
 export function queuedPromptText(item: QueuedPrompt) {
-  return Option.match(decodeDisplayText(item.payload.metadata), {
+  return do { const $optionSubject = decodeDisplayText(item.payload.metadata); const $optionHandlers: { onNone: () => string; onSome: (metadata: { readonly displayText: string; }) => string; } = {
     onNone: () => item.payload.text,
     onSome: (metadata) => metadata.displayText,
-  })
+  }; const { onNone: $optionNone, onSome: $optionSome } = $optionHandlers; match ($optionSubject) { when Option.Some(let $optionValue): $optionSome($optionValue); default: $optionNone(); }; }
 }
 
 // Inline attachments are the files the composer added itself, so they return

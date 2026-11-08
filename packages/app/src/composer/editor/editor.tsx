@@ -42,7 +42,7 @@ import type {
   ComposerSkillPart,
   ComposerSuggestion,
 } from "../types"
-import type { ComposerEditorModel, ComposerSelectControl } from "./interaction"
+import type { ComposerEditorModel, ComposerSelectControl } from "./interaction.vibe"
 import { isAttachment } from "../prompt-parts"
 import { QuoteCommentEditor } from "./quote-comment"
 import "../attachments/attachments.css"

@@ -4,7 +4,7 @@ import { app } from "electron"
 import { acquireApplicationLock, configureApplication } from "./lifecycle/configure"
 import { startSidecarProbe } from "./service/sidecar-probe"
 import { registerStorageSnapshotHandler } from "./storage/snapshot"
-import { createEarlyWindow } from "./windows/early"
+import { createEarlyWindow } from "./windows/early.vibe"
 import { rendererAssetsServed } from "./windows/protocol"
 import { registerRendererScheme } from "./windows/scheme"
 
@@ -30,6 +30,6 @@ if (acquireApplicationLock()) {
     if (!process.env.ELECTRON_RENDERER_URL) await rendererAssetsServed({ quietMs: 40, capMs: 400 })
     marks.served = Date.now()
 
-    return import("./desktop")
+    return import("./desktop.vibe")
   })
 }

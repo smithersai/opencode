@@ -3,7 +3,7 @@ import { PluginRpcs } from "../../shared/ipc-rpc.vibe"
 import { pluginFailure } from "../plugin/error"
 import type { PluginHost } from "../plugin/host"
 import { Plugins } from "../plugin"
-import { IpcPortHandoff } from "../ipc-transport"
+import { IpcPortHandoff } from "../ipc-transport.vibe"
 import { isRendererUrl } from "../windows/scheme"
 import { sender, type RpcContext } from "./context"
 

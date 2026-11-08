@@ -1,6 +1,6 @@
 import type { MessagePortMain, WebContents } from "electron"
-import { Context, Effect, Layer, Option, Queue, Schema, Stream } from "effect"
-import { RpcMessage, RpcServer } from "effect/rpc"
+import { Layer } from "effect"
+import { RpcServer } from "effect/rpc"
 import { bindIpcEvents } from "./ipc-events.vibe"
 
 type PortBinding = {
@@ -9,7 +9,7 @@ type PortBinding = {
   readonly port: MessagePortMain
   readonly onMessage: (event: Electron.MessageEvent) => void
   readonly onClose: () => void
-  readonly unbindEvents: Effect.Effect<void>
+  readonly unbindEvents: void!!
 }
 
 type Handoff = {
@@ -17,48 +17,48 @@ type Handoff = {
   readonly sender: (clientId: number) => WebContents | undefined
 }
 
-export class IpcPortHandoff extends Context.Service<IpcPortHandoff, Handoff>()("opencode/desktop/IpcPortHandoff") {}
+export service IpcPortHandoff: Handoff { static readonly key = "opencode/desktop/IpcPortHandoff";}
 
 // Messages cross the port by structured clone, like Effect's worker protocol: no serialization
 // layer, so binary payloads stay binary and nothing is packed into a shared buffer. Electron's
 // MessagePortMain can only transfer ports, so byte payloads are cloned in both directions.
 export const IpcServerProtocolLive = Layer.unwrap(
-  Effect.gen(function* () {
-    const handoffs = yield* Queue.unbounded<readonly [WebContents, MessagePortMain]>()
+  effect {
+    const handoffs = try Queue.unbounded<readonly [WebContents, MessagePortMain]>()
     const bindings = new Map<number, PortBinding>()
     const senderBindings = new Map<number, number>()
 
     const protocol = Layer.effect(
       RpcServer.Protocol,
       RpcServer.Protocol.make(
-        Effect.fnUntraced(function* (writeRequest) {
-          const disconnects = yield* Queue.unbounded<number>()
-          const inbound = yield* Queue.unbounded<readonly [number, RpcMessage.FromClientEncoded]>()
-          const runFork = Effect.runForkWith(yield* Effect.context())
+        effect (writeRequest) => {
+          const disconnects = try Queue.unbounded<number>()
+          const inbound = try Queue.unbounded<readonly [number, RpcMessage.FromClientEncoded]>()
+          const runFork = Effect.runForkWith(try Effect.context())
           let nextClientId = 0
 
-          const disconnect = Effect.fnUntraced(function* (id: number) {
+          const disconnect = effect (id: number) => {
             const binding = bindings.get(id)
 
             if (!binding) return
             bindings.delete(id)
 
             if (senderBindings.get(binding.sender.id) === id) senderBindings.delete(binding.sender.id)
-            binding.port.off("message", binding.onMessage)
-            binding.port.off("close", binding.onClose)
-            binding.sender.off("destroyed", binding.onClose)
-            yield* binding.unbindEvents
-            binding.port.close()
+            try Effect.orDie(Effect.try({ try: () => binding.port.off("message", binding.onMessage), catch: (e) => e }))
+            try Effect.orDie(Effect.try({ try: () => binding.port.off("close", binding.onClose), catch: (e) => e }))
+            try Effect.orDie(Effect.try({ try: () => binding.sender.off("destroyed", binding.onClose), catch: (e) => e }))
+            try binding.unbindEvents
+            try Effect.orDie(Effect.try({ try: () => binding.port.close(), catch: (e) => e }))
             Queue.offerUnsafe(disconnects, id)
-          })
+          }
 
-          const bind = Effect.fnUntraced(function* (sender: WebContents, port: MessagePortMain) {
+          const bind = effect (sender: Electron.WebContents, port: Electron.MessagePortMain) => {
             const previous = senderBindings.get(sender.id)
 
-            if (previous !== undefined) yield* disconnect(previous)
+            if (previous !== undefined) try disconnect(previous)
 
-            if (sender.isDestroyed()) {
-              port.close()
+            if (try Effect.orDie(Effect.try({ try: () => sender.isDestroyed(), catch: (e) => e }))) {
+              try Effect.orDie(Effect.try({ try: () => port.close(), catch: (e) => e }))
 
               return
             }
@@ -72,25 +72,23 @@ export const IpcServerProtocolLive = Layer.unwrap(
             }
 
             const onClose = () => runFork(disconnect(id))
-            const unbindEvents = yield* bindIpcEvents(sender.id)
+            const unbindEvents = try bindIpcEvents(sender.id)
             const binding = { id, sender, port, onMessage, onClose, unbindEvents }
             bindings.set(id, binding)
             senderBindings.set(sender.id, id)
-            port.on("message", onMessage)
-            port.on("close", onClose)
-            sender.once("destroyed", onClose)
-            port.start()
-          })
+            try Effect.orDie(Effect.try({ try: () => port.on("message", onMessage), catch: (e) => e }))
+            try Effect.orDie(Effect.try({ try: () => port.on("close", onClose), catch: (e) => e }))
+            try Effect.orDie(Effect.try({ try: () => sender.once("destroyed", onClose), catch: (e) => e }))
+            try Effect.orDie(Effect.try({ try: () => port.start(), catch: (e) => e }))
+          }
 
-          yield* Stream.fromQueue(handoffs).pipe(
-            Stream.runForEach(([sender, port]) => bind(sender, port)),
-            Effect.forkScoped,
-          )
-          yield* Stream.fromQueue(inbound).pipe(
-            Stream.runForEach(([id, message]) => (bindings.has(id) ? writeRequest(id, message) : Effect.void)),
-            Effect.forkScoped,
-          )
-          yield* Effect.addFinalizer(() => Effect.forEach([...bindings.keys()], disconnect, { discard: true }))
+          try (Stream.fromQueue(handoffs)
+            |> Stream.runForEach(%, ([sender, port]) => bind(sender, port))
+            |> Effect.forkScoped(%))
+          try (Stream.fromQueue(inbound)
+            |> Stream.runForEach(%, ([id, message]) => (bindings.has(id) ? writeRequest(id, message) : Effect.void))
+            |> Effect.forkScoped(%))
+          try Effect.addFinalizer(() => Effect.forEach([...bindings.keys()], disconnect, { discard: true }))
 
           return {
             codecFor: Schema.toCodecJson,
@@ -100,14 +98,14 @@ export const IpcServerProtocolLive = Layer.unwrap(
                 bindings.get(clientId)?.port.postMessage(response)
               }),
             end: disconnect,
-            clientIds: Effect.sync(() => new Set(bindings.keys())),
+            clientIds: effect { return new Set(bindings.keys()) },
             initialMessage: Effect.succeed(Option.none()),
             supportsAck: true,
             supportsTransferables: false,
             supportsSpanPropagation: false,
             supportsNotifications: true,
           }
-        }),
+        },
       ),
     )
 
@@ -120,5 +118,5 @@ export const IpcServerProtocolLive = Layer.unwrap(
         sender: (clientId) => bindings.get(clientId)?.sender,
       }),
     )
-  }),
+  },
 )

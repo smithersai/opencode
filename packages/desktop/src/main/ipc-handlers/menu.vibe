@@ -1,7 +1,7 @@
 import { BrowserWindow } from "electron"
 import { MenuRpcs } from "../../shared/ipc-rpc.vibe"
-import { IpcPortHandoff } from "../ipc-transport.ts"
-import { ApplicationLifecycle } from "../lifecycle/index.ts"
+import { IpcPortHandoff } from "../ipc-transport.vibe"
+import { ApplicationLifecycle } from "../lifecycle/index.vibe"
 import { runDesktopMenuAction } from "../native/menu-actions.ts"
 import { sender } from "./context.ts"
 

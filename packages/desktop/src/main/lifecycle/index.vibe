@@ -1,14 +1,19 @@
-export * as ApplicationLifecycle from "./index"
+import { listenForSignal } from "./index.platform.ts"
+import { currentPlatform } from "./index.platform.ts"
+import { $platform$2 } from "./index.platform.js";
+import { $platform$1 } from "./index.platform.js";
+import { $platform } from "./index.platform.js";
+export * as ApplicationLifecycle from "./index.vibe"
 
 import { app, BrowserWindow } from "electron"
 import type { Event } from "electron"
-import { Context, Effect, Layer } from "effect"
+import { Effect, Layer } from "effect"
 import { DeepLinksOpened } from "../../shared/ipc-rpc/events.vibe"
 import { emitIpcEvent } from "../ipc-events.vibe"
 import { DesktopLogging, scoped } from "../native/logging"
-import { DesktopStorage } from "../storage"
+import { DesktopStorage } from "../storage/index.vibe"
 import { safeWebContentsURL } from "../windows/state"
-import { getLastFocusedWindow, getWindowByID, mainWindows, setAppQuitting, setRelaunchHandler } from "../windows"
+import { getLastFocusedWindow, getWindowByID, mainWindows, setAppQuitting, setRelaunchHandler } from "../windows/index.vibe"
 import { marks } from "./marks"
 import { initializeFirstLaunchOnboarding } from "./onboarding.vibe"
 import { Shutdown } from "./shutdown.vibe"
@@ -16,20 +21,20 @@ import { consoleReturnWindow } from "./deep-link"
 
 export interface Interface {
   readonly relaunch: () => void
-  readonly prepareToRestart: Effect.Effect<void>
+  readonly prepareToRestart: void!!
   readonly consumeInitialDeepLinks: () => string[]
   readonly createWindow: () => BrowserWindow
   readonly restoreWindows: () => BrowserWindow[]
 }
 
-export class Service extends Context.Service<Service, Interface>()("opencode/desktop/ApplicationLifecycle") {}
+export service Service: Interface { static readonly key = "opencode/desktop/ApplicationLifecycle";}
 
 const runtime = Layer.effect(
   Service,
-  Effect.gen(function* () {
-    const shutdown = yield* Shutdown.Service
-    const runFork = Effect.runForkWith(yield* Effect.context())
-    const windows = yield* mainWindows()
+  effect {
+    const shutdown = try Shutdown.Service
+    const runFork = Effect.runForkWith(try Effect.context())
+    const windows = try mainWindows()
     const createWindow = windows.create
     const restoreWindows = windows.restore
     const pendingDeepLinks: string[] = []
@@ -37,13 +42,12 @@ const runtime = Layer.effect(
     let quitRequested = false
 
     // A hung shutdown step would otherwise leave every quit waiting on it forever.
-    const prepareToRestart = shutdown.run.pipe(
-      Effect.timeoutOrElse({
+    const prepareToRestart = shutdown.run
+      |> Effect.timeoutOrElse(%, {
         duration: "10 seconds",
         orElse: () => Effect.logError("shutdown timed out, quitting anyway"),
-      }),
-      Effect.ensuring(Effect.sync(() => (shutdownReady = true))),
-    )
+      })
+      |> Effect.ensuring(%, effect { return (shutdownReady = true) })
 
     const focusWindow = (win: BrowserWindow | null) => {
       if (!win) return
@@ -74,14 +78,13 @@ const runtime = Layer.effect(
     const relaunch = () => {
       setAppQuitting()
       runFork(
-        prepareToRestart.pipe(
-          Effect.ensuring(
-            Effect.sync(() => {
+        prepareToRestart
+          |> Effect.ensuring(
+            %, Effect.sync(() => {
               app.relaunch()
               app.quit()
             }),
           ),
-        ),
       )
     }
 
@@ -111,7 +114,7 @@ const runtime = Layer.effect(
       // Electron records the cancelled quit only after this event returns. A shutdown with nothing to
       // stop finishes in a microtask, so re-quitting from it would be overwritten and the app would
       // stay alive with no windows. Re-quit on the next tick instead.
-      runFork(prepareToRestart.pipe(Effect.ensuring(Effect.sync(() => setImmediate(() => app.quit())))))
+      runFork(prepareToRestart |> Effect.ensuring(%, Effect.sync(() => $platform(() => app.quit()))))
     }
 
     const willQuit = () => {
@@ -135,12 +138,12 @@ const runtime = Layer.effect(
 
     const signal = () => {
       setAppQuitting()
-      runFork(prepareToRestart.pipe(Effect.ensuring(Effect.sync(() => app.quit()))))
+      runFork(prepareToRestart |> Effect.ensuring(%, Effect.sync(() => app.quit())))
     }
 
     // Electron emits this instead of will-quit when it lost track of a quit, so finish the one we asked for.
     const windowAllClosed = () => {
-      if (quitRequested || process.platform !== "darwin") app.quit()
+      if (quitRequested || currentPlatform() !== "darwin") app.quit()
     }
 
     const activate = () => {
@@ -152,15 +155,15 @@ const runtime = Layer.effect(
     const resetRelaunchHandler = setRelaunchHandler(relaunch)
     let windowsWired = false
 
-    app.on("second-instance", secondInstance)
-    app.on("open-url", openUrl)
-    app.on("before-quit", beforeQuit)
-    app.on("will-quit", willQuit)
-    app.on("child-process-gone", childProcessGone)
-    app.on("render-process-gone", renderProcessGone)
-    process.on("SIGINT", signal)
-    process.on("SIGTERM", signal)
-    yield* Effect.addFinalizer(() =>
+    try Effect.orDie(Effect.try({ try: () => app.on("second-instance", secondInstance), catch: (e) => e }))
+    try Effect.orDie(Effect.try({ try: () => app.on("open-url", openUrl), catch: (e) => e }))
+    try Effect.orDie(Effect.try({ try: () => app.on("before-quit", beforeQuit), catch: (e) => e }))
+    try Effect.orDie(Effect.try({ try: () => app.on("will-quit", willQuit), catch: (e) => e }))
+    try Effect.orDie(Effect.try({ try: () => app.on("child-process-gone", childProcessGone), catch: (e) => e }))
+    try Effect.orDie(Effect.try({ try: () => app.on("render-process-gone", renderProcessGone), catch: (e) => e }))
+    try Effect.orDie(Effect.try({ try: () => listenForSignal("SIGINT", signal), catch: (e) => e }))
+    try Effect.orDie(Effect.try({ try: () => listenForSignal("SIGTERM", signal), catch: (e) => e }))
+    try Effect.addFinalizer(() =>
       Effect.sync(() => {
         app.off("second-instance", secondInstance)
         app.off("open-url", openUrl)
@@ -170,8 +173,8 @@ const runtime = Layer.effect(
         app.off("render-process-gone", renderProcessGone)
         app.off("window-all-closed", windowAllClosed)
         app.off("activate", activate)
-        process.off("SIGINT", signal)
-        process.off("SIGTERM", signal)
+        $platform$1("SIGINT", signal)
+        $platform$2("SIGTERM", signal)
         resetRelaunchHandler()
       }),
     )
@@ -191,7 +194,7 @@ const runtime = Layer.effect(
         return restoreWindows()
       },
     })
-  }),
+  },
 )
 
 // Storage opens after the entry module has set userData and before the renderer loads, so window
@@ -203,12 +206,12 @@ const platform = Layer.mergeAll(
 )
 
 export const layer = Layer.unwrap(
-  Effect.gen(function* () {
+  effect {
     // Decide first-launch state before the storage layer creates drafts.sqlite, which would
     // otherwise read as evidence of an earlier launch on a fresh install.
-    yield* initializeFirstLaunchOnboarding(app.getPath("userData"))
+    try initializeFirstLaunchOnboarding(try Effect.orDie(Effect.try({ try: () => app.getPath("userData"), catch: (e) => e })))
     marks.onboarding = Date.now()
 
     return runtime.pipe(Layer.provideMerge(platform))
-  }),
+  },
 )

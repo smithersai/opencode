@@ -1,4 +1,4 @@
-import type { IpcPortHandoff } from "../ipc-transport"
+import type { IpcPortHandoff } from "../ipc-transport.vibe"
 
 export type RpcContext = { readonly client: { readonly id: number } }
 

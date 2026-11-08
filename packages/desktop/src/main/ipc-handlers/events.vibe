@@ -1,6 +1,6 @@
 import { EventRpcs } from "../../shared/ipc-rpc.vibe"
 import { ipcEventStream } from "../ipc-events.vibe"
-import { IpcPortHandoff } from "../ipc-transport.ts"
+import { IpcPortHandoff } from "../ipc-transport.vibe"
 import { sender } from "./context.ts"
 
 export const eventHandlers = EventRpcs.toLayer(

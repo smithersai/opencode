@@ -1,13 +1,11 @@
-import { randomUUID } from "node:crypto"
-import path from "node:path"
-import { fileURLToPath } from "node:url"
+import { createWindowID, moduleDirectory, joinPath } from "./early.platform.ts"
+import { currentPlatform,resourcesDirectory } from "./early.platform.ts"
 import { app, BrowserWindow, screen, shell } from "electron"
-import { Predicate } from "effect"
 import { resolveExternalURL } from "../files/external-url"
 import { windowArguments } from "./bootstrap.vibe"
 import { WINDOW_IDS_KEY } from "../storage/keys"
 import { getStore } from "../storage/store"
-import { platformFrame, storedBackgroundColor, storedZoomLevel, tone } from "./defaults"
+import { platformFrame, storedBackgroundColor, storedZoomLevel, tone } from "./defaults.vibe"
 import { registerRendererProtocol } from "./protocol"
 import { loadWindow } from "./scheme"
 import { allowRendererPermissions, wireNavigationPolicy, wireRendererHeaders } from "./security"
@@ -36,12 +34,12 @@ const displays = {
 // bundle, the layers and the renderer boot. restoreWindows() adopts it through takeEarlyWindow().
 export function createEarlyWindow() {
   const ids = getStore().get(WINDOW_IDS_KEY)
-  const id = Array.isArray(ids) && Predicate.isString(ids[0]) ? ids[0] : randomUUID()
-  const root = path.dirname(fileURLToPath(import.meta.url))
-  const file = path.join(app.getPath("userData"), windowStateFile(id))
+  const id = Array.isArray(ids) && Predicate.isString(ids[0]) ? ids[0] : createWindowID()
+  const root = moduleDirectory(import.meta.url)
+  const file = joinPath(app.getPath("userData"), windowStateFile(id))
   const state = resolveWindowState(readWindowState(file), { width: 1280, height: 800 }, displays)
   const zoom = storedZoomLevel()
-  const icons = app.isPackaged ? path.join(process.resourcesPath, "icons") : path.join(root, "../../resources/icons")
+  const icons = app.isPackaged ? joinPath(resourcesDirectory(), "icons") : joinPath(root, "../../resources/icons")
 
   const win = new BrowserWindow({
     x: state.x,
@@ -51,11 +49,11 @@ export function createEarlyWindow() {
     show: true,
     autoHideMenuBar: true,
     title: "OpenCode",
-    icon: path.join(icons, `icon.${process.platform === "win32" ? "ico" : "png"}`),
+    icon: joinPath(icons, `icon.${currentPlatform() === "win32" ? "ico" : "png"}`),
     backgroundColor: storedBackgroundColor(),
     ...platformFrame(tone(), zoom),
     webPreferences: {
-      preload: path.join(root, "../preload/index.cjs"),
+      preload: joinPath(root, "../preload/index.cjs"),
       contextIsolation: true,
       nodeIntegration: false,
       sandbox: true,
@@ -88,7 +86,7 @@ export function createEarlyWindow() {
   pending = record
   // The renderer boots while the main bundle and layers load, instead of after them. Everything the
   // page needs before its first request is wired here; the IPC port arrives once the layers are up.
-  registerRendererProtocol(path.join(root, "../renderer"))
+  registerRendererProtocol(joinPath(root, "../renderer"))
   allowRendererPermissions(win)
   wireNavigationPolicy(win, (url) => record.openExternal(url))
   wireRendererHeaders(win)

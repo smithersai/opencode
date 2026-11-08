@@ -4,7 +4,7 @@ import { CHANNEL } from "../constants"
 import { BackgroundServiceState } from "./background-service-state.vibe"
 import { cleanStages } from "./cli-stages.vibe"
 import { keptStages, serviceVersion, shouldRetryEnsure } from "./cli-version"
-import { DesktopCli } from "./desktop-cli"
+import { DesktopCli } from "./desktop-cli.vibe"
 import { SidecarCredentials } from "./sidecar-credentials"
 import { sidecarProbe } from "./sidecar-probe"
 

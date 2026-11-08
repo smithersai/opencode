@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test"
 import type { SessionInboxInfo } from "@opencode/client/promise"
-import { queuedPromptAttachments, queuedPromptRows, type SentEdit } from "./queue"
+import { queuedPromptAttachments, queuedPromptRows, type SentEdit } from "./queue.vibe"
 
 const queued = [
   {

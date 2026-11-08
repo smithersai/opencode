@@ -1,7 +1,7 @@
 import { app, BrowserWindow, systemPreferences } from "electron"
 import { Effect } from "effect"
 import { WindowRpcs } from "../../shared/ipc-rpc.vibe"
-import { IpcPortHandoff } from "../ipc-transport"
+import { IpcPortHandoff } from "../ipc-transport.vibe"
 import {
   getPinchZoomEnabled,
   setPinchZoomEnabled,
@@ -10,8 +10,8 @@ import {
   setWindowThemeReady,
   setZoomLevel,
   updateTitlebar,
-} from "../windows"
-import { storedZoomLevel } from "../windows/defaults"
+} from "../windows/index.vibe"
+import { storedZoomLevel } from "../windows/defaults.vibe"
 import { focusWindow, showWindow } from "../windows/focus"
 import { sender } from "./context"
 

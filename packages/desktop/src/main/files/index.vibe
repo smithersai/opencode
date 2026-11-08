@@ -1,0 +1,173 @@
+import { openPowerShell, openApplication, isBlob, imageFromBytes } from "./index.platform.ts"
+import { currentPlatform } from "./index.platform.ts"
+export * as DesktopFiles from "./index.vibe"
+
+import { clipboard, dialog, shell } from "electron"
+import { Effect, FileSystem, Layer, Path } from "effect"
+import type { DirectoryPickerOptions, FilePickerOptions, SaveFilePickerOptions } from "../../shared/ipc-contract"
+import { scoped } from "../native/logging"
+import { nativeT } from "../native/translations"
+import { assertAttachmentBudget, createPickedFileAuthorizations, readAttachment } from "./attachment-picker"
+import { resolveExternalURL, resolveLocalFilePath } from "./external-url"
+
+export type Interface = ReturnType<typeof make>
+
+export service Service: Interface { static readonly key = "opencode/desktop/DesktopFiles";}
+
+export const layer = Layer.effect(
+  Service,
+  effect {
+    const fs = try FileSystem.FileSystem
+    const path = try Path.Path
+
+    return Service.of(make(fs, path))
+  },
+)
+
+function make(fs: FileSystem.FileSystem, path: Path.Path) {
+  const pickedFiles = createPickedFileAuthorizations((file, maxBytes) =>
+    readAttachment(file, maxBytes) |> Effect.provideService(%, FileSystem.FileSystem, fs),
+  )
+
+  return {
+    openDirectoryPicker: effect (options?: DirectoryPickerOptions | undefined) => try withSpan(effect {
+      const result = try Effect.promise(() =>
+        dialog.showOpenDialog({
+          properties: ["openDirectory", ...(options?.multiple ? ["multiSelections" as const] : []), "createDirectory"],
+          title: options?.title ?? nativeT("desktop.dialog.chooseFolder"),
+          defaultPath: options?.defaultPath,
+        }),
+      )
+
+      if (result.canceled) return null
+
+      return options?.multiple ? result.filePaths : result.filePaths[0]
+    }, "DesktopFiles.openDirectoryPicker"),
+    openFilePicker: effect (sender: number, options?: FilePickerOptions | undefined) => try withSpan(effect {
+      const result = try Effect.promise(() =>
+        dialog.showOpenDialog({
+          properties: ["openFile", ...(options?.multiple ? ["multiSelections" as const] : [])],
+          title: options?.title ?? nativeT("desktop.dialog.chooseFile"),
+          defaultPath: options?.defaultPath,
+          filters: pickerFilters(options?.extensions),
+        }),
+      )
+
+      if (result.canceled) return null
+
+      const files = try Effect.forEach(
+        result.filePaths,
+        effect (file) => {
+          const info = try fs.stat(file)
+
+          return { path: file, name: path.basename(file), size: Number(info.size) }
+        },
+        { concurrency: "unbounded" },
+      )
+
+      try Effect.orDie(Effect.try({ try: () => assertAttachmentBudget(files), catch: (e) => e }))
+
+      return { token: try Effect.orDie(Effect.try({ try: () => pickedFiles.add(sender, result.filePaths), catch: (e) => e })), files }
+    }, "DesktopFiles.openFilePicker"),
+    readPickedFile: pickedFiles.read,
+    releasePickedFiles: pickedFiles.release,
+    saveFile: effect (options: SaveFilePickerOptions, content: string) => try withSpan(effect {
+      const result = try Effect.promise(() =>
+        dialog.showSaveDialog({
+          title: options?.title ?? nativeT("desktop.dialog.saveFile"),
+          defaultPath: options?.defaultPath,
+        }),
+      )
+
+      if (result.canceled) return false
+
+      if (!result.filePath) return false
+      try fs.writeFile(result.filePath, new TextEncoder().encode(content))
+
+      return true
+    }, "DesktopFiles.saveFile"),
+    openPath: effect (target: string, application?: string | undefined) => try withSpan(effect {
+      if (!application) return try Effect.promise(() => shell.openPath(target))
+
+      if ((try Effect.orDie(Effect.try({ try: () => currentPlatform(), catch: (e) => e }))) === "win32" && /^powershell(\.exe)?$/i.test(path.basename(application))) {
+        const info = try fs.stat(target)
+        const cwd = info.type === "Directory" ? target : path.dirname(target)
+
+        // PowerShell takes its working directory rather than a path argument, and needs its own console window:
+        // `start` opens one, and ignored stdio keeps the console from holding cmd's pipes open until PowerShell exits.
+        return try Effect.tryPromise(() => openPowerShell(application, cwd))
+      }
+
+      try Effect.tryPromise(() => openApplication(target, application))
+    }, "DesktopFiles.openPath"),
+    revealPath: effect (target: string) => try withSpan(effect {
+      const exists = fs.exists(target) catch () => false
+
+      if (!exists) return false
+      try Effect.orDie(Effect.try({ try: () => shell.showItemInFolder(target), catch: (e) => e }))
+
+      return true
+    }, "DesktopFiles.revealPath"),
+    readClipboardImage: effect () => try withSpan(effect {
+      const items = try Effect.promise(() => clipboard.read())
+
+      const found = clipboardImageTypes
+        .flatMap((mime) => items.filter((item) => item.types.includes(mime)).map((item) => ({ item, mime })))
+        .at(0)
+
+      if (!found) return null
+      // getType() is typed as Blob | ClipboardBookmark; only the bookmark format yields the latter.
+      const payload = try Effect.promise(async () => found.item.getType(found.mime))
+
+      const blob = try Effect.orDie(Effect.try({ try: () => isBlob(payload) ? payload : undefined, catch: (e) => e }))
+      if (blob === undefined) return null
+      const bytes = try Effect.promise(() => blob.arrayBuffer())
+      // Re-encode through nativeImage so the renderer always receives PNG and the image dimensions.
+      const image = try Effect.orDie(Effect.try({ try: () => imageFromBytes(bytes), catch: (e) => e }))
+
+      if (try Effect.orDie(Effect.try({ try: () => image.isEmpty(), catch: (e) => e }))) return null
+      const size = try Effect.orDie(Effect.try({ try: () => image.getSize(), catch: (e) => e }))
+
+      return { buffer: new Uint8Array(try Effect.orDie(Effect.try({ try: () => image.toPNG(), catch: (e) => e }))), width: size.width, height: size.height }
+    }, "DesktopFiles.readClipboardImage"),
+    writeClipboardText: effect (text: string) => try withSpan(effect {
+      try Effect.promise(() => clipboard.writeText(text))
+    }, "DesktopFiles.writeClipboardText"),
+  }
+}
+
+// Chromium exposes copied bitmaps as image/png; JPEG only appears when an app placed one explicitly.
+const clipboardImageTypes = ["image/png", "image/jpeg"]
+
+export const openExternalURL = effect (value: string) => try withSpan(effect {
+  const url = try Effect.orDie(Effect.try({ try: () => resolveExternalURL(value), catch: (e) => e }))
+
+  if (!url) {
+    try scoped("window", Effect.logWarning("blocked external target", { url: value }))
+
+    return false
+  }
+
+  return (Effect.tryPromise(() => shell.openExternal(url))
+    |> Effect.as(%, true)) catch effect (error) => try (scoped("window", Effect.logError("failed to open external target", { url, error })) |> Effect.as(%, false))
+}, "DesktopFiles.openExternalURL")
+
+export const openLocalFileURL = effect (value: string) => try withSpan(effect {
+  const path = try Effect.orDie(Effect.try({ try: () => resolveLocalFilePath(value), catch: (e) => e }))
+
+  if (!path) {
+    try scoped("window", Effect.logWarning("blocked local file target", { url: value }))
+
+    return
+  }
+
+  const error = try Effect.promise(() => shell.openPath(path))
+
+  if (error) try scoped("window", Effect.logError("failed to open local file", { path, error }))
+}, "DesktopFiles.openLocalFileURL")
+
+function pickerFilters(extensions?: string[]) {
+  if (!extensions?.length) return undefined
+
+  return [{ name: nativeT("desktop.dialog.files"), extensions }]
+}

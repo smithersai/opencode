@@ -9,7 +9,7 @@ import {
   preferApplicationEnvironment,
   prepareApplicationEnvironment,
   prepareDesktop,
-} from "./environment"
+} from "./environment.vibe"
 
 export interface Interface {
   readonly version: string

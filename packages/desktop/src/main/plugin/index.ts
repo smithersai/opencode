@@ -3,14 +3,14 @@ export * as Plugins from "./index"
 import { app } from "electron"
 import { Context, Effect, Layer } from "effect"
 import type { PluginEndpoint } from "../../shared/ipc-rpc/plugins.vibe"
-import { ApplicationLifecycle } from "../lifecycle"
+import { ApplicationLifecycle } from "../lifecycle/index.vibe"
 import { Shutdown } from "../lifecycle/shutdown.vibe"
 
 const LEVELS = { debug: "Debug", info: "Info", warn: "Warn", error: "Error" } as const
 
-import { DesktopCli } from "../service/desktop-cli"
-import { DesktopStorage } from "../storage"
-import { setAppQuitting } from "../windows"
+import { DesktopCli } from "../service/desktop-cli.vibe"
+import { DesktopStorage } from "../storage/index.vibe"
+import { setAppQuitting } from "../windows/index.vibe"
 import type { PluginHost } from "./host"
 
 /** The host once it loaded, and its load while one is in flight. */

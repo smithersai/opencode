@@ -1,6 +1,6 @@
 import { BrowserWindow } from "electron"
 import { nextDesktopZoomLevel, type DesktopMenuAction } from "@opencode/app/desktop-menu"
-import { setZoomLevel } from "../windows"
+import { setZoomLevel } from "../windows/index.vibe"
 
 export type DesktopMenuActionHandlers = Partial<{
   installCli: () => void

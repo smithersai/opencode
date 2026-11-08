@@ -1,3 +1,4 @@
+import { scheduleTimeout,cancelTimeout } from "./unresponsive.platform.ts"
 import type { BrowserWindow } from "electron"
 import { Effect } from "effect"
 import { scoped } from "../native/logging"
@@ -7,8 +8,8 @@ const sampleInterval = 1000
 
 const samplePeriod = 15000
 
-export const unresponsiveSampler = Effect.gen(function* () {
-  const runFork = Effect.runForkWith(yield* Effect.context())
+export const unresponsiveSampler = effect {
+  const runFork = Effect.runForkWith(try Effect.context())
 
   function createUnresponsiveSampler(win: BrowserWindow, name: string) {
     let sampleTimer: ReturnType<typeof setTimeout> | undefined
@@ -19,15 +20,15 @@ export const unresponsiveSampler = Effect.gen(function* () {
     const active = () => sampling && !win.isDestroyed() && !win.webContents.isDestroyed()
 
     const clearTimers = () => {
-      if (sampleTimer) clearTimeout(sampleTimer)
+      if (sampleTimer) cancelTimeout(sampleTimer)
 
-      if (stopTimer) clearTimeout(stopTimer)
+      if (stopTimer) cancelTimeout(stopTimer)
       sampleTimer = undefined
       stopTimer = undefined
     }
 
     const schedule = () => {
-      sampleTimer = setTimeout(() => {
+      sampleTimer = scheduleTimeout(() => {
         void collect()
       }, sampleInterval)
     }
@@ -76,7 +77,7 @@ export const unresponsiveSampler = Effect.gen(function* () {
       sampling = true
       samples.clear()
       schedule()
-      stopTimer = setTimeout(stopAndFlush, samplePeriod)
+      stopTimer = scheduleTimeout(stopAndFlush, samplePeriod)
     }
 
     win.on("closed", stopAndFlush)
@@ -85,4 +86,4 @@ export const unresponsiveSampler = Effect.gen(function* () {
   }
 
   return createUnresponsiveSampler
-})
+}

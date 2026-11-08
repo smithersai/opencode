@@ -1,4 +1,4 @@
-export * as Ipc from "./ipc"
+export * as Ipc from "./ipc.vibe"
 
 import { app, BrowserWindow, MessageChannelMain } from "electron"
 import { Effect, Layer } from "effect"
@@ -6,7 +6,7 @@ import { RpcServer } from "effect/rpc"
 import { DesktopRpcs } from "../shared/ipc-rpc.vibe"
 import { DragCancelEvent, IpcTransportPort } from "../shared/ipc-transport"
 import { Plugins } from "./plugin"
-import { DesktopFiles, openExternalURL } from "./files"
+import { DesktopFiles, openExternalURL } from "./files/index.vibe"
 import { appHandlers } from "./ipc-handlers/app"
 import { eventHandlers } from "./ipc-handlers/events.vibe"
 import { pluginHandlers } from "./ipc-handlers/plugins.vibe"
@@ -14,12 +14,12 @@ import { fileHandlers } from "./ipc-handlers/files.vibe"
 import { menuHandlers } from "./ipc-handlers/menu.vibe"
 import { storageHandlers } from "./ipc-handlers/storage.vibe"
 import { windowHandlers } from "./ipc-handlers/window"
-import { IpcPortHandoff, IpcServerProtocolLive } from "./ipc-transport"
-import { ApplicationLifecycle } from "./lifecycle"
-import { showCliInstaller } from "./native/install-cli.ts"
+import { IpcPortHandoff, IpcServerProtocolLive } from "./ipc-transport.vibe"
+import { ApplicationLifecycle } from "./lifecycle/index.vibe"
+import { showCliInstaller } from "./native/install-cli.vibe"
 import { createMenu, sendMenuCommand } from "./native/menu"
-import { DesktopCli } from "./service/desktop-cli"
-import { getLastFocusedWindow } from "./windows"
+import { DesktopCli } from "./service/desktop-cli.vibe"
+import { getLastFocusedWindow } from "./windows/index.vibe"
 
 const services = Layer.mergeAll(DesktopFiles.layer, Plugins.layer)
 
@@ -39,11 +39,11 @@ export const layer = RpcServer.layer(DesktopRpcs, { disableFatalDefects: true })
   Layer.provideMerge(services),
 )
 
-export const registerIpcHandlers = Effect.gen(function* () {
-  const handoff = yield* IpcPortHandoff
-  const lifecycle = yield* ApplicationLifecycle.Service
-  const desktopCli = yield* DesktopCli.Service
-  const runFork = Effect.runForkWith(yield* Effect.context())
+export const registerIpcHandlers = effect {
+  const handoff = try IpcPortHandoff
+  const lifecycle = try ApplicationLifecycle.Service
+  const desktopCli = try DesktopCli.Service
+  const runFork = Effect.runForkWith(try Effect.context())
 
   const menu = {
     trigger: (id: string) => {
@@ -83,13 +83,13 @@ export const registerIpcHandlers = Effect.gen(function* () {
 
   const onWindowCreated = (_event: Electron.Event, win: BrowserWindow) => wire(win)
 
-  yield* Effect.sync(() => {
+  try Effect.sync(() => {
     app.on("browser-window-created", onWindowCreated)
     BrowserWindow.getAllWindows().forEach((win) => wire(win))
   })
-  yield* Effect.addFinalizer(() => Effect.sync(() => app.off("browser-window-created", onWindowCreated)))
+  try Effect.addFinalizer(() => Effect.sync(() => app.off("browser-window-created", onWindowCreated)))
 
   return {
     installMenu: () => createMenu(menu),
   }
-})
+}

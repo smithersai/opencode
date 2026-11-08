@@ -12,7 +12,7 @@ import { Loader } from "@opencode/ui/loader"
 import { Tooltip } from "@opencode/ui/tooltip"
 import { prefersReducedMotion } from "@opencode/ui/motion"
 import { useLanguage } from "@/runtime/i18n/language"
-import type { SessionQueueView } from "./queue"
+import type { SessionQueueView } from "./queue.vibe"
 import { cascade, Grow, queueStagger } from "./spring-height"
 import "./queue-panel.css"
 

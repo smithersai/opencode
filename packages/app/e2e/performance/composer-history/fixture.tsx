@@ -6,7 +6,7 @@ import { PlatformProvider, type Platform } from "@/runtime/platform/platform"
 import { createBrowserDraftStore } from "@/runtime/persistence/drafts"
 import { createComposerHistory } from "@/composer/history/store"
 import { ComposerEditor } from "@/composer/editor/editor"
-import { createComposerEditor } from "@/composer/editor/interaction"
+import { createComposerEditor } from "../../../src/composer/editor/interaction.vibe"
 import type { ComposerPersistedState } from "@/composer/types"
 import "@/index.css"
 

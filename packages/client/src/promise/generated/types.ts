@@ -146,6 +146,18 @@ export type InstructionKey = string
 
 export type InstructionHash = string
 
+export type SessionInboxSyntheticPayload1 = { text: string; description?: string; metadata?: { [x: string]: any } }
+
+export type SessionMessageNative1 = { [x: string]: any }
+
+export type ToolFileContent1 = { type: "file"; uri: string; mime: string; name?: string | undefined }
+
+export type SessionMessageToolStateRunning1 = {
+  status: "running"
+  input: { [x: string]: any }
+  metadata: { [x: string]: JsonValue }
+}
+
 export type SessionInterruptResponse = { interrupted: boolean }
 
 export type FormID = string
@@ -287,6 +299,12 @@ export type RpcOutput = { output?: any }
 export type PermissionReply = "once" | "always" | "reject"
 
 export type PtyID = string
+
+export type FormMetadata1 = { [x: string]: any }
+
+export type FormWhen1 = { key: string; op: "eq" | "neq"; value: string | number | boolean }
+
+export type FormValue1 = string | number | boolean | Array<string>
 
 export type SessionStatus =
   | { type: "idle" }
@@ -476,6 +494,20 @@ export type ShellInfo = {
   pid?: number
   exit?: number
   signal?: string
+  metadata: { [x: string]: any }
+  time: { started: number; completed?: number }
+}
+
+export type ShellInfo1 = {
+  id: ShellID
+  status: "running" | "exited" | "timeout" | "killed"
+  command: string
+  cwd: string
+  shell: string
+  file: string
+  pid?: number
+  exit?: number
+  signal?: string
   metadata: { [x: string]: JsonValue }
   time: { started: number; completed?: number }
 }
@@ -539,6 +571,17 @@ export type InstructionEntrySnapshot = Array<{ key: InstructionEntryKey; value: 
 export type EventLogSynced = { type: "log.synced"; aggregateID: string; seq?: EventSeq }
 
 export type LocationRef = { directory: AbsolutePath; workspaceID?: WorkspaceID }
+
+export type SessionMessageAssistantText1 = { type: "text"; text: string; native?: SessionMessageNative1 }
+
+export type SessionMessageAssistantReasoning1 = {
+  type: "reasoning"
+  text: string
+  native?: SessionMessageNative1
+  time?: { created: number; completed?: number }
+}
+
+export type ToolContent1 = ToolTextContent | ToolFileContent1
 
 export type FormNumberField = {
   key: string
@@ -772,6 +815,78 @@ export type PersistentPtyReadResult = {
   screen: { text: string; cols: number; rows: number; cursor: { x: number; y: number } }
 }
 
+export type FormStringField1 = {
+  key: string
+  title?: string
+  description?: string
+  required?: boolean
+  hidden?: boolean
+  when?: Array<FormWhen1>
+  type: "string"
+  format?: "email" | "uri" | "date" | "date-time"
+  minLength?: number
+  maxLength?: number
+  pattern?: string
+  placeholder?: string
+  default?: string
+  options?: Array<FormOption>
+  custom?: boolean
+}
+
+export type FormNumberField1 = {
+  key: string
+  title?: string
+  description?: string
+  required?: boolean
+  hidden?: boolean
+  when?: Array<FormWhen1>
+  type: "number"
+  minimum?: number
+  maximum?: number
+  default?: number
+}
+
+export type FormIntegerField1 = {
+  key: string
+  title?: string
+  description?: string
+  required?: boolean
+  hidden?: boolean
+  when?: Array<FormWhen1>
+  type: "integer"
+  minimum?: number
+  maximum?: number
+  default?: number
+}
+
+export type FormBooleanField1 = {
+  key: string
+  title?: string
+  description?: string
+  required?: boolean
+  hidden?: boolean
+  when?: Array<FormWhen1>
+  type: "boolean"
+  default?: boolean
+}
+
+export type FormMultiselectField1 = {
+  key: string
+  title?: string
+  description?: string
+  required?: boolean
+  hidden?: boolean
+  when?: Array<FormWhen1>
+  type: "multiselect"
+  options: Array<FormOption>
+  minItems?: number
+  maxItems?: number
+  custom?: boolean
+  default?: Array<string>
+}
+
+export type FormAnswer1 = { [x: string]: FormValue1 }
+
 export type VcsInfo = { provider?: string; branch: VcsBranch }
 
 export type WebSearchProvider = { id: WebSearchID; name: string }
@@ -802,16 +917,16 @@ export type SessionInboxMovePayload = { projectID: ProjectID; subpath?: Relative
 export type V2EventRpc = {
   id: EventID
   created: number
-  metadata?: { [x: string]: JsonValue } | null
+  metadata?: { [x: string]: any } | undefined
   type: `${"rpc."}${string}`
   location: LocationPublicRef
-  data: { [x: string]: JsonValue }
+  data: { [x: string]: any }
 }
 
 export type V2EventServerConnected = {
   id: EventID
-  metadata?: { [x: string]: JsonValue } | null
-  location?: LocationPublicRef | null
+  metadata?: { [x: string]: any } | undefined
+  location?: LocationPublicRef | undefined
   type: "server.connected"
   data: {}
 }
@@ -925,6 +1040,14 @@ export type SessionInboxUserPayload = {
   metadata?: { [x: string]: JsonValue }
 }
 
+export type SessionInboxUserPayload1 = {
+  text: string
+  files?: Array<PromptFileAttachment>
+  agents?: Array<PromptAgentAttachment>
+  skills?: Array<PromptSkillAttachment>
+  metadata?: { [x: string]: any }
+}
+
 export type SessionMessageToolStateCompleted = {
   status: "completed"
   input: { [x: string]: JsonValue }
@@ -943,7 +1066,7 @@ export type SessionMessageToolStateError = {
 export type SessionAgentSelected = {
   id: EventID
   created: number
-  metadata?: { [x: string]: JsonValue }
+  metadata?: { [x: string]: any }
   type: "session.agent.selected"
   durable: { aggregateID: string; seq: EventSeq; version: 1 }
   location?: LocationRef
@@ -953,7 +1076,7 @@ export type SessionAgentSelected = {
 export type SessionModelSelected = {
   id: EventID
   created: number
-  metadata?: { [x: string]: JsonValue }
+  metadata?: { [x: string]: any }
   type: "session.model.selected"
   durable: { aggregateID: string; seq: EventSeq; version: 1 }
   location?: LocationRef
@@ -963,7 +1086,7 @@ export type SessionModelSelected = {
 export type SessionMoved = {
   id: EventID
   created: number
-  metadata?: { [x: string]: JsonValue }
+  metadata?: { [x: string]: any }
   type: "session.moved"
   durable: { aggregateID: string; seq: EventSeq; version: 1 }
   location?: LocationRef
@@ -973,7 +1096,7 @@ export type SessionMoved = {
 export type SessionRenamed = {
   id: EventID
   created: number
-  metadata?: { [x: string]: JsonValue }
+  metadata?: { [x: string]: any }
   type: "session.renamed"
   durable: { aggregateID: string; seq: EventSeq; version: 1 }
   location?: LocationRef
@@ -983,7 +1106,7 @@ export type SessionRenamed = {
 export type SessionMetadataUpdated = {
   id: EventID
   created: number
-  metadata?: { [x: string]: JsonValue }
+  metadata?: { [x: string]: any }
   type: "session.metadata.updated"
   durable: { aggregateID: string; seq: EventSeq; version: 1 }
   location?: LocationRef
@@ -993,7 +1116,7 @@ export type SessionMetadataUpdated = {
 export type SessionViewed = {
   id: EventID
   created: number
-  metadata?: { [x: string]: JsonValue }
+  metadata?: { [x: string]: any }
   type: "session.viewed"
   durable: { aggregateID: string; seq: EventSeq; version: 1 }
   location?: LocationRef
@@ -1003,7 +1126,7 @@ export type SessionViewed = {
 export type SessionArchived = {
   id: EventID
   created: number
-  metadata?: { [x: string]: JsonValue }
+  metadata?: { [x: string]: any }
   type: "session.archived"
   durable: { aggregateID: string; seq: EventSeq; version: 1 }
   location?: LocationRef
@@ -1013,7 +1136,7 @@ export type SessionArchived = {
 export type SessionUnarchived = {
   id: EventID
   created: number
-  metadata?: { [x: string]: JsonValue }
+  metadata?: { [x: string]: any }
   type: "session.unarchived"
   durable: { aggregateID: string; seq: EventSeq; version: 1 }
   location?: LocationRef
@@ -1023,7 +1146,7 @@ export type SessionUnarchived = {
 export type SessionDeleted = {
   id: EventID
   created: number
-  metadata?: { [x: string]: JsonValue }
+  metadata?: { [x: string]: any }
   type: "session.deleted"
   durable: { aggregateID: string; seq: EventSeq; version: 2 }
   location?: LocationRef
@@ -1033,7 +1156,7 @@ export type SessionDeleted = {
 export type SessionForked = {
   id: EventID
   created: number
-  metadata?: { [x: string]: JsonValue }
+  metadata?: { [x: string]: any }
   type: "session.forked"
   durable: { aggregateID: string; seq: EventSeq; version: 2 }
   location?: LocationRef
@@ -1049,7 +1172,7 @@ export type SessionForked = {
 export type SessionInboxDelivered = {
   id: EventID
   created: number
-  metadata?: { [x: string]: JsonValue }
+  metadata?: { [x: string]: any }
   type: "session.inbox.delivered"
   durable: { aggregateID: string; seq: EventSeq; version: 1 }
   location?: LocationRef
@@ -1061,7 +1184,7 @@ export type SessionInboxMovePayload1 = { location: LocationRef; projectID: Proje
 export type SessionInboxCancelled = {
   id: EventID
   created: number
-  metadata?: { [x: string]: JsonValue }
+  metadata?: { [x: string]: any }
   type: "session.inbox.cancelled"
   durable: { aggregateID: string; seq: EventSeq; version: 1 }
   location?: LocationRef
@@ -1071,7 +1194,7 @@ export type SessionInboxCancelled = {
 export type SessionInboxDeliveryChanged = {
   id: EventID
   created: number
-  metadata?: { [x: string]: JsonValue }
+  metadata?: { [x: string]: any }
   type: "session.inbox.delivery.changed"
   durable: { aggregateID: string; seq: EventSeq; version: 1 }
   location?: LocationRef
@@ -1081,7 +1204,7 @@ export type SessionInboxDeliveryChanged = {
 export type SessionExecutionStarted = {
   id: EventID
   created: number
-  metadata?: { [x: string]: JsonValue }
+  metadata?: { [x: string]: any }
   type: "session.execution.started"
   durable: { aggregateID: string; seq: EventSeq; version: 1 }
   location?: LocationRef
@@ -1091,7 +1214,7 @@ export type SessionExecutionStarted = {
 export type SessionExecutionSucceeded = {
   id: EventID
   created: number
-  metadata?: { [x: string]: JsonValue }
+  metadata?: { [x: string]: any }
   type: "session.execution.succeeded"
   durable: { aggregateID: string; seq: EventSeq; version: 1 }
   location?: LocationRef
@@ -1101,7 +1224,7 @@ export type SessionExecutionSucceeded = {
 export type SessionExecutionFailed = {
   id: EventID
   created: number
-  metadata?: { [x: string]: JsonValue }
+  metadata?: { [x: string]: any }
   type: "session.execution.failed"
   durable: { aggregateID: string; seq: EventSeq; version: 1 }
   location?: LocationRef
@@ -1111,7 +1234,7 @@ export type SessionExecutionFailed = {
 export type SessionExecutionInterrupted = {
   id: EventID
   created: number
-  metadata?: { [x: string]: JsonValue }
+  metadata?: { [x: string]: any }
   type: "session.execution.interrupted"
   durable: { aggregateID: string; seq: EventSeq; version: 1 }
   location?: LocationRef
@@ -1121,7 +1244,7 @@ export type SessionExecutionInterrupted = {
 export type SessionInstructionsUpdated = {
   id: EventID
   created: number
-  metadata?: { [x: string]: JsonValue }
+  metadata?: { [x: string]: any }
   type: "session.instructions.updated"
   durable: { aggregateID: string; seq: EventSeq; version: 2 }
   location?: LocationRef
@@ -1131,17 +1254,17 @@ export type SessionInstructionsUpdated = {
 export type SessionSynthetic = {
   id: EventID
   created: number
-  metadata?: { [x: string]: JsonValue }
+  metadata?: { [x: string]: any }
   type: "session.synthetic"
   durable: { aggregateID: string; seq: EventSeq; version: 1 }
   location?: LocationRef
-  data: { sessionID: SessionID; text: string; description?: string; metadata?: { [x: string]: JsonValue } }
+  data: { sessionID: SessionID; text: string; description?: string; metadata?: { [x: string]: any } }
 }
 
 export type SessionSkillActivated = {
   id: EventID
   created: number
-  metadata?: { [x: string]: JsonValue }
+  metadata?: { [x: string]: any }
   type: "session.skill.activated"
   durable: { aggregateID: string; seq: EventSeq; version: 1 }
   location?: LocationRef
@@ -1151,7 +1274,7 @@ export type SessionSkillActivated = {
 export type SessionShellStarted = {
   id: EventID
   created: number
-  metadata?: { [x: string]: JsonValue }
+  metadata?: { [x: string]: any }
   type: "session.shell.started"
   durable: { aggregateID: string; seq: EventSeq; version: 1 }
   location?: LocationRef
@@ -1161,7 +1284,7 @@ export type SessionShellStarted = {
 export type SessionShellEnded = {
   id: EventID
   created: number
-  metadata?: { [x: string]: JsonValue }
+  metadata?: { [x: string]: any }
   type: "session.shell.ended"
   durable: { aggregateID: string; seq: EventSeq; version: 1 }
   location?: LocationRef
@@ -1175,7 +1298,7 @@ export type SessionShellEnded = {
 export type SessionStepStarted = {
   id: EventID
   created: number
-  metadata?: { [x: string]: JsonValue }
+  metadata?: { [x: string]: any }
   type: "session.step.started"
   durable: { aggregateID: string; seq: EventSeq; version: 1 }
   location?: LocationRef
@@ -1192,7 +1315,7 @@ export type SessionStepStarted = {
 export type SessionStepStreamed = {
   id: EventID
   created: number
-  metadata?: { [x: string]: JsonValue }
+  metadata?: { [x: string]: any }
   type: "session.step.streamed"
   durable: { aggregateID: string; seq: EventSeq; version: 1 }
   location?: LocationRef
@@ -1202,7 +1325,7 @@ export type SessionStepStreamed = {
 export type SessionStepEnded = {
   id: EventID
   created: number
-  metadata?: { [x: string]: JsonValue }
+  metadata?: { [x: string]: any }
   type: "session.step.ended"
   durable: { aggregateID: string; seq: EventSeq; version: 1 }
   location?: LocationRef
@@ -1211,7 +1334,7 @@ export type SessionStepEnded = {
     assistantMessageID: SessionMessageID
     finish: "stop" | "length" | "tool-calls" | "content-filter" | "error" | "unknown"
     rawFinish?: string
-    native?: SessionMessageNative
+    native?: SessionMessageNative1
     cost: MoneyUSD
     tokens: TokenUsageInfo
     snapshot?: SnapshotID
@@ -1222,7 +1345,7 @@ export type SessionStepEnded = {
 export type SessionStepFailed = {
   id: EventID
   created: number
-  metadata?: { [x: string]: JsonValue }
+  metadata?: { [x: string]: any }
   type: "session.step.failed"
   durable: { aggregateID: string; seq: EventSeq; version: 1 }
   location?: LocationRef
@@ -1232,7 +1355,7 @@ export type SessionStepFailed = {
     error: SessionStructuredError
     finish?: "content-filter"
     rawFinish?: string
-    native?: SessionMessageNative
+    native?: SessionMessageNative1
     cost?: MoneyUSD
     tokens?: TokenUsageInfo
     snapshot?: SnapshotID
@@ -1243,7 +1366,7 @@ export type SessionStepFailed = {
 export type SessionTextStarted = {
   id: EventID
   created: number
-  metadata?: { [x: string]: JsonValue }
+  metadata?: { [x: string]: any }
   type: "session.text.started"
   durable: { aggregateID: string; seq: EventSeq; version: 1 }
   location?: LocationRef
@@ -1253,7 +1376,7 @@ export type SessionTextStarted = {
 export type SessionTextEnded = {
   id: EventID
   created: number
-  metadata?: { [x: string]: JsonValue }
+  metadata?: { [x: string]: any }
   type: "session.text.ended"
   durable: { aggregateID: string; seq: EventSeq; version: 1 }
   location?: LocationRef
@@ -1262,24 +1385,24 @@ export type SessionTextEnded = {
     assistantMessageID: SessionMessageID
     ordinal: number
     text: string
-    native?: SessionMessageNative
+    native?: SessionMessageNative1
   }
 }
 
 export type SessionReasoningStarted = {
   id: EventID
   created: number
-  metadata?: { [x: string]: JsonValue }
+  metadata?: { [x: string]: any }
   type: "session.reasoning.started"
   durable: { aggregateID: string; seq: EventSeq; version: 1 }
   location?: LocationRef
-  data: { sessionID: SessionID; assistantMessageID: SessionMessageID; ordinal: number; native?: SessionMessageNative }
+  data: { sessionID: SessionID; assistantMessageID: SessionMessageID; ordinal: number; native?: SessionMessageNative1 }
 }
 
 export type SessionReasoningEnded = {
   id: EventID
   created: number
-  metadata?: { [x: string]: JsonValue }
+  metadata?: { [x: string]: any }
   type: "session.reasoning.ended"
   durable: { aggregateID: string; seq: EventSeq; version: 1 }
   location?: LocationRef
@@ -1288,14 +1411,14 @@ export type SessionReasoningEnded = {
     assistantMessageID: SessionMessageID
     ordinal: number
     text: string
-    native?: SessionMessageNative
+    native?: SessionMessageNative1
   }
 }
 
 export type SessionToolInputStarted = {
   id: EventID
   created: number
-  metadata?: { [x: string]: JsonValue }
+  metadata?: { [x: string]: any }
   type: "session.tool.input.started"
   durable: { aggregateID: string; seq: EventSeq; version: 1 }
   location?: LocationRef
@@ -1305,7 +1428,7 @@ export type SessionToolInputStarted = {
 export type SessionToolInputEnded = {
   id: EventID
   created: number
-  metadata?: { [x: string]: JsonValue }
+  metadata?: { [x: string]: any }
   type: "session.tool.input.ended"
   durable: { aggregateID: string; seq: EventSeq; version: 1 }
   location?: LocationRef
@@ -1315,7 +1438,7 @@ export type SessionToolInputEnded = {
 export type SessionToolCalled = {
   id: EventID
   created: number
-  metadata?: { [x: string]: JsonValue }
+  metadata?: { [x: string]: any }
   type: "session.tool.called"
   durable: { aggregateID: string; seq: EventSeq; version: 1 }
   location?: LocationRef
@@ -1323,53 +1446,16 @@ export type SessionToolCalled = {
     sessionID: SessionID
     assistantMessageID: SessionMessageID
     id: string
-    input: { [x: string]: JsonValue }
+    input: { [x: string]: any }
     executed: boolean
-    native?: SessionMessageNative
-  }
-}
-
-export type SessionToolSuccess = {
-  id: EventID
-  created: number
-  metadata?: { [x: string]: JsonValue }
-  type: "session.tool.success"
-  durable: { aggregateID: string; seq: EventSeq; version: 2 }
-  location?: LocationRef
-  data: {
-    sessionID: SessionID
-    assistantMessageID: SessionMessageID
-    id: string
-    content: [ToolContent, ...Array<ToolContent>]
-    metadata?: { [x: string]: JsonValue }
-    executed: boolean
-    native?: SessionMessageNative
-  }
-}
-
-export type SessionToolFailed = {
-  id: EventID
-  created: number
-  metadata?: { [x: string]: JsonValue }
-  type: "session.tool.failed"
-  durable: { aggregateID: string; seq: EventSeq; version: 2 }
-  location?: LocationRef
-  data: {
-    sessionID: SessionID
-    assistantMessageID: SessionMessageID
-    id: string
-    error: SessionStructuredError
-    content?: [ToolContent, ...Array<ToolContent>]
-    metadata?: { [x: string]: JsonValue }
-    executed: boolean
-    native?: SessionMessageNative
+    native?: SessionMessageNative1
   }
 }
 
 export type SessionRetryScheduled = {
   id: EventID
   created: number
-  metadata?: { [x: string]: JsonValue }
+  metadata?: { [x: string]: any }
   type: "session.retry.scheduled"
   durable: { aggregateID: string; seq: EventSeq; version: 1 }
   location?: LocationRef
@@ -1385,7 +1471,7 @@ export type SessionRetryScheduled = {
 export type SessionCompactionStarted = {
   id: EventID
   created: number
-  metadata?: { [x: string]: JsonValue }
+  metadata?: { [x: string]: any }
   type: "session.compaction.started"
   durable: { aggregateID: string; seq: EventSeq; version: 1 }
   location?: LocationRef
@@ -1395,7 +1481,7 @@ export type SessionCompactionStarted = {
 export type SessionCompactionEnded = {
   id: EventID
   created: number
-  metadata?: { [x: string]: JsonValue }
+  metadata?: { [x: string]: any }
   type: "session.compaction.ended"
   durable: { aggregateID: string; seq: EventSeq; version: 1 }
   location?: LocationRef
@@ -1403,7 +1489,7 @@ export type SessionCompactionEnded = {
     sessionID: SessionID
     reason: "auto" | "manual"
     model?: ModelRef
-    native?: SessionMessageNative
+    native?: SessionMessageNative1
     text: string
     cost?: MoneyUSD
     tokens?: TokenUsageInfo
@@ -1413,7 +1499,7 @@ export type SessionCompactionEnded = {
 export type SessionCompactionFailed = {
   id: EventID
   created: number
-  metadata?: { [x: string]: JsonValue }
+  metadata?: { [x: string]: any }
   type: "session.compaction.failed"
   durable: { aggregateID: string; seq: EventSeq; version: 1 }
   location?: LocationRef
@@ -1430,7 +1516,7 @@ export type SessionCompactionFailed = {
 export type SessionRevertStaged = {
   id: EventID
   created: number
-  metadata?: { [x: string]: JsonValue }
+  metadata?: { [x: string]: any }
   type: "session.revert.staged"
   durable: { aggregateID: string; seq: EventSeq; version: 1 }
   location?: LocationRef
@@ -1440,7 +1526,7 @@ export type SessionRevertStaged = {
 export type SessionRevertCleared = {
   id: EventID
   created: number
-  metadata?: { [x: string]: JsonValue }
+  metadata?: { [x: string]: any }
   type: "session.revert.cleared"
   durable: { aggregateID: string; seq: EventSeq; version: 1 }
   location?: LocationRef
@@ -1450,7 +1536,7 @@ export type SessionRevertCleared = {
 export type SessionRevertCommitted = {
   id: EventID
   created: number
-  metadata?: { [x: string]: JsonValue }
+  metadata?: { [x: string]: any }
   type: "session.revert.committed"
   durable: { aggregateID: string; seq: EventSeq; version: 1 }
   location?: LocationRef
@@ -1460,7 +1546,7 @@ export type SessionRevertCommitted = {
 export type SessionUsageRecorded = {
   id: EventID
   created: number
-  metadata?: { [x: string]: JsonValue }
+  metadata?: { [x: string]: any }
   type: "session.usage.recorded"
   durable: { aggregateID: string; seq: EventSeq; version: 1 }
   location?: LocationRef
@@ -1470,7 +1556,7 @@ export type SessionUsageRecorded = {
 export type LocationShutdown = {
   id: EventID
   created: number
-  metadata?: { [x: string]: JsonValue }
+  metadata?: { [x: string]: any }
   type: "location.shutdown"
   location?: LocationRef
   data: {}
@@ -1479,7 +1565,7 @@ export type LocationShutdown = {
 export type ModelsDevRefreshed = {
   id: EventID
   created: number
-  metadata?: { [x: string]: JsonValue }
+  metadata?: { [x: string]: any }
   type: "models-dev.refreshed"
   location?: LocationRef
   data: {}
@@ -1488,7 +1574,7 @@ export type ModelsDevRefreshed = {
 export type CredentialUpdated = {
   id: EventID
   created: number
-  metadata?: { [x: string]: JsonValue }
+  metadata?: { [x: string]: any }
   type: "credential.updated"
   location?: LocationRef
   data: {}
@@ -1497,7 +1583,7 @@ export type CredentialUpdated = {
 export type CredentialSwitched = {
   id: EventID
   created: number
-  metadata?: { [x: string]: JsonValue }
+  metadata?: { [x: string]: any }
   type: "credential.switched"
   location?: LocationRef
   data: { integrationID: IntegrationID; credentialID: CredentialID | null }
@@ -1506,7 +1592,7 @@ export type CredentialSwitched = {
 export type IntegrationUpdated = {
   id: EventID
   created: number
-  metadata?: { [x: string]: JsonValue }
+  metadata?: { [x: string]: any }
   type: "integration.updated"
   location?: LocationRef
   data: {}
@@ -1515,7 +1601,7 @@ export type IntegrationUpdated = {
 export type ProviderUpdated = {
   id: EventID
   created: number
-  metadata?: { [x: string]: JsonValue }
+  metadata?: { [x: string]: any }
   type: "provider.updated"
   location?: LocationRef
   data: {}
@@ -1524,7 +1610,7 @@ export type ProviderUpdated = {
 export type ModelUpdated = {
   id: EventID
   created: number
-  metadata?: { [x: string]: JsonValue }
+  metadata?: { [x: string]: any }
   type: "model.updated"
   location?: LocationRef
   data: {}
@@ -1533,7 +1619,7 @@ export type ModelUpdated = {
 export type AgentUpdated = {
   id: EventID
   created: number
-  metadata?: { [x: string]: JsonValue }
+  metadata?: { [x: string]: any }
   type: "agent.updated"
   location?: LocationRef
   data: {}
@@ -1542,7 +1628,7 @@ export type AgentUpdated = {
 export type SessionUsageUpdated = {
   id: EventID
   created: number
-  metadata?: { [x: string]: JsonValue }
+  metadata?: { [x: string]: any }
   type: "session.usage.updated"
   location?: LocationRef
   data: { sessionID: SessionID; cost: MoneyUSD; tokens: TokenUsageInfo }
@@ -1551,7 +1637,7 @@ export type SessionUsageUpdated = {
 export type SessionTextDelta = {
   id: EventID
   created: number
-  metadata?: { [x: string]: JsonValue }
+  metadata?: { [x: string]: any }
   type: "session.text.delta"
   location?: LocationRef
   data: { sessionID: SessionID; assistantMessageID: SessionMessageID; ordinal: number; delta: string }
@@ -1560,7 +1646,7 @@ export type SessionTextDelta = {
 export type SessionReasoningDelta = {
   id: EventID
   created: number
-  metadata?: { [x: string]: JsonValue }
+  metadata?: { [x: string]: any }
   type: "session.reasoning.delta"
   location?: LocationRef
   data: { sessionID: SessionID; assistantMessageID: SessionMessageID; ordinal: number; delta: string }
@@ -1569,7 +1655,7 @@ export type SessionReasoningDelta = {
 export type SessionToolInputDelta = {
   id: EventID
   created: number
-  metadata?: { [x: string]: JsonValue }
+  metadata?: { [x: string]: any }
   type: "session.tool.input.delta"
   location?: LocationRef
   data: { sessionID: SessionID; assistantMessageID: SessionMessageID; id: string; delta: string }
@@ -1578,7 +1664,7 @@ export type SessionToolInputDelta = {
 export type SessionToolProgress = {
   id: EventID
   created: number
-  metadata?: { [x: string]: JsonValue }
+  metadata?: { [x: string]: any }
   type: "session.tool.progress"
   location?: LocationRef
   data: { sessionID: SessionID; assistantMessageID: SessionMessageID; id: string; metadata: { [x: string]: JsonValue } }
@@ -1587,7 +1673,7 @@ export type SessionToolProgress = {
 export type SessionCompactionDelta = {
   id: EventID
   created: number
-  metadata?: { [x: string]: JsonValue }
+  metadata?: { [x: string]: any }
   type: "session.compaction.delta"
   location?: LocationRef
   data: { sessionID: SessionID; text: string }
@@ -1596,7 +1682,7 @@ export type SessionCompactionDelta = {
 export type FilesystemChanged = {
   id: EventID
   created: number
-  metadata?: { [x: string]: JsonValue }
+  metadata?: { [x: string]: any }
   type: "filesystem.changed"
   location?: LocationRef
   data: { file: string; event: "add" | "change" | "unlink" }
@@ -1605,7 +1691,7 @@ export type FilesystemChanged = {
 export type ReferenceUpdated = {
   id: EventID
   created: number
-  metadata?: { [x: string]: JsonValue }
+  metadata?: { [x: string]: any }
   type: "reference.updated"
   location?: LocationRef
   data: {}
@@ -1614,7 +1700,7 @@ export type ReferenceUpdated = {
 export type PermissionAsked = {
   id: EventID
   created: number
-  metadata?: { [x: string]: JsonValue }
+  metadata?: { [x: string]: any }
   type: "permission.asked"
   location?: LocationRef
   data: {
@@ -1623,7 +1709,7 @@ export type PermissionAsked = {
     action: string
     resources: Array<string>
     save?: Array<string>
-    metadata?: { [x: string]: JsonValue }
+    metadata?: { [x: string]: any }
     source?: PermissionSource
     message?: string
   }
@@ -1632,7 +1718,7 @@ export type PermissionAsked = {
 export type PermissionReplied = {
   id: EventID
   created: number
-  metadata?: { [x: string]: JsonValue }
+  metadata?: { [x: string]: any }
   type: "permission.replied"
   location?: LocationRef
   data: { sessionID: SessionID; requestID: PermissionID; reply: PermissionReply }
@@ -1641,7 +1727,7 @@ export type PermissionReplied = {
 export type PluginUpdated = {
   id: EventID
   created: number
-  metadata?: { [x: string]: JsonValue }
+  metadata?: { [x: string]: any }
   type: "plugin.updated"
   location?: LocationRef
   data: {}
@@ -1650,7 +1736,7 @@ export type PluginUpdated = {
 export type ProjectUpdated = {
   id: EventID
   created: number
-  metadata?: { [x: string]: JsonValue }
+  metadata?: { [x: string]: any }
   type: "project.updated"
   location?: LocationRef
   data: {
@@ -1668,7 +1754,7 @@ export type ProjectUpdated = {
 export type WorktreeUpdated = {
   id: EventID
   created: number
-  metadata?: { [x: string]: JsonValue }
+  metadata?: { [x: string]: any }
   type: "worktree.updated"
   location?: LocationRef
   data: { projectID: ProjectID }
@@ -1677,7 +1763,7 @@ export type WorktreeUpdated = {
 export type WorktreeResolved = {
   id: EventID
   created: number
-  metadata?: { [x: string]: JsonValue }
+  metadata?: { [x: string]: any }
   type: "worktree.resolved"
   durable: { aggregateID: string; seq: EventSeq; version: 1 }
   location?: LocationRef
@@ -1687,7 +1773,7 @@ export type WorktreeResolved = {
 export type CommandUpdated = {
   id: EventID
   created: number
-  metadata?: { [x: string]: JsonValue }
+  metadata?: { [x: string]: any }
   type: "command.updated"
   location?: LocationRef
   data: {}
@@ -1696,7 +1782,7 @@ export type CommandUpdated = {
 export type ConfigUpdated = {
   id: EventID
   created: number
-  metadata?: { [x: string]: JsonValue }
+  metadata?: { [x: string]: any }
   type: "config.updated"
   location?: LocationRef
   data: {}
@@ -1705,7 +1791,7 @@ export type ConfigUpdated = {
 export type SkillUpdated = {
   id: EventID
   created: number
-  metadata?: { [x: string]: JsonValue }
+  metadata?: { [x: string]: any }
   type: "skill.updated"
   location?: LocationRef
   data: {}
@@ -1714,7 +1800,7 @@ export type SkillUpdated = {
 export type PtyExited = {
   id: EventID
   created: number
-  metadata?: { [x: string]: JsonValue }
+  metadata?: { [x: string]: any }
   type: "pty.exited"
   location?: LocationRef
   data: { id: PtyID; exitCode: number }
@@ -1723,7 +1809,7 @@ export type PtyExited = {
 export type PtyDeleted = {
   id: EventID
   created: number
-  metadata?: { [x: string]: JsonValue }
+  metadata?: { [x: string]: any }
   type: "pty.deleted"
   location?: LocationRef
   data: { id: PtyID }
@@ -1732,7 +1818,7 @@ export type PtyDeleted = {
 export type PersistentPtyRemoved = {
   id: EventID
   created: number
-  metadata?: { [x: string]: JsonValue }
+  metadata?: { [x: string]: any }
   type: "persistent-pty.removed"
   location?: LocationRef
   data: { sessionID: SessionID; ptyID: PtyID }
@@ -1741,7 +1827,7 @@ export type PersistentPtyRemoved = {
 export type ShellCreated = {
   id: EventID
   created: number
-  metadata?: { [x: string]: JsonValue }
+  metadata?: { [x: string]: any }
   type: "shell.created"
   location?: LocationRef
   data: { info: ShellInfo }
@@ -1750,7 +1836,7 @@ export type ShellCreated = {
 export type ShellExited = {
   id: EventID
   created: number
-  metadata?: { [x: string]: JsonValue }
+  metadata?: { [x: string]: any }
   type: "shell.exited"
   location?: LocationRef
   data: { id: ShellID; exit?: number; status: "running" | "exited" | "timeout" | "killed" }
@@ -1759,7 +1845,7 @@ export type ShellExited = {
 export type ShellDeleted = {
   id: EventID
   created: number
-  metadata?: { [x: string]: JsonValue }
+  metadata?: { [x: string]: any }
   type: "shell.deleted"
   location?: LocationRef
   data: { id: ShellID }
@@ -1768,7 +1854,7 @@ export type ShellDeleted = {
 export type FormCancelled = {
   id: EventID
   created: number
-  metadata?: { [x: string]: JsonValue }
+  metadata?: { [x: string]: any }
   type: "form.cancelled"
   location?: LocationRef
   data: { id: FormID; sessionID: string }
@@ -1777,7 +1863,7 @@ export type FormCancelled = {
 export type WebsearchUpdated = {
   id: EventID
   created: number
-  metadata?: { [x: string]: JsonValue }
+  metadata?: { [x: string]: any }
   type: "websearch.updated"
   location?: LocationRef
   data: {}
@@ -1786,7 +1872,7 @@ export type WebsearchUpdated = {
 export type SessionStatusUpdated = {
   id: EventID
   created: number
-  metadata?: { [x: string]: JsonValue }
+  metadata?: { [x: string]: any }
   type: "session.status"
   location?: LocationRef
   data: { sessionID: SessionID; status: SessionStatus }
@@ -1795,7 +1881,7 @@ export type SessionStatusUpdated = {
 export type SessionIdle = {
   id: EventID
   created: number
-  metadata?: { [x: string]: JsonValue }
+  metadata?: { [x: string]: any }
   type: "session.idle"
   location?: LocationRef
   data: { sessionID: SessionID }
@@ -1804,7 +1890,7 @@ export type SessionIdle = {
 export type TuiPromptAppend = {
   id: EventID
   created: number
-  metadata?: { [x: string]: JsonValue }
+  metadata?: { [x: string]: any }
   type: "tui.prompt.append"
   location?: LocationRef
   data: { text: string }
@@ -1813,7 +1899,7 @@ export type TuiPromptAppend = {
 export type TuiCommandExecute = {
   id: EventID
   created: number
-  metadata?: { [x: string]: JsonValue }
+  metadata?: { [x: string]: any }
   type: "tui.command.execute"
   location?: LocationRef
   data: {
@@ -1841,16 +1927,21 @@ export type TuiCommandExecute = {
 export type TuiToastShow = {
   id: EventID
   created: number
-  metadata?: { [x: string]: JsonValue }
+  metadata?: { [x: string]: any }
   type: "tui.toast.show"
   location?: LocationRef
-  data: { title?: string; message: string; variant: "info" | "success" | "warning" | "error"; duration?: number | null }
+  data: {
+    title?: string
+    message: string
+    variant: "info" | "success" | "warning" | "error"
+    duration?: number | undefined
+  }
 }
 
 export type TuiSessionSelect = {
   id: EventID
   created: number
-  metadata?: { [x: string]: JsonValue }
+  metadata?: { [x: string]: any }
   type: "tui.session.select"
   location?: LocationRef
   data: { sessionID: SessionID }
@@ -1859,7 +1950,7 @@ export type TuiSessionSelect = {
 export type InstallationUpdated = {
   id: EventID
   created: number
-  metadata?: { [x: string]: JsonValue }
+  metadata?: { [x: string]: any }
   type: "installation.updated"
   location?: LocationRef
   data: { version: string }
@@ -1868,7 +1959,7 @@ export type InstallationUpdated = {
 export type InstallationUpdateAvailable = {
   id: EventID
   created: number
-  metadata?: { [x: string]: JsonValue }
+  metadata?: { [x: string]: any }
   type: "installation.update-available"
   location?: LocationRef
   data: { version: string }
@@ -1877,7 +1968,7 @@ export type InstallationUpdateAvailable = {
 export type VcsBranchUpdated = {
   id: EventID
   created: number
-  metadata?: { [x: string]: JsonValue }
+  metadata?: { [x: string]: any }
   type: "vcs.branch.updated"
   location?: LocationRef
   data: { branch?: string }
@@ -1886,7 +1977,7 @@ export type VcsBranchUpdated = {
 export type McpStatusChanged = {
   id: EventID
   created: number
-  metadata?: { [x: string]: JsonValue }
+  metadata?: { [x: string]: any }
   type: "mcp.status.changed"
   location?: LocationRef
   data: { server: string }
@@ -1895,10 +1986,62 @@ export type McpStatusChanged = {
 export type McpResourcesChanged = {
   id: EventID
   created: number
-  metadata?: { [x: string]: JsonValue }
+  metadata?: { [x: string]: any }
   type: "mcp.resources.changed"
   location?: LocationRef
   data: { server: string }
+}
+
+export type SessionToolSuccess = {
+  id: EventID
+  created: number
+  metadata?: { [x: string]: any }
+  type: "session.tool.success"
+  durable: { aggregateID: string; seq: EventSeq; version: 2 }
+  location?: LocationRef
+  data: {
+    sessionID: SessionID
+    assistantMessageID: SessionMessageID
+    id: string
+    content: [ToolContent1, ...Array<ToolContent1>]
+    metadata?: { [x: string]: JsonValue }
+    executed: boolean
+    native?: SessionMessageNative1
+  }
+}
+
+export type SessionToolFailed = {
+  id: EventID
+  created: number
+  metadata?: { [x: string]: any }
+  type: "session.tool.failed"
+  durable: { aggregateID: string; seq: EventSeq; version: 2 }
+  location?: LocationRef
+  data: {
+    sessionID: SessionID
+    assistantMessageID: SessionMessageID
+    id: string
+    error: SessionStructuredError
+    content?: [ToolContent1, ...Array<ToolContent1>]
+    metadata?: { [x: string]: JsonValue }
+    executed: boolean
+    native?: SessionMessageNative1
+  }
+}
+
+export type SessionMessageToolStateCompleted1 = {
+  status: "completed"
+  input: { [x: string]: any }
+  content: [ToolContent1, ...Array<ToolContent1>]
+  metadata?: { [x: string]: JsonValue }
+}
+
+export type SessionMessageToolStateError1 = {
+  status: "error"
+  input: { [x: string]: any }
+  error: SessionStructuredError
+  content?: [ToolContent1, ...Array<ToolContent1>]
+  metadata?: { [x: string]: JsonValue }
 }
 
 export type FormField =
@@ -1913,15 +2056,6 @@ export type FormState =
   | { status: "pending" }
   | { status: "answered"; answer: FormAnswer }
   | { status: "cancelled"; message?: string }
-
-export type FormReplied = {
-  id: EventID
-  created: number
-  metadata?: { [x: string]: JsonValue }
-  type: "form.replied"
-  location?: LocationRef
-  data: { id: FormID; sessionID: string; answer: FormAnswer }
-}
 
 export type GenerateDecisionAnswer =
   | GeneratePredicateAnswer
@@ -1940,7 +2074,7 @@ export type ConnectionInfo = ConnectionCredentialInfo | ConnectionEnvInfo
 export type PtyCreated = {
   id: EventID
   created: number
-  metadata?: { [x: string]: JsonValue }
+  metadata?: { [x: string]: any }
   type: "pty.created"
   location?: LocationRef
   data: { info: Pty }
@@ -1949,7 +2083,7 @@ export type PtyCreated = {
 export type PtyUpdated = {
   id: EventID
   created: number
-  metadata?: { [x: string]: JsonValue }
+  metadata?: { [x: string]: any }
   type: "pty.updated"
   location?: LocationRef
   data: { info: Pty }
@@ -1958,7 +2092,7 @@ export type PtyUpdated = {
 export type PersistentPtyAdded = {
   id: EventID
   created: number
-  metadata?: { [x: string]: JsonValue }
+  metadata?: { [x: string]: any }
   type: "persistent-pty.added"
   location?: LocationRef
   data: { sessionID: SessionID; terminal: PersistentPtyInfo }
@@ -1969,6 +2103,23 @@ export type PersistentPtySnapshot = {
   text: string
   checkpoint: string
   cursor: { x: number; y: number }
+}
+
+export type FormField1 =
+  | FormStringField1
+  | FormNumberField1
+  | FormIntegerField1
+  | FormBooleanField1
+  | FormMultiselectField1
+  | FormExternalField
+
+export type FormReplied = {
+  id: EventID
+  created: number
+  metadata?: { [x: string]: any }
+  type: "form.replied"
+  location?: LocationRef
+  data: { id: FormID; sessionID: string; answer: FormAnswer1 }
 }
 
 export type SessionInboxMove = {
@@ -2071,7 +2222,7 @@ export type SessionInfo = {
 export type SessionCreated = {
   id: EventID
   created: number
-  metadata?: { [x: string]: JsonValue }
+  metadata?: { [x: string]: any }
   type: "session.created"
   durable: { aggregateID: string; seq: EventSeq; version: 1 }
   location?: LocationRef
@@ -2094,7 +2245,7 @@ export type SessionCreated = {
 export type SessionPermissions = {
   id: EventID
   created: number
-  metadata?: { [x: string]: JsonValue }
+  metadata?: { [x: string]: any }
   type: "session.permissions"
   durable: { aggregateID: string; seq: EventSeq; version: 1 }
   location?: LocationRef
@@ -2318,10 +2469,24 @@ export type SessionMessageAssistantTool = {
 }
 
 export type SessionInboxItem =
-  | { type: "user"; payload: SessionInboxUserPayload; delivery: SessionInboxDelivery }
-  | { type: "synthetic"; payload: SessionInboxSyntheticPayload; delivery: SessionInboxDelivery }
+  | { type: "user"; payload: SessionInboxUserPayload1; delivery: SessionInboxDelivery }
+  | { type: "synthetic"; payload: SessionInboxSyntheticPayload1; delivery: SessionInboxDelivery }
   | { type: "compaction"; payload: SessionInboxCompactionPayload; delivery: SessionInboxDelivery }
   | { type: "move"; payload: SessionInboxMovePayload1; delivery: SessionInboxDelivery }
+
+export type SessionMessageAssistantTool1 = {
+  type: "tool"
+  id: string
+  name: string
+  executed?: boolean
+  native?: SessionMessageNative1
+  state:
+    | SessionMessageToolStateStreaming
+    | SessionMessageToolStateRunning1
+    | SessionMessageToolStateCompleted1
+    | SessionMessageToolStateError1
+  time: { created: number; ran?: number; completed?: number }
+}
 
 export type FormFields = [FormField, ...Array<FormField>]
 
@@ -2339,6 +2504,8 @@ export type CredentialEntry = {
   active: boolean
   value: CredentialValue
 }
+
+export type FormFields1 = [FormField1, ...Array<FormField1>]
 
 export type AgentInfo = {
   id: AgentID
@@ -2379,20 +2546,20 @@ export type SessionMessageAssistant = {
   retry?: SessionMessageAssistantRetry
 }
 
-export type SessionMessageAssistantContentEncoded =
-  | SessionMessageAssistantText
-  | SessionMessageAssistantReasoning
-  | SessionMessageAssistantTool
-
 export type SessionInboxEnqueued = {
   id: EventID
   created: number
-  metadata?: { [x: string]: JsonValue }
+  metadata?: { [x: string]: any }
   type: "session.inbox.enqueued"
   durable: { aggregateID: string; seq: EventSeq; version: 1 }
   location?: LocationRef
   data: { sessionID: SessionID; inboxID: SessionMessageID; item: SessionInboxItem }
 }
+
+export type SessionMessageAssistantContentEncoded =
+  | SessionMessageAssistantText1
+  | SessionMessageAssistantReasoning1
+  | SessionMessageAssistantTool1
 
 export type FormInfo = { id: FormID; sessionID: string; title: string; metadata?: FormMetadata; fields: FormFields }
 
@@ -2413,6 +2580,8 @@ export type IntegrationExternalMethod = { id: IntegrationMethodID; type: "extern
 
 export type GenerateDecisionsResponse = { data: GenerateDecisionResult }
 
+export type FormInfo1 = { id: FormID; sessionID: string; title: string; metadata?: FormMetadata1; fields: FormFields1 }
+
 export type SessionMessageInfo =
   | SessionMessageAgentSelected
   | SessionMessageModelSelected
@@ -2429,20 +2598,11 @@ export type SessionMessageInfo =
 export type SessionMessageContentUpdated = {
   id: EventID
   created: number
-  metadata?: { [x: string]: JsonValue }
+  metadata?: { [x: string]: any }
   type: "session.message.content.updated"
   durable: { aggregateID: string; seq: EventSeq; version: 1 }
   location?: LocationRef
   data: { sessionID: SessionID; messageID: SessionMessageID; content: Array<SessionMessageAssistantContentEncoded> }
-}
-
-export type FormCreated = {
-  id: EventID
-  created: number
-  metadata?: { [x: string]: JsonValue }
-  type: "form.created"
-  location?: LocationRef
-  data: { form: FormInfo }
 }
 
 export type IntegrationMethod =
@@ -2451,6 +2611,15 @@ export type IntegrationMethod =
   | IntegrationKeyMethod
   | IntegrationExternalMethod
   | IntegrationEnvMethod
+
+export type FormCreated = {
+  id: EventID
+  created: number
+  metadata?: { [x: string]: any }
+  type: "form.created"
+  location?: LocationRef
+  data: { form: FormInfo1 }
+}
 
 export type SessionTransferData = { info: SessionInfo; messages: Array<SessionMessageInfo> }
 
@@ -2507,6 +2676,14 @@ export type SessionEventDurable =
   | SessionRevertCommitted
   | SessionUsageRecorded
   | SessionMessageContentUpdated
+
+export type IntegrationInfo = {
+  id: IntegrationID
+  name: string
+  metadata?: { [x: string]: any }
+  methods: Array<IntegrationMethod>
+  connections: Array<ConnectionInfo>
+}
 
 export type V2Event =
   | LocationShutdown
@@ -2605,14 +2782,6 @@ export type V2Event =
   | McpResourcesChanged
   | V2EventRpc
   | V2EventServerConnected
-
-export type IntegrationInfo = {
-  id: IntegrationID
-  name: string
-  metadata?: { [x: string]: any }
-  methods: Array<IntegrationMethod>
-  connections: Array<ConnectionInfo>
-}
 
 export type SessionLogItem = SessionEventDurable | EventLogSynced
 
@@ -4182,7 +4351,7 @@ export type ExperimentalMediaGetOutput = globalThis.Uint8Array
 
 export type ShellListInput = { readonly location?: { readonly directory?: string | undefined } | undefined }
 
-export type ShellListOutput = { location: LocationPublicRef; data: Array<ShellInfo> }
+export type ShellListOutput = { location: LocationPublicRef; data: Array<ShellInfo1> }
 
 export type ShellCreateInput = {
   readonly location?: { readonly directory?: string | undefined } | undefined
@@ -4192,14 +4361,14 @@ export type ShellCreateInput = {
   readonly metadata?: { readonly [x: string]: JsonValue } | undefined
 }
 
-export type ShellCreateOutput = { location: LocationPublicRef; data: ShellInfo }
+export type ShellCreateOutput = { location: LocationPublicRef; data: ShellInfo1 }
 
 export type ShellGetInput = {
   readonly id: string
   readonly location?: { readonly directory?: string | undefined } | undefined
 }
 
-export type ShellGetOutput = { location: LocationPublicRef; data: ShellInfo }
+export type ShellGetOutput = { location: LocationPublicRef; data: ShellInfo1 }
 
 export type ShellOutputInput = {
   readonly id: string

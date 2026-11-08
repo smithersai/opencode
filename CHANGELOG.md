@@ -6,6 +6,8 @@ Release notes for OpenCode V2, newest first.
 
 ### Bugs fixed
 
+- Generated Promise event streams could narrow opaque metadata to JSON values; they now preserve the declared data codec and its wire transformations.
+
 - Some migrated policy and session contracts became mutable; their fields now retain their original readonly types.
 
 - The LSP disabled codec exposed an extra type name after migration; it now preserves its original value-only API.

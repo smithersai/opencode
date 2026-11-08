@@ -1099,9 +1099,7 @@ function structuralTypes(schemas: ReadonlyArray<Schema.Top>, mutable: boolean, r
       const pattern = `(?<![A-Za-z0-9_$.'"])${reference.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}(?![A-Za-z0-9_$.'"])`
       type = type.replace(new RegExp(pattern, "g"), name)
     }
-    const output = type
-      .replaceAll("Schema.Json", "JsonValue")
-      .replaceAll(/(?<!["'])\bunknown\b(?!["'])/g, "any")
+    const output = type.replaceAll("Schema.Json", "JsonValue").replaceAll(/(?<!["'])\bunknown\b(?!["'])/g, "any")
     return mutable ? mutableType(preserveStringSuggestions(output)) : preserveStringSuggestions(output)
   }
   const equivalent = new Map<string, string>()
@@ -1155,10 +1153,7 @@ function structuralType(schema: Schema.Top) {
     }
     return type
   }
-  return preserveStringSuggestions(
-    expand(document.codes[0].Type)
-      .replaceAll("Schema.Json", "JsonValue"),
-  )
+  return preserveStringSuggestions(expand(document.codes[0].Type).replaceAll("Schema.Json", "JsonValue"))
 }
 
 function includesUndefined(ast: SchemaAST.AST): boolean {
@@ -1752,7 +1747,9 @@ function isDataEnvelope(schema: Schema.Top) {
 }
 
 // Effect 4.1 added StreamNdjson to StreamSchema; the generator supports only SSE and byte streams.
-type SupportedStreamSchema = HttpApiSchema.StreamSse<Sse.EventCodec, Schema.Top, unknown> | HttpApiSchema.StreamUint8Array
+type SupportedStreamSchema =
+  | HttpApiSchema.StreamSse<Sse.EventCodec, Schema.Top, unknown>
+  | HttpApiSchema.StreamUint8Array
 
 function isStreamSchema(schema: Schema.Top): schema is SupportedStreamSchema {
   return "_tag" in schema && (schema._tag === "StreamSse" || schema._tag === "StreamUint8Array")
@@ -1763,6 +1760,20 @@ function streamDataSchema(schema: Extract<SupportedStreamSchema, { readonly _tag
 }
 
 function streamEncodedDataSchema(schema: Extract<SupportedStreamSchema, { readonly _tag: "StreamSse" }>) {
+  // The SSE JSON wrapper retains the original codec, including opaque fields and wire transformations.
+  const fields = "fields" in schema.events ? schema.events.fields : undefined
+  if (typeof fields === "object" && fields !== null && "data" in fields) {
+    const data = fields.data
+    if (
+      Schema.isSchema(data) &&
+      "to" in data &&
+      Schema.isSchema(data.to) &&
+      "schema" in data.to &&
+      Schema.isSchema(data.to.schema)
+    ) {
+      return Schema.toEncoded(data.to.schema)
+    }
+  }
   // oxlint-disable-next-line no-restricted-globals -- Effect exposes this runtime helper without a public type.
   const replaceEncoding: unknown = Reflect.get(SchemaAST, "replaceEncoding")
   if (typeof replaceEncoding !== "function") throw new GenerationError({ reason: "Invalid SSE data schema" })

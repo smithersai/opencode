@@ -1,6 +1,7 @@
 #!/usr/bin/env bun
 
 import { $ } from "bun"
+import { isolatedDependency } from "./local-dependencies"
 import { mkdtemp, rm } from "node:fs/promises"
 import { tmpdir } from "node:os"
 import { join } from "node:path"
@@ -47,7 +48,7 @@ try {
       pkg.dependencies = Object.fromEntries(
         Object.entries(pkg.dependencies).map(([dependency, version]) => {
           const local = archives.get(dependency)
-          return [dependency, local ? `file:${local}` : version]
+          return [dependency, local ? `file:${local}` : isolatedDependency(directory, version)]
         }),
       )
     }

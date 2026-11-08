@@ -64,6 +64,8 @@
     "@types/bun": "catalog:",
     "@typescript/native": "catalog:",
     "vibelang": "file:../../.vibelang-toolchain/vibelang-0.0.13-637d08c93ff1.tgz",
-    "vibelang-unplugin": "file:../../.vibelang-toolchain/vibelang-unplugin-0.0.13-23b4ad6a3929.tgz"
+    "vibelang-unplugin": "file:../../.vibelang-toolchain/vibelang-unplugin-0.0.13-23b4ad6a3929.tgz",
+    "fast-check": "catalog:",
+    "typescript": "catalog:"
   }
 }

@@ -141,3 +141,5 @@ const opencode = OpenCode.layer({
 ```
 
 Resources acquired in `configure` still belong to the instance, not to the Scope the SDK was built in. Both Workerd entrypoints also accept `instances`. The public `OpenCode.InstanceOptions` and `OpenCode.InstanceConfiguration` types describe the corresponding Promise or Effect callbacks.
+
+Package verification installs an isolated consumer using the built workspace archives. Relative local dependencies are resolved from their source package before installation, so a staged toolchain can be checked without publishing its archives.

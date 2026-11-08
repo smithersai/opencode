@@ -2,22 +2,22 @@
 import { randomUUID } from "node:crypto";
 import { app, BrowserWindow, screen } from "electron";
 import { Effect, FileSystem, Path } from "effect";
-import { openExternalURL } from "../files";
-import { scoped } from "../native/logging";
+import { openExternalURL } from "../files/index.js";
+import { scoped } from "../native/logging.js";
 import { DesktopPaths } from "../paths.js";
-import { DesktopStorage } from "../storage";
-import { getStore } from "../storage/store";
-import { WINDOW_IDS_KEY } from "../storage/keys";
-import { windowDataFile } from "../../shared/ipc-transport";
+import { DesktopStorage } from "../storage/index.js";
+import { getStore } from "../storage/store.js";
+import { WINDOW_IDS_KEY } from "../storage/keys.js";
+import { windowDataFile } from "../../shared/ipc-transport.js";
 import { windowArguments } from "./bootstrap.js";
-import { getBackgroundColor, getPinchZoomEnabled, setBackgroundColor, setDockIcon, setPinchZoomEnabled, setTitlebar, setTrafficLightsPosition, setZoomLevel, updateTitlebar, windowAppearance, wireFocus, wireFullscreen, wireZoom, } from "./appearance";
-import { registerRendererProtocol, setProtocolReporter } from "./protocol";
-import { loadWindow } from "./scheme";
-import { createWindowRegistry } from "./registry";
-import { windowRecovery } from "./recovery";
-import { takeEarlyWindow } from "./early";
-import { manageWindowState, readWindowState, resolveWindowState, windowStateFile } from "./window-state";
-import { allowRendererPermissions, wireNavigationPolicy, wireRendererHeaders } from "./security";
+import { getBackgroundColor, getPinchZoomEnabled, setBackgroundColor, setDockIcon, setPinchZoomEnabled, setTitlebar, setTrafficLightsPosition, setZoomLevel, updateTitlebar, windowAppearance, wireFocus, wireFullscreen, wireZoom, } from "./appearance.js";
+import { registerRendererProtocol, setProtocolReporter } from "./protocol.js";
+import { loadWindow } from "./scheme.js";
+import { createWindowRegistry } from "./registry.js";
+import { windowRecovery } from "./recovery.js";
+import { takeEarlyWindow } from "./early.js";
+import { manageWindowState, readWindowState, resolveWindowState, windowStateFile } from "./window-state.js";
+import { allowRendererPermissions, wireNavigationPolicy, wireRendererHeaders } from "./security.js";
 const themeReady = new WeakMap();
 const displays = {
     all: () => screen.getAllDisplays().map((display) => display.bounds),

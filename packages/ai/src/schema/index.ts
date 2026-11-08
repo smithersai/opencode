@@ -1,5 +1,5 @@
 export * from "./ids.vibe"
 export * from "./options.vibe"
 export * from "./messages.vibe"
-export * from "./events.js"
+export * from "./events.vibe"
 export * from "./errors.vibe"

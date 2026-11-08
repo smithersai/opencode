@@ -40,7 +40,7 @@ export const Output = Schema_1.Struct({
 const crlf = "\r\n";
 const normalizeForMatch = (value) => value
     .replace(/[‘’‚‛]/g, "'")
-    .replace(/[“”„‟]/g, '"')
+    .replace(/[“”„‟]/g, "\"")
     .replace(/[‐‑‒–—―−]/g, "-")
     .replace(/[\u00A0\u2002-\u200A\u202F\u205F\u3000]/g, " ");
 const findOccurrences = (content, search) => {
@@ -213,158 +213,169 @@ export const Plugin = {
                 input: Input,
                 output: Output,
                 execute: (input, context) => {
-                    return (Effect_1.gen(function* () {
-                        const permissionSource = {
-                            type: "tool",
-                            messageID: context.messageID,
-                            id: context.id,
-                        };
-                        if (input.oldString === input.newString) {
-                            return yield* Effect_1.fail(new ToolFailure({
-                                message: "No changes to apply: oldString and newString are identical.",
-                            }));
-                        }
-                        if (input.oldString === "") {
-                            return yield* Effect_1.fail(new ToolFailure({
-                                message: "oldString must not be empty. Use write to create or overwrite a file.",
-                            }));
-                        }
-                        const target = yield* access.resolve({ path: input.path, kind: "file" });
-                        yield* access.authorizeExternal([target], context);
-                        const original = yield* runtime.$catch(yield* (() => { return (_tail_1 => { return Effect_1.gen(function* () {
-                            const _completion_1 = _tail_1(), _value_1 = _completion_1[1];
-                            return _completion_1[0] ? yield* _value_1 : _value_1;
-                        }); })(() => { return [true, (Effect_1.fnUntraced(function* () {
-                                let $do1;
-                                const catchProgram = FileMutation.readText(environment.files, target.absolute);
-                                $do1
-                                    =
-                                        Effect_1.gen(function* () {
-                                            return yield* runtime.$catch(yield* (() => { return Effect_1.sync(() => { return catchProgram; }); })(), (e) => (_tail_2 => { return Effect_1.gen(function* () {
-                                                const _completion_2 = _tail_2(), _value_2 = _completion_2[1];
-                                                return _completion_2[0] ? yield* _value_2 : _value_2;
-                                            }); })(() => { return [true, (Effect_1.fnUntraced(function* () {
-                                                    const $matchCache2 = $matchCache();
-                                                    try {
-                                                        const $match1 = e;
-                                                        {
-                                                            if ((typeof $match1 === "function" || typeof $match1 === "object") && $match1
-                                                                !== null && $matchCache2.propertyHas($match1, "_tag") && $matchCache2.get($match1, "_tag") === "Environment.NotFound") {
-                                                                return yield* (() => { return (_tail_3 => { return Effect_1.gen(function* () {
-                                                                    const _completion_3 = _tail_3(), _value_3 = _completion_3[1];
-                                                                    return _completion_3[0] ? yield* _value_3 : _value_3;
-                                                                }); })(() => { return [true, Effect_1.fail(new ToolFailure({ message: `File not found: ${input.path}` }))]; }); })();
-                                                            }
-                                                        }
-                                                        return yield* (() => { return (_tail_4 => { return Effect_1.gen(function* () {
-                                                            const _completion_4 = _tail_4(), _value_4 = _completion_4[1];
-                                                            return _completion_4[0] ? yield* _value_4 : _value_4;
-                                                        }); })(() => { return [true, Effect_1.fail(e)]; }); })();
-                                                    }
-                                                    catch (matchError_1) {
-                                                        $matchCache2.threw(matchError_1);
-                                                        throw matchError_1;
-                                                    }
-                                                    finally {
-                                                        $matchCache2.finish();
-                                                    }
-                                                }))()]; }));
-                                        });
-                                return $do1;
-                            }))()]; }); })(), (error) => (_tail_5 => { return Effect_1.gen(function* () {
-                            const _completion_5 = _tail_5(), _value_5 = _completion_5[1];
-                            return _completion_5[0] ? yield* _value_5 : _value_5;
-                        }); })(() => { return [true, (Effect_1.fnUntraced(function* () {
-                                const $matchCache4 = $matchCache();
-                                try {
-                                    const $match3 = error;
-                                    {
-                                        if ((typeof $match3 === "function" || typeof $match3 === "object") && $match3
-                                            !== null && $matchCache4.propertyHas($match3, "_tag") && $matchCache4.get($match3, "_tag") === "Environment.WrongKind") {
-                                            return yield* (error.actual === "directory"
-                                                ? Effect.fail(new ToolFailure({ message: `Path is a directory, not a file: ${input.path}` }))
-                                                : Effect.fail(new ToolFailure({ message: `Unable to edit ${input.path}`, error })));
-                                        }
-                                    }
-                                    return yield* (() => { return (_tail_6 => { return Effect_1.gen(function* () {
-                                        const _completion_6 = _tail_6(), _value_6 = _completion_6[1];
-                                        return _completion_6[0] ? yield* _value_6 : _value_6;
-                                    }); })(() => { return [true, Effect_1.fail(error)]; }); })();
-                                }
-                                catch (matchError_2) {
-                                    $matchCache4.threw(matchError_2);
-                                    throw matchError_2;
-                                }
-                                finally {
-                                    $matchCache4.finish();
-                                }
-                            }))()]; }));
-                        const source = original.text;
-                        // Strings that differ only in \r ask to change line endings themselves, so they apply to the exact
-                        // bytes. Every other edit matches the LF view Read shows the model and keeps the file's endings.
-                        const endingsOnly = input.oldString.replaceAll("\r", "") === input.newString.replaceAll("\r", "");
-                        const { matches, replace } = endingsOnly
-                            ? {
-                                matches: findOccurrences(source, input.oldString),
-                                replace: () => input.newString,
+                    return Effect_1.gen(function* execute() {
+                        const target = yield* Effect.orDie(Effect.try({ try: () => FileAccess.resolvePath(location.directory, input.path), catch: (e) => e }));
+                        return yield* (Effect_1.gen(function* () {
+                            const permissionSource = {
+                                type: "tool",
+                                messageID: context.messageID,
+                                id: context.id,
+                            };
+                            if (input.oldString === input.newString) {
+                                return yield* Effect_1.fail(new ToolFailure({
+                                    message: "No changes to apply: oldString and newString are identical.",
+                                }));
                             }
-                            : matchView(source, input.oldString, input.newString);
-                        const replacements = matches.length;
-                        const replaced = (input.replaceAll === true ? matches : matches.slice(0, 1))
-                            .toReversed()
-                            .reduce((content, match) => `${content.slice(0, match.start)}${replace(match)}${content.slice(match.end)}`, source);
-                        const preview = replacements > 0 && (replacements === 1 || input.replaceAll === true)
-                            ? yield* Effect.orDie(Effect.try({ try: () => fileDiff(target.resource, source, replaced), catch: (e) => e })) : undefined;
-                        yield* permission.assert({
-                            action: "edit",
-                            resources: [target.resource],
-                            save: ["*"],
-                            metadata: preview ? { files: [preview] } : undefined,
-                            sessionID: context.sessionID,
-                            agent: context.agent,
-                            source: permissionSource,
-                        });
-                        if (replacements === 0) {
-                            return yield* Effect_1.fail(new ToolFailure({
-                                message: `Could not find oldString in ${input.path}. It must match exactly, including whitespace and indentation.`,
-                            }));
-                        }
-                        if (replacements > 1 && input.replaceAll !== true) {
-                            return yield* Effect_1.fail(new ToolFailure({
-                                message: `Found ${replacements} matches for oldString, but expected exactly one. Add more surrounding context to make oldString unique, or set replaceAll to true to replace every occurrence.`,
-                            }));
-                        }
-                        if (replaced === source) {
-                            return yield* Effect_1.fail(new ToolFailure({
-                                message: endingsOnly
-                                    ? `No changes to apply: ${input.path} already has those line endings.`
-                                    : `No changes to apply: the edit leaves ${input.path} unchanged. Line endings follow the file; to change them, write \\r explicitly in oldString or newString.`,
-                            }));
-                        }
-                        const replacementBom = replaced.startsWith("\uFEFF");
-                        const result = yield* fileMutation.write({
-                            target,
-                            content: yield* Effect.orDie(Effect.try({ try: () => Bom.join(replaced, original.bom || replacementBom), catch: (e) => e })),
-                        });
-                        const bom = original.bom || replacementBom;
-                        const formatted = (yield* formatter.file(target.absolute))
-                            ? yield* FileMutation.syncTextBom(environment.files, target.absolute, bom) : (yield* FileMutation.readText(environment.files, target.absolute)).text;
-                        return {
-                            files: [
-                                yield* Effect.orDie(Effect.try({
-                                    try: () => fileDiff(result.resource, source, formatted),
-                                    catch: (e) => e,
-                                })),
-                            ],
-                            replacements,
-                        };
-                    })).pipe(fileMutation.withLock([FileAccess.resolvePath(location.directory, input.path)]), Effect.map((output) => ({
-                        output,
-                        content: `Edited ${output.files[0]?.file} (${output.replacements} replacement${output.replacements === 1 ? "" : "s"})`,
-                        metadata: { files: output.files },
-                    })), Effect.mapError((error) => error instanceof ToolFailure
-                        ? error
-                        : new ToolFailure({ message: `Unable to edit ${input.path}`, error })));
+                            if (input.oldString === "") {
+                                return yield* Effect_1.fail(new ToolFailure({
+                                    message: "oldString must not be empty. Use write to create or overwrite a file.",
+                                }));
+                            }
+                            const target = yield* access.resolve({ path: input.path, kind: "file" });
+                            yield* access.authorizeExternal([target], context);
+                            const original = yield* runtime.$catch(yield* (() => { return (_tail_1 => { return Effect_1.gen(function* () {
+                                const _completion_1 = _tail_1(), _value_1 = _completion_1[1];
+                                return _completion_1[0] ? yield* _value_1 : _value_1;
+                            }); })(() => { return [true, (function* () {
+                                    let $do1;
+                                    const catchProgram = FileMutation.readText(environment.files, target.absolute);
+                                    $do1
+                                        =
+                                            Effect_1.gen(function* () {
+                                                return yield* runtime.$catch(yield* (() => { return Effect_1.sync(() => { return catchProgram; }); })(), (e) => (_tail_2 => { return Effect_1.gen(function* () {
+                                                    const _completion_2 = _tail_2(), _value_2 = _completion_2[1];
+                                                    return _completion_2[0] ? yield* _value_2 : _value_2;
+                                                }); })(() => { return [true, (Effect_1.fnUntraced(function* () {
+                                                        const $matchCache2 = $matchCache();
+                                                        try {
+                                                            const $match1 = e;
+                                                            {
+                                                                if ((typeof $match1 === "function" || typeof $match1 === "object") && $match1
+                                                                    !== null && $matchCache2.propertyHas($match1, "_tag") && $matchCache2.get($match1, "_tag") === "Environment.NotFound") {
+                                                                    return yield* (() => { return (_tail_3 => { return Effect_1.gen(function* () {
+                                                                        const _completion_3 = _tail_3(), _value_3 = _completion_3[1];
+                                                                        return _completion_3[0] ? yield* _value_3 : _value_3;
+                                                                    }); })(() => { return [true, Effect_1.fail(new ToolFailure({
+                                                                            message: `File not found: ${input.path}`,
+                                                                        }))]; }); })();
+                                                                }
+                                                            }
+                                                            return yield* (() => { return (_tail_4 => { return Effect_1.gen(function* () {
+                                                                const _completion_4 = _tail_4(), _value_4 = _completion_4[1];
+                                                                return _completion_4[0] ? yield* _value_4 : _value_4;
+                                                            }); })(() => { return [true, Effect_1.fail(e)]; }); })();
+                                                        }
+                                                        catch (matchError_1) {
+                                                            $matchCache2.threw(matchError_1);
+                                                            throw matchError_1;
+                                                        }
+                                                        finally {
+                                                            $matchCache2.finish();
+                                                        }
+                                                    }))()]; }));
+                                            });
+                                    return $do1;
+                                })()]; }); })(), (error) => (_tail_5 => { return Effect_1.gen(function* () {
+                                const _completion_5 = _tail_5(), _value_5 = _completion_5[1];
+                                return _completion_5[0] ? yield* _value_5 : _value_5;
+                            }); })(() => { return [true, (Effect_1.fnUntraced(function* () {
+                                    const $matchCache4 = $matchCache();
+                                    try {
+                                        const $match3 = error;
+                                        {
+                                            if ((typeof $match3 === "function" || typeof $match3 === "object") && $match3
+                                                !== null && $matchCache4.propertyHas($match3, "_tag") && $matchCache4.get($match3, "_tag") === "Environment.WrongKind") {
+                                                return yield* (error.actual === "directory"
+                                                    ? Effect.fail(new ToolFailure({ message: `Path is a directory, not a file: ${input.path}` }))
+                                                    : Effect.fail(new ToolFailure({ message: `Unable to edit ${input.path}`, error })));
+                                            }
+                                        }
+                                        return yield* (() => { return (_tail_6 => { return Effect_1.gen(function* () {
+                                            const _completion_6 = _tail_6(), _value_6 = _completion_6[1];
+                                            return _completion_6[0] ? yield* _value_6 : _value_6;
+                                        }); })(() => { return [true, Effect_1.fail(error)]; }); })();
+                                    }
+                                    catch (matchError_2) {
+                                        $matchCache4.threw(matchError_2);
+                                        throw matchError_2;
+                                    }
+                                    finally {
+                                        $matchCache4.finish();
+                                    }
+                                }))()]; }));
+                            const source = original.text;
+                            // Strings that differ only in \r ask to change line endings themselves, so they apply to the exact
+                            // bytes. Every other edit matches the LF view Read shows the model and keeps the file's endings.
+                            const endingsOnly = (yield* Effect.orDie(Effect.try({
+                                try: () => input.oldString.replaceAll("\r", ""),
+                                catch: (e) => e,
+                            }))) === (yield* Effect.orDie(Effect.try({
+                                try: () => input.newString.replaceAll("\r", ""),
+                                catch: (e) => e,
+                            })));
+                            const { matches, replace } = endingsOnly
+                                ? {
+                                    matches: findOccurrences(source, input.oldString),
+                                    replace: () => input.newString,
+                                }
+                                : matchView(source, input.oldString, input.newString);
+                            const replacements = matches.length;
+                            const replaced = (input.replaceAll === true ? matches : matches.slice(0, 1))
+                                .toReversed()
+                                .reduce((content, match) => `${content.slice(0, match.start)}${replace(match)}${content.slice(match.end)}`, source);
+                            const preview = replacements > 0 && (replacements === 1 || input.replaceAll === true)
+                                ? yield* Effect.orDie(Effect.try({ try: () => fileDiff(target.resource, source, replaced), catch: (e) => e })) : undefined;
+                            yield* permission.assert({
+                                action: "edit",
+                                resources: [target.resource],
+                                save: ["*"],
+                                metadata: preview ? { files: [preview] } : undefined,
+                                sessionID: context.sessionID,
+                                agent: context.agent,
+                                source: permissionSource,
+                            });
+                            if (replacements === 0) {
+                                return yield* Effect_1.fail(new ToolFailure({
+                                    message: `Could not find oldString in ${input.path}. It must match exactly, including whitespace and indentation.`,
+                                }));
+                            }
+                            if (replacements > 1 && input.replaceAll !== true) {
+                                return yield* Effect_1.fail(new ToolFailure({
+                                    message: `Found ${replacements} matches for oldString, but expected exactly one. Add more surrounding context to make oldString unique, or set replaceAll to true to replace every occurrence.`,
+                                }));
+                            }
+                            if (replaced === source) {
+                                return yield* Effect_1.fail(new ToolFailure({
+                                    message: endingsOnly
+                                        ? `No changes to apply: ${input.path} already has those line endings.`
+                                        : `No changes to apply: the edit leaves ${input.path} unchanged. Line endings follow the file; to change them, write \\r explicitly in oldString or newString.`,
+                                }));
+                            }
+                            const replacementBom = yield* Effect.orDie(Effect.try({ try: () => replaced.startsWith("\uFEFF"), catch: (e) => e }));
+                            const result = yield* fileMutation.write({
+                                target,
+                                content: yield* Effect.orDie(Effect.try({ try: () => Bom.join(replaced, original.bom || replacementBom), catch: (e) => e })),
+                            });
+                            const bom = original.bom || replacementBom;
+                            const formatted = (yield* formatter.file(target.absolute))
+                                ? yield* FileMutation.syncTextBom(environment.files, target.absolute, bom) : (yield* FileMutation.readText(environment.files, target.absolute)).text;
+                            return {
+                                files: [
+                                    yield* Effect.orDie(Effect.try({
+                                        try: () => fileDiff(result.resource, source, formatted),
+                                        catch: (e) => e,
+                                    })),
+                                ],
+                                replacements,
+                            };
+                        })).pipe(fileMutation.withLock([target]), Effect.map((output) => ({
+                            output,
+                            content: `Edited ${output.files[0]?.file} (${output.replacements} replacement${output.replacements === 1 ? "" : "s"})`,
+                            metadata: { files: output.files },
+                        })), Effect.mapError((error) => error instanceof ToolFailure
+                            ? error
+                            : new ToolFailure({ message: `Unable to edit ${input.path}`, error })));
+                    });
                 },
             }))));
         }), "EditTool.Plugin"); });

@@ -10,7 +10,7 @@ import fs from "fs/promises"
 import os from "os"
 import path from "path"
 import { Effect, Logger } from "effect"
-import { AppNodeBuilder } from "../src/effect/app-node-builder.vibe"
+import { AppNodeBuilder } from "../src/effect/app-node-builder.ts"
 import { Git } from "../src/git"
 import { AbsolutePath } from "../src/schema"
 

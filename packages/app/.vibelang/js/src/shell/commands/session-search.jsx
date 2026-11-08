@@ -5,7 +5,7 @@ import { useGlobal } from "@/runtime/server/runtime";
 import { useLanguage } from "@/runtime/i18n/language";
 import { ServerConnection, useServers } from "@/runtime/server/registry";
 import { useTabs } from "@/shell/tabs/tabs";
-import { createKnownServerSessions, createServerSessionEntries } from "./palette";
+import { createKnownServerSessions, createServerSessionEntries } from "./palette.js";
 import { CommandPaletteView } from "./dialog";
 const RECENT_LIMIT = 10;
 export function DialogSessionSearch() {

@@ -8,7 +8,7 @@ import { useLanguage } from "@/runtime/i18n/language";
 import { useServerSDK } from "@/runtime/server/client";
 import { useData } from "@/runtime/server/current";
 import { formatServerError } from "@/runtime/server/errors";
-import { activeProviderAccount } from "./accounts";
+import { activeProviderAccount } from "./accounts.js";
 // Shared by the connect dialog and Settings so both switch, rename and remove accounts the same way.
 export function useProviderAccountActions(directory) {
     const language = useLanguage();

@@ -4,7 +4,7 @@
 // SPDX-License-Identifier: MIT
 import { nextDesktopZoomLevel } from "@opencode/app/desktop-menu";
 import { createSignal } from "solid-js";
-import { api } from "../api";
+import { api } from "../api.js";
 const OS_NAME = (() => {
     if (navigator.userAgent.includes("Mac"))
         return "macos";

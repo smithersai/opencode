@@ -6,9 +6,9 @@ import * as Effect_1 from "effect/Effect";
 import { and, asc, eq, inArray, or } from "drizzle-orm";
 import * as Context from "effect/Context";
 import { DatabaseError, DrizzleClient } from "../database.js";
-import { geoStat } from "../database/schema";
-import { RETIRED_STAT_MODELS, RETIRED_STAT_PROVIDERS } from "./model-normalization";
-import { chunks, collapseRows, DATA_SITE_TIERS, inserted, omitUniqueUsers, rankRowsWithMarketShare, statPeriodKey, statRowScope, synthesizeAllTierRows, toStatBaseRow, UPSERT_CHUNK_SIZE, withUniqueUsersFallback, } from "./stat";
+import { geoStat } from "../database/schema.js";
+import { RETIRED_STAT_MODELS, RETIRED_STAT_PROVIDERS } from "./model-normalization.js";
+import { chunks, collapseRows, DATA_SITE_TIERS, inserted, omitUniqueUsers, rankRowsWithMarketShare, statPeriodKey, statRowScope, synthesizeAllTierRows, toStatBaseRow, UPSERT_CHUNK_SIZE, withUniqueUsersFallback, } from "./stat.js";
 export class GeoStatRepo extends Context.Service()("@opencode/stats/GeoStatRepo") {
     static layer = Layer.effect(GeoStatRepo, Effect_1.gen(function* () {
         const db = yield* DrizzleClient;

@@ -4,7 +4,7 @@ import { Persist, persisted } from "@/runtime/persistence/storage";
 import { onCleanup } from "solid-js";
 import { Schema } from "effect";
 import { Persistence } from "@/runtime/persistence/schema";
-import { useSessionLayout } from "./session-layout";
+import { useSessionLayout } from "./session-layout.js";
 import { useDialog, useI18n } from "@opencode/ui/context";
 import { DialogUsageExceeded } from "@/providers/connect/usage-exceeded";
 import { GoUpsellHero } from "@/providers/connect/go-upsell-hero";

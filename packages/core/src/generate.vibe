@@ -1,6 +1,6 @@
 export * as Generate from "./generate.vibe"
 
-import * as $native from "./generate.native.ts"
+import { plainJson } from "./generate.native.ts"
 import { AIError, Decision, DecisionClient, Image, ImageClient, LLM, LLMClient, Media } from "@opencode/ai/effect"
 import type { DecisionRequest, DecisionResult, ImageRequest, ImageResult } from "@opencode/schema/generate"
 import { Money } from "@opencode/schema/money"
@@ -221,7 +221,7 @@ export const layer = Layer.effect(
           const usage = response.usage
           return {
             answers: response.answers,
-            ...(usage?.cost === undefined ? {} : { cost: Money.USD.make(usage.cost) }),
+            ...(try Effect.orDie(Effect.try({ try: () => usage?.cost === undefined ? {} : { cost: Money.USD.make(usage.cost) }, catch: (e) => e }))),
             ...(usage?.inputTokens === undefined && usage?.outputTokens === undefined
               ? {}
               : { tokens: { input: usage.inputTokens, output: usage.outputTokens } }),
@@ -248,7 +248,6 @@ export const layer = Layer.effect(
 ).pipe(Layer.provide([ImageClient.layer, DecisionClient.layer]))
 
 // Provider metadata may hold undefined fields, which the JSON response schema rejects; the round trip is native code.
-const plainJson = $native.plainJson
 
 function resolutionError(ref: Model.Ref, type: string, error: ModelResolver.Error) {
   if (error._tag === "Integration.Authorization") return error

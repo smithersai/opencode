@@ -6,7 +6,7 @@ import { useTabs } from "@/shell/tabs/tabs";
 import { toggleHomeProjectSelection } from "@/shell/layout/helpers";
 import { createEffect, createMemo, startTransition } from "solid-js";
 import { pathKey } from "@/workspaces/path-key";
-import { addProjects } from "./projects/add";
+import { addProjects } from "./projects/add.js";
 export function createHomeController() {
     const layout = useLayout();
     const global = useGlobal();

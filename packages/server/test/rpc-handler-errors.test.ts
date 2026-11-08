@@ -6,7 +6,7 @@ import { Context, Effect, Layer, Schema } from "effect"
 import { HttpEffect, HttpRouter, HttpServer } from "effect/http"
 import { tmpdirScoped } from "../../core/test/fixture/tmpdir"
 import { it } from "../../core/test/lib/effect"
-import { createEmbeddedRoutes } from "../src/routes.vibe"
+import { createEmbeddedRoutes } from "../src/routes.ts"
 
 const Broken = Rpc.define({
   id: "broken",

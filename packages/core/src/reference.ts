@@ -30,8 +30,11 @@ type Data = {
 
 type Editor = {
   add(name: string, source: Source): void
+  /** @throws {never} */
   remove(name: string): void
+  /** @throws {never} */
   list(): readonly [string, Source][]
+  /** @throws {never} */
   get(name: string): Source | undefined
 }
 

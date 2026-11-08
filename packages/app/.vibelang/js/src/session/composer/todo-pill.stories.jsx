@@ -3,7 +3,7 @@ import { CURRENT_SESSION_ID, STORY_MODEL, STORY_TIME, editThenTestDocument } fro
 import { timelinePresets } from "@opencode/session-ui/timeline/detail";
 import { createMemo, onMount } from "solid-js";
 import { SessionPreview } from "@/session/story-model";
-import { sessionTodos } from "./todos";
+import { sessionTodos } from "./todos.js";
 const timelineDetail = timelinePresets[2].value;
 const plan = [
     "Read the activity pill and the composer lane",

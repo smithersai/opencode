@@ -3,8 +3,8 @@ import { BrowserWindow, Menu } from "electron";
 import { DESKTOP_MENU, desktopMenuKey, desktopMenuVisible, desktopMenuWithPlugins, } from "@opencode/app/desktop-menu";
 import { MenuCommandTriggered } from "../../shared/ipc-rpc/events.js";
 import { emitIpcEvent } from "../ipc-events.js";
-import { runDesktopMenuAction } from "./menu-actions";
-import { nativeT } from "./translations";
+import { runDesktopMenuAction } from "./menu-actions.js";
+import { nativeT } from "./translations.js";
 let menubar = () => [];
 let installed;
 /** Contributions are read on every build; setting a provider rebuilds an installed menu. */

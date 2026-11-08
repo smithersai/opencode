@@ -2,15 +2,15 @@
 import { NodeFileSystem, NodePath, NodeRuntime } from "@effect/platform-node";
 import { app } from "electron";
 import { Effect, Layer } from "effect";
-import { Plugins } from "./plugin";
-import { Ipc } from "./ipc";
+import { Plugins } from "./plugin/index.js";
+import { Ipc } from "./ipc.js";
 import { DesktopInitialization } from "./lifecycle/desktop-initialization.js";
-import { installContextMenu } from "./lifecycle/environment";
-import { ApplicationLifecycle } from "./lifecycle";
-import { DesktopLogging } from "./native/logging";
-import { BackgroundService } from "./service/background-service";
-import { DesktopCli } from "./service/desktop-cli";
-import { marks } from "./lifecycle/marks";
+import { installContextMenu } from "./lifecycle/environment.js";
+import { ApplicationLifecycle } from "./lifecycle/index.js";
+import { DesktopLogging } from "./native/logging.js";
+import { BackgroundService } from "./service/background-service.js";
+import { DesktopCli } from "./service/desktop-cli.js";
+import { marks } from "./lifecycle/marks.js";
 // Everything above has been loaded and evaluated by now; the layers start below.
 marks.bundle = Date.now();
 const runIpc = Effect.fn("Desktop.runIpc")(function* () {

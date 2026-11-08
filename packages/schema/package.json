@@ -447,11 +447,7 @@
       "vibelang-source": "./src/worktree.vibe",
       "default": "./.vibelang/js/src/worktree.js"
     },
-    "./*": {
-      "types": "./src/*.ts",
-      "vibelang-source": "./src/*.ts",
-      "default": "./.vibelang/js/src/*.js"
-    },
+    "./*": "./src/*.ts",
     "./identifier": {
       "types": {
         "default": "./src/identifier.ts"
@@ -568,9 +564,7 @@
       },
       "vibelang-source": "./src/session-v1.ts",
       "default": "./.vibelang/js/src/session-v1.js"
-    },
-    "./event.vibe.-24-throw-24-ts": null,
-    "./rpc.vibe.-24-throw-24-ts": null
+    }
   },
   "scripts": {
     "build": "bun run script/build.ts",
@@ -582,14 +576,14 @@
   "dependencies": {
     "@standard-schema/spec": "catalog:",
     "effect": "catalog:",
-    "vibelang-runtime": "0.0.12"
+    "vibelang-runtime": "file:../../.vibelang-toolchain/vibelang-runtime-0.0.13-89b143f8885a.tgz"
   },
   "devDependencies": {
     "@tsconfig/bun": "catalog:",
     "@types/bun": "catalog:",
     "@typescript/native": "catalog:",
     "typescript": "catalog:",
-    "vibelang": "0.0.12",
+    "vibelang": "file:../../.vibelang-toolchain/vibelang-0.0.13-637d08c93ff1.tgz",
     "fast-check": "catalog:"
   }
 }

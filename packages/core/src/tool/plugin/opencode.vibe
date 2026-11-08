@@ -167,10 +167,11 @@ export const Plugin = {
               options: { namespace: "opencode", codemode: true, pinned: true },
               execute: (input) =>
                 ctx.worktree.create({ projectID: ctx.location.project.id, name: input.name })
-                  |> Effect.map(%, (output) => ({ output, content: `Created worktree in ${output.directory}.` }))
-                  |> Effect.mapError(
-                    %, (error) => new ToolFailure({ message: `Unable to create worktree ${input.name}`, error }),
-                  ),
+                |> Effect.map(%, (output) => ({ output, content: `Created worktree in ${output.directory}.` }))
+                |> Effect.mapError(
+                  %,
+                  (error) => new ToolFailure({ message: `Unable to create worktree ${input.name}`, error }),
+                ),
             })
             draft.add({
               name: "worktree_list",
@@ -180,8 +181,8 @@ export const Plugin = {
               options: { namespace: "opencode", codemode: true, pinned: true },
               execute: () =>
                 ctx.worktree.list({ projectID: ctx.location.project.id })
-                  |> Effect.map(%, (worktrees) => ({ output: { worktrees } }))
-                  |> Effect.mapError(%, (error) => new ToolFailure({ message: "Unable to list worktrees", error })),
+                |> Effect.map(%, (worktrees) => ({ output: { worktrees } }))
+                |> Effect.mapError(%, (error) => new ToolFailure({ message: "Unable to list worktrees", error })),
             })
             draft.add({
               name: "worktree_remove",
@@ -236,38 +237,75 @@ export const Plugin = {
                     try: () => input.query?.toLowerCase().split(/\s+/).filter(Boolean),
                     catch: (e) => e,
                   }))) ?? []
-                  const names = new Map((try ctx.provider.list()).data.map((provider) => [provider.id, provider.name]))
+                  const data2 = (try ctx.provider.list()).data
+                  const names = new Map(
+                    try Effect.orDie(
+                      Effect.try({
+                        try: () => data2.map((provider) => [provider.id, provider.name] as const),
+                        catch: (e) => e,
+                      }),
+                    ),
+                  )
                   const provider = try Effect.orDie(Effect.try({
                     try: () => input.provider?.toLowerCase(),
                     catch: (e) => e,
                   }))
-                  const matching = (try ctx.model.list()).data
-                    .filter(
-                      (model) =>
-                        provider === undefined
-                        || model.providerID.toLowerCase() === provider
-                        || names.get(model.providerID)?.toLowerCase() === provider,
-                    )
-                    .filter((model) => {
-                      const text = `${model.providerID}/${model.id} ${model.name}`.toLowerCase()
-                      return terms.every((term) => text.includes(term))
-                    })
-                    .toSorted(
-                      (left, right) =>
-                        Number(right.providerID === own) - Number(left.providerID === own)
-                        || left.providerID.localeCompare(right.providerID)
-                        || right.time.released - left.time.released,
-                    )
-                    .filter((model, index, sorted) => {
-                      if (input.all || model.family === undefined) return true
-                      return (
-                        sorted.findIndex(
-                          (other) => other.providerID === model.providerID && other.family === model.family,
-                        ) === index
-                      )
-                    })
-                  const page = matching.slice(offset, offset + limit)
-                  const providers = Array.from(new Set(page.map((model) => model.providerID))).map((id) => ({
+                  const data3 = (try ctx.model.list()).data
+                  const filter3 = try Effect.orDie(Effect.try({
+                    try: () =>
+                      data3
+                        .filter(
+                          (model) =>
+                            provider === undefined
+                            || model.providerID.toLowerCase() === provider
+                            || names.get(model.providerID)?.toLowerCase() === provider,
+                        ),
+                    catch: (e) => e,
+                  }))
+                  const filter2 = try Effect.orDie(Effect.try({
+                    try: () =>
+                      filter3
+                        .filter((model) => {
+                          const text = `${model.providerID}/${model.id} ${model.name}`.toLowerCase()
+                          return terms.every((term) => text.includes(term))
+                        }),
+                    catch: (e) => e,
+                  }))
+                  const toSorted2 = try Effect.orDie(Effect.try({
+                    try: () =>
+                      filter2
+                        .toSorted(
+                          (left, right) =>
+                            Number(right.providerID === own) - Number(left.providerID === own)
+                            || left.providerID.localeCompare(right.providerID)
+                            || right.time.released - left.time.released,
+                        ),
+                    catch: (e) => e,
+                  }))
+                  const matching = try Effect.orDie(Effect.try({
+                    try: () =>
+                      toSorted2
+                        .filter((model, index, sorted) => {
+                          if (input.all || model.family === undefined) return true
+                          return (
+                            sorted.findIndex(
+                              (other) => other.providerID === model.providerID && other.family === model.family,
+                            ) === index
+                          )
+                        }),
+                    catch: (e) => e,
+                  }))
+                  const page = try Effect.orDie(
+                    Effect.try({ try: () => matching.slice(offset, offset + limit), catch: (e) => e }),
+                  )
+                  const providers = Array.from(
+                    new Set(
+                      try Effect.orDie(Effect.try({
+                        try: () => page.map((model) => model.providerID),
+                        catch: (e) => e,
+                      })),
+                    ),
+                  ).map((id) => ({
                     id,
                     name: names.get(id) ?? id,
                     models: page

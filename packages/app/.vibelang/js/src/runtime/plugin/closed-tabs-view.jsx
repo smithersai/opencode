@@ -11,7 +11,7 @@ import { getDirectory, getFilename } from "@opencode/util/path";
 import { isIconName } from "@opencode/ui/icons/catalog";
 import { useCommand } from "@/shell/commands/command";
 import { useLanguage } from "@/runtime/i18n/language";
-import { closedTabsSwap, createModifierHeld, hasModifier, } from "./closed-tabs";
+import { closedTabsSwap, createModifierHeld, hasModifier, } from "./closed-tabs.js";
 const MENU_LIMIT = 10;
 const SECTION_LIMIT = 5;
 /** A closed tab's icon, title and, for a file, its folder. */

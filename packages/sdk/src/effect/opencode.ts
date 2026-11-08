@@ -1,4 +1,4 @@
-export * as OpenCode from "./opencode.js"
+export * as OpenCode from "./opencode"
 
 import { OpenCode, type OpenCodeClient } from "@opencode/client/effect"
 import type { Session } from "@opencode/core/session"

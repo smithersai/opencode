@@ -2,7 +2,7 @@ import { describe, expect, test } from "bun:test"
 import { Deferred, Effect, Exit, Fiber, Layer } from "effect"
 import { Socket } from "effect/socket"
 import { existsSync } from "node:fs"
-import { HttpRecorder } from "../src/index.js"
+import { HttpRecorder } from "../src/index.ts"
 import { layerSocketWithMode } from "../src/websocket/recorder"
 import { failureText, readCassette, seedCassetteDirectory, tempDirectory, withEnvironment } from "./support"
 

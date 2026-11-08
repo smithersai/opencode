@@ -9,9 +9,9 @@ import { createComposerModel } from "@/composer/model";
 import { useComposerCommands } from "@/composer/commands";
 import { createNewSessionComposerAdapter } from "./composer-adapter.js";
 import { NewSessionView } from "./view";
-import { createNewSessionWorkspaceController } from "./workspace/controller";
+import { createNewSessionWorkspaceController } from "./workspace/controller.js";
 import { useNewSessionCommands } from "./commands";
-import { createDraftMcpControls } from "./mcp";
+import { createDraftMcpControls } from "./mcp.js";
 /** The draft-only Session page. Submitting promotes the draft into a real Session. */
 export default function NewSessionPage(props) {
     const [search, setSearch] = useSearchParams();

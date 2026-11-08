@@ -29,13 +29,16 @@ const layer = Layer.effect(Service, Effect_1.gen(function* () {
     const scope = yield* Effect.scope;
     yield* project.activate(location.project.id);
     const unsubscribe = yield* bus.listen((event) => {
-        if (!isSessionEvent(event) || !event.location)
-            return Effect.void;
-        const ref = LocationServiceMap.canonical(event.location);
-        if (ref.directory !== location.directory || ref.workspaceID !== location.workspaceID)
-            return Effect.void;
-        // Listeners run inside publish; keep the write and its Project event off that path.
-        return Effect.asVoid(Effect.forkIn(project.activate(location.project.id), scope));
+        return Effect_1.gen(function* () {
+            if (!isSessionEvent(event) || !event.location)
+                return;
+            const placement = event.location;
+            const ref = yield* Effect.orDie(Effect.try({ try: () => LocationServiceMap.canonical(placement), catch: (e) => e }));
+            if (ref.directory !== location.directory || ref.workspaceID !== location.workspaceID)
+                return;
+            // Listeners run inside publish; keep the write and its Project event off that path.
+            return yield* (Effect.asVoid(Effect.forkIn(project.activate(location.project.id), scope)));
+        });
     });
     yield* Effect.addFinalizer(() => unsubscribe);
     let closed = false;

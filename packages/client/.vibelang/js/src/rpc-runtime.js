@@ -28,6 +28,7 @@ export const event = Effect.fn("Client.Rpc.event")(function* (definition, name, 
         data,
     };
 });
+/** @throws {never} */
 export function eventType(definition, name) {
     return `rpc.${definition.id}.${name}`;
 }

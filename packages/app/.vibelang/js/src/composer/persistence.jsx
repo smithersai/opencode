@@ -8,7 +8,7 @@ import { ServerConnection } from "@/runtime/server/registry";
 import { useServerSDK } from "@/runtime/server/client";
 import { useWorkspaceLocation } from "@/workspaces/location";
 import { useTabs } from "@/shell/tabs/tabs";
-import { createComposerReady, createComposerState, } from "./state";
+import { createComposerReady, createComposerState, } from "./state.js";
 const WORKSPACE_KEY = "__workspace__";
 const MAX_PROMPT_SESSIONS = 20;
 export function selectPromptTab(tabs, scope, server) {

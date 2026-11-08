@@ -1,4 +1,4 @@
-import { PromiseSdk } from "./promise.js"
+import { PromiseSdk } from "./promise.ts"
 
 export type { LogEntry, LogLevel, LogOptions, LogWriter } from "./logging.vibe"
 

@@ -5,9 +5,9 @@ import * as runtime from "vibelang-runtime/internal";
 export * as DesktopInitialization from "./desktop-initialization.js";
 import { app } from "electron";
 import { Layer } from "effect";
-import { DesktopLogging } from "../native/logging";
-import { marks } from "./marks";
-import { loadProxyEnvironment, preferApplicationEnvironment, prepareApplicationEnvironment, prepareDesktop, } from "./environment";
+import { DesktopLogging } from "../native/logging.js";
+import { marks } from "./marks.js";
+import { loadProxyEnvironment, preferApplicationEnvironment, prepareApplicationEnvironment, prepareDesktop, } from "./environment.js";
 export class Service extends runtime.$service("opencode/desktop/DesktopInitialization") {
 }
 export const layer = Layer.effect(Service, Effect_1.gen(function* () {

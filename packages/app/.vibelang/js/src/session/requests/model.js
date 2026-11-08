@@ -8,7 +8,7 @@ import { useLanguage } from "@/runtime/i18n/language";
 import { projectSettingsKey, useSettings } from "@/settings/model";
 import { useWorkspaceLocation } from "@/workspaces/location";
 import { sessionPermissionRequest, sessionFormRequest, sessionTreeIDs } from "@/session/requests/session-request-tree";
-import { createWebSearchRequest } from "./websearch";
+import { createWebSearchRequest } from "./websearch.js";
 import { createSessionBackground } from "./background.js";
 import { createSteerBackground } from "@/session/requests/steer-background";
 import { useData } from "@/runtime/server/current";

@@ -77,7 +77,7 @@ export const sampleRate = (mediaType: string | undefined) => {
 }
 
 /** A declared `mediaType` wins over sniffing: headerless PCM can start with bytes that look like an MPEG frame sync. */
-export const finish = (
+export const finish = effect (
   route: MediaProtocol.Identity,
   state: Audio,
   output: {
@@ -89,17 +89,16 @@ export const finish = (
   },
 ): ReadonlyArray<SpeechEvent>!AIError => {
   if (state.chunks.length === 0) {
-    return Effect.fail(
-      route.frameError(`The provider returned no audio${output.detail === undefined ? "" : ` (${output.detail})`}`),
-    )
+    throw route.frameError(`The provider returned no audio${output.detail === undefined ? "" : ` (${output.detail})`}`)
   }
-  return Effect.succeed([
+  const audio = try Effect.orDie(Effect.try({ try: () => Media.bytes(concatBytes(state.chunks), output.mediaType, { info: output.info }), catch: (e) => e }))
+  return [
     SpeechFinishEvent.make({
-      audio: Media.bytes(concatBytes(state.chunks), output.mediaType, { info: output.info }),
+      audio,
       usage: output.usage,
       providerMetadata: output.providerMetadata,
     }),
-  ])
+  ]
 }
 
 export const headerUsage = (type: "characters" | "credits", value: string | undefined): MediaUsage | undefined => {

@@ -2,7 +2,7 @@
 import { useDialog } from "@opencode/ui/context/dialog";
 import { usePlatform } from "@/runtime/platform/platform";
 import { lazy, Suspense } from "solid-js";
-import { directoryPickerKind } from "./policy";
+import { directoryPickerKind } from "./policy.js";
 const DirectoryPickerDialog = lazy(() => import("./dialog").then((module) => ({ default: module.DirectoryPickerDialog })));
 export function useDirectoryPicker() {
     const platform = usePlatform();

@@ -1,0 +1,4 @@
+{
+  "pattern": "The public curried lock signature must retain its declaration and JSDoc.",
+  "nativeDeclaration": "export * as KeyedMutex from \"./keyed-mutex.js\";\nimport { Effect } from \"effect\";\nexport interface KeyedMutex<in Key> {\n    readonly size: Effect.Effect<number>;\n    readonly withLock: (key: Key) => <A, E, R>(effect: Effect.Effect<A, E, R>) => Effect.Effect<A, E, R>;\n}\n/**\n * Creates an in-memory mutex with one lock per key. Entries are removed when no\n * holder or waiter remains.\n *\n *   same key      -> queue\n *   different key -> run independently\n *\n * `users` counts holders and waiters so an entry is not removed while a waiter\n * will reuse it.\n */\nexport declare const makeUnsafe: <Key>() => KeyedMutex<Key>;\n/** Creates an in-memory keyed mutex inside an Effect workflow. */\nexport declare const make: <Key>() => Effect.Effect<KeyedMutex<Key>>;\n"
+}

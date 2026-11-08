@@ -34,14 +34,14 @@
   "dependencies": {
     "acorn": "8.15.0",
     "effect": "catalog:",
-    "vibelang-runtime": "0.0.12"
+    "vibelang-runtime": "file:../../.vibelang-toolchain/vibelang-runtime-0.0.13-89b143f8885a.tgz"
   },
   "devDependencies": {
     "@tsconfig/bun": "catalog:",
     "@types/bun": "catalog:",
     "@typescript/native": "catalog:",
-    "vibelang": "0.0.12",
-    "typescript": "catalog:",
-    "fast-check": "catalog:"
+    "fast-check": "catalog:",
+    "vibelang": "file:../../.vibelang-toolchain/vibelang-0.0.13-637d08c93ff1.tgz",
+    "typescript": "catalog:"
   }
 }

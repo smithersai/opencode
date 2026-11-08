@@ -1,0 +1,117 @@
+import { Route, type RouteBody, type TriggerCompactOperation } from "../../route/client.js"
+import { Protocol } from "../../route/protocol.vibe"
+import { CompactionCheckpointResponse, LLMEvent, LLMRequest } from "../../schema/index.js"
+import { OpenResponses } from "../open-responses.js"
+import { ProviderShared } from "../shared.js"
+
+interface State {
+  readonly parser: Pick<OpenResponses.ParserState, "id" | "provider" | "outputItems">
+  readonly checkpoints: Readonly<Record<string, CompactionCheckpointResponse["checkpoint"]>>
+  readonly responseID?: string
+}
+
+const onOutputItem = effect (
+  state: State,
+  input: { readonly [x: string]: unknown; readonly type: string; readonly delta?: string | undefined; readonly arguments?: string | undefined; readonly text?: string | undefined; readonly item_id?: string | undefined; readonly output_index?: number | undefined; readonly summary_index?: number | undefined; readonly item?: { readonly [x: string]: unknown; readonly type: string; readonly id?: string | undefined; readonly call_id?: string | undefined; readonly name?: string | undefined; readonly namespace?: string | undefined; readonly arguments?: string | undefined; readonly encrypted_content?: string | null | undefined; } | null | undefined; readonly response?: { readonly [x: string]: unknown; readonly id?: string | undefined; readonly service_tier?: string | null | undefined; readonly incomplete_details?: { readonly reason?: string | undefined; } | null | undefined; readonly output?: readonly { readonly [x: string]: unknown; readonly type: string; readonly id?: string | undefined; readonly call_id?: string | undefined; readonly name?: string | undefined; readonly namespace?: string | undefined; readonly arguments?: string | undefined; readonly encrypted_content?: string | null | undefined; }[] | undefined; readonly usage?: { readonly [x: string]: unknown; readonly input_tokens?: number | undefined; readonly input_tokens_details?: { readonly [x: string]: unknown; readonly cached_tokens?: number | undefined; readonly cache_write_tokens?: number | undefined; } | null | undefined; readonly output_tokens?: number | undefined; readonly output_tokens_details?: { readonly [x: string]: unknown; readonly reasoning_tokens?: number | undefined; } | null | undefined; readonly total_tokens?: number | undefined; } | null | undefined; readonly error?: unknown; } | undefined; readonly code?: unknown; readonly message?: unknown; readonly error?: unknown; readonly status?: unknown; readonly status_code?: unknown; },
+) => {
+  const event = try Effect.orDie(Effect.try({ try: () => OpenResponses.normalize(state.parser, input), catch: (e) => e }))
+  const item = event.item
+  if (!item) return state
+  const parser =
+    event.output_index === undefined || state.parser.outputItems[event.output_index] === item.id
+      ? state.parser
+      : { ...state.parser, outputItems: { ...state.parser.outputItems, [event.output_index]: item.id } }
+  const next = parser === state.parser ? state : { ...state, parser }
+  if (event.type === "response.output_item.added" || item.type !== "compaction") return next
+  if (
+    event.output_index !== undefined &&
+    Object.entries(state.parser.outputItems).some(
+      ([index, id]) => id === item.id && Number(index) !== event.output_index,
+    )
+  )
+    throw ProviderShared.eventError(parser.id, "Compaction checkpoint appeared in multiple output slots")
+  if (!item.encrypted_content)
+    throw ProviderShared.eventError(parser.id, "Compaction output is missing its encrypted content")
+  const previous = state.checkpoints[item.id]
+  if (previous && previous.encrypted !== item.encrypted_content)
+    throw ProviderShared.eventError(parser.id, "Compaction output changed after completion")
+  if (previous) return next
+  return {
+    ...next,
+    checkpoints: {
+      ...state.checkpoints,
+      [item.id]: { type: "compaction", provider: parser.provider, id: item.id, encrypted: item.encrypted_content },
+    },
+  } satisfies State
+}
+
+/** Collect a trigger response before acknowledging transport completion. No generation output escapes. */
+export const make = <Body>(body: RouteBody<Body>): TriggerCompactOperation =>
+  effect (request, executor, options): CompactionCheckpointResponse!import("../../schema/errors.vibe").AIError!never => try withSpan((effect (): CompactionCheckpointResponse!import("../../schema/errors.vibe").AIError!never => {
+    const source = request.model.route
+    let result: CompactionCheckpointResponse | undefined
+    // Route registries erase the frame type. The codec validates that boundary before parsing.
+    const event: Schema.Codec<OpenResponses.Event, unknown> = OpenResponses.protocol.stream.event
+    const protocol = Protocol.make({
+      id: source.protocol,
+      body,
+      stream: {
+        event,
+        initial: (request: LLMRequest): State => ({
+          parser: { id: source.id, provider: request.model.provider, outputItems: {} },
+          checkpoints: {},
+        }),
+        terminal: OpenResponses.terminal,
+        step: effect (state: State, event: { readonly [x: string]: unknown; readonly type: string; readonly delta?: string | undefined; readonly arguments?: string | undefined; readonly text?: string | undefined; readonly item_id?: string | undefined; readonly output_index?: number | undefined; readonly summary_index?: number | undefined; readonly item?: { readonly [x: string]: unknown; readonly type: string; readonly id?: string | undefined; readonly call_id?: string | undefined; readonly name?: string | undefined; readonly namespace?: string | undefined; readonly arguments?: string | undefined; readonly encrypted_content?: string | null | undefined; } | null | undefined; readonly response?: { readonly [x: string]: unknown; readonly id?: string | undefined; readonly service_tier?: string | null | undefined; readonly incomplete_details?: { readonly reason?: string | undefined; } | null | undefined; readonly output?: readonly { readonly [x: string]: unknown; readonly type: string; readonly id?: string | undefined; readonly call_id?: string | undefined; readonly name?: string | undefined; readonly namespace?: string | undefined; readonly arguments?: string | undefined; readonly encrypted_content?: string | null | undefined; }[] | undefined; readonly usage?: { readonly [x: string]: unknown; readonly input_tokens?: number | undefined; readonly input_tokens_details?: { readonly [x: string]: unknown; readonly cached_tokens?: number | undefined; readonly cache_write_tokens?: number | undefined; } | null | undefined; readonly output_tokens?: number | undefined; readonly output_tokens_details?: { readonly [x: string]: unknown; readonly reasoning_tokens?: number | undefined; } | null | undefined; readonly total_tokens?: number | undefined; } | null | undefined; readonly error?: unknown; } | undefined; readonly code?: unknown; readonly message?: unknown; readonly error?: unknown; readonly status?: unknown; readonly status_code?: unknown; }) => {
+          if (event.response?.id && state.responseID && event.response.id !== state.responseID)
+            throw ProviderShared.eventError(source.id, "Compaction response ID changed during execution")
+          if (event.type === "response.created") return [{ ...state, responseID: event.response?.id }, []] as const
+          if (event.type === "error" || event.type === "response.failed")
+            throw OpenResponses.providerFailure(event, "Compaction request failed")
+          if (event.type === "response.incomplete")
+            throw ProviderShared.eventError(source.id, "Compaction response was incomplete")
+          if (event.type === "response.output_item.added" || event.type === "response.output_item.done")
+            return [try onOutputItem(state, event), []] as const
+          if (event.type !== "response.completed") return [state, []] as const
+          const responseID = event.response?.id
+          if (!responseID?.trim())
+            throw ProviderShared.eventError(source.id, "Compaction response is missing its response ID")
+          if (event.response?.status !== undefined && event.response.status !== "completed")
+            throw ProviderShared.eventError(source.id, "Compaction response did not complete successfully")
+          let next = state
+          for (const [index, item] of (event.response?.output ?? []).entries()) {
+            next = try onOutputItem(next, { type: "response.output_item.done", output_index: index, item })
+          }
+          const checkpoints = Object.values(next.checkpoints)
+          const checkpoint = checkpoints[0]
+          if (checkpoints.length !== 1 || !checkpoint)
+            throw ProviderShared.eventError(
+              source.id,
+              "Compaction response must contain exactly one checkpoint",
+            )
+          result = new CompactionCheckpointResponse({
+            checkpoint,
+            responseID,
+            usage: try Effect.orDie(Effect.try({ try: () => OpenResponses.mapUsage(event.response?.usage, OpenResponses.metadataKey(request.model)), catch: (e) => e })),
+          })
+          return [next, [LLMEvent.finish({ reason: { normalized: "stop" } })]] as const
+        },
+      },
+    })
+    const route = try Effect.orDie(Effect.try({ try: () => Route.make({
+      id: source.id,
+      provider: source.provider,
+      providerMetadataKey: source.providerMetadataKey,
+      protocol,
+      endpoint: source.endpoint,
+      auth: source.auth,
+      transport: source.transport,
+    }), catch: (e) => e }))
+    const native = try body.from(request)
+    const prepared = try route.prepareTransport(native, request, options)
+    try route.streamPrepared(prepared, request, { http: executor }, options).pipe(Stream.runDrain)
+    if (!result) throw ProviderShared.eventError(source.id, "Compaction response ended without a checkpoint")
+    return result
+  })(), "ResponsesCheckpoint.execute")
+
+export * as ResponsesCheckpoint from "./responses-checkpoint.vibe"

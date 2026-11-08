@@ -2,8 +2,8 @@
 import { existsSync, readdirSync } from "node:fs";
 import path from "node:path";
 import { DatabaseSync } from "node:sqlite";
-import { migrateDatabase } from "./migration";
-import { readEnableState } from "../plugin/enable-state";
+import { migrateDatabase } from "./migration.js";
+import { readEnableState } from "../plugin/enable-state.js";
 // Before the storage layer exists, nothing has been written in this process and every namespace is at revision 0.
 // Legacy electron-store files can make storage stale, but explicit plugin settings still come from SQLite.
 export function readWindowSnapshot(userData, names) {

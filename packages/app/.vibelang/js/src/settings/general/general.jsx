@@ -11,7 +11,7 @@ import { useSettings, } from "@/settings/model";
 import { formatKeybind } from "@/shell/commands/command";
 import { SettingsList } from "@/settings/list";
 import { SettingsRow } from "@/settings/row";
-import { createShellOptions } from "./behavior";
+import { createShellOptions } from "./behavior.js";
 import { InterfaceModeSetting } from "./interface-mode";
 import "@/settings/settings.css";
 const AutoApprovePermissionsSetting = () => {

@@ -1,0 +1,233 @@
+import { ToolError, toolError } from "../tool-error.vibe"
+import { isRecord, own } from "./spec.vibe"
+import { applyCredentials, readResponseBody } from "./runtime.platform.js"
+import type { AppliedAuth, Credential, Plan, SecurityScheme } from "./types.vibe"
+
+const decodeJson = Schema.decodeUnknownOption(Schema.fromJsonString(Schema.Unknown))
+const maxErrorBodyChars = 1_024
+
+export const invoke = effect (plan: Plan, input: unknown): unknown!unknown!HttpClient.HttpClient => {
+  const value = isRecord(input) ? input : {}
+
+  let request = try buildRequest(plan, value)
+
+  const auth = try resolveAuth(plan)
+  for (const [name, item] of Object.entries(auth.query)) {
+    request = HttpClientRequest.setUrlParam(request, name, item)
+  }
+  request = HttpClientRequest.setHeaders(request, auth.headers)
+
+  const client = try HttpClient.HttpClient
+  const response = client
+    .execute(request) catch effect (cause) => {
+      throw toolError(`${plan.operation.method} ${plan.operation.path} failed: transport error`, cause)
+    }
+  const text = try readResponseBody(response, plan)
+  const mediaType = response.headers["content-type"]?.split(";")[0]?.trim().toLowerCase()
+  const json = mediaType === "application/json" || mediaType?.endsWith("+json") === true
+  const decoded = text === "" ? Option.some(null) : json ? decodeJson(text) : Option.none()
+  const parsed = json ? Option.getOrElse(decoded, () => text) : text === "" ? null : text
+  if (response.status < 200 || response.status >= 300) {
+    const rendered = typeof parsed === "string" ? parsed : (JSON.stringify(parsed) ?? "")
+    const summary = rendered === "" || rendered === "null"
+      ? "no response body"
+      : rendered.length > maxErrorBodyChars
+      ? `${rendered.slice(0, maxErrorBodyChars)}...`
+      : rendered
+    throw toolError(`${plan.operation.method} ${plan.operation.path} failed with HTTP ${response.status}: ${summary}`)
+  }
+  if (json && Option.isNone(decoded)) {
+    throw toolError(`${plan.operation.method} ${plan.operation.path} returned malformed JSON.`)
+  }
+  return parsed
+}
+
+const buildRequest = effect (
+  plan: Plan,
+  input: Readonly<Record<string, unknown>>,
+): HttpClientRequest.HttpClientRequest!ToolError => {
+  // Validate model input before auth resolution can refresh credentials.
+  const url = buildUrl(plan, input)
+  if (url instanceof ToolError) throw url
+  const missing = plan.fields.find(
+    (field) => field.required && field.location !== "path" && own(input, field.inputName) === undefined,
+  )
+  if (missing !== undefined) {
+    const label = missing.location === "body" ? "body field" : `${missing.location} parameter`
+    throw toolError(`Missing required ${label} '${missing.inputName}'.`)
+  }
+
+  let request = HttpClientRequest.make(plan.operation.method as HttpMethod.HttpMethod)(url)
+  const query: Array<readonly [string, string]> = []
+  for (const field of plan.fields) {
+    if (field.location !== "query") continue
+    const item = own(input, field.inputName)
+    if (item === undefined) continue
+    const serialized = serializeQuery(field, item)
+    if (serialized instanceof ToolError) throw serialized
+    for (const parameter of serialized) query.push(parameter)
+  }
+  if (query.length > 0) request = HttpClientRequest.appendUrlParams(request, query)
+
+  request = HttpClientRequest.setHeaders(request, plan.headers)
+  for (const field of plan.fields) {
+    if (field.location !== "header") continue
+    const item = own(input, field.inputName)
+    if (item === undefined) continue
+    const serialized = serializeSimple(field, item, String)
+    if (serialized instanceof ToolError) throw serialized
+    request = HttpClientRequest.setHeader(request, field.name, serialized)
+  }
+
+  const setBody = (value: unknown, mediaType: string) =>
+    HttpClientRequest.bodyJson(request, value)
+    |> Effect.map(%, (next) => HttpClientRequest.setHeader(next, "content-type", mediaType))
+    |> Effect.mapError(%, (cause) =>
+      toolError(`Invalid JSON body for ${plan.operation.method} ${plan.operation.path}.`, cause))
+  if (plan.body?.mode === "value") {
+    const field = plan.fields.find((field) => field.location === "body")
+    const body = field === undefined ? undefined : own(input, field.inputName)
+    if (body !== undefined) request = try setBody(body, plan.body.mediaType)
+  }
+  if (plan.body?.mode === "object") {
+    const entries = plan.fields.flatMap((field) => {
+      if (field.location !== "body") return []
+      const item = own(input, field.inputName)
+      return item === undefined ? [] : [[field.name, item] as const]
+    })
+    if (plan.body.required || entries.length > 0) {
+      request = try setBody(Object.fromEntries(entries), plan.body.mediaType)
+    }
+  }
+  return request
+}
+
+const resolveAuth = effect (plan: Plan): AppliedAuth!unknown => {
+  const none: AppliedAuth = { headers: {}, query: {} }
+  if (plan.security.length === 0) return none
+
+  const unavailable: Array<string> = []
+  alternatives: for (const requirement of plan.security) {
+    const names = Object.keys(requirement)
+    if (names.length === 0) return none
+    const credentials: Array<readonly [string, SecurityScheme, Credential]> = []
+    for (const name of names) {
+      const scheme = own(plan.schemes, name)
+      if (scheme === undefined || plan.auth === undefined) {
+        unavailable.push(name)
+        continue alternatives
+      }
+      const credential = try plan.auth.resolve({
+        name,
+        definition: scheme,
+        scopes: requirement[name] ?? [],
+        operation: plan.operation,
+      })
+      if (credential === undefined) {
+        unavailable.push(name)
+        continue alternatives
+      }
+      credentials.push([name, scheme, credential])
+    }
+    const applied = try Effect.orDie(Effect.try({ try: () => applyCredentials(credentials), catch: (error) => error }))
+    return applied instanceof ToolError ? throw applied : applied
+  }
+
+  throw toolError(
+    `${plan.operation.method} ${plan.operation.path} requires authentication; no credential available for: ${
+      [...new Set(unavailable)].join(", ")
+    }.`,
+  )
+}
+
+const buildUrl = (plan: Plan, input: Readonly<Record<string, unknown>>): string | ToolError => {
+  let url = plan.url
+  for (const field of plan.fields) {
+    if (field.location !== "path") continue
+    const item = own(input, field.inputName)
+    if (item === undefined) {
+      return toolError(`Missing required path parameter '${field.inputName}'.`)
+    }
+    const fieldValue = serializeSimple(field, item, (value) =>
+      encodeURIComponent(value).replace(
+        /[!'()*]/g,
+        (character) => `%${character.charCodeAt(0).toString(16).toUpperCase()}`,
+      ))
+    if (fieldValue instanceof ToolError) return fieldValue
+    // URL normalization collapses encoded `.` and `..`, which could retarget the request.
+    if (fieldValue === "" || fieldValue === "." || fieldValue === "..") {
+      return toolError(`Invalid path parameter '${field.inputName}'.`)
+    }
+    url = url.replaceAll(`{${field.name}}`, fieldValue)
+  }
+  const unresolved = url.match(/\{[^{}]+\}/)
+  if (unresolved !== null) return toolError(`Unresolved path parameter ${unresolved[0]}.`)
+  return url
+}
+
+const serializeSimple = (
+  field: Plan["fields"][number],
+  value: unknown,
+  encode: (value: string) => string,
+): string | ToolError => {
+  const scalar = (item: unknown): string | ToolError =>
+    item !== null && typeof item !== "string" && typeof item !== "number" && typeof item !== "boolean"
+      ? toolError(`Parameter '${field.inputName}' contains an unsupported nested value.`)
+      : encode(String(item))
+  if (Array.isArray(value)) {
+    const items = value.map(scalar)
+    const invalid = items.find((item): item is ToolError => item instanceof ToolError)
+    return invalid ?? items.join(",")
+  }
+  if (!isRecord(value)) return scalar(value)
+  const entries = Object.entries(value).flatMap<string | ToolError>(([name, item]) => {
+    const rendered = scalar(item)
+    if (rendered instanceof ToolError) return [rendered]
+    return field.explode ? [`${encode(name)}=${rendered}`] : [encode(name), rendered]
+  })
+  const invalid = entries.find((item): item is ToolError => item instanceof ToolError)
+  return invalid ?? entries.join(",")
+}
+
+const serializeQuery = (
+  field: Plan["fields"][number],
+  value: unknown,
+): ReadonlyArray<readonly [string, string]> | ToolError => {
+  if (field.style === "deepObject") {
+    if (!isRecord(value)) return toolError(`Deep-object parameter '${field.inputName}' must be an object.`)
+    const parameters: Array<readonly [string, string]> = []
+    for (const [name, item] of Object.entries(value)) {
+      if (item === undefined || (item !== null && typeof item === "object")) {
+        return toolError(`Deep-object parameter '${field.inputName}' contains an unsupported nested value.`)
+      }
+      parameters.push([`${field.name}[${name}]`, String(item)])
+    }
+    return parameters
+  }
+  if (Array.isArray(value)) {
+    if (!field.explode) {
+      const rendered = serializeSimple(field, value, String)
+      return rendered instanceof ToolError ? rendered : [[field.name, rendered]]
+    }
+    const parameters: Array<readonly [string, string]> = []
+    for (const item of value) {
+      if (item !== null && typeof item !== "string" && typeof item !== "number" && typeof item !== "boolean") {
+        return toolError(`Parameter '${field.inputName}' contains an unsupported nested value.`)
+      }
+      parameters.push([field.name, String(item)])
+    }
+    return parameters
+  }
+  if (isRecord(value) && field.explode) {
+    const parameters: Array<readonly [string, string]> = []
+    for (const [name, item] of Object.entries(value)) {
+      if (item === undefined || (item !== null && typeof item === "object")) {
+        return toolError(`Query parameter '${field.inputName}' contains an unsupported nested value.`)
+      }
+      parameters.push([name, String(item)])
+    }
+    return parameters
+  }
+  const rendered = serializeSimple(field, value, String)
+  return rendered instanceof ToolError ? rendered : [[field.name, rendered]]
+}

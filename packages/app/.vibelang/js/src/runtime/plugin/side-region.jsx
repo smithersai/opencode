@@ -18,11 +18,11 @@ import { useLanguage } from "@/runtime/i18n/language";
 import { useLayout } from "@/shell/state/layout";
 import { useSessionLayout } from "@/session/session-layout";
 import { PanelTrigger } from "./panel-trigger";
-import { createSessionPanelMenu } from "./panel-menu";
+import { createSessionPanelMenu } from "./panel-menu.js";
 import { RegionContent } from "./panels";
 import { PluginSlot } from "./render";
-import { createTabStripScroll } from "./tab-strip-scroll";
-import { closedTabsModifier } from "./closed-tabs";
+import { createTabStripScroll } from "./tab-strip-scroll.js";
+import { closedTabsModifier } from "./closed-tabs.js";
 import { ClosedTabsSection, NewTabButton } from "./closed-tabs-view";
 const PANE_HEIGHT_MIN = 120;
 /** The side region: the side pane, the pane split below it, and the inner sidebar. */

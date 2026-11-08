@@ -13,7 +13,7 @@ import { sessionBusy, sessionRequests } from "@/shell/layout/project-avatar-stat
 import { pathKey } from "@/workspaces/path-key";
 import { parseHomeSessionIndex } from "@/home/sessions/index";
 import { sessionFormRequest, sessionPermissionRequest, sessionTreeIDs } from "@/session/requests/session-request-tree";
-import { notifySessionTabsRemoved } from "./session-events";
+import { notifySessionTabsRemoved } from "./session-events.js";
 import { errorMessage } from "@/shell/layout/helpers";
 import { showToast } from "@/shell/notifications/toast";
 // Keep the immutable result opaque so Solid Query does not recursively unwrap every session.

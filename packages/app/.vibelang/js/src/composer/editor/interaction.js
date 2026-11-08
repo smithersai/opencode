@@ -4,12 +4,12 @@ import { createEffect, createMemo, createSignal, on, onCleanup } from "solid-js"
 import { createStore, reconcile } from "solid-js/store";
 import { useFilteredList } from "@opencode/ui/hooks";
 import { abort } from "@opencode/util/abort";
-import { createComposerAttachments } from "../attachments/attachments";
+import { createComposerAttachments } from "../attachments/attachments.js";
 import { resolveBlobUrl } from "@/runtime/persistence/drafts";
-import { createComposerEditorActions } from "./actions";
-import { createComposerInteractionState, transitionComposer, } from "../suggestions/machine";
-import { clonePrompt, isAttachment, promptLength } from "../prompt-parts";
-import { isCommentItem } from "../state";
+import { createComposerEditorActions } from "./actions.js";
+import { createComposerInteractionState, transitionComposer, } from "../suggestions/machine.js";
+import { clonePrompt, isAttachment, promptLength } from "../prompt-parts.js";
+import { isCommentItem } from "../state.js";
 export function createComposerEditorState(mode = "normal") {
     return createStore({ ...createComposerInteractionState(), mode });
 }

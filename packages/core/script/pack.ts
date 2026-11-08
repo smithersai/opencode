@@ -2,4 +2,7 @@
 import path from "node:path"
 import { pack } from "@opencode/script/pack"
 
-await pack(path.resolve(import.meta.dir, ".."), { types: "./dist/types/", workspaceOnly: ["./generate.native"] })
+await pack(path.resolve(import.meta.dir, ".."), {
+  types: "./dist/types/",
+  workspaceOnly: ["./generate.native", "./effect/keyed-mutex.native"],
+})

@@ -4,9 +4,9 @@ import { getCACertificates, setDefaultCACertificates } from "node:tls";
 import { app } from "electron";
 import { Effect, Path } from "effect";
 import { DesktopPaths } from "../paths.js";
-import { getUserShell, loadShellEnv } from "../service/shell-env";
-import { registerRendererProtocol, setDockIcon, setProtocolReporter } from "../windows";
-import { scoped } from "../native/logging";
+import { getUserShell, loadShellEnv } from "../service/shell-env.js";
+import { registerRendererProtocol, setDockIcon, setProtocolReporter } from "../windows/index.js";
+import { scoped } from "../native/logging.js";
 // electron-context-menu attaches to every existing and future window, so it can load once the first
 // window is up instead of holding up startup with its dependency tree.
 export const installContextMenu = Effect.gen(function* () {

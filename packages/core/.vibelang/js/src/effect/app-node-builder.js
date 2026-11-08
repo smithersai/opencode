@@ -14,15 +14,21 @@ const instances = makeGlobalNode({
         const locations = yield* LocationServiceMap.Service;
         return Instance.Service.of({
             provide: (session) => Effect.provide(locations.get(session.location)),
-            live: (session) => RcMap.has(locations.rcMap, LocationServiceMap.canonical(session.location)),
+            live: (session) => {
+                return Effect_1.gen(function* live() { return yield* RcMap.has(locations.rcMap, yield* Effect.orDie(Effect.try({ try: () => LocationServiceMap.canonical(session.location), catch: (e) => e }))); });
+            },
         });
     })),
     deps: [LocationServiceMap.node],
 });
 export function build(root, replacements = []) {
-    const bindings = [Instance.node.replace(instances), ...replacements];
-    return LayerNode.compile(root, {
-        replacements: [LocationServiceMap.node.replace(buildLocationServiceMap(bindings)), ...bindings],
-    });
+    return Layer.unwrap(Effect_1.gen(function* () {
+        const bindings = [
+            yield* Effect.orDie(Effect.try({ try: () => Instance.node.replace(instances), catch: (e) => e })),
+            ...replacements,
+        ];
+        const locations = yield* Effect.orDie(Effect.try({ try: () => LocationServiceMap.node.replace(buildLocationServiceMap(bindings)), catch: (e) => e }));
+        return LayerNode.compile(root, { replacements: [locations, ...bindings] });
+    }));
 }
 export * as AppNodeBuilder from "./app-node-builder.js";

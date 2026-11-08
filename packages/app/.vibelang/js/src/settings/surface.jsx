@@ -8,8 +8,8 @@ import { useTabs } from "@/shell/tabs/tabs";
 import { ServerConnection } from "@/runtime/server/registry";
 import { useCommand } from "@/shell/commands/command";
 import { createSettingsPages } from "@/runtime/plugin/settings-pages";
-import { useSettingsServers } from "./servers/inventory";
-import { isPluginTab, isProjectTab, isRootTab, parseSettingsView, settingsViewUrl, } from "./route";
+import { useSettingsServers } from "./servers/inventory.js";
+import { isPluginTab, isProjectTab, isRootTab, parseSettingsView, settingsViewUrl, } from "./route.js";
 export const { use: useSettingsSurface, provider: SettingsSurfaceProvider } = createSimpleContext({
     name: "SettingsSurface",
     gate: false,

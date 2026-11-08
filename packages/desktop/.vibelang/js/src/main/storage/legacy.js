@@ -8,7 +8,7 @@ import { withSpan } from "effect/Effect";
 import { $catchExpression } from "vibelang-runtime/internal";
 import * as Effect_1 from "effect/Effect";
 import * as runtime from "vibelang-runtime/internal";
-import { state } from "./schema";
+import { state } from "./schema.js";
 const DRAFT_RETENTION_MS = 30 * 24 * 60 * 60 * 1000;
 const DRAFT_KEEP_RECENT = 100;
 const Entries = Schema.fromJsonString(Schema.Record(Schema.String, Schema.Unknown));

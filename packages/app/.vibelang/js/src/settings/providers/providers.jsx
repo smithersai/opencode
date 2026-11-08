@@ -19,9 +19,9 @@ import { CONSOLE_INTEGRATION } from "@/providers/connect/controller";
 import { DialogConnectProvider, useProviderConnectController } from "@/providers/connect/dialog";
 import { ProviderModelIcon } from "@/providers/models/provider-group";
 import { SettingsList } from "@/settings/list";
-import { activeProviderAccount, providerAccounts } from "./accounts";
+import { activeProviderAccount, providerAccounts } from "./accounts.js";
 import { AccountNameInput } from "./account-name";
-import { useProviderAccountActions } from "./account-actions";
+import { useProviderAccountActions } from "./account-actions.js";
 import "@/settings/settings.css";
 const PROVIDER_NOTES = [
     { match: (id) => id === "opencode", key: "dialog.provider.opencode.note" },

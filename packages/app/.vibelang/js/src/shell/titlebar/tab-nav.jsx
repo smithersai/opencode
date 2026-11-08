@@ -13,7 +13,7 @@ import { useLanguage } from "@/runtime/i18n/language";
 import { ServerConnection, useServers } from "@/runtime/server/registry";
 import { displayName } from "@opencode/ui/project-avatar";
 import { SessionTabAvatarView } from "@/shell/layout/session-tab-avatar";
-import { sessionTabTitle } from "./tab-title";
+import { sessionTabTitle } from "./tab-title.js";
 import { TabPreviewPopover } from "./tab-popover";
 import "../../../../../src/shell/titlebar/tab-nav.css";
 // MouseEvent.button uses 1 for the middle/wheel button.

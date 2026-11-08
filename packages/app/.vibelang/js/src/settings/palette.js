@@ -2,7 +2,7 @@
 import { createMemo } from "solid-js";
 import { useLanguage } from "@/runtime/i18n/language";
 import { createSettingsSearchCatalog } from "./search";
-import { rankSettings } from "./search-results";
+import { rankSettings } from "./search-results.js";
 import { useSettingsSurface } from "./surface";
 const LIMIT = 5;
 /** Settings rows for the command palette; selecting one opens Settings at that row. */

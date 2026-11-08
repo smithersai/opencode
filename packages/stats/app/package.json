@@ -28,15 +28,15 @@
     "solid-js": "catalog:",
     "sst": "catalog:",
     "vite": "catalog:",
-    "vibelang-runtime": "0.0.12"
+    "vibelang-runtime": "file:../../../.vibelang-toolchain/vibelang-runtime-0.0.13-89b143f8885a.tgz"
   },
   "devDependencies": {
     "@types/bun": "catalog:",
     "@types/d3-scale": "4.0.9",
     "@typescript/native": "catalog:",
     "typescript": "catalog:",
-    "vibelang": "0.0.12",
-    "vibelang-vite": "0.0.12"
+    "vibelang": "file:../../../.vibelang-toolchain/vibelang-0.0.13-637d08c93ff1.tgz",
+    "vibelang-vite": "file:../../../.vibelang-toolchain/vibelang-vite-0.0.13-4bdf1e25b72f.tgz"
   },
   "engines": {
     "node": ">=22"

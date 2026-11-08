@@ -2,7 +2,7 @@
 import { Logo } from "@opencode/ui/logo";
 import { prefersReducedMotion } from "@opencode/ui/motion";
 import { For, onCleanup, onMount, Show } from "solid-js";
-import { PinSound } from "./pin-sound";
+import { PinSound } from "./pin-sound.js";
 import "../../../../src/new-session/wordmark.css";
 // Each letter in the 234×42 logo viewBox, with its counter shadow, stem, and bottom-centre pivot.
 const LETTERS = [

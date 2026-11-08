@@ -2,9 +2,9 @@
 import { Client } from "@planetscale/database";
 import { Effect } from "effect";
 import { Resource } from "sst/resource";
-import { RETIRED_STAT_PROVIDERS, statProvider } from "./model-normalization";
+import { RETIRED_STAT_PROVIDERS, statProvider } from "./model-normalization.js";
 import { isMissingRetentionTable } from "./retention.js";
-import { DATA_SITE_TIERS, normalizeTier } from "./stat";
+import { DATA_SITE_TIERS, normalizeTier } from "./stat.js";
 export class StatsDataError extends Error {
     cause;
     name = "StatsDataError";

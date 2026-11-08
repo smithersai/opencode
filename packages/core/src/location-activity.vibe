@@ -29,10 +29,9 @@ export function layer(options: { readonly timeToLive?: Duration.Input; readonly 
       const timeToLive = Duration.fromInputUnsafe(options.timeToLive ?? "60 minutes")
       const entries = new Map<string, { readonly ref: Location.Ref; touchedAt: number }>()
       const key = (ref: Location.Ref) => `${LocationServiceMap.canonical(ref).directory}\0${ref.workspaceID ?? ""}`
-      const touch = effect (ref: Location.Ref) =>
-        {
-          entries.set(key(ref), { ref, touchedAt: clock.currentTimeMillisUnsafe() })
-        }
+      const touch = effect (ref: Location.Ref) => {
+        entries.set(key(ref), { ref, touchedAt: clock.currentTimeMillisUnsafe() })
+      }
 
       // Read per location so project config can override the global value.
       const idleTimeout = (ref: Location.Ref) =>
@@ -49,11 +48,14 @@ export function layer(options: { readonly timeToLive?: Duration.Input; readonly 
         |> Effect.scoped(%)
         |> Effect.orElseSucceed(%, () => timeToLive)
 
-      const unsubscribe = try bus.listen((event) => {
-        if (!isSessionEvent(event) || !event.location) return Effect.void
-        const location = LocationServiceMap.canonical(event.location)
-        return RcMap.has(locations.rcMap, location)
-          |> Effect.flatMap(%, (active) => (active ? touch(location) : Effect.void))
+      const unsubscribe = try bus.listen(effect (event) => {
+        if (!isSessionEvent(event) || !event.location) return
+        const placement = event.location
+        const location = try Effect.orDie(
+          Effect.try({ try: () => LocationServiceMap.canonical(placement), catch: (e) => e }),
+        )
+        return try (RcMap.has(locations.rcMap, location)
+          |> Effect.flatMap(%, (active) => (active ? touch(location) : Effect.void)))
       })
       try Effect.addFinalizer(() => unsubscribe)
       try (effect {

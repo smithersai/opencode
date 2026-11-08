@@ -14,7 +14,7 @@ import { createResource } from "solid-js";
 import { Schema } from "effect";
 import { Persistence } from "@/runtime/persistence/schema";
 import { useGlobal } from "@/runtime/server/runtime";
-import { useRevealProject } from "./reveal";
+import { useRevealProject } from "./reveal.js";
 export const HomeServersSchema = Schema.Struct({
     collapsed: Persistence.record(Persistence.fallback(Schema.Boolean, () => false)),
 });

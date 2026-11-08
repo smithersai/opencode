@@ -1,0 +1,4 @@
+{
+  "pattern": "An instance provider factory throws while constructing a route layer.",
+  "messages": ["invalid instance configuration", "", "provider construction failed"]
+}

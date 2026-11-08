@@ -15,7 +15,7 @@ import { ProjectFolderMissing } from "./project-folder-missing";
 import { ProjectOptions } from "./project-options";
 import { SettingsList } from "@/settings/list";
 import { SettingsRow } from "@/settings/row";
-import { createEditProjectModel } from "./project-model";
+import { createEditProjectModel } from "./project-model.js";
 import "../../../../../src/settings/workspaces/project.css";
 export const SettingsProjectGeneral = (props) => {
     const language = useLanguage();

@@ -2,8 +2,8 @@
 import { createMemo } from "solid-js";
 import { createStore } from "solid-js/store";
 import { createResizeObserver } from "@solid-primitives/resize-observer";
-import { createSizing } from "./helpers";
-import { clampSessionPanelWidth, sessionPanelWidthCss, sessionPanelWidthMax } from "./session-panel-width";
+import { createSizing } from "./helpers.js";
+import { clampSessionPanelWidth, sessionPanelWidthCss, sessionPanelWidthMax } from "./session-panel-width.js";
 /** wide asks for the wider session minimum. */
 export function createSessionScreenLayout(session, input) {
     const size = createSizing();

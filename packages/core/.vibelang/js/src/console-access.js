@@ -8,7 +8,9 @@ export function server(value) {
     // the default server; rewriting it lets that host be shut down without forcing those users to reconnect.
     return server.replace(/^https:\/\/console\.opencode\.ai(?=\/|$)/, defaultServer);
 }
-/** Authenticates a Console request as the credential's member, in the workspace the sign-in chose. */
+/** Authenticates a Console request as the credential's member, in the workspace the sign-in chose.
+ * @throws {never}
+ */
 export function headers(value) {
     const orgID = value.metadata?.orgID;
     return {

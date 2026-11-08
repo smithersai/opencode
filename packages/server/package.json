@@ -362,9 +362,9 @@
     },
     "./routes": {
       "types": {
-        "default": "./src/routes.d.vibe.ts"
+        "default": "./src/routes.ts"
       },
-      "vibelang-source": "./src/routes.vibe",
+      "vibelang-source": "./src/routes.ts",
       "default": "./.vibelang/js/src/routes.js"
     },
     "./fetch": {
@@ -413,7 +413,7 @@
     "@opencode/simulation": "workspace:*",
     "@opencode/util": "workspace:*",
     "effect": "catalog:",
-    "vibelang-runtime": "0.0.12"
+    "vibelang-runtime": "file:../../.vibelang-toolchain/vibelang-runtime-0.0.13-89b143f8885a.tgz"
   },
   "devDependencies": {
     "@opencode-ai/pty": "0.3.1",
@@ -423,13 +423,13 @@
     "@types/bun": "catalog:",
     "@typescript/native": "catalog:",
     "fast-check": "catalog:",
-    "vibelang": "0.0.12",
-    "vibelang-unplugin": "0.0.12"
+    "vibelang": "file:../../.vibelang-toolchain/vibelang-0.0.13-637d08c93ff1.tgz",
+    "vibelang-unplugin": "file:../../.vibelang-toolchain/vibelang-unplugin-0.0.13-23b4ad6a3929.tgz"
   },
   "imports": {
     "#vibelang/emitted/src/routes": {
-      "types": "./src/routes.d.vibe.ts",
-      "vibelang-source": "./src/routes.vibe",
+      "types": "./src/routes.ts",
+      "vibelang-source": "./src/routes.ts",
       "default": "./.vibelang/js/src/routes.js"
     },
     "#vibelang/emitted/src/handlers/command": {

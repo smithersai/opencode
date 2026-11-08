@@ -18,7 +18,8 @@ export const normalizer = (request: LLMRequest) => {
   // Reserve valid IDs before projecting any history, including IDs encountered later.
   const used = new Set(ids.filter((id) => valid.test(id)))
   const normalized = new Map<string, string>()
-  return (id: string) => {
+  /** @throws {never} */
+  const normalize = (id: string) => {
     if (valid.test(id)) return id
     const previous = normalized.get(id)
     if (previous) return previous
@@ -29,6 +30,7 @@ export const normalizer = (request: LLMRequest) => {
     normalized.set(id, candidate)
     return candidate
   }
+  return normalize
 }
 
 export * as MistralToolID from "./mistral-tool-id.js"

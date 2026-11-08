@@ -6,8 +6,8 @@ import { withSpan } from "effect/Effect";
 import * as Effect_1 from "effect/Effect";
 import { and, eq, inArray } from "drizzle-orm";
 import { DatabaseError, DrizzleClient } from "../database.js";
-import { modelRetention } from "../database/schema";
-import { chunks, UPSERT_CHUNK_SIZE } from "./stat";
+import { modelRetention } from "../database/schema.js";
+import { chunks, UPSERT_CHUNK_SIZE } from "./stat.js";
 export class RetentionStatRepo extends Context.Service()("@opencode/stats/RetentionStatRepo") {
     static layer = Layer.effect(RetentionStatRepo, Effect_1.gen(function* () {
         const db = yield* DrizzleClient;

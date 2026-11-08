@@ -23,7 +23,7 @@ import { SessionUIProvider } from "@/shell/routes/session-ui-provider";
 import { FileProvider } from "@/workspaces/files/model";
 import { LocationProvider } from "@/workspaces/location";
 import { fileName, knobArgs, labEntry, labFields, stateArgs, } from "./catalog.js";
-import { applyMotionPatch, motionFields, motionScopes, motionValues, sameMotion, storyMotion } from "./motion";
+import { applyMotionPatch, motionFields, motionScopes, motionValues, sameMotion, storyMotion } from "./motion.js";
 // How long Play holds each state at full speed. Slow motion doubles it while the motion itself runs 4× longer, so
 // a transition still finishes and Play keeps moving.
 const hold = 1600;

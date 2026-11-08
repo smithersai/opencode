@@ -33,7 +33,7 @@ import type {
   SetSessionModeRequest,
   SetSessionModeResponse,
 } from "@agentclientprotocol/sdk"
-import { OPENCODE_VERSION } from "#vibelang/emitted/src/version"
+import { OPENCODE_VERSION } from "../version.ts"
 import { ACPCapabilities, type Capabilities } from "./capabilities"
 import type { ACPCatalog } from "./catalog"
 import { ACPClient } from "./client.vibe"

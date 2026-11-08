@@ -1,4 +1,4 @@
-export * as PromiseSdk from "./promise.js"
+export * as PromiseSdk from "./promise"
 
 import { OpenCode, type OpenCodeClient } from "@opencode/client"
 import type { Plugin } from "@opencode/plugin"

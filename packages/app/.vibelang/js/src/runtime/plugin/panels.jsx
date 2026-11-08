@@ -12,9 +12,9 @@ import { Persist, persisted } from "@/runtime/persistence/storage";
 import { Persistence } from "@/runtime/persistence/schema";
 import { usePluginHost } from "./host";
 import { Contribution } from "./render";
-import { usePluginAttachment } from "./attachment";
-import { legacyKeys, panelKey } from "./panel-keys";
-import { closedEntry, createSideFocus } from "./closed-tabs";
+import { usePluginAttachment } from "./attachment.js";
+import { legacyKeys, panelKey } from "./panel-keys.js";
+import { closedEntry, createSideFocus } from "./closed-tabs.js";
 const SidebarState = Persistence.struct({
     sidebarOpened: Schema.Boolean,
     sidebarWidth: Schema.Finite.check(Schema.isBetween({ minimum: SESSION_REVIEW_V2_SIDEBAR_WIDTH_MIN, maximum: SESSION_REVIEW_V2_SIDEBAR_WIDTH_MAX })),

@@ -6,7 +6,7 @@ import { Icon } from "@opencode/ui/icon";
 import { Panel } from "@opencode/plugin/gui";
 import { useLanguage } from "@/runtime/i18n/language";
 import { usePluginHost } from "./host";
-import { panelKey } from "./panel-keys";
+import { panelKey } from "./panel-keys.js";
 import { MobilePanel } from "./panels";
 const MobilePanelDrawer = lazy(async () => {
     const { MobilePanelDrawer } = await import("@/shell/mobile-panel-drawer");

@@ -88,7 +88,7 @@ export const { provider: VoiceProvider, use: useVoice } = createSimpleContext({
                     caption: "",
                     captions: [],
                 });
-                await import("./call")
+                await import("./call.js")
                     .then(async ({ createVoiceCall }) => {
                     if (current.generation !== generation)
                         return;

@@ -17,7 +17,7 @@ import { mergeHomeSessionIndex } from "@/home/sessions/index";
 import { homeSessionsQuery } from "@/home/sessions/queries";
 import { listClosedTabs } from "@/shell/tabs/closed";
 import { sessionIDHasOpenTab, useTabs } from "@/shell/tabs/tabs";
-import { sessionTabTitle } from "./tab-title";
+import { sessionTabTitle } from "./tab-title.js";
 import "../../../../../src/shell/titlebar/recently-closed-tabs-menu.css";
 export function RecentlyClosedTabsMenu(props) {
     const language = useLanguage();

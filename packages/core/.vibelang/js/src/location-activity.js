@@ -45,10 +45,13 @@ export function layer(options = {}) {
             return configured?.info.experimental?.location_idle_timeout ?? timeToLive;
         })), () => timeToLive);
         const unsubscribe = yield* bus.listen((event) => {
-            if (!isSessionEvent(event) || !event.location)
-                return Effect.void;
-            const location = LocationServiceMap.canonical(event.location);
-            return Effect.flatMap(RcMap.has(locations.rcMap, location), (active) => (active ? touch(location) : Effect.void));
+            return Effect_1.gen(function* () {
+                if (!isSessionEvent(event) || !event.location)
+                    return;
+                const placement = event.location;
+                const location = yield* Effect.orDie(Effect.try({ try: () => LocationServiceMap.canonical(placement), catch: (e) => e }));
+                return yield* (Effect.flatMap(RcMap.has(locations.rcMap, location), (active) => (active ? touch(location) : Effect.void)));
+            });
         });
         yield* Effect.addFinalizer(() => unsubscribe);
         yield* (Effect.forkScoped(Effect.forever(Effect_1.gen(function* () {

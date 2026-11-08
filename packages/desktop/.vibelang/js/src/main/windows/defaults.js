@@ -4,8 +4,8 @@ import { desktopZoomLevels } from "@opencode/app/desktop-menu";
 import { nativeTheme } from "electron";
 import { Predicate } from "effect";
 import oc2ThemeJson from "../../../../../../ui/src/theme/themes/oc-2.json";
-import { BACKGROUND_COLOR_KEY, ZOOM_LEVEL_KEY } from "../storage/keys";
-import { getStore } from "../storage/store";
+import { BACKGROUND_COLOR_KEY, ZOOM_LEVEL_KEY } from "../storage/keys.js";
+import { getStore } from "../storage/store.js";
 // Frame defaults shared by the early window (created on ready, before the renderer exists) and the
 // full window setup in appearance.ts, so both draw the same frame.
 // SAFETY: oc-2.json is the bundled default theme, which the UI package loads as a DesktopTheme too.

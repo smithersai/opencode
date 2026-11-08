@@ -12,7 +12,7 @@ import {
   type ProviderOptions,
 } from "../schema/index.js"
 import * as OpenAIChat from "../protocols/openai-chat.js"
-import * as OpenAIResponses from "../protocols/openai-responses.js"
+import * as OpenAIResponses from "../protocols/openai-responses.vibe"
 import { withOpenAIOptions, type OpenAIProviderOptionsInput } from "./openai-options.js"
 import { OpenAIImages } from "../protocols/openai-images.vibe"
 import { OpenAISpeech } from "../protocols/openai-speech.vibe"

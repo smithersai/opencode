@@ -10,7 +10,7 @@ import { usePlatform } from "@/runtime/platform/platform";
 import { useLanguage } from "@/runtime/i18n/language";
 import { createIpcClients } from "../../runtime/plugin/ipc.js";
 import { Icon } from "@opencode/ui/icon";
-import { errorDescriptionKey, errorStatus } from "./description";
+import { errorDescriptionKey, errorStatus } from "./description.js";
 const CHAIN_SEPARATOR = "\n" + "─".repeat(40) + "\n";
 function isIssue(value) {
     return (Predicate.hasProperty(value, "message") &&

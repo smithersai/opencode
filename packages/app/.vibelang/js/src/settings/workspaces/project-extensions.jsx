@@ -13,7 +13,7 @@ import { useData } from "@/runtime/server/current";
 import { pluginLabels } from "@/providers/catalog/plugin";
 import { ExternalLink } from "@/runtime/platform/external-link";
 import { ProjectFolderMissing } from "./project-folder-missing";
-import { configuredLanguageServers } from "./project-lsp";
+import { configuredLanguageServers } from "./project-lsp.js";
 import { SettingsList } from "@/settings/list";
 import "../../../../../src/settings/workspaces/project.css";
 const skillKey = (item) => `${item.name}\n${item.path}`;

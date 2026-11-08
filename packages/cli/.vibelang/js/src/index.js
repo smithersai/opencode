@@ -8,7 +8,7 @@ import { Commands } from "./commands/commands.js";
 import { Runtime } from "./framework/runtime";
 import { Observability } from "@opencode/util/observability";
 import { Updater } from "./services/updater";
-import { OPENCODE_ARTIFACT, OPENCODE_CHANNEL, OPENCODE_LOCAL, OPENCODE_VERSION } from "#vibelang/emitted/src/version";
+import { OPENCODE_ARTIFACT, OPENCODE_CHANNEL, OPENCODE_LOCAL, OPENCODE_VERSION } from "./version.js";
 import { LayerNode } from "@opencode/util/effect/layer-node";
 import { Global } from "@opencode/util/global";
 import { AppProcess } from "@opencode/util/process";

@@ -18,7 +18,7 @@ import { usePluginHost } from "@/runtime/plugin/host";
 import { usePluginAttachment } from "@/runtime/plugin/host-apis";
 import { looksLikeSessionID } from "@/session/search";
 import { createSettingsPaletteEntries } from "@/settings/palette";
-import { matchesCommandPaletteEntry } from "./search";
+import { matchesCommandPaletteEntry } from "./search.js";
 const ENTRY_LIMIT = 5;
 // The palette opens with these host commands. Featured plugin commands list before the view toggles.
 const COMMON_COMMAND_IDS = ["session.new", "workspace.new", "session.previous", "session.next"];

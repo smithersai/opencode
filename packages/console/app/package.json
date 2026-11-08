@@ -34,8 +34,8 @@
     "@webgpu/types": "0.1.54",
     "typescript": "catalog:",
     "wrangler": "4.50.0",
-    "vibelang": "0.0.12",
-    "vibelang-vite": "0.0.12"
+    "vibelang": "file:../../../.vibelang-toolchain/vibelang-0.0.13-637d08c93ff1.tgz",
+    "vibelang-vite": "file:../../../.vibelang-toolchain/vibelang-vite-0.0.13-4bdf1e25b72f.tgz"
   },
   "engines": {
     "node": ">=22"

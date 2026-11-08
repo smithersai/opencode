@@ -8,7 +8,7 @@ import { showToast } from "@/shell/notifications/toast";
 import legal from "../../../../../src/settings/about/legal.svg";
 import anomalyBrush from "../../../../../src/settings/about/anomaly-brush.svg";
 import { AnimatedWordmark } from "./animated-wordmark";
-import { FALLBACK_OTHER_CONTRIBUTORS, loadOtherContributorCount } from "./contributors";
+import { FALLBACK_OTHER_CONTRIBUTORS, loadOtherContributorCount } from "./contributors.js";
 const writers = [
     "thdxr",
     "adamdotdev",

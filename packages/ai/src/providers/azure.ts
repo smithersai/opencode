@@ -14,7 +14,7 @@ import {
 } from "../schema/index.js"
 import { OpenAIImages } from "../protocols/openai-images.vibe"
 import * as OpenAIChat from "../protocols/openai-chat.js"
-import * as OpenAIResponses from "../protocols/openai-responses.js"
+import * as OpenAIResponses from "../protocols/openai-responses.vibe"
 import { withOpenAIOptions, type OpenAIProviderOptionsInput } from "./openai-options.js"
 
 export const id = ProviderID.make("azure")

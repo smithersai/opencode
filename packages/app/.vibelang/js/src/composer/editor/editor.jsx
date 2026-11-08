@@ -19,7 +19,7 @@ import { CommentCard, commentCardTarget, quoteTooltip } from "@opencode/session-
 import { typeLabel } from "@opencode/session-ui/message-file";
 import { getFilename } from "@opencode/util/path";
 import { Skill } from "@opencode/schema/skill";
-import { isAttachment } from "../prompt-parts";
+import { isAttachment } from "../prompt-parts.js";
 import { QuoteCommentEditor } from "./quote-comment";
 import "../../../../../src/composer/attachments/attachments.css";
 import "../../../../../src/composer/editor/editor.css";

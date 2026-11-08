@@ -4,15 +4,15 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { app, BrowserWindow, screen, shell } from "electron";
 import { Predicate } from "effect";
-import { resolveExternalURL } from "../files/external-url";
+import { resolveExternalURL } from "../files/external-url.js";
 import { windowArguments } from "./bootstrap.js";
-import { WINDOW_IDS_KEY } from "../storage/keys";
-import { getStore } from "../storage/store";
-import { platformFrame, storedBackgroundColor, storedZoomLevel, tone } from "./defaults";
-import { registerRendererProtocol } from "./protocol";
-import { loadWindow } from "./scheme";
-import { allowRendererPermissions, wireNavigationPolicy, wireRendererHeaders } from "./security";
-import { manageWindowState, readWindowState, resolveWindowState, windowStateFile } from "./window-state";
+import { WINDOW_IDS_KEY } from "../storage/keys.js";
+import { getStore } from "../storage/store.js";
+import { platformFrame, storedBackgroundColor, storedZoomLevel, tone } from "./defaults.js";
+import { registerRendererProtocol } from "./protocol.js";
+import { loadWindow } from "./scheme.js";
+import { allowRendererPermissions, wireNavigationPolicy, wireRendererHeaders } from "./security.js";
+import { manageWindowState, readWindowState, resolveWindowState, windowStateFile } from "./window-state.js";
 let pending;
 const displays = {
     all: () => screen.getAllDisplays().map((display) => display.bounds),

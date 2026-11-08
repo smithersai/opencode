@@ -1,7 +1,7 @@
 import type { ProviderPackage } from "../provider-package.js"
 import { OpenAIChat } from "../protocols/openai-chat.js"
 import { AnthropicMessages } from "../protocols/anthropic-messages.js"
-import { MetaResponses } from "../protocols/meta-responses.js"
+import { MetaResponses } from "../protocols/meta-responses.vibe"
 import { MetaMessages } from "../protocols/meta-messages.vibe"
 import { MetaImages } from "../protocols/meta-images.vibe"
 import { AuthOptions, type ProviderAuthOption } from "../route/auth-options.vibe"

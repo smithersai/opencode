@@ -6,15 +6,15 @@ import { encodeJson } from "../../utils/json.vibe"
 import { ProviderShared } from "../shared.ts"
 
 /** Owned bytes for multipart uploads; decodes `base64` sources and rejects remote sources. */
-export const inlineBytes = (route: string, asset: Media.Asset): Uint8Array!AIError => {
-  if (asset.source.type === "bytes") return Effect.succeed(asset.source.data)
-  const inline = asset.inline()
-  if (!inline) return Effect.fail(ProviderShared.inlineRequired(route, asset))
-  return Effect.fromResult(Base64.decode(inline.base64))
+export const inlineBytes = effect (route: string, asset: Media.Asset): Uint8Array!AIError => {
+  if (asset.source.type === "bytes") return asset.source.data
+  const inline = try Effect.orDie(Effect.try({ try: () => asset.inline(), catch: (e) => e }))
+  if (!inline) throw ProviderShared.inlineRequired(route, asset)
+  return try (Effect.fromResult(Base64.decode(inline.base64))
     |> Effect.mapError(
       %,
       (cause) => ProviderShared.invalidRequest(`${route} media contains invalid base64 data`, cause),
-    )
+    ))
 }
 
 /** Copied because `BlobPart` requires a plain `ArrayBuffer`. */
@@ -63,20 +63,22 @@ export const decodedAsset = (
  * One image of an OpenAI-shaped `data` array, which carries `b64_json`, a `url`, or both. `b64_json` wins; a `data:`
  * URL decodes inline with its own media type, and any other URL stays a URL asset for the caller to download.
  */
-export const imageOutput = (
+export const imageOutput = effect (
   invalid: (message: string, cause?: unknown) => AIError,
   label: string,
   item: { readonly b64_json?: string | null; readonly url?: string | null },
   mediaType: string | undefined,
   options?: Media.AssetOptions,
 ) => {
-  if (item.b64_json) return decodedAsset(invalid, label, item.b64_json, mediaType, options)
-  if (item.url?.startsWith("data:")) {
-    const asset = Media.parseDataUrl(item.url, options)
-    return asset === undefined ? Effect.fail(invalid(`${label} has an invalid data URL`)) : Effect.succeed(asset)
+  if (item.b64_json) return try decodedAsset(invalid, label, item.b64_json, mediaType, options)
+  const url = item.url
+  if (url?.startsWith("data:")) {
+    const asset = try Effect.orDie(Effect.try({ try: () => Media.parseDataUrl(url, options), catch: (e) => e }))
+    if (asset === undefined) throw invalid(`${label} has an invalid data URL`)
+    return asset
   }
-  if (item.url) return Effect.succeed(Media.url(item.url, { ...options, mediaType }))
-  return Effect.fail(invalid(`${label} has neither image data nor a URL`))
+  if (url) return try Effect.orDie(Effect.try({ try: () => Media.url(url, { ...options, mediaType }), catch: (e) => e }))
+  throw invalid(`${label} has neither image data nor a URL`)
 }
 
 /**

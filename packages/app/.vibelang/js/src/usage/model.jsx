@@ -4,8 +4,8 @@ import { isFreeModel } from "@/providers/models/models";
 import { useLanguage } from "@/runtime/i18n/language";
 import { useData } from "@/runtime/server/current";
 import { useWorkspaceLocation } from "@/workspaces/location";
-import { useUsageFormat } from "./format";
-import { modelUsage } from "./limits";
+import { useUsageFormat } from "./format.js";
+import { modelUsage } from "./limits.js";
 /**
  * Labels models with what the member's Console budgets leave for them, loading the budgets once. Spend moves with every
  * request, so `refresh` reloads them on mount, showing the ones already loaded meanwhile.

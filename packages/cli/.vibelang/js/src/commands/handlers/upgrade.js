@@ -5,7 +5,7 @@ import { Commands } from "../commands.js";
 import { Runtime } from "../../framework/runtime";
 import { Updater } from "../../services/updater";
 import { handlePromptErrors } from "../../ui/prompt";
-import { OPENCODE_VERSION } from "#vibelang/emitted/src/version";
+import { OPENCODE_VERSION } from "../../version.js";
 import { stripVTControlCharacters } from "node:util";
 export default Runtime.handler(Commands.commands.upgrade, Effect.fn("cli.upgrade")(function* (input) {
     intro("Upgrade");

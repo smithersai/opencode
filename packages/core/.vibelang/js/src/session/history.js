@@ -16,7 +16,9 @@ const decode = Schema.decodeUnknownEffect(SessionMessage.Info);
 const decodeSync = Schema.decodeUnknownSync(SessionMessage.Info);
 const decodeStoredUser = Schema.decodeUnknownEffect(SessionStored.User);
 const decodeMedia = Schema.decodeUnknownEffect(SessionMessage.MediaInfo);
-/** A completed provider compaction, which replays `native.messages` instead of a summary. */
+/** A completed provider compaction, which replays `native.messages` instead of a summary.
+ * @throws {never}
+ */
 export const isNativeCompaction = (message) => message.type === "compaction" && message.status === "completed" && message.native?.messages !== undefined;
 /** A native compaction's window: canonical AI messages, stored as JSON. */
 export const NativeWindow = Schema.toCodecJson(Schema.Array(Message));

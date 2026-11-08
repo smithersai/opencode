@@ -16,7 +16,7 @@ import { inferHomeDirectory } from "@/runtime/server/global-sync/bootstrap";
 import { useLanguage } from "@/runtime/i18n/language";
 import { ServerConnection, serverName } from "@/runtime/server/registry";
 import { pathKey } from "@/workspaces/path-key";
-import { absoluteTreePath, activeTreeNavigation, canonicalPickerPath, nextSuggestionIndex, pickerFileSearchQuery, pickerAbsoluteInput, pickerMode, cleanPickerInput, createPriorityTaskQueue, createDirectorySearch, currentPickerSuggestions, displayPickerPath, shortenPickerRecentPath, pickerParent, pickerRoot, listPickerDirectory, pickerRelativePath, pickerAbsolutePath, } from "./domain";
+import { absoluteTreePath, activeTreeNavigation, canonicalPickerPath, nextSuggestionIndex, pickerFileSearchQuery, pickerAbsoluteInput, pickerMode, cleanPickerInput, createPriorityTaskQueue, createDirectorySearch, currentPickerSuggestions, displayPickerPath, shortenPickerRecentPath, pickerParent, pickerRoot, listPickerDirectory, pickerRelativePath, pickerAbsolutePath, } from "./domain.js";
 import "../../../../../src/workspaces/selection/dialog.css";
 const TREE_SPRITE_SHEET = `<svg xmlns="http://www.w3.org/2000/svg" data-icon-sprite aria-hidden="true" width="0" height="0" style="display:none"><symbol id="picker-chevron-down" viewBox="0 0 14 14"><path d="M4 5.5L7 8.5L10 5.5" fill="none" stroke="currentColor"/></symbol></svg>`;
 const FOLDER_CLOSED_MASK = `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 14 14' fill='none'%3E%3Cpath d='M1.1667 1.75V11.6667H12.8334V3.5H7.58337L5.83337 1.75H1.1667Z' stroke='black' stroke-miterlimit='10' stroke-linecap='square'/%3E%3C/svg%3E")`;

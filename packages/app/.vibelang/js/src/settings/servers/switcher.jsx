@@ -8,7 +8,7 @@ import { useGlobal } from "@/runtime/server/runtime";
 import { ServerHealthIndicator } from "@/servers/registry/row";
 import { ServerLabel } from "@/servers/registry/label";
 import { useSettingsSurface } from "@/settings/surface";
-import { settingsServerReachable, useSettingsServers } from "./inventory";
+import { settingsServerReachable, useSettingsServers } from "./inventory.js";
 /** Chooses the server per-server pages show; renders nothing with one server. */
 export function SettingsServerSwitcher() {
     const language = useLanguage();

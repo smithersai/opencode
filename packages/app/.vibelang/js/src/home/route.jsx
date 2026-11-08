@@ -2,12 +2,12 @@
 import { ScrollView } from "@opencode/ui/scroll-view";
 import { createMediaQuery } from "@solid-primitives/media";
 import { Show } from "solid-js";
-import { createHomeController } from "./model";
+import { createHomeController } from "./model.js";
 import { createHomeProjectsController } from "./projects/controller";
 import { HomeUtilityNav } from "./projects/view";
 import { HomeProjects } from "./projects/region";
-import { createHomeScrollController } from "./scroll";
-import { createHomeSessionSearchController } from "./sessions/search";
+import { createHomeScrollController } from "./scroll.js";
+import { createHomeSessionSearchController } from "./sessions/search.js";
 import { createHomeSessionsController } from "./sessions/controller";
 import { HomeSessions } from "./sessions/region";
 export function Home() {

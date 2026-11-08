@@ -11,9 +11,9 @@ import { usePlatform } from "@/runtime/platform/platform";
 import { SettingsList } from "@/settings/list";
 import { showToast } from "@/shell/notifications/toast";
 import "@/settings/settings.css";
-import { builtins } from "./builtins";
+import { builtins } from "./builtins.js";
 import { usePluginHost } from "./host";
-import { createInstalled } from "./installed";
+import { createInstalled } from "./installed.js";
 import { useReservedPlugins } from "./root";
 /**
  * The plugins a server lists, for the Plugins tab of Extensions. Only the desktop app's own server (`own`) runs its

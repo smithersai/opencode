@@ -1,0 +1,93 @@
+import { Protocol } from "../route/protocol.vibe"
+import type { LanguageModelCompatibility } from "../schema/index.js"
+import { OpenAIChat } from "./openai-chat.js"
+import { JsonObject, ProviderShared } from "./shared.js"
+import { cacheControl } from "./utils/cache.js"
+import { OpenResponsesOptions } from "./utils/open-responses-options.vibe"
+
+export type ReasoningEffort = OpenResponsesOptions.ReasoningEffort
+
+const Options = Schema.Struct({
+  reasoningEffort: Schema.optional(OpenResponsesOptions.ReasoningEffort),
+  enableThinking: Schema.optional(Schema.Boolean),
+  thinkingBudget: Schema.optional(Schema.Int),
+  preserveThinking: Schema.optional(Schema.Boolean),
+  clearThinking: Schema.optional(Schema.Boolean),
+  thinking: Schema.optional(
+    Schema.Struct({
+      type: ProviderShared.knownString<"adaptive" | "disabled">(),
+    }),
+  ),
+  toolStream: Schema.optional(Schema.Boolean),
+  parallelToolCalls: Schema.optional(Schema.Boolean),
+  repetitionPenalty: Schema.optional(Schema.Number),
+  responseFormat: Schema.optional(
+    Schema.Struct({
+      type: ProviderShared.knownString<"text" | "json_object" | "json_schema">(),
+      json_schema: Schema.optional(JsonObject),
+    }),
+  ),
+  enableSearch: Schema.optional(Schema.Boolean),
+  searchOptions: Schema.optional(
+    Schema.Struct({
+      forced_search: Schema.optional(Schema.Boolean),
+      search_strategy: Schema.optional(ProviderShared.knownString<"turbo" | "max" | "agent" | "agent_max">()),
+      enable_search_extension: Schema.optional(Schema.Boolean),
+    }),
+  ),
+})
+export type OptionsInput = typeof Options.Type
+
+export const compatibility = {
+  maxTokensField: "max_completion_tokens",
+  supportsStrictMode: false,
+  reasoningField: "reasoning_content",
+  zaiToolStream: false,
+} satisfies LanguageModelCompatibility
+
+export const protocol = Protocol.make({
+  id: "alibaba-chat",
+  body: {
+    schema: Schema.Struct({
+      ...OpenAIChat.bodyFields,
+      enable_thinking: Options.fields.enableThinking,
+      thinking_budget: Options.fields.thinkingBudget,
+      preserve_thinking: Options.fields.preserveThinking,
+      clear_thinking: Options.fields.clearThinking,
+      thinking: Options.fields.thinking,
+      parallel_tool_calls: Options.fields.parallelToolCalls,
+      repetition_penalty: Options.fields.repetitionPenalty,
+      top_k: Schema.optional(Schema.Int),
+      response_format: Options.fields.responseFormat,
+      enable_search: Options.fields.enableSearch,
+      search_options: Options.fields.searchOptions,
+    }),
+    from: effect (req): { readonly model: string; readonly messages: readonly ({ readonly role: "system"; readonly content: string | readonly ({ readonly type: "image_url"; readonly image_url: { readonly url: string; }; } | { readonly type: "video_url"; readonly video_url: { readonly url: string; }; } | { readonly type: "file"; readonly file: { readonly filename: string; readonly file_data: string; }; } | { readonly type: "text"; readonly text: string; readonly cache_control?: { readonly type: "ephemeral"; readonly ttl?: string | undefined; } | undefined; })[]; } | { readonly role: "user"; readonly content: string | readonly ({ readonly type: "image_url"; readonly image_url: { readonly url: string; }; } | { readonly type: "video_url"; readonly video_url: { readonly url: string; }; } | { readonly type: "file"; readonly file: { readonly filename: string; readonly file_data: string; }; } | { readonly type: "text"; readonly text: string; readonly cache_control?: { readonly type: "ephemeral"; readonly ttl?: string | undefined; } | undefined; })[]; } | { readonly role: "tool"; readonly tool_call_id: string; readonly content: string | readonly { readonly type: "text"; readonly text: string; readonly cache_control?: { readonly type: "ephemeral"; readonly ttl?: string | undefined; } | undefined; }[]; } | { readonly [x: string]: unknown; readonly role: "assistant"; readonly content: string | readonly { readonly type: "text"; readonly text: string; readonly cache_control?: { readonly type: "ephemeral"; readonly ttl?: string | undefined; } | undefined; }[] | null; readonly tool_calls?: readonly { readonly id: string; readonly type: "function"; readonly function: { readonly name: string; readonly arguments: string; }; readonly extra_content?: { readonly google: { readonly thought_signature: string; }; } | undefined; }[] | undefined; readonly reasoning_content?: string | undefined; readonly reasoning?: string | undefined; readonly reasoning_text?: string | undefined; readonly reasoning_details?: unknown; })[]; readonly tools?: readonly { readonly type: "function"; readonly function: { readonly name: string; readonly description: string; readonly parameters: { readonly [x: string]: unknown; }; readonly strict?: boolean | undefined; }; readonly cache_control?: { readonly type: "ephemeral"; readonly ttl?: string | undefined; } | undefined; }[] | undefined; readonly tool_choice?: "auto" | "none" | "required" | { readonly type: "function"; readonly function: { readonly name: string; }; } | undefined; readonly stream: true; readonly stream_options?: { readonly include_usage: boolean; } | undefined; readonly store?: boolean | undefined; readonly prompt_cache_key?: string | undefined; readonly prompt_cache_retention?: string | undefined; readonly prompt_cache_options?: { readonly ttl?: string | undefined; } | undefined; readonly reasoning_effort?: OpenResponsesOptions.ReasoningEffort | undefined; readonly verbosity?: import("../schema/options.vibe").OpenString<"high" | "low" | "medium"> | undefined; readonly service_tier?: import("../schema/options.vibe").OpenString<"auto" | "default" | "flex" | "priority"> | undefined; readonly metadata?: { readonly [x: string]: string; } | undefined; readonly safety_identifier?: string | undefined; readonly tool_stream?: boolean | undefined; readonly max_completion_tokens?: number | undefined; readonly max_tokens?: number | undefined; readonly temperature?: number | undefined; readonly top_p?: number | undefined; readonly frequency_penalty?: number | undefined; readonly presence_penalty?: number | undefined; readonly seed?: number | undefined; readonly stop?: readonly string[] | undefined; readonly enable_thinking?: boolean | undefined; readonly thinking_budget?: number | undefined; readonly preserve_thinking?: boolean | undefined; readonly clear_thinking?: boolean | undefined; readonly thinking?: { readonly type: import("../schema/options.vibe").OpenString<"adaptive" | "disabled">; } | undefined; readonly parallel_tool_calls?: boolean | undefined; readonly repetition_penalty?: number | undefined; readonly top_k?: number | undefined; readonly response_format?: { readonly type: import("../schema/options.vibe").OpenString<"json_object" | "json_schema" | "text">; readonly json_schema?: { readonly [x: string]: unknown; } | undefined; } | undefined; readonly enable_search?: boolean | undefined; readonly search_options?: { readonly forced_search?: boolean | undefined; readonly search_strategy?: import("../schema/options.vibe").OpenString<"agent" | "agent_max" | "max" | "turbo"> | undefined; readonly enable_search_extension?: boolean | undefined; } | undefined; }!import("../schema/errors.vibe").AIError!never => try withSpan((effect (): { readonly model: string; readonly messages: readonly ({ readonly role: "system"; readonly content: string | readonly ({ readonly type: "image_url"; readonly image_url: { readonly url: string; }; } | { readonly type: "video_url"; readonly video_url: { readonly url: string; }; } | { readonly type: "file"; readonly file: { readonly filename: string; readonly file_data: string; }; } | { readonly type: "text"; readonly text: string; readonly cache_control?: { readonly type: "ephemeral"; readonly ttl?: string | undefined; } | undefined; })[]; } | { readonly role: "user"; readonly content: string | readonly ({ readonly type: "image_url"; readonly image_url: { readonly url: string; }; } | { readonly type: "video_url"; readonly video_url: { readonly url: string; }; } | { readonly type: "file"; readonly file: { readonly filename: string; readonly file_data: string; }; } | { readonly type: "text"; readonly text: string; readonly cache_control?: { readonly type: "ephemeral"; readonly ttl?: string | undefined; } | undefined; })[]; } | { readonly role: "tool"; readonly tool_call_id: string; readonly content: string | readonly { readonly type: "text"; readonly text: string; readonly cache_control?: { readonly type: "ephemeral"; readonly ttl?: string | undefined; } | undefined; }[]; } | { readonly [x: string]: unknown; readonly role: "assistant"; readonly content: string | readonly { readonly type: "text"; readonly text: string; readonly cache_control?: { readonly type: "ephemeral"; readonly ttl?: string | undefined; } | undefined; }[] | null; readonly tool_calls?: readonly { readonly id: string; readonly type: "function"; readonly function: { readonly name: string; readonly arguments: string; }; readonly extra_content?: { readonly google: { readonly thought_signature: string; }; } | undefined; }[] | undefined; readonly reasoning_content?: string | undefined; readonly reasoning?: string | undefined; readonly reasoning_text?: string | undefined; readonly reasoning_details?: unknown; })[]; readonly tools?: readonly { readonly type: "function"; readonly function: { readonly name: string; readonly description: string; readonly parameters: { readonly [x: string]: unknown; }; readonly strict?: boolean | undefined; }; readonly cache_control?: { readonly type: "ephemeral"; readonly ttl?: string | undefined; } | undefined; }[] | undefined; readonly tool_choice?: "auto" | "none" | "required" | { readonly type: "function"; readonly function: { readonly name: string; }; } | undefined; readonly stream: true; readonly stream_options?: { readonly include_usage: boolean; } | undefined; readonly store?: boolean | undefined; readonly prompt_cache_key?: string | undefined; readonly prompt_cache_retention?: string | undefined; readonly prompt_cache_options?: { readonly ttl?: string | undefined; } | undefined; readonly reasoning_effort?: OpenResponsesOptions.ReasoningEffort | undefined; readonly verbosity?: import("../schema/options.vibe").OpenString<"high" | "low" | "medium"> | undefined; readonly service_tier?: import("../schema/options.vibe").OpenString<"auto" | "default" | "flex" | "priority"> | undefined; readonly metadata?: { readonly [x: string]: string; } | undefined; readonly safety_identifier?: string | undefined; readonly tool_stream?: boolean | undefined; readonly max_completion_tokens?: number | undefined; readonly max_tokens?: number | undefined; readonly temperature?: number | undefined; readonly top_p?: number | undefined; readonly frequency_penalty?: number | undefined; readonly presence_penalty?: number | undefined; readonly seed?: number | undefined; readonly stop?: readonly string[] | undefined; readonly enable_thinking?: boolean | undefined; readonly thinking_budget?: number | undefined; readonly preserve_thinking?: boolean | undefined; readonly clear_thinking?: boolean | undefined; readonly thinking?: { readonly type: import("../schema/options.vibe").OpenString<"adaptive" | "disabled">; } | undefined; readonly parallel_tool_calls?: boolean | undefined; readonly repetition_penalty?: number | undefined; readonly top_k?: number | undefined; readonly response_format?: { readonly type: import("../schema/options.vibe").OpenString<"json_object" | "json_schema" | "text">; readonly json_schema?: { readonly [x: string]: unknown; } | undefined; } | undefined; readonly enable_search?: boolean | undefined; readonly search_options?: { readonly forced_search?: boolean | undefined; readonly search_strategy?: import("../schema/options.vibe").OpenString<"agent" | "agent_max" | "max" | "turbo"> | undefined; readonly enable_search_extension?: boolean | undefined; } | undefined; }!import("../schema/errors.vibe").AIError!never => {
+      const opts = try (try Effect.orDie(Effect.try({ try: () => ProviderShared.validateWith(Schema.decodeUnknownEffect(Options)), catch: (e) => e })))(req.providerOptions ?? {})
+      return {
+        ...(try OpenAIChat.fromRequest(req, { cacheControl: try Effect.orDie(Effect.try({ try: () => cacheControl(), catch: (e) => e })) })),
+        enable_thinking: opts.enableThinking,
+        // Alibaba also rejects an explicit budget that is not below `max_completion_tokens`.
+        thinking_budget:
+          try Effect.orDie(Effect.try({ try: () => opts.thinkingBudget === undefined
+            ? undefined
+            : ProviderShared.fitThinkingBudget(opts.thinkingBudget, req.generation?.maxTokens), catch: (e) => e })),
+        preserve_thinking: opts.preserveThinking,
+        clear_thinking: opts.clearThinking,
+        thinking: opts.thinking,
+        tool_stream: opts.toolStream,
+        parallel_tool_calls:
+          opts.parallelToolCalls ??
+          (req.toolChoice?.disableParallelToolUse === undefined ? undefined : !req.toolChoice.disableParallelToolUse),
+        repetition_penalty: opts.repetitionPenalty,
+        top_k: req.generation?.topK,
+        response_format: opts.responseFormat,
+        enable_search: opts.enableSearch,
+        search_options: opts.searchOptions,
+      }
+    })(), "AlibabaChat.fromRequest"),
+  },
+  stream: OpenAIChat.protocol.stream,
+})
+
+export * as AlibabaChat from "./alibaba-chat.vibe"

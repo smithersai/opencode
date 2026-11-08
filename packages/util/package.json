@@ -117,7 +117,7 @@
     "npm-package-arg": "13.0.2",
     "open": "11.0.4",
     "pacote": "21.5.1",
-    "vibelang-runtime": "0.0.12"
+    "vibelang-runtime": "file:../../.vibelang-toolchain/vibelang-runtime-0.0.13-89b143f8885a.tgz"
   },
   "devDependencies": {
     "@tsconfig/bun": "catalog:",
@@ -129,7 +129,7 @@
     "@types/pacote": "11.1.8",
     "@typescript/native": "catalog:",
     "jsqr": "1.4.0",
-    "vibelang": "0.0.12",
-    "vibelang-vite": "0.0.12"
+    "vibelang": "file:../../.vibelang-toolchain/vibelang-0.0.13-637d08c93ff1.tgz",
+    "vibelang-vite": "file:../../.vibelang-toolchain/vibelang-vite-0.0.13-4bdf1e25b72f.tgz"
   }
 }

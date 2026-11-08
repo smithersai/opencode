@@ -1,7 +1,6 @@
 // Type-level contract of the setup contexts, checked by `bun typecheck`. Nothing imports this file. Each
 // `@ts-expect-error` fails the typecheck if its line stops being an error.
 import type { Accessor } from "solid-js"
-import { Schema } from "effect"
 import {
   bindPlugin,
   Contract,
@@ -29,7 +28,7 @@ const Tree = Contract.define<{ open(path: string): void }, "fixture.tree">("fixt
 
 const Pane = Ipc.define({ id: "fixture.pane", methods: { open: { input: Schema.String } } })
 
-const View = Schema.Struct({ open: Schema.Boolean })
+schema View { readonly open: boolean }
 
 const Consumer = Plugin.define({
   stores: { view: Store.global(View, { open: false }), draft: Store.session(View, { open: true }) },

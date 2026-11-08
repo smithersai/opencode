@@ -56,8 +56,8 @@
       "default": "./.vibelang/js/src/plugin/agent.js"
     },
     "./plugin/host": {
-      "types": "./src/plugin/host.ts",
-      "vibelang-source": "./src/plugin/host.ts",
+      "types": "./src/plugin/host.d.vibe.ts",
+      "vibelang-source": "./src/plugin/host.vibe",
       "default": "./.vibelang/js/src/plugin/host.js"
     },
     "./plugin/mcp-codemode-defaults": {
@@ -181,8 +181,8 @@
       "default": "./.vibelang/js/src/voice.js"
     },
     "./mcp/instructions": {
-      "types": "./src/mcp/instructions.ts",
-      "vibelang-source": "./src/mcp/instructions.ts",
+      "types": "./src/mcp/instructions.d.vibe.ts",
+      "vibelang-source": "./src/mcp/instructions.vibe",
       "default": "./.vibelang/js/src/mcp/instructions.js"
     },
     "./plugin/websearch/firecrawl": {
@@ -416,8 +416,8 @@
       "default": "./.vibelang/js/src/location-lifecycle.js"
     },
     "./session/compaction": {
-      "types": "./src/session/compaction.ts",
-      "vibelang-source": "./src/session/compaction.ts",
+      "types": "./src/session/compaction.d.vibe.ts",
+      "vibelang-source": "./src/session/compaction.vibe",
       "default": "./.vibelang/js/src/session/compaction.js"
     },
     "./generate": {
@@ -426,8 +426,8 @@
       "default": "./.vibelang/js/src/generate.js"
     },
     "./plugin/hooks": {
-      "types": "./src/plugin/hooks.ts",
-      "vibelang-source": "./src/plugin/hooks.ts",
+      "types": "./src/plugin/hooks.d.vibe.ts",
+      "vibelang-source": "./src/plugin/hooks.vibe",
       "default": "./.vibelang/js/src/plugin/hooks.js"
     },
     "./plugin/instance": {
@@ -813,8 +813,8 @@
     "@types/which": "3.0.4",
     "drizzle-kit": "catalog:",
     "fast-check": "catalog:",
-    "vibelang": "0.0.12",
-    "vibelang-unplugin": "0.0.12"
+    "vibelang": "file:../../.vibelang-toolchain/vibelang-0.0.13-637d08c93ff1.tgz",
+    "vibelang-unplugin": "file:../../.vibelang-toolchain/vibelang-unplugin-0.0.13-23b4ad6a3929.tgz"
   },
   "dependencies": {
     "@ai-sdk/cohere": "3.0.27",
@@ -856,6 +856,6 @@
     "web-tree-sitter": "0.25.10",
     "which": "6.0.1",
     "zod": "catalog:",
-    "vibelang-runtime": "0.0.12"
+    "vibelang-runtime": "file:../../.vibelang-toolchain/vibelang-runtime-0.0.13-89b143f8885a.tgz"
   }
 }

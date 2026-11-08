@@ -35,7 +35,6 @@ import { WellKnown } from "@opencode/core/wellknown"
 import { Workspace } from "@opencode/core/workspace"
 import { Watcher } from "@opencode/core/filesystem/watcher"
 import { FileWatch } from "@opencode/core/filesystem/file-watch"
-import { HttpRouter } from "effect/http"
 import { Layer } from "effect"
 import { Api } from "./api"
 import { ServerAuth } from "./auth"
@@ -158,7 +157,7 @@ function makeRoutes<AuthError, AuthServices>(
     ? Layer.unwrap(
       effect {
         const { simulationReplacements } = try Effect.promise(() => import("@opencode/simulation/backend"))
-        const simulation = try simulationReplacements({ version: App.make(options.app).version })
+        const simulation = try simulationReplacements({ version: (try Effect.orDie(Effect.try({ try: () => App.make(options.app), catch: (e) => e }))).version })
         return build([...overrides, ...simulation])
       },
     )

@@ -35,8 +35,8 @@
   },
   "exports": {
     ".": {
-      "types": "./src/index.ts",
-      "vibelang-source": "./src/index.ts",
+      "types": "./src/index.d.vibe.ts",
+      "vibelang-source": "./src/index.vibe",
       "default": "./.vibelang/js/src/index.js"
     }
   },
@@ -56,12 +56,12 @@
     "effect": "catalog:",
     "fast-check": "catalog:",
     "typescript": "catalog:",
-    "vibelang": "0.0.12",
-    "vibelang-unplugin": "0.0.12"
+    "vibelang": "file:../../.vibelang-toolchain/vibelang-0.0.13-637d08c93ff1.tgz",
+    "vibelang-unplugin": "file:../../.vibelang-toolchain/vibelang-unplugin-0.0.13-23b4ad6a3929.tgz"
   },
   "dependencies": {
     "@effect/platform-node-shared": "catalog:",
-    "vibelang-runtime": "0.0.12"
+    "vibelang-runtime": "file:../../.vibelang-toolchain/vibelang-runtime-0.0.13-89b143f8885a.tgz"
   },
   "peerDependencies": {
     "effect": "catalog:"

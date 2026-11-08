@@ -1,7 +1,7 @@
 import { showToast } from "@/shell/notifications/toast"
 import { consoleProviderGroup } from "@/providers/catalog/console"
 import { useIntegrations } from "@/providers/catalog/integrations"
-import { useProviders } from "../../providers/catalog/providers.js"
+import { useProviders } from "../../providers/catalog/providers.vibe"
 import { CONSOLE_INTEGRATION } from "@/providers/connect/controller"
 import { useLanguage } from "@/runtime/i18n/language"
 import { useServerSDK } from "@/runtime/server/client"

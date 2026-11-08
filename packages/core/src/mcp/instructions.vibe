@@ -1,7 +1,7 @@
-export * as McpInstructions from "./instructions.js"
+export * as McpInstructions from "./instructions.vibe"
 
 import { makeLocationNode } from "@opencode/util/effect/app-node"
-import { Context, Effect, Layer, Schema } from "effect"
+import { Effect, Layer, Schema } from "effect"
 import { Permission } from "../permission.js"
 import { McpTool } from "../tool/mcp.js"
 import { Mcp } from "./index.js"
@@ -61,18 +61,18 @@ const update = (previous: ReadonlyArray<Summary>, current: ReadonlyArray<Summary
 
 export interface Interface {
   /** Lists server instructions reachable under the given ruleset; callers pass the merged agent and Session permissions. */
-  readonly load: (permissions: Permission.Ruleset) => Effect.Effect<Instructions.List>
+  readonly load: (permissions: Permission.Ruleset) => Instructions.List!!
 }
 
-export class Service extends Context.Service<Service, Interface>()("@opencode/McpInstructions") {}
+export service Service: Interface { static readonly key = "@opencode/McpInstructions";}
 
 export const layer = Layer.effect(
   Service,
-  Effect.gen(function* () {
-    const mcp = yield* Mcp.Service
+  effect {
+    const mcp = try Mcp.Service
 
     return Service.of({
-      load: Effect.fn("McpInstructions.load")(function* (permissions) {
+      load: effect (permissions): Instructions.List!never!never => try withSpan((effect (): Instructions.List!never!never => {
         const source = (value: ReadonlyArray<Summary> | Instructions.Removed) =>
           Instructions.make<ReadonlyArray<Summary>>({
             key: Instructions.Key.make("core/mcp-guidance"),
@@ -84,10 +84,10 @@ export const layer = Layer.effect(
               removed: () => "MCP server instructions are no longer available.",
             },
           })
-        const [instructions, tools] = yield* Effect.all([mcp.instructions(), mcp.tools()], {
+        const [instructions, tools] = try Effect.all([mcp.instructions(), mcp.tools()], {
           concurrency: "unbounded",
         })
-        const canExecute = Permission.evaluate("execute", "*", permissions).effect !== "deny"
+        const canExecute = (try Effect.orDie(Effect.try({ try: () => Permission.evaluate("execute", "*", permissions), catch: (e) => e }))).effect !== "deny"
         // Instructions are useful only when this Session can reach at least one server tool.
         const visible = instructions
           .flatMap((item) => {
@@ -109,9 +109,9 @@ export const layer = Layer.effect(
           })
           .toSorted((a, b) => a.server.localeCompare(b.server))
         return source(visible.length === 0 ? Instructions.removed : visible)
-      }),
+      })(), "McpInstructions.load"),
     })
-  }),
+  },
 )
 
 export const node = makeLocationNode({ service: Service, layer, deps: [Mcp.node] })

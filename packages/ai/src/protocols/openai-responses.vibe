@@ -1,6 +1,3 @@
-import { Effect, Schema } from "effect"
-import { Base64 } from "effect/encoding"
-import { Headers } from "effect/http"
 import { Route } from "../route/client.js"
 import { Auth } from "../route/auth.vibe"
 import { Endpoint } from "../route/endpoint.js"
@@ -15,7 +12,7 @@ import { JsonObject, lenient, optionalArray, optionalNull, ProviderShared } from
 import { ResponsesHostedTools } from "./utils/responses-hosted-tools.vibe"
 import { OpenResponsesChannel } from "./open-responses-channel.js"
 import { ResponsesCompaction } from "./utils/responses-compaction.vibe"
-import { ResponsesCheckpoint } from "./utils/responses-checkpoint.js"
+import { ResponsesCheckpoint } from "./utils/responses-checkpoint.vibe"
 import * as Cache from "./utils/cache.js"
 
 const ADAPTER = "openai-responses"
@@ -181,30 +178,30 @@ const nativeImageTool = (tool: ToolDefinition) => {
   return Schema.is(OpenAIResponsesImageGenerationTool)(native) ? native : undefined
 }
 
-const lowerTool = Effect.fnUntraced(function* (tool: ToolDefinition) {
+const lowerTool = effect (tool: ToolDefinition) => {
   const native = nativeImageToolInput(tool)
   if (native !== undefined) {
     if (Schema.is(OpenAIResponsesImageGenerationTool)(native)) return native
-    return yield* ProviderShared.invalidRequest("OpenAI Responses image generation tool options are invalid")
+    throw ProviderShared.invalidRequest("OpenAI Responses image generation tool options are invalid")
   }
-  return yield* OpenResponses.lowerTool(NAME, tool)
-})
+  return try OpenResponses.lowerTool(NAME, tool)
+}
 
 // Native namespaces hold only function tools, so deeper levels flatten into
 // the leaf names the same way non-native protocols flatten the whole tree.
-const lowerToolEntry = Effect.fnUntraced(function* (tool: ToolEntry) {
-  if (tool.type === "tool") return yield* lowerTool(tool)
+const lowerToolEntry = effect (tool: ToolEntry) => {
+  if (tool.type === "tool") return try lowerTool(tool)
   // OpenAI requires a namespace description; fall back to a generic one so a
   // missing description never blocks the request.
   return {
     type: "namespace" as const,
     name: tool.name,
     description: tool.description ?? `Tools in the ${tool.name} namespace.`,
-    tools: yield* Effect.forEach(ProviderShared.flattenTools(tool.tools), (leaf) =>
+    tools: try Effect.forEach(try Effect.orDie(Effect.try({ try: () => ProviderShared.flattenTools(tool.tools), catch: (e) => e })), (leaf) =>
       OpenResponses.lowerTool(NAME, leaf),
     ),
   }
-})
+}
 
 const lowerTools = (request: LLMRequest) => Effect.forEach(request.tools, lowerToolEntry)
 
@@ -219,18 +216,18 @@ const lowerToolChoice = (toolChoice: NonNullable<LLMRequest["toolChoice"]>, tool
         : { type: "function" as const, name },
   })
 
-const fromRequest = Effect.fn("OpenAIResponses.fromRequest")(function* (request: LLMRequest) {
-  const management = yield* ProviderShared.validateWith(
+const fromRequest = effect (request: LLMRequest) => try withSpan(effect {
+  const management = try (try Effect.orDie(Effect.try({ try: () => ProviderShared.validateWith(
     Schema.decodeUnknownEffect(Schema.UndefinedOr(ContextManagement)),
-  )(request.providerOptions?.contextManagement)
+  ), catch: (e) => e })))(request.providerOptions?.contextManagement)
   const options = OpenResponsesOptions.resolve(request)
   const reasoning = Schema.decodeUnknownSync(ReasoningOptions)(request.providerOptions ?? {})
-  const updates = resolveEffortUpdates(request, options.reasoningEffort)
-  const generation = OpenResponses.lowerGeneration(request, { ...options, reasoningEffort: updates.effort })
+  const updates = try Effect.orDie(Effect.try({ try: () => resolveEffortUpdates(request, options.reasoningEffort), catch: (e) => e }))
+  const generation = try Effect.orDie(Effect.try({ try: () => OpenResponses.lowerGeneration(request, { ...options, reasoningEffort: updates.effort }), catch: (e) => e }))
   return {
-    ...(yield* OpenResponses.lowerConversation(updates.request, adapter)),
+    ...(try OpenResponses.lowerConversation(updates.request, adapter)),
     ...generation,
-    ...Cache.openAIRequestTTL(requestTTL(request)),
+    ...try Effect.orDie(Effect.try({ try: () => Cache.openAIRequestTTL(requestTTL(request)), catch: (e) => e })),
     ...(generation.reasoning || reasoning.reasoningMode || reasoning.reasoningContext
       ? {
           reasoning: {
@@ -241,18 +238,18 @@ const fromRequest = Effect.fn("OpenAIResponses.fromRequest")(function* (request:
         }
       : {}),
     context_management: management?.map((edit) => ({ type: edit.type, compact_threshold: edit.compactThreshold })),
-    tools: request.tools.length === 0 ? undefined : yield* lowerTools(request),
+    tools: request.tools.length === 0 ? undefined : try lowerTools(request),
     tool_choice:
       request.tools.length === 0
         ? undefined
-        : (OpenResponses.allowedToolChoice(request, options) ??
-          (request.toolChoice ? yield* lowerToolChoice(request.toolChoice, request.tools) : undefined)),
+        : ((try Effect.orDie(Effect.try({ try: () => OpenResponses.allowedToolChoice(request, options), catch: (e) => e }))) ??
+          (request.toolChoice ? try lowerToolChoice(request.toolChoice, request.tools) : undefined)),
   }
-})
+}, "OpenAIResponses.fromRequest")
 
 const checkpointBody = {
   schema: CheckpointBody,
-  from: Effect.fn("OpenAIResponses.checkpointBody")(function* (request: LLMRequest) {
+  from: effect (request: LLMRequest) => try withSpan(effect {
     const overlay = request.http?.body
     // Complete history is required for stateless replay and SSE recovery. Raw input overrides bypass that contract.
     if (
@@ -260,27 +257,23 @@ const checkpointBody = {
       overlay?.previous_response_id !== undefined ||
       overlay?.conversation !== undefined
     )
-      return yield* ProviderShared.invalidRequest(
+      throw ProviderShared.invalidRequest(
         "Trigger compaction requires complete canonical history, not an input or continuation override",
       )
     if (overlay?.stream !== undefined && overlay.stream !== true)
-      return yield* ProviderShared.invalidRequest("Trigger compaction requires a streamed response")
-    const native = yield* fromRequest(request)
+      throw ProviderShared.invalidRequest("Trigger compaction requires a streamed response")
+    const native = try fromRequest(request)
     return {
       ...native,
       input: [...native.input, { type: "compaction_trigger" as const }],
     }
-  }),
+  }, "OpenAIResponses.checkpointBody"),
 }
 
-const hostedToolResult = Effect.fnUntraced(function* (item: ResponsesHostedTools.Item) {
+const hostedToolResult = effect (item: ResponsesHostedTools.Item) => {
   const isError = item.error !== undefined && item.error !== null
   if (item.type === "image_generation_call" && item.result) {
-    yield* Effect.fromResult(Base64.decode(item.result)).pipe(
-      Effect.mapError((cause) =>
-        ProviderShared.eventError(ADAPTER, "OpenAI Responses returned invalid image base64", undefined, cause),
-      ),
-    )
+    Effect.fromResult(Base64.decode(item.result)) catch effect (cause) => { throw ProviderShared.eventError(ADAPTER, "OpenAI Responses returned invalid image base64", undefined, cause) }
     const format = item.output_format ?? "png"
     return {
       type: "content" as const,
@@ -294,7 +287,7 @@ const hostedToolResult = Effect.fnUntraced(function* (item: ResponsesHostedTools
     }
   }
   return isError ? { type: "error" as const, value: item.error } : { type: "json" as const, value: item }
-})
+}
 
 const HOSTED_TOOLS = {
   web_search_call: { name: "web_search", input: (item) => item.action ?? {} },
@@ -365,4 +358,4 @@ export const route = Route.make({
   defaults: { providerOptions: { store: false, include: ["reasoning.encrypted_content"] } },
 })
 
-export * as OpenAIResponses from "./openai-responses.js"
+export * as OpenAIResponses from "./openai-responses.vibe"

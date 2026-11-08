@@ -88,7 +88,7 @@ export const Plugin = {
                                     {
                                       value: "allow",
                                       label: `Allow search via ${
-                                        providers.map((provider) => provider.name).join(", ")
+                                        try Effect.orDie(Effect.try({ try: () => providers.map((provider) => provider.name).join(", "), catch: (e) => e }))
                                       }`,
                                     },
                                     {
@@ -119,10 +119,10 @@ export const Plugin = {
                                     type: "string",
                                     required: true,
                                     custom: false,
-                                    options: providers.map((provider) => ({
+                                    options: try Effect.orDie(Effect.try({ try: () => providers.map((provider) => ({
                                       value: provider.id,
                                       label: provider.name,
-                                    })),
+                                    })), catch: (e) => e })),
                                   },
                                 ],
                               })
@@ -135,7 +135,7 @@ export const Plugin = {
                               try websearch.select("random")
                               return
                             }
-                            const provider = providers.find((provider) => provider.id === providerID)
+                            const provider = try Effect.orDie(Effect.try({ try: () => providers.find((provider) => provider.id === providerID), catch: (e) => e }))
                             if (!provider) throw new WebSearch.ProviderRequiredError()
                             try websearch.select(provider.id)
                             return provider.id

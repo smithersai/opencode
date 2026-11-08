@@ -1,5 +1,5 @@
 import type { ProviderPackage } from "../provider-package.ts"
-import { MistralChat } from "../protocols/mistral-chat.js"
+import { MistralChat } from "../protocols/mistral-chat.vibe"
 import { Auth } from "../route/auth.vibe"
 import { Route, type RouteDefaultsInput } from "../route/client.ts"
 import { Endpoint } from "../route/endpoint.ts"

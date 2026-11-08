@@ -3,9 +3,9 @@ import { Effect, Layer, Stream } from "effect"
 import { LLM, LLMEvent, Message } from "../../src/effect.js"
 import { XAI } from "../../src/providers.js"
 import { OpenResponses } from "../../src/protocols/open-responses.js"
-import { OpenAIResponses } from "../../src/protocols/openai-responses.js"
+import { OpenAIResponses } from "../../src/protocols/openai-responses.vibe"
 import * as ProviderShared from "../../src/protocols/shared.js"
-import { XAIResponses } from "../../src/protocols/xai-responses.js"
+import { XAIResponses } from "../../src/protocols/xai-responses.vibe"
 import {
   LLMClient,
   RequestExecutor,

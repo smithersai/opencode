@@ -1,5 +1,4 @@
 import { BrowserWindow } from "electron"
-import { Effect } from "effect"
 import { PluginRpcs } from "../../shared/ipc-rpc.vibe"
 import { pluginFailure } from "../plugin/error"
 import type { PluginHost } from "../plugin/host"
@@ -9,9 +8,9 @@ import { isRendererUrl } from "../windows/scheme"
 import { sender, type RpcContext } from "./context"
 
 export const pluginHandlers = PluginRpcs.toLayer(
-  Effect.gen(function* () {
-    const handoff = yield* IpcPortHandoff
-    const plugins = yield* Plugins.Service
+  effect {
+    const handoff = try IpcPortHandoff
+    const plugins = try Plugins.Service
 
     // Ipcs scope state and events by the calling app window.
     const caller = (context: RpcContext) => {
@@ -19,7 +18,7 @@ export const pluginHandlers = PluginRpcs.toLayer(
       const win = BrowserWindow.fromWebContents(contents)
 
       if (!win || win.isDestroyed() || win.webContents !== contents || !isRendererUrl(contents.getURL()))
-        throw new Error("plugin.caller.invalid")
+        $raise(new Error("plugin.caller.invalid"))
 
       return win.id
     }
@@ -50,5 +49,10 @@ export const pluginHandlers = PluginRpcs.toLayer(
       PluginDisable: ({ id }) => manage((host) => host.disable(id)),
       PluginReload: ({ id }) => manage((host) => host.reload(id)),
     })
-  }),
+  },
 )
+
+module $throw$ts {
+export function raise(value: unknown): never { throw value }
+}
+import { raise as $raise } from $throw$ts

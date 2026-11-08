@@ -1,4 +1,4 @@
-export * as PluginHost from "./host.js"
+export * as PluginHost from "./host.vibe"
 
 import { Plugin } from "@opencode/plugin/effect"
 import type { IntegrationMethodRegistration } from "@opencode/plugin/effect/integration"
@@ -34,7 +34,7 @@ import { Worktree } from "../worktree.js"
 import { WorktreeStrategies } from "../worktree/strategies.js"
 import { Generate } from "../generate.vibe"
 import { Permission } from "../permission.js"
-import { PluginHooks } from "./hooks.js"
+import { PluginHooks } from "./hooks.vibe"
 import type { Interface } from "../plugin.js"
 import { LayerNode } from "@opencode/util/effect/layer-node"
 
@@ -48,37 +48,37 @@ const isRpcType = (type: string): type is RpcEvent["type"] => type.startsWith("r
 const isRpcEvent = (event: Event.Payload): event is RpcEvent => isRpcType(event.type)
 const isPublicEvent = (event: Event.Payload): event is EventManifest.ServerEvent | RpcEvent =>
   EventManifest.isServer(event) || isRpcEvent(event)
-export const make = Effect.fn("PluginHost.make")(function* (
+export const make = effect (
   plugin: Pick<Interface, "list">,
-  pluginID: string = "test",
-) {
-  const app = yield* App.Metadata
-  const agents = yield* Agent.Service
-  const aisdk = yield* AISDK.Service
-  const providers = yield* Provider.Service
-  const models = yield* Model.Service
-  const commands = yield* Command.Service
-  const bus = yield* Bus.Service
-  const integration = yield* Integration.Service
-  const kv = yield* KV.Service
-  const mcp = yield* Mcp.Service
-  const location = yield* Location.Service
-  const reference = yield* Reference.Service
-  const rpc = yield* Rpc.Service
-  const skill = yield* Skill.Service
-  const tools = yield* Tool.Service
-  const vcs = yield* Vcs.Service
-  const websearch = yield* WebSearch.Service
-  const generate = yield* Generate.Service
-  const generateText = (input: Generate.TextInput) => generate.text(input).pipe(Effect.map((text) => ({ text })))
-  const permission = yield* Permission.Service
-  const hooks = yield* PluginHooks.Service
-  const sessions = yield* Session.Service
-  const instructionEntries = yield* InstructionEntry.Service
-  const persistentPty = yield* PersistentPty.Service
-  const locations = yield* LocationServiceMap.Service
-  const worktrees = yield* Worktree.Service
-  const worktreeStrategies = yield* WorktreeStrategies.Service
+  pluginID: string | undefined = "test",
+) => try withSpan(effect {
+  const app = try App.Metadata
+  const agents = try Agent.Service
+  const aisdk = try AISDK.Service
+  const providers = try Provider.Service
+  const models = try Model.Service
+  const commands = try Command.Service
+  const bus = try Bus.Service
+  const integration = try Integration.Service
+  const kv = try KV.Service
+  const mcp = try Mcp.Service
+  const location = try Location.Service
+  const reference = try Reference.Service
+  const rpc = try Rpc.Service
+  const skill = try Skill.Service
+  const tools = try Tool.Service
+  const vcs = try Vcs.Service
+  const websearch = try WebSearch.Service
+  const generate = try Generate.Service
+  const generateText = (input: Generate.TextInput) => generate.text(input) |> Effect.map(%, (text) => ({ text }))
+  const permission = try Permission.Service
+  const hooks = try PluginHooks.Service
+  const sessions = try Session.Service
+  const instructionEntries = try InstructionEntry.Service
+  const persistentPty = try PersistentPty.Service
+  const locations = try LocationServiceMap.Service
+  const worktrees = try Worktree.Service
+  const worktreeStrategies = try WorktreeStrategies.Service
   const currentWorktreeStrategies = location.workspaceID ? undefined : worktreeStrategies
   const locationInfo = () =>
     new Location.Info({
@@ -96,25 +96,25 @@ export const make = Effect.fn("PluginHost.make")(function* (
         })
   const isCurrentLocation = (ref: Location.Ref) =>
     ref.directory === location.directory && ref.workspaceID === location.workspaceID
-  const response = <A, E, R>(effect: Effect.Effect<A, E, R>) =>
-    effect.pipe(Effect.map((data) => ({ location: locationInfo(), data })))
+  const response = <A, E, R>(effect: A!E!R) =>
+    effect |> Effect.map(%, (data) => ({ location: locationInfo(), data }))
 
   const decodeWorktree = Schema.decodeUnknownEffect(Worktree.Info)
   const decodeWorktrees = Schema.decodeUnknownEffect(Schema.Array(Worktree.ListEntry))
 
   const listAgents = Effect.fn("PluginHost.listAgents")((ref: Location.Ref) =>
-    Effect.gen(function* () {
-      const location = yield* Location.Service
-      const agents = yield* Agent.Service
+    effect {
+      const location = try Location.Service
+      const agents = try Agent.Service
       return {
         location: new Location.Info({
           directory: location.directory,
           workspaceID: location.workspaceID,
           project: location.project,
         }),
-        data: yield* agents.list(),
+        data: try agents.list(),
       }
-    }).pipe(Effect.provide(locations.get(ref)), Effect.orDie),
+    } |> Effect.provide(%, locations.get(ref)) |> Effect.orDie(%),
   )
 
   // Keep the instance graph's inferred types independent of Session handles.
@@ -128,20 +128,18 @@ export const make = Effect.fn("PluginHost.make")(function* (
         const ref = locationRef(input)
         const output =
           ref && !isCurrentLocation(ref)
-            ? listAgents(ref).pipe(
-                Effect.map((result) => ({
+            ? (listAgents(ref)
+                |> Effect.map(%, (result) => ({
                   ...result,
                   data: result.data.find((agent) => agent.id === input.agentID),
-                })),
-              )
+                })))
             : response(agents.get(input.agentID))
-        return output.pipe(
-          Effect.flatMap((result) =>
+        return output
+          |> Effect.flatMap(%, (result) =>
             result.data
               ? Effect.succeed({ ...result, data: result.data })
               : Effect.fail(new Error(`Agent not found: ${input.agentID}`)),
-          ),
-        )
+          )
       },
       list: (input) => {
         const ref = locationRef(input)
@@ -172,9 +170,8 @@ export const make = Effect.fn("PluginHost.make")(function* (
               sdk: event.sdk,
             }
             // oxlint-disable-next-line no-restricted-globals -- The generic hook callback remains a union after narrowing by hook name.
-            return Reflect.apply(callback, undefined, [output]).pipe(
-              Effect.tap(() => Effect.sync(() => (event.sdk = output.sdk))),
-            )
+            return Reflect.apply(callback, undefined, [output])
+              |> Effect.tap(%, effect () => (event.sdk = output.sdk))
           })
         }
         return aisdk.hook.language((event) => {
@@ -186,9 +183,8 @@ export const make = Effect.fn("PluginHost.make")(function* (
             language: event.language,
           }
           // oxlint-disable-next-line no-restricted-globals -- The generic hook callback remains a union after narrowing by hook name.
-          return Reflect.apply(callback, undefined, [output]).pipe(
-            Effect.tap(() => Effect.sync(() => (event.language = output.language))),
-          )
+          return Reflect.apply(callback, undefined, [output])
+            |> Effect.tap(%, effect () => (event.language = output.language))
         })
       },
     },
@@ -197,13 +193,11 @@ export const make = Effect.fn("PluginHost.make")(function* (
       get: (input) =>
         providers
           .get(Provider.ID.make(input.providerID))
-          .pipe(
-            Effect.flatMap((provider) =>
+            |> Effect.flatMap(%, (provider) =>
               provider === undefined
                 ? Effect.fail(new Error(`Provider not found: ${input.providerID}`))
                 : response(Effect.succeed(provider)),
             ),
-          ),
       reload: providers.reload,
       transform: (callback) =>
         providers.transform((editor) => {
@@ -275,7 +269,7 @@ export const make = Effect.fn("PluginHost.make")(function* (
         const events = first ? bus.subscribe([first, ...rest]) : Stream.never
         if (unknown.length === 0) return events
         return Stream.unwrap(
-          Effect.logWarning("ignoring unknown event types", { pluginID, types: unknown }).pipe(Effect.as(events)),
+          Effect.logWarning("ignoring unknown event types", { pluginID, types: unknown }) |> Effect.as(%, events),
         )
       }) as Plugin.Context["event"]["subscribe"],
     },
@@ -294,11 +288,11 @@ export const make = Effect.fn("PluginHost.make")(function* (
     },
     integration: {
       list: () => response(integration.list()),
-      get: Effect.fn(function* (input) {
-        const item = yield* integration.get(Integration.ID.make(input.integrationID))
-        if (!item) return yield* Effect.fail(new Error(`Integration not found: ${input.integrationID}`))
-        return yield* response(Effect.succeed(item))
-      }),
+      get: effect (input) => {
+        const item = try integration.get(Integration.ID.make(input.integrationID))
+        if (!item) throw new Error(`Integration not found: ${input.integrationID}`)
+        return try response(Effect.succeed(item))
+      },
       connect: {
         key: (input) =>
           integration.connection.key({
@@ -403,18 +397,18 @@ export const make = Effect.fn("PluginHost.make")(function* (
       list: (input) => {
         const ref = locationRef(input)
         if (ref && !isCurrentLocation(ref))
-          return Effect.gen(function* () {
-            const location = yield* Location.Service
-            const mcp = yield* Mcp.Service
+          return effect {
+            const location = try Location.Service
+            const mcp = try Mcp.Service
             return {
               location: new Location.Info({
                 directory: location.directory,
                 workspaceID: location.workspaceID,
                 project: location.project,
               }),
-              data: yield* mcp.servers(),
+              data: try mcp.servers(),
             }
-          }).pipe(Effect.provide(locations.get(ref)))
+          } |> Effect.provide(%, locations.get(ref))
         return response(mcp.servers())
       },
       reload: mcp.reload,
@@ -435,33 +429,26 @@ export const make = Effect.fn("PluginHost.make")(function* (
       get: (input) =>
         permission
           .get(input.requestID)
-          .pipe(
-            Effect.flatMap((request) =>
+            |> Effect.flatMap(%, (request) =>
               request?.sessionID === input.sessionID
                 ? Effect.succeed(request)
                 : Effect.fail(new Error(`Permission request not found: ${input.requestID}`)),
             ),
-          ),
       reply: (input) =>
         permission
           .get(input.requestID)
-          .pipe(
-            Effect.flatMap((request) =>
+            |> Effect.flatMap(%, (request) =>
               request?.sessionID === input.sessionID
                 ? permission.reply({ requestID: input.requestID, reply: input.decision, message: input.message })
                 : Effect.fail(new Error(`Permission request not found: ${input.requestID}`)),
             ),
-          ),
       // Plain rejections stay defects, as for built-in tools, so they end the step.
       assert: (input) =>
-        permission.assert(input).pipe(
-          Effect.catchTags({
-            "Permission.BlockedError": (error) => Effect.fail(new Tool.Error({ message: error.message, error })),
-            "Permission.CorrectedError": (error) => Effect.fail(new Tool.Error({ message: error.feedback, error })),
-            "Session.NotFoundError": (error) =>
-              Effect.fail(new Tool.Error({ message: `Session not found: ${error.sessionID}`, error })),
-          }),
-        ),
+        do { const catchProgram = permission.assert(input); effect { return catchProgram catch effect (error) => match (error) {
+          when { _tag: "Permission.BlockedError" }: throw new Tool.Error({ message: error.message, error });
+          when { _tag: "Permission.CorrectedError" }: throw new Tool.Error({ message: error.feedback, error });
+          when { _tag: "Session.NotFoundError" }: throw new Tool.Error({ message: `Session not found: ${error.sessionID}`, error });
+        } } },
     },
     plugin: {
       list: () => response(plugin.list()),
@@ -546,7 +533,7 @@ export const make = Effect.fn("PluginHost.make")(function* (
     worktree: {
       list: worktrees.list,
       create: (input) => worktrees.create(input, currentWorktreeStrategies),
-      refresh: (input) => worktrees.refresh(input, currentWorktreeStrategies).pipe(Effect.asVoid),
+      refresh: (input) => worktrees.refresh(input, currentWorktreeStrategies) |> Effect.asVoid(%),
       remove: (input) => worktrees.remove(input, currentWorktreeStrategies),
       reload: worktreeStrategies.reload,
       transform: (callback) =>
@@ -555,9 +542,9 @@ export const make = Effect.fn("PluginHost.make")(function* (
             add: (definition) =>
               editor.add({
                 id: Worktree.StrategyID.make(definition.id),
-                create: (input) => definition.create(input).pipe(Effect.flatMap(decodeWorktree)),
+                create: (input) => definition.create(input) |> Effect.flatMap(%, decodeWorktree),
                 remove: (input) => definition.remove(input),
-                list: (directory) => definition.list(directory).pipe(Effect.flatMap(decodeWorktrees)),
+                list: (directory) => definition.list(directory) |> Effect.flatMap(%, decodeWorktrees),
               }),
           }),
         ),
@@ -586,47 +573,46 @@ export const make = Effect.fn("PluginHost.make")(function* (
       switchAgent: sessions.switchAgent,
       switchModel: sessions.switchModel,
       prompt: sessions.prompt,
-      generate: (input) => sessions.generate(input).pipe(Effect.map((text) => ({ text }))),
+      generate: (input) => sessions.generate(input) |> Effect.map(%, (text) => ({ text })),
       command: (input) => sessions.command({ ...input, command: input.name }),
       compact: sessions.compact,
-      update: Effect.fn(function* (input) {
-        yield* sessions.get(input.sessionID)
-        if (input.title !== undefined) yield* sessions.rename({ sessionID: input.sessionID, title: input.title })
+      update: effect (input) => {
+        try sessions.get(input.sessionID)
+        if (input.title !== undefined) try sessions.rename({ sessionID: input.sessionID, title: input.title })
         if (input.metadata !== undefined)
-          yield* sessions.setMetadata({ sessionID: input.sessionID, metadata: input.metadata })
+          try sessions.setMetadata({ sessionID: input.sessionID, metadata: input.metadata })
         if (input.permissions !== undefined)
-          yield* sessions.setPermissions({ sessionID: input.sessionID, permissions: input.permissions })
-      }),
+          try sessions.setPermissions({ sessionID: input.sessionID, permissions: input.permissions })
+      },
       move: sessions.move,
       synthetic: sessions.synthetic,
       interrupt: (input) =>
         sessions
-          .interrupt(input.sessionID, { resume: input.resume })
-          .pipe(Effect.map((interrupted) => ({ interrupted }))),
+          .interrupt(input.sessionID, { resume: input.resume })|> Effect.map(%, (interrupted) => ({ interrupted })),
       wait: (input) => sessions.wait(input.sessionID),
       context: (input) => sessions.context(input.sessionID),
       instructions: {
         entry: {
-          list: Effect.fn(function* (input) {
-            yield* sessions.get(input.sessionID)
-            return yield* instructionEntries.list(input.sessionID)
-          }),
-          put: Effect.fn(function* (input) {
-            const key = yield* Schema.decodeUnknownEffect(InstructionEntry.Key)(input.key)
-            yield* sessions.get(input.sessionID)
-            yield* instructionEntries.put({ ...input, key })
-          }),
-          remove: Effect.fn(function* (input) {
-            const key = yield* Schema.decodeUnknownEffect(InstructionEntry.Key)(input.key)
-            yield* sessions.get(input.sessionID)
-            yield* instructionEntries.remove({ ...input, key })
-          }),
+          list: effect (input) => {
+            try sessions.get(input.sessionID)
+            return try instructionEntries.list(input.sessionID)
+          },
+          put: effect (input) => {
+            const key = try Schema.decodeUnknownEffect(InstructionEntry.Key)(input.key)
+            try sessions.get(input.sessionID)
+            try instructionEntries.put({ ...input, key })
+          },
+          remove: effect (input) => {
+            const key = try Schema.decodeUnknownEffect(InstructionEntry.Key)(input.key)
+            try sessions.get(input.sessionID)
+            try instructionEntries.remove({ ...input, key })
+          },
         },
       },
     },
   }
   return context
-})
+}, "PluginHost.make")
 
 export const requirements = LayerNode.group([
   App.node,
@@ -673,8 +659,7 @@ export function storage(kv: KV.Interface, pluginID: string): Plugin.Context["sto
           after: options.after === undefined ? undefined : namespace + options.after,
           limit: options.limit,
         })
-        .pipe(
-          Effect.map((result) => {
+          |> Effect.map(%, (result) => {
             const entries = result.entries.map((entry) => ({
               key: entry.key.slice(namespace.length),
               value: entry.value,
@@ -682,7 +667,6 @@ export function storage(kv: KV.Interface, pluginID: string): Plugin.Context["sto
             if (result.next === undefined) return { entries }
             return { entries, next: result.next.slice(namespace.length) }
           }),
-        ),
   }
 }
 
@@ -693,21 +677,20 @@ function methodImplementation(input: IntegrationMethodRegistration): Integration
       integrationID: Integration.ID.make(input.integrationID),
       method: { ...input.method, id: Integration.MethodID.make(input.method.id) },
       authorize: (answer) =>
-        input.authorize(answer).pipe(
-          Effect.map((authorization) => {
+        input.authorize(answer)
+          |> Effect.map(%, (authorization) => {
             if (authorization.mode === "auto") {
               return {
                 ...authorization,
-                callback: authorization.callback.pipe(Effect.map(credential)),
+                callback: authorization.callback |> Effect.map(%, credential),
               }
             }
             return {
               ...authorization,
-              callback: (code: string) => authorization.callback(code).pipe(Effect.map(credential)),
+              callback: (code: string) => authorization.callback(code) |> Effect.map(%, credential),
             }
           }),
-        ),
-      ...(refresh ? { refresh: (value: Credential.OAuth) => refresh(value).pipe(Effect.map(credential)) } : {}),
+      ...(refresh ? { refresh: (value: Credential.OAuth) => refresh(value) |> Effect.map(%, credential) } : {}),
       ...(input.label ? { label: input.label } : {}),
     }
   }

@@ -418,8 +418,8 @@
       "default": "./.vibelang/js/src/providers/opencode/decisions.js"
     },
     "./providers/openrouter": {
-      "types": "./src/providers/openrouter.ts",
-      "vibelang-source": "./src/providers/openrouter.ts",
+      "types": "./src/providers/openrouter.d.vibe.ts",
+      "vibelang-source": "./src/providers/openrouter.vibe",
       "default": "./.vibelang/js/src/providers/openrouter.js"
     },
     "./providers/openrouter/decisions": {
@@ -594,8 +594,8 @@
       "default": "./.vibelang/js/src/protocols/openai-images.js"
     },
     "./protocols/openai-responses": {
-      "types": "./src/protocols/openai-responses.ts",
-      "vibelang-source": "./src/protocols/openai-responses.ts",
+      "types": "./src/protocols/openai-responses.d.vibe.ts",
+      "vibelang-source": "./src/protocols/openai-responses.vibe",
       "default": "./.vibelang/js/src/protocols/openai-responses.js"
     },
     "./protocols/openai-speech": {
@@ -637,8 +637,8 @@
     "@types/bun": "catalog:",
     "@typescript/native": "catalog:",
     "typescript": "catalog:",
-    "vibelang": "0.0.12",
-    "vibelang-vite": "0.0.12",
+    "vibelang": "file:../../.vibelang-toolchain/vibelang-0.0.13-637d08c93ff1.tgz",
+    "vibelang-vite": "file:../../.vibelang-toolchain/vibelang-vite-0.0.13-4bdf1e25b72f.tgz",
     "fast-check": "catalog:"
   },
   "dependencies": {
@@ -649,7 +649,7 @@
     "aws4fetch": "1.0.20",
     "effect": "catalog:",
     "google-auth-library": "10.5.0",
-    "vibelang-runtime": "0.0.12"
+    "vibelang-runtime": "file:../../.vibelang-toolchain/vibelang-runtime-0.0.13-89b143f8885a.tgz"
   },
   "repository": {
     "type": "git",

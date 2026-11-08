@@ -45,7 +45,7 @@
     "ghostty-web": "github:anomalyco/ghostty-web#e91e38a9ceb13c566ddfa15185a9393849f712a9",
     "knobs": "npm:@kitlangton/knobs@0.4.0-next.22",
     "solid-js": "catalog:",
-    "vibelang-runtime": "0.0.12"
+    "vibelang-runtime": "file:../../.vibelang-toolchain/vibelang-runtime-0.0.13-89b143f8885a.tgz"
   },
   "devDependencies": {
     "@happy-dom/global-registrator": "20.0.11",
@@ -59,8 +59,8 @@
     "electron-updater": "6.8.9",
     "lighthouse": "13.4.1",
     "vite": "catalog:",
-    "vibelang": "0.0.12",
-    "vibelang-vite": "0.0.12",
+    "vibelang": "file:../../.vibelang-toolchain/vibelang-0.0.13-637d08c93ff1.tgz",
+    "vibelang-vite": "file:../../.vibelang-toolchain/vibelang-vite-0.0.13-4bdf1e25b72f.tgz",
     "fast-check": "catalog:"
   }
 }

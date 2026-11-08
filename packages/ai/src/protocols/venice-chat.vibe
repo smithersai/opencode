@@ -1,4 +1,3 @@
-import { Effect, Schema } from "effect"
 import { Protocol } from "../route/protocol.vibe"
 import { AIError, LLMEvent, type LanguageModelCompatibility, type LLMRequest } from "../schema/index.js"
 import { classifyProviderFailure } from "../provider-error.vibe"
@@ -159,10 +158,10 @@ const MARKER = "__ENCRYPTED_REASONING__"
 // Request lowering
 // ---------------------------------------------------------------------------
 
-const fromRequest = Effect.fn("VeniceChat.fromRequest")(function* (request: LLMRequest) {
-  const options = yield* ProviderShared.validateWith(Schema.decodeUnknownEffect(Options))(request.providerOptions ?? {})
-  const body = yield* OpenAIChat.fromRequest(request, {
-    cacheControl: cacheControl(),
+const fromRequest = effect (request: LLMRequest) => try withSpan(effect {
+  const options = try (try Effect.orDie(Effect.try({ try: () => ProviderShared.validateWith(Schema.decodeUnknownEffect(Options)), catch: (e) => e })))(request.providerOptions ?? {})
+  const body = try OpenAIChat.fromRequest(request, {
+    cacheControl: try Effect.orDie(Effect.try({ try: () => cacheControl(), catch: (e) => e })),
     assistant: (source, message) => {
       if (message.role !== "assistant") return message
       const parts = source.content.filter(
@@ -216,15 +215,15 @@ const fromRequest = Effect.fn("VeniceChat.fromRequest")(function* (request: LLMR
     response_format: options.responseFormat,
     user: options.user,
   }
-})
+}, "VeniceChat.fromRequest")
 
 // ---------------------------------------------------------------------------
 // Venice normalization around the shared Chat state machine
 // ---------------------------------------------------------------------------
 
-const step = Effect.fn("VeniceChat.step")(function* (state: State, event: typeof Event.Type) {
+const step = effect (state: State, event: { readonly [x: string]: unknown; readonly choices?: readonly { readonly [x: string]: unknown; readonly finish_reason?: string | null | undefined; readonly native_finish_reason?: string | null | undefined; readonly usage?: { readonly [x: string]: unknown; readonly prompt_tokens?: number | null | undefined; readonly completion_tokens?: number | null | undefined; readonly total_tokens?: number | null | undefined; readonly cached_tokens?: number | null | undefined; readonly prompt_cache_hit_tokens?: number | null | undefined; readonly cache_read_input_tokens?: number | null | undefined; readonly cache_created_input_tokens?: number | null | undefined; readonly prompt_tokens_details?: { readonly [x: string]: unknown; readonly cached_tokens?: number | null | undefined; readonly cache_write_tokens?: number | null | undefined; } | null | undefined; readonly completion_tokens_details?: { readonly [x: string]: unknown; readonly reasoning_tokens?: number | null | undefined; readonly accepted_prediction_tokens?: number | null | undefined; readonly rejected_prediction_tokens?: number | null | undefined; } | null | undefined; } | null | undefined; readonly delta?: { readonly [x: string]: unknown; readonly content?: string | null | undefined; readonly refusal?: string | null | undefined; readonly reasoning_content?: string | null | undefined; readonly reasoning?: string | null | undefined; readonly reasoning_text?: string | null | undefined; readonly reasoning_details?: unknown; readonly tool_calls?: readonly { readonly index?: number | null | undefined; readonly id?: string | null | undefined; readonly function?: { readonly name?: string | null | undefined; readonly arguments?: string | null | undefined; } | null | undefined; readonly extra_content?: unknown; readonly thought_signature?: string | null | undefined; }[] | null | undefined; readonly thought_signature?: string | null | undefined; } | null | undefined; }[] | null | undefined; readonly usage?: { readonly [x: string]: unknown; readonly prompt_tokens?: number | null | undefined; readonly completion_tokens?: number | null | undefined; readonly total_tokens?: number | null | undefined; readonly cached_tokens?: number | null | undefined; readonly prompt_cache_hit_tokens?: number | null | undefined; readonly cache_read_input_tokens?: number | null | undefined; readonly cache_created_input_tokens?: number | null | undefined; readonly completion_tokens_details?: { readonly [x: string]: unknown; readonly reasoning_tokens?: number | null | undefined; readonly accepted_prediction_tokens?: number | null | undefined; readonly rejected_prediction_tokens?: number | null | undefined; } | null | undefined; readonly prompt_tokens_details?: { readonly [x: string]: unknown; readonly cached_tokens?: number | null | undefined; readonly cache_write_tokens?: number | null | undefined; readonly cache_creation_input_tokens?: number | null | undefined; } | null | undefined; } | null | undefined; readonly error?: string | { readonly [x: string]: unknown; readonly code?: string | number | null | undefined; readonly message: string; } | null | undefined; readonly issues?: readonly { readonly message: string; readonly path?: readonly (string | number)[] | undefined; }[] | undefined; }) => try withSpan(effect {
   if (typeof event.error === "string")
-    return yield* new AIError({
+    throw new AIError({
       reason: classifyProviderFailure({
         message: [
           event.error,
@@ -246,7 +245,7 @@ const step = Effect.fn("VeniceChat.step")(function* (state: State, event: typeof
           .filter((length) => text.endsWith(MARKER.slice(0, length)))
           .at(-1) ?? 0)
   const visible = state.encrypted ? "" : marker >= 0 ? text.slice(0, marker) : text.slice(0, text.length - pending)
-  const result = yield* OpenAIChat.protocol.stream.step(state.shared, {
+  const result = try OpenAIChat.protocol.stream.step(state.shared, {
     ...event,
     error: event.error,
     usage: event.usage
@@ -295,10 +294,10 @@ const step = Effect.fn("VeniceChat.step")(function* (state: State, event: typeof
     },
     result[1],
   ] as const
-})
+}, "VeniceChat.step")
 
-const onHalt = Effect.fn("VeniceChat.onHalt")(function* (state: State) {
-  const events = yield* OpenAIChat.finishEvents(state.shared)
+const onHalt = effect (state: State) => try withSpan(effect {
+  const events = try OpenAIChat.finishEvents(state.shared)
   return events.flatMap((event): LLMEvent[] => {
     if (
       event.type !== "reasoning-end" &&
@@ -321,7 +320,7 @@ const onHalt = Effect.fn("VeniceChat.onHalt")(function* (state: State) {
       return [LLMEvent.reasoningDelta({ id: event.id, text: state.pending }), { ...event, providerMetadata }]
     return [{ ...event, providerMetadata }]
   })
-})
+}, "VeniceChat.onHalt")
 
 export const compatibility = {
   maxTokensField: "max_completion_tokens",
@@ -346,4 +345,4 @@ export const protocol = Protocol.make({
   },
 })
 
-export * as VeniceChat from "./venice-chat.js"
+export * as VeniceChat from "./venice-chat.vibe"

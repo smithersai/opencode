@@ -1,2 +1,2 @@
-export { imageModel as model } from "../openrouter.js"
-export type { Settings } from "../openrouter.js"
+export { imageModel as model } from "../openrouter.vibe"
+export type { Settings } from "../openrouter.vibe"

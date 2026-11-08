@@ -260,7 +260,7 @@ export const Plugin = {
                   const source = original.text
                   // Strings that differ only in \r ask to change line endings themselves, so they apply to the exact
                   // bytes. Every other edit matches the LF view Read shows the model and keeps the file's endings.
-                  const endingsOnly = input.oldString.replaceAll("\r", "") === input.newString.replaceAll("\r", "")
+                  const endingsOnly = (try Effect.orDie(Effect.try({ try: () => input.oldString.replaceAll("\r", ""), catch: (e) => e }))) === (try Effect.orDie(Effect.try({ try: () => input.newString.replaceAll("\r", ""), catch: (e) => e })))
                   const { matches, replace } = endingsOnly
                     ? {
                       matches: findOccurrences(source, input.oldString),
@@ -308,7 +308,7 @@ export const Plugin = {
                         : `No changes to apply: the edit leaves ${input.path} unchanged. Line endings follow the file; to change them, write \\r explicitly in oldString or newString.`,
                     })
                   }
-                  const replacementBom = replaced.startsWith("\uFEFF")
+                  const replacementBom = try Effect.orDie(Effect.try({ try: () => replaced.startsWith("\uFEFF"), catch: (e) => e }))
                   const result = try fileMutation.write({
                     target,
                     content: try Effect.orDie(

@@ -1,5 +1,3 @@
-import { Effect, Schema } from "effect"
-import { Base64 } from "effect/encoding"
 import { Protocol } from "../route/protocol.vibe"
 import { LLMEvent, LLMRequest, Message, ToolResultPart } from "../schema/index.js"
 import { OpenResponses } from "./open-responses.js"
@@ -59,9 +57,9 @@ const adapter = {
   restoreHostedToolItem: (item: unknown) => (Schema.is(ImageItem)(item) ? item : undefined),
 } satisfies OpenResponses.ProviderAdapter
 
-const fromRequest = Effect.fn("MetaResponses.fromRequest")(function* (request: LLMRequest) {
+const fromRequest = effect (request: LLMRequest) => try withSpan(effect {
   const key = request.model.route.providerMetadataKey ?? String(request.model.provider)
-  const body = yield* OpenResponses.fromRequestWithAdapter(
+  const body = try OpenResponses.fromRequestWithAdapter(
     LLMRequest.update(request, {
       messages: request.messages.map((message) =>
         Message.make({
@@ -115,7 +113,7 @@ const fromRequest = Effect.fn("MetaResponses.fromRequest")(function* (request: L
   }
   flushVideos()
   return { ...body, input }
-})
+}, "MetaResponses.fromRequest")
 
 type InputItem = OpenResponses.OpenResponsesBody["input"][number]
 
@@ -128,66 +126,54 @@ const HOSTED_TOOLS = {
   image_generation_call: {
     name: "image_generation",
     input: () => ({}),
-    result: Effect.fnUntraced(function* (raw: ResponsesHostedTools.Item) {
-      const item = yield* Schema.decodeUnknownEffect(ImageItem)(raw).pipe(
-        Effect.mapError((cause) =>
-          ProviderShared.eventError(
+    result: effect (raw: ResponsesHostedTools.Item) => {
+      const item = Schema.decodeUnknownEffect(ImageItem)(raw) catch effect (cause) => { throw ProviderShared.eventError(
             ADAPTER,
             "Meta returned an invalid image item",
             ProviderShared.encodeJson(raw),
             cause,
-          ),
-        ),
-      )
+          ) }
       if (item.error !== undefined && item.error !== null) return { type: "error" as const, value: item.error }
       if (!item.result)
-        return yield* ProviderShared.eventError(
+        throw ProviderShared.eventError(
           ADAPTER,
           "Meta returned an image without data",
           ProviderShared.encodeJson(raw),
         )
-      const data = yield* Effect.fromResult(Base64.decode(item.result)).pipe(
-        Effect.mapError((cause) =>
-          ProviderShared.eventError(
+      const data = Effect.fromResult(Base64.decode(item.result)) catch effect (cause) => { throw ProviderShared.eventError(
             ADAPTER,
             "Meta returned invalid image base64",
             ProviderShared.encodeJson(raw),
             cause,
-          ),
-        ),
-      )
+          ) }
       // Responses image items can omit output_format, including when PNG/JPEG was requested.
       const mime =
         item.output_format === undefined
-          ? (detectMediaType(data) ?? "application/octet-stream")
+          ? ((try Effect.orDie(Effect.try({ try: () => detectMediaType(data), catch: (e) => e }))) ?? "application/octet-stream")
           : `image/${item.output_format}`
       return {
         type: "content" as const,
         value: [{ type: "file" as const, uri: `data:${mime};base64,${item.result}`, mime }],
       }
-    }),
+    },
   },
 } satisfies ResponsesHostedTools.Definitions
 
-const onEvent = Effect.fnUntraced(function* (
+const onEvent = effect (
   state: OpenResponses.ParserState,
-  input: OpenResponses.Event,
-) {
-  const event = OpenResponses.normalize(state, input)
+  input: { readonly [x: string]: unknown; readonly type: string; readonly delta?: string | undefined; readonly arguments?: string | undefined; readonly text?: string | undefined; readonly item_id?: string | undefined; readonly output_index?: number | undefined; readonly summary_index?: number | undefined; readonly item?: { readonly [x: string]: unknown; readonly type: string; readonly id?: string | undefined; readonly call_id?: string | undefined; readonly name?: string | undefined; readonly namespace?: string | undefined; readonly arguments?: string | undefined; readonly encrypted_content?: string | null | undefined; } | null | undefined; readonly response?: { readonly [x: string]: unknown; readonly id?: string | undefined; readonly service_tier?: string | null | undefined; readonly incomplete_details?: { readonly reason?: string | undefined; } | null | undefined; readonly output?: readonly { readonly [x: string]: unknown; readonly type: string; readonly id?: string | undefined; readonly call_id?: string | undefined; readonly name?: string | undefined; readonly namespace?: string | undefined; readonly arguments?: string | undefined; readonly encrypted_content?: string | null | undefined; }[] | undefined; readonly usage?: { readonly [x: string]: unknown; readonly input_tokens?: number | undefined; readonly input_tokens_details?: { readonly [x: string]: unknown; readonly cached_tokens?: number | undefined; readonly cache_write_tokens?: number | undefined; } | null | undefined; readonly output_tokens?: number | undefined; readonly output_tokens_details?: { readonly [x: string]: unknown; readonly reasoning_tokens?: number | undefined; } | null | undefined; readonly total_tokens?: number | undefined; } | null | undefined; readonly error?: unknown; } | undefined; readonly code?: unknown; readonly message?: unknown; readonly error?: unknown; readonly status?: unknown; readonly status_code?: unknown; },
+) => {
+  const event = try Effect.orDie(Effect.try({ try: () => OpenResponses.normalize(state, input), catch: (e) => e }))
   if (event.type === "response.output_item.done" && event.item && ResponsesHostedTools.isItem(event.item, HOSTED_TOOLS))
-    return yield* ResponsesHostedTools.onDone(state, event.item, HOSTED_TOOLS)
-  const result = yield* OpenResponses.step(state, event)
+    return try ResponsesHostedTools.onDone(state, event.item, HOSTED_TOOLS)
+  const result = try OpenResponses.step(state, event)
   if (event.type !== "response.output_item.done" || event.item?.type !== "message") return result
-  const message = yield* Schema.decodeUnknownEffect(MessageAnnotations)(event.item).pipe(
-    Effect.mapError((cause) =>
-      ProviderShared.eventError(
+  const message = Schema.decodeUnknownEffect(MessageAnnotations)(event.item) catch effect (cause) => { throw ProviderShared.eventError(
         ADAPTER,
         "Meta returned invalid message annotations",
         ProviderShared.encodeJson(event),
         cause,
-      ),
-    ),
-  )
+      ) }
   const annotations = message.content.flatMap((part) => part.annotations ?? [])
   if (annotations.length === 0) return result
   return [
@@ -204,11 +190,11 @@ const onEvent = Effect.fnUntraced(function* (
         : item,
     ),
   ] satisfies OpenResponses.StepResult
-})
+}
 
-const step = Effect.fnUntraced(function* (state: ParserState, input: OpenResponses.Event) {
+const step = effect (state: ParserState, input: { readonly [x: string]: unknown; readonly type: string; readonly delta?: string | undefined; readonly arguments?: string | undefined; readonly text?: string | undefined; readonly item_id?: string | undefined; readonly output_index?: number | undefined; readonly summary_index?: number | undefined; readonly item?: { readonly [x: string]: unknown; readonly type: string; readonly id?: string | undefined; readonly call_id?: string | undefined; readonly name?: string | undefined; readonly namespace?: string | undefined; readonly arguments?: string | undefined; readonly encrypted_content?: string | null | undefined; } | null | undefined; readonly response?: { readonly [x: string]: unknown; readonly id?: string | undefined; readonly service_tier?: string | null | undefined; readonly incomplete_details?: { readonly reason?: string | undefined; } | null | undefined; readonly output?: readonly { readonly [x: string]: unknown; readonly type: string; readonly id?: string | undefined; readonly call_id?: string | undefined; readonly name?: string | undefined; readonly namespace?: string | undefined; readonly arguments?: string | undefined; readonly encrypted_content?: string | null | undefined; }[] | undefined; readonly usage?: { readonly [x: string]: unknown; readonly input_tokens?: number | undefined; readonly input_tokens_details?: { readonly [x: string]: unknown; readonly cached_tokens?: number | undefined; readonly cache_write_tokens?: number | undefined; } | null | undefined; readonly output_tokens?: number | undefined; readonly output_tokens_details?: { readonly [x: string]: unknown; readonly reasoning_tokens?: number | undefined; } | null | undefined; readonly total_tokens?: number | undefined; } | null | undefined; readonly error?: unknown; } | undefined; readonly code?: unknown; readonly message?: unknown; readonly error?: unknown; readonly status?: unknown; readonly status_code?: unknown; }) => {
   const completedItems = new Set(state.completedItems)
-  const event = OpenResponses.normalize(state, input)
+  const event = try Effect.orDie(Effect.try({ try: () => OpenResponses.normalize(state, input), catch: (e) => e }))
   if (event.type === "response.output_item.done" && event.item && completedItems.has(event.item.id))
     return [state, []] as const
   const events: LLMEvent[] = []
@@ -217,19 +203,19 @@ const step = Effect.fnUntraced(function* (state: ParserState, input: OpenRespons
   // Recover terminal-only items in order, without duplicating Spark's streamed items.
   if (event.type === "response.completed") {
     for (const [index, item] of (event.response?.output ?? []).entries()) {
-      const done = OpenResponses.normalize(current, { type: "response.output_item.done", item, output_index: index })
+      const done = try Effect.orDie(Effect.try({ try: () => OpenResponses.normalize(current, { type: "response.output_item.done", item, output_index: index }), catch: (e) => e }))
       // Spark changes reasoning IDs in the terminal snapshot; output indices still identify the streamed items.
       if (!done.item || completedItems.has(done.item.id) || completedItems.has(state.outputItems[index] ?? "")) continue
-      const result = yield* onEvent(current, done)
+      const result = try onEvent(current, done)
       current = result[0]
       events.push(...result[1])
       completedItems.add(done.item.id)
     }
   }
-  const result = yield* onEvent(current, event)
+  const result = try onEvent(current, event)
   if (event.type === "response.output_item.done" && event.item) completedItems.add(event.item.id)
   return [{ ...result[0], completedItems }, [...events, ...result[1]]] as const
-})
+}
 
 export const protocol = Protocol.make({
   id: ADAPTER,
@@ -244,4 +230,4 @@ export const protocol = Protocol.make({
 
 export const httpTransport = OpenResponses.httpTransport
 
-export * as MetaResponses from "./meta-responses.js"
+export * as MetaResponses from "./meta-responses.vibe"

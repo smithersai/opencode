@@ -1,4 +1,3 @@
-import { Schema } from "effect"
 import { LLM } from "@opencode/schema/llm"
 import { ContentBlockID, ToolCallID } from "./ids.vibe"
 import {

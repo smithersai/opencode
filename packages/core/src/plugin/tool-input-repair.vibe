@@ -29,7 +29,8 @@ export const Plugin = define({
       // The outer Code Mode tool is built per snapshot rather than registered, so it cannot be
       // looked up here. Its `{ code }` input is trivial; the tools it calls are repaired normally.
       if (event.tool === "execute") return
-      const tool = (try ctx.tool.list()).find((tool) => tool.id === event.tool)
+      const list2 = try ctx.tool.list()
+      const tool = try Effect.orDie(Effect.try({ try: () => list2.find((tool) => tool.id === event.tool), catch: (e) => e }))
       if (!tool) return
       const schema = (try Effect.orDie(Effect.try({ try: () => toolDefinition(tool), catch: (e) => e }))).inputSchema
       if (schema.type !== "object") return

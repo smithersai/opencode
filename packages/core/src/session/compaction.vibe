@@ -1,4 +1,4 @@
-export * as SessionCompaction from "./compaction.js"
+export * as SessionCompaction from "./compaction.vibe"
 
 import {
   AIError,
@@ -18,7 +18,7 @@ import type { StreamOptions } from "@opencode/ai/route"
 import type { SessionCompactionResult } from "@opencode/plugin/effect/session"
 import type { SessionError } from "@opencode/schema/session-error"
 import { makeLocationNode } from "@opencode/util/effect/app-node"
-import { Context, Effect, Exit, Fiber, Layer, Result, Scope, Stream } from "effect"
+import { Effect, Exit, Fiber, Layer, Result, Scope, Stream } from "effect"
 import { Agent } from "../agent.vibe"
 import { Bus } from "../bus.js"
 import { Database } from "../database/database.js"
@@ -68,18 +68,18 @@ export type Outcome =
   | { readonly status: "failed"; readonly error: SessionError.Error }
 
 export interface Interface extends State.Transformable<Editor> {
-  readonly compact: (trigger: Trigger) => Effect.Effect<Outcome>
+  readonly compact: (trigger: Trigger) => Outcome!!
   /**
    * Starts a background summary when the context nears the threshold. Never waits for it. Loads `context` only when
    * background summaries are on. `estimate`, when given, is `estimatePrompt` of the loaded context.
    */
   readonly precompute: <E>(
-    context: Effect.Effect<SessionContext.Loaded, E>,
+    context: SessionContext.Loaded!E,
     estimate?: Estimate,
-  ) => Effect.Effect<void, E>
+  ) => void!E
 }
 
-export class Service extends Context.Service<Service, Interface>()("@opencode/SessionCompaction") {}
+export service Service: Interface { static readonly key = "@opencode/SessionCompaction";}
 
 /**
  * A summary fills `text`, and references the messages it keeps verbatim with `metadata.keepID`; history
@@ -267,17 +267,16 @@ export const layer = Layer.effect(
     })
 
     /** The model that writes the summary, and the request size it aims for. */
-    const selectModel = Effect.fnUntraced(function* (
+    const selectModel = effect (
       context: SessionContext.Loaded,
       buffer: number | undefined,
       native: boolean,
-    ) {
-      const agent = native ? undefined : yield* agents.get(Agent.ID.make("compaction"))
+    ) => {
+      const agent = native ? undefined : try agents.get(Agent.ID.make("compaction"))
       const model =
         (agent?.model &&
-          (yield* models
-            .resolve({ ...context.session, model: agent.model }, catalog.available)
-            .pipe(Effect.orElseSucceed(() => undefined)))) ??
+          (models
+            .resolve({ ...context.session, model: agent.model }, catalog.available) catch () => undefined)) ??
         context.model
       const ceiling = calculateCeiling(model.limit, buffer)
       // An unknown window never triggers auto compaction, but the compaction request still needs a size to aim for.
@@ -285,10 +284,10 @@ export const layer = Layer.effect(
         ? ceiling
         : calculateCeiling({ ...model.limit, context: UNKNOWN_WINDOW }, buffer)
       return { context: model === context.model ? context : { ...context, model }, cap }
-    })
+    }
 
-    const compact = Effect.fn("SessionCompaction.compact")(function* (trigger: Trigger): Effect.fn.Return<Outcome> {
-      const settings = state.get()
+    const compact = effect (trigger: Trigger): Outcome!! => try withSpan((effect (): Outcome!! => {
+      const settings = try Effect.orDie(Effect.try({ try: () => state.get(), catch: (e) => e }))
       const context = trigger.context
 
       // Only the user compacts when automatic compaction is off, overflow included.
@@ -301,7 +300,7 @@ export const layer = Layer.effect(
       const held = precomputed.get(context.session.id)
       precomputed.delete(context.session.id)
       const native = context.model.compaction?.type === "native"
-      const model = yield* selectModel(context, settings.buffer, native)
+      const model = try selectModel(context, settings.buffer, native)
       // The provider just rejected this context, so the estimate ran low; the first attempt already aims below it.
       const budget =
         trigger.reason === "overflow"
@@ -312,20 +311,19 @@ export const layer = Layer.effect(
       // The runner opened the manual compaction's message when it delivered the `/compact` item. An automatic one
       // opens here, before any wait, so a background summary still being written shows as a running compaction.
       if (trigger.reason !== "manual")
-        yield* bus.publish(SessionEvent.Compaction.Started, { sessionID: context.session.id, reason: "auto" })
-      const swapped = held ? yield* usePrecomputed(selected, held, budget, settings) : undefined
+        try bus.publish(SessionEvent.Compaction.Started, { sessionID: context.session.id, reason: "auto" })
+      const swapped = held ? try usePrecomputed(selected, held, budget, settings) : undefined
       const compaction = swapped
         ? Effect.succeed(swapped)
         : native
           ? compactNatively(selected, budget, settings.keep)
           : summarize(selected, budget, settings.keep)
-      return yield* compaction.pipe(
-        Effect.matchEffect({
+      return try (compaction
+        |> Effect.matchEffect(%, {
           onSuccess: (result) => publish(selected, result),
           onFailure: (failure) => publish(selected, failure),
-        }),
-      )
-    })
+        }))
+    })(), "SessionCompaction.compact")
 
     /**
      * Once the context passes `PRECOMPUTE_RATIO` of the ceiling, summarizes everything before the latest response in
@@ -334,13 +332,13 @@ export const layer = Layer.effect(
      * for every step until compaction is actually due. One summary is held per Session until compaction takes it, or
      * until it fails or falls too far behind, when a newer response replaces it.
      */
-    const precompute = Effect.fn("SessionCompaction.precompute")(function* <E>(
-      load: Effect.Effect<SessionContext.Loaded, E>,
-      given?: Estimate,
-    ) {
-      const settings = state.get()
+    const precompute = effect <E>(
+      load: SessionContext.Loaded!E!never,
+      given?: Estimate | undefined,
+    ) => try withSpan(effect {
+      const settings = try Effect.orDie(Effect.try({ try: () => state.get(), catch: (e) => e }))
       if (!settings.precompute || !settings.auto) return
-      const context = yield* load
+      const context = try load
       if (context.model.compaction?.type === "native") return
       const ceiling = calculateCeiling(context.model.limit, settings.buffer)
       if (!Number.isFinite(ceiling)) return
@@ -363,18 +361,18 @@ export const layer = Layer.effect(
         if (index >= 0 && !failed && tailTokens(context, index) <= existing.tailLimit) return
         // Summarizing up to the same response again would repeat the same request.
         if (index >= 0 && (existing.keepID === anchor.id || failures >= PRECOMPUTE_MAX_FAILURES)) return
-        yield* Fiber.interrupt(existing.fiber)
+        try Fiber.interrupt(existing.fiber)
         precomputed.delete(sessionID)
       }
       // After a model switch nothing is cached for the new model yet; wait until its first response has written it.
       if (anchor.model.id !== context.model.ref.id || anchor.model.variant !== context.model.ref.variant) return
 
-      const model = yield* selectModel(context, settings.buffer, false)
+      const model = try selectModel(context, settings.buffer, false)
       const usage: SessionUsage.Recorded[] = []
-      const fiber = yield* summarize({ reason: "auto", context: model.context }, model.cap, settings.keep, {
+      const fiber = try (summarize({ reason: "auto", context: model.context }, model.cap, settings.keep, {
         messages: context.messages.slice(0, anchorIndex),
         usage: (recorded) => usage.push(recorded),
-      }).pipe(Effect.forkIn(scope))
+      }) |> Effect.forkIn(%, scope))
       precomputed.set(sessionID, {
         firstID: context.messages[0]?.id,
         keepID: anchor.id,
@@ -385,19 +383,19 @@ export const layer = Layer.effect(
         usage,
         fiber,
       })
-    })
+    }, "SessionCompaction.precompute")
 
     /**
      * The held summary plus everything since it, kept verbatim, when it still describes this conversation and that
      * tail is short. Waits for a summary still being written. Undefined, after stopping the background work, when it
      * cannot be used; compaction then summarizes as usual.
      */
-    const usePrecomputed = Effect.fnUntraced(function* (
+    const usePrecomputed = effect (
       trigger: Trigger,
       held: Precomputed,
       budget: number,
       settings: Settings,
-    ): Effect.fn.Return<Result | undefined> {
+    ): (Result | undefined)!! => {
       const context = trigger.context
       const index = heldIndex(held, context)
       const usable =
@@ -407,16 +405,16 @@ export const layer = Layer.effect(
         index >= 0 &&
         tailTokens(context, index) <= tailLimit(settings.keep, budget)
       if (!usable) {
-        yield* Fiber.interrupt(held.fiber)
+        try Fiber.interrupt(held.fiber)
         return undefined
       }
 
-      const exit = yield* Fiber.await(held.fiber).pipe(Effect.onInterrupt(() => Fiber.interrupt(held.fiber)))
+      const exit = try (Fiber.await(held.fiber) |> Effect.onInterrupt(%, () => Fiber.interrupt(held.fiber)))
       if (Exit.isFailure(exit)) return undefined
       // Background calls were billed as they finished; the compaction's message still shows what it cost.
       held.usage.forEach((usage) => addSpent(context.session.id, usage))
       return { ...exit.value, metadata: { keepID: held.keepID, ...exit.value.metadata } }
-    })
+    }
 
     const due = (context: SessionContext.Loaded, ceiling: number, estimate?: Estimate) => {
       const messages = context.messages
@@ -449,16 +447,16 @@ export const layer = Layer.effect(
      * E = one exchange: a user message and the replies to it. S = a summary. [S + "…"] = one checkpoint: a summary
      * plus the newest `keep` tokens of messages, referenced by their first message and sent as text.
      */
-    const summarize = Effect.fnUntraced(function* (
+    const summarize = effect (
       trigger: Trigger,
       budget: number,
       keep: number,
-      background?: Background,
-    ): Effect.fn.Return<Result, Failure> {
+      background?: Background | undefined,
+    ): Result!Failure => {
       const context = trigger.context
       const messages = background?.messages ?? context.messages
       const split = splitConversation(messages, keep)
-      if (split === undefined) return yield* Effect.fail(NOTHING_TO_COMPACT)
+      if (split === undefined) throw NOTHING_TO_COMPACT
       // A background summary covers all of its messages; what follows them is kept when it is swapped in.
       const keepID = background ? undefined : split.keepID
 
@@ -466,7 +464,7 @@ export const layer = Layer.effect(
       const prompt = buildPrompt(previous !== undefined, previous?.summary.includes(LEGACY_HEADING) ?? false)
       const headings = SUMMARY_TEMPLATE.split("\n").filter((line) => line.startsWith("##"))
       const filled = (text: string) => text.split("\n").some((line) => headings.includes(line.trim()))
-      const prepared = yield* prepare(context, messages, budget)
+      const prepared = try prepare(context, messages, budget)
       // Size the unchanged request with the number that decided to compact: the last response's count plus an
       // estimate of what came after it. Characters overstate a conversation whose old reasoning the provider drops.
       // A hook can still make this request larger than that count; the provider then rejects it and it is resent as
@@ -475,34 +473,33 @@ export const layer = Layer.effect(
 
       // Hooks saw the request without the summary prompt, so it is appended here. A reply that ignores the
       // template gets one reminder before it counts as a failure.
-      const send = (request: LLMRequest, size?: Estimate) =>
-        Effect.gen(function* () {
-          const prompted = fitOutput(
-            LLMRequest.update(request, { messages: [...request.messages, Message.user(prompt)] }),
-            context.model.limit,
-            size && { ...size, estimated: size.estimated + Token.estimate(prompt) },
-          )
-          const reply = yield* stream(context, prompted, prepared.options, background)
-          if (filled(reply.text)) return reply
+      const send = effect (request: LLMRequest, size?: Estimate) => {
+        const prompted = fitOutput(
+          LLMRequest.update(request, { messages: [...request.messages, Message.user(prompt)] }),
+          context.model.limit,
+          size && { ...size, estimated: size.estimated + (try Effect.orDie(Effect.try({ try: () => Token.estimate(prompt), catch: (e) => e }))) },
+        )
+        const reply = try stream(context, prompted, prepared.options, background)
+        if (filled(reply.text)) return reply
 
-          const nudged = fitOutput(
-            LLMRequest.update(prompted, { messages: [...prompted.messages, Message.user(NUDGE)] }),
-            context.model.limit,
-            size && { ...size, estimated: size.estimated + Token.estimate(prompt) + Token.estimate(NUDGE) },
-          )
-          const retry = yield* stream(context, nudged, prepared.options, background)
-          if (filled(retry.text)) return retry
-          return yield* Effect.fail<Failure>({
-            error: {
-              type: "compaction.failed",
-              message: retry.text.trim()
-                ? "Compaction summary did not match the required template"
-                : "Compaction produced no summary",
-            },
-          })
+        const nudged = fitOutput(
+          LLMRequest.update(prompted, { messages: [...prompted.messages, Message.user(NUDGE)] }),
+          context.model.limit,
+          size && { ...size, estimated: size.estimated + (try Effect.orDie(Effect.try({ try: () => Token.estimate(prompt), catch: (e) => e }))) + (try Effect.orDie(Effect.try({ try: () => Token.estimate(NUDGE), catch: (e) => e }))) },
+        )
+        const retry = try stream(context, nudged, prepared.options, background)
+        if (filled(retry.text)) return retry
+        return try Effect.fail<Failure>({
+          error: {
+            type: "compaction.failed",
+            message: retry.text.trim()
+              ? "Compaction summary did not match the required template"
+              : "Compaction produced no summary",
+          },
         })
+      }
 
-      const overhead = Token.estimate(prompt) + Token.estimate(NUDGE)
+      const overhead = (try Effect.orDie(Effect.try({ try: () => Token.estimate(prompt), catch: (e) => e }))) + (try Effect.orDie(Effect.try({ try: () => Token.estimate(NUDGE), catch: (e) => e })))
       // Automatic compaction starts past the ceiling, so the whole conversation is sent unchanged while the window can
       // still fit the summary. Below that, the history before the tail is sent instead, as before: unchanged when it fits,
       // which still reuses the cache for that shorter prefix, and as text otherwise. Dropping exchanges to make room
@@ -512,7 +509,7 @@ export const layer = Layer.effect(
         trigger.reason === "overflow"
           ? budget
           : Math.max(budget, summaryRoom(context.model.limit, prepared.request.generation?.maxTokens))
-      const result = yield* deliver(
+      const result = try deliver(
         trigger,
         prepared,
         budget - overhead,
@@ -523,7 +520,7 @@ export const layer = Layer.effect(
       if (!keepID) return result
       // A compaction hook may choose its own kept range.
       return { ...result, metadata: { keepID, ...result.metadata } }
-    })
+    }
 
     /**
      *   endpoint:  [window]                      →  [U U][item]    the provider picks which messages to keep
@@ -537,45 +534,43 @@ export const layer = Layer.effect(
      * window = the previous compaction and everything since. item = one encrypted compaction item, which only
      * replays on the model that made it. U = a user message as typed.
      */
-    const compactNatively = Effect.fnUntraced(function* (
+    const compactNatively = effect (
       trigger: Trigger,
       budget: number,
       keep: number,
-    ): Effect.fn.Return<Result, Failure> {
+    ): Result!Failure => {
       const context = trigger.context
-      if (!context.messages.some(SessionRecentText.messageToText)) return yield* Effect.fail(NOTHING_TO_COMPACT)
+      if (!context.messages.some(SessionRecentText.messageToText)) throw NOTHING_TO_COMPACT
       const unsupported = (message: string) =>
         Effect.fail<Failure>({ error: { type: "provider.unsupported-operation", message } })
-      const prepared = yield* prepare(context, context.messages, budget, "session")
+      const prepared = try prepare(context, context.messages, budget, "session")
 
       const toResult = (window: ReadonlyArray<Message>, usage: Usage | undefined) =>
-        spend(context.session.id, usage && SessionUsage.record(usage, context.model.cost)).pipe(
-          Effect.as<Result>({
+        spend(context.session.id, usage && SessionUsage.record(usage, context.model.cost))
+          |> Effect.as<Result>({
             text: "",
             // Plain JSON, not the schema encoder: provider metadata can hold undefined entries, which it rejects.
             native: { messages: JSON.parse(JSON.stringify(window)) },
-          }),
-        )
+          })(%)
 
       const send = (request: LLMRequest) => {
         if (LLMClient.canCompact(request, { mechanism: "trigger" })) {
-          return Effect.gen(function* () {
-            const history = yield* SessionHistory.load(db, context.session.id, "local").pipe(Effect.orDie)
+          return effect {
+            const history = try (SessionHistory.load(db, context.session.id, "local") |> Effect.orDie(%))
             const retained = recentUserMessages(history, context.model, keep)
-            const response = yield* llm.compact(request, { ...prepared.options, mechanism: "trigger" })
-            return yield* toResult([...retained, Message.assistant(response.checkpoint)], response.usage)
-          })
+            const response = try llm.compact(request, { ...prepared.options, mechanism: "trigger" })
+            return try toResult([...retained, Message.assistant(response.checkpoint)], response.usage)
+          }
         }
         if (LLMClient.canCompact(request)) {
           return llm
-            .compact(request, { mechanism: "endpoint", http: prepared.options.http })
-            .pipe(Effect.flatMap((response) => toResult(response.replacement, response.usage)))
+            .compact(request, { mechanism: "endpoint", http: prepared.options.http })|> Effect.flatMap(%, (response) => toResult(response.replacement, response.usage))
         }
         return unsupported(`Native compaction is not supported for ${request.model.provider}/${request.model.route.id}`)
       }
 
-      return yield* deliver(trigger, prepared, budget, send)
-    })
+      return try deliver(trigger, prepared, budget, send)
+    }
 
     /**
      * Sends the request as-is if it is estimated to fit `shrink.fit`, else `shrink.history` as-is if it fits `target`,
@@ -594,7 +589,7 @@ export const layer = Layer.effect(
       trigger: Trigger,
       prepared: Prepared,
       target: number,
-      send: (request: LLMRequest, size?: Estimate) => Effect.Effect<Result, AIError | Failure>,
+      send: (request: LLMRequest, size?: Estimate) => Result!(AIError | Failure),
       shrink: { readonly fit: number; readonly history: LLMRequest; readonly measured?: Estimate } = {
         fit: target,
         history: prepared.request,
@@ -769,7 +764,7 @@ export const layer = Layer.effect(
       return llm.stream(request, options).pipe(
         Stream.runFoldEffect(
           (): Streamed => ({ text: "" }),
-          (streamed, event): Effect.Effect<Streamed, AIError | Failure> => {
+          (streamed, event): Streamed!(AIError | Failure)! => {
             if (LLMEvent.is.providerError(event)) {
               if (event.classification === undefined)
                 return unusable({ type: "provider.error", message: event.message })
@@ -787,9 +782,8 @@ export const layer = Layer.effect(
             }
 
             if (LLMEvent.is.stepFinish(event)) {
-              return spend(sessionID, SessionUsage.record(event.usage, context.model.cost), background?.usage).pipe(
-                Effect.as(streamed),
-              )
+              return spend(sessionID, SessionUsage.record(event.usage, context.model.cost), background?.usage)
+                |> Effect.as(%, streamed)
             }
 
             if (!LLMEvent.is.finish(event)) return Effect.succeed(streamed)
@@ -855,13 +849,12 @@ export const layer = Layer.effect(
         tokens: supplied.tokens,
         cost: SessionUsage.calculateCost(context.model.cost, supplied.tokens),
       }
-      return spend(context.session.id, usage, background?.usage).pipe(
-        Effect.as<Result>({
+      return spend(context.session.id, usage, background?.usage)
+        |> Effect.as<Result>({
           text: supplied.summary,
           native: supplied.native,
           metadata: supplied.metadata,
-        }),
-      )
+        })(%)
     }
 
     /**
@@ -879,23 +872,23 @@ export const layer = Layer.effect(
       usage: SessionUsage.Recorded | undefined,
       record = (recorded: SessionUsage.Recorded) => addSpent(sessionID, recorded),
     ) =>
-      Effect.gen(function* () {
+      effect {
         if (!usage) return
         record(usage)
-        yield* bus.publish(SessionEvent.UsageRecorded, { sessionID, source: "compaction", ...usage })
-      })
+        try bus.publish(SessionEvent.UsageRecorded, { sessionID, source: "compaction", ...usage })
+      }
 
-    const publish = Effect.fnUntraced(function* (
+    const publish = effect (
       trigger: Trigger,
-      outcome: Result | Failure,
-    ): Effect.fn.Return<Outcome> {
+      outcome: Failure | Result,
+    ): Outcome!! => {
       const context = trigger.context
       const sessionID = context.session.id
       const reason = trigger.reason === "manual" ? "manual" : "auto"
       const usage = spent.get(sessionID)
 
       if ("error" in outcome) {
-        yield* bus.publish(SessionEvent.Compaction.Failed, {
+        try bus.publish(SessionEvent.Compaction.Failed, {
           sessionID,
           reason,
           inputID: trigger.reason === "manual" ? trigger.inputID : undefined,
@@ -905,7 +898,7 @@ export const layer = Layer.effect(
         return { status: "failed", error: outcome.error }
       }
 
-      yield* bus.publish(
+      try bus.publish(
         SessionEvent.Compaction.Ended,
         {
           sessionID,
@@ -918,21 +911,20 @@ export const layer = Layer.effect(
         { metadata: outcome.metadata },
       )
       return { status: "completed" }
-    })
+    }
 
     return Service.of({
       transform: state.transform,
       reload: state.reload,
       // A manual compaction settles through its `/compact` inbox item, which the runner owns.
       compact: (trigger) =>
-        compact(trigger).pipe(
-          Effect.onInterrupt(() =>
+        compact(trigger)
+          |> Effect.onInterrupt(%, () =>
             trigger.reason === "manual"
               ? Effect.void
               : publish(trigger, { error: { type: "compaction.interrupted", message: "Compaction was interrupted" } }),
-          ),
-          Effect.ensuring(Effect.sync(() => spent.delete(trigger.context.session.id))),
-        ),
+          )
+          |> Effect.ensuring(%, effect { return spent.delete(trigger.context.session.id) }),
       precompute,
     })
   }),

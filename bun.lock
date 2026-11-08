@@ -649,6 +649,7 @@
         "@tsconfig/bun": "catalog:",
         "@types/bun": "catalog:",
         "@typescript/native": "catalog:",
+        "fast-check": "catalog:",
         "prettier": "3.6.2",
         "typescript": "catalog:",
         "vibelang": "0.0.12",

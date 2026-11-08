@@ -241,6 +241,7 @@
     "@typescript/native": "catalog:",
     "prettier": "3.6.2",
     "typescript": "catalog:",
-    "vibelang": "0.0.12"
+    "vibelang": "0.0.12",
+    "fast-check": "catalog:"
   }
 }

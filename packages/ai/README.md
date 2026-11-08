@@ -1573,3 +1573,5 @@ This package is built on Effect. Public methods in `@opencode/ai/effect` return 
 ## Development scripts
 
 Run `bun run test test/recording-script.test.ts` from this directory to check the example and recording setup programs, including gateway URL options.
+
+`DecisionTextPart` and `DecisionMediaPart` are codec values. Read their decoded types through `typeof DecisionTextPart.Type` and `typeof DecisionMediaPart.Type`; these exports do not declare same-named types.

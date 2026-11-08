@@ -1,0 +1,6 @@
+{
+  "module": "decision",
+  "names": ["DecisionTextPart", "DecisionMediaPart"],
+  "nativeDeclaration": "export declare const DecisionTextPart: unknown;\nexport declare const DecisionMediaPart: unknown;\n",
+  "contract": "Codec constants declare values without same-named exported types."
+}

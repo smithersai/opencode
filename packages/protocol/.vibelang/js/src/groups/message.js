@@ -85,9 +85,7 @@ export const SessionMediaMessagesResponse = Schema.Struct({
     cursor: MessagesCursor,
 });
 /** Experimental: the `session.message` response for clients that opt into `experimental-media-uri`. */
-export const SessionMediaMessageResponse = Schema.Struct({
-    data: PublicMediaSessionMessage,
-});
+export const SessionMediaMessageResponse = Schema.Struct({ data: PublicMediaSessionMessage });
 export const MessageGroup = HttpApiGroup.make("server.message")
     .add(HttpApiEndpoint.get("session.messages", "/api/session/:sessionID/message", {
     params: { sessionID: Session.ID },

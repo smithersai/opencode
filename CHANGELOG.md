@@ -6,6 +6,8 @@ Release notes for OpenCode V2, newest first.
 
 ### Bugs fixed
 
+- Decision input parts and media response codecs gained extra type exports during migration; they now keep their original value-only APIs and optional field behavior.
+
 - Development and test CLIs could ignore supplied version and channel metadata; runtime definitions now preserve those values and release highlights.
 
 - Generated Promise event streams could narrow opaque metadata to JSON values; they now preserve the declared data codec and its wire transformations.

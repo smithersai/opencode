@@ -15,13 +15,13 @@ import {
 // Input
 // ---------------------------------------------------------------------------
 
-export schema DecisionTextPart { readonly type: "text"; readonly text: string }
+export const DecisionTextPart = Schema.Struct({ type: Schema.Literal("text"), text: Schema.String })
 export const DecisionJsonPart = Schema.Struct({ type: Schema.Literal("json"), value: Schema.Json })
-export schema DecisionMediaPart {
-  readonly type: "media"
-  readonly media: Media.AssetSchema
-  readonly filename?: string
-}
+export const DecisionMediaPart = Schema.Struct({
+  type: Schema.Literal("media"),
+  media: Media.AssetSchema,
+  filename: Schema.optional(Schema.String),
+})
 export const DecisionPart = Schema.Union([DecisionTextPart, DecisionJsonPart, DecisionMediaPart]).pipe(
   Schema.toTaggedUnion("type"),
 )

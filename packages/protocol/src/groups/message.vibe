@@ -87,13 +87,13 @@ const MessagesCursor = Schema.Struct({
 })
 
 /** Experimental: the `session.messages` response for clients that opt into `experimental-media-uri`. */
-export schema SessionMediaMessagesResponse {
-  readonly data: ReadonlyArray<PublicMediaSessionMessage>
-  readonly cursor: MessagesCursor
-}
+export const SessionMediaMessagesResponse = Schema.Struct({
+  data: Schema.Array(PublicMediaSessionMessage),
+  cursor: MessagesCursor,
+})
 
 /** Experimental: the `session.message` response for clients that opt into `experimental-media-uri`. */
-export schema SessionMediaMessageResponse { readonly data: PublicMediaSessionMessage }
+export const SessionMediaMessageResponse = Schema.Struct({ data: PublicMediaSessionMessage })
 
 export const MessageGroup = HttpApiGroup.make("server.message")
   .add(

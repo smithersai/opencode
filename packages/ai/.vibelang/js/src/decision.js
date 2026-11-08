@@ -8,9 +8,7 @@ import { AIError, HttpOptions, ModelID, ProviderID, ProviderMetadata, ProviderOp
 // ---------------------------------------------------------------------------
 // Input
 // ---------------------------------------------------------------------------
-export const DecisionTextPart = Schema.Struct({
-    type: Schema.Literal("text"), text: Schema.String,
-});
+export const DecisionTextPart = Schema.Struct({ type: Schema.Literal("text"), text: Schema.String });
 export const DecisionJsonPart = Schema.Struct({ type: Schema.Literal("json"), value: Schema.Json });
 export const DecisionMediaPart = Schema.Struct({
     type: Schema.Literal("media"),

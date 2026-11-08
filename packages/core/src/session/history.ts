@@ -28,7 +28,9 @@ const decodeMedia = Schema.decodeUnknownEffect(SessionMessage.MediaInfo)
  */
 export type Boundary = "latest" | "local" | Model.Ref
 
-/** A completed provider compaction, which replays `native.messages` instead of a summary. */
+/** A completed provider compaction, which replays `native.messages` instead of a summary.
+ * @throws {never}
+ */
 export const isNativeCompaction = (
   message: SessionMessage.Info,
 ): message is SessionMessage.CompactionCompleted & { readonly native: { readonly messages: unknown } } =>

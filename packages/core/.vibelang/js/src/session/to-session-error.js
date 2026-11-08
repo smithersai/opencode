@@ -88,6 +88,7 @@ export function toSessionError(cause) {
         return { type: "provider.auth", message: cause.message };
     return { type: "unknown", message: cause instanceof Error ? cause.message : String(cause) };
 }
+/** @throws {never} */
 export function contentFilterError(summary, reason) {
     return {
         type: "provider.content-filter",

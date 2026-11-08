@@ -65,18 +65,24 @@ export function buildLocationServiceMap(replacements = []) {
         });
         const map = {
             ...inner,
-            get: (ref) => inner.get(LocationServiceMap.canonical(ref)),
-            contextEffect: (ref) => inner.contextEffect(LocationServiceMap.canonical(ref)),
-            contextEffectOption: (ref) => inner.contextEffectOption(LocationServiceMap.canonical(ref)),
-            invalidate: (ref) => Effect.uninterruptible(Effect.suspend(() => {
-                const key = LocationServiceMap.canonical(ref);
+            get: (ref) => Layer.unwrap(Effect_1.gen(function* () {
+                return inner.get(yield* Effect.orDie(Effect.try({ try: () => LocationServiceMap.canonical(ref), catch: (e) => e })));
+            })),
+            contextEffect: (ref) => {
+                return Effect_1.gen(function* contextEffect() { return yield* inner.contextEffect(yield* Effect.orDie(Effect.try({ try: () => LocationServiceMap.canonical(ref), catch: (e) => e }))); });
+            },
+            contextEffectOption: (ref) => {
+                return Effect_1.gen(function* contextEffectOption() { return yield* inner.contextEffectOption(yield* Effect.orDie(Effect.try({ try: () => LocationServiceMap.canonical(ref), catch: (e) => e }))); });
+            },
+            invalidate: (ref) => Effect.uninterruptible((Effect_1.gen(function* () {
+                const key = yield* Effect.orDie(Effect.try({ try: () => LocationServiceMap.canonical(ref), catch: (e) => e }));
                 const build = Option.getOrUndefined(MutableHashMap.get(builds, key));
                 MutableHashMap.remove(builds, key);
                 // Detach routing first, then cancel interactions and notify clients. Running
                 // steps retain their borrowed graph until they can hand off at a boundary.
                 // Do not await a boot here: failed/in-flight builds have their own cleanup path.
-                return Effect.andThen(inner.invalidate(key), build?.close ?? Effect.void);
-            })),
+                return yield* (Effect.andThen(inner.invalidate(key), build?.close ?? Effect.void));
+            }))),
         };
         // Cached instances borrow their owner instead of retaining its Layer scope.
         const bindings = [

@@ -13,7 +13,13 @@ const instances = makeGlobalNode({
       const locations = try LocationServiceMap.Service
       return Instance.Service.of({
         provide: (session) => Effect.provide(locations.get(session.location)),
-        live: (session) => RcMap.has(locations.rcMap, LocationServiceMap.canonical(session.location)),
+        live: effect (session) =>
+          try RcMap.has(
+            locations.rcMap,
+            try Effect.orDie(
+              Effect.try({ try: () => LocationServiceMap.canonical(session.location), catch: (e) => e }),
+            ),
+          ),
       })
     },
   ),
@@ -21,9 +27,15 @@ const instances = makeGlobalNode({
 })
 
 export function build<A, E>(root: LayerNode.Graph<A, E>, replacements: LayerNode.Replacements = []) {
-  const bindings = [Instance.node.replace(instances), ...replacements]
-  return LayerNode.compile(root, {
-    replacements: [LocationServiceMap.node.replace(buildLocationServiceMap(bindings)), ...bindings],
+  return Layer.unwrap(effect {
+    const bindings = [
+      try Effect.orDie(Effect.try({ try: () => Instance.node.replace(instances), catch: (e) => e })),
+      ...replacements,
+    ]
+    const locations = try Effect.orDie(
+      Effect.try({ try: () => LocationServiceMap.node.replace(buildLocationServiceMap(bindings)), catch: (e) => e }),
+    )
+    return LayerNode.compile(root, { replacements: [locations, ...bindings] })
   })
 }
 

@@ -79,7 +79,9 @@ export interface Interface extends State.Transformable<Editor> {
   ) => void!E
 }
 
-export service Service: Interface { static readonly key = "@opencode/SessionCompaction";}
+export service Service: Interface {
+  static readonly key = "@opencode/SessionCompaction"
+}
 
 /**
  * A summary fills `text`, and references the messages it keeps verbatim with `metadata.keepID`; history
@@ -162,7 +164,8 @@ const PRECOMPUTED_TAIL_SHARE = 0.25
 /** Failed background summaries after which no new one starts until the next compaction. */
 const PRECOMPUTE_MAX_FAILURES = 2
 
-const SUMMARY_TEMPLATE = `You MUST use this format for your response (you may omit sections that aren't applicable). Do not include the <template> tags in your response.
+const SUMMARY_TEMPLATE =
+  `You MUST use this format for your response (you may omit sections that aren't applicable). Do not include the <template> tags in your response.
 <template>
 ## Objective
 - [one or two brief sentences describing what the user is trying to accomplish]
@@ -226,8 +229,8 @@ export const buildPrompt = (update: boolean, legacy = false) => {
     // updates skip this. Remove once no session still in use has a latest checkpoint older than #48058.
     ...(legacy
       ? [
-          "The existing checkpoint was written with an earlier format that recorded far more detail than this one asks for. Rewrite it at the level of detail described below rather than carrying its detail forward. Keep its requirements, decisions, and open questions; they came from earlier conversation with the user.",
-        ]
+        "The existing checkpoint was written with an earlier format that recorded far more detail than this one asks for. Rewrite it at the level of detail described below rather than carrying its detail forward. Keep its requirements, decisions, and open questions; they came from earlier conversation with the user.",
+      ]
       : []),
     "Newer history always takes precedence over the existing checkpoint. Preserve previous information unless newer history clearly contradicts, supersedes, resolves, or makes it stale. If something is no longer relevant to continuing the work, you may remove it.",
     "Incorporate newer requirements, decisions, progress, and context. Reconcile Work State and Next Move: move completed work out of Active, remove resolved blockers and answered questions, and preserve unresolved or pending work.",
@@ -244,7 +247,7 @@ const LEGACY_HEADING = "## Additional Context"
 
 export const layer = Layer.effect(
   Service,
-  Effect.gen(function* () {
+  Effect.gen(function*() {
     const agents = yield* Agent.Service
     const bus = yield* Bus.Service
     const llm = yield* LLMClient.Service
@@ -273,11 +276,10 @@ export const layer = Layer.effect(
       native: boolean,
     ) => {
       const agent = native ? undefined : try agents.get(Agent.ID.make("compaction"))
-      const model =
-        (agent?.model &&
-          (models
-            .resolve({ ...context.session, model: agent.model }, catalog.available) catch () => undefined)) ??
-        context.model
+      const model = (agent?.model
+        && (models
+          .resolve({ ...context.session, model: agent.model }, catalog.available) catch () => undefined))
+        ?? context.model
       const ceiling = calculateCeiling(model.limit, buffer)
       // An unknown window never triggers auto compaction, but the compaction request still needs a size to aim for.
       const cap = Number.isFinite(ceiling)
@@ -286,44 +288,49 @@ export const layer = Layer.effect(
       return { context: model === context.model ? context : { ...context, model }, cap }
     }
 
-    const compact = effect (trigger: Trigger): Outcome!! => try withSpan((effect (): Outcome!! => {
-      const settings = try Effect.orDie(Effect.try({ try: () => state.get(), catch: (e) => e }))
-      const context = trigger.context
+    const compact = effect (trigger: Trigger): Outcome!! =>
+      try withSpan(
+        (effect (): Outcome!! => {
+          const settings = try Effect.orDie(Effect.try({ try: () => state.get(), catch: (e) => e }))
+          const context = trigger.context
 
-      // Only the user compacts when automatic compaction is off, overflow included.
-      if (trigger.reason !== "manual" && !settings.auto) return { status: "skipped" }
-      if (
-        trigger.reason === "auto" &&
-        !due(context, calculateCeiling(context.model.limit, settings.buffer), trigger.estimate)
+          // Only the user compacts when automatic compaction is off, overflow included.
+          if (trigger.reason !== "manual" && !settings.auto) return { status: "skipped" }
+          if (
+            trigger.reason === "auto"
+            && !due(context, calculateCeiling(context.model.limit, settings.buffer), trigger.estimate)
+          ) {
+            return { status: "skipped" }
+          }
+          const held = precomputed.get(context.session.id)
+          precomputed.delete(context.session.id)
+          const native = context.model.compaction?.type === "native"
+          const model = try selectModel(context, settings.buffer, native)
+          // The provider just rejected this context, so the estimate ran low; the first attempt already aims below it.
+          const budget = trigger.reason === "overflow"
+            ? Math.min(model.cap, Math.floor(total(trigger.estimate ?? estimatePrompt(context)) * SHRINK_STEPS[0]))
+            : model.cap
+
+          const selected = model.context === context ? trigger : { ...trigger, context: model.context }
+          // The runner opened the manual compaction's message when it delivered the `/compact` item. An automatic one
+          // opens here, before any wait, so a background summary still being written shows as a running compaction.
+          if (trigger.reason !== "manual") {
+            try bus.publish(SessionEvent.Compaction.Started, { sessionID: context.session.id, reason: "auto" })
+          }
+          const swapped = held ? try usePrecomputed(selected, held, budget, settings) : undefined
+          const compaction = swapped
+            ? Effect.succeed(swapped)
+            : native
+            ? compactNatively(selected, budget, settings.keep)
+            : summarize(selected, budget, settings.keep)
+          return try (compaction
+            |> Effect.matchEffect(%, {
+              onSuccess: (result) => publish(selected, result),
+              onFailure: (failure) => publish(selected, failure),
+            }))
+        })(),
+        "SessionCompaction.compact",
       )
-        return { status: "skipped" }
-      const held = precomputed.get(context.session.id)
-      precomputed.delete(context.session.id)
-      const native = context.model.compaction?.type === "native"
-      const model = try selectModel(context, settings.buffer, native)
-      // The provider just rejected this context, so the estimate ran low; the first attempt already aims below it.
-      const budget =
-        trigger.reason === "overflow"
-          ? Math.min(model.cap, Math.floor(total(trigger.estimate ?? estimatePrompt(context)) * SHRINK_STEPS[0]))
-          : model.cap
-
-      const selected = model.context === context ? trigger : { ...trigger, context: model.context }
-      // The runner opened the manual compaction's message when it delivered the `/compact` item. An automatic one
-      // opens here, before any wait, so a background summary still being written shows as a running compaction.
-      if (trigger.reason !== "manual")
-        try bus.publish(SessionEvent.Compaction.Started, { sessionID: context.session.id, reason: "auto" })
-      const swapped = held ? try usePrecomputed(selected, held, budget, settings) : undefined
-      const compaction = swapped
-        ? Effect.succeed(swapped)
-        : native
-          ? compactNatively(selected, budget, settings.keep)
-          : summarize(selected, budget, settings.keep)
-      return try (compaction
-        |> Effect.matchEffect(%, {
-          onSuccess: (result) => publish(selected, result),
-          onFailure: (failure) => publish(selected, failure),
-        }))
-    })(), "SessionCompaction.compact")
 
     /**
      * Once the context passes `PRECOMPUTE_RATIO` of the ceiling, summarizes everything before the latest response in
@@ -335,55 +342,59 @@ export const layer = Layer.effect(
     const precompute = effect <E>(
       load: SessionContext.Loaded!E!never,
       given?: Estimate | undefined,
-    ) => try withSpan(effect {
-      const settings = try Effect.orDie(Effect.try({ try: () => state.get(), catch: (e) => e }))
-      if (!settings.precompute || !settings.auto) return
-      const context = try load
-      if (context.model.compaction?.type === "native") return
-      const ceiling = calculateCeiling(context.model.limit, settings.buffer)
-      if (!Number.isFinite(ceiling)) return
-      const estimate = given ?? estimatePrompt(context)
-      if (due(context, ceiling, estimate)) return
-      if (total(estimate) < ceiling * PRECOMPUTE_RATIO) return
+    ) =>
+      try withSpan(
+        effect {
+          const settings = try Effect.orDie(Effect.try({ try: () => state.get(), catch: (e) => e }))
+          if (!settings.precompute || !settings.auto) return
+          const context = try load
+          if (context.model.compaction?.type === "native") return
+          const ceiling = calculateCeiling(context.model.limit, settings.buffer)
+          if (!Number.isFinite(ceiling)) return
+          const estimate = given ?? estimatePrompt(context)
+          if (due(context, ceiling, estimate)) return
+          if (total(estimate) < ceiling * PRECOMPUTE_RATIO) return
 
-      const anchorIndex = context.messages.findLastIndex((message) => hasMeasuredPrompt(message, context.model.ref))
-      const anchor = context.messages[anchorIndex]
-      if (anchorIndex <= 0 || anchor?.type !== "assistant" || !anchor.tokens) return
-      if (anchor.tokens.input + anchor.tokens.cache.read + anchor.tokens.cache.write < PRECOMPUTE_MIN_TOKENS) return
+          const anchorIndex = context.messages.findLastIndex((message) => hasMeasuredPrompt(message, context.model.ref))
+          const anchor = context.messages[anchorIndex]
+          if (anchorIndex <= 0 || anchor?.type !== "assistant" || !anchor.tokens) return
+          if (anchor.tokens.input + anchor.tokens.cache.read + anchor.tokens.cache.write < PRECOMPUTE_MIN_TOKENS) return
 
-      const sessionID = context.session.id
-      const existing = precomputed.get(sessionID)
-      const exit = existing?.fiber.pollUnsafe()
-      const failed = exit !== undefined && Exit.isFailure(exit)
-      const failures = (existing?.failures ?? 0) + (failed ? 1 : 0)
-      if (existing) {
-        const index = heldIndex(existing, context)
-        if (index >= 0 && !failed && tailTokens(context, index) <= existing.tailLimit) return
-        // Summarizing up to the same response again would repeat the same request.
-        if (index >= 0 && (existing.keepID === anchor.id || failures >= PRECOMPUTE_MAX_FAILURES)) return
-        try Fiber.interrupt(existing.fiber)
-        precomputed.delete(sessionID)
-      }
-      // After a model switch nothing is cached for the new model yet; wait until its first response has written it.
-      if (anchor.model.id !== context.model.ref.id || anchor.model.variant !== context.model.ref.variant) return
+          const sessionID = context.session.id
+          const existing = precomputed.get(sessionID)
+          const exit = existing?.fiber.pollUnsafe()
+          const failed = exit !== undefined && Exit.isFailure(exit)
+          const failures = (existing?.failures ?? 0) + (failed ? 1 : 0)
+          if (existing) {
+            const index = heldIndex(existing, context)
+            if (index >= 0 && !failed && tailTokens(context, index) <= existing.tailLimit) return
+            // Summarizing up to the same response again would repeat the same request.
+            if (index >= 0 && (existing.keepID === anchor.id || failures >= PRECOMPUTE_MAX_FAILURES)) return
+            try Fiber.interrupt(existing.fiber)
+            precomputed.delete(sessionID)
+          }
+          // After a model switch nothing is cached for the new model yet; wait until its first response has written it.
+          if (anchor.model.id !== context.model.ref.id || anchor.model.variant !== context.model.ref.variant) return
 
-      const model = try selectModel(context, settings.buffer, false)
-      const usage: SessionUsage.Recorded[] = []
-      const fiber = try (summarize({ reason: "auto", context: model.context }, model.cap, settings.keep, {
-        messages: context.messages.slice(0, anchorIndex),
-        usage: (recorded) => usage.push(recorded),
-      }) |> Effect.forkIn(%, scope))
-      precomputed.set(sessionID, {
-        firstID: context.messages[0]?.id,
-        keepID: anchor.id,
-        model: context.model.ref,
-        initial: context.initial,
-        tailLimit: tailLimit(settings.keep, model.cap),
-        failures,
-        usage,
-        fiber,
-      })
-    }, "SessionCompaction.precompute")
+          const model = try selectModel(context, settings.buffer, false)
+          const usage: SessionUsage.Recorded[] = []
+          const fiber = try (summarize({ reason: "auto", context: model.context }, model.cap, settings.keep, {
+            messages: context.messages.slice(0, anchorIndex),
+            usage: (recorded) => usage.push(recorded),
+          }) |> Effect.forkIn(%, scope))
+          precomputed.set(sessionID, {
+            firstID: context.messages[0]?.id,
+            keepID: anchor.id,
+            model: context.model.ref,
+            initial: context.initial,
+            tailLimit: tailLimit(settings.keep, model.cap),
+            failures,
+            usage,
+            fiber,
+          })
+        },
+        "SessionCompaction.precompute",
+      )
 
     /**
      * The held summary plus everything since it, kept verbatim, when it still describes this conversation and that
@@ -398,12 +409,11 @@ export const layer = Layer.effect(
     ): (Result | undefined)!! => {
       const context = trigger.context
       const index = heldIndex(held, context)
-      const usable =
-        settings.precompute &&
-        trigger.reason !== "overflow" &&
-        context.model.compaction?.type !== "native" &&
-        index >= 0 &&
-        tailTokens(context, index) <= tailLimit(settings.keep, budget)
+      const usable = settings.precompute
+        && trigger.reason !== "overflow"
+        && context.model.compaction?.type !== "native"
+        && index >= 0
+        && tailTokens(context, index) <= tailLimit(settings.keep, budget)
       if (!usable) {
         try Fiber.interrupt(held.fiber)
         return undefined
@@ -477,7 +487,12 @@ export const layer = Layer.effect(
         const prompted = fitOutput(
           LLMRequest.update(request, { messages: [...request.messages, Message.user(prompt)] }),
           context.model.limit,
-          size && { ...size, estimated: size.estimated + (try Effect.orDie(Effect.try({ try: () => Token.estimate(prompt), catch: (e) => e }))) },
+          size
+            && {
+              ...size,
+              estimated: size.estimated
+                + (try Effect.orDie(Effect.try({ try: () => Token.estimate(prompt), catch: (e) => e }))),
+            },
         )
         const reply = try stream(context, prompted, prepared.options, background)
         if (filled(reply.text)) return reply
@@ -485,7 +500,14 @@ export const layer = Layer.effect(
         const nudged = fitOutput(
           LLMRequest.update(prompted, { messages: [...prompted.messages, Message.user(NUDGE)] }),
           context.model.limit,
-          size && { ...size, estimated: size.estimated + (try Effect.orDie(Effect.try({ try: () => Token.estimate(prompt), catch: (e) => e }))) + (try Effect.orDie(Effect.try({ try: () => Token.estimate(NUDGE), catch: (e) => e }))) },
+          size
+            && {
+              ...size,
+              estimated: size.estimated + (try Effect.orDie(Effect.try({
+                try: () => Token.estimate(prompt),
+                catch: (e) => e,
+              }))) + (try Effect.orDie(Effect.try({ try: () => Token.estimate(NUDGE), catch: (e) => e }))),
+            },
         )
         const retry = try stream(context, nudged, prepared.options, background)
         if (filled(retry.text)) return retry
@@ -499,16 +521,16 @@ export const layer = Layer.effect(
         })
       }
 
-      const overhead = (try Effect.orDie(Effect.try({ try: () => Token.estimate(prompt), catch: (e) => e }))) + (try Effect.orDie(Effect.try({ try: () => Token.estimate(NUDGE), catch: (e) => e })))
+      const overhead = (try Effect.orDie(Effect.try({ try: () => Token.estimate(prompt), catch: (e) => e })))
+        + (try Effect.orDie(Effect.try({ try: () => Token.estimate(NUDGE), catch: (e) => e })))
       // Automatic compaction starts past the ceiling, so the whole conversation is sent unchanged while the window can
       // still fit the summary. Below that, the history before the tail is sent instead, as before: unchanged when it fits,
       // which still reuses the cache for that shorter prefix, and as text otherwise. Dropping exchanges to make room
       // for the tail would leave them in neither the summary nor the tail. Where 15% of the window is under
       // `RESERVE_MIN`, the ceiling equals `summaryRoom`, so automatic compaction always takes this fallback.
-      const fit =
-        trigger.reason === "overflow"
-          ? budget
-          : Math.max(budget, summaryRoom(context.model.limit, prepared.request.generation?.maxTokens))
+      const fit = trigger.reason === "overflow"
+        ? budget
+        : Math.max(budget, summaryRoom(context.model.limit, prepared.request.generation?.maxTokens))
       const result = try deliver(
         trigger,
         prepared,
@@ -545,28 +567,46 @@ export const layer = Layer.effect(
         Effect.fail<Failure>({ error: { type: "provider.unsupported-operation", message } })
       const prepared = try prepare(context, context.messages, budget, "session")
 
-      const toResult = (window: ReadonlyArray<Message>, usage: Usage | undefined) =>
-        spend(context.session.id, usage && SessionUsage.record(usage, context.model.cost))
-          |> Effect.as<Result>({
-            text: "",
-            // Plain JSON, not the schema encoder: provider metadata can hold undefined entries, which it rejects.
-            native: { messages: JSON.parse(JSON.stringify(window)) },
-          })(%)
+      const toResult = effect (window: ReadonlyArray<Message>, usage: Usage | undefined) => {
+        const recorded = usage
+          && try Effect.orDie(
+            Effect.try({ try: () => SessionUsage.record(usage, context.model.cost), catch: (e) => e }),
+          )
+        try spend(context.session.id, recorded)
+        return {
+          text: "",
+          // Plain JSON, not the schema encoder: provider metadata can hold undefined entries, which it rejects.
+          native: {
+            messages: try Effect.orDie(Effect.try({ try: () => JSON.parse(JSON.stringify(window)), catch: (e) => e })),
+          },
+        } satisfies Result
+      }
 
-      const send = (request: LLMRequest) => {
-        if (LLMClient.canCompact(request, { mechanism: "trigger" })) {
-          return effect {
+      const send = effect (request: LLMRequest) => {
+        const checkpoint = try Effect.orDie(Effect.try({
+          try: () => LLMClient.canCompact(request, { mechanism: "trigger" }) ? request : undefined,
+          catch: (e) => e,
+        }))
+        if (checkpoint) {
+          return try (effect {
             const history = try (SessionHistory.load(db, context.session.id, "local") |> Effect.orDie(%))
             const retained = recentUserMessages(history, context.model, keep)
-            const response = try llm.compact(request, { ...prepared.options, mechanism: "trigger" })
+            const response = try llm.compact(checkpoint, { ...prepared.options, mechanism: "trigger" })
             return try toResult([...retained, Message.assistant(response.checkpoint)], response.usage)
-          }
+          })
         }
-        if (LLMClient.canCompact(request)) {
-          return llm
-            .compact(request, { mechanism: "endpoint", http: prepared.options.http })|> Effect.flatMap(%, (response) => toResult(response.replacement, response.usage))
+        const endpoint = try Effect.orDie(Effect.try({
+          try: () => LLMClient.canCompact(request) ? request : undefined,
+          catch: (e) => e,
+        }))
+        if (endpoint) {
+          return try (llm
+            .compact(endpoint, { mechanism: "endpoint", http: prepared.options.http })
+            |> Effect.flatMap(%, (response) => toResult(response.replacement, response.usage)))
         }
-        return unsupported(`Native compaction is not supported for ${request.model.provider}/${request.model.route.id}`)
+        return try unsupported(
+          `Native compaction is not supported for ${request.model.provider}/${request.model.route.id}`,
+        )
       }
 
       return try deliver(trigger, prepared, budget, send)
@@ -585,7 +625,7 @@ export const layer = Layer.effect(
      * resend the same request under the session's retry policy. A `Failure` from `send` is a reply that cannot be
      * used, and is never retried.
      */
-    const deliver = Effect.fnUntraced(function* (
+    const deliver = Effect.fnUntraced(function*(
       trigger: Trigger,
       prepared: Prepared,
       target: number,
@@ -610,18 +650,17 @@ export const layer = Layer.effect(
         const unchanged = asText
           ? undefined
           : (measured ? total(measured) : estimateRequest(prepared.request)) <= fit
-            ? prepared.request
-            : estimateRequest(shrink.history) <= target
-              ? shrink.history
-              : undefined
-        const request =
-          unchanged ??
-          flattenAndDropOldest(shrink.history, context, target) ??
-          (rejections > 0
+          ? prepared.request
+          : estimateRequest(shrink.history) <= target
+          ? shrink.history
+          : undefined
+        const request = unchanged
+          ?? flattenAndDropOldest(shrink.history, context, target)
+          ?? (rejections > 0
             ? undefined
             : asText
-              ? flattenAndDropOldest(shrink.history, context, Number.POSITIVE_INFINITY)
-              : shrink.history)
+            ? flattenAndDropOldest(shrink.history, context, Number.POSITIVE_INFINITY)
+            : shrink.history)
         if (!request) {
           return yield* Effect.fail<Failure>({
             error: {
@@ -684,12 +723,11 @@ export const layer = Layer.effect(
      */
     const flattenAndDropOldest = (request: LLMRequest, context: SessionContext.Loaded, target: number) => {
       const previous = previousCompaction(context.messages)
-      const end =
-        request.messages.findLastIndex(
-          (message) =>
-            (previous !== undefined && message.id === previous.id) ||
-            message.content.some((part) => part.type === "compaction"),
-        ) + 1
+      const end = request.messages.findLastIndex(
+        (message) =>
+          (previous !== undefined && message.id === previous.id)
+          || message.content.some((part) => part.type === "compaction"),
+      ) + 1
       const summary = previous !== undefined && !SessionHistory.isNativeCompaction(previous) ? previous : undefined
       // TODO: Read the previous summary from the hooked request once it no longer merges summary and recent into one
       // message. Until then it is rebuilt from storage, which drops a compaction hook's edits to that message.
@@ -715,8 +753,8 @@ export const layer = Layer.effect(
               group
                 .map((message) => flattenMessage(message, level))
                 .filter(Boolean)
-                .join("\n"),
-            ),
+                .join("\n")
+            )
           )
           .filter((renders) => renders[0]),
       ]
@@ -725,10 +763,9 @@ export const layer = Layer.effect(
         omitted ? `[${omitted} older ${omitted === 1 ? "exchange" : "exchanges"} omitted]\n\n` : ""
       const size = (text: string) => (text ? Token.estimate(text) + 1 : 0)
       // Room for the longest possible note is set aside before choosing what to keep.
-      const room =
-        target -
-        estimateRequest({ system: request.system, tools: [], messages: lead }) -
-        Token.estimate(note(exchanges.length))
+      const room = target
+        - estimateRequest({ system: request.system, tools: [], messages: lead })
+        - Token.estimate(note(exchanges.length))
 
       const levels = exchanges.map(() => 0)
       let total = exchanges.reduce((sum, renders) => sum + size(renders[0]), 0)
@@ -764,11 +801,12 @@ export const layer = Layer.effect(
       return llm.stream(request, options).pipe(
         Stream.runFoldEffect(
           (): Streamed => ({ text: "" }),
-          (streamed, event): Streamed!(AIError | Failure)! => {
+          effect (streamed, event): Streamed!(AIError | Failure)! => {
             if (LLMEvent.is.providerError(event)) {
-              if (event.classification === undefined)
-                return unusable({ type: "provider.error", message: event.message })
-              return Effect.fail(
+              if (event.classification === undefined) {
+                return try unusable({ type: "provider.error", message: event.message })
+              }
+              return try Effect.fail(
                 new AIError({
                   reason: new InvalidRequestError({ message: event.message, classification: event.classification }),
                 }),
@@ -777,19 +815,27 @@ export const layer = Layer.effect(
 
             if (LLMEvent.is.textDelta(event)) {
               const next = { ...streamed, text: streamed.text + event.text }
-              if (background) return Effect.succeed(next)
-              return bus.publish(SessionEvent.Compaction.Delta, { sessionID, text: event.text }).pipe(Effect.as(next))
+              if (background) return try Effect.succeed(next)
+              return try bus.publish(SessionEvent.Compaction.Delta, { sessionID, text: event.text }).pipe(
+                Effect.as(next),
+              )
             }
 
             if (LLMEvent.is.stepFinish(event)) {
-              return spend(sessionID, SessionUsage.record(event.usage, context.model.cost), background?.usage)
-                |> Effect.as(%, streamed)
+              return try (spend(
+                sessionID,
+                try Effect.orDie(
+                  Effect.try({ try: () => SessionUsage.record(event.usage, context.model.cost), catch: (e) => e }),
+                ),
+                background?.usage,
+              )
+                |> Effect.as(%, streamed))
             }
 
-            if (!LLMEvent.is.finish(event)) return Effect.succeed(streamed)
+            if (!LLMEvent.is.finish(event)) return try Effect.succeed(streamed)
             switch (event.reason.normalized) {
               case "unknown":
-                return Effect.fail(
+                return try Effect.fail(
                   new AIError({
                     reason: new InvalidProviderOutputError({
                       message: "The provider response ended with an unknown finish reason.",
@@ -798,18 +844,18 @@ export const layer = Layer.effect(
                   }),
                 )
               case "error":
-                return Effect.fail(
+                return try Effect.fail(
                   new AIError({ reason: new UnknownProviderError({ message: "Compaction generation failed" }) }),
                 )
               case "length":
-                return unusable({
+                return try unusable({
                   type: "compaction.failed",
                   message: "Compaction summary reached the output token limit",
                 })
               case "content-filter":
-                return unusable(contentFilterError("Compaction summary was blocked by the provider", event.reason))
+                return try unusable(contentFilterError("Compaction summary was blocked by the provider", event.reason))
               default:
-                return Effect.succeed(streamed)
+                return try Effect.succeed(streamed)
             }
           },
         ),
@@ -844,17 +890,24 @@ export const layer = Layer.effect(
     }
 
     /** A request hook supplied the summary itself, so no model call happens. */
-    const fromHook = (context: SessionContext.Loaded, supplied: SessionCompactionResult, background?: Background) => {
-      const usage = supplied.tokens && {
-        tokens: supplied.tokens,
-        cost: SessionUsage.calculateCost(context.model.cost, supplied.tokens),
+    const fromHook = effect (
+      context: SessionContext.Loaded,
+      supplied: SessionCompactionResult,
+      background?: Background,
+    ) => {
+      const tokens = supplied.tokens
+      const usage = tokens && {
+        tokens,
+        cost: try Effect.orDie(
+          Effect.try({ try: () => SessionUsage.calculateCost(context.model.cost, tokens), catch: (e) => e }),
+        ),
       }
-      return spend(context.session.id, usage, background?.usage)
+      return try (spend(context.session.id, usage, background?.usage)
         |> Effect.as<Result>({
           text: supplied.summary,
           native: supplied.native,
           metadata: supplied.metadata,
-        })(%)
+        })(%))
     }
 
     /**
@@ -919,12 +972,16 @@ export const layer = Layer.effect(
       // A manual compaction settles through its `/compact` inbox item, which the runner owns.
       compact: (trigger) =>
         compact(trigger)
-          |> Effect.onInterrupt(%, () =>
-            trigger.reason === "manual"
-              ? Effect.void
-              : publish(trigger, { error: { type: "compaction.interrupted", message: "Compaction was interrupted" } }),
-          )
-          |> Effect.ensuring(%, effect { return spent.delete(trigger.context.session.id) }),
+        |> Effect.onInterrupt(%, () =>
+          trigger.reason === "manual"
+            ? Effect.void
+            : publish(trigger, { error: { type: "compaction.interrupted", message: "Compaction was interrupted" } }))
+        |> Effect.ensuring(
+          %,
+          effect {
+            return spent.delete(trigger.context.session.id)
+          },
+        ),
       precompute,
     })
   }),
@@ -1050,12 +1107,11 @@ const flattenMessage = (message: Message, level: number) => {
       const result = part.result
       const label = result.type === "error" ? "Tool error" : "Tool result"
       if (level >= OUTPUTS_REMOVED) return [`[${label} omitted]`]
-      const output =
-        result.type === "content"
-          ? SessionRecentText.serializeToolContent(result.value)
-          : typeof result.value === "string"
-            ? result.value
-            : (JSON.stringify(result.value) ?? "")
+      const output = result.type === "content"
+        ? SessionRecentText.serializeToolContent(result.value)
+        : typeof result.value === "string"
+        ? result.value
+        : (JSON.stringify(result.value) ?? "")
       return [`[${label}]: ${level >= OUTPUTS_CLIPPED ? clip(output) : output}`]
     })
     .join("\n")
@@ -1104,11 +1160,12 @@ export const estimatePrompt = (context: SessionContext.Loaded): Estimate => {
   // The anchor's usage covers its own output, but not its local tool results, which the provider never saw.
   const unmeasured = sent.filter((message) => message.role !== "assistant" || message.id !== anchor?.id)
 
-  if (anchor?.type !== "assistant" || !anchor.tokens)
+  if (anchor?.type !== "assistant" || !anchor.tokens) {
     return {
       measured: 0,
       estimated: estimateRequest({ system: base.system, tools: context.tools.definitions, messages: unmeasured }),
     }
+  }
 
   const tokens = anchor.tokens
   return {
@@ -1144,22 +1201,23 @@ const summaryRoom = (limit: SessionContext.Loaded["model"]["limit"], output = RE
  * messages that window stood for, which the count leaves out, so only the current provider's counts are trusted.
  */
 const hasMeasuredPrompt = (message: SessionMessage.Info, model: SessionContext.Loaded["model"]["ref"]) =>
-  message.type === "assistant" &&
-  message.model.providerID === model.providerID &&
-  !message.error &&
-  message.tokens !== undefined &&
-  message.tokens.input + message.tokens.cache.read + message.tokens.cache.write > 0
+  message.type === "assistant"
+  && message.model.providerID === model.providerID
+  && !message.error
+  && message.tokens !== undefined
+  && message.tokens.input + message.tokens.cache.read + message.tokens.cache.write > 0
 
 /** The prompt size, only while the model, variant and agent that were measured still match; they shape the request. */
 const measuredPrompt = (context: SessionContext.Loaded) => {
   const anchor = context.messages.findLast((message) => hasMeasuredPrompt(message, context.model.ref))
   if (
-    anchor?.type !== "assistant" ||
-    anchor.model.id !== context.model.ref.id ||
-    anchor.model.variant !== context.model.ref.variant ||
-    anchor.agent !== context.agent.id
-  )
+    anchor?.type !== "assistant"
+    || anchor.model.id !== context.model.ref.id
+    || anchor.model.variant !== context.model.ref.variant
+    || anchor.agent !== context.agent.id
+  ) {
     return undefined
+  }
   return estimatePrompt(context)
 }
 
@@ -1188,16 +1246,16 @@ const fitOutput = (request: LLMRequest, limit: SessionContext.Loaded["model"]["l
 }
 
 const estimateRequest = (request: Pick<LLMRequest, "system" | "tools" | "messages">) =>
-  request.system.reduce((sum, part) => sum + Token.estimate(part.text), 0) +
-  request.tools.reduce((sum, tool) => sum + estimateTool(tool), 0) +
-  request.messages.reduce((sum, message) => sum + estimateMessage(message), 0)
+  request.system.reduce((sum, part) => sum + Token.estimate(part.text), 0)
+  + request.tools.reduce((sum, tool) => sum + estimateTool(tool), 0)
+  + request.messages.reduce((sum, message) => sum + estimateMessage(message), 0)
 
 /** Only what providers receive; `metadata` and `native` stay local. */
 const estimateTool = (tool: ToolEntry): number => {
   if (tool.type === "tool") return Token.estimate(tool.name + tool.description + JSON.stringify(tool.inputSchema))
   return (
-    Token.estimate(tool.name + (tool.description ?? "")) +
-    tool.tools.reduce((sum, entry) => sum + estimateTool(entry), 0)
+    Token.estimate(tool.name + (tool.description ?? ""))
+    + tool.tools.reduce((sum, entry) => sum + estimateTool(entry), 0)
   )
 }
 
@@ -1211,11 +1269,12 @@ const estimatePart = (part: ContentPart): number => {
   if (part.type === "media") return estimateMedia(part.media.mediaType)
   if (part.type === "tool-call") return Token.estimate(part.name + (JSON.stringify(part.input) ?? ""))
 
-  if (part.result.type === "content")
+  if (part.result.type === "content") {
     return part.result.value.reduce(
       (sum, content) => sum + (content.type === "text" ? Token.estimate(content.text) : estimateMedia(content.mime)),
       0,
     )
+  }
   const value = part.result.value
   return Token.estimate(typeof value === "string" ? value : (JSON.stringify(value) ?? ""))
 }

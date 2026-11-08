@@ -203,29 +203,52 @@ export const Plugin = {
                             try: () => input.query?.toLowerCase().split(/\s+/).filter(Boolean),
                             catch: (e) => e,
                         }))) ?? [];
-                        const names = new Map((yield* ctx.provider.list()).data.map((provider) => [provider.id, provider.name]));
+                        const data2 = (yield* ctx.provider.list()).data;
+                        const names = new Map(yield* Effect.orDie(Effect.try({
+                            try: () => data2.map((provider) => [provider.id, provider.name]),
+                            catch: (e) => e,
+                        })));
                         const provider = yield* Effect.orDie(Effect.try({
                             try: () => input.provider?.toLowerCase(),
                             catch: (e) => e,
                         }));
-                        const matching = (yield* ctx.model.list()).data
-                            .filter((model) => provider === undefined
-                            || model.providerID.toLowerCase() === provider
-                            || names.get(model.providerID)?.toLowerCase() === provider)
-                            .filter((model) => {
-                            const text = `${model.providerID}/${model.id} ${model.name}`.toLowerCase();
-                            return terms.every((term) => text.includes(term));
-                        })
-                            .toSorted((left, right) => Number(right.providerID === own) - Number(left.providerID === own)
-                            || left.providerID.localeCompare(right.providerID)
-                            || right.time.released - left.time.released)
-                            .filter((model, index, sorted) => {
-                            if (input.all || model.family === undefined)
-                                return true;
-                            return (sorted.findIndex((other) => other.providerID === model.providerID && other.family === model.family) === index);
-                        });
-                        const page = matching.slice(offset, offset + limit);
-                        const providers = Array.from(new Set(page.map((model) => model.providerID))).map((id) => ({
+                        const data3 = (yield* ctx.model.list()).data;
+                        const filter3 = yield* Effect.orDie(Effect.try({
+                            try: () => data3
+                                .filter((model) => provider === undefined
+                                || model.providerID.toLowerCase() === provider
+                                || names.get(model.providerID)?.toLowerCase() === provider),
+                            catch: (e) => e,
+                        }));
+                        const filter2 = yield* Effect.orDie(Effect.try({
+                            try: () => filter3
+                                .filter((model) => {
+                                const text = `${model.providerID}/${model.id} ${model.name}`.toLowerCase();
+                                return terms.every((term) => text.includes(term));
+                            }),
+                            catch: (e) => e,
+                        }));
+                        const toSorted2 = yield* Effect.orDie(Effect.try({
+                            try: () => filter2
+                                .toSorted((left, right) => Number(right.providerID === own) - Number(left.providerID === own)
+                                || left.providerID.localeCompare(right.providerID)
+                                || right.time.released - left.time.released),
+                            catch: (e) => e,
+                        }));
+                        const matching = yield* Effect.orDie(Effect.try({
+                            try: () => toSorted2
+                                .filter((model, index, sorted) => {
+                                if (input.all || model.family === undefined)
+                                    return true;
+                                return (sorted.findIndex((other) => other.providerID === model.providerID && other.family === model.family) === index);
+                            }),
+                            catch: (e) => e,
+                        }));
+                        const page = yield* Effect.orDie(Effect.try({ try: () => matching.slice(offset, offset + limit), catch: (e) => e }));
+                        const providers = Array.from(new Set(yield* Effect.orDie(Effect.try({
+                            try: () => page.map((model) => model.providerID),
+                            catch: (e) => e,
+                        })))).map((id) => ({
                             id,
                             name: names.get(id) ?? id,
                             models: page

@@ -66,18 +66,29 @@ export function buildLocationServiceMap(
       )
       const map = {
         ...inner,
-        get: (ref: Location.Ref) => inner.get(LocationServiceMap.canonical(ref)),
-        contextEffect: (ref: Location.Ref) => inner.contextEffect(LocationServiceMap.canonical(ref)),
-        contextEffectOption: (ref: Location.Ref) => inner.contextEffectOption(LocationServiceMap.canonical(ref)),
+        get: (ref: Location.Ref) =>
+          Layer.unwrap(effect {
+            return inner.get(
+              try Effect.orDie(Effect.try({ try: () => LocationServiceMap.canonical(ref), catch: (e) => e })),
+            )
+          }),
+        contextEffect: effect (ref: Location.Ref) =>
+          try inner.contextEffect(
+            try Effect.orDie(Effect.try({ try: () => LocationServiceMap.canonical(ref), catch: (e) => e })),
+          ),
+        contextEffectOption: effect (ref: Location.Ref) =>
+          try inner.contextEffectOption(
+            try Effect.orDie(Effect.try({ try: () => LocationServiceMap.canonical(ref), catch: (e) => e })),
+          ),
         invalidate: (ref: Location.Ref) =>
-          Effect.suspend(() => {
-            const key = LocationServiceMap.canonical(ref)
+          (effect {
+            const key = try Effect.orDie(Effect.try({ try: () => LocationServiceMap.canonical(ref), catch: (e) => e }))
             const build = Option.getOrUndefined(MutableHashMap.get(builds, key))
             MutableHashMap.remove(builds, key)
             // Detach routing first, then cancel interactions and notify clients. Running
             // steps retain their borrowed graph until they can hand off at a boundary.
             // Do not await a boot here: failed/in-flight builds have their own cleanup path.
-            return inner.invalidate(key) |> Effect.andThen(%, build?.close ?? Effect.void)
+            return try (inner.invalidate(key) |> Effect.andThen(%, build?.close ?? Effect.void))
           }) |> Effect.uninterruptible(%),
       }
       // Cached instances borrow their owner instead of retaining its Layer scope.

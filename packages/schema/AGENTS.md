@@ -28,6 +28,8 @@
 
 ## Module Shape
 
+- Preserve the original `readonly` fields when migrating `Schema.Struct` codecs, including nested and private shapes used by public contracts.
+
 - Use one canonical exported value for each contract. Avoid bridge aliases such as `PluginID`, `PluginEvent`, `PtyInfo`, and `PtyEvent`.
 - Prefer importing the schema module namespace and reading canonical members, for example `Plugin.ID` or `Question.Info`.
 - Core may compose Schema contracts with runtime behavior into a deliberate domain facade, but the facade must re-export the exact canonical Schema value. Do not create a second schema identity.
@@ -35,6 +37,8 @@
 - Keep standalone ID modules only when they prevent real cycles or heavy dependency edges. Inline one-off IDs into their owning contract module when no cycle exists.
 
 ## Public Re-exports
+
+- Preserve both the value and type meanings of existing exports. A codec exported only as a value must not gain a same-name type alias during migration.
 
 - Public leaf packages re-export the canonical domain namespaces used by their APIs so consumers install and version one package. Keep the list curated by public API reachability rather than mirroring the Schema root.
 - Re-export directly from `@opencode/schema/<domain>` and preserve the exact canonical values and types. Do not wrap schemas, duplicate definitions, or route exports through another facade package.

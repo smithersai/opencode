@@ -5,7 +5,7 @@ import { Context, Deferred, Effect, Fiber, Layer } from "effect"
 import { HttpEffect, HttpRouter, HttpServer } from "effect/http"
 import { tmpdirScoped } from "../../core/test/fixture/tmpdir"
 import { it } from "../../core/test/lib/effect"
-import { createRoutes } from "../src/routes.vibe"
+import { createRoutes } from "../src/routes.ts"
 
 it.live(
   "agent and provider lists wait for plugins while single provider reads stay nonblocking",

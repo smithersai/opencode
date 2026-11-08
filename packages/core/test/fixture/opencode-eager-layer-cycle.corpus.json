@@ -1,0 +1,6 @@
+{
+  "pattern": "A replacement location map depends on the root which depends on that map.",
+  "failureStage": "application graph construction",
+  "names": ["root", "", "line\nbreak", "snowman ☃"],
+  "grouped": [false, true]
+}

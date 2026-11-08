@@ -504,17 +504,17 @@ const SessionSummary = Schema.Struct({
 })
 
 schema SessionTokens {
-  input: Schema.Finite
-  output: Schema.Finite
-  reasoning: Schema.Finite
-  cache: {
-    read: Schema.Finite
-    write: Schema.Finite
+  readonly input: Schema.Finite
+  readonly output: Schema.Finite
+  readonly reasoning: Schema.Finite
+  readonly cache: {
+    readonly read: Schema.Finite
+    readonly write: Schema.Finite
   }
 }
 
 schema SessionShare {
-  url: string
+  readonly url: string
 }
 
 const SessionRevert = Schema.Struct({

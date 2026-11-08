@@ -61,16 +61,55 @@ async function generate() {
     if (read.error) throw new Error(ts.flattenDiagnosticMessageText(read.error.messageText, "\n"))
     const parsed = ts.parseJsonConfigFileContent(read.config, ts.sys, path.dirname(config), undefined, config)
     for (const reference of parsed.projectReferences ?? []) await project(ts.resolveProjectReferencePath(reference))
-    const sources: string[] = []
+    let hasVibeSource = false
     for await (const file of new Bun.Glob("**/*.{vibe,vibex}").scan({
       cwd: path.dirname(config),
       absolute: true,
       onlyFiles: true,
+      dot: true,
     })) {
-      if (!file.split(path.sep).includes("node_modules")) sources.push(file)
+      if (!file.split(path.sep).includes("node_modules")) {
+        hasVibeSource = true
+        break
+      }
     }
+    if (!hasVibeSource) return
+    const listing = Bun.spawn(
+      [
+        process.execPath,
+        "run",
+        "--silent",
+        "vibelang",
+        "-p",
+        config,
+        "--customConditions",
+        "vibelang-source",
+        "--listFilesOnly",
+        "--pretty",
+        "false",
+      ],
+      { cwd: root, stdout: "pipe", stderr: "inherit" },
+    )
+    const listed = await new Response(listing.stdout).text()
+    const listCode = await listing.exited
+    if (listCode) {
+      process.stderr.write(listed)
+      throw new Error(
+        "Could not list declaration sources for " + path.relative(root, config) + " (exit " + listCode + ")",
+      )
+    }
+    const sources = [
+      ...new Set(
+        listed
+          .split(/\r?\n/)
+          .map((file) => file.trim())
+          .filter((file) => /\.(?:vibe|vibex)$/.test(file))
+          .map((file) => path.resolve(root, file))
+          .filter((file) => !file.split(path.sep).includes("node_modules")),
+      ),
+    ]
     if (!sources.length) return
-    console.log(`Generating declarations: ${path.relative(root, config)}`)
+    console.log("Generating declarations: " + path.relative(root, config) + " (" + sources.length + " modules)")
     // Select VibeLang source when a dependency's generated "types" target is absent.
     // Keep this condition local to generation; runtime entry resolution is unchanged.
     const child = Bun.spawn(

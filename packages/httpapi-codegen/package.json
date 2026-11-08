@@ -22,6 +22,7 @@
     "@types/bun": "catalog:",
     "@typescript/native": "catalog:",
     "vibelang": "file:../../.vibelang-toolchain/vibelang-0.0.13-637d08c93ff1.tgz",
-    "vibelang-vite": "file:../../.vibelang-toolchain/vibelang-vite-0.0.13-4bdf1e25b72f.tgz"
+    "vibelang-vite": "file:../../.vibelang-toolchain/vibelang-vite-0.0.13-4bdf1e25b72f.tgz",
+    "fast-check": "catalog:"
   }
 }

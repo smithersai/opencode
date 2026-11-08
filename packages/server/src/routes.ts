@@ -35,7 +35,9 @@ import { WellKnown } from "@opencode/core/wellknown"
 import { Workspace } from "@opencode/core/workspace"
 import { Watcher } from "@opencode/core/filesystem/watcher"
 import { FileWatch } from "@opencode/core/filesystem/file-watch"
-import { Layer } from "effect"
+import { HttpRouter } from "effect/http"
+import { HttpApiBuilder } from "effect/http-api"
+import { Context, Effect, Layer, Option } from "effect"
 import { Api } from "./api"
 import { ServerAuth } from "./auth"
 import { CorsConfig } from "./cors.vibe"
@@ -155,12 +157,12 @@ function makeRoutes<AuthError, AuthServices>(
   }
   const serviceLayer = options.simulation
     ? Layer.unwrap(
-      effect {
-        const { simulationReplacements } = try Effect.promise(() => import("@opencode/simulation/backend"))
-        const simulation = try simulationReplacements({ version: (try Effect.orDie(Effect.try({ try: () => App.make(options.app), catch: (e) => e }))).version })
-        return build([...overrides, ...simulation])
-      },
-    )
+        Effect.gen(function* () {
+          const { simulationReplacements } = yield* Effect.promise(() => import("@opencode/simulation/backend"))
+          const simulation = yield* simulationReplacements({ version: App.make(options.app).version })
+          return build([...overrides, ...simulation])
+        }),
+      )
     : build(overrides)
   return serviceLayer.pipe(
     Layer.flatMap((context) => {

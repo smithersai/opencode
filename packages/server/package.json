@@ -362,9 +362,9 @@
     },
     "./routes": {
       "types": {
-        "default": "./src/routes.d.vibe.ts"
+        "default": "./src/routes.ts"
       },
-      "vibelang-source": "./src/routes.vibe",
+      "vibelang-source": "./src/routes.ts",
       "default": "./.vibelang/js/src/routes.js"
     },
     "./fetch": {
@@ -428,8 +428,8 @@
   },
   "imports": {
     "#vibelang/emitted/src/routes": {
-      "types": "./src/routes.d.vibe.ts",
-      "vibelang-source": "./src/routes.vibe",
+      "types": "./src/routes.ts",
+      "vibelang-source": "./src/routes.ts",
       "default": "./.vibelang/js/src/routes.js"
     },
     "#vibelang/emitted/src/handlers/command": {

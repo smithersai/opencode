@@ -1,0 +1,19 @@
+{
+  "module": "config/lsp",
+  "export": "Disabled",
+  "nativeDeclaration": "export * as ConfigLSP from \"./lsp.js\";\nimport { Schema } from \"effect\";\nexport declare const Disabled: Schema.Struct<{\n    readonly disabled: Schema.Literal<true>;\n}>;\ndeclare const Server_base: Schema.Class<Server, Schema.Struct<{\n    readonly command: Schema.$Array<Schema.String>;\n    readonly extensions: Schema.decodeTo<Schema.optional<Schema.toType<Schema.$Array<Schema.String>>>, Schema.optionalKey<Schema.$Array<Schema.String>>, never, never>;\n    readonly disabled: Schema.decodeTo<Schema.optional<Schema.toType<Schema.Boolean>>, Schema.optionalKey<Schema.Boolean>, never, never>;\n    readonly env: Schema.decodeTo<Schema.optional<Schema.toType<Schema.$Record<Schema.String, Schema.String>>>, Schema.optionalKey<Schema.$Record<Schema.String, Schema.String>>, never, never>;\n    readonly initialization: Schema.decodeTo<Schema.optional<Schema.toType<Schema.$Record<Schema.String, Schema.Unknown>>>, Schema.optionalKey<Schema.$Record<Schema.String, Schema.Unknown>>, never, never>;\n}>, {}>;\nexport declare class Server extends Server_base {\n}\nexport declare const Entry: Schema.Union<readonly [Schema.Struct<{\n    readonly disabled: Schema.Literal<true>;\n}>, typeof Server]>;\nexport declare const Info: Schema.Union<readonly [Schema.Boolean, Schema.$Record<Schema.String, Schema.Union<readonly [Schema.Struct<{\n    readonly disabled: Schema.Literal<true>;\n}>, typeof Server]>>]>;\n",
+  "witnesses": [
+    {
+      "disabled": true
+    },
+    {
+      "disabled": false
+    },
+    {},
+    null,
+    {
+      "disabled": true,
+      "extra": "ignored"
+    }
+  ]
+}

@@ -1,10 +1,11 @@
-export * as OpenCode from "./opencode.vibe"
+export * as OpenCode from "./opencode"
 
 import { OpenCode, type OpenCodeClient } from "@opencode/client/effect"
 import type { Session } from "@opencode/core/session"
 import type { Workspace } from "@opencode/core/workspace"
-import { Effect, Layer } from "effect"
+import { Context, Effect, Layer } from "effect"
 import type { Config, Scope } from "effect"
+import { FetchHttpClient, HttpClient } from "effect/http"
 import { EmbeddedHost } from "../internal/host"
 import type { SdkInstances } from "../internal/instances.vibe"
 
@@ -35,7 +36,7 @@ export type Interface = Omit<OpenCodeClient, "plugin" | "workspace"> & {
 export const create: <R = never>(
   options?: CreateOptions<R>,
   embed?: EmbedOptions,
-) => Interface!(Config.ConfigError | Error)!(Scope.Scope | R) = Effect.fn("OpenCode.create")(function* <
+) => Effect.Effect<Interface, Config.ConfigError | Error, Scope.Scope | R> = Effect.fn("OpenCode.create")(function* <
   R = never,
 >(options: CreateOptions<R> = {}, embed: EmbedOptions = {}) {
   const host = yield* Effect.acquireRelease(EmbeddedHost.create(options, embed), (host) => Effect.promise(host.close))
@@ -66,7 +67,7 @@ export const create: <R = never>(
   }
 })
 
-export service Service: Interface { static readonly key = "@opencode/sdk/OpenCode";}
+export class Service extends Context.Service<Service, Interface>()("@opencode/sdk/OpenCode") {}
 
 export const layer = <R = never>(
   options: CreateOptions<R> = {},

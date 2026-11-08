@@ -2,6 +2,7 @@ export * as FileMutation from "./file-mutation.vibe"
 
 import { makeLocationNode } from "@opencode/util/effect/app-node"
 import { KeyedMutex } from "./effect/keyed-mutex.js"
+import { withKeyedLock } from "./effect/keyed-mutex.native.ts"
 import { FSUtil } from "@opencode/util/fs-util"
 import { Bom } from "@opencode/util/bom"
 import { Environment } from "./environment/index.js"
@@ -80,9 +81,9 @@ const layer = Layer.effect(
     const withLock: Interface["withLock"] = (targets) => (effect) =>
       [...new Set(targets.map(FSUtil.resolve))]
         .sort()
-        .reduceRight((result, target) => transactionLocks.withLock(target)(result), effect)
+        .reduceRight((result, target) => withKeyedLock(transactionLocks, target, result), effect)
     const withTargetLock = (target: Target) => <A, E, R>(effect: A!E!R) =>
-      locks.withLock(target.absolute)(Effect.uninterruptible(effect))
+      withKeyedLock(locks, target.absolute, Effect.uninterruptible(effect))
 
     const writeResult = (target: Target, existed: boolean): WriteResult => ({
       operation: "write",

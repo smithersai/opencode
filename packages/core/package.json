@@ -576,8 +576,8 @@
       "default": "./.vibelang/js/src/database/v1-migration.noop.js"
     },
     "./effect/app-node-builder": {
-      "types": "./src/effect/app-node-builder.d.vibe.ts",
-      "vibelang-source": "./src/effect/app-node-builder.vibe",
+      "types": "./src/effect/app-node-builder.ts",
+      "vibelang-source": "./src/effect/app-node-builder.ts",
       "default": "./.vibelang/js/src/effect/app-node-builder.js"
     },
     "./v1/config/agent": {
@@ -814,7 +814,8 @@
     "drizzle-kit": "catalog:",
     "fast-check": "catalog:",
     "vibelang": "file:../../.vibelang-toolchain/vibelang-0.0.13-637d08c93ff1.tgz",
-    "vibelang-unplugin": "file:../../.vibelang-toolchain/vibelang-unplugin-0.0.13-23b4ad6a3929.tgz"
+    "vibelang-unplugin": "file:../../.vibelang-toolchain/vibelang-unplugin-0.0.13-23b4ad6a3929.tgz",
+    "typescript": "catalog:"
   },
   "dependencies": {
     "@ai-sdk/cohere": "3.0.27",

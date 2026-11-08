@@ -1,8 +1,9 @@
-export * as PromiseSdk from "./promise.vibe"
+export * as PromiseSdk from "./promise"
 
 import { OpenCode, type OpenCodeClient } from "@opencode/client"
 import type { Plugin } from "@opencode/plugin"
 import { Session } from "@opencode/schema/session"
+import { Effect, Schema } from "effect"
 import { EmbeddedHost } from "./internal/host"
 
 export interface InstanceConfiguration {
@@ -40,11 +41,12 @@ export async function create(options: CreateOptions = {}, embed: EmbeddedHost.Em
         instances: instances
           ? {
               key: (session) => instances.key(Schema.encodeSync(Session.Info)(session)),
-              configure: effect (key) => {
-                const { PluginPromise } = try Effect.promise(() => import("@opencode/core/plugin/promise"))
-                const configuration = try Effect.tryPromise(async () => instances.configure(key))
-                return { plugins: configuration.plugins.map(PluginPromise.fromPromise) }
-              },
+              configure: (key) =>
+                Effect.gen(function* () {
+                  const { PluginPromise } = yield* Effect.promise(() => import("@opencode/core/plugin/promise"))
+                  const configuration = yield* Effect.tryPromise(async () => instances.configure(key))
+                  return { plugins: configuration.plugins.map(PluginPromise.fromPromise) }
+                }),
             }
           : undefined,
       },

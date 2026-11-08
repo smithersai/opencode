@@ -1,0 +1,5 @@
+{
+  "pattern": "An SSE JSON wrapper projects an opaque record value as JSON instead of the declared unknown codec.",
+  "fields": ["unknown", "any", "metadataKey", "with space", "quoted\"key", "line\nbreak"],
+  "labels": ["unknown", "any", "\"unknown\"", "opaque"]
+}

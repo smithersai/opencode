@@ -4,11 +4,7 @@ import { Effect, Semaphore } from "effect"
 
 export interface KeyedMutex<in Key> {
   readonly size: Effect.Effect<number>
-  /** @throws {never} */
-  readonly withLock: (key: Key) => {
-    /** @throws {never} */
-    <A, E, R>(effect: Effect.Effect<A, E, R>): Effect.Effect<A, E, R>
-  }
+  readonly withLock: (key: Key) => <A, E, R>(effect: Effect.Effect<A, E, R>) => Effect.Effect<A, E, R>
 }
 
 /**

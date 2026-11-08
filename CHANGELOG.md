@@ -6,6 +6,13 @@ Release notes for OpenCode V2, newest first.
 
 ### Bugs fixed
 
+- Some migrated policy and session contracts became mutable; their fields now retain their original readonly types.
+
+- Embedded servers could fail to load after migration; route construction now preserves its original native validation and callback behavior.
+- Migrated file updates could change the mutex declarations; locking now retains its original types and lazy behavior.
+- The LSP disabled codec exposed an extra type name after migration; it now preserves its original value-only API.
+
+- Declaration generation could fail on standalone VibeLang fixtures excluded from a project; it now checks the files the project actually compiles.
 - Package archives could expose workspace-only helpers through wildcard exports; those paths are now private while ordinary imports remain available.
 - TypeScript checks now generate the declarations needed to read VibeLang modules instead of relying on committed generated copies.
 - Package typechecks could reject the shared pack helper; its declaration guard now resolves correctly in `NodeNext` projects.

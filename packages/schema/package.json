@@ -108,8 +108,8 @@
       "default": "./.vibelang/js/src/config/formatter.js"
     },
     "./config/lsp": {
-      "types": "./src/config/lsp.d.vibe.ts",
-      "vibelang-source": "./src/config/lsp.vibe",
+      "types": "./src/config/lsp.ts",
+      "vibelang-source": "./src/config/lsp.ts",
       "default": "./.vibelang/js/src/config/lsp.js"
     },
     "./config/mcp": {
@@ -447,7 +447,11 @@
       "vibelang-source": "./src/worktree.vibe",
       "default": "./.vibelang/js/src/worktree.js"
     },
-    "./*": "./src/*.ts",
+    "./*": {
+      "types": "./src/*.ts",
+      "vibelang-source": "./src/*.ts",
+      "default": "./.vibelang/js/src/*.js"
+    },
     "./identifier": {
       "types": {
         "default": "./src/identifier.ts"
@@ -564,7 +568,9 @@
       },
       "vibelang-source": "./src/session-v1.ts",
       "default": "./.vibelang/js/src/session-v1.js"
-    }
+    },
+    "./event.vibe.-24-throw-24-ts": null,
+    "./rpc.vibe.-24-throw-24-ts": null
   },
   "scripts": {
     "build": "bun run script/build.ts",
@@ -583,6 +589,7 @@
     "@types/bun": "catalog:",
     "@typescript/native": "catalog:",
     "typescript": "catalog:",
-    "vibelang": "0.0.12"
+    "vibelang": "0.0.12",
+    "fast-check": "catalog:"
   }
 }

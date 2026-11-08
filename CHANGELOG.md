@@ -6,6 +6,8 @@ Release notes for OpenCode V2, newest first.
 
 ### Bugs fixed
 
+- The LSP disabled codec exposed an extra type name after migration; it now preserves its original value-only API.
+
 - Declaration generation could fail on standalone VibeLang fixtures excluded from a project; it now checks the files the project actually compiles.
 - Package archives could expose workspace-only helpers through wildcard exports; those paths are now private while ordinary imports remain available.
 - TypeScript checks now generate the declarations needed to read VibeLang modules instead of relying on committed generated copies.

@@ -6,6 +6,8 @@ Release notes for OpenCode V2, newest first.
 
 ### Bugs fixed
 
+- Packed Server modules could fail to load in Node because relative imports omitted file extensions; regenerated runtime modules now name their files explicitly.
+
 - Migration-generated helper imports could fail the repository style checks; named imports now preserve the same helper behavior.
 
 - Embedded servers could fail to load after migration; route construction now preserves its original native validation and callback behavior.

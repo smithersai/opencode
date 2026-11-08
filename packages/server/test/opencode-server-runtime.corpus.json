@@ -1,0 +1,8 @@
+[
+  {
+    "module": "src/handlers/command.js",
+    "source": "src/handlers/command.vibe",
+    "previousSpecifiers": ["../api", "../location"],
+    "targets": ["src/api.js", "src/location.js"]
+  }
+]

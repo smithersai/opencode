@@ -14,7 +14,8 @@ export const normalizer = (request) => {
     // Reserve valid IDs before projecting any history, including IDs encountered later.
     const used = new Set(ids.filter((id) => valid.test(id)));
     const normalized = new Map();
-    return (id) => {
+    /** @throws {never} */
+    const normalize = (id) => {
         if (valid.test(id))
             return id;
         const previous = normalized.get(id);
@@ -28,5 +29,6 @@ export const normalizer = (request) => {
         normalized.set(id, candidate);
         return candidate;
     };
+    return normalize;
 };
 export * as MistralToolID from "./mistral-tool-id.js";

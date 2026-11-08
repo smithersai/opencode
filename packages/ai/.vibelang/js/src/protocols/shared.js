@@ -68,6 +68,7 @@ export const promptCacheKey = (request) => {
  * and `outputTokens` includes reasoning. Protocol mappers normalize those
  * inclusive values before calling this helper. The provider-supplied total is
  * the source of truth when present; otherwise their sum is the canonical total.
+ * @throws {never}
  */
 export const totalTokens = (inputTokens, outputTokens, total) => {
     if (total !== undefined)
@@ -295,6 +296,7 @@ const formatContentTypes = (types) => {
         return `${types[0]} and ${types[1]}`;
     return `${types.slice(0, -1).join(", ")}, and ${types.at(-1)}`;
 };
+/** @throws {never} */
 export const supportsContent = (part, types) => types.includes(part.type);
 /** @throws {never} */
 export const unsupportedContent = (route, role, types) => invalidRequest(`${route} ${role} messages only support ${formatContentTypes(types)} content for now`);
@@ -304,6 +306,7 @@ export const unsupportedContent = (route, role, types) => invalidRequest(`${rout
  * invalid(e.message)))`. Any decode error is translated into
  * `AIError` carrying the original parse-error message.
  */
+/** @throws {never} */
 export const validateWith = (decode) => (payload) => decode(payload).pipe(Effect.mapError((error) => invalidRequest(error.message, error)));
 /**
  * Build an HTTP POST with a JSON body. Sets `content-type: application/json`

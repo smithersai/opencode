@@ -157,7 +157,8 @@ const fromRequest = (request) => {
                     if (part.type !== "tool-result") {
                         return yield* Effect_1.fail(ProviderShared.unsupportedContent("Cohere Chat", "tool", ["tool-result"]));
                     }
-                    if (part.result.type === "content" && part.result.value.some((item) => item.type === "file")) {
+                    const result = part.result;
+                    if (result.type === "content" && result.value.some((item) => item.type === "file")) {
                         return yield* Effect_1.fail(yield* Effect.orDie(Effect.try({ try: () => ProviderShared.invalidRequest("Cohere Chat does not support file content in tool results"), catch: (e) => e })));
                     }
                     messages.push({ role: "tool", tool_call_id: part.id, content: yield* Effect.orDie(Effect.try({ try: () => ProviderShared.toolResultText(part), catch: (e) => e })) });
@@ -184,7 +185,7 @@ const fromRequest = (request) => {
                     calls.push({ id: part.id, type: "function", function: { name: part.name, arguments: args } });
                     continue;
                 }
-                if (message.role === "user" && part.type === "media" && part.media.mediaType.startsWith("image/")) {
+                if (message.role === "user" && part.type === "media" && (yield* Effect.orDie(Effect.try({ try: () => part.media.mediaType.startsWith("image/"), catch: (e) => e })))) {
                     const url = (yield* Effect.orDie(Effect.try({ try: () => ProviderShared.mediaUrl(part.media), catch: (e) => e })))
                         ?? (yield* ProviderShared.requireInlineMedia("Cohere Chat", part.media)).dataUrl;
                     content.push({ type: "image_url", image_url: { url } });

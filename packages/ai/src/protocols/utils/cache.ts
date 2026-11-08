@@ -8,13 +8,16 @@ export interface Breakpoints {
 
 export const newBreakpoints = (cap: number): Breakpoints => ({ remaining: cap, dropped: 0 })
 
+/** @throws {never} */
 export const cacheControl = () => {
   const breakpoints = newBreakpoints(4)
-  return (cache: CacheHint | undefined) => {
+  /** @throws {never} */
+  const lower = (cache: CacheHint | undefined) => {
     if (cache === undefined || breakpoints.remaining === 0) return undefined
     breakpoints.remaining -= 1
     return { type: "ephemeral" as const, ttl: cache.ttl }
   }
+  return lower
 }
 
 // OpenAI's request-level lifetime. `prompt_cache_retention` takes only "24h" (or "in_memory") and is the only

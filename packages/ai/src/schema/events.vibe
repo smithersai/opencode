@@ -364,8 +364,8 @@ const toolCallID = (value: ToolCallID | string) => ToolCallID.make(value)
  * `events.filter(LLMEvent.guards["tool-call"])`.
  */
 export const LLMEvent = Object.assign(llmEventTagged, {
-  compaction: CompactionPart.make,
-  stepStart: StepStart.make,
+  compaction: (...args: Parameters<typeof CompactionPart.make>) => CompactionPart.make(...args),
+  stepStart: (...args: Parameters<typeof StepStart.make>) => StepStart.make(...args),
   textStart: (input: WithID<TextStart, ContentBlockID>) => TextStart.make({ ...input, id: contentBlockID(input.id) }),
   textDelta: (input: WithID<TextDelta, ContentBlockID>) => TextDelta.make({ ...input, id: contentBlockID(input.id) }),
   textEnd: (input: WithID<TextEnd, ContentBlockID>) => TextEnd.make({ ...input, id: contentBlockID(input.id) }),
@@ -390,7 +390,7 @@ export const LLMEvent = Object.assign(llmEventTagged, {
       output: input.output === undefined ? undefined : ToolOutput.make(input.output.structured, input.output.content),
     }),
   toolError: (input: WithID<ToolError, ToolCallID>) => ToolError.make({ ...input, id: toolCallID(input.id) }),
-  media: MediaEvent.make,
+  media: (...args: Parameters<typeof MediaEvent.make>) => MediaEvent.make(...args),
   stepFinish: (input: WithUsage<StepFinish>) =>
     StepFinish.make({
       ...input,
@@ -401,8 +401,8 @@ export const LLMEvent = Object.assign(llmEventTagged, {
       ...input,
       usage: input.usage === undefined ? undefined : Usage.from(input.usage),
     }),
-  providerError: ProviderErrorEvent.make,
-  raw: RawEvent.make,
+  providerError: (...args: Parameters<typeof ProviderErrorEvent.make>) => ProviderErrorEvent.make(...args),
+  raw: (...args: Parameters<typeof RawEvent.make>) => RawEvent.make(...args),
   is: {
     compaction: llmEventTagged.guards.compaction,
     stepStart: llmEventTagged.guards["step-start"],

@@ -15,7 +15,8 @@ import {
   type ReasoningPart,
   type ToolCallPart,
   type ToolDefinition,
-  } from "../schema/index.js"
+  type ToolResultPart,
+} from "../schema/index.js"
 import { BedrockEventStream } from "./bedrock-event-stream.js"
 import { classifyProviderFailure } from "../provider-error.vibe"
 import { JsonObject, optionalArray, ProviderShared } from "./shared.js"
@@ -312,9 +313,9 @@ const lowerToolCall = (part: ToolCallPart, normalizeID: (id: string) => string):
 })
 
 const lowerToolResultContent = effect (
-  part: unknown,
+  part: ToolResultPart,
   documentNames: Set<string>,
-) => {
+): Array<Schema.Schema.Type<typeof BedrockToolResultContentItem>>!AIError => {
   if (part.result.type === "text" || part.result.type === "error")
     return [{ text: try Effect.orDie(Effect.try({ try: () => ProviderShared.toolResultText(part), catch: (e) => e })) }]
   if (part.result.type === "json") return [{ json: part.result.value }]
@@ -332,7 +333,7 @@ const lowerToolResultContent = effect (
 }
 
 const lowerToolResult = effect (
-  part: unknown,
+  part: ToolResultPart,
   documentNames: Set<string>,
   normalizeID: (id: string) => string,
 ) => {
@@ -441,7 +442,7 @@ const lowerMessages = effect (
 
     const content: BedrockUserBlock[] = []
     for (const part of message.content) {
-      if (!(try Effect.orDie(Effect.try({ try: () => ProviderShared.supportsContent(part, ["tool-result"]), catch: (e) => e }))))
+      if (!ProviderShared.supportsContent(part, ["tool-result"]))
         throw ProviderShared.unsupportedContent("Bedrock Converse", "tool", ["tool-result"])
       const result = try lowerToolResult(part, documentNames, normalizeID)
       const images: BedrockMedia.ImageBlock[] = hoistImages

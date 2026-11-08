@@ -867,6 +867,7 @@ const NO_EVENTS: StepResult["1"] = []
 // `finish` event; `response.failed` and `error` are hard failures. All four end
 // the stream, so keep this set aligned with `step` and the protocol's terminal predicate.
 const TERMINAL_TYPES = new Set(["error", "response.completed", "response.incomplete", "response.failed"])
+/** @throws {never} */
 export const terminal = (event: Event) => TERMINAL_TYPES.has(event.type)
 
 const onOutputTextDelta = (state: ParserState, event: Event, id: string): StepResult => {

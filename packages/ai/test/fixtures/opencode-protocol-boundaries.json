@@ -1,0 +1,6 @@
+{
+  "bytes": [[], [0], [255, 0, 127, 128]],
+  "chunks": [[[]], [[1], [], [2, 3]], [[82, 73, 70, 70], [0, 0, 0, 0], [87, 65, 86, 69]]],
+  "cacheHints": [[], [false, false, true], [true, true, false, true, true, true]],
+  "invalidImages": [{}, { "url": "data:invalid" }, { "b64_json": "!" }]
+}

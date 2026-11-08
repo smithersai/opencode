@@ -172,7 +172,8 @@ const fromRequest = effect (request: LLMRequest) =>
             if (part.type !== "tool-result") {
               throw ProviderShared.unsupportedContent("Cohere Chat", "tool", ["tool-result"])
             }
-            if (part.result.type === "content" && (try Effect.orDie(Effect.try({ try: () => part.result.value.some((item) => item.type === "file"), catch: (e) => e })))) {
+            const result = part.result
+            if (result.type === "content" && result.value.some((item) => item.type === "file")) {
               throw try Effect.orDie(Effect.try({ try: () => ProviderShared.invalidRequest("Cohere Chat does not support file content in tool results"), catch: (e) => e }))
             }
             messages.push({ role: "tool", tool_call_id: part.id, content: try Effect.orDie(Effect.try({ try: () => ProviderShared.toolResultText(part), catch: (e) => e })) })

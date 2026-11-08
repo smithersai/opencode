@@ -118,6 +118,7 @@ export interface ToolAccumulator {
  * and `outputTokens` includes reasoning. Protocol mappers normalize those
  * inclusive values before calling this helper. The provider-supplied total is
  * the source of truth when present; otherwise their sum is the canonical total.
+ * @throws {never}
  */
 export const totalTokens = (
   inputTokens: number | undefined,
@@ -393,6 +394,7 @@ const formatContentTypes = (types: ReadonlyArray<ContentType>) => {
   return `${types.slice(0, -1).join(", ")}, and ${types.at(-1)}`
 }
 
+/** @throws {never} */
 export const supportsContent = <const Type extends ContentType>(
   part: ContentPart,
   types: ReadonlyArray<Type>,
@@ -411,6 +413,7 @@ export const unsupportedContent = (
  * invalid(e.message)))`. Any decode error is translated into
  * `AIError` carrying the original parse-error message.
  */
+/** @throws {never} */
 export const validateWith =
   <A, I, E extends { readonly message: string }>(decode: (input: I) => Effect.Effect<A, E>) =>
   (payload: I) =>

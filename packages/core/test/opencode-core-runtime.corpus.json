@@ -1,0 +1,12 @@
+[
+  {
+    "module": "src/file-mutation.js",
+    "source": "src/file-mutation.vibe",
+    "previousSpecifiers": ["./effect/keyed-mutex.native.js"],
+    "targets": ["src/effect/keyed-mutex.native.js"]
+  },
+  {
+    "module": "src/plugin/update.js",
+    "targets": ["src/effect/keyed-mutex.native.js"]
+  }
+]

@@ -6,6 +6,8 @@ Release notes for OpenCode V2, newest first.
 
 ### Bugs fixed
 
+- The SDK in-memory client bundle could fail because newly generated native helpers were missing from the runtime output; the prepared module graph now includes those files.
+
 - Packed Server modules could fail to load in Node because relative imports omitted file extensions; regenerated runtime modules now name their files explicitly.
 
 - Migration-generated helper imports could fail the repository style checks; named imports now preserve the same helper behavior.

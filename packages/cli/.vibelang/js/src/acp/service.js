@@ -4,7 +4,7 @@ import { Session } from "@opencode/schema/session";
 import { FSUtil } from "@opencode/util/fs-util";
 import { DateTime, Effect, Ref, Schema } from "effect";
 import { withTimestampedFallback } from "@opencode/util/session-title-fallback";
-import { OPENCODE_VERSION } from "#vibelang/emitted/src/version";
+import { OPENCODE_VERSION } from "../version.js";
 import { ACPCapabilities } from "./capabilities";
 import { ACPClient } from "./client.js";
 import { configOptions, resolveChange } from "./config-option";

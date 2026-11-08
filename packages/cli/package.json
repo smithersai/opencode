@@ -95,11 +95,5 @@
     "url": "git+https://github.com/anomalyco/opencode.git",
     "directory": "packages/cli"
   },
-  "imports": {
-    "#vibelang/emitted/src/version": {
-      "types": "./src/version.d.vibe.ts",
-      "vibelang-source": "./src/version.vibe",
-      "default": "./.vibelang/js/src/version.js"
-    }
-  }
+  "imports": {}
 }

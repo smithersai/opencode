@@ -4,7 +4,7 @@
 // version-mismatched background service before the TUI attaches.
 import { createCliRenderer, RGBA, TextAttributes } from "@opentui/core";
 import { render, useTerminalDimensions } from "@opentui/solid";
-import { OPENCODE_VERSION } from "#vibelang/emitted/src/version";
+import { OPENCODE_VERSION } from "../version.js";
 import "@opencode/tui/component/spinner-renderable";
 import { SPINNER_FRAMES } from "@opencode/tui/component/spinner";
 import { go } from "@opencode/tui/logo";

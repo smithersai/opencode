@@ -4,7 +4,7 @@ import { readFileSync } from "node:fs";
 import path from "node:path";
 import { brotliDecompressSync } from "node:zlib";
 import { AppArchive } from "./app-archive";
-import { OPENCODE_LOCAL } from "#vibelang/emitted/src/version";
+import { OPENCODE_LOCAL } from "./version.js";
 export const load = Effect.fn("cli.app-assets.load")(function* () {
     const embedded = yield* Effect.tryPromise(() => import("virtual:opencode-app-assets")).pipe(Effect.map((module) => AppArchive.decode(module.default())), Effect.option);
     if (Option.isSome(embedded) && (Object.keys(embedded.value).length > 0 || !OPENCODE_LOCAL))

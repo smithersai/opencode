@@ -2,7 +2,7 @@
 import { Global } from "@opencode/util/global";
 import { AppProcess } from "@opencode/util/process";
 import { EffectFlock } from "@opencode/util/effect-flock";
-import { OPENCODE_ARTIFACT, OPENCODE_CHANNEL, OPENCODE_LOCAL, OPENCODE_VERSION } from "#vibelang/emitted/src/version";
+import { OPENCODE_ARTIFACT, OPENCODE_CHANNEL, OPENCODE_LOCAL, OPENCODE_VERSION } from "../version.js";
 import { Context, Duration, Effect, FileSystem, Layer, Option, Ref, Schema } from "effect";
 import { ChildProcess } from "effect/process";
 import { parse } from "jsonc-parser";

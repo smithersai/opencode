@@ -1,6 +1,6 @@
 import { NodeFileSystem, NodeServices } from "@effect/platform-node"
 import { Global } from "@opencode/util/global"
-import { OPENCODE_VERSION } from "../src/version.vibe"
+import { OPENCODE_VERSION } from "../src/version.ts"
 import { expect, test } from "bun:test"
 import { Console, Effect, FileSystem, Option, Scope } from "effect"
 import { Command } from "effect/cli"

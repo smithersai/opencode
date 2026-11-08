@@ -274,10 +274,10 @@ function executable(
   return {
     name,
     extensions,
-    enabled: Effect.sync(() => {
+    enabled: effect {
       const match = findExecutable(name)
       return match ? [match, ...args] : false
-    }),
+    },
   }
 }
 

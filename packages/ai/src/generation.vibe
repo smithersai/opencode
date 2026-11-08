@@ -114,7 +114,7 @@ export class Generation<Response> {
    * the deadline instead of stalling it. (`Stream.interruptWhen` would express this directly but deadlocks under
    * `TestClock` when the source completes while the timer sleeps.)
    */
-  events(options?: AwaitOptions): Stream<Event, AIError> {
+  events(options?: AwaitOptions): Stream.Stream<Event, AIError> {
     if (this.terminal) return Stream.make(this.event())
     const timeout = Duration.fromInputUnsafe(options?.poll?.timeout ?? DEFAULT_POLL_TIMEOUT)
     return Stream.unwrap(
@@ -156,7 +156,7 @@ export const resultEvents = <Response, A>(
   generation: Generation<Response>,
   expand: (response: Response) => ReadonlyArray<A>,
   options?: AwaitOptions,
-): Stream<Observation | A, AIError> => {
+): Stream.Stream<Observation | A, AIError> => {
   const timeout = Duration.fromInputUnsafe(options?.poll?.timeout ?? DEFAULT_POLL_TIMEOUT)
   return Stream.unwrap(
     Clock.currentTimeMillis
@@ -177,7 +177,7 @@ export const resultEvents = <Response, A>(
  * Run `effect` within the time left until `deadline`. Fails before starting once the deadline has passed: a fast
  * request could otherwise win the zero-budget race and schedule another zero-delay poll.
  */
-const within = <A>(effect: A!AIError, id: string, timeout: Duration, deadline: number) =>
+const within = <A>(effect: A!AIError, id: string, timeout: Duration.Duration, deadline: number) =>
   Clock.currentTimeMillis
   |> Effect.flatMap(%, (now) =>
     now >= deadline
@@ -188,7 +188,7 @@ const within = <A>(effect: A!AIError, id: string, timeout: Duration, deadline: n
           orElse: () => Effect.fail(timeoutError(id, timeout)),
         })))
 
-const timeoutError = (id: string, timeout: Duration) =>
+const timeoutError = (id: string, timeout: Duration.Duration) =>
   new AIError({
     reason: new TimeoutError({
       message: `Generation ${id} did not finish within ${Duration.format(timeout)}`,

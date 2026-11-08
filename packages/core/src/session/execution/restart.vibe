@@ -1,6 +1,6 @@
 export * as SessionRestart from "./restart.vibe"
 
-import { Context, Effect, Layer } from "effect"
+import { Effect, Layer } from "effect"
 import { makeGlobalNode } from "@opencode/util/effect/app-node"
 import { Bus } from "../../bus.ts"
 import { Job } from "../../job.ts"
@@ -60,7 +60,7 @@ export interface Interface {
  * — the managed server invokes it at boot; embedders may call it from their
  * own start-up.
  */
-export class Service extends Context.Service<Service, Interface>()("@opencode/SessionRestart") {}
+export service Service: Interface { static readonly key = "@opencode/SessionRestart";}
 
 export const layer = (options?: Options) =>
   Layer.effect(
@@ -111,7 +111,7 @@ export const layer = (options?: Options) =>
           ? (background.error ?? "Command failed")
           : "Command cancelled"
 
-        try (sessions
+        try ((do { const catchProgram = sessions
           .synthetic({
             id: background.notificationID,
             sessionID: recovery.sessionID,
@@ -130,8 +130,10 @@ export const layer = (options?: Options) =>
             // Restart notices must not revive idle owners of long-lived shells.
             // Interrupted executions resume separately after their notices are admitted.
             resume: false,
-          })
-          |> Effect.catchTag(%, "Session.NotFoundError", () => Effect.void)
+          }); effect { return catchProgram catch effect (e) => match (e) {
+          when { _tag: "Session.NotFoundError" }: (undefined as void);
+          default: throw e;
+        } } })
           |> Effect.orDie(%))
         try jobs.completeBackground(background.notificationID)
       }

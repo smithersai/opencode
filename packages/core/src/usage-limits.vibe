@@ -19,10 +19,10 @@ export class UnavailableError extends Schema.TaggedError<UnavailableError>()("Us
 
 export interface Interface {
   /** The usage limits of the OpenCode Console workspace this location is signed in to, if it is. */
-  readonly get: () => Info | undefined!UnavailableError
+  readonly get: () => (Info | undefined)!UnavailableError
 }
 
-export class Service extends Context.Service<Service, Interface>()("@opencode/UsageLimits") {}
+export service Service: Interface { static readonly key = "@opencode/UsageLimits";}
 
 export const layer = Layer.effect(
   Service,
@@ -105,7 +105,7 @@ schema GoMeter {
 schema GoUsage { usage: { rolling: GoMeter; weekly: GoMeter; monthly: GoMeter } }
 
 /** Every budget covering the member. Console refuses a service account's key with 403, and it has no budgets. */
-function readBudgets(http: HttpClient, server: string, credential: Credential.Key | Credential.OAuth) {
+function readBudgets(http: HttpClient.HttpClient, server: string, credential: Credential.Key | Credential.OAuth) {
   return HttpClient.withScope(http)
     .execute(
       HttpClientRequest.get(`${server}/api/policies/current-budgets`).pipe(
@@ -152,7 +152,7 @@ function readBudgets(http: HttpClient, server: string, credential: Credential.Ke
  * doesn't subscribe to Go in, which has no allowance to show.
  */
 function readGo(
-  http: HttpClient,
+  http: HttpClient.HttpClient,
   server: string,
   credential: Credential.Key | Credential.OAuth,
   workspaceID: string,

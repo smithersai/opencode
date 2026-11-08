@@ -17,7 +17,7 @@ export const RenameInput = Schema.Struct({
   title: Schema.String.check(Schema.isMinLength(1)).annotate({ description: "New session title." }),
 })
 
-const RenameOutput = Schema.Struct({ sessionID: Session.ID, title: Schema.String })
+schema RenameOutput { readonly sessionID: Session.ID; readonly title: string }
 
 export const MoveInput = Schema.Struct({
   sessionID: Schema.optionalKey(Session.ID).annotate({ description: "Omit to move the current session." }),
@@ -26,7 +26,7 @@ export const MoveInput = Schema.Struct({
   }),
 })
 
-const MoveOutput = Schema.Struct({ sessionID: Session.ID, directory: AbsolutePath })
+schema MoveOutput { readonly sessionID: Session.ID; readonly directory: AbsolutePath }
 
 export const WorktreeCreateInput = Schema.Struct({
   name: Schema.Trim.check(Schema.isNonEmpty()).annotate({ description: "Worktree name." }),
@@ -166,12 +166,11 @@ export const Plugin = {
               output: Worktree.Info,
               options: { namespace: "opencode", codemode: true, pinned: true },
               execute: (input) =>
-                ctx.worktree.create({ projectID: ctx.location.project.id, name: input.name }).pipe(
-                  Effect.map((output) => ({ output, content: `Created worktree in ${output.directory}.` })),
-                  Effect.mapError(
-                    (error) => new ToolFailure({ message: `Unable to create worktree ${input.name}`, error }),
+                ctx.worktree.create({ projectID: ctx.location.project.id, name: input.name })
+                  |> Effect.map(%, (output) => ({ output, content: `Created worktree in ${output.directory}.` }))
+                  |> Effect.mapError(
+                    %, (error) => new ToolFailure({ message: `Unable to create worktree ${input.name}`, error }),
                   ),
-                ),
             })
             draft.add({
               name: "worktree_list",
@@ -180,10 +179,9 @@ export const Plugin = {
               output: Schema.Struct({ worktrees: Worktree.List }),
               options: { namespace: "opencode", codemode: true, pinned: true },
               execute: () =>
-                ctx.worktree.list({ projectID: ctx.location.project.id }).pipe(
-                  Effect.map((worktrees) => ({ output: { worktrees } })),
-                  Effect.mapError((error) => new ToolFailure({ message: "Unable to list worktrees", error })),
-                ),
+                ctx.worktree.list({ projectID: ctx.location.project.id })
+                  |> Effect.map(%, (worktrees) => ({ output: { worktrees } }))
+                  |> Effect.mapError(%, (error) => new ToolFailure({ message: "Unable to list worktrees", error })),
             })
             draft.add({
               name: "worktree_remove",

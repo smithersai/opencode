@@ -75,12 +75,12 @@
     "solid-js": "catalog:",
     "string-width": "catalog:",
     "strip-ansi": "7.1.2",
-    "vibelang-runtime": "file:../../.vibelang-toolchain/vibelang-runtime-0.0.11-587937650a6b.tgz"
+    "vibelang-runtime": "0.0.12"
   },
   "devDependencies": {
     "@tsconfig/bun": "catalog:",
     "@types/bun": "catalog:",
     "@typescript/native": "catalog:",
-    "vibelang": "file:../../.vibelang-toolchain/vibelang-0.0.11-1ded989eae73.tgz"
+    "vibelang": "0.0.12"
   }
 }

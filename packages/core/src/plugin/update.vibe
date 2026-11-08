@@ -15,11 +15,11 @@ interface Change {
 
 export interface Interface {
   readonly check: (target: string, options?: { readonly refresh?: boolean }) => boolean!!
-  readonly update: (target: string) => void!Npm.InstallFailedError | EffectFlock.LockError
-  readonly changes: () => Stream<Change>
+  readonly update: (target: string) => void!(Npm.InstallFailedError | EffectFlock.LockError)
+  readonly changes: () => Stream.Stream<Change>
 }
 
-export class Service extends Context.Service<Service, Interface>()("@opencode/PluginUpdate") {}
+export service Service: Interface { static readonly key = "@opencode/PluginUpdate";}
 
 const layer = Layer.effect(
   Service,

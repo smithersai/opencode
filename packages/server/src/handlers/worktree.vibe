@@ -10,22 +10,32 @@ export const WorktreeHandler = HttpApiBuilder.group(Api, "server.worktree", effe
   return handlers
     .handle(
       "worktree.list",
-      (ctx) => worktrees.list(ctx.query).pipe(Effect.catchTag("Project.NotFoundError", missingProject)),
+      (ctx) => worktrees.list(ctx.query) |> Effect.catchTag(%, "Project.NotFoundError", missingProject),
     )
-    .handle("worktree.create", (ctx) => worktrees.create(ctx.payload).pipe(badRequest))
+    .handle("worktree.create", (ctx) => worktrees.create(ctx.payload) |> badRequest(%))
     .handle(
       "worktree.remove",
-      (ctx) => worktrees.remove(ctx.payload).pipe(badRequest, Effect.as(HttpApiSchema.NoContent.make())),
+      (ctx) => (() => {
+        const pipe$program = worktrees.remove(ctx.payload);
+        const pipe$stage0 = badRequest;
+        const pipe$stage1 = Effect.as(HttpApiSchema.NoContent.make());
+        return pipe$program |> pipe$stage0(%) |> pipe$stage1(%);
+      })(),
     )
     .handle(
       "worktree.refresh",
-      (ctx) => worktrees.refresh(ctx.payload).pipe(badRequest, Effect.as(HttpApiSchema.NoContent.make())),
+      (ctx) => (() => {
+        const pipe$program = worktrees.refresh(ctx.payload);
+        const pipe$stage0 = badRequest;
+        const pipe$stage1 = Effect.as(HttpApiSchema.NoContent.make());
+        return pipe$program |> pipe$stage0(%) |> pipe$stage1(%);
+      })(),
     )
 })
 
 function badRequest<A, R>(effect: A!Worktree.Error!R) {
-  return effect.pipe(
-    Effect.mapError((error) =>
+  return effect
+    |> Effect.mapError(%, (error) =>
       error._tag === "Project.NotFoundError"
         ? missingProject(error)
         : new WorktreeError({
@@ -37,8 +47,7 @@ function badRequest<A, R>(effect: A!Worktree.Error!R) {
               : undefined,
           },
         })
-    ),
-  )
+    )
 }
 
 function missingProject(error: Project.NotFoundError) {

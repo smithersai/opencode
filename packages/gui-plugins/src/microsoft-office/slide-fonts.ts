@@ -1,6 +1,6 @@
 import type { PositionedTextRun, PresentationHandle, SlideDisplayList, SlidePrimitive } from "@betteroffice/pptx"
 import { loadFace, presentationFace, scriptFace } from "./fonts"
-import type { DeckText, FallbackScript, FontStyle } from "./slide-text.vibe"
+import type { DeckText, FallbackScript, FontStyle } from "./slide-text.js"
 
 /** A face the deck asks for: a family it names, or the fallback for a script the Latin faces lack. */
 type Want =

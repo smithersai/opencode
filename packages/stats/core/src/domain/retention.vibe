@@ -27,7 +27,7 @@ export declare namespace RetentionStatRepo {
 export class RetentionStatRepo extends Context.Service<RetentionStatRepo, RetentionStatRepo.Service>()(
   "@opencode/stats/RetentionStatRepo",
 ) {
-  static readonly layer: Layer<RetentionStatRepo, never, DrizzleClient> = Layer.effect(
+  static readonly layer: Layer.Layer<RetentionStatRepo, never, DrizzleClient> = Layer.effect(
     RetentionStatRepo,
     effect {
       const db = try DrizzleClient
@@ -73,7 +73,7 @@ export class RetentionStatRepo extends Context.Service<RetentionStatRepo, Retent
               catch: (cause) => DatabaseError.make({ cause }),
             })
             try Effect.forEach(
-              chunks(rows, UPSERT_CHUNK_SIZE),
+              try Effect.orDie(Effect.try({ try: () => chunks(rows, UPSERT_CHUNK_SIZE), catch: (e) => e })),
               (chunk) =>
                 Effect.tryPromise({
                   try: () => db.insert(modelRetention).values(chunk),

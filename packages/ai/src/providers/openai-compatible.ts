@@ -1,6 +1,6 @@
 import { ProviderID, type ModelID, type ProviderOptions } from "../schema/index.js"
 import { OpenAICompatibleChat } from "../protocols/openai-compatible-chat.js"
-import { OpenAIImages } from "../protocols/openai-images.vibe"
+import { OpenAIImages } from "../protocols/openai-images.js"
 import { MediaRoute } from "../route/media.vibe"
 import type { RouteDefaultsInput } from "../route/client.js"
 import { AuthOptions, type ProviderAuthOption } from "../route/auth-options.vibe"

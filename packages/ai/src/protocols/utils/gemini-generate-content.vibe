@@ -12,7 +12,7 @@ import {
   type ProviderMetadata,
 } from "../../schema/index.js"
 import { ProviderShared } from "../shared.js"
-import { MediaInput } from "./media-input.vibe"
+import { MediaInput } from "./media-input.js"
 
 const PROVIDER = ProviderID.make("google")
 
@@ -135,8 +135,8 @@ export const toolMedia = (item: Tool.FileContent) =>
 export const mediaPart = (
   route: string,
   asset: Media.Asset,
-): | { readonly fileData: { readonly mimeType: string; readonly fileUri: string } }
-  | { readonly inlineData: { readonly mimeType: string; readonly data: string } }!AIError => {
+): (| { readonly fileData: { readonly mimeType: string; readonly fileUri: string } }
+  | { readonly inlineData: { readonly mimeType: string; readonly data: string } })!AIError => {
   const fileUri = asset.kind === "video" && asset.source.type === "url" && /^https?:\/\//i.test(asset.source.url)
     ? asset.source.url
     : MediaInput.refID(asset, PROVIDER)

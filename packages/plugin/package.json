@@ -180,8 +180,8 @@
       "default": "./.vibelang/js/src/effect/worktree.js"
     },
     "./gui/context.typecheck": {
-      "types": "./src/gui/context.typecheck.d.vibe.ts",
-      "vibelang-source": "./src/gui/context.typecheck.vibe",
+      "types": "./src/gui/context.typecheck.ts",
+      "vibelang-source": "./src/gui/context.typecheck.ts",
       "default": "./.vibelang/js/src/gui/context.typecheck.js"
     },
     "./gui/host-apis": {
@@ -281,7 +281,7 @@
     "@opencode/schema": "workspace:*",
     "@opencode/util": "workspace:*",
     "effect": "catalog:",
-    "vibelang-runtime": "file:../../.vibelang-toolchain/vibelang-runtime-0.0.11-587937650a6b.tgz"
+    "vibelang-runtime": "0.0.12"
   },
   "peerDependencies": {
     "@opencode/theme": "workspace:*",
@@ -328,8 +328,8 @@
     "vite": "catalog:",
     "vite-plugin-solid": "catalog:",
     "@typescript/native": "catalog:",
-    "vibelang": "file:../../.vibelang-toolchain/vibelang-0.0.11-1ded989eae73.tgz",
-    "vibelang-vite": "file:../../.vibelang-toolchain/vibelang-vite-0.0.11-5223c46c8aba.tgz",
+    "vibelang": "0.0.12",
+    "vibelang-vite": "0.0.12",
     "fast-check": "catalog:"
   },
   "repository": {

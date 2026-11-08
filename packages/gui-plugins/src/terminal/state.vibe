@@ -4,7 +4,7 @@ import { titleNumber } from "./title.ts"
 function fallback<S extends Schema.ConstraintCodec<unknown, unknown>>(schema: S, value: () => S["Type"]) {
   const defaulted = Schema.withDecodingDefaultType<S>(Effect.sync(value))(schema)
 
-  return Schema.catchDecoding<typeof defaulted>(() => Effect.sync(() => Option.some(value())))(defaulted)
+  return Schema.catchDecoding<typeof defaulted>(effect () => Option.some(value()))(defaulted)
 }
 
 function optional<S extends Schema.ConstraintCodec<unknown, unknown>>(schema: S) {

@@ -93,9 +93,7 @@ export const create = (
           lock.withPermit(
             Ref.updateAndGet(calls, update) |> Effect.tap(%, (toolCalls) => context.progress({ toolCalls })),
           )
-        const result = try (runtime(inventory)
-          .execute(code)
-          |> Effect.provideService(%, Run, {
+        const result = try effect { provide Run = {
             executeTool: effect (name, tool, input) => {
               const index = try Ref.getAndUpdate(callIndex, (index) => index + 1)
               const executed = try executeTool(name, tool, input, context)
@@ -111,7 +109,8 @@ export const create = (
               return text === "" ? null : text
             },
             hooks: progressHooks(record),
-          }))
+          } { return try runtime(inventory)
+          .execute(code) } }
         const toolCalls = try Ref.get(calls)
         const collected = (try Ref.get(files))
           .toSorted((left, right) => left.index - right.index)

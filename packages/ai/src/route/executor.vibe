@@ -81,7 +81,7 @@ const providerMessage = (status: number, body: string | void) => {
   return `${fallback}: ${text.length > MAX_BODY_CHARS ? `${text.slice(0, MAX_BODY_CHARS)}…` : text}`
 }
 
-const statusError = effect (response: HttpClientResponse) => {
+const statusError = effect (response: HttpClientResponse.HttpClientResponse) => {
   if (response.status < 400) return response
   const result = try (response.text |> Effect.result(%))
   throw httpFailure({
@@ -152,7 +152,7 @@ const CONNECTION_LOST = "Connection lost while reading the response"
 
 const httpError = (input: {
   readonly error: unknown
-  readonly request: HttpClientRequest
+  readonly request: HttpClientRequest.HttpClientRequest
   readonly operation: HttpOperation
   readonly http?: HttpContext
 }) => {
@@ -201,7 +201,7 @@ const httpError = (input: {
   })
 }
 
-export const responseStream = (response: HttpClientResponse): Stream<Uint8Array, AIError> =>
+export const responseStream = (response: HttpClientResponse.HttpClientResponse): Stream.Stream<Uint8Array, AIError> =>
   response.stream.pipe(
     Stream.mapError((error) =>
       httpError({ error, request: response.request, operation: "read", http: responseHttp(response) })
@@ -210,9 +210,9 @@ export const responseStream = (response: HttpClientResponse): Stream<Uint8Array,
 
 export const stream = (
   executor: Interface,
-  request: HttpClientRequest,
+  request: HttpClientRequest.HttpClientRequest,
   middleware?: HttpMiddleware,
-): Stream<Uint8Array, AIError> =>
+): Stream.Stream<Uint8Array, AIError> =>
   Stream.unwrap(
     effect {
       const response = try executor.execute(request, middleware)
@@ -220,22 +220,21 @@ export const stream = (
     },
   )
 
-export const layer: Layer<Service, never, HttpClient> = Layer.effect(
+export const layer: Layer.Layer<Service, never, HttpClient.HttpClient> = Layer.effect(
   Service,
   effect {
     const http = try HttpClient.HttpClient
-    const executeOnce = effect (request: HttpClientRequest, middleware?: HttpMiddleware) => {
+    const executeOnce = effect (request: HttpClientRequest.HttpClientRequest, middleware?: HttpMiddleware) => {
       if (!middleware) {
         return try (http.execute(request)
           |> Effect.mapError(%, (error) => httpError({ error, request, operation: "request" }))
           |> Effect.flatMap(%, statusError))
       }
 
-      const response = try (middleware(request, (input) =>
+      const response = middleware(request, (input) =>
         http
           .execute(input)
-        |> Effect.mapError(%, (cause) => (cause instanceof Error ? cause : new Error(String(cause)))))
-        |> Effect.mapError(%, (error) => httpError({ error, request, operation: "request" })))
+        |> Effect.mapError(%, (cause) => (cause instanceof Error ? cause : new Error(String(cause))))) catch effect (error) => { throw httpError({ error, request, operation: "request" }) }
       return try statusError(response)
     }
     return Service.of({
@@ -247,7 +246,7 @@ export const layer: Layer<Service, never, HttpClient> = Layer.effect(
 export const fetchLayer = layer.pipe(Layer.provide(FetchHttpClient.layer))
 
 /** Run `fn` on every request: it sees the raw response before status classification, inside middleware already on `executor`, and outside per-call middleware. */
-export const middleware = (fn: HttpMiddleware, executor: Layer<Service> = fetchLayer): Layer<Service> =>
+export const middleware = (fn: HttpMiddleware, executor: Layer.Layer<Service> = fetchLayer): Layer.Layer<Service> =>
   Layer.effect(
     Service,
     effect {

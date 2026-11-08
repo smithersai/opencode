@@ -1,7 +1,7 @@
 import type { WebContents } from "electron"
 import type { DesktopEvent } from "../shared/ipc-rpc/events.vibe"
 
-const queues = new Map<number, Queue<DesktopEvent>>()
+const queues = new Map<number, Queue.Queue<DesktopEvent>>()
 
 export const bindIpcEvents = effect (senderId: number) =>
   try withSpan(

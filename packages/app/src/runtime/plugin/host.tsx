@@ -52,7 +52,7 @@ import {
 import { OpenCode, type OpenCodeClient } from "@opencode/client/promise"
 import { useLanguage } from "@/runtime/i18n/language"
 import { PluginAlertDialog, PluginConfirmDialog, PluginPromptDialog, PluginSelectDialog } from "./dialogs"
-import { createSessionStore, whenLoaded } from "./stores.vibe"
+import { createSessionStore, whenLoaded } from "./stores.js"
 
 type Contribution = { key: string; registry: string; plugin: string; value: Accessor<unknown> }
 

@@ -243,8 +243,8 @@
       "default": "./.vibelang/js/src/providers/google.js"
     },
     "./providers/google-vertex": {
-      "types": "./src/providers/google-vertex.d.vibe.ts",
-      "vibelang-source": "./src/providers/google-vertex.vibe",
+      "types": "./src/providers/google-vertex.ts",
+      "vibelang-source": "./src/providers/google-vertex.ts",
       "default": "./.vibelang/js/src/providers/google-vertex.js"
     },
     "./providers/google-vertex-messages": {
@@ -418,8 +418,8 @@
       "default": "./.vibelang/js/src/providers/opencode/decisions.js"
     },
     "./providers/openrouter": {
-      "types": "./src/providers/openrouter.d.vibe.ts",
-      "vibelang-source": "./src/providers/openrouter.vibe",
+      "types": "./src/providers/openrouter.ts",
+      "vibelang-source": "./src/providers/openrouter.ts",
       "default": "./.vibelang/js/src/providers/openrouter.js"
     },
     "./providers/openrouter/decisions": {
@@ -558,8 +558,8 @@
       "default": "./.vibelang/js/src/protocols/cloudflare-run-decisions.js"
     },
     "./protocols/cloudflare-workers-ai-images": {
-      "types": "./src/protocols/cloudflare-workers-ai-images.d.vibe.ts",
-      "vibelang-source": "./src/protocols/cloudflare-workers-ai-images.vibe",
+      "types": "./src/protocols/cloudflare-workers-ai-images.ts",
+      "vibelang-source": "./src/protocols/cloudflare-workers-ai-images.ts",
       "default": "./.vibelang/js/src/protocols/cloudflare-workers-ai-images.js"
     },
     "./protocols/deepgram-transcription": "./src/protocols/deepgram-transcription.vibe",
@@ -589,13 +589,13 @@
       "default": "./.vibelang/js/src/protocols/openai-decisions.js"
     },
     "./protocols/openai-images": {
-      "types": "./src/protocols/openai-images.d.vibe.ts",
-      "vibelang-source": "./src/protocols/openai-images.vibe",
+      "types": "./src/protocols/openai-images.ts",
+      "vibelang-source": "./src/protocols/openai-images.ts",
       "default": "./.vibelang/js/src/protocols/openai-images.js"
     },
     "./protocols/openai-responses": {
-      "types": "./src/protocols/openai-responses.d.vibe.ts",
-      "vibelang-source": "./src/protocols/openai-responses.vibe",
+      "types": "./src/protocols/openai-responses.ts",
+      "vibelang-source": "./src/protocols/openai-responses.ts",
       "default": "./.vibelang/js/src/protocols/openai-responses.js"
     },
     "./protocols/openai-speech": {
@@ -604,8 +604,8 @@
       "default": "./.vibelang/js/src/protocols/openai-speech.js"
     },
     "./protocols/openai-transcription": {
-      "types": "./src/protocols/openai-transcription.d.vibe.ts",
-      "vibelang-source": "./src/protocols/openai-transcription.vibe",
+      "types": "./src/protocols/openai-transcription.ts",
+      "vibelang-source": "./src/protocols/openai-transcription.ts",
       "default": "./.vibelang/js/src/protocols/openai-transcription.js"
     },
     "./protocols/system-one": {
@@ -637,8 +637,8 @@
     "@types/bun": "catalog:",
     "@typescript/native": "catalog:",
     "typescript": "catalog:",
-    "vibelang": "file:../../.vibelang-toolchain/vibelang-0.0.11-1ded989eae73.tgz",
-    "vibelang-vite": "file:../../.vibelang-toolchain/vibelang-vite-0.0.11-5223c46c8aba.tgz",
+    "vibelang": "0.0.12",
+    "vibelang-vite": "0.0.12",
     "fast-check": "catalog:"
   },
   "dependencies": {
@@ -649,7 +649,7 @@
     "aws4fetch": "1.0.20",
     "effect": "catalog:",
     "google-auth-library": "10.5.0",
-    "vibelang-runtime": "file:../../.vibelang-toolchain/vibelang-runtime-0.0.11-587937650a6b.tgz"
+    "vibelang-runtime": "0.0.12"
   },
   "repository": {
     "type": "git",

@@ -63,7 +63,7 @@ export declare namespace GeoStatRepo {
 }
 
 export class GeoStatRepo extends Context.Service<GeoStatRepo, GeoStatRepo.Service>()("@opencode/stats/GeoStatRepo") {
-  static readonly layer: Layer<GeoStatRepo, never, DrizzleClient> = Layer.effect(
+  static readonly layer: Layer.Layer<GeoStatRepo, never, DrizzleClient> = Layer.effect(
     GeoStatRepo,
     effect {
       const db = try DrizzleClient
@@ -76,11 +76,11 @@ export class GeoStatRepo extends Context.Service<GeoStatRepo, GeoStatRepo.Servic
       ) =>
         try withSpan(
           effect {
-            const scope = opts?.model && opts.provider
+            const scope = try Effect.orDie(Effect.try({ try: () => opts?.model && opts.provider
               ? and(eq(geoStat.provider, opts.provider), eq(geoStat.model, opts.model))
               : opts?.model
               ? eq(geoStat.model, opts.model)
-              : and(eq(geoStat.provider, "all"), eq(geoStat.model, "all"))
+              : and(eq(geoStat.provider, "all"), eq(geoStat.model, "all")), catch: (e) => e }))
             return try Effect.tryPromise({
               try: () =>
                 db
@@ -150,7 +150,7 @@ export class GeoStatRepo extends Context.Service<GeoStatRepo, GeoStatRepo.Servic
         try withSpan(
           effect {
             try Effect.forEach(
-              chunks(rows, UPSERT_CHUNK_SIZE),
+              try Effect.orDie(Effect.try({ try: () => chunks(rows, UPSERT_CHUNK_SIZE), catch: (e) => e })),
               (chunk) =>
                 Effect.tryPromise({
                   try: () => withUniqueUsersFallback((includeUniqueUsers) => upsertGeoChunk(chunk, includeUniqueUsers)),
@@ -207,7 +207,7 @@ export class GeoStatRepo extends Context.Service<GeoStatRepo, GeoStatRepo.Servic
       ) =>
         try withSpan(
           effect {
-            const scope = statRowScope(rows)
+            const scope = try Effect.orDie(Effect.try({ try: () => statRowScope(rows), catch: (e) => e }))
             if (!scope) return
 
             try Effect.tryPromise({
@@ -237,7 +237,7 @@ export class GeoStatRepo extends Context.Service<GeoStatRepo, GeoStatRepo.Servic
       const deleteUnknownDimensions = effect (rows: GeoStatRow[]) =>
         try withSpan(
           effect {
-            const scope = statRowScope(rows)
+            const scope = try Effect.orDie(Effect.try({ try: () => statRowScope(rows), catch: (e) => e }))
             if (!scope) return
             const replacements = new Set(rows.map((row) => [statPeriodKey(row), row.model, row.country].join("\u0000")))
             const stale = try Effect.tryPromise({
@@ -272,7 +272,7 @@ export class GeoStatRepo extends Context.Service<GeoStatRepo, GeoStatRepo.Servic
               .filter((row) => replacements.has([statPeriodKey(row), row.model, row.country].join("\u0000")))
               .map((row) => row.id)
             try Effect.forEach(
-              chunks(ids, UPSERT_CHUNK_SIZE),
+              try Effect.orDie(Effect.try({ try: () => chunks(ids, UPSERT_CHUNK_SIZE), catch: (e) => e })),
               (chunk) =>
                 Effect.tryPromise({
                   try: () => db.delete(geoStat).where(and(eq(geoStat.provider, "unknown"), inArray(geoStat.id, chunk))),

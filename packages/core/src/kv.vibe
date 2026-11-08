@@ -24,13 +24,13 @@ export interface ScanResult {
 }
 
 export interface Interface {
-  readonly get: (key: string) => Value | undefined!!
+  readonly get: (key: string) => (Value | undefined)!!
   readonly set: (key: string, value: Value) => void!!
   readonly remove: (key: string) => void!!
   readonly scan: (options: ScanOptions) => ScanResult!!
 }
 
-export class Service extends Context.Service<Service, Interface>()("@opencode/KV") {}
+export service Service: Interface { static readonly key = "@opencode/KV";}
 
 const layer = Layer.effect(
   Service,
@@ -55,14 +55,16 @@ const layer = Layer.effect(
       set: effect (key, value) =>
         try withSpan(
           effect {
-            try ((try Effect.orDie(Effect.try({
+            const orDie2 = try Effect.orDie(Effect.try({
               try: () =>
                 db
                   .insert(KVTable),
               catch: (error) => error,
-            })))
-              .values({ key, value })
-              .onConflictDoUpdate({ target: KVTable.key, set: { value, time_updated: Date.now() } })
+            }))
+            const values2 = try Effect.orDie(Effect.try({ try: () => orDie2
+              .values({ key, value }), catch: (e) => e }))
+            try ((try Effect.orDie(Effect.try({ try: () => values2
+              .onConflictDoUpdate({ target: KVTable.key, set: { value, time_updated: Date.now() } }), catch: (e) => e })))
               .run() |> Effect.orDie(%))
           },
           "KV.set",

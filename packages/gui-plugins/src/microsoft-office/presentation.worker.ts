@@ -17,7 +17,7 @@ import {
   type VectorBitmap,
   type VectorRequest,
 } from "./slide-protocol"
-import { deckText } from "./slide-text.vibe"
+import { deckText } from "./slide-text.js"
 import { serveWorker, Transfer } from "./worker-rpc"
 
 // One worker holds one open PowerPoint deck: its engine, fonts, laid-out slides, decoded pictures and painting. The

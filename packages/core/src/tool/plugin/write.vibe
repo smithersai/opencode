@@ -71,8 +71,10 @@ export const Plugin = {
                   }
                   const target = try access.resolve({ path: input.path, kind: "file" })
                   try access.authorizeExternal([target], context)
-                  const current = try (FileMutation.readText(environment.files, target.absolute)
-                    |> Effect.catchTag(%, "Environment.NotFound", () => Effect.undefined))
+                  const current = FileMutation.readText(environment.files, target.absolute) catch effect (e) => match (e) {
+                    when { _tag: "Environment.NotFound" }: undefined;
+                    default: throw e;
+                  }
                   const next = try Effect.orDie(Effect.try({ try: () => Bom.split(input.content), catch: (e) => e }))
                   const preview = try Effect.orDie(
                     Effect.try({

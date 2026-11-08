@@ -110,7 +110,7 @@ const fromRequest = effect (request: Request) =>
 
 const decodeQueueResult = route.decodeJson(QueueResult)
 
-const decodeResult = effect (response: HttpClientResponse, context: MediaProtocol.PollContext<FalQueue.Token>) =>
+const decodeResult = effect (response: HttpClientResponse.HttpClientResponse, context: MediaProtocol.PollContext<FalQueue.Token>) =>
   try withSpan(
     effect {
       const output = try decodeQueueResult(response)

@@ -123,7 +123,7 @@ const toolTrie = <R>(tools: Tools<R>): ToolNode<R> => {
     for (const [name, value] of Object.entries(group)) {
       let current = node
       for (const segment of name.split(".")) {
-        if (segment === "") throw new TypeError(`Tool name '${name}' contains an empty segment.`)
+        if (segment === "") $raise(new TypeError(`Tool name '${name}' contains an empty segment.`))
         const child = current.children.get(segment) ?? { children: new Map() }
         current.children.set(segment, child)
         current = child
@@ -236,8 +236,8 @@ const makeSearchTool = (searchIndex: ReadonlyArray<SearchEntry>): Tool => ({
   description: "Search available tools",
   input: SearchInput,
   output: SearchOutput,
-  execute: (input) =>
-    Effect.sync(() => {
+  execute: effect (input) =>
+    {
       const request = input as typeof SearchInput.Type
       const query = request.query ?? ""
       const offset = request.offset ?? 0
@@ -267,7 +267,7 @@ const makeSearchTool = (searchIndex: ReadonlyArray<SearchEntry>): Tool => ({
         remaining,
         next: remaining > 0 ? { offset: offset + items.length } : null,
       }
-    }),
+    },
 })
 
 /** Exact callable signature of the built-in `search` function, for host-owned instructions. */
@@ -317,7 +317,7 @@ const namespaceKeys = <R>(root: ToolNode<R>, path: ReadonlyArray<string>): Reado
   const segments = canonicalSegments(path)
   const node = lookup(root, segments)
   if (node === undefined) {
-    throw new ToolRuntimeError("UnknownTool", `Unknown tool namespace '${segments.join(".")}'.`)
+    $raise(new ToolRuntimeError("UnknownTool", `Unknown tool namespace '${segments.join(".")}'.`))
   }
   return Array.from(node.children.keys())
 }
@@ -332,16 +332,16 @@ const resolve = <R>(root: ToolNode<R>, path: ReadonlyArray<string>, index: Reado
       ns ? index.filter((entry) => entry.description.path.startsWith(`${ns}.`)) : index,
       ns ? segments.slice(1).join(" ") : name,
     )[0]
-    throw new ToolRuntimeError(
+    $raise(new ToolRuntimeError(
       "UnknownTool",
       closest
         ? `Unknown tool '${name}'. Did you mean ${toolExpression(closest.description.path)}?`
         : `Unknown tool '${name}'.`,
       ["Use search to find available tools."],
-    )
+    ))
   }
   if (node.tool === undefined) {
-    throw new ToolRuntimeError("UnknownTool", `Tool '${segments.join(".")}' is not callable.`)
+    $raise(new ToolRuntimeError("UnknownTool", `Tool '${segments.join(".")}' is not callable.`))
   }
   return node.tool
 }
@@ -367,8 +367,8 @@ export type ToolRuntime<R = never> = {
   readonly execute: (
     path: ReadonlyArray<string>,
     args: Array<Json | undefined>,
-  ) => Json | undefined!unknown!R
-  readonly search: (args: Array<Json | undefined>) => Json | undefined!unknown!R
+  ) => (Json | undefined)!unknown!R
+  readonly search: (args: Array<Json | undefined>) => (Json | undefined)!unknown!R
   readonly keys: (path: ReadonlyArray<string>) => ReadonlyArray<string>
 }
 
@@ -383,7 +383,7 @@ export const make = <R>(
 
   const recordCall = (call: ToolCall): void => {
     if (maxToolCalls !== undefined && calls.length >= maxToolCalls) {
-      throw new ToolRuntimeError("ToolCallLimitExceeded", `Execution exceeded its tool-call limit of ${maxToolCalls}.`)
+      $raise(new ToolRuntimeError("ToolCallLimitExceeded", `Execution exceeded its tool-call limit of ${maxToolCalls}.`))
     }
     calls.push(call)
   }
@@ -404,13 +404,13 @@ export const make = <R>(
           name === "search" ? [] : ["The signature may have changed. Use search to get the current signature."],
         ),
     })
-    try Effect.sync(() => recordCall({ name }))
+    recordCall({ name })
     return try hooked(
       { name, input },
       hooks["tool.before"],
       hooks["tool.after"],
       effect {
-        const raw = try (Effect.suspend(() => tool.execute(input))
+        const raw = try (effect { return try tool.execute(input) }
           |> Effect.catchCause(%, (cause) => {
             if (Cause.hasInterruptsOnly(cause)) return Effect.interrupt
             return Effect.fail(
@@ -437,7 +437,7 @@ export const make = <R>(
     calls,
     hooks,
     keys: (path) => namespaceKeys(root, path),
-    search: (args) => Effect.suspend(() => executeTool("search", makeSearchTool(prepared.searchIndex), args)),
+    search: effect (args) => try executeTool("search", makeSearchTool(prepared.searchIndex), args),
     execute: (path, args) =>
       Effect.suspend(() => {
         const segments = canonicalSegments(path)
@@ -451,3 +451,8 @@ export const make = <R>(
 }
 
 export * as ToolRuntime from "./tool-runtime.vibe"
+
+module $throw$ts {
+export function raise(value: unknown): never { throw value }
+}
+import { raise as $raise } from $throw$ts

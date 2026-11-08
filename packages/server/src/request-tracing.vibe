@@ -1,2 +1,2 @@
-export const withoutParentSpan = <A, E>(effect: A!E!Scope) =>
-  effect |> Effect.updateContext(%, (context: Context<Scope>) => Context.omit(Tracer.ParentSpan)(context))
+export const withoutParentSpan = <A, E>(effect: A!E!Scope.Scope) =>
+  effect |> Effect.updateContext(%, (context: Context.Context<Scope.Scope>) => Context.omit(Tracer.ParentSpan)(context))

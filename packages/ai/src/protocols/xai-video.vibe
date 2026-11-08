@@ -132,7 +132,7 @@ const fraction = (progress: number | null | undefined) =>
 const decodeVideoStatus = route.decodeJson(VideoStatus)
 
 const decodeStatus = effect (
-  response: HttpClientResponse,
+  response: HttpClientResponse.HttpClientResponse,
   context: MediaProtocol.PollContext<Token>,
 ) =>
   try withSpan(
@@ -145,7 +145,7 @@ const decodeStatus = effect (
   )
 
 const decodeResult = effect (
-  response: HttpClientResponse,
+  response: HttpClientResponse.HttpClientResponse,
   context: MediaProtocol.PollContext<Token>,
 ) =>
   try withSpan(
@@ -178,10 +178,10 @@ const decodeResult = effect (
       const duration = decoded.video?.duration ?? undefined
       return new VideoResponse({
         videos: [
-          Media.url(url, {
+          try Effect.orDie(Effect.try({ try: () => Media.url(url, {
             mediaType: "video/mp4",
             info: duration === undefined ? undefined : { durationSeconds: duration },
-          }),
+          }), catch: (e) => e })),
         ],
         providerMetadata: {
           xai: {

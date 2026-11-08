@@ -6,7 +6,7 @@ import { definition } from "../tool/runtime.vibe"
 import { trusted } from "vibelang-runtime"
 
 // definition is plain TypeScript that throws only programmer errors.
-const toolDefinition = trusted(definition, [])
+const toolDefinition_impl = (void trusted, definition), toolDefinition: typeof toolDefinition_impl = function (...args) { return toolDefinition_impl.apply(void 0, args) }
 
 // Repairs apply only when the input schema unambiguously supports them:
 // - Stringified root or nested object: '{"limit":"20"}' -> { limit: 20 }
@@ -31,7 +31,7 @@ export const Plugin = define({
       if (event.tool === "execute") return
       const tool = (try ctx.tool.list()).find((tool) => tool.id === event.tool)
       if (!tool) return
-      const schema = toolDefinition(tool).inputSchema
+      const schema = (try Effect.orDie(Effect.try({ try: () => toolDefinition(tool), catch: (e) => e }))).inputSchema
       if (schema.type !== "object") return
       event.input = repair(event.input, schema, schema, 0)
     }),

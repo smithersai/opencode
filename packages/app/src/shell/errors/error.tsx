@@ -8,7 +8,7 @@ import { Predicate } from "effect"
 import { Updater } from "@opencode/plugin/gui/updater"
 import { usePlatform } from "@/runtime/platform/platform"
 import { useLanguage } from "@/runtime/i18n/language"
-import { createIpcClients } from "../../runtime/plugin/ipc.vibe"
+import { createIpcClients } from "../../runtime/plugin/ipc.js"
 import { Icon } from "@opencode/ui/icon"
 import { errorDescriptionKey, errorStatus } from "./description"
 

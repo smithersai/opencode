@@ -36,9 +36,9 @@ export schema AllowedTools {
   mode?: "auto" | "none" | "required"
 }
 
-export const StreamOptions = Schema.Struct({
-  includeObfuscation: Schema.optional(Schema.Boolean),
-})
+export schema StreamOptions {
+  readonly includeObfuscation?: boolean
+}
 
 // Malformed options are dropped one at a time so a bad `topLogprobs` cannot discard `store` or `reasoningEffort`.
 export const Options = Schema.Struct({

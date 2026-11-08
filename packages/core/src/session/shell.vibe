@@ -25,9 +25,10 @@ export const start = effect (input: { session: Session.Info; command: string }) 
       return {
         info,
         result: shell.result(info),
-        output: shell
-          .output(info.id, { limit: 1024 * 1024 })
-          |> Effect.catchTag(%, "Shell.NotFoundError", () => Effect.succeed(ShellResult.unavailable)),
+        output: do { const catchProgram = shell
+          .output(info.id, { limit: 1024 * 1024 }); effect { return catchProgram catch (e) => match (e) {
+          when { _tag: "Shell.NotFoundError" }: ShellResult.unavailable;
+        } } },
       }
     },
     "SessionShell.start",

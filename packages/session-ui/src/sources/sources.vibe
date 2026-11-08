@@ -68,7 +68,7 @@ function step(content: SessionMessageAssistant["content"][number]): SourceStep[]
   if (content.name !== "webfetch") return []
 
   const page = Option.getOrUndefined(
-    decodeURL(currentToolInput(content)).flatMapNullishOr((input) => source(input.url)),
+    Option.flatMapNullishOr(decodeURL(currentToolInput(content)), (input) => source(input.url)),
   )
 
   if (!page) return []
@@ -89,7 +89,7 @@ function search(tool: SessionMessageAssistantTool): SourceStep {
   return {
     type: "search",
     id: tool.id,
-    query: Option.match(decodeQuery(currentToolInput(tool)), { onNone: () => "", onSome: (input) => input.query }),
+    query: do { const $optionSubject = decodeQuery(currentToolInput(tool)); const $optionHandlers: { onNone: () => string; onSome: (input: { readonly query: string; }) => string; } = { onNone: () => "", onSome: (input) => input.query }; const { onNone: $optionNone, onSome: $optionSome } = $optionHandlers; match ($optionSubject) { when Option.Some(let $optionValue): $optionSome($optionValue); default: $optionNone(); }; },
     status: tool.state.status === "streaming" ? "running" : tool.state.status,
     results: tool.state.status === "completed" ? results(currentToolOutput(tool) ?? "") : [],
     error: currentToolError(tool),

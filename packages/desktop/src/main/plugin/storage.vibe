@@ -125,7 +125,7 @@ export function createStorage(
           const returned = mutate(draft as Mutable<typeof options.initial>)
 
           if (returned !== undefined) {
-            throw new Error("Persisted.update must not return a value. Use set(next) to replace the value.")
+            $raise(new Error("Persisted.update must not return a value. Use set(next) to replace the value."))
           }
 
           write(draft)
@@ -165,3 +165,8 @@ function source(state: StateStore, settings: SettingsFiles, from: MainStoreFrom)
     },
   }
 }
+
+module $throw$ts {
+export function raise(value: unknown): never { throw value }
+}
+import { raise as $raise } from $throw$ts

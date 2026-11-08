@@ -1,5 +1,5 @@
 import type { ProviderPackage } from "../provider-package.js"
-import { VeniceChat } from "../protocols/venice-chat.vibe"
+import { VeniceChat } from "../protocols/venice-chat.js"
 import { OpenAIChat } from "../protocols/openai-chat.js"
 import { AuthOptions, type ProviderAuthOption } from "../route/auth-options.vibe"
 import { Route, type RouteDefaultsInput } from "../route/client.js"

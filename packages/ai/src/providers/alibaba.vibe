@@ -1,8 +1,8 @@
 import type { ProviderPackage } from "../provider-package.ts"
-import { AlibabaChat } from "../protocols/alibaba-chat.vibe"
+import { AlibabaChat } from "../protocols/alibaba-chat.js"
 import { AlibabaImages } from "../protocols/alibaba-images.vibe"
 import { AlibabaMessages } from "../protocols/alibaba-messages.vibe"
-import { AlibabaResponses } from "../protocols/alibaba-responses.vibe"
+import { AlibabaResponses } from "../protocols/alibaba-responses.js"
 import { AuthOptions, type AtLeastOne, type ProviderAuthOption } from "../route/auth-options.vibe"
 import { Route, type RouteDefaultsInput } from "../route/client.ts"
 import { Endpoint } from "../route/endpoint.ts"
@@ -97,13 +97,13 @@ export const configure = (input: Config) => {
     : `${workspaceID}.${region}.maas.aliyuncs.com`
   if (baseURL === undefined) {
     if (region === undefined) {
-      throw new ProviderConfigurationError({ provider: id, message: "Alibaba requires region or baseURL" })
+      $raise(new ProviderConfigurationError({ provider: id, message: "Alibaba requires region or baseURL" }))
     }
     if (host === undefined) {
-      throw new ProviderConfigurationError({
+      $raise(new ProviderConfigurationError({
         provider: id,
         message: `Alibaba region ${region} requires workspaceID or baseURL`,
-      })
+      }))
     }
   }
   const opts = { ...rest, auth: AuthOptions.bearer(input, ["DASHSCOPE_API_KEY", "ALIBABA_API_KEY"]) }
@@ -164,3 +164,8 @@ function hostedTool(type: "web_search" | "web_extractor" | "code_interpreter", d
 }
 
 export * as Alibaba from "./alibaba.vibe"
+
+module $throw$ts {
+export function raise(value: unknown): never { throw value }
+}
+import { raise as $raise } from $throw$ts

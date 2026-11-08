@@ -4,7 +4,7 @@ import { MediaRoute } from "../route/media.vibe"
 import { mergeJsonRecords, tokenUsage, type OpenString } from "../schema/index.js"
 import { ProviderShared } from "./shared.js"
 import { GeminiGenerateContent } from "./utils/gemini-generate-content.vibe"
-import { MediaInput } from "./utils/media-input.vibe"
+import { MediaInput } from "./utils/media-input.js"
 
 const route = MediaProtocol.identity({ id: "google-images", name: "Google Images", provider: "google" })
 export const DEFAULT_BASE_URL = "https://generativelanguage.googleapis.com/v1beta"
@@ -116,7 +116,7 @@ const fromRequest = effect (request: Request) =>
 const decodeDocument = route.decodeJson(GoogleImageResponse)
 
 const decodeResponse = effect (
-  response: HttpClientResponse,
+  response: HttpClientResponse.HttpClientResponse,
 ) =>
   try withSpan(
     effect {
@@ -197,20 +197,23 @@ const decodeResponse = effect (
       const outputTokens = usage?.candidatesTokenCount === undefined
         ? undefined
         : usage.candidatesTokenCount + (usage.thoughtsTokenCount ?? 0)
+      const counts = usage === undefined
+        ? undefined
+        : {
+          input: usage.promptTokenCount,
+          output: outputTokens,
+          total: try Effect.orDie(Effect.try({ try: () => ProviderShared.totalTokens(usage.promptTokenCount, outputTokens, usage.totalTokenCount), catch: (e) => e })),
+          details: {
+            reasoningTokens: usage.thoughtsTokenCount,
+            cacheReadInputTokens: usage.cachedContentTokenCount,
+            google: usage,
+          },
+        }
       return new ImageResponse({
         images,
-        usage: usage === undefined
+        usage: counts === undefined
           ? undefined
-          : tokenUsage({
-            input: usage.promptTokenCount,
-            output: outputTokens,
-            total: ProviderShared.totalTokens(usage.promptTokenCount, outputTokens, usage.totalTokenCount),
-            details: {
-              reasoningTokens: usage.thoughtsTokenCount,
-              cacheReadInputTokens: usage.cachedContentTokenCount,
-              google: usage,
-            },
-          }),
+          : try Effect.orDie(Effect.try({ try: () => tokenUsage(counts), catch: (e) => e })),
         providerMetadata: {
           google: {
             modelVersion: decoded.modelVersion,

@@ -23,12 +23,12 @@ export const layer = Layer.effect(
     )
 
     return Service.of({
-      add: (effect) =>
-        Effect.sync(() => {
+      add: effect (effect) =>
+        {
           effects.add(effect)
 
           return () => effects.delete(effect)
-        }),
+        },
       run,
     })
   },

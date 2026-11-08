@@ -203,8 +203,8 @@
       "default": "./.vibelang/js/src/groups/provider.js"
     },
     "./groups/session": {
-      "types": "./src/groups/session.d.vibe.ts",
-      "vibelang-source": "./src/groups/session.vibe",
+      "types": "./src/groups/session.ts",
+      "vibelang-source": "./src/groups/session.ts",
       "default": "./.vibelang/js/src/groups/session.js"
     },
     "./groups/websearch": {
@@ -233,7 +233,7 @@
   "dependencies": {
     "@opencode/schema": "workspace:*",
     "effect": "catalog:",
-    "vibelang-runtime": "file:../../.vibelang-toolchain/vibelang-runtime-0.0.11-587937650a6b.tgz"
+    "vibelang-runtime": "0.0.12"
   },
   "devDependencies": {
     "@tsconfig/bun": "catalog:",
@@ -241,6 +241,6 @@
     "@typescript/native": "catalog:",
     "prettier": "3.6.2",
     "typescript": "catalog:",
-    "vibelang": "file:../../.vibelang-toolchain/vibelang-0.0.11-1ded989eae73.tgz"
+    "vibelang": "0.0.12"
   }
 }

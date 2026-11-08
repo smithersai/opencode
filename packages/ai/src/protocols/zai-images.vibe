@@ -80,7 +80,7 @@ const fromRequest = effect (request: Request) =>
 const decodeDocument = route.decodeJson(ZAIImageResponse)
 
 const decodeResponse = effect (
-  response: HttpClientResponse,
+  response: HttpClientResponse.HttpClientResponse,
 ) =>
   try withSpan(
     effect {

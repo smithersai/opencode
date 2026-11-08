@@ -56,8 +56,8 @@
       "default": "./.vibelang/js/src/plugin/agent.js"
     },
     "./plugin/host": {
-      "types": "./src/plugin/host.d.vibe.ts",
-      "vibelang-source": "./src/plugin/host.vibe",
+      "types": "./src/plugin/host.ts",
+      "vibelang-source": "./src/plugin/host.ts",
       "default": "./.vibelang/js/src/plugin/host.js"
     },
     "./plugin/mcp-codemode-defaults": {
@@ -181,8 +181,8 @@
       "default": "./.vibelang/js/src/voice.js"
     },
     "./mcp/instructions": {
-      "types": "./src/mcp/instructions.d.vibe.ts",
-      "vibelang-source": "./src/mcp/instructions.vibe",
+      "types": "./src/mcp/instructions.ts",
+      "vibelang-source": "./src/mcp/instructions.ts",
       "default": "./.vibelang/js/src/mcp/instructions.js"
     },
     "./plugin/websearch/firecrawl": {
@@ -416,23 +416,23 @@
       "default": "./.vibelang/js/src/location-lifecycle.js"
     },
     "./session/compaction": {
-      "types": "./src/session/compaction.d.vibe.ts",
-      "vibelang-source": "./src/session/compaction.vibe",
+      "types": "./src/session/compaction.ts",
+      "vibelang-source": "./src/session/compaction.ts",
       "default": "./.vibelang/js/src/session/compaction.js"
     },
     "./generate": {
-      "types": "./src/generate.d.vibe.ts",
-      "vibelang-source": "./src/generate.vibe",
+      "types": "./src/generate.ts",
+      "vibelang-source": "./src/generate.ts",
       "default": "./.vibelang/js/src/generate.js"
     },
     "./plugin/hooks": {
-      "types": "./src/plugin/hooks.d.vibe.ts",
-      "vibelang-source": "./src/plugin/hooks.vibe",
+      "types": "./src/plugin/hooks.ts",
+      "vibelang-source": "./src/plugin/hooks.ts",
       "default": "./.vibelang/js/src/plugin/hooks.js"
     },
     "./plugin/instance": {
-      "types": "./src/plugin/instance.d.vibe.ts",
-      "vibelang-source": "./src/plugin/instance.vibe",
+      "types": "./src/plugin/instance.ts",
+      "vibelang-source": "./src/plugin/instance.ts",
       "default": "./.vibelang/js/src/plugin/instance.js"
     },
     "./plugin/models-dev": {
@@ -813,8 +813,8 @@
     "@types/which": "3.0.4",
     "drizzle-kit": "catalog:",
     "fast-check": "catalog:",
-    "vibelang": "file:../../.vibelang-toolchain/vibelang-0.0.11-1ded989eae73.tgz",
-    "vibelang-unplugin": "file:../../.vibelang-toolchain/vibelang-unplugin-0.0.11-0cd78f8e2c0c.tgz"
+    "vibelang": "0.0.12",
+    "vibelang-unplugin": "0.0.12"
   },
   "dependencies": {
     "@ai-sdk/cohere": "3.0.27",
@@ -856,6 +856,6 @@
     "web-tree-sitter": "0.25.10",
     "which": "6.0.1",
     "zod": "catalog:",
-    "vibelang-runtime": "file:../../.vibelang-toolchain/vibelang-runtime-0.0.11-587937650a6b.tgz"
+    "vibelang-runtime": "0.0.12"
   }
 }

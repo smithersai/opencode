@@ -55,8 +55,8 @@
     "vite": "8.2.2",
     "vite-plugin-pwa": "1.3.0",
     "vite-plugin-solid": "2.11.14",
-    "vibelang": "file:../../.vibelang-toolchain/vibelang-0.0.11-1ded989eae73.tgz",
-    "vibelang-vite": "file:../../.vibelang-toolchain/vibelang-vite-0.0.11-5223c46c8aba.tgz",
+    "vibelang": "0.0.12",
+    "vibelang-vite": "0.0.12",
     "fast-check": "catalog:"
   },
   "dependencies": {
@@ -90,6 +90,6 @@
     "fuzzysort": "catalog:",
     "qr-scanner": "1.4.2",
     "solid-js": "catalog:",
-    "vibelang-runtime": "file:../../.vibelang-toolchain/vibelang-runtime-0.0.11-587937650a6b.tgz"
+    "vibelang-runtime": "0.0.12"
   }
 }

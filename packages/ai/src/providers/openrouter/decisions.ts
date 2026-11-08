@@ -1,2 +1,2 @@
-export { decisionModel as model } from "../openrouter.vibe"
-export type { Settings } from "../openrouter.vibe"
+export { decisionModel as model } from "../openrouter.js"
+export type { Settings } from "../openrouter.js"

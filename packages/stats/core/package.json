@@ -19,9 +19,9 @@
     "./domain/provider": "./src/domain/provider.vibe",
     "./domain/retention": "./src/domain/retention.vibe",
     "./domain/*": "./src/domain/*.ts",
-    "./r2-sql": "./src/r2-sql.vibe",
+    "./r2-sql": "./src/r2-sql.ts",
     "./runtime": "./src/runtime.vibe",
-    "./stat-sync": "./src/stat-sync.vibe",
+    "./stat-sync": "./src/stat-sync.ts",
     "./sync-range": {
       "types": "./src/sync-range.ts",
       "vibelang-source": "./src/sync-range.ts",
@@ -87,7 +87,7 @@
     "drizzle-orm": "catalog:",
     "effect": "catalog:",
     "sst": "catalog:",
-    "vibelang-runtime": "file:../../../.vibelang-toolchain/vibelang-runtime-0.0.11-587937650a6b.tgz"
+    "vibelang-runtime": "0.0.12"
   },
   "devDependencies": {
     "@tsconfig/node22": "catalog:",
@@ -96,8 +96,8 @@
     "@typescript/native": "catalog:",
     "drizzle-kit": "catalog:",
     "typescript": "catalog:",
-    "vibelang": "file:../../../.vibelang-toolchain/vibelang-0.0.11-1ded989eae73.tgz",
-    "vibelang-vite": "file:../../../.vibelang-toolchain/vibelang-vite-0.0.11-5223c46c8aba.tgz"
+    "vibelang": "0.0.12",
+    "vibelang-vite": "0.0.12"
   },
   "engines": {
     "node": ">=22"

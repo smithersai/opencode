@@ -14,9 +14,9 @@ export interface Interface {
   notify: (recovery: Recovery, startedAt: number) => void!!
 }
 
-export class Service extends Context.Service<Service, Interface>()("@opencode/SubagentJob") {}
+export service Service: Interface { static readonly key = "@opencode/SubagentJob";}
 
-const make: Interface!!Session.Service | Job.Service | Scope = effect {
+const make: Interface!!(Session.Service | Job.Service | Scope.Scope) = effect {
   const sessions = try Session.Service
   const jobs = try Job.Service
   const scope = try Scope.Scope

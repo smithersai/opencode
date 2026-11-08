@@ -1,5 +1,5 @@
 import { make, type Tool } from "../tool.vibe"
-import { invoke } from "./runtime.vibe"
+import { invoke } from "./runtime.js"
 import {
   componentDefinitions,
   hasDirectionalSchemas,
@@ -116,7 +116,7 @@ export const fromSpec = (options: Options): Result => {
   return { tools, skipped }
 }
 
-const setTool = (tools: Tools, path: ReadonlyArray<string>, tool: Tool<HttpClient>): void => {
+const setTool = (tools: Tools, path: ReadonlyArray<string>, tool: Tool<HttpClient.HttpClient>): void => {
   const [head, ...rest] = path
   if (head === undefined) return
   if (rest.length === 0) {

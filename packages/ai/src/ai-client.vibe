@@ -7,7 +7,7 @@ import { TranscriptionClient } from "./transcription-client.vibe"
 import { VideoClient } from "./video-client.vibe"
 
 /** Every modality client over `executor`, which stays in the output so `asset.bytes()` and `Media.write` resolve. */
-export const layerWith = <E, R>(executor: Layer<RequestExecutor.Service, E, R>) =>
+export const layerWith = <E, R>(executor: Layer.Layer<RequestExecutor.Service, E, R>) =>
   Layer.mergeAll(
     LLMClient.layer,
     ImageClient.layer,

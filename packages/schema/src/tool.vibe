@@ -41,7 +41,7 @@ export type Options =
     }
   )
 
-export type ValueSchema<A = unknown> = Schema.Codec<A, any> | StandardSchemaV1<any, A> | JsonSchema
+export type ValueSchema<A = unknown> = Schema.Codec<A, any> | StandardSchemaV1<any, A> | JsonSchema.JsonSchema
 
 type InputValue<S> = 0 extends 1 & S ? any
   : S extends Schema.Codec<infer A, any> ? A

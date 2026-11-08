@@ -156,8 +156,8 @@ export const driver = (input: DriverInput): WebSocketChannelDriver => {
   const shape = input.continuation ?? ((fields: Readonly<Record<string, unknown>>) => fields)
   let output: OpenResponses.StreamItem[] = []
   return {
-    create: (checkpoint) =>
-      Effect.sync(() => {
+    create: effect (checkpoint) =>
+      {
         output = []
         const previous = checkpointValue(checkpoint)
         // Ask the route first: diffing the whole history is wasted when it declines the continuation.
@@ -170,10 +170,10 @@ export const driver = (input: DriverInput): WebSocketChannelDriver => {
           message: ProviderShared.encodeJson({ ...fields, input: delta, previous_response_id: previous.responseID }),
           mode: "incremental" as const,
         }
-      }),
+      },
     observe: effect (create, frame) => {
       const event = OpenResponses.decodeChannelEvent(frame) catch effect (cause) => {
-        throw ProviderShared.eventError(input.id, `Invalid ${input.name} WebSocket event`, frame, cause)
+        throw try Effect.orDie(Effect.try({ try: () => ProviderShared.eventError(input.id, `Invalid ${input.name} WebSocket event`, frame, cause), catch: (e) => e }))
       }
       const observation = try (input.base.observeEvent
         ? input.base.observeEvent(create, frame, event)

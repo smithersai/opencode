@@ -65,9 +65,8 @@ export const Plugin = {
                         onProvider: (provider) => context.progress({ provider: provider.id }),
                       },
                     )
-                  const result = try (search()
-                    |> Effect.catchTag(%, "WebSearch.ProviderRequired", () => {
-                      return providerSelectionLock
+                  const result = search() catch effect (e) => match (e) {
+                    when { _tag: "WebSearch.ProviderRequired" }: try (providerSelectionLock
                         .withPermit(
                           effect {
                             if (try websearch.default()) return
@@ -146,8 +145,9 @@ export const Plugin = {
                           duration: "1 minute",
                           orElse: () => Effect.fail(new Error("Web search cancelled")),
                         })
-                        |> Effect.flatMap(%, search)
-                    }))
+                        |> Effect.flatMap(%, search));
+                    default: throw e;
+                  }
                   const output = {
                     provider: result.providerID,
                     results: result.results,
@@ -185,9 +185,10 @@ export const Plugin = {
           ) |> Effect.orDie(%))
 
         const hook = effect (event: SessionHooks["context"]) => {
-          const disabled = try (websearch.default()
-            |> Effect.as(%, false)
-            |> Effect.catchTag(%, "WebSearch.Disabled", () => Effect.succeed(true)))
+          const disabled = (websearch.default()
+            |> Effect.as(%, false)) catch (e) => match (e) {
+            when { _tag: "WebSearch.Disabled" }: true;
+          }
           if (disabled) delete event.tools[name]
         }
         try ctx.session.hook("context", hook)

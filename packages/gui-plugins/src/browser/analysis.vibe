@@ -44,9 +44,9 @@ export function analyzeTrace(value: unknown, limit = 100) {
   const decoded = Schema.decodeUnknownOption(Trace)(value)
 
   if (decoded._tag === "None") {
-    throw new Error(
+    $raise(new Error(
       "Selected file is not a Chromium performance trace. Use a fileID returned by browser.trace.stop for this tab; CPU profiles and heap snapshots use their own analysis tools.",
-    )
+    ))
   }
   const trace = decoded.value
   const events = new Map<string, { name: string; count: number; totalMs: number; maxMs: number }>()
@@ -88,9 +88,9 @@ export function analyzeCpu(value: unknown, limit = 100) {
   const decoded = Schema.decodeUnknownOption(Cpu)(value)
 
   if (decoded._tag === "None") {
-    throw new Error(
+    $raise(new Error(
       "Selected file is not a CPU profile. Use a fileID returned by browser.cpu.stop for this tab, not a trace or heap snapshot.",
-    )
+    ))
   }
   const profile = decoded.value
   const times = new Map<number, number>()
@@ -122,9 +122,9 @@ export function parseHeap(value: unknown) {
   const decoded = Schema.decodeUnknownOption(Heap)(value)
 
   if (decoded._tag === "None") {
-    throw new Error(
+    $raise(new Error(
       "Selected file is not a V8 heap snapshot. Use a fileID returned by browser.heap.snapshot for this tab, not a trace or CPU profile.",
-    )
+    ))
   }
   const heap = decoded.value
   const fields = heap.snapshot.meta.node_fields
@@ -150,15 +150,15 @@ export function parseHeap(value: unknown) {
     || heap.nodes.length % width
     || heap.edges.length % edgeWidth
   ) {
-    throw malformedHeap()
+    $raise(malformedHeap())
   }
   const types = heap.snapshot.meta.node_types[indexes.type]
   const edgeTypes = heap.snapshot.meta.edge_types[indexes.edgeType]
 
   if (!Array.isArray(types) || !Array.isArray(edgeTypes)) {
-    throw new Error(
+    $raise(new Error(
       "Heap snapshot type tables are unsupported. Use a complete capture from browser.heap.snapshot and report the compatibility issue if it persists.",
-    )
+    ))
   }
 
   const node = (offset: number) => ({
@@ -176,7 +176,7 @@ export function parseHeap(value: unknown) {
   for (let offset = 0; offset < heap.nodes.length; offset += width) {
     const item = node(offset)
 
-    if (!Number.isSafeInteger(item.edgeCount) || item.edgeCount < 0) throw malformedHeap()
+    if (!Number.isSafeInteger(item.edgeCount) || item.edgeCount < 0) $raise(malformedHeap())
     edgeTotal += item.edgeCount
     const name = item.name.slice(0, 2_048)
     const entry = classes.get(name) ?? { name, count: 0, bytes: 0 }
@@ -187,12 +187,12 @@ export function parseHeap(value: unknown) {
   }
 
   // Edge counts drive the traversal below; a downloaded file can claim trillions of edges it does not carry.
-  if (edgeTotal * edgeWidth !== heap.edges.length) throw malformedHeap()
+  if (edgeTotal * edgeWidth !== heap.edges.length) $raise(malformedHeap())
 
   for (let offset = indexes.to; offset < heap.edges.length; offset += edgeWidth) {
     const to = heap.edges[offset]
 
-    if (!Number.isSafeInteger(to) || to < 0 || to >= heap.nodes.length || to % width) throw malformedHeap()
+    if (!Number.isSafeInteger(to) || to < 0 || to >= heap.nodes.length || to % width) $raise(malformedHeap())
   }
 
   return {
@@ -222,9 +222,9 @@ export function parseHeap(value: unknown) {
       const target = heap.nodes.findIndex((value, index) => index % width === indexes.id && value === id) - indexes.id
 
       if (target < 0) {
-        throw new Error(
+        $raise(new Error(
           "Object ID was not found in this heap snapshot. Call browser.heap.query with the same tabID and fileID, then copy an exact returned object id. Object IDs cannot be reused across snapshots.",
-        )
+        ))
       }
       const references: { name: string; node: ReturnType<typeof node> }[] = []
       const retainers: { name: string; node: ReturnType<typeof node> }[] = []
@@ -263,3 +263,8 @@ export function parseHeap(value: unknown) {
     },
   }
 }
+
+module $throw$ts {
+export function raise(value: unknown): never { throw value }
+}
+import { raise as $raise } from $throw$ts

@@ -96,7 +96,7 @@ const fromRequest = effect (request: Request) =>
 const decodeDocument = route.decodeJson(AlibabaImageResponse)
 
 const decodeResponse = effect (
-  response: HttpClientResponse,
+  response: HttpClientResponse.HttpClientResponse,
 ) =>
   try withSpan(
     effect {

@@ -95,7 +95,7 @@ const fromRequest = effect (request: Request) =>
         )
       }
       if (request.frames?.last !== undefined && request.frames.first === undefined) {
-        throw ProviderShared.invalidRequest(`${route.name} requires frames.first when frames.last is set`)
+        throw try Effect.orDie(Effect.try({ try: () => ProviderShared.invalidRequest(`${route.name} requires frames.first when frames.last is set`), catch: (e) => e }))
       }
       const image = request.frames?.first === undefined ? undefined : try inlineMedia(request.frames.first)
       const lastFrame = request.frames?.last === undefined ? undefined : try inlineMedia(request.frames.last)
@@ -152,7 +152,7 @@ const statusOf = (operation: typeof Operation.Type): Status => {
 const decodeOperation = route.decodeJson(Operation)
 
 const decodeStatus = effect (
-  response: HttpClientResponse,
+  response: HttpClientResponse.HttpClientResponse,
   context: MediaProtocol.PollContext<Token>,
 ) =>
   try withSpan(
@@ -164,7 +164,7 @@ const decodeStatus = effect (
   )
 
 const decodeResult = effect (
-  response: HttpClientResponse,
+  response: HttpClientResponse.HttpClientResponse,
   context: MediaProtocol.PollContext<Token>,
 ) =>
   try withSpan(

@@ -17,11 +17,11 @@ export const SshStage = Schema.Literals([
   "failed",
 ])
 
-export const SshPrompt = Schema.Struct({
-  id: Schema.String,
-  text: Schema.String,
-  confirm: Schema.Boolean,
-})
+export schema SshPrompt {
+  readonly id: string
+  readonly text: string
+  readonly confirm: boolean
+}
 
 export schema SshItem {
   config: SshConfig

@@ -47,7 +47,7 @@ export async function pluginDefinition(id: string, code: string): Promise<Entry>
 
         if (mainOnlyModule(name)) return inertModule(name)
 
-        throw new Error(`Plugin GUI bundle requires a module the app does not share: ${name}`)
+        $raise(new Error(`Plugin GUI bundle requires a module the app does not share: ${name}`))
       },
     })
   ).then(
@@ -62,3 +62,8 @@ export async function pluginDefinition(id: string, code: string): Promise<Entry>
   // A setup's returned cleanup reaches the host, which runs it when the plugin goes away.
   return { ...bundle.value.definition, id, windowEntry: async () => ({ default: (ctx: never) => setup?.(ctx) }) }
 }
+
+module $throw$ts {
+export function raise(value: unknown): never { throw value }
+}
+import { raise as $raise } from $throw$ts

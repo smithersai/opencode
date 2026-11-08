@@ -1,4 +1,3 @@
-import type { HttpClientResponse } from "effect/http"
 import type { Status } from "../generation.vibe"
 import { ImageModel, type ImageRequestFor, ImageResponse } from "../image.ts"
 import { Media } from "../media.ts"
@@ -67,9 +66,9 @@ const inlineSize = (source: Media.Source): number => {
 
 const fileInput = effect (asset: Media.Asset) => {
   if (inlineSize(asset.source) > MAX_DATA_URL_BYTES) {
-    throw ProviderShared.invalidRequest(
+    throw try Effect.orDie(Effect.try({ try: () => ProviderShared.invalidRequest(
       `${route.name} data URL inputs are limited to 256 KB; pass a larger file by https URL`,
-    )
+    ), catch: (e) => e }))
   }
   return (try ProviderShared.mediaReference(asset, undefined, route.name)).value
 }

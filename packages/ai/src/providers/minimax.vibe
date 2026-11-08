@@ -65,7 +65,7 @@ const chatProtocol = Protocol.make({
     from: effect (request: LLMRequest) =>
       try withSpan(
         effect {
-          const options = try ProviderShared.validateWith(Schema.decodeUnknownEffect(ChatOptions))(
+          const options = try (try Effect.orDie(Effect.try({ try: () => ProviderShared.validateWith(Schema.decodeUnknownEffect(ChatOptions)), catch: (e) => e })))(
             request.providerOptions ?? {},
           )
           return {

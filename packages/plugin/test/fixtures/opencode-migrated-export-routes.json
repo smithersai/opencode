@@ -120,12 +120,6 @@
     "output": "./.vibelang/js/src/effect/worktree.js"
   },
   {
-    "entrypoint": "./gui/context.typecheck",
-    "source": "./src/gui/context.typecheck.vibe",
-    "types": "./src/gui/context.typecheck.d.vibe.ts",
-    "output": "./.vibelang/js/src/gui/context.typecheck.js"
-  },
-  {
     "entrypoint": "./gui/host-apis",
     "source": "./src/gui/host-apis.vibe",
     "types": "./src/gui/host-apis.d.vibe.ts",

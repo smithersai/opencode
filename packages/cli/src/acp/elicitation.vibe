@@ -35,14 +35,10 @@ export const UnshownQuestionMessage =
   "The question couldn't be shown to the user in this client. Continue without an answer: make reasonable assumptions and state them, or ask the user in your reply if you can't proceed."
 
 function cancel(client: OpenCodeClient, form: Form.Info, message?: string) {
-  return client.session.form.cancel({ sessionID: form.sessionID, formID: form.id, message }).pipe(
-    Effect.catchTag(["FormAlreadySettledError", "FormNotFoundError"], () => Effect.void),
-    Effect.catch(() =>
-      ACPClient.decodeSessionID(form.sessionID)
+  return do { const catchProgram = (client.session.form.cancel({ sessionID: form.sessionID, formID: form.id, message })
+    |> Effect.catchTag(%, ["FormAlreadySettledError", "FormNotFoundError"], () => Effect.void)); effect { return catchProgram catch effect () => try (ACPClient.decodeSessionID(form.sessionID)
       |> Effect.flatMap(%, (sessionID) => client.session.interrupt({ sessionID }))
-      |> Effect.ignore(%)
-    ),
-  )
+      |> Effect.ignore(%)) } }
 }
 
 export function requestedSchema(form: AskedForm, capabilities: Capabilities): ElicitationSchema | undefined {
@@ -104,14 +100,9 @@ export const ask = effect (input: Input) => {
 
 export function respond(input: Input, outcome: Form.Answer | "cancel") {
   if (outcome === "cancel") return cancel(input.client, input.form)
-  return input.client.session.form
+  return do { const catchProgram = (input.client.session.form
     .reply({ sessionID: input.form.sessionID, formID: input.form.id, answer: outcome })
-    .pipe(
-      Effect.catchTag(["FormAlreadySettledError", "FormNotFoundError"], () => Effect.void),
-      Effect.catch((cause) =>
-        Effect.logWarning("ACP form reply failed", cause) |> Effect.andThen(%, cancel(input.client, input.form))
-      ),
-    )
+      |> Effect.catchTag(%, ["FormAlreadySettledError", "FormNotFoundError"], () => Effect.void)); effect { return catchProgram catch effect (cause) => try (Effect.logWarning("ACP form reply failed", cause) |> Effect.andThen(%, cancel(input.client, input.form))) } }
 }
 
 function credentialLike(field: Form.Field) {

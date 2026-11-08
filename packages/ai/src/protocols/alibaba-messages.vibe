@@ -25,7 +25,7 @@ export const protocol = Protocol.make({
     from: effect (req) =>
       try withSpan(
         effect {
-          const opts = try ProviderShared.validateWith(Schema.decodeUnknownEffect(Options))(req.providerOptions ?? {})
+          const opts = try (try Effect.orDie(Effect.try({ try: () => ProviderShared.validateWith(Schema.decodeUnknownEffect(Options)), catch: (e) => e })))(req.providerOptions ?? {})
           // Model Studio accepts enabled thinking without Anthropic's mandatory token budget.
           const body = try AnthropicMessages.protocol.body.from(
             LLMRequest.update(req, {
@@ -41,7 +41,7 @@ export const protocol = Protocol.make({
                 type: opts.thinking.type,
                 budget_tokens: budget === undefined
                   ? undefined
-                  : ProviderShared.fitThinkingBudget(budget, body.max_tokens),
+                  : try Effect.orDie(Effect.try({ try: () => ProviderShared.fitThinkingBudget(budget, body.max_tokens), catch: (e) => e })),
               },
           }
         },

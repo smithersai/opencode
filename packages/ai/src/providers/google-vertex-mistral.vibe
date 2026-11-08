@@ -1,5 +1,5 @@
 import type { ProviderPackage } from "../provider-package.ts"
-import { MistralChat } from "../protocols/mistral-chat.vibe"
+import { MistralChat } from "../protocols/mistral-chat.js"
 import { Auth } from "../route/auth.vibe"
 import { Route, type RouteDefaultsInput } from "../route/client.ts"
 import { Endpoint } from "../route/endpoint.ts"
@@ -57,7 +57,7 @@ export const routes = [route]
 
 const configuredRoute = (input: Config) => {
   if ("apiKey" in input && input.apiKey !== undefined) {
-    throw new ProviderConfigurationError({ provider: id, message: "Google Vertex Mistral does not support API keys" })
+    $raise(new ProviderConfigurationError({ provider: id, message: "Google Vertex Mistral does not support API keys" }))
   }
   const {
     accessToken: _accessToken,
@@ -100,7 +100,7 @@ export const model: ProviderPackage.Definition<Settings, MistralChat.ProviderOpt
   { accessToken, apiKey, baseURL, body, headers, location, project, ...providerOptions },
 ) => {
   if (apiKey !== undefined) {
-    throw new ProviderConfigurationError({ provider: id, message: "Google Vertex Mistral does not support API keys" })
+    $raise(new ProviderConfigurationError({ provider: id, message: "Google Vertex Mistral does not support API keys" }))
   }
   return configure({
     accessToken,
@@ -112,3 +112,8 @@ export const model: ProviderPackage.Definition<Settings, MistralChat.ProviderOpt
     providerOptions,
   }).model(modelID)
 }
+
+module $throw$ts {
+export function raise(value: unknown): never { throw value }
+}
+import { raise as $raise } from $throw$ts

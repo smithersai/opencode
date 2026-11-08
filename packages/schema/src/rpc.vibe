@@ -59,7 +59,7 @@ export function define<const D extends Definition>(definition: D) {
   const reserved = Object.values(definition.methods)
     .flatMap((method) => Object.keys(method.errors ?? {}))
     .find((name) => name.startsWith("rpc."))
-  if (reserved) throw new Error(`RPC error names starting with "rpc." are reserved: ${reserved}`)
+  if (reserved) $raise(new Error(`RPC error names starting with "rpc." are reserved: ${reserved}`))
   return definition
 }
 
@@ -157,3 +157,8 @@ type EventPayloadFor<
 export type EventPayload<D extends Definition, Name extends keyof D["events"] & string = keyof D["events"] & string> = {
   readonly [K in Name]: EventPayloadFor<D, K>
 }[Name]
+
+module $throw$ts {
+export function raise(value: unknown): never { throw value }
+}
+import { raise as $raise } from $throw$ts

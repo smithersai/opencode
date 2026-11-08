@@ -18,13 +18,11 @@ const NAME = "OpenAI Decisions"
 export const DEFAULT_BASE_URL = "https://api.openai.com/v1"
 export const PATH = "/decisions"
 
-const Options = Schema.Struct({
-  promptCacheKey: Schema.optional(Schema.String),
-  promptCacheOptions: Schema.optional(
-    Schema.Struct({ mode: Schema.optional(Schema.String), ttl: Schema.optional(Schema.String) }),
-  ),
-  safetyIdentifier: Schema.optional(Schema.String),
-})
+schema Options {
+  readonly promptCacheKey?: string
+  readonly promptCacheOptions?: { readonly mode?: string; readonly ttl?: string }
+  readonly safetyIdentifier?: string
+}
 /** Known fields map to their wire names; anything else is sent as given. */
 export type OptionsInput = ProviderOptions & typeof Options.Encoded
 
@@ -135,7 +133,7 @@ export const protocol = DecisionRoute.protocol({
           )
           const byName = new Map(answers.map((answer) => [answer.name, answer]))
           const ordered = context.request.questions.flatMap((question) => byName.get(question.name) ?? [])
-          const usage = OpenResponses.mapUsage(output.value.usage, context.providerMetadataKey)
+          const usage = try Effect.orDie(Effect.try({ try: () => OpenResponses.mapUsage(output.value.usage, context.providerMetadataKey), catch: (e) => e }))
           return new DecisionResponse({
             answers: ordered.length === answers.length ? ordered : answers,
             usage: usage === undefined

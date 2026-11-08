@@ -29,7 +29,7 @@ export interface VcsDefinition {
   readonly name: string
   readonly init?: (input: VcsScope) => void!unknown
   readonly info: (input: VcsScope) => Vcs.Info!unknown
-  readonly base?: (input: VcsScope) => Vcs.Base | null!unknown
+  readonly base?: (input: VcsScope) => (Vcs.Base | null)!unknown
   readonly branches: (input: VcsBranchesInput) => Vcs.BranchList!unknown
   readonly status: (input: VcsScope) => readonly Vcs.FileStatus[]!unknown
   readonly diff: (input: VcsDiffInput) => readonly FileDiff.Info[]!unknown

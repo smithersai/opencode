@@ -88,10 +88,10 @@ effect (request, executor, options) =>
     effect {
       const route = request.model.route
       // The standalone compaction endpoint rejects histories containing configuration updates.
-      const native = try OpenResponses.lowerConversation(stripEffortUpdates(request), adapter)
-      const generation = OpenResponses.lowerGeneration(request)
+      const native = try OpenResponses.lowerConversation(try Effect.orDie(Effect.try({ try: () => stripEffortUpdates(request), catch: (e) => e })), adapter)
+      const generation = try Effect.orDie(Effect.try({ try: () => OpenResponses.lowerGeneration(request), catch: (e) => e }))
       const tools = request.tools.length === 0 ? undefined : try lowerTools(request)
-      const body = try ProviderShared.validateWith(Schema.decodeUnknownEffect(Body))(
+      const body = try (try Effect.orDie(Effect.try({ try: () => ProviderShared.validateWith(Schema.decodeUnknownEffect(Body)), catch: (e) => e })))(
         mergeJsonRecords(
           {
             ...native,
@@ -106,24 +106,24 @@ effect (request, executor, options) =>
           request.http?.body,
         ),
       )
-      const url = Endpoint.render(route.endpoint, { request, body: native })
+      const url = try Effect.orDie(Effect.try({ try: () => Endpoint.render(route.endpoint, { request, body: native }), catch: (e) => e }))
       url.pathname = `${url.pathname.replace(/\/$/, "")}/compact`
       const parts = try HttpTransport.jsonRequestParts({
         request: LLMRequest.update(request, {
           http: request.http === undefined ? undefined : new HttpOptions({ ...request.http, body: undefined }),
         }),
         body,
-        endpoint: Endpoint.path(url.toString()),
+        endpoint: try Effect.orDie(Effect.try({ try: () => Endpoint.path(url.toString()), catch: (e) => e })),
         auth: route.auth,
         encodeBody: Schema.encodeSync(Schema.fromJsonString(Body)),
       })
       const response = try executor.execute(
-        ProviderShared.jsonPost({
+        try Effect.orDie(Effect.try({ try: () => ProviderShared.jsonPost({
           url: parts.url,
           body: parts.bodyText,
           headers: parts.headers,
           encoding: request.http?.encoding,
-        }),
+        }), catch: (e) => e })),
         options?.http,
       )
       const text = try RequestExecutor.responseStream(response).pipe(
@@ -143,14 +143,13 @@ effect (request, executor, options) =>
             http: RequestExecutor.responseHttp(response),
           }),
         })
-      const result = try (Schema.decodeUnknownEffect(Schema.fromJsonString(Response))(text)
-        |> Effect.mapError(%, (cause) => invalid("Invalid compaction response", cause)))
+      const result = Schema.decodeUnknownEffect(Schema.fromJsonString(Response))(text) catch effect (cause) => { throw invalid("Invalid compaction response", cause) }
       if (!result.output.some((item) => item.type === "compaction")) {
         throw invalid("Compaction response did not contain a checkpoint")
       }
       return new CompactionResponse({
         replacement: result.output.map((item) => toMessage(item, request.model)),
-        usage: OpenResponses.mapUsage(result.usage, OpenResponses.metadataKey(request.model)),
+        usage: try Effect.orDie(Effect.try({ try: () => OpenResponses.mapUsage(result.usage, OpenResponses.metadataKey(request.model)), catch: (e) => e })),
       })
     },
     "ResponsesCompaction.execute",

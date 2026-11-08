@@ -70,7 +70,7 @@ export const routes = [route]
 
 const configuredRoute = (input: Config) => {
   if ("apiKey" in input && input.apiKey !== undefined) {
-    throw new ProviderConfigurationError({ provider: id, message: "Google Vertex Messages does not support API keys" })
+    $raise(new ProviderConfigurationError({ provider: id, message: "Google Vertex Messages does not support API keys" }))
   }
   const {
     accessToken: _accessToken,
@@ -113,7 +113,7 @@ export const model: ProviderPackage.Definition<Settings, AnthropicMessages.Provi
   { accessToken, apiKey, baseURL, body, headers, location, project, ...providerOptions },
 ) => {
   if (apiKey !== undefined) {
-    throw new ProviderConfigurationError({ provider: id, message: "Google Vertex Messages does not support API keys" })
+    $raise(new ProviderConfigurationError({ provider: id, message: "Google Vertex Messages does not support API keys" }))
   }
   return configure({
     accessToken,
@@ -125,3 +125,8 @@ export const model: ProviderPackage.Definition<Settings, AnthropicMessages.Provi
     providerOptions,
   }).model(modelID)
 }
+
+module $throw$ts {
+export function raise(value: unknown): never { throw value }
+}
+import { raise as $raise } from $throw$ts

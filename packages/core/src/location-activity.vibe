@@ -29,10 +29,10 @@ export function layer(options: { readonly timeToLive?: Duration.Input; readonly 
       const timeToLive = Duration.fromInputUnsafe(options.timeToLive ?? "60 minutes")
       const entries = new Map<string, { readonly ref: Location.Ref; touchedAt: number }>()
       const key = (ref: Location.Ref) => `${LocationServiceMap.canonical(ref).directory}\0${ref.workspaceID ?? ""}`
-      const touch = (ref: Location.Ref) =>
-        Effect.sync(() => {
+      const touch = effect (ref: Location.Ref) =>
+        {
           entries.set(key(ref), { ref, touchedAt: clock.currentTimeMillisUnsafe() })
-        })
+        }
 
       // Read per location so project config can override the global value.
       const idleTimeout = (ref: Location.Ref) =>

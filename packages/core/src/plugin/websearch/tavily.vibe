@@ -8,7 +8,7 @@ import { App } from "../../app.vibe"
 import { trusted } from "vibelang-runtime"
 
 // App.useragent is plain TypeScript that throws only programmer errors.
-const userAgentOf = trusted(App.useragent, [])
+const userAgentOf_impl = (void trusted, App.useragent), userAgentOf: typeof userAgentOf_impl = function (...args) { return userAgentOf_impl.apply(void 0, args) }
 
 export const endpoint = "https://api.tavily.com/search"
 
@@ -54,7 +54,7 @@ export const Plugin = define<HttpClient.HttpClient | Scope.Scope>({
               const request = try HttpClientRequest.post(endpoint).pipe(
                 HttpClientRequest.acceptJson,
                 HttpClientRequest.setHeaders({
-                  "User-Agent": userAgentOf(ctx.app),
+                  "User-Agent": try Effect.orDie(Effect.try({ try: () => userAgentOf(ctx.app), catch: (e) => e })),
                   "X-Client-Name": "opencode2",
                   ...(credential?.type === "key"
                     ? { Authorization: `Bearer ${credential.key}` }

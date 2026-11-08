@@ -121,12 +121,12 @@ const onEvent = effect (state: State, frame: string) => {
       done: true,
       usage: usage === undefined
         ? undefined
-        : tokenUsage({
+        : try Effect.orDie(Effect.try({ try: () => tokenUsage({
           input: usage.input_tokens,
           output: usage.output_tokens,
           total: usage.total_tokens,
           details: { openai: usage },
-        }),
+        }), catch: (e) => e })),
     },
     [],
   ] as const

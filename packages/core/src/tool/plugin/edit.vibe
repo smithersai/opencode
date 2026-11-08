@@ -248,16 +248,15 @@ export const Plugin = {
                   const target = try access.resolve({ path: input.path, kind: "file" })
                   try access.authorizeExternal([target], context)
 
-                  const original = try (FileMutation.readText(environment.files, target.absolute)
-                    |> Effect.catchTag(
-                      %,
-                      "Environment.NotFound",
-                      () => Effect.fail(new ToolFailure({ message: `File not found: ${input.path}` })),
-                    )
-                    |> Effect.catchTag(%, "Environment.WrongKind", (error) =>
-                      error.actual === "directory"
+                  const original = (do { const catchProgram = FileMutation.readText(environment.files, target.absolute); effect { return catchProgram catch effect (e) => match (e) {
+                    when { _tag: "Environment.NotFound" }: throw new ToolFailure({ message: `File not found: ${input.path}` });
+                    default: throw e;
+                  } } }) catch effect (error) => match (error) {
+                    when { _tag: "Environment.WrongKind" }: try (error.actual === "directory"
                         ? Effect.fail(new ToolFailure({ message: `Path is a directory, not a file: ${input.path}` }))
-                        : Effect.fail(new ToolFailure({ message: `Unable to edit ${input.path}`, error }))))
+                        : Effect.fail(new ToolFailure({ message: `Unable to edit ${input.path}`, error })));
+                    default: throw error;
+                  }
                   const source = original.text
                   // Strings that differ only in \r ask to change line endings themselves, so they apply to the exact
                   // bytes. Every other edit matches the LF view Read shows the model and keeps the file's endings.

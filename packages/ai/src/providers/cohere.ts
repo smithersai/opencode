@@ -1,4 +1,4 @@
-import { CohereChat } from "../protocols/cohere-chat.vibe"
+import { CohereChat } from "../protocols/cohere-chat.js"
 import { OpenAIChat } from "../protocols/openai-chat.js"
 import { Route, type RouteDefaultsInput } from "../route/client.js"
 import { Endpoint } from "../route/endpoint.js"

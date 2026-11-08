@@ -38,4 +38,4 @@ export interface Interface {
   }) => DrainResult!RunError
 }
 
-export class Service extends Context.Service<Service, Interface>()("@opencode/SessionRunner") {}
+export service Service: Interface { static readonly key = "@opencode/SessionRunner";}

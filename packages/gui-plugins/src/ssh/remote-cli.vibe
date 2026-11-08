@@ -15,7 +15,7 @@ export function quote(value: string) {
 
 export function requireVersion(version: string) {
   if (version !== "local" && !/^[0-9][a-zA-Z0-9.+-]*$/.test(version)) {
-    throw new Failure({ code: "version", detail: version })
+    $raise(new Failure({ code: "version", detail: version }))
   }
 
   return version
@@ -52,7 +52,7 @@ export function parseVersion(output: string) {
   const marker = line.lastIndexOf(" v")
   const version = marker === -1 ? line : line.slice(marker + 2)
 
-  if (!version) throw new Error("V2 CLI did not provide a version")
+  if (!version) $raise(new Error("V2 CLI did not provide a version"))
 
   return version
 }
@@ -72,7 +72,7 @@ printf 'OPENCODE_REMOTE_TARGET=%s\\n' "$target"
 
 export function archiveUrl(target: string, version: string) {
   if (!/^(linux|darwin)-(x64-baseline|arm64)(-musl)?$/.test(target)) {
-    throw new Failure({ code: "platform", detail: target })
+    $raise(new Failure({ code: "platform", detail: target }))
   }
 
   return `https://registry.npmjs.org/@opencode/cli-${target}/-/cli-${target}-${requireVersion(version)}.tgz`
@@ -130,16 +130,17 @@ export const latestBeta = effect () =>
     effect {
       const http = try HttpClient.HttpClient
 
-      const metadata = try (http.get("https://registry.npmjs.org/@opencode%2fcli/beta")
+      const metadata = (http.get("https://registry.npmjs.org/@opencode%2fcli/beta")
         |> Effect.flatMap(%, HttpClientResponse.filterStatusOk)
         |> Effect.flatMap(%, HttpClientResponse.schemaBodyJson(Beta))
-        |> Effect.timeout(%, "30 seconds")
-        |> Effect.mapError(
-          %,
-          () => new Failure({ code: "install", detail: "https://registry.npmjs.org/@opencode%2fcli/beta" }),
-        ))
+        |> Effect.timeout(%, "30 seconds")) catch effect () => { throw new Failure({ code: "install", detail: "https://registry.npmjs.org/@opencode%2fcli/beta" }) }
 
       return metadata.version
     },
     "RemoteCli.latestBeta",
   )
+
+module $throw$ts {
+export function raise(value: unknown): never { throw value }
+}
+import { raise as $raise } from $throw$ts

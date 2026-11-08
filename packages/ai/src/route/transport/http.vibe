@@ -25,22 +25,23 @@ export interface JsonRequestParts<Body = unknown> {
 }
 
 export interface HttpPrepared<Frame> {
-  readonly request: HttpClientRequest
+  readonly request: HttpClientRequest.HttpClientRequest
   readonly framing: Framing.Definition<Frame>
   readonly middleware?: HttpMiddleware
 }
 
 const bodyWithOverlay = effect <Body>(body: Body, request: LLMRequest, encodeBody: (body: Body) => string) => {
   if (request.http?.body === undefined) return { jsonBody: body, bodyText: encodeBody(body) }
-  if (ProviderShared.isRecord(body)) {
-    const overlaid = mergeJsonRecords(body, request.http.body) ?? {}
+  const record = try Effect.orDie(Effect.try({ try: () => ProviderShared.isRecord(body) ? body : undefined, catch: (e) => e }))
+  if (record !== undefined) {
+    const overlaid = mergeJsonRecords(record, request.http.body) ?? {}
     return { jsonBody: overlaid, bodyText: ProviderShared.encodeJson(overlaid) }
   }
-  throw ProviderShared.invalidRequest("http.body can only overlay JSON object request bodies")
+  throw try Effect.orDie(Effect.try({ try: () => ProviderShared.invalidRequest("http.body can only overlay JSON object request bodies"), catch: (e) => e }))
 }
 
 export const jsonRequestParts = effect <Body>(input: JsonRequestInput<Body>) => {
-  const endpoint = renderEndpoint(input.endpoint, { request: input.request, body: input.body })
+  const endpoint = try Effect.orDie(Effect.try({ try: () => renderEndpoint(input.endpoint, { request: input.request, body: input.body }), catch: (e) => e }))
   if (input.request.http?.query) {
     Object.entries(input.request.http.query).forEach(([key, value]) => endpoint.searchParams.set(key, value))
   }
@@ -74,12 +75,12 @@ export const httpJson = <Body, Frame>(input: HttpJsonInput<Body, Frame>): HttpJs
   with: (patch) => httpJson({ ...input, ...patch }),
   prepare: effect (prepareInput) => {
     const parts = try jsonRequestParts({ ...prepareInput })
-    const request = ProviderShared.jsonPost({
+    const request = try Effect.orDie(Effect.try({ try: () => ProviderShared.jsonPost({
       url: parts.url,
       body: parts.bodyText,
       headers: parts.headers,
       encoding: prepareInput.request.http?.encoding,
-    })
+    }), catch: (e) => e }))
     return {
       request,
       framing: input.framing,

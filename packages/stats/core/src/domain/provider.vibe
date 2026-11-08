@@ -47,7 +47,7 @@ export declare namespace ProviderStatRepo {
 export class ProviderStatRepo extends Context.Service<ProviderStatRepo, ProviderStatRepo.Service>()(
   "@opencode/stats/ProviderStatRepo",
 ) {
-  static readonly layer: Layer<ProviderStatRepo, never, DrizzleClient> = Layer.effect(
+  static readonly layer: Layer.Layer<ProviderStatRepo, never, DrizzleClient> = Layer.effect(
     ProviderStatRepo,
     effect {
       const db = try DrizzleClient
@@ -116,7 +116,7 @@ export class ProviderStatRepo extends Context.Service<ProviderStatRepo, Provider
         try withSpan(
           effect {
             try Effect.forEach(
-              chunks(rows, UPSERT_CHUNK_SIZE),
+              try Effect.orDie(Effect.try({ try: () => chunks(rows, UPSERT_CHUNK_SIZE), catch: (e) => e })),
               (chunk) =>
                 Effect.tryPromise({
                   try: () =>
@@ -172,7 +172,7 @@ export class ProviderStatRepo extends Context.Service<ProviderStatRepo, Provider
       ) =>
         try withSpan(
           effect {
-            const scope = statRowScope(rows)
+            const scope = try Effect.orDie(Effect.try({ try: () => statRowScope(rows), catch: (e) => e }))
             if (!scope) return
 
             try Effect.tryPromise({

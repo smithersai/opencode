@@ -37,7 +37,7 @@ export type AuthResolver = (context: {
   readonly definition: SecurityScheme
   readonly scopes: ReadonlyArray<string>
   readonly operation: Operation
-}) => Credential | undefined!unknown
+}) => (Credential | undefined)!unknown
 
 export type Options = {
   readonly spec: Document
@@ -56,7 +56,7 @@ export type Skipped = {
   readonly reason: string
 }
 
-export type Tools = { [name: string]: Tool<HttpClient> | Tools }
+export type Tools = { [name: string]: Tool<HttpClient.HttpClient> | Tools }
 
 export type Result = {
   /** Namespaced tools; the host places them under a key in its `tools` object. */

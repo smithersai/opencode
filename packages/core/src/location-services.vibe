@@ -10,13 +10,13 @@ export type LocationServices = Instance.Services
 
 export function buildLocationServiceMap(
   replacements: LayerNode.Replacements = [],
-): Layer<LocationServiceMap.Service> {
+): Layer.Layer<LocationServiceMap.Service> {
   return Layer.effect(
     LocationServiceMap.Service,
     effect {
       const owner = try Effect.scope
       const builds = MutableHashMap.empty<Location.Ref, { close?: void!! }>()
-      const inner: LayerMap<Location.Ref, LocationServices, Instance.Error> = try LayerMap.make(
+      const inner: LayerMap.LayerMap<Location.Ref, LocationServices, Instance.Error> = try LayerMap.make(
         (ref: Location.Ref) => {
           const build: { close?: void!! } = {}
           MutableHashMap.set(builds, ref, build)

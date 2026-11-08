@@ -29,7 +29,7 @@ export interface Interface {
   readonly unwatch: (input: Input) => void!!
 }
 
-export class Service extends Context.Service<Service, Interface>()("@opencode/FileWatch") {}
+export service Service: Interface { static readonly key = "@opencode/FileWatch";}
 
 export schema Options {
   enabled?: boolean

@@ -83,13 +83,13 @@ const fromRequest = effect (request: Request) =>
 
 const decodeQueueResult = route.decodeJson(QueueResult)
 
-const decodeResult = effect (response: HttpClientResponse, context: MediaProtocol.PollContext<FalQueue.Token>) =>
+const decodeResult = effect (response: HttpClientResponse.HttpClientResponse, context: MediaProtocol.PollContext<FalQueue.Token>) =>
   try withSpan(
     effect {
       const output = try decodeQueueResult(response)
       const { video, seed, ...rest } = output.value
       return new VideoResponse({
-        videos: [Media.url(video.url, { mediaType: video.content_type ?? "video/mp4" })],
+        videos: [try Effect.orDie(Effect.try({ try: () => Media.url(video.url, { mediaType: video.content_type ?? "video/mp4" }), catch: (e) => e }))],
         providerMetadata: {
           fal: {
             requestId: context.token.requestID,

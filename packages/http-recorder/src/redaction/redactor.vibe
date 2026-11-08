@@ -142,13 +142,13 @@ const redactJsonFields = (value: unknown, fields: ReadonlySet<string>): Redacted
   return { value: Object.fromEntries(entries), changed }
 }
 const redactBody = (value: string, fields: ReadonlySet<string>, transform: ((body: string) => string) | undefined) => {
-  const redacted = Option.match(decodeJson(value), {
+  const redacted = do { const $optionSubject = decodeJson(value); const $optionHandlers: { onNone: () => string; onSome: (parsed: unknown) => string; } = {
     onNone: () => value,
     onSome: (parsed) => {
       const result = redactJsonFields(parsed, fields)
       return result.changed ? JSON.stringify(result.value) : value
     },
-  })
+  }; const { onNone: $optionNone, onSome: $optionSome } = $optionHandlers; match ($optionSubject) { when Option.Some(let $optionValue): $optionSome($optionValue); default: $optionNone(); }; }
   return transform?.(redacted) ?? redacted
 }
 

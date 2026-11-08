@@ -20,7 +20,7 @@ export interface Options<R = never> {
    * Reconstruct configuration on a cache miss. Resources belong to the instance Scope; other requirements
    * are the services the SDK entrypoint was built with.
    */
-  readonly configure: (key: string) => Configuration!unknown!R | Scope.Scope
+  readonly configure: (key: string) => Configuration!unknown!(R | Scope.Scope)
 }
 
 /** Closes `configure` over services captured where the SDK entrypoint was built; the host graph has none of its own. */
@@ -56,7 +56,7 @@ export function layer(options: Options, replacements: () => LayerNode.Replacemen
         ...LocationServiceMap.canonical(session.location),
       })
       const provide = (session: Session.Info) => Effect.provide(instances.get(key(session)))
-      const instances: LayerMap<
+      const instances: LayerMap.LayerMap<
         ReturnType<typeof key>,
         Instance.Services,
         Instance.Error

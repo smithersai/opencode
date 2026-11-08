@@ -1,6 +1,6 @@
 import { type Accessor, createMemo } from "solid-js"
 import { createSimpleContext } from "@opencode/ui/context"
-import { useProviders } from "../catalog/providers.vibe"
+import { useProviders } from "../catalog/providers.js"
 import { useGlobal } from "@/runtime/server/runtime"
 
 type ModelKey = { providerID: string; modelID: string }

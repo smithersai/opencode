@@ -49,7 +49,7 @@ export function generate(input: RequestInput | LLMRequest, options?: StreamOptio
 export function stream<const Model extends LanguageModel>(
   input: RequestInput<Model> | LLMRequest,
   options?: StreamOptions,
-): Stream<LLMEvent, AIError, Service>
+): Stream.Stream<LLMEvent, AIError, Service>
 export function stream(input: RequestInput | LLMRequest, options?: StreamOptions) {
   return Stream.unwrap(requestEffect(input) |> Effect.map(%, (request) => LLMClient.stream(request, options)))
 }
@@ -72,21 +72,21 @@ export type LoopInput<SelectedLanguageModel extends LanguageModel = LanguageMode
 export function loop<const Model extends LanguageModel>(
   input: LoopInput<Model>,
   options?: StreamOptions,
-): Stream<LLMEvent, AIError, Service>
+): Stream.Stream<LLMEvent, AIError, Service>
 export function loop(input: LoopInput, options?: StreamOptions) {
   const { tools, until, ...rest } = input
-  const step = (request: LLMRequest, steps: ReadonlyArray<LLMResponse>): Stream<LLMEvent, AIError, Service> =>
+  const step = (request: LLMRequest, steps: ReadonlyArray<LLMResponse>): Stream.Stream<LLMEvent, AIError, Service> =>
     Stream.suspend(() => {
       const events: LLMEvent[] = []
       return LLMClient.stream(request, options).pipe(
         Stream.map((event) =>
           event.type === "step-start" || event.type === "step-finish" ? { ...event, index: steps.length } : event
         ),
-        Stream.tap((event) => Effect.sync(() => events.push(event))),
+        Stream.tap(effect (event) => events.push(event)),
         Stream.concat(
           Stream.unwrap(
             effect {
-              const response = LLMResponse.fromEvents(events)
+              const response = try Effect.orDie(Effect.try({ try: () => LLMResponse.fromEvents(events), catch: (e) => e }))
               const calls = response?.toolCalls.filter((call) => call.providerExecuted !== true) ?? []
               if (!response || calls.length === 0 || events.some(LLMEvent.is.providerError)) return Stream.empty
               const done = [...steps, response]
@@ -186,7 +186,7 @@ export interface GenerateObjectDynamicOptions<SelectedLanguageModel extends Lang
   extends GenerateObjectBase<SelectedLanguageModel>
 {
   /** Raw JSON Schema object describing the expected output shape. */
-  readonly jsonSchema: JsonSchema
+  readonly jsonSchema: JsonSchema.JsonSchema
 }
 
 const runGenerateObject = effect (
@@ -209,17 +209,12 @@ const runGenerateObject = effect (
           }),
         })
       }
-      const object = try (tool._decode(call.input)
-        |> Effect.mapError(
-          %,
-          (error) =>
-            new AIError({
+      const object = tool._decode(call.input) catch effect (error) => { throw new AIError({
               reason: new InvalidProviderOutputError({
                 message: `generateObject: tool input failed schema decode: ${error.message}`,
                 cause: error,
               }),
-            }),
-        ))
+            }) }
       return new GenerateObjectResponse(object, response)
     },
     "LLM.generateObject",

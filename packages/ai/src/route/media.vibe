@@ -90,7 +90,7 @@ export interface StreamRoute<Request extends MediaRequest, Event, Response> {
   readonly id: string
   readonly provider: ProviderID
   readonly protocol: string
-  readonly stream: (request: Request, execute: Execute) => Stream<Event, AIError>
+  readonly stream: (request: Request, execute: Execute) => Stream.Stream<Event, AIError>
   readonly generate: (request: Request, execute: Execute) => Response!AIError
 }
 
@@ -199,7 +199,7 @@ export const queued = <Request extends MediaRequest, Response, Token>(
     const poll = <A>(operation: {
       readonly path: (token: Token) => string
       readonly decode: (
-        response: HttpClientResponse,
+        response: HttpClientResponse.HttpClientResponse,
         context: MediaProtocol.PollContext<Token>,
       ) => A!AIError
     }) =>
@@ -242,17 +242,12 @@ export const queued = <Request extends MediaRequest, Response, Token>(
   ) =>
     try withSpan(
       effect {
-        const token = try (decodeToken(raw)
-          |> Effect.mapError(
-            %,
-            (cause) =>
-              new AIError({
+        const token = decodeToken(raw) catch effect (cause) => { throw new AIError({
                 reason: new InvalidRequestError({
                   message: `${protocol.id} cannot resume a generation from this token`,
                   cause,
                 }),
-              }),
-          ))
+              }) }
         const route = generationRoute(token, transport.http(model), execute)
         return new Generation(route, encodeToken(token), try route.status)
       },
@@ -394,7 +389,7 @@ const makeTransport = <Request extends MediaRequest>(
           const body = try protocol.from(resolved)
           const url = withQuery(
             withQuery(
-              Endpoint.render(input.endpoint, { request: resolved, body }),
+              try Effect.orDie(Effect.try({ try: () => Endpoint.render(input.endpoint, { request: resolved, body }), catch: (e) => e })),
               body.type === "multipart" ? undefined : body.query,
             ),
             http?.query,
@@ -423,7 +418,7 @@ const withQuery = (url: URL, query: MediaProtocol.Query | undefined) => {
 }
 
 const encode = (body: MediaProtocol.Body | undefined, headers: Headers.Headers) => {
-  if (body === undefined) return { text: "", headers, apply: (request: HttpClientRequest) => request }
+  if (body === undefined) return { text: "", headers, apply: (request: HttpClientRequest.HttpClientRequest) => request }
   if (body.type === "json") {
     const text = encodeJson(body.value)
     return { text, headers, apply: HttpClientRequest.bodyText(text, "application/json") }

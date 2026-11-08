@@ -18,12 +18,11 @@ export const cleanStages = effect (
         effect (entry) => {
           if (keep.has(entry)) return
           const target = path.join(root, entry)
-          const stat = try (fs.stat(target) |> Effect.orElseSucceed(%, () => undefined))
+          const stat = fs.stat(target) catch () => undefined
 
           if (stat?.type !== "Directory") return
-          try (fs
-            .remove(target, { recursive: true, force: true })
-            |> Effect.catch(%, (error) => Effect.logError("failed to clean staged v2 CLI", { path: target, error })))
+          fs
+            .remove(target, { recursive: true, force: true }) catch effect (error) => try Effect.logError("failed to clean staged v2 CLI", { path: target, error })
         },
         { concurrency: "unbounded" },
       )

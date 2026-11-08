@@ -42,12 +42,12 @@ export const make = effect (
       const render = options?.encode ?? frame
       const subscribers = new Map<Queue.Queue<string, Error>, ReadonlySet<string> | undefined>()
 
-      const fail = (error: Error) =>
-        Effect.sync(() => {
+      const fail = effect (error: Error) =>
+        {
           const current = Array.from(subscribers.keys())
           subscribers.clear()
           for (const subscriber of current) Queue.failCauseUnsafe(subscriber, Cause.fail(error))
-        })
+        }
 
       const publish = effect (event: Event.Payload) => {
         if (!isOpenCodeEvent(event)) return

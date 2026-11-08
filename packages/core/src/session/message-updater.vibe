@@ -4,13 +4,13 @@ import { SessionEvent } from "./event.ts"
 import { SessionMessage } from "./message.ts"
 
 export interface Adapter {
-  readonly getAgent: () => SessionMessage.AgentSelected["agent"] | undefined!!
-  readonly getModel: () => SessionMessage.ModelSelected["model"] | undefined!!
+  readonly getAgent: () => (SessionMessage.AgentSelected["agent"] | undefined)!!
+  readonly getModel: () => (SessionMessage.ModelSelected["model"] | undefined)!!
   readonly getLocation: () => SessionMessage.LocationSwitched["previous"]!!
-  readonly getCurrentAssistant: () => SessionMessage.Assistant | undefined!!
-  readonly getAssistant: (messageID: SessionMessage.ID) => SessionMessage.Assistant | undefined!!
-  readonly getShell: (shellID: SessionMessage.Shell["shellID"]) => SessionMessage.Shell | undefined!!
-  readonly getCompaction: () => SessionMessage.Compaction | undefined!!
+  readonly getCurrentAssistant: () => (SessionMessage.Assistant | undefined)!!
+  readonly getAssistant: (messageID: SessionMessage.ID) => (SessionMessage.Assistant | undefined)!!
+  readonly getShell: (shellID: SessionMessage.Shell["shellID"]) => (SessionMessage.Shell | undefined)!!
+  readonly getCompaction: () => (SessionMessage.Compaction | undefined)!!
   readonly updateAssistant: (assistant: SessionMessage.Assistant) => void!!
   readonly updateShell: (shell: SessionMessage.Shell) => void!!
   readonly updateCompaction: (compaction: SessionMessage.Compaction) => void!!

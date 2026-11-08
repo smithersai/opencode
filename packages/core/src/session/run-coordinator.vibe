@@ -32,8 +32,8 @@ export interface Coordinator<Key, E, Reason = never> {
  * with this execution's exit.
  */
 type Execution<E, Reason> = {
-  readonly done: Deferred<void, E>
-  owner?: Fiber<void>
+  readonly done: Deferred.Deferred<void, E>
+  owner?: Fiber.Fiber<void>
   scope: Promotable
   pendingWake?: Promotable
   stopping: boolean
@@ -59,10 +59,10 @@ export const make = effect <Key, E, Reason = never>(options: {
    * Runs in the execution fiber for every exit, including interruption, after the final
    * drain and before the execution settles (waiters resolve after it completes).
    */
-  readonly settled?: (key: Key, exit: Exit<void, E>, reason?: Reason) => void!!
-}): Coordinator<Key, E, Reason>!never!Scope => {
+  readonly settled?: (key: Key, exit: Exit.Exit<void, E>, reason?: Reason) => void!!
+}): Coordinator<Key, E, Reason>!never!Scope.Scope => {
   const executions = new Map<Key, Execution<E, Reason>>()
-  const fork = try FiberSet.makeRuntime<never, void, never>()
+  const fork2 = try FiberSet.makeRuntime<never, void, never>()
 
   const loop = (key: Key, execution: Execution<E, Reason>, force: boolean): void!E =>
     effect {
@@ -89,7 +89,7 @@ export const make = effect <Key, E, Reason = never>(options: {
     // The leading yield lets `owner` be assigned before the drain can settle, and keeps
     // failing self-waking executions from growing the stack across successor starts.
     // Drains start one tick after wake; callers observe progress through events or run.
-    execution.owner = fork(
+    execution.owner = fork2(
       Effect.yieldNow
         |> Effect.andThen(%, Effect.uninterruptible(options.started?.(key) ?? Effect.void))
         |> Effect.andThen(%, loop(key, execution, force))
@@ -106,7 +106,7 @@ export const make = effect <Key, E, Reason = never>(options: {
 
   // A doorbell that survives the execution loop (rung after the loop decided to end, or
   // during failure or interruption cleanup) starts a fresh execution for the remaining work.
-  const settle = (key: Key, execution: Execution<E, Reason>, exit: Exit<void, E>) => {
+  const settle = (key: Key, execution: Execution<E, Reason>, exit: Exit.Exit<void, E>) => {
     if (execution.pendingWake) start(key, false, execution.pendingWake)
     else executions.delete(key)
     Deferred.doneUnsafe(execution.done, exit)
@@ -154,7 +154,7 @@ export const make = effect <Key, E, Reason = never>(options: {
     execution.interruptionReason = reason
     // Fire and forget: nobody benefits from waiting out cleanup here, and callers like
     // the interrupt endpoint must acknowledge immediately even when finalizers are slow.
-    fork(Fiber.interrupt(execution.owner))
+    fork2(Fiber.interrupt(execution.owner))
     return true
   }
 

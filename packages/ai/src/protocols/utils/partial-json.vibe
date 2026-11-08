@@ -36,9 +36,9 @@ const decodeJsonString = Schema.decodeUnknownSync(Schema.fromJsonString(Schema.S
 
 /** Parse complete or incomplete JSON, restricted by the supplied partial-value flags. */
 export function parseJSON(jsonString: string, allowPartial = Allow.ALL): unknown {
-  if (typeof jsonString !== "string") throw new TypeError(`expecting str, got ${typeof jsonString}`)
+  if (typeof jsonString !== "string") $raise(new TypeError(`expecting str, got ${typeof jsonString}`))
   const input = jsonString.trim()
-  if (!input) throw new Error(`${jsonString} is empty`)
+  if (!input) $raise(new Error(`${jsonString} is empty`))
   try {
     return decodeJson(input)
   } catch {}
@@ -54,7 +54,7 @@ export function parseJSON(jsonString: string, allowPartial = Allow.ALL): unknown
     return _parseJSON(input, allowPartial)
   } catch (error) {
     if (repaired !== input) return _parseJSON(repaired, allowPartial)
-    throw error
+    $raise(error)
   }
 }
 
@@ -104,11 +104,11 @@ const _parseJSON = (jsonString: string, allow: number) => {
   let index = 0
 
   const markPartialJSON = (message: string): never => {
-    throw new PartialJSON(`${message} at position ${index}`)
+    $raise(new PartialJSON(`${message} at position ${index}`))
   }
 
   const throwMalformedError = (message: string): never => {
-    throw new MalformedJSON(`${message} at position ${index}`)
+    $raise(new MalformedJSON(`${message} at position ${index}`))
   }
 
   const parseAny = (): unknown => {
@@ -210,7 +210,7 @@ const _parseJSON = (jsonString: string, allow: number) => {
           })
         } catch (error) {
           if (Allow.OBJ & allow) return object
-          throw error
+          $raise(error)
         }
         skipBlank()
         if (jsonString[index] === ",") index++
@@ -280,3 +280,8 @@ const _parseJSON = (jsonString: string, allow: number) => {
 }
 
 export const parse = parseJSON
+
+module $throw$ts {
+export function raise(value: unknown): never { throw value }
+}
+import { raise as $raise } from $throw$ts

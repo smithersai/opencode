@@ -164,7 +164,7 @@ export function latest(definitions: ReadonlyArray<Definition>) {
         if (definition.durable.version > existing.durable.version) result.set(definition.type, definition)
         return result
       }
-      if (definition !== existing) throw new Error(`Duplicate latest event definition for ${definition.type}`)
+      if (definition !== existing) $raise(new Error(`Duplicate latest event definition for ${definition.type}`))
       return result
     }, new Map<string, Definition>()),
   )
@@ -179,7 +179,7 @@ export function durableMap<const Definitions extends ReadonlyArray<Definition>>(
     definitions.reduce((result, definition) => {
       if (definition.durability !== "durable") return result
       const key = versionedType(definition.type, definition.durable.version)
-      if (result.has(key)) throw new Error(`Duplicate durable event definition for ${key}`)
+      if (result.has(key)) $raise(new Error(`Duplicate durable event definition for ${key}`))
       result.set(key, definition)
       return result
     }, new Map<string, DurableDefinition>()),
@@ -202,3 +202,8 @@ function readonlyMap<Key, Value>(map: Map<Key, Value>): ReadonlyMap<Key, Value> 
   })
   return result
 }
+
+module $throw$ts {
+export function raise(value: unknown): never { throw value }
+}
+import { raise as $raise } from $throw$ts

@@ -22,4 +22,4 @@ export { WindowRpcs } from "./ipc-rpc/window.vibe"
 
 export const DesktopRpcs = AppRpcs.merge(StorageRpcs, FileRpcs, WindowRpcs, MenuRpcs, EventRpcs, PluginRpcs)
 
-export type DesktopRpcClient = RpcClient.FromGroup<typeof DesktopRpcs, RpcClientError>
+export type DesktopRpcClient = RpcClient.FromGroup<typeof DesktopRpcs, RpcClientError.RpcClientError>

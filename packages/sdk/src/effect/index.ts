@@ -1,4 +1,4 @@
-export * as OpenCode from "./opencode.vibe"
+export * as OpenCode from "./opencode.js"
 export * as Tool from "./tool"
 export { EnvironmentDriver } from "@opencode/core/environment/driver"
 export { EnvironmentFiles } from "@opencode/core/environment/files"

@@ -2,9 +2,9 @@ export * as ConfigLSP from "./lsp.vibe"
 
 import { optional } from "../schema.vibe"
 
-export const Disabled = Schema.Struct({
-  disabled: Schema.Literal(true),
-})
+export schema Disabled {
+  readonly disabled: true
+}
 
 export class Server extends Schema.Class<Server>("Config.LSP.Server")({
   command: Schema.String.pipe(Schema.Array),

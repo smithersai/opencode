@@ -42,11 +42,11 @@ export class ConflictError extends Schema.TaggedError<ConflictError>()("Permissi
 export interface Interface {
   readonly list: (input?: ListInput) => ReadonlyArray<Info>!!
   readonly add: (input: AddInput) => void!!
-  readonly update: (input: UpdateInput) => Info!NotFoundError | ConflictError
+  readonly update: (input: UpdateInput) => Info!(NotFoundError | ConflictError)
   readonly remove: (id: ID) => void!!
 }
 
-export class Service extends Context.Service<Service, Interface>()("@opencode/PermissionSaved") {}
+export service Service: Interface { static readonly key = "@opencode/PermissionSaved";}
 
 const layer = Layer.effect(
   Service,
@@ -70,12 +70,13 @@ const layer = Layer.effect(
       try withSpan(
         effect {
           if (!input.resources.length) return
-          try ((try Effect.orDie(Effect.try({
+          const orDie2 = try Effect.orDie(Effect.try({
             try: () =>
               db
                 .insert(PermissionTable),
             catch: (error) => error,
-          })))
+          }))
+          const values2 = try Effect.orDie(Effect.try({ try: () => orDie2
             .values(
               input.resources.map((resource) => ({
                 id: ID.create(),
@@ -83,8 +84,9 @@ const layer = Layer.effect(
                 action: input.action,
                 resource,
               })),
-            )
-            .onConflictDoNothing()
+            ), catch: (e) => e }))
+          try ((try Effect.orDie(Effect.try({ try: () => values2
+            .onConflictDoNothing(), catch: (e) => e })))
             .run() |> Effect.orDie(%))
         },
         "PermissionSaved.add",
@@ -106,7 +108,7 @@ const layer = Layer.effect(
           const action = input.action ?? current.action
           const resource = input.resource ?? current.resource
           // The unique index rejects an edit that duplicates another saved permission in the project.
-          const updated = try ((try Effect.orDie(Effect.try({
+          const updated = ((try Effect.orDie(Effect.try({
             try: () =>
               db
                 .update(PermissionTable)
@@ -116,8 +118,10 @@ const layer = Layer.effect(
             catch: (error) => error,
           })))
             .get()
-            |> Effect.catchIf(%, isUniqueViolation, () => new ConflictError({ id: input.id, action, resource }))
-            |> Effect.catchTag(%, "EffectDrizzleQueryError", (error) => Effect.die(error)))
+            |> Effect.catchIf(%, isUniqueViolation, () => new ConflictError({ id: input.id, action, resource }))) catch effect (error) => match (error) {
+            when { _tag: "EffectDrizzleQueryError" }: try Effect.die(error);
+            default: throw error;
+          }
           if (!updated) throw new NotFoundError({ id: input.id })
           return info(updated)
         },

@@ -11,11 +11,11 @@ export type {
   ExtractionResponseFor,
   ExtractionRoute,
 } from "./experimental/extraction.vibe"
-export { Realtime } from "./experimental/realtime.vibe"
+export { Realtime } from "./experimental/realtime.js"
 export type {
   RealtimeConnectInput,
   RealtimeSession,
   RealtimeTransport,
   RealtimeTransportInput,
   RealtimeTransportType,
-} from "./experimental/realtime.vibe"
+} from "./experimental/realtime.js"

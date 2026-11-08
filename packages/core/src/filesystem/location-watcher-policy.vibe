@@ -16,10 +16,10 @@ export interface Interface extends State.Transformable<Editor> {
   readonly current: () => readonly string[]
   readonly observe: (
     listener: (ignore: readonly string[]) => void!!,
-  ) => State.Registration!never!Scope
+  ) => State.Registration!never!Scope.Scope
 }
 
-export class Service extends Context.Service<Service, Interface>()("@opencode/LocationWatcherPolicy") {}
+export service Service: Interface { static readonly key = "@opencode/LocationWatcherPolicy";}
 
 const layer = Layer.effect(
   Service,

@@ -1,4 +1,3 @@
-import type { HttpClientResponse } from "effect/http"
 import type { Status } from "../generation.vibe"
 import { ImageModel, ImageResponse, type ImageRequestFor } from "../image.ts"
 import { Media } from "../media.ts"
@@ -132,8 +131,8 @@ const validate = effect (request: Request, model: Capabilities) => {
 }
 
 const imageInput = effect (asset: Media.Asset) => {
-  const value = asset.inline()?.base64 ?? ProviderShared.mediaUrl(asset)
-  if (value === undefined) throw ProviderShared.invalidRequest(`${route.name} accepts inline images or https URLs`)
+  const value = (try Effect.orDie(Effect.try({ try: () => asset.inline(), catch: (e) => e })))?.base64 ?? (try Effect.orDie(Effect.try({ try: () => ProviderShared.mediaUrl(asset), catch: (e) => e })))
+  if (value === undefined) throw try Effect.orDie(Effect.try({ try: () => ProviderShared.invalidRequest(`${route.name} accepts inline images or https URLs`), catch: (e) => e }))
   return value
 }
 
@@ -215,7 +214,7 @@ const decodeResult = effect (
       const cost = document.cost ?? context.token.cost
       return new ImageResponse({
         // `sample` is a signed URL that expires 10 minutes after the result is ready, so it is downloaded now.
-        images: [try context.materialize(Media.url(sample))],
+        images: [try context.materialize(try Effect.orDie(Effect.try({ try: () => Media.url(sample), catch: (e) => e })))],
         usage: cost === undefined ? undefined : { type: "credits", credits: cost },
         providerMetadata: {
           bfl: { id: context.token.id, seed: seed ?? undefined, prompt: prompt ?? undefined, ...rest },

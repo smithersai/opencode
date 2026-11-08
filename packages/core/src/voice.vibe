@@ -48,7 +48,7 @@ export interface Interface {
   readonly session: (input: SessionInput) => RealtimeTransport!Error
 }
 
-export class Service extends Context.Service<Service, Interface>()("@opencode/Voice") {}
+export service Service: Interface { static readonly key = "@opencode/Voice";}
 
 export const layer = Layer.effect(
   Service,

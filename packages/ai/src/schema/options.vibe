@@ -369,19 +369,12 @@ export class CacheHint extends Schema.Class<CacheHint>("LLM.CacheHint")({
 // object form to choose placements exactly; an object with only `ttl` keeps
 // the automatic placements and sets their lifetime. Routes without inline
 // markers send `ttl` as a request-level cache option where one exists.
-export const CachePolicyObject = Schema.Struct({
-  tools: Schema.optional(Schema.Boolean),
-  system: Schema.optional(Schema.Boolean),
-  messages: Schema.optional(
-    Schema.Union([
-      Schema.Literal("latest-user-message"),
-      Schema.Literal("latest-assistant"),
-      Schema.Struct({ tail: Schema.Natural }),
-    ]),
-  ),
-  ttl: Schema.optional(CacheTTL),
-})
-export type CachePolicyObject = Schema.Schema.Type<typeof CachePolicyObject>
+export schema CachePolicyObject {
+  readonly tools?: boolean
+  readonly system?: boolean
+  readonly messages?: "latest-user-message" | "latest-assistant" | { readonly tail: Schema.Natural }
+  readonly ttl?: CacheTTL
+}
 
 export const CachePolicy = Schema.Union([Schema.Literal("auto"), Schema.Literal("none"), CachePolicyObject])
 export type CachePolicy = Schema.Schema.Type<typeof CachePolicy>

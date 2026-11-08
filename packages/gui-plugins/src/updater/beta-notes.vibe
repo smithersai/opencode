@@ -62,7 +62,7 @@ export type BetaNotes = {
  * history (or was force-pushed away), the newest notes stand in, with the rest on the What's new page. None without a previous commit,
  * or without a change.
  */
-export function sliceBetaNotes(embedded: EmbeddedNotes, previous: string | undefined): Option<BetaNotes> {
+export function sliceBetaNotes(embedded: EmbeddedNotes, previous: string | undefined): Option.Option<BetaNotes> {
   if (!previous || previous === embedded.sha) return Option.none()
 
   const cut = embedded.commits.findIndex((commit) => previous.startsWith(commit))

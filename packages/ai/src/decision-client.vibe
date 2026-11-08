@@ -17,13 +17,13 @@ export interface Interface {
   ) => DecisionResponseFor<Questions>!AIError
 }
 
-export class Service extends Context.Service<Service, Interface>()("@opencode/AI/DecisionClient") {}
+export service Service: Interface { static readonly key = "@opencode/AI/DecisionClient";}
 
 export const generate = <Options extends DecisionOptions, const Questions extends DecisionQuestions>(
   request: DecisionRequestFor<Options, Questions>,
 ): DecisionResponseFor<Questions>!AIError!Service => Effect.flatMap(Service, (client) => client.generate(request))
 
-export const layer: Layer<Service, never, RequestExecutor.Service> = Layer.effect(
+export const layer: Layer.Layer<Service, never, RequestExecutor.Service> = Layer.effect(
   Service,
   effect {
     const executor = try RequestExecutor.Service

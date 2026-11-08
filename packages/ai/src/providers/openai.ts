@@ -12,17 +12,17 @@ import {
   type ProviderOptions,
 } from "../schema/index.js"
 import * as OpenAIChat from "../protocols/openai-chat.js"
-import * as OpenAIResponses from "../protocols/openai-responses.vibe"
+import * as OpenAIResponses from "../protocols/openai-responses.js"
 import { withOpenAIOptions, type OpenAIProviderOptionsInput } from "./openai-options.js"
-import { OpenAIImages } from "../protocols/openai-images.vibe"
+import { OpenAIImages } from "../protocols/openai-images.js"
 import { OpenAISpeech } from "../protocols/openai-speech.vibe"
-import { OpenAITranscription } from "../protocols/openai-transcription.vibe"
+import { OpenAITranscription } from "../protocols/openai-transcription.js"
 import { OpenAIDecisions, type OptionsInput as OpenAIDecisionOptionsInput } from "../protocols/openai-decisions.vibe"
 
 export type { OpenAIOptionsInput, OpenAIResponseIncludable, OpenAIServiceTier } from "./openai-options.js"
-export type { OpenAIImageOptions } from "../protocols/openai-images.vibe"
+export type { OpenAIImageOptions } from "../protocols/openai-images.js"
 export type { OpenAISpeechOptions } from "../protocols/openai-speech.vibe"
-export type { OpenAITranscriptionOptions } from "../protocols/openai-transcription.vibe"
+export type { OpenAITranscriptionOptions } from "../protocols/openai-transcription.js"
 export type { OptionsInput as OpenAIDecisionOptions } from "../protocols/openai-decisions.vibe"
 
 export const id = ProviderID.make("openai")

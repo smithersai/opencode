@@ -19,7 +19,7 @@ const Body = Schema.Struct({
 const fromRequest = effect (request: LLMRequest) =>
   try withSpan(
     effect {
-      const options = try ProviderShared.validateWith(Schema.decodeUnknownEffect(Options))(
+      const options = try (try Effect.orDie(Effect.try({ try: () => ProviderShared.validateWith(Schema.decodeUnknownEffect(Options)), catch: (e) => e })))(
         request.providerOptions ?? {},
       )
       // Z.AI accepts enabled thinking without Anthropic's mandatory token budget.

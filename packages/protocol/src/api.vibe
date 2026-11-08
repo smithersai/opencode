@@ -5,7 +5,7 @@ import { VoiceGroup } from "./groups/voice.vibe"
 import { MessageGroup } from "./groups/message.vibe"
 import { ModelGroup } from "./groups/model.vibe"
 import { ProviderGroup } from "./groups/provider.vibe"
-import { makeSessionGroup } from "./groups/session.vibe"
+import { makeSessionGroup } from "./groups/session.js"
 import { makePermissionGroup } from "./groups/permission.vibe"
 import { FileSystemGroup } from "./groups/fs.vibe"
 import { makeFormGroup } from "./groups/form.vibe"
@@ -120,7 +120,7 @@ export type Api<
   SessionLocationId extends HttpApiMiddleware.AnyId,
   SessionLocationService,
   Event extends HttpApiGroup.Constraint,
-> = HttpApi<
+> = HttpApi.HttpApi<
   "server",
   HttpApiGroup.AddMiddleware<
     HttpApiGroup.AddMiddleware<

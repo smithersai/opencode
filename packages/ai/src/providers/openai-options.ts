@@ -1,6 +1,6 @@
 import { mergeProviderOptions, type ProviderOptions } from "../schema/index.js"
 import type { Options, ResponseIncludable, ServiceTier } from "../protocols/utils/open-responses-options.vibe"
-import type { ContextManagement, ReasoningContext, ReasoningMode } from "../protocols/openai-responses.vibe"
+import type { ContextManagement, ReasoningContext, ReasoningMode } from "../protocols/openai-responses.js"
 
 // Mirrors OpenAI's `ResponseIncludable` union from the official SDK. Keep this
 // in lockstep with `openai-node/src/resources/responses/responses.ts`.

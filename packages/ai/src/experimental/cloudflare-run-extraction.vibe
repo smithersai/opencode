@@ -73,7 +73,7 @@ export const protocol = MediaProtocol.inline<ExtractionRequestFor, ExtractionRes
           })
           return new ExtractionResponse({
             answers: Object.fromEntries(answers),
-            usage: result.usage === undefined
+            usage: try Effect.orDie(Effect.try({ try: () => result.usage === undefined
               ? undefined
               : new Usage({
                 inputTokens: result.usage.input_tokens,
@@ -84,7 +84,7 @@ export const protocol = MediaProtocol.inline<ExtractionRequestFor, ExtractionRes
                   undefined,
                 ),
                 providerMetadata: { [route.provider]: result.usage },
-              }),
+              }), catch: (e) => e })),
             providerMetadata: {
               [route.provider]: {
                 model: result.model,

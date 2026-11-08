@@ -12,7 +12,7 @@ export const make = effect (options: {
   try withSpan(
     effect {
       // Every Exit is an Effect, so the latest resolution replays directly for each consumer.
-      const current = try Ref.make<Exit<SidecarCredentials.Data, unknown> | undefined>(undefined)
+      const current = try Ref.make<Exit.Exit<SidecarCredentials.Data, unknown> | undefined>(undefined)
       const first = try Deferred.make<void>()
       try (options.initial
         |> Effect.exit(%)

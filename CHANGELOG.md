@@ -6,6 +6,8 @@ Release notes for OpenCode V2, newest first.
 
 ### Bugs fixed
 
+- Development and test CLIs could ignore supplied version and channel metadata; runtime definitions now preserve those values and release highlights.
+
 - Generated Promise event streams could narrow opaque metadata to JSON values; they now preserve the declared data codec and its wire transformations.
 
 - Some migrated policy and session contracts became mutable; their fields now retain their original readonly types.

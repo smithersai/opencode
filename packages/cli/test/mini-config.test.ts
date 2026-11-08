@@ -7,7 +7,7 @@ import path from "node:path"
 import { Config } from "../src/config"
 import { Server } from "../src/commands/commands.ts"
 import type { MiniCommandInput } from "../src/mini"
-import { OPENCODE_VERSION } from "../src/version.vibe"
+import { OPENCODE_VERSION } from "../src/version.ts"
 
 test("mini handler passes resolved CLI keybinds to the runtime", async () => {
   const root = await Bun.$`mktemp -d`.text().then((value) => value.trim())

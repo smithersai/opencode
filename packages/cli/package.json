@@ -98,7 +98,7 @@
   "imports": {
     "#vibelang/emitted/src/version": {
       "types": "./src/version.d.vibe.ts",
-      "vibelang-source": "./src/version.vibe",
+      "vibelang-source": "./src/version.ts",
       "default": "./.vibelang/js/src/version.js"
     }
   }

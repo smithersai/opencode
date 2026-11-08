@@ -10,19 +10,26 @@ export const pack = async () => {
   const original = await Bun.file("package.json").text()
   // oxlint-disable-next-line typescript-eslint/no-unsafe-type-assertion -- package.json is validated by the package schema and build checks.
   const pkg = JSON.parse(original) as {
+    readonly name: string
     readonly version: string
-    exports: Record<string, string | { readonly import: string; readonly types: string }>
+    exports: Record<
+      string,
+      string | { readonly import?: string; readonly types?: string; readonly "vibelang-source"?: string }
+    >
   }
 
   for (const [key, value] of Object.entries(pkg.exports)) {
-    if (typeof value !== "string") continue
-    const file = value.replace("./src/", "./dist/").replace(/\.ts$/, "")
+    const source = typeof value === "string" ? value : (value["vibelang-source"] ?? value.import)
+    if (!source) continue
+    const file = source.replace("./src/", "./dist/").replace(/\.(?:tsx?|vibex?)$/, "")
     pkg.exports[key] = { import: `${file}.js`, types: `${file}.d.ts` }
   }
   await Bun.write("package.json", JSON.stringify(pkg, null, 2))
   try {
     await $`bun pm pack`
-    return fileURLToPath(new URL(`../opencode-ai-http-recorder-${pkg.version}.tgz`, import.meta.url))
+    return fileURLToPath(
+      new URL(`../${pkg.name.replace("@", "").replace("/", "-")}-${pkg.version}.tgz`, import.meta.url),
+    )
   } finally {
     await Bun.write("package.json", original)
   }

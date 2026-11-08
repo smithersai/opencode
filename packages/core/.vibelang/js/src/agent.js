@@ -5,7 +5,7 @@ import * as Effect_1 from "effect/Effect";
 import * as runtime from "vibelang-runtime/internal";
 export * as Agent from "./agent.js";
 import { makeLocationNode } from "@opencode/util/effect/app-node";
-import { Array as Arr, Effect, Types } from "effect";
+import { Array, Effect, Types } from "effect";
 import { Agent } from "@opencode/schema/agent";
 import { Bus } from "./bus.js";
 import { State } from "./state.js";
@@ -34,7 +34,7 @@ const layer = Layer.effect(Service, Effect_1.gen(function* () {
         }
     };
     const list = (data) => {
-        const agents = Arr.fromIterable(data.agents.values());
+        const agents = Array.fromIterable(data.agents.values());
         const selected = selectedDefault(data);
         if (!selected)
             return agents;
@@ -45,7 +45,7 @@ const layer = Layer.effect(Service, Effect_1.gen(function* () {
             name: "agent",
             initial: () => ({ agents: new Map() }),
             editor: (editor) => ({
-                list: () => Arr.fromIterable(editor.agents.values()),
+                list: () => Array.fromIterable(editor.agents.values()),
                 get: (id) => editor.agents.get(id),
                 default: (id) => {
                     editor.default = id;

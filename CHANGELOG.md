@@ -6,6 +6,8 @@ Release notes for OpenCode V2, newest first.
 
 ### Bugs fixed
 
+- Migration-generated helper imports could fail the repository style checks; named imports now preserve the same helper behavior.
+
 - Simulation codec interfaces could expand into anonymous fields in consumer declarations; their original interface names are now retained.
 
 - Migrated codec fields could become writable in provider options, browser RPC, CodeMode and theme types; their original `readonly` contracts are now preserved.

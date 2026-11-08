@@ -1,0 +1,5 @@
+[
+  { "segments": ["generate.native"], "wildcard": false, "conditional": false, "explicit": false },
+  { "segments": ["session", "compaction.native"], "wildcard": false, "conditional": true, "explicit": false },
+  { "segments": ["native", "body.-24-call-24-ts"], "wildcard": true, "conditional": true, "explicit": false }
+]

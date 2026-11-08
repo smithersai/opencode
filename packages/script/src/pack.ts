@@ -67,6 +67,9 @@ export async function pack(
       return [key, { import: options.source ? value : output(value), types: declaration(value) }]
     }),
   )
+  // Private paths need explicit masks when a broader wildcard would expose them.
+  for (const key of options.workspaceOnly ?? []) exports[key] = null
+
   const imports = pkg.imports
     ? Object.fromEntries(
         Object.entries(pkg.imports).map(([key, conditions]) => [

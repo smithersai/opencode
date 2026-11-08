@@ -85,7 +85,10 @@ const rpcFromEffect = Effect.fn("Plugin.Rpc.fromEffect")(function* (host: HostRp
     const subscribe = (
       name: string,
       options?: Pick<RpcCallOptions, "signal">,
-    ): AsyncIterable<RpcEventPayload<Rpc.PortableDefinition>> => streams(local.events.subscribe(name), options)
+    ): AsyncIterable<RpcEventPayload<Rpc.PortableDefinition>> =>
+      // The in-process payload is the wire payload before JSON encoding: since Effect 4.1.1 the wire type reads
+      // metadata as JSON values, while the local event holds the same objects as unknown.
+      streams(local.events.subscribe(name), options) as AsyncIterable<RpcEventPayload<Rpc.PortableDefinition>>
     return Object.assign(
       Object.fromEntries(
         Object.keys(definition.methods).map((name) => [

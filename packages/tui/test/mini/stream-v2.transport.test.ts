@@ -4400,7 +4400,7 @@ describe("V2 mini transport", () => {
         durable: durable("ses_child", seq),
         data: { sessionID: "ses_child", assistantMessageID: "msg_tool_projected", id, name },
       })
-    const called = (id: string, input: Record<string, unknown>, seq: number) =>
+    const called = (id: string, input: Extract<RunV2Event, { type: "session.tool.called" }>["data"]["input"], seq: number) =>
       events.push({
         id: `evt_called_${id}`,
         created: seq,

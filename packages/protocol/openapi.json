@@ -12135,7 +12135,7 @@
                     "data": {
                       "type": "array",
                       "items": {
-                        "$ref": "#/components/schemas/Shell.Info_1"
+                        "$ref": "#/components/schemas/Shell.Info"
                       }
                     }
                   },
@@ -12220,7 +12220,7 @@
                       "$ref": "#/components/schemas/Location.PublicRef"
                     },
                     "data": {
-                      "$ref": "#/components/schemas/Shell.Info_1"
+                      "$ref": "#/components/schemas/Shell.Info"
                     }
                   },
                   "required": ["location", "data"],
@@ -12342,7 +12342,7 @@
                       "$ref": "#/components/schemas/Location.PublicRef"
                     },
                     "data": {
-                      "$ref": "#/components/schemas/Shell.Info_1"
+                      "$ref": "#/components/schemas/Shell.Info"
                     }
                   },
                   "required": ["location", "data"],
@@ -16020,12 +16020,6 @@
           "$ref": "#/components/schemas/Form.Value"
         }
       },
-      "Form.Answer_1": {
-        "type": "object",
-        "additionalProperties": {
-          "$ref": "#/components/schemas/Form.Value_1"
-        }
-      },
       "Form.BooleanField": {
         "type": "object",
         "properties": {
@@ -16048,41 +16042,6 @@
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/Form.When"
-            }
-          },
-          "type": {
-            "type": "string",
-            "enum": ["boolean"]
-          },
-          "default": {
-            "type": "boolean"
-          }
-        },
-        "required": ["key", "type"],
-        "additionalProperties": false
-      },
-      "Form.BooleanField_1": {
-        "type": "object",
-        "properties": {
-          "key": {
-            "type": "string"
-          },
-          "title": {
-            "type": "string"
-          },
-          "description": {
-            "type": "string"
-          },
-          "required": {
-            "type": "boolean"
-          },
-          "hidden": {
-            "type": "boolean"
-          },
-          "when": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/Form.When_1"
             }
           },
           "type": {
@@ -16192,28 +16151,6 @@
           }
         ]
       },
-      "Form.Field_1": {
-        "anyOf": [
-          {
-            "$ref": "#/components/schemas/Form.StringField_1"
-          },
-          {
-            "$ref": "#/components/schemas/Form.NumberField_1"
-          },
-          {
-            "$ref": "#/components/schemas/Form.IntegerField_1"
-          },
-          {
-            "$ref": "#/components/schemas/Form.BooleanField_1"
-          },
-          {
-            "$ref": "#/components/schemas/Form.MultiselectField_1"
-          },
-          {
-            "$ref": "#/components/schemas/Form.ExternalField"
-          }
-        ]
-      },
       "Form.Fields": {
         "type": "array",
         "prefixItems": [
@@ -16224,18 +16161,6 @@
         "minItems": 1,
         "items": {
           "$ref": "#/components/schemas/Form.Field"
-        }
-      },
-      "Form.Fields_1": {
-        "type": "array",
-        "prefixItems": [
-          {
-            "$ref": "#/components/schemas/Form.Field_1"
-          }
-        ],
-        "minItems": 1,
-        "items": {
-          "$ref": "#/components/schemas/Form.Field_1"
         }
       },
       "Form.ID": {
@@ -16259,28 +16184,6 @@
           },
           "fields": {
             "$ref": "#/components/schemas/Form.Fields"
-          }
-        },
-        "required": ["id", "sessionID", "title", "fields"],
-        "additionalProperties": false
-      },
-      "Form.Info_1": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "$ref": "#/components/schemas/Form.ID"
-          },
-          "sessionID": {
-            "type": "string"
-          },
-          "title": {
-            "type": "string"
-          },
-          "metadata": {
-            "$ref": "#/components/schemas/Form.Metadata_1"
-          },
-          "fields": {
-            "$ref": "#/components/schemas/Form.Fields_1"
           }
         },
         "required": ["id", "sessionID", "title", "fields"],
@@ -16351,75 +16254,7 @@
         "required": ["key", "type"],
         "additionalProperties": false
       },
-      "Form.IntegerField_1": {
-        "type": "object",
-        "properties": {
-          "key": {
-            "type": "string"
-          },
-          "title": {
-            "type": "string"
-          },
-          "description": {
-            "type": "string"
-          },
-          "required": {
-            "type": "boolean"
-          },
-          "hidden": {
-            "type": "boolean"
-          },
-          "when": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/Form.When_1"
-            }
-          },
-          "type": {
-            "type": "string",
-            "enum": ["integer"]
-          },
-          "minimum": {
-            "anyOf": [
-              {
-                "type": "number"
-              },
-              {
-                "type": "string",
-                "enum": ["NaN", "Infinity", "-Infinity"]
-              }
-            ]
-          },
-          "maximum": {
-            "anyOf": [
-              {
-                "type": "number"
-              },
-              {
-                "type": "string",
-                "enum": ["NaN", "Infinity", "-Infinity"]
-              }
-            ]
-          },
-          "default": {
-            "anyOf": [
-              {
-                "type": "number"
-              },
-              {
-                "type": "string",
-                "enum": ["NaN", "Infinity", "-Infinity"]
-              }
-            ]
-          }
-        },
-        "required": ["key", "type"],
-        "additionalProperties": false
-      },
       "Form.Metadata": {
-        "type": "object"
-      },
-      "Form.Metadata_1": {
         "type": "object"
       },
       "Form.MultiselectField": {
@@ -16444,63 +16279,6 @@
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/Form.When"
-            }
-          },
-          "type": {
-            "type": "string",
-            "enum": ["multiselect"]
-          },
-          "options": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/Form.Option"
-            }
-          },
-          "minItems": {
-            "type": "integer",
-            "minimum": 0,
-            "maximum": 9007199254740991
-          },
-          "maxItems": {
-            "type": "integer",
-            "minimum": 0,
-            "maximum": 9007199254740991
-          },
-          "custom": {
-            "type": "boolean"
-          },
-          "default": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
-          }
-        },
-        "required": ["key", "type", "options"],
-        "additionalProperties": false
-      },
-      "Form.MultiselectField_1": {
-        "type": "object",
-        "properties": {
-          "key": {
-            "type": "string"
-          },
-          "title": {
-            "type": "string"
-          },
-          "description": {
-            "type": "string"
-          },
-          "required": {
-            "type": "boolean"
-          },
-          "hidden": {
-            "type": "boolean"
-          },
-          "when": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/Form.When_1"
             }
           },
           "type": {
@@ -16594,71 +16372,6 @@
               {
                 "type": "string",
                 "enum": ["Infinity", "-Infinity", "NaN"]
-              }
-            ]
-          }
-        },
-        "required": ["key", "type"],
-        "additionalProperties": false
-      },
-      "Form.NumberField_1": {
-        "type": "object",
-        "properties": {
-          "key": {
-            "type": "string"
-          },
-          "title": {
-            "type": "string"
-          },
-          "description": {
-            "type": "string"
-          },
-          "required": {
-            "type": "boolean"
-          },
-          "hidden": {
-            "type": "boolean"
-          },
-          "when": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/Form.When_1"
-            }
-          },
-          "type": {
-            "type": "string",
-            "enum": ["number"]
-          },
-          "minimum": {
-            "anyOf": [
-              {
-                "type": "number"
-              },
-              {
-                "type": "string",
-                "enum": ["NaN", "Infinity", "-Infinity"]
-              }
-            ]
-          },
-          "maximum": {
-            "anyOf": [
-              {
-                "type": "number"
-              },
-              {
-                "type": "string",
-                "enum": ["NaN", "Infinity", "-Infinity"]
-              }
-            ]
-          },
-          "default": {
-            "anyOf": [
-              {
-                "type": "number"
-              },
-              {
-                "type": "string",
-                "enum": ["NaN", "Infinity", "-Infinity"]
               }
             ]
           }
@@ -16799,70 +16512,6 @@
         "required": ["key", "type"],
         "additionalProperties": false
       },
-      "Form.StringField_1": {
-        "type": "object",
-        "properties": {
-          "key": {
-            "type": "string"
-          },
-          "title": {
-            "type": "string"
-          },
-          "description": {
-            "type": "string"
-          },
-          "required": {
-            "type": "boolean"
-          },
-          "hidden": {
-            "type": "boolean"
-          },
-          "when": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/Form.When_1"
-            }
-          },
-          "type": {
-            "type": "string",
-            "enum": ["string"]
-          },
-          "format": {
-            "type": "string",
-            "enum": ["email", "uri", "date", "date-time"]
-          },
-          "minLength": {
-            "type": "integer",
-            "minimum": 0,
-            "maximum": 9007199254740991
-          },
-          "maxLength": {
-            "type": "integer",
-            "minimum": 0,
-            "maximum": 9007199254740991
-          },
-          "pattern": {
-            "type": "string"
-          },
-          "placeholder": {
-            "type": "string"
-          },
-          "default": {
-            "type": "string"
-          },
-          "options": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/Form.Option"
-            }
-          },
-          "custom": {
-            "type": "boolean"
-          }
-        },
-        "required": ["key", "type"],
-        "additionalProperties": false
-      },
       "Form.Value": {
         "anyOf": [
           {
@@ -16874,29 +16523,6 @@
           {
             "type": "string",
             "enum": ["Infinity", "-Infinity", "NaN"]
-          },
-          {
-            "type": "boolean"
-          },
-          {
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
-          }
-        ]
-      },
-      "Form.Value_1": {
-        "anyOf": [
-          {
-            "type": "string"
-          },
-          {
-            "type": "number"
-          },
-          {
-            "type": "string",
-            "enum": ["NaN", "Infinity", "-Infinity"]
           },
           {
             "type": "boolean"
@@ -16930,37 +16556,6 @@
               {
                 "type": "string",
                 "enum": ["Infinity", "-Infinity", "NaN"]
-              },
-              {
-                "type": "boolean"
-              }
-            ]
-          }
-        },
-        "required": ["key", "op", "value"],
-        "additionalProperties": false
-      },
-      "Form.When_1": {
-        "type": "object",
-        "properties": {
-          "key": {
-            "type": "string"
-          },
-          "op": {
-            "type": "string",
-            "enum": ["eq", "neq"]
-          },
-          "value": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "number"
-              },
-              {
-                "type": "string",
-                "enum": ["NaN", "Infinity", "-Infinity"]
               },
               {
                 "type": "boolean"
@@ -20777,7 +20372,7 @@
                 "enum": ["user"]
               },
               "payload": {
-                "$ref": "#/components/schemas/Session.Inbox.UserPayload_1"
+                "$ref": "#/components/schemas/Session.Inbox.UserPayload"
               },
               "delivery": {
                 "$ref": "#/components/schemas/Session.Inbox.Delivery"
@@ -20794,7 +20389,7 @@
                 "enum": ["synthetic"]
               },
               "payload": {
-                "$ref": "#/components/schemas/Session.Inbox.SyntheticPayload_1"
+                "$ref": "#/components/schemas/Session.Inbox.SyntheticPayload"
               },
               "delivery": {
                 "$ref": "#/components/schemas/Session.Inbox.Delivery"
@@ -20953,22 +20548,6 @@
         "required": ["text"],
         "additionalProperties": false
       },
-      "Session.Inbox.SyntheticPayload_1": {
-        "type": "object",
-        "properties": {
-          "text": {
-            "type": "string"
-          },
-          "description": {
-            "type": "string"
-          },
-          "metadata": {
-            "type": "object"
-          }
-        },
-        "required": ["text"],
-        "additionalProperties": false
-      },
       "Session.Inbox.User": {
         "type": "object",
         "properties": {
@@ -21003,37 +20582,6 @@
         "additionalProperties": false
       },
       "Session.Inbox.UserPayload": {
-        "type": "object",
-        "properties": {
-          "text": {
-            "type": "string"
-          },
-          "files": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/Prompt.FileAttachment"
-            }
-          },
-          "agents": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/Prompt.AgentAttachment"
-            }
-          },
-          "skills": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/Prompt.SkillAttachment"
-            }
-          },
-          "metadata": {
-            "type": "object"
-          }
-        },
-        "required": ["text"],
-        "additionalProperties": false
-      },
-      "Session.Inbox.UserPayload_1": {
         "type": "object",
         "properties": {
           "text": {
@@ -21318,7 +20866,7 @@
             "type": "string"
           },
           "native": {
-            "$ref": "#/components/schemas/Session.Message.Native_1"
+            "$ref": "#/components/schemas/Session.Message.Native"
           },
           "time": {
             "type": "object",
@@ -21383,7 +20931,7 @@
             "type": "string"
           },
           "native": {
-            "$ref": "#/components/schemas/Session.Message.Native_1"
+            "$ref": "#/components/schemas/Session.Message.Native"
           }
         },
         "required": ["type", "text"],
@@ -21461,7 +21009,7 @@
             "type": "boolean"
           },
           "native": {
-            "$ref": "#/components/schemas/Session.Message.Native_1"
+            "$ref": "#/components/schemas/Session.Message.Native"
           },
           "state": {
             "anyOf": [
@@ -21827,9 +21375,6 @@
       "Session.Message.Native": {
         "type": "object"
       },
-      "Session.Message.Native_1": {
-        "type": "object"
-      },
       "Session.Message.Shell": {
         "type": "object",
         "properties": {
@@ -22049,12 +21594,12 @@
             "type": "array",
             "prefixItems": [
               {
-                "$ref": "#/components/schemas/Tool.Content_1"
+                "$ref": "#/components/schemas/Tool.Content"
               }
             ],
             "minItems": 1,
             "items": {
-              "$ref": "#/components/schemas/Tool.Content_1"
+              "$ref": "#/components/schemas/Tool.Content"
             }
           },
           "metadata": {
@@ -22113,12 +21658,12 @@
             "type": "array",
             "prefixItems": [
               {
-                "$ref": "#/components/schemas/Tool.Content_1"
+                "$ref": "#/components/schemas/Tool.Content"
               }
             ],
             "minItems": 1,
             "items": {
-              "$ref": "#/components/schemas/Tool.Content_1"
+              "$ref": "#/components/schemas/Tool.Content"
             }
           },
           "metadata": {
@@ -22901,60 +22446,6 @@
         "required": ["id", "status", "command", "cwd", "shell", "file", "metadata", "time"],
         "additionalProperties": false
       },
-      "Shell.Info_1": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "$ref": "#/components/schemas/Shell.ID"
-          },
-          "status": {
-            "type": "string",
-            "enum": ["running", "exited", "timeout", "killed"]
-          },
-          "command": {
-            "type": "string"
-          },
-          "cwd": {
-            "type": "string"
-          },
-          "shell": {
-            "type": "string"
-          },
-          "file": {
-            "type": "string"
-          },
-          "pid": {
-            "type": "integer",
-            "minimum": 0,
-            "maximum": 9007199254740991
-          },
-          "exit": {
-            "type": "number"
-          },
-          "signal": {
-            "type": "string"
-          },
-          "metadata": {
-            "type": "object"
-          },
-          "time": {
-            "type": "object",
-            "properties": {
-              "started": {
-                "type": "number",
-                "description": "Start time in milliseconds since the Unix epoch"
-              },
-              "completed": {
-                "type": "number"
-              }
-            },
-            "required": ["started"],
-            "additionalProperties": false
-          }
-        },
-        "required": ["id", "status", "command", "cwd", "shell", "file", "metadata", "time"],
-        "additionalProperties": false
-      },
       "ShellNotFoundErrorEncoded": {
         "type": "object",
         "properties": {
@@ -23062,44 +22553,7 @@
           }
         ]
       },
-      "Tool.Content_1": {
-        "anyOf": [
-          {
-            "$ref": "#/components/schemas/Tool.TextContent"
-          },
-          {
-            "$ref": "#/components/schemas/Tool.FileContent_1"
-          }
-        ]
-      },
       "Tool.FileContent": {
-        "type": "object",
-        "properties": {
-          "type": {
-            "type": "string",
-            "enum": ["file"]
-          },
-          "uri": {
-            "type": "string"
-          },
-          "mime": {
-            "type": "string"
-          },
-          "name": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ]
-          }
-        },
-        "required": ["type", "uri", "mime"],
-        "additionalProperties": false
-      },
-      "Tool.FileContent_1": {
         "type": "object",
         "properties": {
           "type": {
@@ -24408,7 +23862,7 @@
             "type": "object",
             "properties": {
               "form": {
-                "$ref": "#/components/schemas/Form.Info_1"
+                "$ref": "#/components/schemas/Form.Info"
               }
             },
             "required": ["form"],
@@ -24447,7 +23901,7 @@
                 "type": "string"
               },
               "answer": {
-                "$ref": "#/components/schemas/Form.Answer_1"
+                "$ref": "#/components/schemas/Form.Answer"
               }
             },
             "required": ["id", "sessionID", "answer"],
@@ -25339,7 +24793,7 @@
                 "$ref": "#/components/schemas/Model.Ref"
               },
               "native": {
-                "$ref": "#/components/schemas/Session.Message.Native_1"
+                "$ref": "#/components/schemas/Session.Message.Native"
               },
               "text": {
                 "type": "string"
@@ -26565,7 +26019,7 @@
                 "type": "string"
               },
               "native": {
-                "$ref": "#/components/schemas/Session.Message.Native_1"
+                "$ref": "#/components/schemas/Session.Message.Native"
               }
             },
             "required": ["sessionID", "assistantMessageID", "ordinal", "text"],
@@ -26625,7 +26079,7 @@
                 "maximum": 9007199254740991
               },
               "native": {
-                "$ref": "#/components/schemas/Session.Message.Native_1"
+                "$ref": "#/components/schemas/Session.Message.Native"
               }
             },
             "required": ["sessionID", "assistantMessageID", "ordinal"],
@@ -27142,7 +26596,7 @@
                 "type": "string"
               },
               "native": {
-                "$ref": "#/components/schemas/Session.Message.Native_1"
+                "$ref": "#/components/schemas/Session.Message.Native"
               },
               "cost": {
                 "$ref": "#/components/schemas/Money.USD"
@@ -27226,7 +26680,7 @@
                 "type": "string"
               },
               "native": {
-                "$ref": "#/components/schemas/Session.Message.Native_1"
+                "$ref": "#/components/schemas/Session.Message.Native"
               },
               "cost": {
                 "$ref": "#/components/schemas/Money.USD"
@@ -27524,7 +26978,7 @@
                 "type": "string"
               },
               "native": {
-                "$ref": "#/components/schemas/Session.Message.Native_1"
+                "$ref": "#/components/schemas/Session.Message.Native"
               }
             },
             "required": ["sessionID", "assistantMessageID", "ordinal", "text"],
@@ -27645,7 +27099,7 @@
                 "type": "boolean"
               },
               "native": {
-                "$ref": "#/components/schemas/Session.Message.Native_1"
+                "$ref": "#/components/schemas/Session.Message.Native"
               }
             },
             "required": ["sessionID", "assistantMessageID", "id", "input", "executed"],
@@ -27709,12 +27163,12 @@
                 "type": "array",
                 "prefixItems": [
                   {
-                    "$ref": "#/components/schemas/Tool.Content_1"
+                    "$ref": "#/components/schemas/Tool.Content"
                   }
                 ],
                 "minItems": 1,
                 "items": {
-                  "$ref": "#/components/schemas/Tool.Content_1"
+                  "$ref": "#/components/schemas/Tool.Content"
                 }
               },
               "metadata": {
@@ -27724,7 +27178,7 @@
                 "type": "boolean"
               },
               "native": {
-                "$ref": "#/components/schemas/Session.Message.Native_1"
+                "$ref": "#/components/schemas/Session.Message.Native"
               }
             },
             "required": ["sessionID", "assistantMessageID", "id", "error", "executed"],
@@ -27985,12 +27439,12 @@
                 "type": "array",
                 "prefixItems": [
                   {
-                    "$ref": "#/components/schemas/Tool.Content_1"
+                    "$ref": "#/components/schemas/Tool.Content"
                   }
                 ],
                 "minItems": 1,
                 "items": {
-                  "$ref": "#/components/schemas/Tool.Content_1"
+                  "$ref": "#/components/schemas/Tool.Content"
                 }
               },
               "metadata": {
@@ -28000,7 +27454,7 @@
                 "type": "boolean"
               },
               "native": {
-                "$ref": "#/components/schemas/Session.Message.Native_1"
+                "$ref": "#/components/schemas/Session.Message.Native"
               }
             },
             "required": ["sessionID", "assistantMessageID", "id", "content", "executed"],

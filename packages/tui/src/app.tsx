@@ -1343,7 +1343,8 @@ function App() {
       title: evt.data.title,
       message: evt.data.message,
       variant: evt.data.variant,
-      duration: evt.data.duration,
+      // The wire type allows null since Effect 4.1.1; the toast API takes a number or nothing.
+      duration: evt.data.duration ?? undefined,
     })
   })
 

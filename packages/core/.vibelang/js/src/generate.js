@@ -182,7 +182,7 @@ export const layer = Layer.effect(Service, Effect_1.gen(function* () {
             const usage = response.usage;
             return {
                 answers: response.answers,
-                ...(usage?.cost === undefined ? {} : { cost: Money.USD.make(usage.cost) }),
+                ...(yield* Effect.orDie(Effect.try({ try: () => usage?.cost === undefined ? {} : { cost: Money.USD.make(usage.cost) }, catch: (e) => e }))),
                 ...(usage?.inputTokens === undefined && usage?.outputTokens === undefined
                     ? {}
                     : { tokens: { input: usage.inputTokens, output: usage.outputTokens } }),

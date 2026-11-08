@@ -6,6 +6,8 @@ Release notes for OpenCode V2, newest first.
 
 ### Bugs fixed
 
+- Native SQLite implementation helpers could be reached through the package wildcard; those helper subpaths now stay private.
+
 - SDK package verification could lose relative local dependencies when installing its isolated consumer; it now resolves those archives from their source package.
 
 - The SDK in-memory client bundle could fail because newly generated native helpers were missing from the runtime output; the prepared module graph now includes those files.

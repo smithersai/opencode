@@ -619,7 +619,19 @@
       "types": "./src/v1/config/permission.d.vibe.ts",
       "vibelang-source": "./src/v1/config/permission.vibe",
       "default": "./.vibelang/js/src/v1/config/permission.js"
-    }
+    },
+    "./database/sqlite.bun": {
+      "types": "./src/database/sqlite.bun.d.vibe.ts",
+      "vibelang-source": "./src/database/sqlite.bun.vibe",
+      "default": "./.vibelang/js/src/database/sqlite.bun.js"
+    },
+    "./database/sqlite.node": {
+      "types": "./src/database/sqlite.node.d.vibe.ts",
+      "vibelang-source": "./src/database/sqlite.node.vibe",
+      "default": "./.vibelang/js/src/database/sqlite.node.js"
+    },
+    "./database/sqlite.bun.platform": null,
+    "./database/sqlite.node.platform": null
   },
   "imports": {
     "#sqlite": {
@@ -629,18 +641,18 @@
         "default": "./.vibelang/js/src/database/sqlite.workerd.js"
       },
       "bun": {
-        "types": "./src/database/sqlite.bun.ts",
-        "vibelang-source": "./src/database/sqlite.bun.ts",
+        "types": "./src/database/sqlite.bun.d.vibe.ts",
+        "vibelang-source": "./src/database/sqlite.bun.vibe",
         "default": "./.vibelang/js/src/database/sqlite.bun.js"
       },
       "node": {
-        "types": "./src/database/sqlite.node.ts",
-        "vibelang-source": "./src/database/sqlite.node.ts",
+        "types": "./src/database/sqlite.node.d.vibe.ts",
+        "vibelang-source": "./src/database/sqlite.node.vibe",
         "default": "./.vibelang/js/src/database/sqlite.node.js"
       },
       "default": {
-        "types": "./src/database/sqlite.node.ts",
-        "vibelang-source": "./src/database/sqlite.node.ts",
+        "types": "./src/database/sqlite.node.d.vibe.ts",
+        "vibelang-source": "./src/database/sqlite.node.vibe",
         "default": "./.vibelang/js/src/database/sqlite.node.js"
       }
     },

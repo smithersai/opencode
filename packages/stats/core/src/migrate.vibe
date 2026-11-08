@@ -1,0 +1,3 @@
+import { layer, migrate } from "./database.vibe"
+
+await Effect.runPromise(migrate() |> Effect.provide(%, layer))

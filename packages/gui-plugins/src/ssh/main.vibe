@@ -1,6 +1,4 @@
 import { NodeServices } from "@effect/platform-node"
-import { Effect, Exit, Fiber, Layer, ManagedRuntime, Schema, Scope, Stream } from "effect"
-import { FetchHttpClient } from "effect/http"
 import { builtinMainContext } from "@opencode/plugin/gui/builtin"
 import type { Plugin } from "@opencode/plugin/gui/main"
 import { SshFailure } from "./command"
@@ -35,7 +33,7 @@ const setup: Plugin.MainSetup = async (ctx) => {
       command: cli.command,
       configs: saved.value,
       save: (configs) => Effect.try({ try: () => saved.set(configs), catch: SshFailure.from }),
-    }).pipe(Scope.provide(scope)),
+    }) |> Scope.provide(%, scope),
   )
 
   ctx.onCleanup(() => runtime.runPromise(controller.close))
@@ -56,7 +54,7 @@ const setup: Plugin.MainSetup = async (ctx) => {
     respond: (input, caller) =>
       runtime.runPromise(controller.respond(input.id, input.prompt, input.value, caller.window)),
     cancel: (input, caller) => runtime.runPromise(controller.cancel(input.id, caller.window)),
-    forget: (input) => runtime.runPromise(controller.forget(input.id).pipe(Effect.orDie)),
+    forget: (input) => runtime.runPromise(controller.forget(input.id) |> Effect.orDie(%)),
   })
 
   function push() {

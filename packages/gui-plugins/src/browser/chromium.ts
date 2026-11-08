@@ -8,8 +8,8 @@ import { createBrowserFiles } from "./files"
 import { createDiagnostics } from "./diagnostics"
 import { loadIcon } from "./icon"
 import { pageLetter, pageReload, pageShortcut, type PageShortcut } from "./keys"
-import { createProfiling, type Recording } from "./profiling"
-import type { BrowserNetwork } from "./network"
+import { createProfiling, type Recording } from "./profiling.vibe"
+import type { BrowserNetwork } from "./network.vibe"
 import {
   allowedDestination,
   committedLoad,

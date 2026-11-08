@@ -1,7 +1,7 @@
 import { compose } from "@opencode/plugin/gui/host"
 import context from "./context"
 import btw from "./btw/index.vibe"
-import debug from "./debug"
+import debug from "./debug/index.vibe"
 import terminal from "./terminal"
 import file from "./file"
 import review from "./review/index.vibe"
@@ -25,8 +25,8 @@ export const builtins = compose({
   details,
   browser: { ...browser, mainEntry: () => import("./browser/main") },
   pairing: { ...pairing, mainEntry: () => import("./pairing/main.vibe") },
-  updater: { ...updater, mainEntry: () => import("./updater/main") },
-  ssh: { ...ssh, mainEntry: () => import("./ssh/main") },
+  updater: { ...updater, mainEntry: () => import("./updater/main.vibe") },
+  ssh: { ...ssh, mainEntry: () => import("./ssh/main.vibe") },
   wsl: { ...wsl, mainEntry: () => import("./wsl/main.vibe") },
   "microsoft-office": microsoftOffice,
   sources,

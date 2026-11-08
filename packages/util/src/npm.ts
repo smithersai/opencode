@@ -8,7 +8,7 @@ import { Global } from "./global.js"
 import { EffectFlock } from "./effect-flock.js"
 import { makeGlobalNode } from "./effect/app-node.js"
 import { filesystem } from "#vibelang/emitted/src/effect/app-node-platform"
-import { NpmConfig } from "./npm-config.js"
+import { NpmConfig } from "./npm-config.vibe"
 
 export class InstallFailedError extends Schema.TaggedError<InstallFailedError>()("NpmInstallFailedError", {
   add: Schema.Array(Schema.String).pipe(Schema.optional),

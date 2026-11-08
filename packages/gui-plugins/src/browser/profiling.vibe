@@ -1,7 +1,6 @@
+import * as Host from "./profiling.host.platform.ts"
 import type { WebContents } from "electron"
 import { Browser } from "@opencode/plugin-browser/rpc"
-import { gzipSync, gunzipSync } from "node:zlib"
-import { Schema } from "effect"
 import type { Cdp } from "./cdp"
 import type { BrowserFiles } from "./files"
 import { analyzeCpu, analyzeTrace, parseHeap } from "./analysis.vibe"
@@ -47,10 +46,10 @@ export function createProfiling(
     const file = await files.transfer(id)
 
     try {
-      const data = Buffer.from(file.data)
+      const data = Host.fileBytes(file.data)
 
       return Schema.decodeUnknownSync(Schema.fromJsonString(Schema.Unknown))(
-        (file.name.endsWith(".gz") ? gunzipSync(data, { maxOutputLength: 128 * 1024 * 1024 }) : data).toString("utf8"),
+        (file.name.endsWith(".gz") ? Host.decompress(data, { maxOutputLength: 128 * 1024 * 1024 }) : data).toString("utf8"),
       )
     } catch (error) {
       throw new Error(
@@ -70,9 +69,9 @@ export function createProfiling(
 
     if (cpu.result) return cpu.result
     const resources = cpu.resources
-    clearTimeout(cpu.timer)
+    Host.cancel(cpu.timer)
     cpu.result = cdp.send("Profiler.stop").then(async ({ profile }) => ({
-      id: await files.save("profile.cpuprofile", "application/json", Buffer.from(JSON.stringify(profile)), [
+      id: await files.save("profile.cpuprofile", "application/json", Host.textBytes(JSON.stringify(profile)), [
         ...resources,
       ]),
       durationMs: (profile.endTime - profile.startTime) / 1000,
@@ -98,19 +97,19 @@ export function createProfiling(
       const complete = Promise.withResolvers<{ stream?: string; dataLossOccurred: boolean }>()
       const off = cdp.on("Tracing.tracingComplete", (event) => complete.resolve(event))
 
-      const owner = {
+      const owner: Recording = {
         owner: contents,
         pid: contents.getOSProcessId(),
-        started: performance.now(),
-        timer: undefined as ReturnType<typeof setTimeout> | undefined,
+        started: Host.now(),
+        timer: undefined,
         finish: () => {
           if (trace) return trace
           trace = (async () => {
-            clearTimeout(owner.timer)
-            const durationMs = performance.now() - owner.started
+            Host.cancel(owner.timer)
+            const durationMs = Host.now() - owner.started
             const deadline = Promise.withResolvers<never>()
 
-            const timeout = setTimeout(
+            const timeout = Host.later(
               () =>
                 deadline.reject(
                   new Error(
@@ -136,7 +135,7 @@ export function createProfiling(
               try {
                 while (true) {
                   const part = await cdp.send("IO.read", { handle: result.stream, size: 256 * 1024 })
-                  const buffer = Buffer.from(part.data, part.base64Encoded ? "base64" : "utf8")
+                  const buffer = Host.encodedBytes(part.data, part.base64Encoded ? "base64" : "utf8")
                   bytes += buffer.byteLength
 
                   if (bytes > 64 * 1024 * 1024)
@@ -155,7 +154,7 @@ export function createProfiling(
                 Schema.fromJsonString(
                   Schema.Struct({ traceEvents: Schema.Array(Schema.Record(Schema.String, Schema.Json)) }),
                 ),
-              )(Buffer.concat(chunks).toString("utf8"))
+              )(Host.concat(chunks).toString("utf8"))
 
               // A CDP trace is browser-wide. Export only this renderer process, never
               // the application renderer or another session's process metadata.
@@ -164,7 +163,7 @@ export function createProfiling(
               const id = await files.save(
                 "trace.json.gz",
                 "application/gzip",
-                gzipSync(
+                Host.compress(
                   JSON.stringify({
                     traceEvents,
                     metadata: { source: "opencode", scope: "renderer-process", processId: owner.pid },
@@ -180,7 +179,7 @@ export function createProfiling(
                   result.dataLossOccurred || contents.isDestroyed() || contents.getOSProcessId() !== owner.pid,
               }
             } finally {
-              clearTimeout(timeout)
+              Host.cancel(timeout)
               off()
 
               if (shared.recording === owner) shared.recording = undefined
@@ -194,7 +193,7 @@ export function createProfiling(
       shared.recording = owner
       trace = undefined
       traceResources = new Set(source())
-      traceID = crypto.randomUUID()
+      traceID = Host.randomID()
 
       try {
         await cdp.send("Tracing.start", {
@@ -213,7 +212,7 @@ export function createProfiling(
             excludedCategories: ["*"],
           },
         })
-        owner.timer = setTimeout(() => {
+        owner.timer = Host.later(() => {
           void owner.finish().catch(() => undefined)
         }, durationMs)
       } catch (error) {
@@ -241,8 +240,8 @@ export function createProfiling(
         )
       await cdp.send("Profiler.enable")
       await cdp.send("Profiler.start")
-      cpu = { started: Date.now(), id: crypto.randomUUID(), resources: new Set(source()) }
-      cpu.timer = setTimeout(() => {
+      cpu = { started: Date.now(), id: Host.randomID(), resources: new Set(source()) }
+      cpu.timer = Host.later(() => {
         void stopCpu().catch(() => undefined)
       }, 30_000)
     },
@@ -259,7 +258,7 @@ export function createProfiling(
       let overflow = false
 
       const off = cdp.on("HeapProfiler.addHeapSnapshotChunk", ({ chunk }) => {
-        size += Buffer.byteLength(chunk)
+        size += new TextEncoder().encode(chunk).length
 
         if (size > 128 * 1024 * 1024) overflow = true
 
@@ -279,7 +278,7 @@ export function createProfiling(
           "Heap snapshot exceeded the 128 MiB desktop capture limit. Use a smaller page/test case or ask the user to inspect the heap with desktop developer tools; this tool has no size override.",
         )
 
-      return files.save("heap.heapsnapshot.gz", "application/gzip", gzipSync(chunks.join("")), [
+      return files.save("heap.heapsnapshot.gz", "application/gzip", Host.compress(chunks.join("")), [
         ...resources,
         ...source(),
       ])

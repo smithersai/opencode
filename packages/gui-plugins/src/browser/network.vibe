@@ -1,22 +1,17 @@
+import * as Host from "./network.host.platform.ts"
 import { net, session, type WebContents } from "electron"
 import type { RpcClient } from "@opencode/client/effect/api"
 import type { Session } from "@opencode/schema/session"
 import { Browser } from "@opencode/plugin-browser/rpc"
 import { BrowserProxy } from "@opencode/plugin-browser/proxy"
 import { Effect } from "effect"
-import { Base64 } from "effect/encoding"
 
 export type BrowserNetwork = Effect.Success<ReturnType<typeof createBrowserNetwork>>
 
-export const createBrowserNetwork = Effect.fn("BrowserNetwork.create")(function* (input: {
-  rpc: RpcClient<typeof Browser.Definition, unknown>
-  attachment: { sessionID: Session.ID; connectionID: string }
-  location: { directory: string; workspace?: string }
-  partition: string
-}) {
+export const createBrowserNetwork = effect (input: { rpc: RpcClient<typeof Browser.Definition, unknown>; attachment: { sessionID: Session.ID; connectionID: string; }; location: { directory: string; workspace?: string; }; partition: string; }) => try withSpan(effect {
   const options = { location: input.location }
 
-  const proxy = yield* Effect.acquireRelease(
+  const proxy = try Effect.acquireRelease(
     Effect.tryPromise(() =>
       BrowserProxy.make({
         open: (target, signal) =>
@@ -37,14 +32,14 @@ export const createBrowserNetwork = Effect.fn("BrowserNetwork.create")(function*
     (proxy) => Effect.promise(() => proxy.close()),
   )
 
-  const partition = session.fromPartition(input.partition)
-  yield* Effect.addFinalizer(() => Effect.promise(() => partition.closeAllConnections()))
+  const partition = try Effect.orDie(Effect.try({ try: () => session.fromPartition(input.partition), catch: (e) => e }))
+  try Effect.addFinalizer(() => Effect.promise(() => partition.closeAllConnections()))
   // This is the browser's private partition, not the app/API connection. Never
   // bypass localhost: it must resolve on the machine running the OC2 server.
-  yield* Effect.tryPromise(() =>
+  try Effect.tryPromise(() =>
     partition.setProxy({ mode: "fixed_servers", proxyRules: proxy.url, proxyBypassRules: "<-loopback>" }),
   )
-  yield* Effect.tryPromise(() => partition.closeAllConnections())
+  try Effect.tryPromise(() => partition.closeAllConnections())
 
   return {
     attach(contents: WebContents) {
@@ -81,7 +76,7 @@ export const createBrowserNetwork = Effect.fn("BrowserNetwork.create")(function*
         const chunks: Buffer[] = []
 
         const finish = (value?: { mime: string; data: Buffer }) => {
-          clearTimeout(timeout)
+          Host.cancel(timeout)
           resolve(value)
         }
 
@@ -90,7 +85,7 @@ export const createBrowserNetwork = Effect.fn("BrowserNetwork.create")(function*
           finish()
         }
 
-        const timeout = setTimeout(fail, 5_000)
+        const timeout = Host.later(fail, 5_000)
         request.on("login", (auth, callback) => {
           if (auth.isProxy && auth.host === proxy.host && auth.port === proxy.port)
             return callback(proxy.credentials.username, proxy.credentials.password)
@@ -106,14 +101,14 @@ export const createBrowserNetwork = Effect.fn("BrowserNetwork.create")(function*
 
             if (chunks.reduce((size, item) => size + item.length, 0) > MAX_ICON_BYTES) fail()
           })
-          response.on("end", () => finish({ mime, data: Buffer.concat(chunks) }))
+          response.on("end", () => finish({ mime, data: Host.concat(chunks) }))
           response.on("error", fail)
         })
         request.on("error", fail)
         request.end()
       }),
   }
-})
+}, "BrowserNetwork.create")
 
 /** Icons larger than this are not worth reducing; sites list a favicon of a few kilobytes. */
 const MAX_ICON_BYTES = 256 * 1024

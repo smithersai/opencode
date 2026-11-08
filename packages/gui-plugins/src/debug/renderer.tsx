@@ -1,7 +1,7 @@
 import { showToast, toaster } from "@opencode/ui/toast"
 import { lazy, Show, Suspense } from "solid-js"
 import { createKeyed, Command, Slot, type Plugin } from "@opencode/plugin/gui"
-import type Debug from "./index"
+import type Debug from "./index.vibe"
 import { HeapSnapshots, MemoryDiagnostics } from "./contract.vibe"
 
 const setup: Plugin.Setup<typeof Debug> = (ctx) => {

@@ -7,7 +7,7 @@ import {
   type TokenCostEntry,
 } from "@opencode/stats-core/domain/home"
 import { statModel } from "@opencode/stats-core/domain/model-normalization"
-import { runStatsEffect } from "../stats-runtime"
+import { runStatsEffect } from "../stats-runtime.vibe"
 import {
   catalogSlug,
   findModelCatalogEntry,

@@ -1,5 +1,4 @@
 import { dialog } from "electron"
-import { Effect, Exit, Schema, Scope } from "effect"
 import { builtinMainContext } from "@opencode/plugin/gui/builtin"
 import { MenubarItem, type Plugin } from "@opencode/plugin/gui/main"
 import { Updater } from "@opencode/plugin/gui/updater"
@@ -44,12 +43,12 @@ const setup: Plugin.MainSetup = async (ctx) => {
           catch: (error) => error,
         }),
       persistence: {
-        get: Effect.sync(() => ready.value ?? undefined),
-        set: (value) => Effect.sync(() => ready.set(value)),
-        clear: Effect.sync(() => ready.set(null)),
+        get: effect { return ready.value ?? undefined },
+        set: effect (value) => try Effect.orDie(Effect.try({ try: () => ready.set(value), catch: (error) => error })),
+        clear: effect { return try Effect.orDie(Effect.try({ try: () => ready.set(null), catch: (error) => error })) },
       },
       changed: () => publish.changed(),
-    }).pipe(Scope.provide(scope)),
+    }) |> Scope.provide(%, scope),
   )
 
   const provider = ctx.provide(Updater, {
@@ -60,11 +59,11 @@ const setup: Plugin.MainSetup = async (ctx) => {
 
   publish.changed = () => provider.changed()
 
-  const show = Effect.gen(function* () {
-    const state = yield* updater.check
+  const show = effect {
+    const state = try updater.check
 
     if (state.status === "error") {
-      yield* promise(() =>
+      try promise(() =>
         dialog.showMessageBox({
           type: "error",
           message: ctx.t("dialog.checkFailed.message"),
@@ -76,7 +75,7 @@ const setup: Plugin.MainSetup = async (ctx) => {
     }
 
     if (state.status === "up-to-date") {
-      yield* promise(() =>
+      try promise(() =>
         dialog.showMessageBox({
           type: "info",
           message: ctx.t("dialog.upToDate.message"),
@@ -89,7 +88,7 @@ const setup: Plugin.MainSetup = async (ctx) => {
 
     if (state.status !== "ready") return
 
-    const response = yield* promise(() =>
+    const response = try promise(() =>
       dialog.showMessageBox({
         type: "info",
         message: ctx.t("dialog.ready.message", { version: state.version }),
@@ -100,8 +99,8 @@ const setup: Plugin.MainSetup = async (ctx) => {
       }),
     )
 
-    if (response.response === 0) yield* updater.install
-  })
+    if (response.response === 0) try updater.install
+  }
 
   ctx.add(
     MenubarItem,
@@ -122,7 +121,7 @@ const setup: Plugin.MainSetup = async (ctx) => {
 }
 
 function promise<A>(evaluate: () => Promise<A>) {
-  return Effect.tryPromise(evaluate).pipe(Effect.orDie)
+  return Effect.tryPromise(evaluate) |> Effect.orDie(%)
 }
 
 export default setup

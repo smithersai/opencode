@@ -37,13 +37,27 @@
       "vibelang-source": "./src/effect/app-node-platform.vibe",
       "default": "./.vibelang/js/src/effect/app-node-platform.js"
     },
+    "./heap-snapshot": {
+      "types": "./src/heap-snapshot.d.vibe.ts",
+      "vibelang-source": "./src/heap-snapshot.vibe",
+      "default": "./.vibelang/js/src/heap-snapshot.js"
+    },
+    "./npm-config": {
+      "types": "./src/npm-config.d.vibe.ts",
+      "vibelang-source": "./src/npm-config.vibe",
+      "default": "./.vibelang/js/src/npm-config.js"
+    },
     "./*": {
       "types": "./src/*.ts",
       "vibelang-source": "./src/*.ts",
       "default": "./.vibelang/js/src/*.js"
     },
     "./bom.vibe.$call$ts": null,
-    "./patch.vibe.$throw$ts": null
+    "./patch.vibe.$throw$ts": null,
+    "./npm-config.host.platform": null,
+    "./heap-snapshot.host.platform": null,
+    "./heap-snapshot.platform": null,
+    "./npm-config.platform": null
   },
   "imports": {
     "#global-roots": {

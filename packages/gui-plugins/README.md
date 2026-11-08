@@ -406,7 +406,7 @@ session: BuiltinStore.session(
 
 SSH keeps a main store, imported from a key of the desktop settings file. `{ state: [namespace, key] }` names a key of another main storage namespace instead, and `file` another settings file:
 
-<!-- source: src/ssh/main.ts#saved -->
+<!-- source: src/ssh/main.vibe#saved -->
 
 ```ts
 // The saved hosts; stored before in the desktop settings file.
@@ -674,8 +674,8 @@ export const builtins = compose({
   details,
   browser: { ...browser, mainEntry: () => import("./browser/main") },
   pairing: { ...pairing, mainEntry: () => import("./pairing/main.vibe") },
-  updater: { ...updater, mainEntry: () => import("./updater/main") },
-  ssh: { ...ssh, mainEntry: () => import("./ssh/main") },
+  updater: { ...updater, mainEntry: () => import("./updater/main.vibe") },
+  ssh: { ...ssh, mainEntry: () => import("./ssh/main.vibe") },
   wsl: { ...wsl, mainEntry: () => import("./wsl/main.vibe") },
   "microsoft-office": microsoftOffice,
   sources,

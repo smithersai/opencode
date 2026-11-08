@@ -1,0 +1,4 @@
+
+export function runStatsEffect<A, E>(effect: A!E) {
+  return Effect.runPromise(effect)
+}

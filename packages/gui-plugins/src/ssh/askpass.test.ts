@@ -4,7 +4,7 @@ import { Deferred, Effect, Fiber, Layer, Queue, Scope, Exit } from "effect"
 import net from "node:net"
 import { Socket } from "effect/socket"
 import { testEffect } from "../../../core/test/lib/effect"
-import { createAskpass } from "./askpass"
+import { createAskpass } from "./askpass.vibe"
 
 const it = testEffect(Layer.empty)
 

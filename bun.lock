@@ -224,6 +224,8 @@
         "vibelang-runtime": "0.0.12",
       },
       "devDependencies": {
+        "typescript": "catalog:",
+        "fast-check": "catalog:",
         "@tsconfig/bun": "catalog:",
         "@types/bun": "catalog:",
         "@typescript/native": "catalog:",
@@ -316,6 +318,7 @@
         "zod": "catalog:",
       },
       "devDependencies": {
+        "typescript": "catalog:",
         "@ai-sdk/openai-compatible": "2.0.41",
         "@effect/platform-node": "catalog:",
         "@effect/sql-sqlite-bun": "catalog:",
@@ -600,6 +603,7 @@
         "vibelang-runtime": "0.0.12",
       },
       "devDependencies": {
+        "fast-check": "catalog:",
         "@tsconfig/bun": "catalog:",
         "@types/bun": "catalog:",
         "@typescript/native": "catalog:",
@@ -889,6 +893,7 @@
         "vibelang-runtime": "0.0.12",
       },
       "devDependencies": {
+        "fast-check": "catalog:",
         "@tsconfig/bun": "catalog:",
         "@types/bun": "catalog:",
         "@typescript/native": "catalog:",

@@ -20,8 +20,8 @@ export type Inventory = {
 }
 
 schema Listing {
-  path: string
-  line: string
+  readonly path: string
+  readonly line: string
 }
 
 const NamespaceSummary = Schema.Struct({
@@ -32,9 +32,9 @@ const NamespaceSummary = Schema.Struct({
 })
 
 export schema Summary {
-  total: number
-  shown: number
-  namespaces: ReadonlyArray<NamespaceSummary>
+  readonly total: number
+  readonly shown: number
+  readonly namespaces: ReadonlyArray<NamespaceSummary>
 }
 
 export type Options = {

@@ -6,6 +6,8 @@ Release notes for OpenCode V2, newest first.
 
 ### Bugs fixed
 
+- Migrated codec fields could become writable in provider options, browser RPC, CodeMode and theme types; their original `readonly` contracts are now preserved.
+
 - Decision input parts and media response codecs gained extra type exports during migration; they now keep their original value-only APIs and optional field behavior.
 
 - Development and test CLIs could ignore supplied version and channel metadata; runtime definitions now preserve those values and release highlights.

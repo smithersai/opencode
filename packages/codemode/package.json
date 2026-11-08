@@ -40,6 +40,8 @@
     "@tsconfig/bun": "catalog:",
     "@types/bun": "catalog:",
     "@typescript/native": "catalog:",
-    "vibelang": "0.0.12"
+    "vibelang": "0.0.12",
+    "typescript": "catalog:",
+    "fast-check": "catalog:"
   }
 }

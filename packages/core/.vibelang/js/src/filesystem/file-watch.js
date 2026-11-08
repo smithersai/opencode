@@ -29,7 +29,7 @@ export class DisabledError extends Schema.TaggedError()("FileWatch.DisabledError
 export class Service extends runtime.$service("@opencode/FileWatch") {
 }
 export const Options = Schema.Struct({
-    enabled: Schema.mutableKey(Schema.optional(Schema.Boolean)),
+    enabled: Schema.optional(Schema.Boolean),
 });
 // Global rather than location-scoped so watches outlive idle location eviction.
 export const layer = (options) => Layer.effect(Service, Effect_1.gen(function* () {

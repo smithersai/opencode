@@ -32,7 +32,7 @@ export interface Interface {
 export service Service: Interface { static readonly key = "@opencode/FileWatch";}
 
 export schema Options {
-  enabled?: boolean
+  readonly enabled?: boolean
 }
 
 type Entry = { expires: number; scope: Scope.Closeable }

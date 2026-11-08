@@ -71,18 +71,18 @@ export type StatefulColorDefinition = Schema.Schema.Type<typeof StatefulColorDef
 export type FormfieldColorDefinition = StatefulColorDefinition
 
 schema ActionColorDefinition {
-  primary?: StatefulColorDefinition
-  secondary?: StatefulColorDefinition
-  destructive?: StatefulColorDefinition
+  readonly primary?: StatefulColorDefinition
+  readonly secondary?: StatefulColorDefinition
+  readonly destructive?: StatefulColorDefinition
 }
 
 schema TextFeedbackDefinition {
-  base?: ColorValue
-  muted?: ColorValue
+  readonly base?: ColorValue
+  readonly muted?: ColorValue
 }
 
 schema BackgroundFeedbackDefinition {
-  base?: ColorValue
+  readonly base?: ColorValue
 }
 
 const TextDefinition = Schema.Struct({
@@ -201,62 +201,62 @@ const ThemeTokensDefinition = Schema.Struct({
 export type ThemeTokensDefinition = Schema.Schema.Type<typeof ThemeTokensDefinition>
 
 schema CompleteStatefulColorDefinition {
-  base: ColorValue
-  $hovered?: ColorValue
-  $focused?: ColorValue
-  $pressed?: ColorValue
-  $selected?: ColorValue
-  $disabled?: ColorValue
+  readonly base: ColorValue
+  readonly $hovered?: ColorValue
+  readonly $focused?: ColorValue
+  readonly $pressed?: ColorValue
+  readonly $selected?: ColorValue
+  readonly $disabled?: ColorValue
 }
 
 schema CompleteActionColorDefinition {
-  primary: CompleteStatefulColorDefinition
-  secondary: CompleteStatefulColorDefinition
-  destructive: CompleteStatefulColorDefinition
+  readonly primary: CompleteStatefulColorDefinition
+  readonly secondary: CompleteStatefulColorDefinition
+  readonly destructive: CompleteStatefulColorDefinition
 }
 
-schema CompleteTextFeedbackDefinition { base: ColorValue; muted?: ColorValue }
-schema CompleteBackgroundFeedbackDefinition { base: ColorValue }
+schema CompleteTextFeedbackDefinition { readonly base: ColorValue; readonly muted?: ColorValue }
+schema CompleteBackgroundFeedbackDefinition { readonly base: ColorValue }
 
 schema CompleteThemeTokensDefinition {
-  text: {
-    base: ColorValue
-    muted: ColorValue
-    faint?: ColorValue
-    action: CompleteActionColorDefinition
-    formfield: CompleteStatefulColorDefinition
-    feedback: {
-      error: CompleteTextFeedbackDefinition
-      warning: CompleteTextFeedbackDefinition
-      success: CompleteTextFeedbackDefinition
-      info: CompleteTextFeedbackDefinition
+  readonly text: {
+    readonly base: ColorValue
+    readonly muted: ColorValue
+    readonly faint?: ColorValue
+    readonly action: CompleteActionColorDefinition
+    readonly formfield: CompleteStatefulColorDefinition
+    readonly feedback: {
+      readonly error: CompleteTextFeedbackDefinition
+      readonly warning: CompleteTextFeedbackDefinition
+      readonly success: CompleteTextFeedbackDefinition
+      readonly info: CompleteTextFeedbackDefinition
     }
   }
-  background: {
-    base: ColorValue
-    raised: { base: ColorValue; high: ColorValue; max: ColorValue }
-    action: CompleteActionColorDefinition
-    formfield: CompleteStatefulColorDefinition
-    feedback: {
-      error: CompleteBackgroundFeedbackDefinition
-      warning: CompleteBackgroundFeedbackDefinition
-      success: CompleteBackgroundFeedbackDefinition
-      info: CompleteBackgroundFeedbackDefinition
+  readonly background: {
+    readonly base: ColorValue
+    readonly raised: { readonly base: ColorValue; readonly high: ColorValue; readonly max: ColorValue }
+    readonly action: CompleteActionColorDefinition
+    readonly formfield: CompleteStatefulColorDefinition
+    readonly feedback: {
+      readonly error: CompleteBackgroundFeedbackDefinition
+      readonly warning: CompleteBackgroundFeedbackDefinition
+      readonly success: CompleteBackgroundFeedbackDefinition
+      readonly info: CompleteBackgroundFeedbackDefinition
     }
   }
-  border: { base: ColorValue }
-  scrollbar: { base: ColorValue }
-  diff: {
-    text: { added: ColorValue; removed: ColorValue; context: ColorValue; hunkHeader: ColorValue }
-    background: { added: ColorValue; removed: ColorValue; context: ColorValue }
-    highlight: { added: ColorValue; removed: ColorValue }
-    lineNumber: {
-      text: ColorValue
-      background: { added: ColorValue; removed: ColorValue }
+  readonly border: { readonly base: ColorValue }
+  readonly scrollbar: { readonly base: ColorValue }
+  readonly diff: {
+    readonly text: { readonly added: ColorValue; readonly removed: ColorValue; readonly context: ColorValue; readonly hunkHeader: ColorValue }
+    readonly background: { readonly added: ColorValue; readonly removed: ColorValue; readonly context: ColorValue }
+    readonly highlight: { readonly added: ColorValue; readonly removed: ColorValue }
+    readonly lineNumber: {
+      readonly text: ColorValue
+      readonly background: { readonly added: ColorValue; readonly removed: ColorValue }
     }
   }
-  syntax: Readonly<Record<SyntaxToken, HueColorValue>>
-  markdown: Readonly<Record<MarkdownToken, HueColorValue>>
+  readonly syntax: Readonly<Record<SyntaxToken, HueColorValue>>
+  readonly markdown: Readonly<Record<MarkdownToken, HueColorValue>>
 }
 
 const ThemeDefinitionFields = Schema.Struct({

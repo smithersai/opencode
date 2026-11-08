@@ -8,7 +8,7 @@ import { ToolRuntime } from "./tool-runtime.js";
 export { searchSignature, toolExpression } from "./tool-runtime.js";
 /** Schema for a host tool input containing CodeMode source. */
 export const Input = Schema.Struct({
-    code: Schema.mutableKey(Schema.String),
+    code: Schema.String,
 });
 export const DiagnosticKind = Schema.Literals(["ParseError", "UnsupportedSyntax", "UnknownTool", "InvalidToolInput", "InvalidToolOutput", "InvalidDataValue", "ToolCallLimitExceeded", "TimeoutExceeded", "ToolFailure", "ExecutionFailure", "Truncated"]);
 export const Diagnostic = Schema.Struct({
@@ -18,7 +18,7 @@ export const Diagnostic = Schema.Struct({
     suggestions: Schema.optionalKey(Schema.Array(Schema.String)),
 });
 const ToolCallSchema = Schema.Struct({
-    name: Schema.mutableKey(Schema.String),
+    name: Schema.String,
 });
 export const Success = Schema.Struct({
     ok: Schema.Literal(true),

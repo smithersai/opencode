@@ -61,7 +61,7 @@ export type ExecuteOptions<Provided extends Record<string, unknown> = {}> = Opti
 export type DataValue = Schema.Json
 
 /** Schema for a host tool input containing CodeMode source. */
-export schema Input { code: string }
+export schema Input { readonly code: string }
 
 export schema DiagnosticKind = "ParseError" | "UnsupportedSyntax" | "UnknownTool" | "InvalidToolInput" | "InvalidToolOutput" | "InvalidDataValue" | "ToolCallLimitExceeded" | "TimeoutExceeded" | "ToolFailure" | "ExecutionFailure" | "Truncated"
 /** Stable categories produced by program, schema, tool, limit, and truncation diagnostics. */
@@ -76,7 +76,7 @@ export const Diagnostic = Schema.Struct({
 /** A normalized program diagnostic safe to return across an agent tool boundary. */
 export type Diagnostic = typeof Diagnostic.Type
 
-schema ToolCallSchema { name: string }
+schema ToolCallSchema { readonly name: string }
 export const Success = Schema.Struct({
   ok: Schema.Literal(true),
   value: Schema.Json,

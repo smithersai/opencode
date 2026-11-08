@@ -2,8 +2,8 @@
 import * as Schema from "effect/Schema";
 export * as CodeModeCatalog from "./catalog.js";
 const Listing = Schema.Struct({
-    path: Schema.mutableKey(Schema.String),
-    line: Schema.mutableKey(Schema.String),
+    path: Schema.String,
+    line: Schema.String,
 });
 const NamespaceSummary = Schema.Struct({
     name: Schema.String,
@@ -12,9 +12,9 @@ const NamespaceSummary = Schema.Struct({
     entries: Schema.Array(Listing),
 });
 export const Summary = Schema.Struct({
-    total: Schema.mutableKey(Schema.Number),
-    shown: Schema.mutableKey(Schema.Number),
-    namespaces: Schema.mutableKey(Schema.Array(NamespaceSummary)),
+    total: Schema.Number,
+    shown: Schema.Number,
+    namespaces: Schema.Array(NamespaceSummary),
 });
 const DESCRIPTION_LIMIT = 120;
 const CHARACTERS_PER_TOKEN = 4;

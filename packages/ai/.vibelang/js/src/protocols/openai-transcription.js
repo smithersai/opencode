@@ -21,10 +21,10 @@ export const PATH = "/audio/transcriptions";
 // 3. Streaming event schema
 // ---------------------------------------------------------------------------
 const Segment = Schema.Struct({
-    text: Schema.mutableKey(Schema.String),
-    start: Schema.mutableKey(Schema.Number),
-    end: Schema.mutableKey(Schema.Number),
-    speaker: Schema.mutableKey(Schema.optional(Schema.String)),
+    text: Schema.String,
+    start: Schema.Number,
+    end: Schema.Number,
+    speaker: Schema.optional(Schema.String),
 });
 const Usage = Schema.Union([
     Schema.Struct({

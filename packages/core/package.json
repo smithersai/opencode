@@ -814,7 +814,8 @@
     "drizzle-kit": "catalog:",
     "fast-check": "catalog:",
     "vibelang": "0.0.12",
-    "vibelang-unplugin": "0.0.12"
+    "vibelang-unplugin": "0.0.12",
+    "typescript": "catalog:"
   },
   "dependencies": {
     "@ai-sdk/cohere": "3.0.27",

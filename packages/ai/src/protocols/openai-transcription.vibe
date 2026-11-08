@@ -47,10 +47,10 @@ export type Request = TranscriptionRequestFor<OpenAITranscriptionOptions>
 // ---------------------------------------------------------------------------
 
 schema Segment {
-  text: string
-  start: number
-  end: number
-  speaker?: string
+  readonly text: string
+  readonly start: number
+  readonly end: number
+  readonly speaker?: string
 }
 
 const Usage = Schema.Union([

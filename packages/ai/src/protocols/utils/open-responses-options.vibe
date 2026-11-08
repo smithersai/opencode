@@ -32,8 +32,8 @@ export const ServiceTierSchema = ServiceTier
 export const TruncationSchema = Schema.Literals(Truncations)
 
 export schema AllowedTools {
-  toolNames: ReadonlyArray<string>
-  mode?: "auto" | "none" | "required"
+  readonly toolNames: ReadonlyArray<string>
+  readonly mode?: "auto" | "none" | "required"
 }
 
 export schema StreamOptions {

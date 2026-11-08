@@ -52,6 +52,7 @@
     "@types/bun": "catalog:",
     "@typescript/native": "catalog:",
     "typescript": "catalog:",
-    "vibelang": "0.0.12"
+    "vibelang": "0.0.12",
+    "fast-check": "catalog:"
   }
 }

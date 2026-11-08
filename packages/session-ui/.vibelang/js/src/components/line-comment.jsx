@@ -5,7 +5,7 @@ import { createSignal, For, onMount, Show, splitProps } from "solid-js";
 import { Button } from "@opencode/ui/button";
 import { FileIcon } from "@opencode/ui/file-icon";
 import { Icon } from "@opencode/ui/icon";
-import { installLineCommentStyles } from "./line-comment-styles";
+import { installLineCommentStyles } from "./line-comment-styles.js";
 import { useI18n } from "@opencode/ui/context/i18n";
 installLineCommentStyles();
 function InlineGlyph(props) {

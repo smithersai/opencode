@@ -5,12 +5,12 @@
 // surfaces keep streaming markdown/code layout stable and wait for image loads
 // before their snapshots enter scrollback.
 import { CodeRenderable, ImageRenderable, MarkdownRenderable, TextRenderable, getTreeSitterClient, } from "@opentui/core";
-import { entryBody, entryCanStream, entryDone, entryFlags } from "./entry.body";
-import { monoMarkdownRenderable, monoMarkdownTableOptions } from "./mono";
-import { entryColor, entryLook, entrySyntax } from "./scrollback.shared";
-import { turnSummaryCommit } from "./turn-summary";
+import { entryBody, entryCanStream, entryDone, entryFlags } from "./entry.body.js";
+import { monoMarkdownRenderable, monoMarkdownTableOptions } from "./mono.js";
+import { entryColor, entryLook, entrySyntax } from "./scrollback.shared.js";
+import { turnSummaryCommit } from "./turn-summary.js";
 import { entryWriter, sameEntryGroup, separatorRows, spacerWriter, turnSummaryWriter } from "./scrollback.writer";
-import {} from "./theme";
+import {} from "./theme.js";
 function commitMarkdownBlocks(input) {
     if (input.endBlockExclusive <= input.startBlock) {
         return false;

@@ -8,11 +8,11 @@ import { useData } from "../../../context/data";
 import { useClient } from "../../../context/client";
 import { useTheme } from "../../../context/theme";
 import { useStorage } from "../../../context/storage";
-import { Locale } from "../../../util/locale";
+import { Locale } from "../../../util/locale.js";
 import { Keymap } from "../../../context/keymap";
-import { useComposerTab } from "./context";
+import { useComposerTab } from "./context.js";
 import { withTimestampedFallback } from "@opencode/util/session-title-fallback";
-import { sessionFamily } from "../../../util/session";
+import { sessionFamily } from "../../../util/session.js";
 export function SubagentsTab(props) {
     const renderer = useRenderer();
     const route = useRouteData("session");

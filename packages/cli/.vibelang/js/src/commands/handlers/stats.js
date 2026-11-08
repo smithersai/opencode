@@ -6,9 +6,9 @@ import { activityCalendar } from "@opencode/util/activity-calendar";
 import { Effect, Option } from "effect";
 import { EOL } from "node:os";
 import { Commands } from "../commands.js";
-import { Runtime } from "../../framework/runtime";
-import { ServerConnection } from "../../services/server-connection";
-import { errorMessage } from "../../util/error";
+import { Runtime } from "../../framework/runtime.js";
+import { ServerConnection } from "../../services/server-connection.js";
+import { errorMessage } from "../../util/error.js";
 const handler = Effect.fn("cli.stats")(function* (input) {
     const days = Option.getOrUndefined(input.days);
     const year = Option.getOrUndefined(input.year);

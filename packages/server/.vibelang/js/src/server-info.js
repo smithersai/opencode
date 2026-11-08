@@ -28,4 +28,4 @@ export function connectionURLs(value, requestedHostname) {
         ]),
     ];
 }
-export * as ServerInfo from "./server-info";
+export * as ServerInfo from "./server-info.js";

@@ -3,8 +3,8 @@ import { isDeepStrictEqual } from "node:util";
 import { Mcp } from "@opencode/schema/mcp";
 import { Cause, Deferred, Effect, Exit, Queue, Ref, Scope, Stream } from "effect";
 import { ACPClient } from "./client.js";
-import { availableCommands, configOptions } from "./config-option";
-import { ACPConnection } from "./connection";
+import { availableCommands, configOptions } from "./config-option.js";
+import { ACPConnection } from "./connection.js";
 import { ACPError } from "./error.js";
 export const make = Effect.fnUntraced(function* (input) {
     const scope = yield* Effect.scope;
@@ -134,4 +134,4 @@ function mcpConfig(server) {
         environment: Object.fromEntries(server.env.map((entry) => [entry.name, entry.value])),
     });
 }
-export * as ACPSessions from "./sessions";
+export * as ACPSessions from "./sessions.js";

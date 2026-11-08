@@ -7,8 +7,8 @@ import { InvalidRequestError, ServiceUnavailableError } from "@opencode/protocol
 import { Global } from "@opencode/util/global";
 import { Effect } from "effect";
 import { HttpApiBuilder } from "effect/http-api";
-import { Api } from "../api";
-import { awaitPlugins, locationErrors } from "../location";
+import { Api } from "../api.js";
+import { awaitPlugins, locationErrors } from "../location.js";
 export const VoiceHandler = HttpApiBuilder.group(Api, "server.voice", (handlers) => Effect.gen(function* () {
     const global = yield* Global.Service;
     const locations = yield* LocationServiceMap.Service;

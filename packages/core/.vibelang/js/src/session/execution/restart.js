@@ -79,7 +79,7 @@ export const layer = (options) => Layer.effect(Service, Effect_1.gen(function* (
                     : state === "error"
                         ? (background.error ?? "Command failed")
                         : "Command cancelled";
-            yield* (Effect.orDie((yield* (Effect_1.fnUntraced(function* () {
+            yield* (Effect.orDie((yield* (function* () {
                 let $do1;
                 const catchProgram = sessions
                     .synthetic({
@@ -131,7 +131,7 @@ export const layer = (options) => Layer.effect(Service, Effect_1.gen(function* (
                                 }))()]; }));
                         });
                 return $do1;
-            }))())));
+            })())));
             yield* jobs.completeBackground(background.notificationID);
         });
     };

@@ -9,9 +9,9 @@ import { showToast } from "@opencode/ui/toast";
 import { artifactKind } from "@opencode/util/artifact";
 import { getFilename } from "@opencode/util/path";
 import { usePlugin } from "@opencode/plugin/gui";
-import { current, useShared } from "./context";
+import { current, useShared } from "./context.js";
 import { OpenInAppMenuItemsV2, useOpenInApp } from "./open-in-app";
-import { resolveOpenInAppPath, workspaceFileUrl } from "./path";
+import { resolveOpenInAppPath, workspaceFileUrl } from "./path.js";
 export function ArtifactToolbar(props) {
     const ctx = usePlugin();
     const shared = useShared();

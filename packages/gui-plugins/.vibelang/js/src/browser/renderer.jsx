@@ -40,7 +40,7 @@ const setup = (ctx) => {
     const opened = createMemo((seen) => seen || !!sessions.current(), false);
     createKeyed(opened, () => {
         const owner = getOwner();
-        void import("./model").then((module) => {
+        void import("./model.js").then((module) => {
             if (ctx.signal.aborted)
                 return;
             const created = runWithOwner(owner, () => module.createModel(ctx));

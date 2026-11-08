@@ -3,7 +3,7 @@ import { confirm, log, multiselect, password, select, text } from "@clack/prompt
 import { Effect, Schema } from "effect";
 import { Form } from "@opencode/schema/form";
 import { formValidateValue } from "@opencode/tui/util/form";
-import { openUrl, prompt, requireInteractive } from "../../../ui/prompt";
+import { openUrl, prompt, requireInteractive } from "../../../ui/prompt.js";
 const skip = Symbol("skip");
 const custom = Symbol("custom");
 const decodeAnswer = Schema.decodeUnknownOption(Schema.fromJsonString(Form.Value));

@@ -4,13 +4,13 @@ import { useTerminalDimensions } from "@opentui/solid";
 import { batch, createSignal, For, Show } from "solid-js";
 import { createStore, reconcile } from "solid-js/store";
 import { EMPTY_SESSION_TAB_STATUS, SessionTabs, TAB_SPINNERS, TAB_UNREAD_MARKERS, } from "../../../component/session-tabs";
-import { closeSessionTab, cycleSessionTab, moveSessionTab } from "../../../context/session-tabs-model";
+import { closeSessionTab, cycleSessionTab, moveSessionTab } from "../../../context/session-tabs-model.js";
 import { StoryFooter } from "./footer";
 import { DialogPrompt } from "../../../ui/dialog-prompt";
 import { useDialog } from "../../../ui/dialog";
 import { DialogSelect } from "../../../ui/dialog-select";
-import { clampSessionTabsWidth, sessionTabsFitVertically, SESSION_SIDEBAR_WIDTH, SESSION_TABS_COMPACT_BREAKPOINT, SESSION_TABS_COMPACT_WIDTH, } from "../../../ui/layout";
-import { createPaneResize } from "../../../ui/pane-resize";
+import { clampSessionTabsWidth, sessionTabsFitVertically, SESSION_SIDEBAR_WIDTH, SESSION_TABS_COMPACT_BREAKPOINT, SESSION_TABS_COMPACT_WIDTH, } from "../../../ui/layout.js";
+import { createPaneResize } from "../../../ui/pane-resize.js";
 import { PaneResizeHandle } from "../../../ui/pane-resize-handle";
 const FIXTURE_TABS = [
     { sessionID: "fixture-1", title: "Implement session tabs", project: "opencode" },

@@ -3,8 +3,8 @@ import { WebSearch } from "@opencode/core/websearch";
 import { InvalidRequestError, ServiceUnavailableError } from "@opencode/protocol/errors";
 import { Effect } from "effect";
 import { HttpApiBuilder } from "effect/http-api";
-import { Api } from "../api";
-import { awaitPlugins, response } from "../location";
+import { Api } from "../api.js";
+import { awaitPlugins, response } from "../location.js";
 export const WebSearchHandler = HttpApiBuilder.group(Api, "server.websearch", (handlers) => Effect.gen(function* () {
     return handlers
         .handle("websearch.providers", Effect.fn("server.websearch.providers")(function* () {

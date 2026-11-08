@@ -4,7 +4,7 @@ import { LayerNode } from "@opencode/util/effect/layer-node";
 import { Deferred, Effect, Schema, Stream } from "effect";
 import { ChildProcess, ChildProcessSpawner } from "effect/process";
 import { randomBytes } from "node:crypto";
-import { selfCommand } from "../util/process";
+import { selfCommand } from "../util/process.js";
 const Ready = Schema.Struct({ url: Schema.String });
 const decodeReady = Schema.decodeUnknownPromise(Schema.fromJsonString(Ready));
 const startupDirectory = process.cwd();
@@ -45,4 +45,4 @@ const makeEndpoint = Effect.fn("cli.standalone.endpoint")(function* (options) {
 export function start(options = {}) {
     return makeEndpoint(options);
 }
-export * as Standalone from "./standalone";
+export * as Standalone from "./standalone.js";

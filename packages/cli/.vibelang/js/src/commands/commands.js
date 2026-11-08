@@ -2,7 +2,7 @@
 import { Argument, Flag, GlobalFlag } from "effect/cli";
 import { Schema } from "effect";
 import { Spec } from "../framework/spec.js";
-import { Updater } from "../services/updater";
+import { Updater } from "../services/updater.js";
 export const PrintLogs = GlobalFlag.Setting("print-logs")({
     flag: Flag.Boolean("print-logs").pipe(Flag.withDescription("Print logs to stderr (server logs require --standalone)"), Flag.withDefault(false)),
 });

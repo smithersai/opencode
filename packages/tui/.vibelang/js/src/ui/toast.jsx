@@ -3,9 +3,9 @@ import { createContext, createSignal, onCleanup, useContext, Show } from "solid-
 import { createStore } from "solid-js/store";
 import { useTheme } from "../context/theme";
 import { useRenderer, useTerminalDimensions } from "@opentui/solid";
-import { SplitBorder } from "./border";
+import { SplitBorder } from "./border.js";
 import { TextAttributes } from "@opentui/core";
-import { errorMessage } from "../util/error";
+import { errorMessage } from "../util/error.js";
 function ToastSurface(props) {
     const theme = useTheme();
     const dimensions = useTerminalDimensions();

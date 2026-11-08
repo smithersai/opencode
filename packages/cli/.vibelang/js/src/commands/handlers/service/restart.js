@@ -3,9 +3,9 @@ import { EOL } from "os";
 import { Effect } from "effect";
 import { Service } from "@opencode/client/effect/service";
 import { Commands } from "../../commands.js";
-import { Runtime } from "../../../framework/runtime";
-import { ServiceConfig } from "../../../services/service-config";
-import { ServerConnection } from "../../../services/server-connection";
+import { Runtime } from "../../../framework/runtime.js";
+import { ServiceConfig } from "../../../services/service-config.js";
+import { ServerConnection } from "../../../services/server-connection.js";
 export default Runtime.handler(Commands.commands.service.commands.restart, Effect.fn("cli.service.restart")(function* () {
     const options = yield* ServiceConfig.options();
     // Keep this explicit: automatic service replacement must preserve terminals.

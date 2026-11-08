@@ -6,8 +6,8 @@ import { useTerminalDimensions } from "@opentui/solid";
 import { createMemo, createResource, createSignal, For, Show } from "solid-js";
 import { Logo } from "../../component/logo";
 import { useTheme } from "../../context/theme";
-import { tint } from "../../theme/color";
-import { statsMetrics, statsNumber } from "./stats-data";
+import { tint } from "../../theme/color.js";
+import { statsMetrics, statsNumber } from "./stats-data.js";
 const digits = {
     "0": ["111", "101", "101", "101", "111"],
     "1": ["010", "110", "010", "010", "111"],

@@ -4,10 +4,10 @@ import { isConflictError } from "@opencode/client";
 import { CredentialLegacy } from "@opencode/schema/credential-legacy";
 import { Effect, Option, Schema } from "effect";
 import { Commands } from "../../commands.js";
-import { Runtime } from "../../../framework/runtime";
-import { createClient, request } from "./shared";
-import { errorMessage } from "../../../util/error";
-import { readStdin } from "../../../util/io";
+import { Runtime } from "../../../framework/runtime.js";
+import { createClient, request } from "./shared.js";
+import { errorMessage } from "../../../util/error.js";
+import { readStdin } from "../../../util/io.js";
 export default Runtime.handler(Commands.commands.auth.commands.import, Effect.fn("cli.auth.import")(function* (input) {
     const file = Option.getOrUndefined(input.file);
     if (!file && process.stdin.isTTY)

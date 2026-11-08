@@ -14,4 +14,4 @@ export const listen = Effect.gen(function* () {
     }), (handler) => Effect.sync(() => process.off("SIGUSR1", handler)));
     yield* Queue.take(signals).pipe(Effect.andThen(HeapSnapshot.write(global.log).pipe(Effect.catchCause((cause) => Effect.logError("failed to write heap snapshot", { cause })))), Effect.forever, Effect.forkScoped({ startImmediately: true }));
 });
-export * as Heap from "./heap";
+export * as Heap from "./heap.js";

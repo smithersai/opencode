@@ -2,7 +2,7 @@
 import { Show } from "solid-js";
 import { createLineCommentAnnotations, createLineCommentGutterRenderer, createLineCommentState, createManagedLineCommentAnnotationRenderer, } from "../../components/line-comment-annotations";
 import { useI18n } from "@opencode/ui/context/i18n";
-import { cloneSelectedLineRange } from "../../pierre/selection-bridge";
+import { cloneSelectedLineRange } from "../../pierre/selection-bridge.js";
 import { LineCommentEditor, LineComment } from "@opencode/ui/line-comment";
 function lineCommentElementV2(view) {
     return (<Show when={view().editor} fallback={<div data-prevent-autofocus="" data-comment-id={view().id} onMouseDown={(event) => event.stopPropagation()} onClick={view().onClick} onMouseEnter={view().onMouseEnter}>

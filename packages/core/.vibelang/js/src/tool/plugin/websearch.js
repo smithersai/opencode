@@ -89,7 +89,7 @@ export const Plugin = {
                                                         options: [
                                                             {
                                                                 value: "allow",
-                                                                label: `Allow search via ${providers.map((provider) => provider.name).join(", ")}`,
+                                                                label: `Allow search via ${yield* Effect.orDie(Effect.try({ try: () => providers.map((provider) => provider.name).join(", "), catch: (e) => e }))}`,
                                                             },
                                                             {
                                                                 value: "choose",
@@ -119,10 +119,10 @@ export const Plugin = {
                                                             type: "string",
                                                             required: true,
                                                             custom: false,
-                                                            options: providers.map((provider) => ({
-                                                                value: provider.id,
-                                                                label: provider.name,
-                                                            })),
+                                                            options: yield* Effect.orDie(Effect.try({ try: () => providers.map((provider) => ({
+                                                                    value: provider.id,
+                                                                    label: provider.name,
+                                                                })), catch: (e) => e })),
                                                         },
                                                     ],
                                                 }) : undefined;
@@ -134,7 +134,7 @@ export const Plugin = {
                                                 yield* websearch.select("random");
                                                 return;
                                             }
-                                            const provider = providers.find((provider) => provider.id === providerID);
+                                            const provider = yield* Effect.orDie(Effect.try({ try: () => providers.find((provider) => provider.id === providerID), catch: (e) => e }));
                                             if (!provider)
                                                 return yield* Effect_1.fail(new WebSearch.ProviderRequiredError());
                                             yield* websearch.select(provider.id);

@@ -13,6 +13,7 @@ import { Npm } from "@opencode/util/npm";
 import { EffectFlock } from "@opencode/util/effect-flock";
 import { makeGlobalNode } from "@opencode/util/effect/app-node";
 import { KeyedMutex } from "../effect/keyed-mutex.js";
+import { withKeyedLock } from "../effect/keyed-mutex.native.js";
 const interval = 24 * 60 * 60 * 1_000;
 export class Service extends runtime.$service("@opencode/PluginUpdate") {
 }
@@ -22,7 +23,7 @@ const layer = Layer.effect(Service, Effect_1.gen(function* () {
     const status = new Map();
     const changes = yield* PubSub.unbounded();
     return Service.of({
-        check: (target, options) => locks.withLock(target)(Effect_1.gen(function* () {
+        check: (target, options) => withKeyedLock(locks, target, Effect_1.gen(function* () {
             const checkedAt = yield* Clock.currentTimeMillis;
             const current = status.get(target);
             if (!options?.refresh && current && checkedAt - current.checkedAt < interval)
@@ -36,7 +37,7 @@ const layer = Layer.effect(Service, Effect_1.gen(function* () {
             return value;
         })),
         // Serialize per target so a concurrent update cannot clear the in-progress flag of another still running.
-        update: (target) => locks.withLock(target)(Effect_1.gen(function* () {
+        update: (target) => withKeyedLock(locks, target, Effect_1.gen(function* () {
             const outdated = status.get(target)?.outdated ?? false;
             yield* PubSub.publish(changes, { target, outdated, updating: true });
             yield* (Effect.onExit(Effect.tap(npm.update(target), () => Effect_1.sync(() => { return status.delete(target); })), (exit) => PubSub.publish(changes, {

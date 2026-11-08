@@ -6,8 +6,8 @@ import { Effect, Option, Schema } from "effect";
 import { EOL } from "node:os";
 import path from "node:path";
 import { Commands } from "../../commands.js";
-import { Runtime } from "../../../framework/runtime";
-import { ServerConnection } from "../../../services/server-connection";
+import { Runtime } from "../../../framework/runtime.js";
+import { ServerConnection } from "../../../services/server-connection.js";
 export default Runtime.handler(Commands.commands.session.commands.import, Effect.fn("cli.session.import")(function* (input) {
     const text = yield* Effect.tryPromise({
         try: () => input.file.startsWith("http://") || input.file.startsWith("https://")

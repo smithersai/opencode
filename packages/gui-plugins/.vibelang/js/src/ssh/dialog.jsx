@@ -7,7 +7,7 @@ import { useDialog } from "@opencode/ui/context/dialog";
 import { createMemo, createSignal, on, onCleanup, onMount, Show } from "solid-js";
 import { createStore } from "solid-js/store";
 import { createKeyed, usePlugin } from "@opencode/plugin/gui";
-import { isSshConnecting, sshName } from "./name";
+import { isSshConnecting, sshName } from "./name.js";
 export { default as css } from "../../../../src/ssh/ssh.css?inline";
 export function DialogSsh(props) {
     const dialog = useDialog();

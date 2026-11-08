@@ -3,7 +3,7 @@ import { AppProcess } from "@opencode/util/process";
 import { Effect } from "effect";
 import { ChildProcess } from "effect/process";
 import net from "node:net";
-export * as PortOwner from "./port-owner";
+export * as PortOwner from "./port-owner.js";
 // Best effort: names the process listening on a TCP port so a failed bind can say who holds it.
 // Windows has no cheap equivalent of lsof, so it keeps the generic message.
 export const describe = Effect.fnUntraced(function* (port, hostname) {

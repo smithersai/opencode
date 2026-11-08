@@ -16,8 +16,8 @@ import { createKeyed, usePlugin, usePanel } from "@opencode/plugin/gui";
 import { terminalTab } from "./state.js";
 import { SortableTerminalTab } from "./tab";
 import { Terminal } from "./terminal";
-import { terminalTabLabel } from "./title";
-import { focusTerminalById } from "./focus";
+import { terminalTabLabel } from "./title.js";
+import { focusTerminalById } from "./focus.js";
 const MAX_CACHED_TERMINAL_WORKSPACES = 20;
 /**
  * The terminals of the routed session's workspace. In the side region each terminal is its own strip tab and `tab`

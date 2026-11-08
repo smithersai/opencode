@@ -3,8 +3,8 @@ import { EOL } from "os";
 import { Effect, Option } from "effect";
 import { Global } from "@opencode/util/global";
 import { Commands } from "../../commands.js";
-import { Runtime } from "../../../framework/runtime";
-import { databasePath } from "../../../database-path";
+import { Runtime } from "../../../framework/runtime.js";
+import { databasePath } from "../../../database-path.js";
 export default Runtime.handler(Commands.commands.debug.commands.paths, Effect.fn("cli.debug.paths")(function* (input) {
     const global = yield* Global.Service;
     const paths = { ...global, db: databasePath(global.data) };

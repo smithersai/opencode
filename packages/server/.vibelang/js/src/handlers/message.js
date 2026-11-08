@@ -4,11 +4,11 @@ import { Session } from "@opencode/core/session";
 import { Effect, Option, Schema } from "effect";
 import { HttpServerResponse } from "effect/http";
 import { HttpApiBuilder } from "effect/http-api";
-import { Api } from "../api";
-import { wantsMediaRefs } from "#vibelang/emitted/src/media-uri";
+import { Api } from "../api.js";
+import { wantsMediaRefs } from "../media-uri.js";
 import { InvalidCursorError } from "@opencode/protocol/errors";
 import { SessionMediaMessagesResponse } from "@opencode/protocol/groups/message";
-import { failedMessageDecode, missingSession } from "./session-error";
+import { failedMessageDecode, missingSession } from "./session-error.js";
 const DefaultMessagesLimit = 50;
 const Cursor = Schema.Struct({
     id: SessionMessage.ID,

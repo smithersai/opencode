@@ -7,7 +7,7 @@ import { useClient } from "../context/client";
 import { useTheme } from "../context/theme";
 import { DialogHeader, DialogLayout, useDialog } from "../ui/dialog";
 import { Link } from "../ui/link";
-import { errorMessage } from "../util/error";
+import { errorMessage } from "../util/error.js";
 export function DialogPair() {
     const client = useClient();
     const dialog = useDialog();

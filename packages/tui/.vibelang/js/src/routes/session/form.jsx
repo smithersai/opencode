@@ -7,13 +7,13 @@ import { openUrl } from "@opencode/util/open";
 import { useTheme } from "../../context/theme";
 import { useData } from "../../context/data";
 import { useClipboard } from "../../context/clipboard";
-import { SplitBorder } from "../../ui/border";
+import { SplitBorder } from "../../ui/border.js";
 import { useToast } from "../../ui/toast";
 import { Keymap } from "../../context/keymap";
 import { useInteractivity } from "../../context/interactivity";
 import { useConfig } from "../../config";
-import { errorMessage } from "../../util/error";
-import { formCustom, formDisplayValue, formInitialValues, formLabel, formRows, formSelected, formSetMultiselectCustom, formTextual, formToggleMultiselect, formValidateValue, isFormAnswerField, } from "../../util/form";
+import { errorMessage } from "../../util/error.js";
+import { formCustom, formDisplayValue, formInitialValues, formLabel, formRows, formSelected, formSetMultiselectCustom, formTextual, formToggleMultiselect, formValidateValue, isFormAnswerField, } from "../../util/form.js";
 export const FORM_MODE = "form";
 function truncate(label, max) {
     return label.length > max ? label.slice(0, max - 1).trimEnd() + "…" : label;

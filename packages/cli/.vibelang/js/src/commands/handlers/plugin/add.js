@@ -8,9 +8,9 @@ import { Global } from "@opencode/util/global";
 import { Npm } from "@opencode/util/npm";
 import { Host } from "@opencode/plugin/host";
 import { Commands } from "../../commands.js";
-import { Runtime } from "../../../framework/runtime";
-import { resolveConfigPath } from "../mcp/add";
-import { Config } from "../../../config";
+import { Runtime } from "../../../framework/runtime.js";
+import { resolveConfigPath } from "../mcp/add.js";
+import { Config } from "../../../config/index.js";
 export default Runtime.handler(Commands.commands.plugin.commands.add, Effect.fn("cli.plugin.add")(function* (input) {
     if (!(yield* Effect.promise(() => Npm.isInstallablePackage(input.package))))
         return yield* Effect.fail(new Error("Plugin target must be an npm registry package or Git package specifier"));

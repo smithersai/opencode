@@ -4,8 +4,8 @@ import { readFile, rm, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { spawn } from "node:child_process";
-import { resolveZedDbPath, resolveZedSelection } from "./editor-zed";
-export { normalizePromptContent } from "./prompt/content";
+import { resolveZedDbPath, resolveZedSelection } from "./editor-zed.js";
+export { normalizePromptContent } from "./prompt/content.js";
 export async function openEditor(input) {
     const editor = process.env.VISUAL || process.env.EDITOR;
     if (!editor)

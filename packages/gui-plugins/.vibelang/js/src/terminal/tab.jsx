@@ -5,8 +5,8 @@ import { useSortable } from "@dnd-kit/solid/sortable";
 import { Tabs } from "@opencode/ui/tabs";
 import { Menu } from "@opencode/ui/menu";
 import { usePlugin } from "@opencode/plugin/gui";
-import { terminalTabLabel } from "./title";
-import { focusTerminalById } from "./focus";
+import { terminalTabLabel } from "./title.js";
+import { focusTerminalById } from "./focus.js";
 export function SortableTerminalTab(props) {
     const plugin = usePlugin();
     const sortable = useSortable({

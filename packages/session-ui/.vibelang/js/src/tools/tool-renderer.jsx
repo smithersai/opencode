@@ -6,7 +6,7 @@ import { createResizeObserver } from "@solid-primitives/resize-observer";
 import { Effect, Option, Schema } from "effect";
 import { createTwoFilesPatch, diffLines } from "diff";
 import { Dynamic } from "solid-js/web";
-import { useData } from "../context";
+import { useData } from "../context/index.js";
 import { useFileComponent } from "@opencode/ui/context/file";
 import { useI18n } from "@opencode/ui/context/i18n";
 import { BasicTool, GenericTool } from "../components/basic-tool";
@@ -15,7 +15,7 @@ import { Icon } from "@opencode/ui/icon";
 import { ToolErrorCard } from "../components/tool-error-card";
 import { DiffChanges } from "@opencode/ui/diff-changes";
 import { Markdown } from "../components/markdown";
-import { createMarkdownImages } from "../components/markdown-image";
+import { createMarkdownImages } from "../components/markdown-image.js";
 import { createImagePreview } from "../components/image-preview";
 import { useMarkdown } from "../context/markdown";
 import { getDirectory, getFilename } from "@opencode/util/path";
@@ -26,13 +26,13 @@ import { Dialog, DialogBody, DialogHeader, DialogTitle } from "@opencode/ui/dial
 import { IconButton } from "@opencode/ui/icon-button";
 import { TextShimmer } from "@opencode/ui/text-shimmer";
 import { AnimatedNumber } from "@opencode/ui/animated-number";
-import { changedFileDiff, patchFileGroups } from "../components/apply-patch-file";
+import { changedFileDiff, patchFileGroups } from "../components/apply-patch-file.js";
 import { animate } from "@kitlangton/solid-motion";
 import { SessionProgressIndicatorV2 } from "../v2/components/session-progress-indicator-v2";
 import { currentToolError, currentToolGroupedRead, currentToolInput, currentToolMetadata, currentToolOutput, executeToolCallArgs, executeToolCalls, executeToolSubtitle, readImagePath, } from "../message/current-tool-state.js";
 import { AssistantReasoningContent, writeClipboard } from "../message/message-content";
-import { stripAnsi } from "./ansi";
-import { followShellOutput } from "./shell-output";
+import { stripAnsi } from "./ansi.js";
+import { followShellOutput } from "./shell-output.js";
 import { LinkedText } from "../components/linked-text";
 function ShellSubmessage(props) {
     let widthRef;
@@ -157,7 +157,7 @@ function displayDirectory(path) {
     const data = useData();
     return relativizeProjectPath(getDirectory(path), data.directory);
 }
-import { resolveFileDiff } from "../components/session-diff";
+import { resolveFileDiff } from "../components/session-diff.js";
 export function taskAgentName(raw, list) {
     if (!raw)
         return undefined;

@@ -3,7 +3,7 @@ import { useI18n } from "@opencode/ui/context/i18n";
 import { Icon } from "@opencode/ui/icon";
 import { frameLoop, prefersReducedMotion, Spring } from "@opencode/ui/motion";
 import { createMemo, For, onCleanup, onMount, Show } from "solid-js";
-import { sourcesFade } from "./experiment";
+import { sourcesFade } from "./experiment.js";
 import { SiteIcon } from "./site-icon";
 import "../../../../src/sources/sources.css";
 /**

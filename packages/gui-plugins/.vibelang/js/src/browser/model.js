@@ -4,9 +4,9 @@ import { createStore, reconcile } from "solid-js/store";
 import { makeEventListener } from "@solid-primitives/event-listener";
 import { createKeyed } from "@opencode/plugin/gui";
 import { readHref } from "./comment.js";
-import { createConnection, unavailable, } from "./connection";
+import { createConnection, unavailable, } from "./connection.js";
 import { recordable, remember, withIcon } from "./history.js";
-import { workspaceFileURL } from "./link";
+import { workspaceFileURL } from "./link.js";
 import { BrowserPane } from "./ipc.js";
 // Attachments belong to the shell session tab, not the session route: native pages and the agent's
 // browser survive visiting Settings or another tab and close when the session tab does.

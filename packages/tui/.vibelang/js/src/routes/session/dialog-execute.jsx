@@ -10,8 +10,8 @@ import { Keymap } from "../../context/keymap";
 import { useTheme, useThemes } from "../../context/theme";
 import { DIALOG_INSET, DialogBleed, DialogFooter, DialogHeader, DialogLayout, dialogWidth, useDialog, } from "../../ui/dialog";
 import { useToast } from "../../ui/toast";
-import { Locale } from "../../util/locale";
-import { getScrollAcceleration } from "../../util/scroll";
+import { Locale } from "../../util/locale.js";
+import { getScrollAcceleration } from "../../util/scroll.js";
 const decodeJson = Schema.decodeUnknownOption(Schema.fromJsonString(Schema.Unknown));
 // The part is the live store object, so the dialog follows the tool while child
 // calls stream and the output arrives.

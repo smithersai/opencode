@@ -3,9 +3,9 @@ import { EOL } from "os";
 import { Effect } from "effect";
 import { OpenCode } from "@opencode/client";
 import { Commands } from "../../commands.js";
-import { Runtime } from "../../../framework/runtime";
+import { Runtime } from "../../../framework/runtime.js";
 import { Service } from "@opencode/client/effect/service";
-import { ServerConnection } from "../../../services/server-connection";
+import { ServerConnection } from "../../../services/server-connection.js";
 export default Runtime.handler(Commands.commands.debug.commands.agents, Effect.fn("cli.debug.agents")(function* () {
     const { endpoint } = yield* ServerConnection.resolve();
     const client = OpenCode.make({ baseUrl: endpoint.url, headers: Service.headers(endpoint) });

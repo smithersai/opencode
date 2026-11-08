@@ -24,4 +24,4 @@ export function decode(archive) {
         archive.subarray(body + offset, body + offset + size),
     ]));
 }
-export * as AppArchive from "./app-archive";
+export * as AppArchive from "./app-archive.js";

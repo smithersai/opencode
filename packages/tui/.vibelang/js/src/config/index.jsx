@@ -5,9 +5,9 @@ import { Vcs } from "@opencode/schema/vcs";
 import { Schema } from "effect";
 import { createContext, onCleanup, useContext } from "solid-js";
 import { createStore, reconcile } from "solid-js/store";
-import { safeWatch } from "../util/watch";
+import { safeWatch } from "../util/watch.js";
 import path from "path";
-import { TuiKeybind } from "./keybind";
+import { TuiKeybind } from "./keybind.js";
 export const AttentionSoundName = Schema.Literals([
     "default",
     "question",

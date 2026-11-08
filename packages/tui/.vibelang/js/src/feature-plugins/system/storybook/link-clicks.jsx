@@ -2,7 +2,7 @@
 import { useTerminalDimensions } from "@opentui/solid";
 import { createSignal } from "solid-js";
 import { useConfig } from "../../../config";
-import { createTimelineAnchors } from "../../../routes/session/anchors";
+import { createTimelineAnchors } from "../../../routes/session/anchors.js";
 import { TextPart } from "../../../routes/session/message-parts";
 import { context } from "../../../routes/session/render-context";
 import { StoryFooter } from "./footer";

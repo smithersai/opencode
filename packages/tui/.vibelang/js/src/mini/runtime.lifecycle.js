@@ -12,12 +12,12 @@
 import path from "path";
 import { CliRenderEvents, buildKittyKeyboardFlags, createCliRenderer, } from "@opentui/core";
 import { isFallbackTitle } from "@opencode/util/session-title-fallback";
-import { setTerminalTitle } from "../util/renderer";
-import { monoSnapshot } from "./mono";
-import { entrySplash, exitSplash } from "./splash";
-import { resolveRunTheme } from "./theme";
-import { resolveMiniSettings } from "./runtime.boot";
-import { formatModelLabel } from "./variant.shared";
+import { setTerminalTitle } from "../util/renderer.js";
+import { monoSnapshot } from "./mono.js";
+import { entrySplash, exitSplash } from "./splash.js";
+import { resolveRunTheme } from "./theme.js";
+import { resolveMiniSettings } from "./runtime.boot.js";
+import { formatModelLabel } from "./variant.shared.js";
 const FOOTER_HEIGHT = 4;
 // Gracefully tears down the renderer. Order matters: switch external output
 // back to passthrough before leaving split-footer mode, so pending stdout
@@ -67,7 +67,7 @@ function queueSplash(renderer, state, phase, write) {
 // scrollback commits and footer repaints happen in the same frame. After
 // the entry splash, RunFooter takes over the footer region.
 export async function createRuntimeLifecycle(input) {
-    const footerTask = import("./footer");
+    const footerTask = import("./footer.js");
     const tuiConfig = await input.tuiConfig;
     const miniSettings = resolveMiniSettings(tuiConfig);
     const mono = miniSettings.mono;

@@ -5,10 +5,10 @@ import { Effect, Option, Predicate } from "effect";
 import { EOL } from "node:os";
 import path from "node:path";
 import { Commands, Server as ServerFlag } from "../../commands.js";
-import { Runtime } from "../../../framework/runtime";
-import { ServerConnection } from "../../../services/server-connection";
-import { ServiceConfig } from "../../../services/service-config";
-import { errorMessage } from "../../../util/error";
+import { Runtime } from "../../../framework/runtime.js";
+import { ServerConnection } from "../../../services/server-connection.js";
+import { ServiceConfig } from "../../../services/service-config.js";
+import { errorMessage } from "../../../util/error.js";
 const handler = Effect.fn("cli.debug.heap-dump")(function* (input) {
     const server = yield* Effect.serviceOption(ServerFlag).pipe(Effect.map(Option.flatten));
     const endpoint = yield* running(Option.getOrUndefined(server));

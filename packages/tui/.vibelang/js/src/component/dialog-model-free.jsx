@@ -4,7 +4,7 @@ import { createMemo, createSignal } from "solid-js";
 import { useData } from "../context/data";
 import { useLocal } from "../context/local";
 import { useLocation } from "../context/location";
-import { modelPreferenceKey } from "../model-preference";
+import { modelPreferenceKey } from "../model-preference.js";
 import { DialogSelect } from "../ui/dialog-select";
 import { FavoriteMarker, ModelDetail, isFreeModel, prioritizeFavorites } from "./model-options";
 /** Model picker for users without a connected provider, under the "new-designs" experiment. */

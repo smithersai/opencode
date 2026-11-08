@@ -4,7 +4,7 @@ import { Keymap } from "../context/keymap";
 import { useNewDesigns } from "../config";
 import { useTheme } from "../context/theme";
 import { DialogHeader, DialogLayout, useDialog } from "../ui/dialog";
-import { errorMessage } from "../util/error";
+import { errorMessage } from "../util/error.js";
 import { Spinner } from "./spinner";
 export function DialogUpdate(props) {
     const dialog = useDialog();

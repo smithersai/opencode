@@ -2,7 +2,7 @@
 import { createMemo, onMount } from "solid-js";
 import { useData } from "../../context/data";
 import { DialogSelect } from "../../ui/dialog-select";
-import { Locale } from "../../util/locale";
+import { Locale } from "../../util/locale.js";
 import { DialogMessage } from "./dialog-message";
 import { useDialog } from "../../ui/dialog";
 export function DialogTimeline(props) {

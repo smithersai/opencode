@@ -9,8 +9,8 @@ import { SplitButton, SplitButtonAction, SplitButtonMenuTrigger } from "@opencod
 import { showToast } from "@opencode/ui/toast";
 import { Tooltip } from "@opencode/ui/tooltip";
 import { createLatest, usePlugin, } from "@opencode/plugin/gui";
-import { useShared } from "./context";
-import { openInAppParentPath } from "./path";
+import { useShared } from "./context.js";
+import { openInAppParentPath } from "./path.js";
 const MAC_OPEN_APPS = [
     { id: "vscode", label: "open.app.vscode", icon: "vscode", openWith: "Visual Studio Code" },
     { id: "cursor", label: "open.app.cursor", icon: "cursor", openWith: "Cursor" },

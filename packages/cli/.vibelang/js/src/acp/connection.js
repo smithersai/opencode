@@ -42,4 +42,4 @@ export function make(app, stream) {
 function promise(evaluate) {
     return Effect.tryPromise({ try: evaluate, catch: (cause) => cause }).pipe(Effect.catch((cause) => (cause instanceof RequestError ? Effect.fail(cause) : Effect.die(cause))));
 }
-export * as ACPConnection from "./connection";
+export * as ACPConnection from "./connection.js";

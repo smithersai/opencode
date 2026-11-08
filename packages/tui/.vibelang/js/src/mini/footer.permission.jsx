@@ -15,10 +15,10 @@
 import { TextAttributes, measureEditText } from "@opentui/core";
 import { useKeyboard, useRenderer, useTerminalDimensions } from "@opentui/solid";
 import { For, Match, Show, Switch, createEffect, createMemo, createSignal } from "solid-js";
-import { createPermissionBodyState, permissionAlwaysLines, permissionCancel, permissionEscape, permissionHover, permissionInfo, permissionLabel, permissionOptions, permissionReject, permissionRun, permissionShift, } from "./permission.shared";
-import { stringWidth } from "../util/string-width";
-import { toolFiletype } from "./tool";
-import { transparent } from "./theme";
+import { createPermissionBodyState, permissionAlwaysLines, permissionCancel, permissionEscape, permissionHover, permissionInfo, permissionLabel, permissionOptions, permissionReject, permissionRun, permissionShift, } from "./permission.shared.js";
+import { stringWidth } from "../util/string-width.js";
+import { toolFiletype } from "./tool.js";
+import { transparent } from "./theme.js";
 import { PatchDiff } from "../component/patch-diff";
 function buttons(list, selected, theme, disabled, onHover, onSelect, mono) {
     return (<box width="100%" flexDirection="row" flexWrap="wrap" columnGap={1} flexShrink={0}>

@@ -6,7 +6,7 @@ import { useArgs } from "../context/args";
 import { useRouteData } from "../context/route";
 import { usePromptRef } from "../context/prompt";
 import { useLocal } from "../context/local";
-import { useEditorContext } from "../context/editor";
+import { useEditorContext } from "../context/editor.js";
 import { useData } from "../context/data";
 import { useLocation } from "../context/location";
 import { FormPrompt } from "./session/form";

@@ -4,10 +4,10 @@ import { useTerminalDimensions } from "@opentui/solid";
 import { batch, createEffect, createMemo, createSignal, For, Show } from "solid-js";
 import { OneCellSpinner } from "../../../component/one-cell-spinner";
 import { useConfig } from "../../../config";
-import { entrySplashLayout } from "../../../mini/splash";
-import { stringWidth } from "../../../util/string-width";
+import { entrySplashLayout } from "../../../mini/splash.js";
+import { stringWidth } from "../../../util/string-width.js";
 import { StoryFooter } from "./footer";
-import { ONE_CELL_SPINNERS } from "./one-cell-spinner.fixtures";
+import { ONE_CELL_SPINNERS } from "./one-cell-spinner.fixtures.js";
 function OneCellSpinnerStory(props) {
     const dimensions = useTerminalDimensions();
     const theme = props.context.theme;

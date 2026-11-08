@@ -4,9 +4,9 @@ import { Effect } from "effect";
 import { OpenCode } from "@opencode/client";
 import { Service } from "@opencode/client/effect/service";
 import { Commands } from "../../commands.js";
-import { Runtime } from "../../../framework/runtime";
-import { ServerConnection } from "../../../services/server-connection";
-import { redactConfig } from "./redact";
+import { Runtime } from "../../../framework/runtime.js";
+import { ServerConnection } from "../../../services/server-connection.js";
+import { redactConfig } from "./redact.js";
 export default Runtime.handler(Commands.commands.debug.commands.config, Effect.fn("cli.debug.config")(function* () {
     const { endpoint } = yield* ServerConnection.resolve();
     const client = OpenCode.make({ baseUrl: endpoint.url, headers: Service.headers(endpoint) });

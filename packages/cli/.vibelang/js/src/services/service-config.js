@@ -6,8 +6,8 @@ import { Service } from "@opencode/client/effect/service";
 import { Effect, FileSystem, Option, Schedule, Schema } from "effect";
 import { randomBytes } from "crypto";
 import path from "path";
-import { selfCommand } from "../util/process";
-import { RemoteTunnel } from "./remote-tunnel";
+import { selfCommand } from "../util/process.js";
+import { RemoteTunnel } from "./remote-tunnel.js";
 // The CLI's service configuration file, plus the Service.EnsureOptions binding that
 // points the client package's service operations at this CLI: which
 // registration file (by channel), which version, and how to spawn opencode.
@@ -346,4 +346,4 @@ export const unset = Effect.fn("cli.service-config.unset")(function* (key, name)
         }
     }
 });
-export * as ServiceConfig from "./service-config";
+export * as ServiceConfig from "./service-config.js";

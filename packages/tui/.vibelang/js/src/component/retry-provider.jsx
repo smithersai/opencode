@@ -3,8 +3,8 @@ import { CliRenderer, RGBA, RootTextNodeRenderable, TextNodeRenderable, } from "
 import { extend } from "@opentui/solid";
 import { createEffect, onCleanup } from "solid-js";
 import { smootherstep } from "./tab-pulse";
-import { stringWidth } from "../util/string-width";
-import { webSearchProviderName } from "../util/tool-display";
+import { stringWidth } from "../util/string-width.js";
+import { webSearchProviderName } from "../util/tool-display.js";
 const FADE = 80;
 const RESIZE = 60;
 const DURATION = FADE * 2 + RESIZE;

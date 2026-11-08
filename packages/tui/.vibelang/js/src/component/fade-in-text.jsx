@@ -3,7 +3,7 @@ import { RGBA } from "@opentui/core";
 import { extend } from "@opentui/solid";
 import { splitProps } from "solid-js";
 import { useConfig } from "../config";
-import { MaskedTextRenderable } from "./masked-text";
+import { MaskedTextRenderable } from "./masked-text.js";
 import { clamp, coast, smootherstep } from "./tab-pulse";
 const DURATION = 200;
 const FEATHER = 8;

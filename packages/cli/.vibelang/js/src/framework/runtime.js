@@ -4,8 +4,8 @@ import { Command } from "effect/cli";
 import { PrintLogs } from "../commands/commands.js";
 import { Spec } from "./spec.js";
 import { Global } from "@opencode/util/global";
-import { Updater } from "../services/updater";
-import { Config } from "../config";
+import { Updater } from "../services/updater.js";
+import { Config } from "../config/index.js";
 import { Npm } from "@opencode/util/npm";
 export function handler(_node, run) {
     return run;
@@ -51,4 +51,4 @@ function provide(node, handlers) {
         ...children.flatMap((child) => child.aliases.map((alias) => provide(alias, handlers))),
     ]));
 }
-export * as Runtime from "./runtime";
+export * as Runtime from "./runtime.js";

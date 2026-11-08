@@ -4,7 +4,7 @@ import { onMount } from "solid-js";
 import { createStore } from "solid-js/store";
 import { createSimpleContext } from "../context/helper";
 import { useTuiPaths } from "../context/runtime";
-import { appendText, readText, writeText } from "../util/persistence";
+import { appendText, readText, writeText } from "../util/persistence.js";
 export const MAX_FRECENCY_ENTRIES = 1000;
 export function parseFrecency(text) {
     const latest = text

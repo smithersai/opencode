@@ -2,8 +2,8 @@
 import { Agent } from "@opencode/core/agent";
 import { Effect } from "effect";
 import { HttpApiBuilder } from "effect/http-api";
-import { Api } from "../api";
-import { awaitPlugins, response } from "../location";
+import { Api } from "../api.js";
+import { awaitPlugins, response } from "../location.js";
 import { AgentNotFoundError } from "@opencode/protocol/errors";
 export const AgentHandler = HttpApiBuilder.group(Api, "server.agent", (handlers) => handlers
     .handle("agent.list", () => Effect.gen(function* () {

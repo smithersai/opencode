@@ -6,7 +6,7 @@ import { FilePath } from "../ui/file-path";
 import { useTheme } from "../context/theme";
 import { useConfig, useNewDesigns } from "../config";
 import { DIALOG_INSET, DialogBleed, dialogWidth, DialogHeader, DialogLayout, useDialog, } from "../ui/dialog";
-import { getScrollAcceleration } from "../util/scroll";
+import { getScrollAcceleration } from "../util/scroll.js";
 const options = ["no", "yes"];
 export function statusLabel(status) {
     if (status === "added")

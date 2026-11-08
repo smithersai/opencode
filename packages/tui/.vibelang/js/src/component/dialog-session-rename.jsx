@@ -3,7 +3,7 @@ import { DialogPrompt } from "../ui/dialog-prompt";
 import { useDialog } from "../ui/dialog";
 import { useClient } from "../context/client";
 import { useToast } from "../ui/toast";
-import { errorMessage } from "../util/error";
+import { errorMessage } from "../util/error.js";
 export function DialogSessionRename(props) {
     const dialog = useDialog();
     const client = useClient();

@@ -3,9 +3,9 @@ import { FileDiff } from "@opencode/schema/file-diff";
 import { Patch } from "@opencode/util/patch";
 import { applyPatch, parsePatch, reversePatch, structuredPatch } from "diff";
 import { Effect, Option, Schema } from "effect";
-import { ACPChild } from "./child";
+import { ACPChild } from "./child.js";
 import { ACPClient } from "./client.js";
-import { absolutePath, canonicalName, filePath, patchHunks, pendingToolCall, stringValue, toLocations, } from "./tool";
+import { absolutePath, canonicalName, filePath, patchHunks, pendingToolCall, stringValue, toLocations, } from "./tool.js";
 const options = [
     { optionId: "once", kind: "allow_once", name: "Allow once" },
     { optionId: "always", kind: "allow_always", name: "Always allow" },
@@ -134,4 +134,4 @@ function permissionLocations(toolName, input, ask, cwd) {
     return Array.from(new Set(paths), (path) => ({ path }));
 }
 const PathActions = new Set(["read", "edit", "external_directory"]);
-export * as ACPPermission from "./permission";
+export * as ACPPermission from "./permission.js";

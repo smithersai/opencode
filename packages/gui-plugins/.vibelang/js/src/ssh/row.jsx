@@ -6,7 +6,7 @@ import { Menu } from "@opencode/ui/menu";
 import { Loader } from "@opencode/ui/loader";
 import { Show } from "solid-js";
 import { usePlugin } from "@opencode/plugin/gui";
-import { isSshConnecting, sshName } from "./name";
+import { isSshConnecting, sshName } from "./name.js";
 export default function SshRow(props) {
     const plugin = usePlugin();
     const pending = () => props.ssh.pending(props.id);

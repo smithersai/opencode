@@ -17,10 +17,10 @@ import { createEffect, createMemo, For, Match, onCleanup, Show, Switch, untrack 
 import { createStore } from "solid-js/store";
 import { Predicate } from "effect";
 import { Dynamic } from "solid-js/web";
-import { mediaKindFromPath } from "../pierre/media";
-import { cloneSelectedLineRange, previewSelectedLines } from "../pierre/selection-bridge";
+import { mediaKindFromPath } from "../pierre/media.js";
+import { cloneSelectedLineRange, previewSelectedLines } from "../pierre/selection-bridge.js";
 import { createLineCommentController } from "./line-comment-annotations";
-import { normalize, text } from "./session-diff";
+import { normalize, text } from "./session-diff.js";
 const MAX_DIFF_CHANGED_LINES = 500;
 const REVIEW_MOUNT_MARGIN = 300;
 function ReviewCommentMenu(props) {

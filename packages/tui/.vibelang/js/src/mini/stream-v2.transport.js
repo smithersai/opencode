@@ -2,14 +2,14 @@
 import { ClientError } from "@opencode/client/promise";
 import { Event } from "@opencode/schema/event";
 import { SessionMessage } from "@opencode/schema/session-message";
-import { blockerStatus, pickBlockerView } from "./session-data";
-import { writeSessionOutput } from "./stream";
-import { createFragmentReconciler, fragmentRef } from "./stream-v2.fragment";
-import { toolImageCommits, userImageCommits } from "./stream-v2.image";
-import { messagePrompt } from "./session.shared";
-import { createSubagentTracker, toolCommit, toolFinalPhase } from "./stream-v2.subagent";
-import { normalizeTool, toolOutputText } from "./tool";
-import { toolDisplayContent } from "../util/tool-display";
+import { blockerStatus, pickBlockerView } from "./session-data.js";
+import { writeSessionOutput } from "./stream.js";
+import { createFragmentReconciler, fragmentRef } from "./stream-v2.fragment.js";
+import { toolImageCommits, userImageCommits } from "./stream-v2.image.js";
+import { messagePrompt } from "./session.shared.js";
+import { createSubagentTracker, toolCommit, toolFinalPhase } from "./stream-v2.subagent.js";
+import { normalizeTool, toolOutputText } from "./tool.js";
+import { toolDisplayContent } from "../util/tool-display.js";
 export function formatUnknownError(error) {
     if (typeof error === "string")
         return error;

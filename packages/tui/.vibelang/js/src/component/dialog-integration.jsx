@@ -16,8 +16,8 @@ import { DialogPrompt } from "../ui/dialog-prompt";
 import { DialogSelect } from "../ui/dialog-select";
 import { Link } from "../ui/link";
 import { useToast } from "../ui/toast";
-import { errorMessage } from "../util/error";
-import { formInitialValues, formLabel, formRows, formSelected, formToggleMultiselect, formValidateValue, } from "../util/form";
+import { errorMessage } from "../util/error.js";
+import { formInitialValues, formLabel, formRows, formSelected, formToggleMultiselect, formValidateValue, } from "../util/form.js";
 const INTEGRATION_PRIORITY = {
     opencode: 0,
     "opencode-go": 1,

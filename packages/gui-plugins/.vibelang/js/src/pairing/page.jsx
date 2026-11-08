@@ -7,7 +7,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/solid-query";
 import { createMemo, createSignal, onCleanup, Show } from "solid-js";
 import { renderSVG } from "@opencode/util/qr";
 import { usePlugin } from "@opencode/plugin/gui";
-import { remoteAddress } from "./remote";
+import { remoteAddress } from "./remote.js";
 export default function PairingPage(props) {
     const ctx = usePlugin();
     // The plugin's dialogs close with it, so disabling pairing also stops the dialog's code polling.

@@ -8,8 +8,8 @@ import { Effect, Option, Stream } from "effect";
 import { HttpServerResponse } from "effect/http";
 import { HttpApiBuilder } from "effect/http-api";
 import path from "path";
-import { Api } from "../api";
-import { response } from "../location";
+import { Api } from "../api.js";
+import { response } from "../location.js";
 export const FileSystemHandler = HttpApiBuilder.group(Api, "server.fs", (handlers) => Effect.gen(function* () {
     const fileWatch = yield* FileWatch.Service;
     return handlers

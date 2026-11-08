@@ -10,8 +10,8 @@ import { createMemo, For, Show } from "solid-js";
 import { createStore } from "solid-js/store";
 import { showToast } from "@opencode/ui/toast";
 import { usePlugin } from "@opencode/plugin/gui";
-import { useWslAddServerProbes } from "./probes";
-import { addServerViewModel } from "./model";
+import { useWslAddServerProbes } from "./probes.js";
+import { addServerViewModel } from "./model.js";
 export { default as css } from "../../../../src/wsl/dialog.css?inline";
 function isWslRuntimeMissing(error) {
     if (!error)

@@ -4,13 +4,13 @@ import { RGBA, TextAttributes } from "@opentui/core";
 import { useRenderer } from "@opentui/solid";
 import { Spinner } from "../../component/spinner";
 import { createSyntaxStyleMemo, useTheme, useThemes } from "../../context/theme";
-import { reasoningSummary } from "../../context/thinking";
+import { reasoningSummary } from "../../context/thinking.js";
 import { usePlugin } from "../../plugin/context";
-import { SplitBorder } from "../../ui/border";
-import { Locale } from "../../util/locale";
+import { SplitBorder } from "../../ui/border.js";
+import { Locale } from "../../util/locale.js";
 import { use } from "./render-context";
-import { generateThinkingSyntax } from "./thinking-syntax";
-import { canonicalToolName } from "../../util/tool-display";
+import { generateThinkingSyntax } from "./thinking-syntax.js";
+import { canonicalToolName } from "../../util/tool-display.js";
 export const INLINE_TOOL_ICON_WIDTH = 2;
 const toolDisplays = new Set([
     "shell",

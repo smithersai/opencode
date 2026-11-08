@@ -5,11 +5,11 @@ import { Icon } from "@opencode/ui/icon";
 import { encodeFilePath, getFilename } from "@opencode/util/path";
 import { Command, createKeyed, bindPlugin, LinkHandler, MenuItem, Slot, Style, usePanel, } from "@opencode/plugin/gui";
 import { artifactKind } from "@opencode/util/artifact";
-import { resolveArtifactPath } from "./artifact";
-import { FileContext } from "./context";
+import { resolveArtifactPath } from "./artifact.js";
+import { FileContext } from "./context.js";
 import { FileTree, OpenInApp, } from "@opencode/plugin/gui/file";
 import { FileVisual } from "./label";
-import { fileTabId, fileTabPath, isFileTab, workspaceFileUrl } from "./path";
+import { fileTabId, fileTabPath, isFileTab, workspaceFileUrl } from "./path.js";
 import tabStyles from "../../../../src/file/tabs.css?inline";
 import { onIdle, BuiltinPanel, BuiltinSlot } from "@opencode/plugin/gui/builtin";
 import { Browser } from "@opencode/plugin/gui/browser";
@@ -163,7 +163,7 @@ const setup = (ctx) => {
     ctx.add(Style, tabStyles);
     const style = {};
     const styled = (module) => {
-        style.loaded ??= import("./styles").then((css) => void ctx.add(Style, css.default));
+        style.loaded ??= import("./styles.js").then((css) => void ctx.add(Style, css.default));
         return Promise.all([module, style.loaded]).then(([value]) => value);
     };
     const FileBrowser = lazy(() => styled(import("./browser")));
@@ -175,7 +175,7 @@ const setup = (ctx) => {
         void FileBrowser.preload();
         void Tree.preload();
         void List.preload();
-        void import("./resolve-link");
+        void import("./resolve-link.js");
         if (layout.narrow())
             void MobileFiles.preload();
     }));
@@ -400,7 +400,7 @@ const setup = (ctx) => {
             sessions.current()?.key === session.key &&
             files.root === root &&
             session.server.client === client;
-        const pending = import("./resolve-link")
+        const pending = import("./resolve-link.js")
             .then(async ({ checkFileLinkExists, parseFileLink }) => {
             if (!current())
                 return false;
@@ -490,7 +490,7 @@ const setup = (ctx) => {
                 });
             };
             void (async () => {
-                const { findFileLink, isAbsoluteLink, parseFileLink } = await import("./resolve-link");
+                const { findFileLink, isAbsoluteLink, parseFileLink } = await import("./resolve-link.js");
                 if (!stillCurrent())
                     return;
                 const parsed = parseFileLink(link.href);

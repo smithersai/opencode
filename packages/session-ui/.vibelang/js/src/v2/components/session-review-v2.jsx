@@ -10,7 +10,7 @@ import { ResizeHandle } from "@opencode/ui/resize-handle";
 import { useLocale } from "@kobalte/core/i18n";
 import { makeEventListener } from "@solid-primitives/event-listener";
 import { Show, createEffect, createMemo, createSignal } from "solid-js";
-import { getWorkerPool } from "../../pierre/worker";
+import { getWorkerPool } from "../../pierre/worker.js";
 import { SessionFilePanelV2, SessionFilePanelV2Empty } from "./session-file-panel-v2";
 export const SESSION_REVIEW_V2_SIDEBAR_WIDTH_DEFAULT = 240;
 export const SESSION_REVIEW_V2_SIDEBAR_WIDTH_MIN = 200;

@@ -43,6 +43,15 @@
 
 ---
 
+### Local VibeLang toolchain
+
+This branch uses the verified `0.0.13` release-candidate archives while npm
+publication completes. Put the matching archives listed by the root
+`package.json` in the ignored `.vibelang-toolchain/` directory before running
+`bun install --frozen-lockfile`. The directory and archives are never committed.
+All four VibeLang packages must come from the same release-candidate bundle.
+Once published, replace these local pins with exact npm `0.0.13` versions.
+
 ### Installation
 
 ```bash

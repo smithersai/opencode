@@ -7,7 +7,7 @@ import { useClient } from "../context/client";
 import { Keymap } from "../context/keymap";
 import { useSessionTerminals } from "../context/session-terminals";
 import { useTheme, useThemes } from "../context/theme";
-import { errorMessage } from "../util/error";
+import { errorMessage } from "../util/error.js";
 extend({ embeddedTerminal: EmbeddedTerminalRenderable });
 export function TerminalPane(props) {
     const client = useClient();

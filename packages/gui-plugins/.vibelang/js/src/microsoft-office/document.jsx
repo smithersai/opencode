@@ -4,8 +4,8 @@ import { createStore } from "solid-js/store";
 import { Loader } from "@opencode/ui/loader";
 import { createKeyed, createLatest, usePlugin } from "@opencode/plugin/gui";
 import { OfficePages } from "./pages";
-import { layerFont, lineHeight, } from "./word-protocol";
-import { createWorkerClient, movableBuffer } from "./worker-rpc";
+import { layerFont, lineHeight, } from "./word-protocol.js";
+import { createWorkerClient, movableBuffer } from "./worker-rpc.js";
 /**
  * A read-only, paginated Word document. Its engine runs in a worker of its own (`document.worker.vibe`), which opens the
  * file, lays it out, builds and paints its pages and computes their text; the window only shows the bitmaps and the text

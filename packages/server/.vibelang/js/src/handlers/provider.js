@@ -3,8 +3,8 @@ import { Provider } from "@opencode/core/provider";
 import { ProviderNotFoundError } from "@opencode/protocol/errors";
 import { Effect } from "effect";
 import { HttpApiBuilder } from "effect/http-api";
-import { Api } from "../api";
-import { awaitPlugins, response } from "../location";
+import { Api } from "../api.js";
+import { awaitPlugins, response } from "../location.js";
 export const ProviderHandler = HttpApiBuilder.group(Api, "server.provider", (handlers) => Effect.gen(function* () {
     return handlers
         .handle("provider.list", Effect.fn(function* () {

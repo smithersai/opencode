@@ -6,7 +6,7 @@ import { Tooltip } from "@opencode/ui/tooltip";
 import { useI18n } from "@opencode/ui/context/i18n";
 import { lastAssistantWithUsage } from "@opencode/client/solid";
 import { usePlugin } from "@opencode/plugin/gui";
-import { catalogModel, syncCatalog } from "./catalog";
+import { catalogModel, syncCatalog } from "./catalog.js";
 function ContextTooltipRow(props) {
     return (<div class="flex min-w-0 items-center gap-4">
       <span class="shrink-0 text-v2-text-text-muted">{props.name}</span>

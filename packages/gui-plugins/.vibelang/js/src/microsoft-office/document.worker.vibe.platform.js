@@ -4,10 +4,10 @@ import { buildResidentRegionLayoutRequest, getLayoutKernelInputs, workerLayoutCo
 import { createRustMeasureSource } from "@betteroffice/docx/layout";
 import { applyFrameDelta, decodeFrameDelta, encodeDisplayListFrameExtras, GlyphCache, rasterizeDisplayPageToBackBuffer, } from "@betteroffice/docx/layout/render";
 import { createYrsPositionProjection, createYrsSession } from "@betteroffice/docx/yrs";
-import { wordFonts } from "./fonts";
-import { createBitmapImageResolver } from "./word-images";
-import { layerFont } from "./word-protocol";
-import { pageText, positionTarget } from "./word-text";
+import { wordFonts } from "./fonts.js";
+import { createBitmapImageResolver } from "./word-images.js";
+import { layerFont } from "./word-protocol.js";
+import { pageText, positionTarget } from "./word-text.js";
 // One worker holds one open Word document: its engine session, fonts, layout, built pages and painting. The window
 // terminates the worker when the document closes, which is the only way the engine's memory is given back.
 const FontRequirements = Schema.fromJsonString(Schema.Array(Schema.Struct({

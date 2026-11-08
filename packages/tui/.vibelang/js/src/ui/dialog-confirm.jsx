@@ -5,7 +5,7 @@ import { useNewDesigns } from "../config";
 import { DialogHeader, DialogLayout, useDialog } from "./dialog";
 import { createStore } from "solid-js/store";
 import { For } from "solid-js";
-import { Locale } from "../util/locale";
+import { Locale } from "../util/locale.js";
 export function DialogConfirm(props) {
     const dialog = useDialog();
     const theme = useTheme().surface("dialog");

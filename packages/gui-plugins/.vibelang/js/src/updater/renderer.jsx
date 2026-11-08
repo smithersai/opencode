@@ -4,7 +4,7 @@ import { lazy, onCleanup, Suspense } from "solid-js";
 import { Command, SettingsPage, TitlebarItem } from "@opencode/plugin/gui";
 import { onIdle } from "@opencode/plugin/gui/builtin";
 import { Updater } from "@opencode/plugin/gui/updater";
-import { updaterAction } from "./action";
+import { updaterAction } from "./action.js";
 const setup = (ctx) => {
     whatsNew(ctx);
     betaNotes(ctx);

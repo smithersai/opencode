@@ -8,6 +8,7 @@ import * as runtime from "vibelang-runtime/internal";
 export * as FileMutation from "./file-mutation.js";
 import { makeLocationNode } from "@opencode/util/effect/app-node";
 import { KeyedMutex } from "./effect/keyed-mutex.js";
+import { withKeyedLock } from "./effect/keyed-mutex.native.js";
 import { FSUtil } from "@opencode/util/fs-util";
 import { Bom } from "@opencode/util/bom";
 import { Environment } from "./environment/index.js";
@@ -39,8 +40,8 @@ const layer = Layer.effect(Service, Effect_1.gen(function* () {
     const locks = yield* Effect.orDie(Effect.try({ try: () => KeyedMutex.makeUnsafe(), catch: (error) => error }));
     const withLock = (targets) => (effect) => [...new Set(targets.map(FSUtil.resolve))]
         .sort()
-        .reduceRight((result, target) => transactionLocks.withLock(target)(result), effect);
-    const withTargetLock = (target) => (effect) => locks.withLock(target.absolute)(Effect.uninterruptible(effect));
+        .reduceRight((result, target) => withKeyedLock(transactionLocks, target, result), effect);
+    const withTargetLock = (target) => (effect) => withKeyedLock(locks, target.absolute, Effect.uninterruptible(effect));
     const writeResult = (target, existed) => ({
         operation: "write",
         target: target.absolute,

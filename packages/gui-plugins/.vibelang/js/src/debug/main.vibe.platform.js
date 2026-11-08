@@ -6,10 +6,10 @@ import path from "node:path";
 import { getHeapSpaceStatistics, getHeapStatistics, writeHeapSnapshot } from "node:v8";
 import { HeapSnapshots, MemoryDiagnostics } from "./contract.js";
 import { summarize, traceConfig } from "./memory-infra.js";
-import { startMemoryLog } from "./memory-log";
-import { debugBuild, memoryLogInterval } from "./options";
-import { captureServer } from "./server-heap";
-import { signalIncludesServer, snapshotDirectory } from "./signal";
+import { startMemoryLog } from "./memory-log.js";
+import { debugBuild, memoryLogInterval } from "./options.js";
+import { captureServer } from "./server-heap.js";
+import { signalIncludesServer, snapshotDirectory } from "./signal.js";
 import { ProcessSignal } from "@opencode/util/process-signal";
 /** What a window's page holds, read from inside it. */
 const PageStats = Schema.Struct({

@@ -3,17 +3,17 @@ import { createMemo, createSignal, For, Match, Show, Switch } from "solid-js";
 import { RGBA } from "@opentui/core";
 import { useRenderer } from "@opentui/solid";
 import { createSyntaxStyleMemo, useTheme, useThemes } from "../../context/theme";
-import { reasoningSummary } from "../../context/thinking";
-import { SplitBorder } from "../../ui/border";
-import { Locale } from "../../util/locale";
+import { reasoningSummary } from "../../context/thinking.js";
+import { SplitBorder } from "../../ui/border.js";
+import { Locale } from "../../util/locale.js";
 import { EntryAnchor, GroupAnchor, visitEntries } from "./anchor-view";
-import { groupID } from "./anchors";
-import { instructionPaths } from "./grouping/session";
-import { summarizeActivity } from "./activity-summary";
+import { groupID } from "./anchors.js";
+import { instructionPaths } from "./grouping/session.js";
+import { summarizeActivity } from "./activity-summary.js";
 import { InlineToolRow, reasoningContent, toolDisplay } from "./message-parts";
 import { use } from "./render-context";
-import { resolvePart } from "./rows";
-import { generateThinkingSyntax } from "./thinking-syntax";
+import { resolvePart } from "./rows.js";
+import { generateThinkingSyntax } from "./thinking-syntax.js";
 export function SessionGroupView(props) {
     return (<Group {...props} node={props.row} level={0} completed={props.row.completed} pending={props.row.kind === "exploration" || props.row.kind === "activity" ? props.row.pending : []}/>);
 }

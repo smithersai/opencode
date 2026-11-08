@@ -8,13 +8,13 @@ import { DialogVariant } from "./dialog-variant";
 import * as fuzzysort from "fuzzysort";
 import { useConnected } from "./use-connected";
 import { useData } from "../context/data";
-import { modelPreferenceKey } from "../model-preference";
+import { modelPreferenceKey } from "../model-preference.js";
 import { useLocation } from "../context/location";
 import { useNewDesigns } from "../config";
 import { DialogFreeModels } from "./dialog-model-free";
 import { FavoriteMarker, ModelDetail, isFreeModel, prioritizeFavorites, sortModelOptions } from "./model-options";
 import { DialogUsage, useUsageLimits } from "./usage";
-import { formatDollars, usageLevel } from "../util/usage-limits";
+import { formatDollars, usageLevel } from "../util/usage-limits.js";
 export function DialogModel(props) {
     const local = useLocal();
     const dialog = useDialog();

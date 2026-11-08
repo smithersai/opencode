@@ -6,12 +6,12 @@ import { createStore, produce, reconcile } from "solid-js/store";
 import { Portal, render } from "solid-js/web";
 import { liveAccessor, PanelContext, PluginContext, } from "@opencode/plugin/gui/host";
 import barStyles from "../../../../src/browser/bar.css?inline";
-import browserEn from "./i18n/en";
-import { createModel } from "./model";
+import browserEn from "./i18n/en.js";
+import { createModel } from "./model.js";
 import SessionBrowserPane from "./panel";
 import { BrowserPane } from "./ipc.js";
-import { pageShortcut } from "./keys";
-import { refusal } from "./policy";
+import { pageShortcut } from "./keys.js";
+import { refusal } from "./policy.js";
 // A 16px blue square, as main reports a page icon.
 const icon = "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxNiAxNiI+PHJlY3Qgd2lkdGg9IjE2IiBoZWlnaHQ9IjE2IiByeD0iMyIgZmlsbD0iIzNiODJmNiIvPjwvc3ZnPg==";
 const visits = [

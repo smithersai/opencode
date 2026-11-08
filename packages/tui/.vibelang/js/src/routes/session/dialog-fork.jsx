@@ -7,9 +7,9 @@ import { Spinner } from "../../component/spinner";
 import { DialogSelect } from "../../ui/dialog-select";
 import { DIALOG_LIST_INSET, DialogHeader, DialogLayout, useDialog } from "../../ui/dialog";
 import { useToast } from "../../ui/toast";
-import { errorMessage } from "../../util/error";
-import { Locale } from "../../util/locale";
-import { projectedPromptInput } from "#vibelang/emitted/src/prompt/codec";
+import { errorMessage } from "../../util/error.js";
+import { Locale } from "../../util/locale.js";
+import { projectedPromptInput } from "../../prompt/codec.js";
 export function DialogFork(props) {
     const data = useData();
     const dialog = useDialog();

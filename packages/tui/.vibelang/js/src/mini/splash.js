@@ -4,10 +4,10 @@
 // The entry header is a single flex row; the exit banner retains its cell-based
 // logo and resume information. Both become immutable terminal history.
 import { BoxRenderable, TextAttributes, TextRenderable, StyledText, fg, } from "@opentui/core";
-import { Locale } from "../util/locale";
-import { stringWidth } from "../util/string-width";
-import { go } from "../logo";
-import { monoTruncate } from "./mono";
+import { Locale } from "../util/locale.js";
+import { stringWidth } from "../util/string-width.js";
+import { go } from "../logo.js";
+import { monoTruncate } from "./mono.js";
 const SPLASH_TITLE_LIMIT = 50;
 const SPLASH_TITLE_FALLBACK = "Untitled session";
 function cells(line) {

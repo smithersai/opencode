@@ -7,7 +7,7 @@ const setup = (ctx) => {
     const refs = ctx.storage.store("refs", RefsStore);
     // The pane brings the CDP driver and the full RPC client with every protocol schema;
     // load it when a window first registers a pane instead of at startup.
-    const load = () => (loaded.pane ??= import("./pane").then((module) => module.createBrowserPane({
+    const load = () => (loaded.pane ??= import("./pane.js").then((module) => module.createBrowserPane({
         windows: ctx.windows,
         serverEndpoints: ctx.serverEndpoints,
         storage: builtinMainContext(ctx).storage,

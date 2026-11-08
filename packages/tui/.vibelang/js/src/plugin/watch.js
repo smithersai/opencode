@@ -2,7 +2,7 @@
 import path from "path";
 import { existsSync } from "fs";
 import { lstat, realpath, stat } from "fs/promises";
-import { safeWatch } from "../util/watch";
+import { safeWatch } from "../util/watch.js";
 // Watch plugin sources for changes. Files are watched through their parent
 // directory (editors that save by rename replace the inode, which silently
 // kills a direct file watch) and filtered by basename so bursts in busy

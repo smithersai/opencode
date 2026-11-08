@@ -7,13 +7,13 @@ import { useClipboard } from "../context/clipboard";
 import { Keymap } from "../context/keymap";
 import { useLocation } from "../context/location";
 import { useRoute } from "../context/route";
-import { getScrollAcceleration } from "../util/scroll";
+import { getScrollAcceleration } from "../util/scroll.js";
 import { useTheme } from "../context/theme";
 import { emptyPrompt } from "../prompt/history";
 import { DIALOG_INSET, DialogFooter, DialogHeader, DialogLayout, dialogWidth, useDialog } from "../ui/dialog";
 import { FilePath } from "../ui/file-path";
 import { useToast } from "../ui/toast";
-import { errorDetails } from "../util/error-details";
+import { errorDetails } from "../util/error-details.js";
 export function DialogErrorDetails(props) {
     const clipboard = useClipboard();
     const dialog = useDialog();

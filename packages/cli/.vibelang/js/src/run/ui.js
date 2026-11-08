@@ -21,4 +21,4 @@ export function error(message) {
         message = message.slice("Error: ".length);
     println(Style.TEXT_DANGER_BOLD + "Error: " + Style.TEXT_NORMAL + message);
 }
-export * as UI from "./ui";
+export * as UI from "./ui.js";

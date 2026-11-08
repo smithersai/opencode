@@ -2,9 +2,9 @@
 import { EOL } from "node:os";
 import { Effect, Option } from "effect";
 import { Commands } from "../../commands.js";
-import { Runtime } from "../../../framework/runtime";
-import { createClient, loadIntegrations, request, resolveIntegration } from "./shared";
-import { errorMessage } from "../../../util/error";
+import { Runtime } from "../../../framework/runtime.js";
+import { createClient, loadIntegrations, request, resolveIntegration } from "./shared.js";
+import { errorMessage } from "../../../util/error.js";
 export default Runtime.handler(Commands.commands.auth.commands.export, Effect.fn("cli.auth.export")(function* (input) {
     const client = yield* createClient();
     const target = Option.getOrUndefined(input.target);

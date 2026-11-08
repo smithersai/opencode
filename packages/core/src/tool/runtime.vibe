@@ -289,6 +289,6 @@ export const effectiveName = (tool: Tool.Info) =>
     : `${tool.options.namespace.replaceAll(".", "_")}_${normalizedName(tool)}`
 
 module $throw$ts {
-export function raise(value: unknown): never { throw value }
+export function $raise(value: unknown): never { throw value }
 }
-import { raise as $raise } from $throw$ts
+import { $raise } from $throw$ts

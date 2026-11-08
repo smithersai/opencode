@@ -2,13 +2,13 @@
 import { Browser } from "@opencode/plugin-browser/rpc";
 import electron from "electron";
 import { Schema } from "effect";
-import { createCdp, abortError, waitFor } from "./cdp";
-import { createBrowserFiles } from "./files";
-import { createDiagnostics } from "./diagnostics";
-import { loadIcon } from "./icon";
-import { pageLetter, pageReload, pageShortcut } from "./keys";
-import { createProfiling } from "./profiling";
-import { allowedDestination, committedLoad, destinationOrigin, fileURLWithin, localFileURL, normalizeURL, refusal, } from "./policy";
+import { createCdp, abortError, waitFor } from "./cdp.js";
+import { createBrowserFiles } from "./files.js";
+import { createDiagnostics } from "./diagnostics.js";
+import { loadIcon } from "./icon.js";
+import { pageLetter, pageReload, pageShortcut } from "./keys.js";
+import { createProfiling } from "./profiling.js";
+import { allowedDestination, committedLoad, destinationOrigin, fileURLWithin, localFileURL, normalizeURL, refusal, } from "./policy.js";
 // Captures and downloads belong to the tab, not whichever document it now shows; navigate replaces it anyway.
 const retainedOperations = [
     "navigate",
@@ -903,7 +903,7 @@ export function createBrowserPage(win, options) {
             case "heap.compare":
                 return result({ tab: state(), ...(await profiling.analyze(action)) });
             case "lighthouse": {
-                const { audit } = await import("./lighthouse");
+                const { audit } = await import("./lighthouse.js");
                 const report = await audit(contents, files, cdp, captureSources);
                 return result({ tab: state(), scores: report.scores, failures: report.failures }, await Promise.all(report.files.map(transfer)));
             }

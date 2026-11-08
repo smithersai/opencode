@@ -6,8 +6,8 @@ import { HeapSnapshot } from "@opencode/util/heap-snapshot";
 import { Effect, Option, RcMap } from "effect";
 import { HttpApiBuilder } from "effect/http-api";
 import path from "node:path";
-import { Api } from "../api";
-import { requestRef } from "../location";
+import { Api } from "../api.js";
+import { requestRef } from "../location.js";
 export const DebugHandler = HttpApiBuilder.group(Api, "server.debug", (handlers) => Effect.gen(function* () {
     const global = yield* Global.Service;
     return handlers

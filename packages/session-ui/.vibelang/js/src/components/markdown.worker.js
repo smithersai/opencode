@@ -3,8 +3,8 @@
 import { codeToTokens, isSupportedLanguage, LiveTokenizer } from "@pierre/highlights";
 import { createMarkdownParser } from "@opencode/ui/context/marked-parser";
 import { OpenCodeTheme } from "@opencode/ui/context/highlight-theme";
-import { createLatestWorkerQueue } from "./markdown-worker-queue";
-import { project } from "./markdown-stream";
+import { createLatestWorkerQueue } from "./markdown-worker-queue.js";
+import { project } from "./markdown-stream.js";
 const streams = new Map();
 const projections = new Map();
 const parser = createMarkdownParser();

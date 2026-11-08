@@ -16,9 +16,9 @@
 // Demo mode handles permission and Form replies locally, completing or failing
 // the synthetic tool parts through the same callbacks used by the live footer.
 import path from "path";
-import { parseSlashHead } from "../prompt/parse";
-import { writeSessionOutput } from "./stream";
-import { toolCommit, toolFinalPhase } from "./stream-v2.subagent";
+import { parseSlashHead } from "../prompt/parse.js";
+import { writeSessionOutput } from "./stream.js";
+import { toolCommit, toolFinalPhase } from "./stream-v2.subagent.js";
 const KINDS = [
     "motion",
     "markdown",

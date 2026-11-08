@@ -2,9 +2,9 @@
 import { Option, Schema } from "effect";
 import { builtinMainContext } from "@opencode/plugin/gui/builtin";
 import { Wsl } from "./contract.js";
-import { createWslRuntime } from "./runtime";
-import { createWslServersController, wslServerIdForDistro } from "./servers";
-import { spawnWslSidecar } from "./sidecar";
+import { createWslRuntime } from "./runtime.js";
+import { createWslServersController, wslServerIdForDistro } from "./servers.js";
+import { spawnWslSidecar } from "./sidecar.js";
 // A record is kept when it names a distro; an id that is missing or not a non-empty string is derived from the distro.
 const Distro = Schema.Struct({ distro: Schema.NonEmptyString });
 const Id = Schema.Struct({ id: Schema.NonEmptyString });
@@ -43,7 +43,7 @@ export const setup = (ctx) => {
         writeServers: (servers) => saved.set({ servers }),
         installCli: local
             ? async (distro) => {
-                const { buildLocalWslCli } = await import("./local");
+                const { buildLocalWslCli } = await import("./local.js");
                 const binary = await buildLocalWslCli({ ...local, version: cli.version });
                 await runtime.installCli(distro, { version: cli.version, binary });
             }

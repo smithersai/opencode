@@ -4,9 +4,9 @@ import { Service } from "@opencode/client/effect/service";
 import { Effect } from "effect";
 import { EOL } from "node:os";
 import { Commands } from "../../commands.js";
-import { Runtime } from "../../../framework/runtime";
-import { ServerConnection } from "../../../services/server-connection";
-import { errorMessage } from "../../../util/error";
+import { Runtime } from "../../../framework/runtime.js";
+import { ServerConnection } from "../../../services/server-connection.js";
+import { errorMessage } from "../../../util/error.js";
 const handler = Effect.fn("cli.session.delete")(function* (input) {
     const server = yield* ServerConnection.resolve();
     const client = OpenCode.make({ baseUrl: server.endpoint.url, headers: Service.headers(server.endpoint) });

@@ -2,7 +2,7 @@
 import { Effect } from "effect";
 import { OpenCode } from "@opencode/client";
 import { Service } from "@opencode/client/effect/service";
-import { ServerConnection } from "../../../services/server-connection";
+import { ServerConnection } from "../../../services/server-connection.js";
 export const location = { directory: process.cwd() };
 export const createClient = Effect.fn("cli.auth.client")(function* (input = {}) {
     const server = yield* ServerConnection.resolve(input);

@@ -6,9 +6,9 @@ import { Service } from "@opencode/client/effect/service";
 import { OpenCode } from "@opencode/client/promise";
 import { renderUnicodeCompact } from "@opencode/util/qr";
 import { Commands } from "../commands.js";
-import { Runtime } from "../../framework/runtime";
-import { RemoteTunnel } from "../../services/remote-tunnel";
-import { ServiceConfig } from "../../services/service-config";
+import { Runtime } from "../../framework/runtime.js";
+import { RemoteTunnel } from "../../services/remote-tunnel.js";
+import { ServiceConfig } from "../../services/service-config.js";
 export default Runtime.handler(Commands.commands.pair, Effect.fn("cli.pair")(function* (input) {
     const config = yield* ServiceConfig.read();
     if (config.disabled === true)

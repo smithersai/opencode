@@ -6,7 +6,7 @@ import { comparablePath, containsDirectory, getFilename, sameDirectory } from "@
 import { createStore } from "solid-js/store";
 import { For, onCleanup, Show } from "solid-js";
 import { createKeyed, usePlugin } from "@opencode/plugin/gui";
-import { workspaceDirectories } from "./paths";
+import { workspaceDirectories } from "./paths.js";
 export function SessionWorkspaceMenu(props) {
     const ctx = usePlugin();
     const data = () => props.session.server.data;

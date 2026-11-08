@@ -6,10 +6,10 @@ import { PermissionSaved } from "@opencode/core/permission/saved";
 import { Session } from "@opencode/core/session";
 import { Effect } from "effect";
 import { HttpApiBuilder, HttpApiSchema } from "effect/http-api";
-import { Api } from "../api";
+import { Api } from "../api.js";
 import { ConflictError, PermissionNotFoundError, PermissionSavedNotFoundError } from "@opencode/protocol/errors";
-import { locationErrors, response, sessionInfo } from "../location";
-import { missingSession } from "./session-error";
+import { locationErrors, response, sessionInfo } from "../location.js";
+import { missingSession } from "./session-error.js";
 function missingRequest(id) {
     return new PermissionNotFoundError({ requestID: id, message: `Permission request not found: ${id}` });
 }

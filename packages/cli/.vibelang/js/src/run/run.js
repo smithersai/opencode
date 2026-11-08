@@ -5,14 +5,14 @@ import { FSUtil } from "@opencode/util/fs-util";
 import { noTimeoutFetch } from "@opencode/util/no-timeout-fetch";
 import { open } from "node:fs/promises";
 import path from "node:path";
-import { readStdin } from "../util/io";
-import { ServerConnection } from "../services/server-connection";
-import { parseSessionTargetModel, resolveSessionTarget } from "../session-target";
+import { readStdin } from "../util/io.js";
+import { ServerConnection } from "../services/server-connection.js";
+import { parseSessionTargetModel, resolveSessionTarget } from "../session-target.js";
 import { toolInlineInfo } from "@opencode/tui/mini/tool";
-import { runNonInteractivePrompt } from "./noninteractive";
-import { UI } from "./ui";
-import { Env } from "../env";
-import { errorMessage } from "../util/error";
+import { runNonInteractivePrompt } from "./noninteractive.js";
+import { UI } from "./ui.js";
+import { Env } from "../env.js";
+import { errorMessage } from "../util/error.js";
 class RunTargetError extends Error {
     sessionID;
     constructor(message, sessionID) {

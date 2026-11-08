@@ -12,8 +12,8 @@ import { Menu } from "@opencode/ui/menu";
 import { createKeyed, usePlugin } from "@opencode/plugin/gui";
 import { artifactKind } from "@opencode/util/artifact";
 import ArtifactView from "./artifact-view";
-import { useShared } from "./context";
-import { fileTabPath } from "./path";
+import { useShared } from "./context.js";
+import { fileTabPath } from "./path.js";
 function selectionFromLines(range) {
     const startLine = Math.min(range.start, range.end);
     const endLine = Math.max(range.start, range.end);

@@ -73,4 +73,4 @@ export function nonEmptyToolContent(content) {
     const [first, ...rest] = content;
     return first === undefined ? undefined : [first, ...rest];
 }
-import { isRecord } from "./record";
+import { isRecord } from "./record.js";

@@ -7,7 +7,7 @@ import { $catchExpression } from "vibelang-runtime/internal";
 import * as Effect_1 from "effect/Effect";
 import * as runtime from "vibelang-runtime/internal";
 export * as Generate from "./generate.js";
-import * as $native from "./generate.native.js";
+import { plainJson } from "./generate.native.js";
 import { AIError, Decision, DecisionClient, Image, ImageClient, LLM, LLMClient, Media } from "@opencode/ai/effect";
 import { Money } from "@opencode/schema/money";
 import { SessionID } from "@opencode/schema/session-id";
@@ -198,7 +198,6 @@ export const layer = Layer.effect(Service, Effect_1.gen(function* () {
     });
 })).pipe(Layer.provide([ImageClient.layer, DecisionClient.layer]));
 // Provider metadata may hold undefined fields, which the JSON response schema rejects; the round trip is native code.
-const plainJson = $native.plainJson;
 function resolutionError(ref, type, error) {
     if (error._tag === "Integration.Authorization")
         return error;

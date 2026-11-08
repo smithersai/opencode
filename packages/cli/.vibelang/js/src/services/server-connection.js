@@ -4,10 +4,10 @@ import { ClientError, isUnauthorizedError, OpenCode } from "@opencode/client/pro
 import { OPENCODE_VERSION } from "../version.js";
 import { Effect, Option, Redacted } from "effect";
 import { Server as ServerFlag, Standalone as StandaloneFlag } from "../commands/commands.js";
-import { Env } from "../env";
-import { ServiceConfig } from "./service-config";
-import { Standalone } from "./standalone";
-import { errorMessage } from "../util/error";
+import { Env } from "../env.js";
+import { ServiceConfig } from "./service-config.js";
+import { Standalone } from "./standalone.js";
+import { errorMessage } from "../util/error.js";
 export const resolve = Effect.fn("cli.server-connection.resolve")(function* (args = {}) {
     const serverFlag = yield* Effect.serviceOption(ServerFlag).pipe(Effect.map(Option.flatten));
     const standaloneFlag = yield* Effect.serviceOption(StandaloneFlag);
@@ -80,4 +80,4 @@ function connectError(endpoint, cause) {
         return new Error(`Could not reach server at ${endpoint.url}: ${errorMessage(cause.cause ?? cause)}`, { cause });
     return new Error(`Server at ${endpoint.url} did not provide a compatible V2 health response: ${errorMessage(cause)}`, { cause });
 }
-export * as ServerConnection from "./server-connection";
+export * as ServerConnection from "./server-connection.js";

@@ -3,8 +3,8 @@ import { EOL } from "node:os";
 import { Cause, Effect, Exit, Option } from "effect";
 import { Npm } from "@opencode/util/npm";
 import { Commands } from "../../commands.js";
-import { Runtime } from "../../../framework/runtime";
-import { inspect } from "./inventory";
+import { Runtime } from "../../../framework/runtime.js";
+import { inspect } from "./inventory.js";
 export default Runtime.handler(Commands.commands.plugin.commands.update, Effect.fn("cli.plugin.update")(function* (input) {
     const result = yield* inspect(Option.getOrUndefined(input.target));
     for (const item of result.items) {

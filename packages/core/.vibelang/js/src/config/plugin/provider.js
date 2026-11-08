@@ -17,7 +17,7 @@ export const Plugin = define({
     effect: (ctx) => {
         return Effect_1.gen(function* effect() {
             const config = yield* Config.Service;
-            const loaded = yield* ConfigEntryObserver.observe(config, ctx.event, Effect.andThen(ctx.integration.reload(), ctx.provider.reload()));
+            const loaded = yield* ConfigEntryObserver.observe(config, ctx.event, Effect.andThen((yield* Effect.orDie(Effect.try({ try: () => ctx.integration.reload(), catch: (e) => e }))), yield* Effect.orDie(Effect.try({ try: () => ctx.provider.reload(), catch: (e) => e }))));
             yield* ctx.integration.transform((integrations) => {
                 for (const [id, provider] of configuredProviders(loaded.entries)) {
                     const integrationID = id;

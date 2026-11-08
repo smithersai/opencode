@@ -2,17 +2,17 @@
 import { CliRenderEvents, SyntaxStyle } from "@opentui/core";
 import { useRenderer } from "@opentui/solid";
 import { generateSyntax, resolveThemeDocument, themeModes, } from "@opencode/theme/tui";
-import { allThemes, getOpenCode2Theme, hasTheme, parseTheme, setCustomThemes, setSystemTheme, subscribeThemes, } from "../theme";
-import { generateSystem, terminalMode } from "../theme/system";
-import { discoverThemes } from "../theme/discovery";
-import { createComponentTheme } from "../theme/component";
+import { allThemes, getOpenCode2Theme, hasTheme, parseTheme, setCustomThemes, setSystemTheme, subscribeThemes, } from "../theme/index.js";
+import { generateSystem, terminalMode } from "../theme/system.js";
+import { discoverThemes } from "../theme/discovery.js";
+import { createComponentTheme } from "../theme/component.js";
 import { createEffect, createMemo, createSignal, onCleanup, onMount } from "solid-js";
 import { createStore, produce } from "solid-js/store";
 import { createSimpleContext } from "./helper";
 import { useConfig, useNewDesigns } from "../config";
 import { useStorageOptional } from "./storage";
-import { DevTools } from "../devtools";
-import { configDirectories } from "../util/config-directories";
+import { DevTools } from "../devtools/index.js";
+import { configDirectories } from "../util/config-directories.js";
 const themePerformance = DevTools.register({ id: "theme-performance", title: "Theme performance" });
 function createThemeErrors() {
     let handler;

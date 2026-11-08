@@ -9,10 +9,10 @@ import { useRenderer, useTerminalDimensions } from "@opentui/solid";
 import * as fuzzysort from "fuzzysort";
 import { isDeepEqual } from "remeda";
 import { DIALOG_INSET, DIALOG_LIST_INSET, DialogBleed, DialogFooter, DialogHeader, DialogLayout, dialogWidth, useDialog, } from "./dialog";
-import { Locale } from "../util/locale";
-import { getScrollAcceleration } from "../util/scroll";
+import { Locale } from "../util/locale.js";
+import { getScrollAcceleration } from "../util/scroll.js";
 import { useConfig, useNewDesigns } from "../config";
-import { moveSelection, reconcileSelection } from "./select-controller";
+import { moveSelection, reconcileSelection } from "./select-controller.js";
 export function dialogSelectContentWidth(dialogWidth) {
     // Scroll padding, row padding, the gutter, title padding, and the separating gap.
     return dialogWidth - DIALOG_LIST_INSET * 2 - 4;

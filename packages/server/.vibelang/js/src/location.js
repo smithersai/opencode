@@ -9,7 +9,7 @@ import { LocationNotFoundError, InvalidRequestError, ServiceUnavailableError } f
 import { Effect, Layer, Schema } from "effect";
 import { HttpServerRequest } from "effect/http";
 import { HttpApiMiddleware } from "effect/http-api";
-import { missingSession } from "./handlers/session-error";
+import { missingSession } from "./handlers/session-error.js";
 export class LocationMiddleware extends HttpApiMiddleware.Service()("@opencode/HttpApiLocation", { error: [LocationNotFoundError] }) {
 }
 export function locationErrors(effect) {

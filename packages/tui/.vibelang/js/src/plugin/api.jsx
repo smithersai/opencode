@@ -21,7 +21,7 @@ import { useStorage } from "../context/storage";
 import { useSessionTabs } from "../context/session-tabs";
 import { useOptionalPanel } from "../context/panel";
 import { useLocal } from "../context/local";
-import { abbreviateHome } from "../util/path-format";
+import { abbreviateHome } from "../util/path-format.js";
 const placements = ["prepend", "append", "before", "after", "replace"];
 // The host services a plugin context adapts. Collected once by the provider
 // (hooks must run during component setup) and shared by every activation.

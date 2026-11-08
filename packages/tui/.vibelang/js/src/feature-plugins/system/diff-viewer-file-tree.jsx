@@ -3,11 +3,11 @@
 import { MouseButton, TextAttributes } from "@opentui/core";
 import { useRenderer } from "@opentui/solid";
 import { truncateFilePath } from "../../ui/file-path";
-import { stringWidth } from "../../util/string-width";
+import { stringWidth } from "../../util/string-width.js";
 import { useTheme } from "../../context/theme";
-import { tint } from "../../theme/color";
+import { tint } from "../../theme/color.js";
 import { createEffect, createMemo, createSignal, For, Match, Show, Switch } from "solid-js";
-import { buildFileTree, flattenFileTree } from "./diff-viewer-file-tree-utils";
+import { buildFileTree, flattenFileTree } from "./diff-viewer-file-tree-utils.js";
 const FILE_TREE_STATUS_WIDTH = 1;
 export function DiffViewerFileTree(props) {
     const renderer = useRenderer();

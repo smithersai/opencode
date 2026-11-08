@@ -29,4 +29,4 @@ export function make(name, options = {}) {
         aliases: extra,
     };
 }
-export * as Spec from "./spec";
+export * as Spec from "./spec.js";

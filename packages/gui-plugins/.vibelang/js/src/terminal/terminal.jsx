@@ -8,10 +8,10 @@ import { createPtyClient } from "@opencode/client/solid";
 import { Option, Predicate, Schema } from "effect";
 import { createMemo, createSignal, onCleanup, onMount, Show, splitProps } from "solid-js";
 import { createKeyed, usePlugin } from "@opencode/plugin/gui";
-import { SerializeAddon } from "./serialize";
-import { disposeIfDisposable, getHoveredLinkText, setOptionIfSupported } from "./runtime-adapters";
-import { consumeTerminalMetaKey, terminalKeyInput } from "./terminal-key-event";
-import { terminalWriter } from "./writer";
+import { SerializeAddon } from "./serialize.js";
+import { disposeIfDisposable, getHoveredLinkText, setOptionIfSupported } from "./runtime-adapters.js";
+import { consumeTerminalMetaKey, terminalKeyInput } from "./terminal-key-event.js";
+import { terminalWriter } from "./writer.js";
 import { TerminalQuote } from "./quote";
 // Serialization on unmount is a synchronous O(rows x cols) walk on the main thread and the
 // result is written to localStorage or desktop state for every terminal in the workspace.

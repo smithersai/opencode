@@ -6,7 +6,7 @@ import { LocationNotFoundError, InvalidRequestError, SessionNotFoundError } from
 import { Effect, Layer } from "effect";
 import { HttpRouter, HttpServerRequest, HttpServerResponse } from "effect/http";
 import { HttpApiMiddleware } from "effect/http-api";
-import { locationErrors, requestRef, sessionInfo } from "../location";
+import { locationErrors, requestRef, sessionInfo } from "../location.js";
 export class FormLocationMiddleware extends HttpApiMiddleware.Service()("@opencode/HttpApiFormLocation", {
     error: [InvalidRequestError, SessionNotFoundError, LocationNotFoundError],
 }) {

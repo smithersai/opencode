@@ -3,10 +3,10 @@ import { Service } from "@opencode/client/effect/service";
 import { ClientError, OpenCode } from "@opencode/client/promise";
 import { noTimeoutFetch } from "@opencode/util/no-timeout-fetch";
 import { setTimeout } from "node:timers/promises";
-import { readStdin } from "./util/io";
-import { createMiniHost, INTERACTIVE_INPUT_ERROR, usingInteractiveStdin } from "./mini-host";
-import { parseSessionTargetModel, resolveSessionTarget } from "./session-target";
-import { Env } from "./env";
+import { readStdin } from "./util/io.js";
+import { createMiniHost, INTERACTIVE_INPUT_ERROR, usingInteractiveStdin } from "./mini-host.js";
+import { parseSessionTargetModel, resolveSessionTarget } from "./session-target.js";
+import { Env } from "./env.js";
 class MiniInputError extends Error {
 }
 export async function runMini(input) {

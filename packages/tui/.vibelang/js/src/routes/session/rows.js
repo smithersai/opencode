@@ -4,8 +4,8 @@ import { createStore, produce, reconcile } from "solid-js/store";
 import { useConfig } from "../../config";
 import { useData } from "../../context/data";
 import { useClient } from "../../context/client";
-import { append, completePrevious, groupRefs, hasPart, messagePath, partitionPending, partPath, projectEntries, defaultVerbosity, } from "./grouping/session";
-import { groupID } from "./anchors";
+import { append, completePrevious, groupRefs, hasPart, messagePath, partitionPending, partPath, projectEntries, defaultVerbosity, } from "./grouping/session.js";
+import { groupID } from "./anchors.js";
 /**
  * A page boundary can cut a group in half, which would show a partial summary and
  * give the group a provisional ID (derived from its first part). While the oldest

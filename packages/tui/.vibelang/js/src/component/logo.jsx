@@ -3,8 +3,8 @@ import { RGBA, TextAttributes } from "@opentui/core";
 import { For } from "solid-js";
 import { useTerminalDimensions } from "@opentui/solid";
 import { useTheme } from "../context/theme";
-import { tint } from "../theme/color";
-import { go, logo } from "../logo";
+import { tint } from "../theme/color.js";
+import { go, logo } from "../logo.js";
 export function Logo() {
     const theme = useTheme();
     const dimensions = useTerminalDimensions();

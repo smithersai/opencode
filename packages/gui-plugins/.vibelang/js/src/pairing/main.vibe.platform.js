@@ -3,7 +3,7 @@ import { execFile } from "node:child_process";
 import { powerSaveBlocker } from "electron";
 import { Schema } from "effect";
 import { builtinMainContext } from "@opencode/plugin/gui/builtin";
-import { Pairing } from "./contract";
+import { Pairing } from "./contract.js";
 export const setup = (ctx) => {
     // Whether main keeps the display awake; stored before in the desktop's own settings namespace.
     const stored = builtinMainContext(ctx).storage.store("keepScreenActive", {

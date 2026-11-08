@@ -8,7 +8,7 @@ import { KeymapProvider, useBindings, useKeymapSelector } from "@opentui/keymap/
 import { useRenderer } from "@opentui/solid";
 import { createComputed, createContext, createMemo, createSignal, onCleanup, useContext, } from "solid-js";
 import { useConfig } from "../config";
-import { TuiKeybind } from "../config/keybind";
+import { TuiKeybind } from "../config/keybind.js";
 import { resolveInteractivity, useInteractivity } from "./interactivity";
 const MODE = { key: "opencode.mode", base: "base" };
 export const COMMAND_PALETTE_COMMAND = "command.palette.show";

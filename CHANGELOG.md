@@ -6,6 +6,8 @@ Release notes for OpenCode V2, newest first.
 
 ### Bugs fixed
 
+- Migration-generated helper imports could fail the repository style checks; named imports now preserve the same helper behavior.
+
 - Embedded servers could fail to load after migration; route construction now preserves its original native validation and callback behavior.
 - Migrated file updates could change the mutex declarations; locking now retains its original types and lazy behavior.
 

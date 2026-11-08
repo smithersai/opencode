@@ -3,8 +3,8 @@ import { EOL } from "os";
 import { Effect } from "effect";
 import { Service } from "@opencode/client/effect/service";
 import { Commands } from "../../commands.js";
-import { Runtime } from "../../../framework/runtime";
-import { ServiceConfig } from "../../../services/service-config";
+import { Runtime } from "../../../framework/runtime.js";
+import { ServiceConfig } from "../../../services/service-config.js";
 export default Runtime.handler(Commands.commands.service.commands.status, Effect.fn("cli.service.status")(function* () {
     const options = yield* ServiceConfig.options();
     const found = yield* Service.discover({ ...options, version: undefined });

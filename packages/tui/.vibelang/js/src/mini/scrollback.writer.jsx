@@ -2,12 +2,12 @@
 import { createScrollbackWriter, useRenderer } from "@opentui/solid";
 import { MarkdownRenderable, TextAttributes, TextRenderable, } from "@opentui/core";
 import { For, Match, Switch, createMemo, onCleanup } from "solid-js";
-import { entryBody, entryFlags } from "./entry.body";
-import { monoMarkdownRenderable, monoMarkdownTableOptions } from "./mono";
-import { entryColor, entryLook, entrySyntax } from "./scrollback.shared";
-import { toolFiletype, toolStructuredFinal } from "./tool";
-import { RUN_THEME_FALLBACK, transparent } from "./theme";
-import { todoMarker } from "../util/todo";
+import { entryBody, entryFlags } from "./entry.body.js";
+import { monoMarkdownRenderable, monoMarkdownTableOptions } from "./mono.js";
+import { entryColor, entryLook, entrySyntax } from "./scrollback.shared.js";
+import { toolFiletype, toolStructuredFinal } from "./tool.js";
+import { RUN_THEME_FALLBACK, transparent } from "./theme.js";
+import { todoMarker } from "../util/todo.js";
 import { PatchDiff } from "../component/patch-diff";
 export function entryGroupKey(commit) {
     if (!commit.partID) {

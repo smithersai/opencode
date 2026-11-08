@@ -4,7 +4,7 @@ import { onMount } from "solid-js";
 import { createStore, produce, unwrap } from "solid-js/store";
 import { createSimpleContext } from "../context/helper";
 import { useTuiPaths } from "../context/runtime";
-import { appendText, readText, writeText } from "../util/persistence";
+import { appendText, readText, writeText } from "../util/persistence.js";
 import { parsePromptInfo } from "./history";
 export const MAX_STASH_ENTRIES = 50;
 export function parsePromptStash(text) {

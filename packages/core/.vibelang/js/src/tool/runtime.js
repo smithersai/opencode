@@ -259,4 +259,4 @@ export const normalizedName = (tool) => tool.name.replace(/[^a-zA-Z0-9_-]/g, "_"
 export const effectiveName = (tool) => tool.options?.namespace === undefined
     ? normalizedName(tool)
     : `${tool.options.namespace.replaceAll(".", "_")}_${normalizedName(tool)}`;
-import { raise as $raise } from "./runtime.vibe.-24-throw-24-ts.js";
+import { $raise } from "./runtime.vibe.-24-throw-24-ts.js";

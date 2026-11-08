@@ -3,7 +3,7 @@ import { NodeSocketServer } from "@effect/platform-node";
 import { Deferred, Effect, Fiber, Predicate, Schema, Semaphore } from "effect";
 import { Socket } from "effect/socket";
 import { randomUUID } from "node:crypto";
-import { SshFailure } from "./command";
+import { SshFailure } from "./command.js";
 const Request = Schema.fromJsonString(Schema.Struct({ token: Schema.String, text: Schema.String, confirm: Schema.Boolean }));
 export const createAskpass = Effect.fn("Ssh.askpass")(function* (input) {
     const token = randomUUID();

@@ -3,7 +3,7 @@ import { SessionMessage } from "@opencode/schema/session-message";
 import { EOL } from "node:os";
 import { readFile } from "node:fs/promises";
 import { nonEmptyToolContent, toolOutputText } from "@opencode/tui/mini/tool";
-import { UI } from "./ui";
+import { UI } from "./ui.js";
 // MCP elicitations are temporarily owned by the "global" sentinel instead of a real
 // session. An exclusive local process may treat them as this run's blockers; an
 // attached client must not cancel input that may belong to another session.

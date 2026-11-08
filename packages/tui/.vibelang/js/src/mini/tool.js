@@ -15,13 +15,13 @@
 import os from "os";
 import path from "path";
 import stripAnsi from "strip-ansi";
-import { LANGUAGE_EXTENSIONS } from "../util/filetype";
-import { Locale } from "../util/locale";
-import { canonicalToolName, finiteNumber, primitiveInputSummary, toolDisplayContent, toolDisplayMetadata, webSearchProviderLabel, } from "../util/tool-display";
-import { formatPath } from "../util/path-format";
-import { isRecord } from "../util/record";
-import { parseTodos, todoMarker } from "../util/todo";
-export { canonicalToolName } from "../util/tool-display";
+import { LANGUAGE_EXTENSIONS } from "../util/filetype.js";
+import { Locale } from "../util/locale.js";
+import { canonicalToolName, finiteNumber, primitiveInputSummary, toolDisplayContent, toolDisplayMetadata, webSearchProviderLabel, } from "../util/tool-display.js";
+import { formatPath } from "../util/path-format.js";
+import { isRecord } from "../util/record.js";
+import { parseTodos, todoMarker } from "../util/todo.js";
+export { canonicalToolName } from "../util/tool-display.js";
 function dict(v) {
     return isRecord(v) ? { ...v } : {};
 }

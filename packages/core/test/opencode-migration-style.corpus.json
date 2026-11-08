@@ -1,0 +1,10 @@
+{
+  "contract": "Migration bridges use named imports and preserve native helper behavior.",
+  "files": ["packages/core/src/generate.vibe", "packages/core/src/agent.vibe", "packages/core/src/tool/runtime.vibe"],
+  "metadata": {
+    "provider": {
+      "enabled": true
+    },
+    "optional": null
+  }
+}

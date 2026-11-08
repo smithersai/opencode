@@ -5,7 +5,7 @@ import { Keymap } from "../../../context/keymap";
 import { useSessionTerminals } from "../../../context/session-terminals";
 import { useTheme } from "../../../context/theme";
 import { useToast } from "../../../ui/toast";
-import { useComposerTab } from "./context";
+import { useComposerTab } from "./context.js";
 export function TerminalsTab(props) {
     const composer = useComposerTab();
     const terminals = useSessionTerminals();

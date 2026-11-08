@@ -7,8 +7,8 @@
 // The saved variant persists across sessions in ~/.local/state/opencode/model.json
 // so your last-used variant sticks. Cycling (ctrl+t) updates both the active
 // variant and the persisted file.
-import { createSession, sessionVariant } from "./session.shared";
-import { cycleModelVariant, normalizeModelVariant } from "../model-preference";
+import { createSession, sessionVariant } from "./session.shared.js";
+import { cycleModelVariant, normalizeModelVariant } from "../model-preference.js";
 export function modelInfo(providers, model) {
     const provider = providers?.find((item) => item.id === model.providerID);
     return {

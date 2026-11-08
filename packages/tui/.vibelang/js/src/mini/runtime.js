@@ -10,13 +10,13 @@
 //      local sessions,
 //   4. runs the prompt queue until the footer closes.
 import { SessionMessage } from "@opencode/schema/session-message";
-import { newSessionLocation } from "../config/new-session-location";
-import { errorMessage } from "../util/error";
-import { loadRunAgents, loadRunCommands, loadRunReferences } from "./catalog.shared";
-import { resolveMiniSettings, resolveModelInfo, resolveModelInfoStrict, resolveRunTuiConfig, resolveSessionInfo, } from "./runtime.boot";
-import { createRuntimeLifecycle } from "./runtime.lifecycle";
-import { cycleVariant, formatModelLabel, resolveVariant } from "./variant.shared";
-import { verbosityPreset } from "./verbosity";
+import { newSessionLocation } from "../config/new-session-location.js";
+import { errorMessage } from "../util/error.js";
+import { loadRunAgents, loadRunCommands, loadRunReferences } from "./catalog.shared.js";
+import { resolveMiniSettings, resolveModelInfo, resolveModelInfoStrict, resolveRunTuiConfig, resolveSessionInfo, } from "./runtime.boot.js";
+import { createRuntimeLifecycle } from "./runtime.lifecycle.js";
+import { cycleVariant, formatModelLabel, resolveVariant } from "./variant.shared.js";
+import { verbosityPreset } from "./verbosity.js";
 function variantsFor(providers, model) {
     if (!model) {
         return [];
@@ -592,7 +592,7 @@ async function runInteractiveRuntime(input, deps = {}) {
         });
     }
     const createDemo = async () => {
-        const { createRunDemo } = await import("./demo");
+        const { createRunDemo } = await import("./demo.js");
         return createRunDemo({
             footer,
             sessionID: state.sessionID,
@@ -610,7 +610,7 @@ async function runInteractiveRuntime(input, deps = {}) {
     const loadStreamTransport = () => {
         if (streamTask)
             return streamTask;
-        streamTask = import("./stream-v2.transport");
+        streamTask = import("./stream-v2.transport.js");
         return streamTask;
     };
     const ensureStream = () => {
@@ -715,7 +715,7 @@ async function runInteractiveRuntime(input, deps = {}) {
         if (state.demo) {
             await state.demo.start();
         }
-        const mod = await import("./runtime.queue");
+        const mod = await import("./runtime.queue.js");
         const createSession = input.createSession;
         await mod.runPromptQueue({
             footer,

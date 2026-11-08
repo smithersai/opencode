@@ -30,17 +30,17 @@ import { render } from "@opentui/solid";
 import { batch, createComponent, createSignal } from "solid-js";
 import { createStore, reconcile } from "solid-js/store";
 import { Keymap } from "../context/keymap";
-import { Locale } from "../util/locale";
+import { Locale } from "../util/locale.js";
 import { RUN_SUBAGENT_PANEL_ROWS, footerPanelLayout } from "./footer.command";
 import { SUBAGENT_INSPECTOR_ROWS } from "./footer.subagent";
 import { TEXTAREA_MIN_ROWS, footerPromptLayout } from "./footer.prompt";
 import { RunFooterView } from "./footer.view";
-import { monoSnapshot } from "./mono";
-import { RunScrollbackStream } from "./scrollback.surface";
-import { resolveRunTheme } from "./theme";
-import { modelInfo } from "./variant.shared";
-import { entrySplash } from "./splash";
-import { SEED_LAUNCH } from "../ui/one-cell-motion";
+import { monoSnapshot } from "./mono.js";
+import { RunScrollbackStream } from "./scrollback.surface.js";
+import { resolveRunTheme } from "./theme.js";
+import { modelInfo } from "./variant.shared.js";
+import { entrySplash } from "./splash.js";
+import { SEED_LAUNCH } from "../ui/one-cell-motion.js";
 export function resolveRunAgent(agents, current) {
     const selectable = agents.filter((agent) => agent.mode !== "subagent" && !agent.hidden);
     if (current === undefined)

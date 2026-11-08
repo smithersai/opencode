@@ -2,7 +2,7 @@
 import { Plugin } from "@opencode/plugin/tui";
 import { createMemo, For, Show } from "solid-js";
 import { TodoItem } from "../../component/todo-item";
-import { sessionTodos } from "../../util/todo";
+import { sessionTodos } from "../../util/todo.js";
 export function SidebarTodo(props) {
     const [view, updateView] = props.context.storage.store("view", { initial: { open: true } });
     const theme = props.context.theme;

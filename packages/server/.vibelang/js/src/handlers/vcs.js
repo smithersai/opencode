@@ -10,8 +10,8 @@ import { ConflictError, InvalidRequestError, ServiceUnavailableError } from "@op
 import { VcsInitNotSupportedError } from "@opencode/protocol/groups/vcs";
 import { Effect } from "effect";
 import { HttpApiBuilder, HttpApiSchema } from "effect/http-api";
-import { Api } from "../api";
-import { response } from "../location";
+import { Api } from "../api.js";
+import { response } from "../location.js";
 export const VcsHandler = HttpApiBuilder.group(Api, "server.vcs", (handlers) => Effect.gen(function* () {
     const project = yield* Project.Service;
     const bus = yield* Bus.Service;

@@ -2,10 +2,10 @@
 import { createEffect, createSignal, onCleanup, Show } from "solid-js";
 import { useTheme } from "../context/theme";
 import { useConfig } from "../config";
-import "./spinner-renderable";
-import { SPINNER_FRAMES } from "./spinner-frames";
+import "./spinner-renderable.js";
+import { SPINNER_FRAMES } from "./spinner-frames.js";
 import { ShimmerText } from "./shimmer-text";
-export { SPINNER_FRAMES } from "./spinner-frames";
+export { SPINNER_FRAMES } from "./spinner-frames.js";
 export function Spinner(props) {
     const theme = useTheme();
     const config = useConfig().data;

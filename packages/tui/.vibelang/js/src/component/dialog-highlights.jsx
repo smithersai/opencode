@@ -6,7 +6,7 @@ import { useConfig } from "../config";
 import { Keymap } from "../context/keymap";
 import { useTheme } from "../context/theme";
 import { DIALOG_INSET, DialogBleed, DialogFooter, DialogHeader, DialogLayout, useDialog } from "../ui/dialog";
-import { getScrollAcceleration } from "../util/scroll";
+import { getScrollAcceleration } from "../util/scroll.js";
 export function DialogHighlights(props) {
     const dialog = useDialog();
     const theme = useTheme().surface("dialog");

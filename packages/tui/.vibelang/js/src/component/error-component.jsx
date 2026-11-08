@@ -2,11 +2,11 @@
 import { TextAttributes } from "@opentui/core";
 import { useKeyboard, useTerminalDimensions } from "@opentui/solid";
 import { createSignal, For, Show } from "solid-js";
-import { getScrollAcceleration } from "../util/scroll";
+import { getScrollAcceleration } from "../util/scroll.js";
 import { useClipboard } from "../context/clipboard";
 import { useExit } from "../context/exit";
 import { useTuiApp } from "../context/runtime";
-import { describeOS, describeTerminal } from "../util/system";
+import { describeOS, describeTerminal } from "../util/system.js";
 export function ErrorComponent(props) {
     const term = useTerminalDimensions();
     const exit = useExit();

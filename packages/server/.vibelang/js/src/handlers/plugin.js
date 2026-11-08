@@ -4,8 +4,8 @@ import { PluginUpdate } from "@opencode/core/plugin/update";
 import { InvalidRequestError, PluginNotFoundError, ServiceUnavailableError } from "@opencode/protocol/errors";
 import { Cause, Effect, Exit } from "effect";
 import { HttpApiBuilder } from "effect/http-api";
-import { Api } from "../api";
-import { response } from "../location";
+import { Api } from "../api.js";
+import { response } from "../location.js";
 export const PluginHandler = HttpApiBuilder.group(Api, "server.plugin", (handlers) => handlers
     .handle("plugin.list", () => Effect.gen(function* () {
     return yield* response(Plugin.Service.use((plugin) => plugin.list()));

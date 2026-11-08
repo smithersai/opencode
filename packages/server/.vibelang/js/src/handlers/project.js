@@ -2,7 +2,7 @@
 import * as Effect from "effect/Effect";
 import * as HttpApiBuilder from "effect/http-api/HttpApiBuilder";
 import { Project } from "@opencode/core/project";
-import { Api } from "../api";
+import { Api } from "../api.js";
 import { ProjectNotFoundError } from "@opencode/protocol/errors";
 export const ProjectHandler = HttpApiBuilder.group(Api, "server.project", (handlers) => handlers
     .handle("project.list", (ctx) => Project.Service.use((project) => project.list(ctx.query)))

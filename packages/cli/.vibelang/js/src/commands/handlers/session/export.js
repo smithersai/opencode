@@ -5,9 +5,9 @@ import { Service } from "@opencode/client/effect/service";
 import { Effect, Option } from "effect";
 import { EOL } from "node:os";
 import { Commands } from "../../commands.js";
-import { Runtime } from "../../../framework/runtime";
-import { ServerConnection } from "../../../services/server-connection";
-import { errorMessage } from "../../../util/error";
+import { Runtime } from "../../../framework/runtime.js";
+import { ServerConnection } from "../../../services/server-connection.js";
+import { errorMessage } from "../../../util/error.js";
 export default Runtime.handler(Commands.commands.session.commands.export, Effect.fn("cli.session.export")((input) => Effect.gen(function* () {
     const requested = Option.getOrUndefined(input.session);
     if (!requested && !process.stdin.isTTY) {

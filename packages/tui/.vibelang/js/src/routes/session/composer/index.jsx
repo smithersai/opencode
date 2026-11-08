@@ -3,12 +3,12 @@ import { createEffect, createMemo, For, onCleanup, Show } from "solid-js";
 import { createStore } from "solid-js/store";
 import { TextAttributes } from "@opentui/core";
 import { useTheme } from "../../../context/theme";
-import { SplitBorder } from "../../../ui/border";
+import { SplitBorder } from "../../../ui/border.js";
 import { Keymap } from "../../../context/keymap";
 import { SubagentsTab } from "./subagents-tab";
 import { ShellTab } from "./shell-tab";
 import { TerminalsTab } from "./terminals-tab";
-import { ComposerContext } from "./context";
+import { ComposerContext } from "./context.js";
 export function Composer(props) {
     const theme = useTheme();
     const [store, setStore] = createStore({

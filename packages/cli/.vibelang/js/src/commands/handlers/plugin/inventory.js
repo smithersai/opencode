@@ -4,8 +4,8 @@ import { Cause, Effect, Exit } from "effect";
 import { OpenCode } from "@opencode/client";
 import { Service } from "@opencode/client/effect/service";
 import { Npm } from "@opencode/util/npm";
-import { Config } from "../../../config";
-import { ServerConnection } from "../../../services/server-connection";
+import { Config } from "../../../config/index.js";
+import { ServerConnection } from "../../../services/server-connection.js";
 export const inspect = Effect.fn("cli.plugin.inspect")(function* (selected) {
     const { endpoint } = yield* ServerConnection.resolve();
     const client = OpenCode.make({ baseUrl: endpoint.url, headers: Service.headers(endpoint) });

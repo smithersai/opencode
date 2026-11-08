@@ -5,7 +5,7 @@ import { SessionTimeline } from "../timeline/session-timeline";
 import { FileComponentProvider } from "@opencode/ui/context/file";
 import { Button } from "@opencode/ui/button";
 import { Show, createMemo, createSignal } from "solid-js";
-import { CURRENT_SESSION_ID, STORY_TIME } from "./current-session-fixtures";
+import { CURRENT_SESSION_ID, STORY_TIME } from "./current-session-fixtures.js";
 export function CurrentSessionProviders(props) {
     return (<DataProvider directory="C:/workspaces/opencode" sessionID={props.document.sessionID} backgroundCompaction={props.backgroundCompaction} data={{
             agent: [

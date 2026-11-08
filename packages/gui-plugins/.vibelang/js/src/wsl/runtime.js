@@ -2,7 +2,7 @@
 import { spawn } from "node:child_process";
 import { existsSync } from "node:fs";
 import { join } from "node:path";
-import { discoverScript, installScript, parseVersion, versionScript } from "./remote-cli";
+import { discoverScript, installScript, parseVersion, versionScript } from "./remote-cli.js";
 const DEFAULT_WSL_TIMEOUT_MS = 20_000;
 const DEFAULT_WSL_INSTALL_TIMEOUT_MS = 15 * 60_000;
 export function wslArgs(args, distro, user) {

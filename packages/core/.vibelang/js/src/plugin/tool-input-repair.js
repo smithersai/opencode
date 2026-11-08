@@ -30,7 +30,8 @@ export const Plugin = define({
             // looked up here. Its `{ code }` input is trivial; the tools it calls are repaired normally.
             if (event.tool === "execute")
                 return;
-            const tool = (yield* ctx.tool.list()).find((tool) => tool.id === event.tool);
+            const list2 = yield* ctx.tool.list();
+            const tool = yield* Effect.orDie(Effect.try({ try: () => list2.find((tool) => tool.id === event.tool), catch: (e) => e }));
             if (!tool)
                 return;
             const schema = (yield* Effect.orDie(Effect.try({ try: () => toolDefinition(tool), catch: (e) => e }))).inputSchema;

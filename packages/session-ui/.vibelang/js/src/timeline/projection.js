@@ -3,7 +3,7 @@ import { Effect, Option, Predicate, Schema } from "effect";
 import { createMemo, mapArray } from "solid-js";
 import { currentContentDefaultOpen, currentToolFailed, currentToolGroupedRead, currentToolHasLoadedFiles, } from "../message/current-tool-state.js";
 import { TimelineRow } from "./timeline-row.js";
-import { timelineCategory, timelineNoticePlacement, timelineNoticeRequired } from "./detail";
+import { timelineCategory, timelineNoticePlacement, timelineNoticeRequired } from "./detail.js";
 export { TimelineRow };
 const decodeJson = Schema.decodeUnknownOption(Schema.fromJsonString(Schema.Unknown));
 const decodeString = Schema.decodeUnknownOption(Schema.String);

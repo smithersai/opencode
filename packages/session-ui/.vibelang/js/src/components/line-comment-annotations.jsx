@@ -3,8 +3,8 @@ import { createEffect, createMemo, createSignal, onCleanup, Show } from "solid-j
 import { createStore } from "solid-js/store";
 import { render as renderSolid } from "solid-js/web";
 import { useI18n } from "@opencode/ui/context/i18n";
-import { createHoverCommentUtility } from "../pierre/comment-hover";
-import { cloneSelectedLineRange, formatSelectedLineLabel, lineInSelectedRange } from "../pierre/selection-bridge";
+import { createHoverCommentUtility } from "../pierre/comment-hover.js";
+import { cloneSelectedLineRange, formatSelectedLineLabel, lineInSelectedRange } from "../pierre/selection-bridge.js";
 import { LineComment, LineCommentEditor } from "./line-comment";
 // Generic host machinery shared by the inline and panel annotation renderers: each
 // annotation key gets a detached DOM host with its own Solid root, updated in

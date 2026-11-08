@@ -9,4 +9,4 @@ export function parse(client) {
         compaction: compaction !== undefined && compaction !== null,
     };
 }
-export * as ACPCapabilities from "./capabilities";
+export * as ACPCapabilities from "./capabilities.js";

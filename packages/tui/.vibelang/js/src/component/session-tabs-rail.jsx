@@ -2,7 +2,7 @@
 import { createMemo, createSignal } from "solid-js";
 import { Keymap } from "../context/keymap";
 import { useTheme } from "../context/theme";
-import { tint } from "../theme/color";
+import { tint } from "../theme/color.js";
 export function SessionTabsRailControls(props) {
     const theme = useTheme();
     const keymap = Keymap.use();

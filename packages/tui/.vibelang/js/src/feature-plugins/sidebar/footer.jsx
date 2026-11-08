@@ -5,7 +5,7 @@ import { useTerminalDimensions } from "@opentui/solid";
 import { FilePath } from "../../ui/file-path";
 import { useWorkingDirectoryActions } from "../../ui/working-directory-actions";
 import { usePromptMove } from "../../component/prompt/move";
-import { hasConnectedProvider } from "../../util/connected-provider";
+import { hasConnectedProvider } from "../../util/connected-provider.js";
 export function SidebarOnboarding(props) {
     const dimensions = useTerminalDimensions();
     const [onboarding, updateOnboarding] = props.context.storage.store("getting-started", {

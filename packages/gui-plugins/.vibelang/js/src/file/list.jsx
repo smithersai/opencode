@@ -5,8 +5,8 @@ import { createVirtualizer, defaultRangeExtractor } from "@tanstack/solid-virtua
 import { getDirectory, getFilename } from "@opencode/util/path";
 import { createKeyed, usePlugin } from "@opencode/plugin/gui";
 import { OpenInAppContextMenuV2, useOpenInApp } from "./open-in-app";
-import { resolveOpenInAppPath } from "./path";
-import { FILE_TREE_ROW_HEIGHT, kindChange, normalizeFileTreeV2Path } from "./tree-model";
+import { resolveOpenInAppPath } from "./path.js";
+import { FILE_TREE_ROW_HEIGHT, kindChange, normalizeFileTreeV2Path } from "./tree-model.js";
 const kindLabel = (kind) => {
     if (kind === "add")
         return "A";

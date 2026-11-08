@@ -4,9 +4,9 @@ import { createStore } from "solid-js/store";
 import { Loader } from "@opencode/ui/loader";
 import { createKeyed, usePlugin } from "@opencode/plugin/gui";
 import { OfficePages } from "./pages";
-import { paper } from "./paper";
-import { maxImageSide, } from "./slide-protocol";
-import { createWorkerClient, movableBuffer, SupersededError, WorkerClosedError } from "./worker-rpc";
+import { paper } from "./paper.js";
+import { maxImageSide, } from "./slide-protocol.js";
+import { createWorkerClient, movableBuffer, SupersededError, WorkerClosedError } from "./worker-rpc.js";
 /**
  * A read-only PowerPoint deck: every slide fitted to the pane and painted as it scrolls into view, with its speaker
  * notes below it. Hidden slides show dimmed, as in PowerPoint's editor. A worker per deck opens, lays out and paints

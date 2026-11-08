@@ -2,12 +2,12 @@
 import { createEffect, createMemo, createSignal, For, Index, on, onCleanup, onMount, Show, untrack, } from "solid-js";
 import { createStore } from "solid-js/store";
 import { createMediaQuery } from "@solid-primitives/media";
-import { useData } from "../context";
+import { useData } from "../context/index.js";
 import { useDialog } from "@opencode/ui/context/dialog";
 import { useI18n } from "@opencode/ui/context/i18n";
 import { Markdown } from "../components/markdown";
-import { linkSegments } from "../components/link-segments";
-import { sessionReferenceText, setupSessionLinks } from "../components/markdown-session-links";
+import { linkSegments } from "../components/link-segments.js";
+import { sessionReferenceText, setupSessionLinks } from "../components/markdown-session-links.js";
 import { useMarkdown } from "../context/markdown";
 import { useSources } from "../context/sources";
 import { SourcesChip } from "../sources/sources-chip";
@@ -24,13 +24,13 @@ import { Button } from "@opencode/ui/button";
 import { TextReveal } from "@opencode/ui/text-reveal";
 import { TextShimmer } from "@opencode/ui/text-shimmer";
 import { BasicTool } from "../components/basic-tool";
-import { reasoningHeading } from "../timeline/projection";
+import { reasoningHeading } from "../timeline/projection.js";
 import { Card } from "@opencode/ui/card";
 import { springStyle } from "@opencode/ui/motion/solid";
 import { userRunSpring } from "../timeline/user-runs.js";
-import { agentLabel } from "./agent-label";
-import { relativeTime, useNow } from "./relative-time";
-import { attached, typeLabel } from "../components/message-file";
+import { agentLabel } from "./agent-label.js";
+import { relativeTime, useNow } from "./relative-time.js";
+import { attached, typeLabel } from "../components/message-file.js";
 export async function writeClipboard(text) {
     const body = typeof document === "undefined" ? undefined : document.body;
     if (body) {

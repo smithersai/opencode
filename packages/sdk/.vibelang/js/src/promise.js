@@ -3,7 +3,7 @@ export * as PromiseSdk from "./promise.js";
 import { OpenCode } from "@opencode/client";
 import { Session } from "@opencode/schema/session";
 import { Effect, Schema } from "effect";
-import { EmbeddedHost } from "./internal/host";
+import { EmbeddedHost } from "./internal/host.js";
 export async function create(options = {}, embed = {}) {
     const { plugins, instances, ...hostOptions } = options;
     const host = await Effect.runPromise(EmbeddedHost.create({

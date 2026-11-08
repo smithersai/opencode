@@ -108,4 +108,4 @@ const read = Effect.fnUntraced(function* (client, cwd) {
         commands: commandResult.data.filter((command) => !builtinCommands.has(command.name)),
     };
 });
-export * as ACPCatalog from "./catalog";
+export * as ACPCatalog from "./catalog.js";

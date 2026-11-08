@@ -3,8 +3,8 @@ import { RGBA, TextAttributes } from "@opentui/core";
 import { useTerminalDimensions } from "@opentui/solid";
 import { createMemo, Show } from "solid-js";
 import { useTheme } from "../../context/theme";
-import { Locale } from "../../util/locale";
-import { stringWidth } from "../../util/string-width";
+import { Locale } from "../../util/locale.js";
+import { stringWidth } from "../../util/string-width.js";
 export function PromptMetadataRow(props) {
     const theme = useTheme();
     const dimensions = useTerminalDimensions();

@@ -3,7 +3,7 @@ export * as OpenCode from "./opencode.js";
 import { OpenCode } from "@opencode/client/effect";
 import { Context, Effect, Layer } from "effect";
 import { FetchHttpClient, HttpClient } from "effect/http";
-import { EmbeddedHost } from "../internal/host";
+import { EmbeddedHost } from "../internal/host.js";
 export const create = Effect.fn("OpenCode.create")(function* (options = {}, embed = {}) {
     const host = yield* Effect.acquireRelease(EmbeddedHost.create(options, embed), (host) => Effect.promise(host.close));
     const httpClient = yield* HttpClient.HttpClient.pipe(Effect.provide(FetchHttpClient.layer));

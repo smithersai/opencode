@@ -3,7 +3,7 @@
 import { BoxRenderable, CodeRenderable, DiffRenderable, getTreeSitterClient, } from "@opentui/core";
 import { useRenderer } from "@opentui/solid";
 import { batch, createMemo, createSignal, For, onCleanup, Show, splitProps } from "solid-js";
-import { splitAddedPatch, splitPatchHunks } from "../util/diff";
+import { splitAddedPatch, splitPatchHunks } from "../util/diff.js";
 // Smaller patches render fine as a single DiffRenderable; only split files large enough to stall the TUI.
 const VIRTUAL_MIN_LINES = 3000;
 const VIRTUAL_CHUNK_LINES = 128;

@@ -6,7 +6,7 @@ import { Effect, Option } from "effect";
 import { applyEdits, modify } from "jsonc-parser";
 import { Global } from "@opencode/util/global";
 import { Commands } from "../../commands.js";
-import { Runtime } from "../../../framework/runtime";
+import { Runtime } from "../../../framework/runtime.js";
 export default Runtime.handler(Commands.commands.mcp.commands.add, Effect.fn("cli.mcp.add")(function* (input) {
     const url = Option.getOrUndefined(input.url);
     const headers = Option.getOrUndefined(input.header);

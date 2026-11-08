@@ -36,4 +36,4 @@ export function toolCallID(child, id) {
 export function prefixTitle(child, value) {
     return child?.title ? `${child.title}: ${value}` : value;
 }
-export * as ACPChild from "./child";
+export * as ACPChild from "./child.js";

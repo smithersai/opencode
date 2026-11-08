@@ -63,4 +63,4 @@ function report(reason, pending) {
         "",
     ].join("\n");
 }
-export * as ShutdownDeadline from "./shutdown-deadline";
+export * as ShutdownDeadline from "./shutdown-deadline.js";

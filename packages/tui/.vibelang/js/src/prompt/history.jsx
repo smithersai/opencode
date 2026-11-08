@@ -5,7 +5,7 @@ import { onMount } from "solid-js";
 import { createStore, produce, unwrap } from "solid-js/store";
 import { createSimpleContext } from "../context/helper";
 import { useTuiPaths } from "../context/runtime";
-import { appendText, readText, writeText } from "../util/persistence";
+import { appendText, readText, writeText } from "../util/persistence.js";
 export const emptyPrompt = () => ({ text: "", files: [], agents: [], skills: [], pasted: [] });
 // Part ranges are textarea offsets, so shift by the measured offset rather than string length.
 export function appendPrompt(prompt, following, widthMethod) {

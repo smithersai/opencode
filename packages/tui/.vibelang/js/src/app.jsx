@@ -2,7 +2,7 @@
 import { existsSync } from "fs";
 import path from "path";
 import { render, useRenderer, useTerminalDimensions } from "@opentui/solid";
-import "./component/spinner-renderable";
+import "./component/spinner-renderable.js";
 import { Effect, Latch } from "effect";
 import { Service } from "@opencode/client/effect/service";
 import { OpenCode } from "@opencode/client";
@@ -12,8 +12,8 @@ import { ClipboardProvider, useClipboard } from "./context/clipboard";
 import { LogProvider } from "./context/log";
 import { ExitProvider, useExit } from "./context/exit";
 import { EpilogueProvider } from "./context/epilogue";
-import { epilogue } from "./util/presentation";
-import { Selection } from "./util/selection";
+import { epilogue } from "./util/presentation.js";
+import { Selection } from "./util/selection.js";
 import { CliRenderEvents, createCliRenderer, MouseButton, } from "@opentui/core";
 import { RouteProvider, useRoute } from "./context/route";
 import { Switch, Match, createEffect, createMemo, ErrorBoundary, createSignal, onMount, onCleanup, batch, Show, } from "solid-js";
@@ -22,8 +22,8 @@ import { DialogProvider, useDialog } from "./ui/dialog";
 import { DialogIntegration } from "./component/dialog-integration";
 import { ErrorComponent } from "./component/error-component";
 import { PluginRouteMissing } from "./component/plugin-route-missing";
-import { EditorContextProvider } from "./context/editor";
-import { useEvent } from "./context/event";
+import { EditorContextProvider } from "./context/editor.js";
+import { useEvent } from "./context/event.js";
 import { ClientProvider, useClient } from "./context/client";
 import { StartupLoading } from "./component/startup-loading";
 import { DevToolsBar } from "./component/devtools-bar";
@@ -43,15 +43,15 @@ import { DialogConfig } from "./component/dialog-config";
 import { DialogDebug } from "./component/dialog-debug";
 import { DialogPair } from "./component/dialog-pair";
 import { DialogHighlights } from "./component/dialog-highlights";
-import { claim } from "./util/highlights";
+import { claim } from "./util/highlights.js";
 import { DialogThemeList } from "./component/dialog-theme-list";
 import { DialogHelp } from "./ui/dialog-help";
 import { DialogAgent } from "./component/dialog-agent";
 import { DialogSessionList } from "./component/dialog-session-list";
 import { DialogOpen, DialogOpenKey, moveOpenSession } from "./component/dialog-open";
 import { SessionTabs } from "./component/session-tabs";
-import { clampSessionTabsWidth, sessionTabsFitVertically, SESSION_SIDEBAR_WIDTH } from "./ui/layout";
-import { createPaneResize } from "./ui/pane-resize";
+import { clampSessionTabsWidth, sessionTabsFitVertically, SESSION_SIDEBAR_WIDTH } from "./ui/layout.js";
+import { createPaneResize } from "./ui/pane-resize.js";
 import { PaneResizeHandle } from "./ui/pane-resize-handle";
 import { clickedLink } from "./ui/link";
 import { ThemeErrorToast } from "./component/theme-error-toast";
@@ -62,28 +62,28 @@ import { FrecencyProvider } from "./prompt/frecency";
 import { PromptStashProvider } from "./prompt/stash";
 import { Toast, ToastProvider, useToast } from "./ui/toast";
 import { isFallbackTitle } from "@opencode/util/session-title-fallback";
-import * as Model from "./util/model";
+import * as Model from "./util/model.js";
 import { ArgsProvider, useArgs } from "./context/args";
 import { openUrl } from "@opencode/util/open";
 import { PromptRefProvider, usePromptRef } from "./context/prompt";
 import { Config, ConfigProvider, useConfig } from "./config";
-import { newSessionLocation } from "./config/new-session-location";
+import { newSessionLocation } from "./config/new-session-location.js";
 import { UpdateNotificationProvider, useUpdateNotification } from "./context/update-notification";
 import { PluginProvider, usePlugin } from "./plugin/context";
-import { localPluginDirectories } from "./plugin/discovery";
+import { localPluginDirectories } from "./plugin/discovery.js";
 import { PluginRoute, Slot } from "./plugin/render";
 import { CommandPaletteDialog } from "./component/command-palette";
 import { COMMAND_PALETTE_COMMAND, Keymap } from "./context/keymap";
 import { DialogVariant } from "./component/dialog-variant";
-import { destroyRenderer, setTerminalTitle } from "./util/renderer";
-import { cliErrorMessage, errorFormat } from "./util/error";
+import { destroyRenderer, setTerminalTitle } from "./util/renderer.js";
+import { cliErrorMessage, errorFormat } from "./util/error.js";
 import { AttentionProvider } from "./context/attention";
 import { StorageProvider, useStorage } from "./context/storage";
 import { SessionTerminalsProvider } from "./context/session-terminals";
 import { ClientMcp } from "./context/client-mcp";
 import { PanelProvider, usePanel } from "./context/panel";
 import { SessionFrame } from "./component/session-frame";
-import { createTuiClipboard } from "./clipboard";
+import { createTuiClipboard } from "./clipboard.js";
 const appGlobalBindingCommands = ["session.list", "session.new", "open.menu"];
 const sessionTabBindingCommands = [
     "session.tab.next",
@@ -1202,7 +1202,8 @@ function App() {
             title: evt.data.title,
             message: evt.data.message,
             variant: evt.data.variant,
-            duration: evt.data.duration,
+            // The wire type allows null since Effect 4.1.1; the toast API takes a number or nothing.
+            duration: evt.data.duration ?? undefined,
         });
     });
     event.on("tui.session.select", (evt, { directory }) => {

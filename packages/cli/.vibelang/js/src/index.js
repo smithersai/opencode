@@ -5,75 +5,75 @@ import { NodeRuntime, NodeServices } from "@effect/platform-node";
 import { Cause, Effect } from "effect";
 import { getErrorReported } from "effect/Runtime";
 import { Commands } from "./commands/commands.js";
-import { Runtime } from "./framework/runtime";
+import { Runtime } from "./framework/runtime.js";
 import { Observability } from "@opencode/util/observability";
-import { Updater } from "./services/updater";
+import { Updater } from "./services/updater.js";
 import { OPENCODE_ARTIFACT, OPENCODE_CHANNEL, OPENCODE_LOCAL, OPENCODE_VERSION } from "./version.js";
 import { LayerNode } from "@opencode/util/effect/layer-node";
 import { Global } from "@opencode/util/global";
 import { AppProcess } from "@opencode/util/process";
-import { Config } from "./config";
+import { Config } from "./config/index.js";
 import { Npm } from "@opencode/util/npm";
 import { EffectFlock } from "@opencode/util/effect-flock";
-import { Heap } from "./heap";
-import { CpuProfile } from "./cpu-profile";
-import { ShutdownDeadline } from "./shutdown-deadline";
+import { Heap } from "./heap.js";
+import { CpuProfile } from "./cpu-profile.js";
+import { ShutdownDeadline } from "./shutdown-deadline.js";
 ensurePluginRuntime();
 if (process.env.OPENCODE_SSH_ASKPASS_PORT) {
-    const { askpass } = await import("./ssh-askpass");
+    const { askpass } = await import("./ssh-askpass.js");
     process.exit(await Effect.runPromise(askpass.pipe(Effect.provide(NodeServices.layer))));
 }
 const Handlers = Runtime.handlers(Commands, {
-    $: () => import("./commands/handlers/default"),
-    upgrade: () => import("./commands/handlers/upgrade"),
-    uninstall: () => import("./commands/handlers/uninstall"),
-    acp: () => import("./commands/handlers/acp"),
-    api: () => import("./commands/handlers/api"),
+    $: () => import("./commands/handlers/default.js"),
+    upgrade: () => import("./commands/handlers/upgrade.js"),
+    uninstall: () => import("./commands/handlers/uninstall.js"),
+    acp: () => import("./commands/handlers/acp.js"),
+    api: () => import("./commands/handlers/api.js"),
     auth: {
-        list: () => import("./commands/handlers/auth/list"),
-        login: () => import("./commands/handlers/auth/login"),
+        list: () => import("./commands/handlers/auth/list.js"),
+        login: () => import("./commands/handlers/auth/login.js"),
         logout: () => import("./commands/handlers/auth/logout.js"),
-        export: () => import("./commands/handlers/auth/export"),
-        import: () => import("./commands/handlers/auth/import"),
+        export: () => import("./commands/handlers/auth/export.js"),
+        import: () => import("./commands/handlers/auth/import.js"),
         switch: () => import("./commands/handlers/auth/switch.js"),
     },
     debug: {
-        agents: () => import("./commands/handlers/debug/agents"),
-        config: () => import("./commands/handlers/debug/config"),
-        "heap-dump": () => import("./commands/handlers/debug/heap-dump"),
-        paths: () => import("./commands/handlers/debug/paths"),
+        agents: () => import("./commands/handlers/debug/agents.js"),
+        config: () => import("./commands/handlers/debug/config.js"),
+        "heap-dump": () => import("./commands/handlers/debug/heap-dump.js"),
+        paths: () => import("./commands/handlers/debug/paths.js"),
     },
     mcp: {
-        list: () => import("./commands/handlers/mcp/list"),
-        add: () => import("./commands/handlers/mcp/add"),
-        auth: () => import("./commands/handlers/mcp/auth"),
-        logout: () => import("./commands/handlers/mcp/logout"),
+        list: () => import("./commands/handlers/mcp/list.js"),
+        add: () => import("./commands/handlers/mcp/add.js"),
+        auth: () => import("./commands/handlers/mcp/auth.js"),
+        logout: () => import("./commands/handlers/mcp/logout.js"),
     },
     plugin: {
-        list: () => import("./commands/handlers/plugin/list"),
-        add: () => import("./commands/handlers/plugin/add"),
-        check: () => import("./commands/handlers/plugin/check"),
-        update: () => import("./commands/handlers/plugin/update"),
-        remove: () => import("./commands/handlers/plugin/remove"),
+        list: () => import("./commands/handlers/plugin/list.js"),
+        add: () => import("./commands/handlers/plugin/add.js"),
+        check: () => import("./commands/handlers/plugin/check.js"),
+        update: () => import("./commands/handlers/plugin/update.js"),
+        remove: () => import("./commands/handlers/plugin/remove.js"),
     },
-    models: () => import("./commands/handlers/models"),
-    stats: () => import("./commands/handlers/stats"),
-    mini: () => import("./commands/handlers/mini"),
-    run: () => import("./commands/handlers/run"),
-    pair: () => import("./commands/handlers/pair"),
-    reload: () => import("./commands/handlers/reload"),
+    models: () => import("./commands/handlers/models.js"),
+    stats: () => import("./commands/handlers/stats.js"),
+    mini: () => import("./commands/handlers/mini.js"),
+    run: () => import("./commands/handlers/run.js"),
+    pair: () => import("./commands/handlers/pair.js"),
+    reload: () => import("./commands/handlers/reload.js"),
     session: {
-        list: () => import("./commands/handlers/session/list"),
-        delete: () => import("./commands/handlers/session/delete"),
-        export: () => import("./commands/handlers/session/export"),
-        import: () => import("./commands/handlers/session/import"),
+        list: () => import("./commands/handlers/session/list.js"),
+        delete: () => import("./commands/handlers/session/delete.js"),
+        export: () => import("./commands/handlers/session/export.js"),
+        import: () => import("./commands/handlers/session/import.js"),
     },
     service: {
-        start: () => import("./commands/handlers/service/start"),
-        restart: () => import("./commands/handlers/service/restart"),
-        status: () => import("./commands/handlers/service/status"),
+        start: () => import("./commands/handlers/service/start.js"),
+        restart: () => import("./commands/handlers/service/restart.js"),
+        status: () => import("./commands/handlers/service/status.js"),
         stop: () => import("./commands/handlers/service/stop.js"),
-        get: () => import("./commands/handlers/service/get"),
+        get: () => import("./commands/handlers/service/get.js"),
         set: () => import("./commands/handlers/service/set.js"),
         unset: () => import("./commands/handlers/service/unset.js"),
     },

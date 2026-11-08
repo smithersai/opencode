@@ -4,7 +4,7 @@ import { Plugin } from "@opencode/core/plugin";
 import { RpcError, RpcInternalError } from "@opencode/protocol/errors";
 import { Effect } from "effect";
 import { HttpApiBuilder } from "effect/http-api";
-import { Api } from "../api";
+import { Api } from "../api.js";
 export const RpcHandler = HttpApiBuilder.group(Api, "server.rpc", (handlers) => handlers.handle("rpc.call", ({ params, payload }) => Effect.gen(function* () {
     yield* Plugin.awaitActivation;
     const rpc = yield* Rpc.Service;

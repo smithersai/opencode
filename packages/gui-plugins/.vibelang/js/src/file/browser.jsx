@@ -8,9 +8,9 @@ import { SessionReviewV2Sidebar, SessionReviewV2SidebarToggle } from "@opencode/
 import { getFilename } from "@opencode/util/path";
 import { artifactKind } from "@opencode/util/artifact";
 import { createKeyed, usePlugin, usePanel, } from "@opencode/plugin/gui";
-import { current, useShared } from "./context";
+import { current, useShared } from "./context.js";
 import SessionFileList, { applyFileListKeyDown } from "./list";
-import { fileTabPath, isFileTab } from "./path";
+import { fileTabPath, isFileTab } from "./path.js";
 import PierreFileTree from "./pierre-tree";
 import { SessionFileView } from "./view";
 const emptyFiles = [];

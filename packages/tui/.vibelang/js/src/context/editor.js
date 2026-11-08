@@ -2,10 +2,10 @@
 import { onCleanup, onMount } from "solid-js";
 import { createStore } from "solid-js/store";
 import { Option, Schema, SchemaGetter } from "effect";
-import { isRecord } from "../util/record";
+import { isRecord } from "../util/record.js";
 import { useTuiPaths } from "./runtime";
 import { createSimpleContext } from "./helper";
-import { editorIntegration } from "../editor";
+import { editorIntegration } from "../editor.js";
 const MCP_PROTOCOL_VERSION = "2025-11-25";
 const JsonRpcMessageSchema = Schema.Struct({
     id: Schema.optional(Schema.Union([Schema.Number, Schema.String, Schema.Null])),

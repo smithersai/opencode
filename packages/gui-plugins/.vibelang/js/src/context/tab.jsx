@@ -11,9 +11,9 @@ import { File } from "@opencode/session-ui/file";
 import { Markdown } from "@opencode/session-ui/markdown";
 import { lastAssistantWithUsage } from "@opencode/client/solid";
 import { createKeyed, usePlugin } from "@opencode/plugin/gui";
-import { catalogModel, syncCatalog } from "./catalog";
-import { fetchSessionExport, sessionExportFilename } from "./export";
-import { createSessionContextFormatter } from "./format";
+import { catalogModel, syncCatalog } from "./catalog.js";
+import { fetchSessionExport, sessionExportFilename } from "./export.js";
+import { createSessionContextFormatter } from "./format.js";
 function Stat(props) {
     return (<div class="flex flex-col gap-1">
       <div class="text-12-regular text-text-weak">{props.label}</div>

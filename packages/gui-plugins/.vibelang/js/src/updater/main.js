@@ -4,8 +4,8 @@ import { Effect, Exit, Schema, Scope } from "effect";
 import { builtinMainContext } from "@opencode/plugin/gui/builtin";
 import { MenubarItem } from "@opencode/plugin/gui/main";
 import { Updater } from "@opencode/plugin/gui/updater";
-import { logContext } from "./log";
-import { make } from "./machine";
+import { logContext } from "./log.js";
+import { make } from "./machine.js";
 const setup = async (ctx) => {
     const builtin = builtinMainContext(ctx);
     const build = ctx.app;
@@ -23,7 +23,7 @@ const setup = async (ctx) => {
     });
     // electron-updater loads only in packaged builds, after the first window is up.
     const platform = enabled
-        ? await import("./platform").then((module) => runPromise(module.make(build.channel)))
+        ? await import("./platform.js").then((module) => runPromise(module.make(build.channel)))
         : undefined;
     if (ctx.signal.aborted)
         return;

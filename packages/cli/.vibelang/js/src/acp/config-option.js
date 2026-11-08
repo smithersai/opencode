@@ -2,7 +2,7 @@
 import { Model } from "@opencode/schema/model";
 import { Provider } from "@opencode/schema/provider";
 import { Effect, Order } from "effect";
-import { builtinCommands, findModel } from "./catalog";
+import { builtinCommands, findModel } from "./catalog.js";
 import { ACPError } from "./error.js";
 const DEFAULT_VARIANT_VALUE = "default";
 export function currentModel(catalog, selection) {

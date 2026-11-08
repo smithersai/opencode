@@ -3,9 +3,9 @@ import { Integration } from "@opencode/core/integration";
 import { Plugin } from "@opencode/core/plugin";
 import { Effect } from "effect";
 import { HttpApiBuilder, HttpApiSchema } from "effect/http-api";
-import { Api } from "../api";
+import { Api } from "../api.js";
 import { IntegrationAttemptNotFoundError, IntegrationMethodNotFoundError, IntegrationNotFoundError, InvalidRequestError, } from "@opencode/protocol/errors";
-import { response } from "../location";
+import { response } from "../location.js";
 import { WellKnown } from "@opencode/core/wellknown";
 const authorize = (effect) => effect.pipe(Effect.mapError((error) => new InvalidRequestError({
     message: error.cause instanceof Error && error.cause.message.trim() ? error.cause.message : "Authentication failed",

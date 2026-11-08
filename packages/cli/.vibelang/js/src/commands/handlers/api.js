@@ -2,9 +2,9 @@
 import { EOL } from "node:os";
 import { Effect, Option } from "effect";
 import { Commands } from "../commands.js";
-import { Runtime } from "../../framework/runtime";
+import { Runtime } from "../../framework/runtime.js";
 import { Service } from "@opencode/client/effect/service";
-import { ServerConnection } from "../../services/server-connection";
+import { ServerConnection } from "../../services/server-connection.js";
 const methods = new Set(["delete", "get", "head", "options", "patch", "post", "put"]);
 export default Runtime.handler(Commands.commands.api, Effect.fn("cli.api")(function* (input) {
     const server = yield* ServerConnection.resolve({

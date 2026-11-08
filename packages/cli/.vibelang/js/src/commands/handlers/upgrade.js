@@ -2,9 +2,9 @@
 import { intro, log, outro, spinner } from "@clack/prompts";
 import { Effect, Option } from "effect";
 import { Commands } from "../commands.js";
-import { Runtime } from "../../framework/runtime";
-import { Updater } from "../../services/updater";
-import { handlePromptErrors } from "../../ui/prompt";
+import { Runtime } from "../../framework/runtime.js";
+import { Updater } from "../../services/updater.js";
+import { handlePromptErrors } from "../../ui/prompt.js";
 import { OPENCODE_VERSION } from "../../version.js";
 import { stripVTControlCharacters } from "node:util";
 export default Runtime.handler(Commands.commands.upgrade, Effect.fn("cli.upgrade")(function* (input) {

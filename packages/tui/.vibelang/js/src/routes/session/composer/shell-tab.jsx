@@ -6,7 +6,7 @@ import { useData } from "../../../context/data";
 import { useClient } from "../../../context/client";
 import { useTheme } from "../../../context/theme";
 import { Keymap } from "../../../context/keymap";
-import { useComposerTab } from "./context";
+import { useComposerTab } from "./context.js";
 import { useDialog } from "../../../ui/dialog";
 import { DialogShellOutput } from "../../../component/dialog-shell-output";
 export function ShellTab(props) {

@@ -2,8 +2,8 @@
 import { parseColor, RGBA } from "@opentui/core";
 import { useRenderer } from "@opentui/solid";
 import { createEffect, createMemo, createSignal, onCleanup, Show } from "solid-js";
-import { oneCellFrame } from "../ui/one-cell-motion";
-import "./spinner-renderable";
+import { oneCellFrame } from "../ui/one-cell-motion.js";
+import "./spinner-renderable.js";
 export function OneCellSpinner(props) {
     const renderer = useRenderer();
     const [elapsed, setElapsed] = createSignal(0);

@@ -5,7 +5,7 @@ import { Icon } from "@opencode/ui/icon";
 import { Loader } from "@opencode/ui/loader";
 import { Show } from "solid-js";
 import { createKeyed, usePlugin } from "@opencode/plugin/gui";
-import { isSshConnecting, sshName } from "./name";
+import { isSshConnecting, sshName } from "./name.js";
 export function SshCover(props) {
     const plugin = usePlugin();
     const dialog = useDialog();

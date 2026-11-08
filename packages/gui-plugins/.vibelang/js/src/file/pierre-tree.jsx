@@ -4,10 +4,10 @@ import { FileTree } from "@pierre/trees";
 import { getIcon } from "@opencode/ui/icons/catalog";
 import { createMemo, createSignal, onCleanup, onMount } from "solid-js";
 import { createKeyed, usePlugin } from "@opencode/plugin/gui";
-import { startFileDrag } from "./drag";
+import { startFileDrag } from "./drag.js";
 import { OpenInAppContextMenuV2, useOpenInApp } from "./open-in-app";
-import { resolveOpenInAppPath } from "./path";
-import { buildAllowedTreeInput, buildGitStatusMap, buildLiveTreeInput, diffGitStatusPatch, FILE_TREE_ROW_HEIGHT, normalizeFileTreeV2Path, } from "./tree-model";
+import { resolveOpenInAppPath } from "./path.js";
+import { buildAllowedTreeInput, buildGitStatusMap, buildLiveTreeInput, diffGitStatusPatch, FILE_TREE_ROW_HEIGHT, normalizeFileTreeV2Path, } from "./tree-model.js";
 const TREE_UNSAFE_CSS = `
   :host {
     color-scheme: inherit;

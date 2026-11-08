@@ -8,7 +8,7 @@ import { createStore } from "solid-js/store";
 import { useToast } from "./toast";
 import { useClipboard } from "../context/clipboard";
 import { useConfig, useNewDesigns } from "../config";
-import { copy, copyOnSelectRelease } from "../util/selection";
+import { copy, copyOnSelectRelease } from "../util/selection.js";
 export const DIALOG_INSET = 3;
 // List rows reserve a 1-cell gutter for the ▌ bar / ● marker.
 export const DIALOG_LIST_INSET = DIALOG_INSET + 1;

@@ -8,7 +8,7 @@ import { Worktree } from "@opencode/core/worktree";
 import { Project } from "@opencode/core/project";
 import { ProjectNotFoundError } from "@opencode/protocol/errors";
 import { WorktreeError } from "@opencode/protocol/groups/worktree";
-import { Api } from "../api";
+import { Api } from "../api.js";
 export const WorktreeHandler = HttpApiBuilder.group(Api, "server.worktree", (handlers) => {
     return Effect_1.gen(function* () {
         const worktrees = yield* Worktree.Service;

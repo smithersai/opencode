@@ -7,7 +7,7 @@ import { Spinner } from "../../component/spinner";
 import { usePlugin } from "../../plugin/context";
 import { DialogSelect } from "../../ui/dialog-select";
 import { useDialog } from "../../ui/dialog";
-import { errorMessage } from "../../util/error";
+import { errorMessage } from "../../util/error.js";
 const id = "opencode.plugins";
 export function PluginsDialog(props) {
     const dialog = useDialog();

@@ -4,7 +4,7 @@ import { createStore } from "solid-js/store";
 import { Command, createKeyed, LinkHandler, MenuItem, SettingsPage, usePanel, } from "@opencode/plugin/gui";
 import { BuiltinPanel, onIdle } from "@opencode/plugin/gui/builtin";
 import { Changes } from "@opencode/plugin/gui/review";
-import { createReviewModel } from "./model";
+import { createReviewModel } from "./model.js";
 const TAB = "changes";
 const KEY = `review:${TAB}`;
 const setup = (ctx) => {

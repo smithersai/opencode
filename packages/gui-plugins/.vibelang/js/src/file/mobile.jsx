@@ -5,8 +5,8 @@ import { Tabs } from "@opencode/ui/tabs";
 import { getFilename } from "@opencode/util/path";
 import { usePlugin, usePanel } from "@opencode/plugin/gui";
 import { SessionFileBrowserTab } from "./browser";
-import { useShared } from "./context";
-import { fileTabPath, isFileTab } from "./path";
+import { useShared } from "./context.js";
+import { fileTabPath, isFileTab } from "./path.js";
 const OPEN_FILE_TAB = "open-file";
 export default function SessionMobileFiles(props) {
     const ctx = usePlugin();

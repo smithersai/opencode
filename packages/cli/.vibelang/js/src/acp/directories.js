@@ -63,4 +63,4 @@ function rules(directories) {
         effect: "allow",
     }));
 }
-export * as ACPDirectories from "./directories";
+export * as ACPDirectories from "./directories.js";

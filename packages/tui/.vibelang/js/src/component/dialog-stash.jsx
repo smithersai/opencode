@@ -2,7 +2,7 @@
 import { useDialog } from "../ui/dialog";
 import { DialogSelect } from "../ui/dialog-select";
 import { createMemo, createSignal } from "solid-js";
-import { Locale } from "../util/locale";
+import { Locale } from "../util/locale.js";
 import { Keymap } from "../context/keymap";
 import { useTheme } from "../context/theme";
 import { usePromptStash } from "../prompt/stash";

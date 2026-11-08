@@ -95,4 +95,4 @@ function displayError(error) {
         return "Compaction failed";
     return error.message;
 }
-export * as ACPCompaction from "./compaction";
+export * as ACPCompaction from "./compaction.js";

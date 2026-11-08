@@ -2,9 +2,9 @@
 import { createSignal, onCleanup, onMount, Show } from "solid-js";
 import { useClient } from "../context/client";
 import { useTheme } from "../context/theme";
-import { SplitBorder } from "../ui/border";
+import { SplitBorder } from "../ui/border.js";
 import { useToast } from "../ui/toast";
-import { errorMessage } from "../util/error";
+import { errorMessage } from "../util/error.js";
 import { Spinner } from "./spinner";
 export function MigrationOverlay() {
     const client = useClient();

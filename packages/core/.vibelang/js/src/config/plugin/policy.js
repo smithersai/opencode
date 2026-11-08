@@ -6,7 +6,7 @@ import { Config } from "../../config.js";
 import { ManagedPolicy } from "../../managed-policy.js";
 import { State } from "../../state.js";
 import { Wildcard } from "../../util/wildcard.js";
-import { ConfigEntryObserver } from "#vibelang/emitted/src/config/plugin/entry-observer";
+import { ConfigEntryObserver } from "./entry-observer.js";
 export const Plugin = define({
     id: "opencode.config.policy",
     effect: Effect.fn(function* (ctx) {

@@ -5,12 +5,12 @@ import { Global } from "@opencode/util/global";
 import { Effect, FileSystem, Schedule } from "effect";
 import path from "node:path";
 import { Commands } from "../commands.js";
-import { Runtime } from "../../framework/runtime";
-import { ServerConnection } from "../../services/server-connection";
-import { RetainedImage } from "../../services/retained-image";
-import { Updater } from "../../services/updater";
-import { handlePromptErrors, prompt, requireInteractive } from "../../ui/prompt";
-import { errorMessage } from "../../util/error";
+import { Runtime } from "../../framework/runtime.js";
+import { ServerConnection } from "../../services/server-connection.js";
+import { RetainedImage } from "../../services/retained-image.js";
+import { Updater } from "../../services/updater.js";
+import { handlePromptErrors, prompt, requireInteractive } from "../../ui/prompt.js";
+import { errorMessage } from "../../util/error.js";
 export default Runtime.handler(Commands.commands.uninstall, Effect.fn("cli.uninstall")(function* (input) {
     intro("Uninstall OpenCode");
     const fs = yield* FileSystem.FileSystem;

@@ -3,13 +3,13 @@ import { createStore } from "solid-js/store";
 import { dedupeWith } from "effect/Array";
 import { createSimpleContext } from "./helper";
 import { batch, createMemo, onCleanup } from "solid-js";
-import { useEvent } from "./event";
+import { useEvent } from "./event.js";
 import path from "path";
 import { useTuiPaths } from "./runtime";
 import { useArgs } from "./args";
 import { RGBA } from "@opentui/core";
-import { readJson, writeJsonAtomic } from "../util/persistence";
-import { createModelPreferenceRepository, cycleModelVariant, favoriteModels, modelPreferenceKey, normalizeModelVariant, recentModels, } from "../model-preference";
+import { readJson, writeJsonAtomic } from "../util/persistence.js";
+import { createModelPreferenceRepository, cycleModelVariant, favoriteModels, modelPreferenceKey, normalizeModelVariant, recentModels, } from "../model-preference.js";
 import { useTheme } from "./theme";
 import { useNewDesigns } from "../config";
 import { useToast } from "../ui/toast";
@@ -17,7 +17,7 @@ import { useRoute } from "./route";
 import { useData } from "./data";
 import { usePermission } from "./permission";
 import { useLocation } from "./location";
-import { parse } from "../util/model";
+import { parse } from "../util/model.js";
 export const { use: useLocal, provider: LocalProvider } = createSimpleContext({
     name: "Local",
     init: () => {

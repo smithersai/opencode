@@ -2,7 +2,7 @@
 import { createEffect, createMemo, Match, on, onCleanup, Show, Switch, untrack } from "solid-js";
 import { createStore } from "solid-js/store";
 import { useI18n } from "@opencode/ui/context/i18n";
-import { dataUrlFromMediaValue, hasMediaValue, isBinaryContent, mediaKindFromPath, normalizeMimeType, svgTextFromValue, } from "../pierre/media";
+import { dataUrlFromMediaValue, hasMediaValue, isBinaryContent, mediaKindFromPath, normalizeMimeType, svgTextFromValue, } from "../pierre/media.js";
 function mediaValue(cfg, mode) {
     if (cfg.current !== undefined)
         return cfg.current;

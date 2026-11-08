@@ -7,9 +7,9 @@ import { Effect, Queue } from "effect";
 import { HttpServerRequest, HttpServerResponse } from "effect/http";
 import { HttpApiBuilder, HttpApiSchema } from "effect/http-api";
 import { Socket } from "effect/socket";
-import { Api } from "../api";
+import { Api } from "../api.js";
 import { CorsConfig, isAllowedRequestOrigin } from "../cors.js";
-import { makeMediaGet } from "./media";
+import { makeMediaGet } from "./media.js";
 import { runPtySocket } from "./pty-socket.js";
 export const PersistentPtyHandler = HttpApiBuilder.group(Api, "server.experimental", (handlers) => Effect.gen(function* () {
     const tickets = yield* PtyTicket.Service;

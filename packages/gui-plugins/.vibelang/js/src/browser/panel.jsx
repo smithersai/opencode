@@ -14,7 +14,7 @@ import { createResizeObserver } from "@solid-primitives/resize-observer";
 import { createMemo, For, on, onCleanup, Show } from "solid-js";
 import { createStore } from "solid-js/store";
 import { createKeyed, usePlugin, usePanel, } from "@opencode/plugin/gui";
-import { addressParts, connection, loopback, resolveAddress, searches } from "./address";
+import { addressParts, connection, loopback, resolveAddress, searches } from "./address.js";
 import { commentNote, pageNote } from "./comment.js";
 import { bare, completes, highlight, suggest } from "./history.js";
 import { PageIcon } from "./page-icon";

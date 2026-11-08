@@ -2,11 +2,11 @@
 import { intro, log, outro, select, spinner, text } from "@clack/prompts";
 import { Effect, Option } from "effect";
 import { Commands } from "../../commands.js";
-import { Runtime } from "../../../framework/runtime";
-import { selectIntegration } from "../../../ui/integration-picker";
-import { handlePromptErrors, openUrl, prompt, requireInteractive } from "../../../ui/prompt";
-import { answerForm, secret } from "./form";
-import { createClient, connectMethods, loadIntegrations, location, request, resolveIntegration, resolveMethod, } from "./shared";
+import { Runtime } from "../../../framework/runtime.js";
+import { selectIntegration } from "../../../ui/integration-picker.js";
+import { handlePromptErrors, openUrl, prompt, requireInteractive } from "../../../ui/prompt.js";
+import { answerForm, secret } from "./form.js";
+import { createClient, connectMethods, loadIntegrations, location, request, resolveIntegration, resolveMethod, } from "./shared.js";
 const integrationPriority = new Map([
     ["opencode-go", 0],
     ["opencode", 1],

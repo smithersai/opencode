@@ -6,11 +6,11 @@ import { Keymap } from "../context/keymap";
 import { useLocal } from "../context/local";
 import { useLocation } from "../context/location";
 import { useTheme } from "../context/theme";
-import { SplitBorder } from "../ui/border";
+import { SplitBorder } from "../ui/border.js";
 import { DialogHeader, DialogLayout, useDialog } from "../ui/dialog";
 import { DialogSelect } from "../ui/dialog-select";
 import { useToast } from "../ui/toast";
-import { formatDollars, formatReset, limitScope, modelUsage, refusalReset, servedByConsole, usageLevel, } from "../util/usage-limits";
+import { formatDollars, formatReset, limitScope, modelUsage, refusalReset, servedByConsole, usageLevel, } from "../util/usage-limits.js";
 /**
  * The OpenCode Console limits on this location's models. Limits load once; `refresh` reloads them, since spend moves
  * with every request, and keeps showing the ones already loaded meanwhile.

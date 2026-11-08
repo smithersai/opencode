@@ -22,7 +22,7 @@ import { ConfigFormatterPlugin } from "../config/plugin/formatter.js";
 import { ConfigImagePlugin } from "../config/plugin/image.js";
 import { ConfigInstructionPlugin } from "../config/plugin/instruction.js";
 import { ConfigLocationWatcherPlugin } from "../config/plugin/location-watcher.js";
-import { ConfigMcpPlugin } from "#vibelang/emitted/src/config/plugin/mcp";
+import { ConfigMcpPlugin } from "../config/plugin/mcp.js";
 import { ConfigProviderPlugin } from "../config/plugin/provider.js";
 import { ConfigPolicyPlugin } from "../config/plugin/policy.js";
 import { ConfigReferencePlugin } from "../config/plugin/reference.js";

@@ -3,7 +3,7 @@ import { createMemo, lazy, onCleanup, Suspense } from "solid-js";
 import { Icon } from "@opencode/ui/icon";
 import { Command, createKeyed } from "@opencode/plugin/gui";
 import { BuiltinPanel, onIdle } from "@opencode/plugin/gui/builtin";
-import { createBtw } from "./model";
+import { createBtw } from "./model.js";
 const setup = (ctx) => {
     const SessionBtwPanel = lazy(() => import("./panel"));
     onCleanup(onIdle(() => void SessionBtwPanel.preload()));

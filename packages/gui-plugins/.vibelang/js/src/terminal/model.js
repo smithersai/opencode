@@ -3,7 +3,7 @@ import { batch, createMemo, createRoot, getOwner, onCleanup, untrack } from "sol
 import { createStore } from "solid-js/store";
 import { createKeyed, } from "@opencode/plugin/gui";
 import { MAX_TERMINAL_SESSIONS, numberFromTitle, TerminalState, terminalTab } from "./state.js";
-import { defaultTitle } from "./title";
+import { defaultTitle } from "./title.js";
 const STORE = "terminals";
 // The raw key terminals used before plugins, in the same workspace storage file.
 const LEGACY = "workspace:terminal";

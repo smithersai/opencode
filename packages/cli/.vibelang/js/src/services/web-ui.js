@@ -3,7 +3,7 @@ import { FSUtil } from "@opencode/util/fs-util";
 import { Effect, FileSystem } from "effect";
 import { HttpServerError, HttpServerRequest, HttpServerResponse } from "effect/http";
 import { createHash } from "node:crypto";
-import { load } from "../app-assets";
+import { load } from "../app-assets.js";
 export const handler = Effect.fn("cli.web-ui.handler")(function* (options) {
     const fileSystem = yield* FileSystem.FileSystem;
     const assets = options?.assets
@@ -69,4 +69,4 @@ function cspForHtml(body) {
     const match = body.match(/<script\b(?![^>]*\bsrc\s*=)[^>]*\bid=(["'])oc-theme-preload-script\1[^>]*>([\s\S]*?)<\/script>/i);
     return csp(match ? createHash("sha256").update(match[2]).digest("base64") : "");
 }
-export * as WebUi from "./web-ui";
+export * as WebUi from "./web-ui.js";

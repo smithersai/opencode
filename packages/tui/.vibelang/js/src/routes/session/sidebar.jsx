@@ -7,8 +7,8 @@ import { Slot } from "../../plugin/render";
 import { withTimestampedFallback } from "@opencode/util/session-title-fallback";
 import { TextAttributes } from "@opentui/core";
 import "../../component/title-shimmer";
-import { getScrollAcceleration } from "../../util/scroll";
-import { SESSION_SIDEBAR_WIDTH } from "../../ui/layout";
+import { getScrollAcceleration } from "../../util/scroll.js";
+import { SESSION_SIDEBAR_WIDTH } from "../../ui/layout.js";
 export function Sidebar(props) {
     const data = useData();
     const theme = useTheme();

@@ -6,11 +6,11 @@ import { Loader } from "@opencode/ui/loader";
 import { showToast } from "@opencode/ui/toast";
 import { cellAtPoint, extendTo, hyperlinkAtCell, normalizeRange, parseHyperlinkLocation, rangeRect, safeExternalHyperlink, selectionAt, selectionKeyReducer, } from "@betteroffice/xlsx/headless";
 import { createKeyed, createLatest, usePlugin } from "@opencode/plugin/gui";
-import { externalUrl } from "./links";
-import { paper } from "./paper";
-import { columnName, contains, coverMerges, hiddenAt, lastCell, settleMerges, skipHidden } from "./sheet-cells";
-import { headerHeight, paintCells, paintHeaders, paintSelection, rowHeaderWidth, shiftGrid, trackIndex, } from "./sheet-paint";
-import { createWorkerClient, movableBuffer, SupersededError, WorkerClosedError } from "./worker-rpc";
+import { externalUrl } from "./links.js";
+import { paper } from "./paper.js";
+import { columnName, contains, coverMerges, hiddenAt, lastCell, settleMerges, skipHidden } from "./sheet-cells.js";
+import { headerHeight, paintCells, paintHeaders, paintSelection, rowHeaderWidth, shiftGrid, trackIndex, } from "./sheet-paint.js";
+import { createWorkerClient, movableBuffer, SupersededError, WorkerClosedError } from "./worker-rpc.js";
 /** The most cells one copy reads; a larger selection would hold the workbook worker for seconds. */
 const copyLimit = 200_000;
 /**

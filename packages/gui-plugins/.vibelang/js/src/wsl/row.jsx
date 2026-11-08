@@ -5,7 +5,7 @@ import { IconButton } from "@opencode/ui/icon-button";
 import { Menu } from "@opencode/ui/menu";
 import { Show } from "solid-js";
 import { usePlugin } from "@opencode/plugin/gui";
-import { wslOpencodeAction } from "./model";
+import { wslOpencodeAction } from "./model.js";
 export default function WslRow(props) {
     const plugin = usePlugin();
     const check = () => props.state()?.opencodeChecks[props.distro];

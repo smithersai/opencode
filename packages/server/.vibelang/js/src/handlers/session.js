@@ -11,12 +11,12 @@ import { HttpServerResponse } from "effect/http";
 import { HttpApiBuilder, HttpApiSchema } from "effect/http-api";
 import { SessionMediaMessageResponse } from "@opencode/protocol/groups/message";
 import { SessionMediaInboxResponse } from "@opencode/protocol/groups/session";
-import { Api } from "../api";
-import { wantsMediaRefs } from "#vibelang/emitted/src/media-uri";
+import { Api } from "../api.js";
+import { wantsMediaRefs } from "../media-uri.js";
 import { ConflictError, CommandExecutionError, CommandNotFoundError, FormAlreadySettledError, FormInvalidAnswerError, FormNotFoundError, InvalidRequestError, InvalidCursorError, MessageNotFoundError, ServiceUnavailableError, SessionBusyError, SkillNotFoundError, } from "@opencode/protocol/errors";
 import { AbsolutePath } from "@opencode/core/schema";
-import { locationErrors } from "../location";
-import { failedMessageDecode, failedSnapshot, missingMessage, missingSession } from "./session-error";
+import { locationErrors } from "../location.js";
+import { failedMessageDecode, failedSnapshot, missingMessage, missingSession } from "./session-error.js";
 function missingForm(id) {
     return new FormNotFoundError({ id, message: `Form not found: ${id}` });
 }

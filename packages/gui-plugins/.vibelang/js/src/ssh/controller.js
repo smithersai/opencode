@@ -3,9 +3,9 @@ import { NodeSocketServer } from "@effect/platform-node";
 import { Cause, Clock, Deferred, Effect, Exit, Fiber, FileSystem, Path, Predicate, PubSub, Ref, Schedule, Scope, Stream, } from "effect";
 import { HttpClient } from "effect/http";
 import { ChildProcess, ChildProcessSpawner } from "effect/process";
-import { createAskpass } from "./askpass";
-import { bootstrap } from "./bootstrap";
-import { parseTarget, quote, runSsh, sshArgs, sshExecutable, tunnelArgs, SshFailure } from "./command";
+import { createAskpass } from "./askpass.js";
+import { bootstrap } from "./bootstrap.js";
+import { parseTarget, quote, runSsh, sshArgs, sshExecutable, tunnelArgs, SshFailure } from "./command.js";
 export const createSshController = Effect.fn("Ssh.controller")(function* (input) {
     const fs = yield* FileSystem.FileSystem;
     const path = yield* Path.Path;

@@ -3,9 +3,9 @@ import { NodeServices } from "@effect/platform-node";
 import { Effect, Exit, Fiber, Layer, ManagedRuntime, Schema, Scope, Stream } from "effect";
 import { FetchHttpClient } from "effect/http";
 import { builtinMainContext } from "@opencode/plugin/gui/builtin";
-import { SshFailure } from "./command";
+import { SshFailure } from "./command.js";
 import { Ssh, SshConfig } from "./contract.js";
-import { createSshController } from "./controller";
+import { createSshController } from "./controller.js";
 const setup = async (ctx) => {
     const cli = ctx.cli;
     // The saved hosts; stored before in the desktop settings file.

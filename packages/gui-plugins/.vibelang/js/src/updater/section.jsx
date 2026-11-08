@@ -3,7 +3,7 @@ import { createMemo } from "solid-js";
 import { Button } from "@opencode/ui/button";
 import { Switch } from "@opencode/ui/switch";
 import { usePlugin } from "@opencode/plugin/gui";
-import { updaterAction } from "./action";
+import { updaterAction } from "./action.js";
 export default function UpdatesSection(props) {
     const ctx = usePlugin();
     const releaseNotes = ctx.stores.releaseNotes;

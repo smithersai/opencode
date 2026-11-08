@@ -3,7 +3,7 @@ import { createSignal, onCleanup } from "solid-js";
 import { createSimpleContext } from "./helper";
 import { useClient } from "./client";
 import { useData } from "./data";
-import { useEvent } from "./event";
+import { useEvent } from "./event.js";
 import { useStorage } from "./storage";
 export const { use: useSessionTerminals, provider: SessionTerminalsProvider } = createSimpleContext({
     name: "SessionTerminals",

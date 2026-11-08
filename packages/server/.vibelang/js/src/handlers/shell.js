@@ -4,8 +4,8 @@ import { Location } from "@opencode/core/location";
 import { Effect } from "effect";
 import { HttpApiBuilder, HttpApiSchema } from "effect/http-api";
 import { ShellNotFoundError } from "@opencode/protocol/errors";
-import { Api } from "../api";
-import { response } from "../location";
+import { Api } from "../api.js";
+import { response } from "../location.js";
 export const ShellHandler = HttpApiBuilder.group(Api, "server.shell", (handlers) => Effect.gen(function* () {
     return handlers
         .handle("shell.list", Effect.fn(function* () {

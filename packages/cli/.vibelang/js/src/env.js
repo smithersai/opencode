@@ -10,4 +10,4 @@ export const password = Config.Redacted("OPENCODE_PASSWORD").pipe(Config.orElse(
 export function session() {
     return Object.fromEntries(Object.entries(process.env).filter((entry) => entry[1] !== undefined && entry[0] !== "OPENCODE_PASSWORD" && entry[0] !== "OPENCODE_SERVER_PASSWORD"));
 }
-export * as Env from "./env";
+export * as Env from "./env.js";

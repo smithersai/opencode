@@ -3,7 +3,7 @@ import { Plugin } from "@opencode/plugin/tui";
 import { createMemo, Show } from "solid-js";
 import { useUsageLimits } from "../../component/usage";
 import { useLocal } from "../../context/local";
-import { formatDollars, usageLevel } from "../../util/usage-limits";
+import { formatDollars, usageLevel } from "../../util/usage-limits.js";
 /** What the workspace's limits leave for the selected model; hidden when no limit applies to it. */
 export function SidebarLimit(props) {
     const theme = props.context.theme;

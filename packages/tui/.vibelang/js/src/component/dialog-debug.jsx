@@ -7,7 +7,7 @@ import { useRoute } from "../context/route";
 import { useLocal } from "../context/local";
 import { useClipboard } from "../context/clipboard";
 import { useToast } from "../ui/toast";
-import { describeOS, describeTerminal } from "../util/system";
+import { describeOS, describeTerminal } from "../util/system.js";
 import { useTuiApp } from "../context/runtime";
 import { useNewDesigns } from "../config";
 export function DialogDebug() {

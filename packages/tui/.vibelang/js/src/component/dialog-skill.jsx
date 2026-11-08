@@ -4,7 +4,7 @@ import { DialogSelect } from "../ui/dialog-select";
 import { createResource, createMemo, createSignal, Match, Switch } from "solid-js";
 import { DIALOG_LIST_INSET, useDialog } from "../ui/dialog";
 import { useTheme } from "../context/theme";
-import { errorMessage } from "../util/error";
+import { errorMessage } from "../util/error.js";
 import { useData } from "../context/data";
 export function DialogSkill(props) {
     const dialog = useDialog();

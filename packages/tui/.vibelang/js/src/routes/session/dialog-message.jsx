@@ -5,9 +5,9 @@ import { DialogSelect } from "../../ui/dialog-select";
 import { useClipboard } from "../../context/clipboard";
 import { useToast } from "../../ui/toast";
 import { useClient } from "../../context/client";
-import { errorMessage } from "../../util/error";
+import { errorMessage } from "../../util/error.js";
 import { DialogFork } from "./dialog-fork";
-import { projectedPromptInput } from "#vibelang/emitted/src/prompt/codec";
+import { projectedPromptInput } from "../../prompt/codec.js";
 import { useNewDesigns } from "../../config";
 export function DialogMessage(props) {
     const data = useData();

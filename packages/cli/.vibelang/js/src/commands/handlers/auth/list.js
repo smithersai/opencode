@@ -2,9 +2,9 @@
 import { EOL } from "node:os";
 import { Effect } from "effect";
 import { Commands } from "../../commands.js";
-import { Runtime } from "../../../framework/runtime";
-import { createClient, loadIntegrations } from "./shared";
-import { errorMessage } from "../../../util/error";
+import { Runtime } from "../../../framework/runtime.js";
+import { createClient, loadIntegrations } from "./shared.js";
+import { errorMessage } from "../../../util/error.js";
 export default Runtime.handler(Commands.commands.auth.commands.list, (input) => list(input).pipe(Effect.catch((error) => Effect.sync(() => {
     process.stderr.write(errorMessage(error) + EOL);
     process.exitCode = 1;

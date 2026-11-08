@@ -2,13 +2,13 @@
 import { createMemo } from "solid-js";
 import { useTuiPaths } from "../../context/runtime";
 import { useTheme } from "../../context/theme";
-import { Locale } from "../../util/locale";
-import { abbreviateHome } from "../../util/path-format";
+import { Locale } from "../../util/locale.js";
+import { abbreviateHome } from "../../util/path-format.js";
 import { SessionQuestion } from "./permission";
 import { useDialog } from "../../ui/dialog";
 import { useClient } from "../../context/client";
 import { useToast } from "../../ui/toast";
-import { errorMessage } from "../../util/error";
+import { errorMessage } from "../../util/error.js";
 import { DialogWorkspaces } from "../../component/dialog-workspaces";
 import { useData } from "../../context/data";
 export function SessionLocationMissing(props) {

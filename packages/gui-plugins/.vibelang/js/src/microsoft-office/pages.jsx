@@ -5,7 +5,7 @@ import { createStore } from "solid-js/store";
 import { createKeyed } from "@opencode/plugin/gui";
 import { PreviewControls } from "@opencode/ui/preview-controls";
 import { DocumentSurface } from "@opencode/ui/document-surface";
-import { paper } from "./paper";
+import { paper } from "./paper.js";
 /** How long a resize has to settle before visible pages paint again at the new scale. */
 const settleDelay = 150;
 /** The rows mounted with the column: enough to fill a tall screen with the first pages. */

@@ -8,7 +8,7 @@
 // the current browse position. When the user arrows up at cursor offset 0,
 // the current draft is saved and history begins. Arrowing past the end
 // restores the draft.
-export { mentionTriggerIndex, slashTriggerIndex } from "../prompt/display";
+export { mentionTriggerIndex, slashTriggerIndex } from "../prompt/display.js";
 import { measureEditText } from "@opentui/core";
 const HISTORY_LIMIT = 200;
 export function promptCopy(prompt) {

@@ -4,7 +4,7 @@ import { spawn } from "node:child_process";
 import { randomUUID } from "node:crypto";
 import { createServer } from "node:net";
 import { Predicate } from "effect";
-import { shellEscape, wslArgs } from "./runtime";
+import { shellEscape, wslArgs } from "./runtime.js";
 export async function spawnWslSidecar(distro, opts) {
     const t = opts.t;
     const opencode = await opts.runtime.resolveCli(distro, { signal: opts.signal });

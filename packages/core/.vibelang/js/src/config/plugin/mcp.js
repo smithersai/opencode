@@ -11,7 +11,7 @@ export const Plugin = define({
     id: "opencode.config.mcp",
     effect: (ctx) => {
         return Effect_1.gen(function* effect() {
-            yield* register(ctx.event.subscribe({ types: ["config.updated"] }));
+            yield* register(yield* Effect.orDie(Effect.try({ try: () => ctx.event.subscribe({ types: ["config.updated"] }), catch: (e) => e })));
         });
     },
 });

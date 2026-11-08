@@ -6,7 +6,7 @@ import * as Effect_1 from "effect/Effect";
 import { Location } from "@opencode/core/location";
 import { LocationServiceMap } from "@opencode/core/location-service-map";
 import { ServiceUnavailableError } from "@opencode/protocol/errors";
-import { Api } from "../api";
+import { Api } from "../api.js";
 export const LocationHandler = HttpApiBuilder.group(Api, "server.location", (handlers) => {
     return Effect_1.gen(function* () {
         const locations = yield* LocationServiceMap.Service;

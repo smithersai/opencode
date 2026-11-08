@@ -4,8 +4,8 @@ import { createStore, produce, reconcile } from "solid-js/store";
 import path from "path";
 import { mkdirSync, readFileSync } from "fs";
 import { Flock } from "@opencode/util/flock";
-import { writeJsonAtomic } from "../util/persistence";
-import { safeWatch } from "../util/watch";
+import { writeJsonAtomic } from "../util/persistence.js";
+import { safeWatch } from "../util/watch.js";
 import { useTuiApp, useTuiPaths } from "./runtime";
 function clone(value) {
     const json = JSON.stringify(value);

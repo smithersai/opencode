@@ -5,10 +5,10 @@ import { HttpServerRequest, HttpServerResponse } from "effect/http";
 import { HttpApiBuilder } from "effect/http-api";
 import { PersistentPty } from "@opencode/core/persistent-pty";
 import { UnauthorizedError } from "@opencode/protocol/errors";
-import { Api } from "../api";
-import { ServerAuth } from "../auth";
-import { ServerInfo } from "../server-info";
-import { ServerPairing } from "../pairing";
+import { Api } from "../api.js";
+import { ServerAuth } from "../auth.js";
+import { ServerInfo } from "../server-info.js";
+import { ServerPairing } from "../pairing.js";
 export const ServerHandler = HttpApiBuilder.group(Api, "server.server", (handlers) => Effect.gen(function* () {
     const pairing = yield* ServerPairing.Service;
     const auth = yield* ServerAuth.Config;

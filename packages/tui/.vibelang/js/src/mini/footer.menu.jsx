@@ -3,10 +3,10 @@
 import { TextAttributes } from "@opentui/core";
 import { useTerminalDimensions } from "@opentui/solid";
 import { createEffect, createMemo, createSignal } from "solid-js";
-import { transparent } from "./theme";
-import { Locale } from "../util/locale";
-import { stringWidth } from "../util/string-width";
-import { moveSelection, moveSelectionOffset, reconcileSelection, revealSelectionOffset } from "../ui/select-controller";
+import { transparent } from "./theme.js";
+import { Locale } from "../util/locale.js";
+import { stringWidth } from "../util/string-width.js";
+import { moveSelection, moveSelectionOffset, reconcileSelection, revealSelectionOffset } from "../ui/select-controller.js";
 export const FOOTER_MENU_ROWS = 8;
 export const FOOTER_COMPACT_WIDTH = 40;
 export function footerMenuText(text, width, mono = false) {

@@ -4,7 +4,7 @@ import path from "path";
 import { stat } from "fs/promises";
 import { fileURLToPath } from "url";
 import { Host } from "@opencode/plugin/host";
-import { resolveSlots } from "./structure";
+import { resolveSlots } from "./structure.js";
 import { createStore, produce, reconcile as reconcileStore, unwrap } from "solid-js/store";
 import { isDeepEqual } from "remeda";
 import "#runtime-plugin-support";
@@ -12,13 +12,13 @@ import { useConfig } from "../config";
 import { useTuiLifecycle } from "../context/runtime";
 import { useClient } from "../context/client";
 import { useData } from "../context/data";
-import { errorMessage } from "../util/error";
+import { errorMessage } from "../util/error.js";
 import { createPluginContext, usePluginHost } from "./api";
-import { createSourceWatcher } from "./watch";
-import { discoverPluginTargets, localSource, mergePluginTargets } from "./discovery";
-import { createPluginSources } from "./source";
-import { isMissingPath } from "../util/config-directories";
-import { createMarkdownRenderer } from "./markdown";
+import { createSourceWatcher } from "./watch.js";
+import { discoverPluginTargets, localSource, mergePluginTargets } from "./discovery.js";
+import { createPluginSources } from "./source.js";
+import { isMissingPath } from "../util/config-directories.js";
+import { createMarkdownRenderer } from "./markdown.js";
 import { useLog } from "../context/log";
 const PluginContext = createContext();
 export function PluginProvider(props) {
@@ -194,7 +194,7 @@ export function PluginProvider(props) {
         ], directory);
         // Resolve: fold entries into one desired generation. A source that fails
         // to import keeps its running previous version and only reports failure.
-        const { builtins } = await import("./builtins");
+        const { builtins } = await import("./builtins.js");
         const desired = new Map();
         for (const plugin of builtins)
             desired.set(plugin.id, { plugin, source: "builtin", version: "builtin", enabled: true });

@@ -3,8 +3,8 @@ import { SessionMessage } from "@opencode/schema/session-message";
 import { Effect } from "effect";
 import { access, constants } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
-import { builtinCommands } from "./catalog";
-import { linkReference, promptContentToParts } from "./content";
+import { builtinCommands } from "./catalog.js";
+import { linkReference, promptContentToParts } from "./content.js";
 import { ACPError } from "./error.js";
 export const prepare = Effect.fnUntraced(function* (catalog, content) {
     if (content.some((block) => block.type === "image" && !block.data && !block.uri)) {
@@ -42,4 +42,4 @@ function detectSlashCommand(text) {
         return undefined;
     return { name, args: rest.join(" ").trim() };
 }
-export * as ACPPrompt from "./prompt";
+export * as ACPPrompt from "./prompt.js";

@@ -51,4 +51,4 @@ export function handleSelectionKey(renderer, toast, event, clipboard, copyOnSele
         return;
     renderer.clearSelection();
 }
-export * as Selection from "./selection";
+export * as Selection from "./selection.js";

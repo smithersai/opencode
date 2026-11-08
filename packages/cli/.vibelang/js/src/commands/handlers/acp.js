@@ -6,13 +6,13 @@ import { CrossSpawnSpawner } from "@opencode/util/cross-spawn-spawner";
 import { Effect, Option } from "effect";
 import { FetchHttpClient, HttpClient, HttpClientRequest } from "effect/http";
 import { Writable } from "node:stream";
-import { ACP } from "../../acp/agent";
+import { ACP } from "../../acp/agent.js";
 import { Commands } from "../commands.js";
-import { Runtime } from "../../framework/runtime";
-import { Standalone } from "../../services/standalone";
+import { Runtime } from "../../framework/runtime.js";
+import { Standalone } from "../../services/standalone.js";
 export default Runtime.handler(Commands.commands.acp, Effect.fn("cli.acp")(function* (input) {
     if (input.login) {
-        const login = yield* Effect.promise(() => import("./auth/login"));
+        const login = yield* Effect.promise(() => import("./auth/login.js"));
         return yield* login.default({
             target: Option.none(),
             method: Option.none(),

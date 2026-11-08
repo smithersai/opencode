@@ -3,7 +3,7 @@ import { useI18n } from "@opencode/ui/context/i18n";
 import { Icon } from "@opencode/ui/icon";
 import { frameLoop, prefersReducedMotion, Spring } from "@opencode/ui/motion";
 import { createSignal, For, Match, onCleanup, Show, Switch } from "solid-js";
-import { sourcesExpand } from "./experiment";
+import { sourcesExpand } from "./experiment.js";
 import { SiteIcon } from "./site-icon";
 import "../../../../src/sources/sources.css";
 /** A turn's searches and opened pages in the order they ran. `onOpen` opens a result's or page's URL. */

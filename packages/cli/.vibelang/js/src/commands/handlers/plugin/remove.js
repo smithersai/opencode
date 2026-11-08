@@ -5,9 +5,9 @@ import { Effect } from "effect";
 import { applyEdits, modify, parse } from "jsonc-parser";
 import { Global } from "@opencode/util/global";
 import { Commands } from "../../commands.js";
-import { Runtime } from "../../../framework/runtime";
-import { Config } from "../../../config";
-import { resolveConfigPath } from "../mcp/add";
+import { Runtime } from "../../../framework/runtime.js";
+import { Config } from "../../../config/index.js";
+import { resolveConfigPath } from "../mcp/add.js";
 export default Runtime.handler(Commands.commands.plugin.commands.remove, Effect.fn("cli.plugin.remove")(function* (input) {
     const global = yield* Global.Service;
     const configPath = yield* Effect.promise(() => resolveConfigPath(global.config));

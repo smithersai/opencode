@@ -3,7 +3,7 @@ import { Credential } from "@opencode/core/credential";
 import { ConflictError } from "@opencode/protocol/errors";
 import { Effect } from "effect";
 import { HttpApiBuilder, HttpApiSchema } from "effect/http-api";
-import { Api } from "../api";
+import { Api } from "../api.js";
 export const CredentialHandler = HttpApiBuilder.group(Api, "server.credential", (handlers) => handlers
     .handle("credential.list", Effect.fn(function* () {
     const credential = yield* Credential.Service;

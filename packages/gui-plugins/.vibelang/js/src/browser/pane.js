@@ -6,10 +6,10 @@ import { SessionID } from "@opencode/schema/session-id";
 import electron from "electron";
 import { Deferred, Effect, ManagedRuntime, Queue, Schedule, Schema, Stream } from "effect";
 import { HttpClient, HttpClientRequest } from "effect/http";
-import { createBrowserPage } from "./chromium";
-import { browserFailure } from "./errors";
-import { createBrowserNetwork } from "./network";
-import { destinationOrigin, fileURLWithin, refusal } from "./policy";
+import { createBrowserPage } from "./chromium.js";
+import { browserFailure } from "./errors.js";
+import { createBrowserNetwork } from "./network.js";
+import { destinationOrigin, fileURLWithin, refusal } from "./policy.js";
 import { createRefs } from "./refs.js";
 import { createBrowserRestoreStore } from "./restore.js";
 export function createBrowserPane(input) {

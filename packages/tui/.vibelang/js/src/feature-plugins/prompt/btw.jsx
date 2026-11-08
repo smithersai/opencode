@@ -11,7 +11,7 @@ import { useTheme, useThemes } from "../../context/theme";
 import { usePlugin } from "../../plugin/context";
 import { DIALOG_INSET, DialogBleed, DialogFooter, DialogHeader, DialogLayout } from "../../ui/dialog";
 import { useToast } from "../../ui/toast";
-import { getScrollAcceleration } from "../../util/scroll";
+import { getScrollAcceleration } from "../../util/scroll.js";
 // session.generate exposes the session's tools but runs no tool loop, so a
 // tool call would surface as an empty answer.
 const instructions = [

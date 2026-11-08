@@ -3,7 +3,7 @@ import { Config } from "@opencode/core/config";
 import { ShellSelect } from "@opencode/core/shell/select";
 import { Effect } from "effect";
 import { HttpApiBuilder } from "effect/http-api";
-import { Api } from "../api";
+import { Api } from "../api.js";
 export const ConfigHandler = HttpApiBuilder.group(Api, "server.config", (handlers) => handlers
     .handle("config.get", () => Config.Service.use((config) => config.entries()))
     .handle("config.update", Effect.fn(function* (ctx) {

@@ -47,7 +47,10 @@ const rpcFromEffect = Effect.fn("Plugin.Rpc.fromEffect")(function* (host, stream
     const run = Effect.runPromiseWith(context);
     const client = (definition) => {
         const local = host(definition);
-        const subscribe = (name, options) => streams(local.events.subscribe(name), options);
+        const subscribe = (name, options) => 
+        // The in-process payload is the wire payload before JSON encoding: since Effect 4.1.1 the wire type reads
+        // metadata as JSON values, while the local event holds the same objects as unknown.
+        streams(local.events.subscribe(name), options);
         return Object.assign(Object.fromEntries(Object.keys(definition.methods).map((name) => [
             name,
             (input, options) => {

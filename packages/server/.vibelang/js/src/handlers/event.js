@@ -5,7 +5,7 @@ import * as HttpServerResponse from "effect/http/HttpServerResponse";
 import * as Stream from "effect/Stream";
 import * as Effect_1 from "effect/Effect";
 import { Event } from "@opencode/schema/event";
-import { Api } from "../api";
+import { Api } from "../api.js";
 import { EventFeed } from "../event-feed.js";
 export const EventHandler = HttpApiBuilder.group(Api, "server.event", (handlers) => {
     return Effect_1.gen(function* () {

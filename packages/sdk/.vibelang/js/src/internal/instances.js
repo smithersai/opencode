@@ -59,10 +59,11 @@ export function layer(options, replacements) {
                     const plugins = yield* Plugin.Service;
                     yield* plugins.awaitActivation;
                     // Covers setup failures and IDs colliding with host plugins; Core reports both in the inventory.
-                    const failed = (yield* plugins.list()).filter((plugin) => plugin.state.status === "failed"
-                        && configuration.plugins.some((configured) => configured.id === plugin.id));
+                    const list2 = yield* plugins.list();
+                    const failed = yield* Effect.orDie(Effect.try({ try: () => list2.filter((plugin) => plugin.state.status === "failed"
+                            && configuration.plugins.some((configured) => configured.id === plugin.id)), catch: (e) => e }));
                     if (failed.length > 0) {
-                        yield* Effect.die(new Error(`Instance plugin setup failed: ${failed.map((plugin) => plugin.id).join(", ")}`));
+                        yield* Effect.die(new Error(`Instance plugin setup failed: ${yield* Effect.orDie(Effect.try({ try: () => failed.map((plugin) => plugin.id).join(", "), catch: (e) => e }))}`));
                     }
                 })(), context);
             })));

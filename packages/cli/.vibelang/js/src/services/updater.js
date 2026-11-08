@@ -8,9 +8,9 @@ import { ChildProcess } from "effect/process";
 import { parse } from "jsonc-parser";
 import path from "node:path";
 import { stripVTControlCharacters } from "node:util";
-import { RetainedImage } from "./retained-image";
-import { action, parseReleaseVersion } from "./updater-action";
-import { errorMessage } from "../util/error";
+import { RetainedImage } from "./retained-image.js";
+import { action, parseReleaseVersion } from "./updater-action.js";
+import { errorMessage } from "../util/error.js";
 export const methods = ["curl", "npm", "pnpm", "bun", "yarn", "vp", "brew", "winget"];
 export class UpgradeError extends Error {
     title;
@@ -479,5 +479,5 @@ const make = Effect.gen(function* () {
     return Service.of({ run, check, apply, method, latest, upgrade, removal });
 });
 export const layer = Layer.effect(Service, make);
-export * as Updater from "./updater";
-export { action } from "./updater-action";
+export * as Updater from "./updater.js";
+export { action } from "./updater-action.js";

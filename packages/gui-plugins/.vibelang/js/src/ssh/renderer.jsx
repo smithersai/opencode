@@ -5,8 +5,8 @@ import { Command, createKeyed, MenuItem, Server, Style } from "@opencode/plugin/
 import { onIdle } from "@opencode/plugin/gui/builtin";
 import { Ssh } from "./contract.js";
 import { SshCover } from "./cover";
-import { sshName, sshServerState } from "./name";
-import { createSshController } from "./state";
+import { sshName, sshServerState } from "./name.js";
+import { createSshController } from "./state.js";
 const loadDialog = () => import("./dialog");
 const setup = (ctx) => {
     // SSH lives in the desktop main process.

@@ -2,7 +2,7 @@
 import { useMutation } from "@tanstack/solid-query";
 import { createMemo } from "solid-js";
 import { createKeyed } from "@opencode/plugin/gui";
-import { addServerProbePlan, createProbeFailureGate, runAddableProbePlan, } from "./model";
+import { addServerProbePlan, createProbeFailureGate, runAddableProbePlan, } from "./model.js";
 export function useWslAddServerProbes(input) {
     const gate = createProbeFailureGate();
     const probe = useMutation(() => ({

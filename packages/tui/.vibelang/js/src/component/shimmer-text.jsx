@@ -2,7 +2,7 @@
 import { RGBA } from "@opentui/core";
 import { extend } from "@opentui/solid";
 import { splitProps } from "solid-js";
-import { MaskedTextRenderable } from "./masked-text";
+import { MaskedTextRenderable } from "./masked-text.js";
 import { coast, intensityAt } from "./tab-pulse";
 const DURATION = 1200;
 class ShimmerTextRenderable extends MaskedTextRenderable {

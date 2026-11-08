@@ -2,9 +2,9 @@
 import { app, BrowserWindow, nativeImage, nativeTheme } from "electron";
 import { WindowFocusChanged, WindowFullscreenChanged, WindowPinchZoomChanged, WindowZoomChanged, } from "../../shared/ipc-rpc/events.js";
 import { emitIpcEvent } from "../ipc-events.js";
-import { BACKGROUND_COLOR_KEY, PINCH_ZOOM_ENABLED_KEY, ZOOM_LEVEL_KEY } from "../storage/keys";
-import { getStore } from "../storage/store";
-import { platformFrame, savedBackgroundColor, storedBackgroundColor, storedZoomLevel, titlebarOverlay, tone } from "./defaults";
+import { BACKGROUND_COLOR_KEY, PINCH_ZOOM_ENABLED_KEY, ZOOM_LEVEL_KEY } from "../storage/keys.js";
+import { getStore } from "../storage/store.js";
+import { platformFrame, savedBackgroundColor, storedBackgroundColor, storedZoomLevel, titlebarOverlay, tone } from "./defaults.js";
 const titlebarThemes = new WeakMap();
 const pinchZoomEnabled = new WeakMap();
 const maxZoomLevel = 10;

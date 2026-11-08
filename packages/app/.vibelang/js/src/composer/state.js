@@ -3,8 +3,8 @@ import { batch, createSignal, untrack } from "solid-js";
 import { createStore } from "solid-js/store";
 import { Persist, persisted } from "@/runtime/persistence/storage";
 import { ServerScope } from "@/runtime/server/scope";
-import { clonePrompt } from "./prompt-parts";
-import { createComposerQuoteSource } from "./quote-source";
+import { clonePrompt } from "./prompt-parts.js";
+import { createComposerQuoteSource } from "./quote-source.js";
 import { ComposerStore, DEFAULT_PROMPT, contextItemKey, } from "./schema.js";
 export { DEFAULT_PROMPT } from "./schema.js";
 export function isCommentItem(item) {

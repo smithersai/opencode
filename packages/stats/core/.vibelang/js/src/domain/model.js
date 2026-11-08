@@ -6,9 +6,9 @@ import * as Effect_1 from "effect/Effect";
 import { and, asc, eq, gte, inArray, max, or } from "drizzle-orm";
 import * as Context from "effect/Context";
 import { DatabaseError, DrizzleClient } from "../database.js";
-import { modelStat } from "../database/schema";
-import { RETIRED_STAT_MODELS, RETIRED_STAT_PROVIDERS } from "./model-normalization";
-import { chunks, collapseRows, DATA_SITE_TIERS, inserted, omitUniqueUsers, periodKeyFor, rankBy, statPeriodKey, statRowScope, synthesizeAllTierRows, toStatBaseRow, UPSERT_CHUNK_SIZE, withUniqueUsersFallback, } from "./stat";
+import { modelStat } from "../database/schema.js";
+import { RETIRED_STAT_MODELS, RETIRED_STAT_PROVIDERS } from "./model-normalization.js";
+import { chunks, collapseRows, DATA_SITE_TIERS, inserted, omitUniqueUsers, periodKeyFor, rankBy, statPeriodKey, statRowScope, synthesizeAllTierRows, toStatBaseRow, UPSERT_CHUNK_SIZE, withUniqueUsersFallback, } from "./stat.js";
 export class ModelStatRepo extends Context.Service()("@opencode/stats/ModelStatRepo") {
     static layer = Layer.effect(ModelStatRepo, Effect_1.gen(function* () {
         const db = yield* DrizzleClient;

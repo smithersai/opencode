@@ -29,7 +29,7 @@ import { useTabs } from "@/shell/tabs/tabs";
 import { Persist, persisted } from "@/runtime/persistence/storage";
 import { Persistence } from "@/runtime/persistence/schema";
 import { Schema } from "effect";
-import { CONSOLE_INTEGRATION, connectMethods, createProviderConnectionController, providerFormDefaults, } from "./controller";
+import { CONSOLE_INTEGRATION, connectMethods, createProviderConnectionController, providerFormDefaults, } from "./controller.js";
 import { ConsoleAuthorization } from "./console";
 import { DialogChatGPTPlanWelcome } from "./chatgpt-welcome";
 import { authServerName, RemoteAuthNotice } from "./remote";

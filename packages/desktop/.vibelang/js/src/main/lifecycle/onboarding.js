@@ -6,11 +6,11 @@ import * as Path from "effect/Path";
 import { withSpan } from "effect/Effect";
 import * as Effect_1 from "effect/Effect";
 import { app } from "electron";
-import { scoped } from "../native/logging";
-import { hasExistingAppState } from "../storage/install-state";
-import { FIRST_LAUNCH_ONBOARDING_COMPLETE_KEY } from "../storage/keys";
-import { getStore } from "../storage/store";
-import { nativeT } from "../native/translations";
+import { scoped } from "../native/logging.js";
+import { hasExistingAppState } from "../storage/install-state.js";
+import { FIRST_LAUNCH_ONBOARDING_COMPLETE_KEY } from "../storage/keys.js";
+import { getStore } from "../storage/store.js";
+import { nativeT } from "../native/translations.js";
 export const initializeFirstLaunchOnboarding = (userDataPath) => {
     return Effect_1.gen(function* initializeFirstLaunchOnboarding() { return yield* withSpan(Effect_1.gen(function* () {
         const store = yield* Effect.orDie(Effect.try({ try: () => getStore(), catch: (e) => e }));

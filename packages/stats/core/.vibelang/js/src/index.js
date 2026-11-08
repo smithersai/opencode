@@ -2,11 +2,11 @@
 export * as AppConfig from "./config.js";
 export * as Database from "./database.js";
 export * as GeoStat from "./domain/geo.js";
-export * as StatsHome from "./domain/home";
-export * as Inference from "./domain/inference";
+export * as StatsHome from "./domain/home.js";
+export * as Inference from "./domain/inference.js";
 export * as ModelStat from "./domain/model.js";
 export * as ProviderStat from "./domain/provider.js";
 export * as RetentionStat from "./domain/retention.js";
-export * as Stat from "./domain/stat";
+export * as Stat from "./domain/stat.js";
 export * as Runtime from "./runtime.js";
 export * as StatSync from "./stat-sync.js";

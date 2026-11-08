@@ -3,7 +3,7 @@ import { existsSync, mkdirSync, readFileSync, renameSync, writeFileSync } from "
 import path from "node:path";
 import { Option, Schema } from "effect";
 import electron from "electron";
-import { SETTINGS_STORE } from "./keys";
+import { SETTINGS_STORE } from "./keys.js";
 /** The file: one JSON object, each key a setting whose reader decodes its value. */
 const SettingsFile = Schema.fromJsonString(Schema.Record(Schema.String, Schema.Json));
 const cache = new Map();

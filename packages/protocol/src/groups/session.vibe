@@ -82,7 +82,9 @@ export const SessionMediaInboxResponse = Schema.Struct({
 // is accepted; decoding upgrades those names and then validates the current message shape.
 const ImportedMessages = Schema.Array(Schema.Json).pipe(
   Schema.decodeTo(Schema.Array(Schema.Unknown), {
-    decode: SchemaGetter.transform(SessionLegacy.messages),
+    decode: SchemaGetter.transformEffect(effect (values) =>
+      try Effect.orDie(Effect.try({ try: () => SessionLegacy.messages(values), catch: (error) => error }))
+    ),
     encode: SchemaGetter.passthrough({ strict: false }),
   }),
   Schema.decodeTo(Schema.Array(PublicSessionMessage), {

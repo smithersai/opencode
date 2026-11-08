@@ -25,7 +25,7 @@ import { useHostApis } from "@/runtime/plugin/root";
 import { ServerConnection } from "@/runtime/server/registry";
 import { filterWorkspaceInventory, inspectWorkspaceDeletion, managedWorkspaceDirectories, mergeWorkspaceSessionInventory, removeWorkspacesSequentially, sessionsForWorkspace, workspaceInventory, } from "@/workspaces/paths";
 import { listAllSessions } from "@/session/list";
-import { workspaceInventoryQuery } from "./queries";
+import { workspaceInventoryQuery } from "./queries.js";
 import "@/settings/settings.css";
 export const SettingsWorkspaces = (props) => {
     const dialog = useDialog();

@@ -1,4 +1,5 @@
 import { describe, expect, test } from "bun:test"
+import fc from "fast-check"
 import { Effect, Layer, Option } from "effect"
 import { HttpClient, HttpClientRequest, HttpClientResponse } from "effect/http"
 import { CodeMode, OpenAPI, Tool } from "../src/index.js"
@@ -1357,6 +1358,70 @@ describe("OpenAPI.fromSpec", () => {
     cyclic.self = cyclic
     await expect(Effect.runPromise(tool.execute({ body: cyclic }).pipe(Effect.provide(client.layer)))).rejects.toThrow(
       "Invalid JSON body",
+    )
+  })
+
+  test("preserves UTF-8 Basic credentials through the platform boundary", async () => {
+    const text = fc
+      .array(
+        fc.integer({ min: 0, max: 0x10ffff }).filter((value) => value < 0xd800 || value > 0xdfff),
+        { maxLength: 16 },
+      )
+      .map((values) => String.fromCodePoint(...values))
+    await fc.assert(
+      fc.asyncProperty(text, text, async (username, password) => {
+        const client = recordingClient(() => json({ ok: true }))
+        const tool = toolAt(
+          OpenAPI.fromSpec({
+            baseUrl,
+            spec: {
+              ...singleOperation({}),
+              security: [{ basic: [] }],
+              components: { securitySchemes: { basic: { type: "http", scheme: "basic" } } },
+            },
+            auth: { resolve: () => Effect.succeed({ type: "basic", username, password }) },
+          }).tools,
+          "test",
+        )
+        if (!Tool.isTool(tool)) throw new Error("basic auth tool was not generated")
+        await Effect.runPromise(tool.execute({}).pipe(Effect.provide(client.layer)))
+        const header = client.requests[0]!.headers.authorization!
+        expect(header.startsWith("Basic ")).toBe(true)
+        const decoded = Uint8Array.from(atob(header.slice(6)), (char) => char.charCodeAt(0))
+        expect(new TextDecoder().decode(decoded)).toBe(`${username}:${password}`)
+      }),
+      { numRuns: 50, seed: 38401 },
+    )
+  })
+
+  test("preserves UTF-8 responses across chunk and buffer growth boundaries", async () => {
+    const tool = toolAt(OpenAPI.fromSpec({ baseUrl, spec: singleOperation({}) }).tools, "test")
+    if (!Tool.isTool(tool)) throw new Error("response tool was not generated")
+    await fc.assert(
+      fc.asyncProperty(
+        fc.integer({ min: 0, max: 2048 }),
+        fc.integer({ min: 257, max: 8192 }),
+        fc.boolean(),
+        async (extra, width, declared) => {
+          const text = "é漢🙂".repeat(8192 + extra)
+          const bytes = new TextEncoder().encode(text)
+          const client = recordingClient(
+            () =>
+              new Response(
+                new ReadableStream({
+                  start(controller) {
+                    for (let offset = 0; offset < bytes.length; offset += width)
+                      controller.enqueue(bytes.subarray(offset, offset + width))
+                    controller.close()
+                  },
+                }),
+                { headers: { "content-type": "text/plain", ...(declared ? { "content-length": "1" } : {}) } },
+              ),
+          )
+          await expect(Effect.runPromise(tool.execute({}).pipe(Effect.provide(client.layer)))).resolves.toBe(text)
+        },
+      ),
+      { numRuns: 50, seed: 38402 },
     )
   })
 

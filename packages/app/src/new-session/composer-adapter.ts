@@ -1,3 +1,4 @@
+import { Predicate } from "effect"
 import { base64Encode } from "@opencode/util/encode"
 import { Session } from "@opencode/schema/session"
 import { startTransition } from "solid-js"

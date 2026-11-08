@@ -5,7 +5,7 @@ import { Session } from "@opencode/schema/session";
 import { startTransition } from "solid-js";
 import { useComposerState } from "@/composer/persistence";
 import { createComposerControls, createComposerModelSelection } from "@/composer/selection";
-import { createComposerProjectControls } from "./project/controller";
+import { createComposerProjectControls } from "./project/controller.js";
 import { useLanguage } from "@/runtime/i18n/language";
 import { useLocal } from "@/providers/models/selection";
 import { useData, useServer } from "@/runtime/server/current";

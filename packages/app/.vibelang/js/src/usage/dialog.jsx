@@ -8,8 +8,8 @@ import { For, Match, onMount, Show, Switch } from "solid-js";
 import { useLanguage } from "@/runtime/i18n/language";
 import { usePlatform } from "@/runtime/platform/platform";
 import { useData } from "@/runtime/server/current";
-import { useUsageFormat } from "./format";
-import { usageView, } from "./limits";
+import { useUsageFormat } from "./format.js";
+import { usageView, } from "./limits.js";
 import "../../../../src/usage/dialog.css";
 /** The Usage dialog: the location's OpenCode Go allowance and Console budgets, refreshed when it opens. */
 export function DialogUsage(props) {

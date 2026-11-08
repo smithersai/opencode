@@ -9,7 +9,7 @@ import { SessionPanelFrame, SessionRouteFrame } from "@/session/session-frame";
 import { LayoutProvider } from "@/shell/state/layout";
 import { SettingsSurfaceProvider } from "@/settings/surface";
 import Shell from "@/shell/shell";
-import { requireServerKey } from "./session";
+import { requireServerKey } from "./session.js";
 import { PluginAttachment } from "@/runtime/plugin/root";
 export const File = lazy(() => import("@opencode/session-ui/file").then((module) => ({ default: module.File })));
 const loadSessionRoute = () => Promise.all([import("@/session/route"), File.preload()]).then(([module]) => module);

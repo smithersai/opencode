@@ -6,7 +6,7 @@
 import { Worktree } from "@opencode/schema/worktree";
 import { SessionID } from "@opencode/schema/session-id";
 import { SessionMessage } from "@opencode/schema/session-message";
-import { isFormAlreadySettledError, isFormNotFoundError, isPermissionNotFoundError, } from "../promise";
+import { isFormAlreadySettledError, isFormNotFoundError, isPermissionNotFoundError, } from "../promise/index.js";
 import { createStore, produce, reconcile } from "solid-js/store";
 import { batch, createEffect, createMemo, createSignal, onCleanup } from "solid-js";
 const messagePageLimit = 20;

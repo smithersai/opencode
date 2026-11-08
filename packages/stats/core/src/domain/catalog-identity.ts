@@ -9,6 +9,7 @@ export type CatalogIdentity = {
   models: ReadonlyMap<string, string>
 }
 
+/** @throws {never} */
 export async function loadCatalogIdentity() {
   if (cache.value && (cache.expiresAt ?? 0) > Date.now()) return { catalog: cache.value, stale: false }
   return fetch(CATALOG_URL, { signal: AbortSignal.timeout(10_000) })

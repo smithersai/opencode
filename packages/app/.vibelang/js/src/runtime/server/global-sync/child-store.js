@@ -2,11 +2,11 @@
 import { createRoot, createSignal, getOwner, onCleanup, runWithOwner } from "solid-js";
 import { createStore } from "solid-js/store";
 import { Persist } from "@/runtime/persistence/storage";
-import { DIR_IDLE_TTL_MS, MAX_DIR_STORES, } from "./types";
-import { canDisposeDirectory, pickDirectoriesToEvict } from "./eviction";
+import { DIR_IDLE_TTL_MS, MAX_DIR_STORES, } from "./types.js";
+import { canDisposeDirectory, pickDirectoriesToEvict } from "./eviction.js";
 import { useQuery } from "@tanstack/solid-query";
-import { directoryKey } from "./utils";
-import { normalizeAgentList, normalizeProviderList } from "./utils";
+import { directoryKey } from "./utils.js";
+import { normalizeAgentList, normalizeProviderList } from "./utils.js";
 import { ProjectState, VcsState } from "../persistence.js";
 export function createChildStoreManager(input) {
     const children = {};

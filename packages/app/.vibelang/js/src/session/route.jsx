@@ -23,12 +23,12 @@ import { useSettings } from "@/settings/model";
 import { SessionUIProvider } from "@/shell/routes/session-ui-provider";
 import { useTabs } from "@/shell/tabs/tabs";
 import { requireServerKey } from "@/shell/routes/session";
-import { useSessionModel } from "./model";
+import { useSessionModel } from "./model.js";
 import { SessionPanelFrame } from "./session-frame";
 import { SessionIdentityHeader } from "./session-identity-header";
 import { ServerUnavailablePanel } from "./server-unavailable-panel";
 import { SessionErrorFallback } from "./route-error";
-import { createSessionResolution } from "./session-resolution";
+import { createSessionResolution } from "./session-resolution.js";
 import { SessionScreenView } from "./screen";
 import { PreparingComposer } from "./preparing-composer";
 export function TargetSessionRouteContent() {

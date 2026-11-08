@@ -5,8 +5,8 @@ import { createEffect, on, onCleanup } from "solid-js";
 import { createStore } from "solid-js/store";
 import { frameLoop } from "@opencode/ui/motion";
 import { useLayout } from "@/shell/state/layout";
-import { useSessionHashScroll } from "../use-session-hash-scroll";
-import { createTimelineModel } from "./model";
+import { useSessionHashScroll } from "../use-session-hash-scroll.js";
+import { createTimelineModel } from "./model.js";
 export function createSessionTimelineInteraction(session) {
     const layout = useLayout();
     const location = useLocation();

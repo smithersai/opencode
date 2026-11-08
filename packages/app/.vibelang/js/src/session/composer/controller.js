@@ -5,9 +5,9 @@ import { setCursorPosition } from "@/composer/editor/dom";
 import { promptLength } from "@/composer/prompt-parts";
 import { createComposerModel } from "@/composer/model";
 import { useSettings } from "@/settings/model";
-import { createActiveComposerAdapter } from "./adapter";
-import { createSessionQueue } from "./queue";
-import { createSessionComposerRegionController } from "./session-composer-region-controller";
+import { createActiveComposerAdapter } from "./adapter.js";
+import { createSessionQueue } from "./queue.js";
+import { createSessionComposerRegionController } from "./session-composer-region-controller.js";
 export function createSessionComposerController(input) {
     const settings = useSettings();
     const dialog = useDialog();

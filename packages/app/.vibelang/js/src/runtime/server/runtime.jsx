@@ -13,11 +13,11 @@ import { createNotificationCoordinator } from "@/shell/notifications/coordinator
 import { useCurrentRoute } from "@/shell/state/layout";
 import { useTabs } from "@/shell/tabs/tabs";
 import { Persist, persisted } from "@/runtime/persistence/storage";
-import { createDesktopData } from "./data";
+import { createDesktopData } from "./data.js";
 import { ModelState } from "./persistence.js";
 import { useLanguage } from "@/runtime/i18n/language";
 import { showToast } from "@/shell/notifications/toast";
-import { formatServerError } from "./errors";
+import { formatServerError } from "./errors.js";
 import { useSettings } from "@/settings/model";
 import { timelinePreset } from "@opencode/session-ui/timeline/detail";
 import { projectForSession } from "@/shell/layout/helpers";

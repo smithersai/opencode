@@ -2,8 +2,8 @@
 import { net, protocol } from "electron";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
-import { documentPolicyHeader, jsCallStacksDocumentPolicy } from "./headers";
-import { rendererHost, rendererProtocol } from "./scheme";
+import { documentPolicyHeader, jsCallStacksDocumentPolicy } from "./headers.js";
+import { rendererHost, rendererProtocol } from "./scheme.js";
 // The entry module registers the handler the moment the first window exists, before logging is up,
 // so problems go to the console until the logging layer installs a reporter.
 let report = (level, message, data) => console[level === "error" ? "error" : "warn"](message, data);

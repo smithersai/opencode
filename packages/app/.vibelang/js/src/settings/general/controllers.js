@@ -5,7 +5,7 @@ import { monoDefault, monoFontFamily, monoInput, sansDefault, sansFontFamily, sa
 import { usePlatform } from "@/runtime/platform/platform";
 import { desktopZoomLevels } from "@/shell/commands/desktop-menu";
 import { playSoundById, SOUND_OPTIONS } from "@/shell/notifications/sound";
-import { createSoundPreviewController } from "./behavior";
+import { createSoundPreviewController } from "./behavior.js";
 import { ServerConnection } from "@/runtime/server/registry";
 import { useServerCtx } from "@/runtime/server/runtime";
 import { useLanguage } from "@/runtime/i18n/language";

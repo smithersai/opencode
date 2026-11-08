@@ -4,7 +4,7 @@ import { createMemo, onCleanup } from "solid-js";
 import { useLanguage } from "@/runtime/i18n/language";
 import { COMMAND_SEARCH_ID, commandPaletteOptions, useCommand } from "./command";
 import { CommandPaletteView, matchesCommandPaletteEntry } from "./dialog";
-import { createCommandPaletteCommandEntry } from "./palette";
+import { createCommandPaletteCommandEntry } from "./palette.js";
 /** Search everything, limited to commands. */
 export function DialogCommandSearch() {
     const command = useCommand();

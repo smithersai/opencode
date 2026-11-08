@@ -17,25 +17,28 @@ export const pluginHandlers = PluginRpcs.toLayer(
       const contents = sender(handoff, context)
       const win = BrowserWindow.fromWebContents(contents)
 
-      if (!win || win.isDestroyed() || win.webContents !== contents || !isRendererUrl(contents.getURL()))
+      if (!win || win.isDestroyed() || win.webContents !== contents || !isRendererUrl(contents.getURL())) {
         $raise(new Error("plugin.caller.invalid"))
+      }
 
       return win.id
     }
 
+    const failPlugin = effect (error: unknown) => {
+      throw try Effect.orDie(Effect.try({ try: () => pluginFailure(error), catch: (cause) => cause }))
+    }
+
     // The manager enables, disables and reloads plugins.
-    const manage = <A>(run: (host: PluginHost) => A | Promise<A>) =>
-      Effect.tryPromise({
-        try: () => plugins.host().then(run),
-        catch: pluginFailure,
-      })
+    const manage = effect <A>(run: (host: PluginHost) => A | Promise<A>) => {
+      return Effect.tryPromise(() => plugins.host().then(run)) catch effect (error) => try failPlugin(error.cause)
+    }
 
     return PluginRpcs.of({
-      PluginCall: (request, context) =>
-        Effect.tryPromise({
-          try: (signal) => plugins.host().then((host) => host.call(request, { window: caller(context), signal })),
-          catch: pluginFailure,
-        }),
+      PluginCall: effect (request, context) => {
+        return Effect.tryPromise((signal) =>
+          plugins.host().then((host) => host.call(request, { window: caller(context), signal }))
+        ) catch effect (error) => try failPlugin(error.cause)
+      },
       PluginSubscribe: ({ ipc }, context) => Effect.sync(() => plugins.subscribe(ipc, caller(context))),
       PluginEmbed: ({ id, layout }, context) => Effect.sync(() => plugins.loaded()?.embed(caller(context), id, layout)),
       PluginCapture: ({ id }, context) =>
@@ -53,6 +56,8 @@ export const pluginHandlers = PluginRpcs.toLayer(
 )
 
 module $throw$ts {
-export function raise(value: unknown): never { throw value }
+  export function raise(value: unknown): never {
+    throw value
+  }
 }
 import { raise as $raise } from $throw$ts

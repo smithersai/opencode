@@ -25,12 +25,12 @@ import { formatKeybindParts, useCommand } from "@/shell/commands/command";
 import { createMediaQuery } from "@solid-primitives/media";
 import { useIsRouting, useLocation } from "@solidjs/router";
 import { useLanguage } from "@/runtime/i18n/language";
-import { closedEntry, createClosedTabs } from "./closed-tabs";
+import { closedEntry, createClosedTabs } from "./closed-tabs.js";
 import { panelsMoving } from "@/shell/panel-motion";
 import { createEmbeds } from "./embeds";
 import { usePluginHost } from "./host";
-import { createLocatedWrites } from "./located";
-import { createSessionPanelMenu } from "./panel-menu";
+import { createLocatedWrites } from "./located.js";
+import { createSessionPanelMenu } from "./panel-menu.js";
 import { deferredHandle, globalStoreTarget, persistedHandle, renamedFrom, renamedStoreName, storeImports, storeName, } from "./stores.js";
 import { ui } from "./ui";
 /**
@@ -335,7 +335,7 @@ export function createHostApis() {
         },
     };
 }
-export { PluginAttachmentProvider, usePluginAttachment } from "./attachment";
+export { PluginAttachmentProvider, usePluginAttachment } from "./attachment.js";
 /** Builds the session and layout attachment before readiness; its `attach` connects HostApis as the routes render. */
 export function createPluginAttachment(apis) {
     const global = useGlobal();

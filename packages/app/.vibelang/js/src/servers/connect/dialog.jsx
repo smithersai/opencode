@@ -15,10 +15,10 @@ import { normalizeServerUrl, ServerConnection, useServers } from "@/runtime/serv
 import { useTabs } from "@/shell/tabs/tabs";
 import { useCheckServerHealth } from "@/runtime/server/health";
 import { usePlatform } from "@/runtime/platform/platform";
-import { isMixedContent } from "./browser";
-import { cameraHint, createCameraAvailability } from "./camera";
+import { isMixedContent } from "./browser.js";
+import { cameraHint, createCameraAvailability } from "./camera.js";
 import { bareServerAddress, pairingLink } from "./pairing.js";
-import { useRedeemPairing } from "./redeem";
+import { useRedeemPairing } from "./redeem.js";
 import { ConnectMethodSwitch } from "./method";
 import "@/settings/settings.css";
 const PairingScanner = lazy(() => import("./scanner").then((module) => ({ default: module.PairingScanner })));

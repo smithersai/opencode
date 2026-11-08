@@ -14,9 +14,9 @@ import { useServers } from "@/runtime/server/registry";
 import { useLanguage } from "@/runtime/i18n/language";
 import { Persist, persisted } from "@/runtime/persistence/storage";
 import { SessionTabAvatarView } from "@/shell/layout/session-tab-avatar";
-import { sessionTabTitle } from "./tab-title";
+import { sessionTabTitle } from "./tab-title.js";
 import { sessionTitle } from "@/session/title";
-import { createSessionInbox, inboxArchived, inboxBusy } from "./inbox-model";
+import { createSessionInbox, inboxArchived, inboxBusy } from "./inbox-model.js";
 // `since` is when the inbox was first used; Recent only lists sessions that finished a run after it.
 const InboxState = Persistence.struct({
     workingExpanded: Schema.Boolean,

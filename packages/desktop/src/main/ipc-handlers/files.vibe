@@ -10,16 +10,20 @@ export const fileHandlers = FileRpcs.toLayer(
 
     return FileRpcs.of({
       FilesOpenDirectoryPicker: ({ options }) => files.openDirectoryPicker(options),
-      FilesOpenFilePicker: ({ options }, context) =>
-        files
+      FilesOpenFilePicker: effect ({ options }, context) => {
+        const contents = try Effect.orDie(Effect.try({ try: () => sender(handoff, context), catch: (error) => error }))
+        return try (files
           .openFilePicker(
-            sender(handoff, context).id,
+            contents.id,
             options ? { ...options, extensions: options.extensions && [...options.extensions] } : undefined,
-          ) |> Effect.orDie(%),
-      FilesReadPickedFile: ({ token, path }, context) =>
-        files
-          .readPickedFile(sender(handoff, context).id, token, path)
-        |> Effect.map(%, (buffer) => new Uint8Array(buffer)) |> Effect.orDie(%),
+          ) |> Effect.orDie(%))
+      },
+      FilesReadPickedFile: effect ({ token, path }, context) => {
+        const contents = try Effect.orDie(Effect.try({ try: () => sender(handoff, context), catch: (error) => error }))
+        return try (files
+          .readPickedFile(contents.id, token, path)
+          |> Effect.map(%, (buffer) => new Uint8Array(buffer)) |> Effect.orDie(%))
+      },
       FilesReleasePickedFiles: ({ token }, context) =>
         Effect.sync(() => files.releasePickedFiles(sender(handoff, context).id, token)),
       FilesSaveFile: ({ options, content }) => files.saveFile(options, content) |> Effect.orDie(%),

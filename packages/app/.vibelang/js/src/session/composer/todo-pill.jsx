@@ -6,7 +6,7 @@ import { createEffect, createMemo, For, on, Show } from "solid-js";
 import { createStore } from "solid-js/store";
 import { useLanguage } from "@/runtime/i18n/language";
 import { useComposerLaneAlignment } from "./composer-lane";
-import { currentTodo, todoFinished } from "./todos";
+import { currentTodo, todoFinished } from "./todos.js";
 import "../../../../../src/session/composer/todo-pill.css";
 // The agent's plan as one capsule in the composer lane, beside the background activity capsule: progress and the todo
 // in hand, opening a popover with the whole list.

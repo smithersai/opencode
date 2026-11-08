@@ -3,8 +3,8 @@ import { For, Show } from "solid-js";
 import { Dialog, DialogBody, DialogHeader, DialogTitleGroup } from "@opencode/ui/dialog";
 import { useLanguage } from "@/runtime/i18n/language";
 import { ExternalLink } from "@/runtime/platform/external-link";
-import { fonts } from "./fonts";
-import { crateNotices, notices } from "./notices";
+import { fonts } from "./fonts.js";
+import { crateNotices, notices } from "./notices.js";
 const licenseOf = new Map(crateNotices.texts.map((text) => [text.id, text.license]));
 const texts = crateNotices.texts.map((text) => ({
     ...text,

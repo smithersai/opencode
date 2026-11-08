@@ -2,11 +2,11 @@
 import { app, BrowserWindow, systemPreferences } from "electron";
 import { Effect } from "effect";
 import { WindowRpcs } from "../../shared/ipc-rpc.js";
-import { IpcPortHandoff } from "../ipc-transport";
-import { getPinchZoomEnabled, setPinchZoomEnabled, setTitlebar, setTrafficLightsPosition, setWindowThemeReady, setZoomLevel, updateTitlebar, } from "../windows";
-import { storedZoomLevel } from "../windows/defaults";
-import { focusWindow, showWindow } from "../windows/focus";
-import { sender } from "./context";
+import { IpcPortHandoff } from "../ipc-transport.js";
+import { getPinchZoomEnabled, setPinchZoomEnabled, setTitlebar, setTrafficLightsPosition, setWindowThemeReady, setZoomLevel, updateTitlebar, } from "../windows/index.js";
+import { storedZoomLevel } from "../windows/defaults.js";
+import { focusWindow, showWindow } from "../windows/focus.js";
+import { sender } from "./context.js";
 export const windowHandlers = WindowRpcs.toLayer(Effect.gen(function* () {
     const handoff = yield* IpcPortHandoff;
     return WindowRpcs.of({

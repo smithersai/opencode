@@ -6,8 +6,8 @@ import { homedir, tmpdir } from "node:os";
 import path from "node:path";
 import { app } from "electron";
 import { debugBuild, memoryLogInterval } from "@opencode/gui-plugins/debug/options";
-import { APP_ID, APP_NAME, CHANNEL } from "../constants";
-import { remoteDebuggingPort } from "../diagnostics/options";
+import { APP_ID, APP_NAME, CHANNEL } from "../constants.js";
+import { remoteDebuggingPort } from "../diagnostics/options.js";
 const testOnboarding = process.env.OPENCODE_TEST_ONBOARDING === "1";
 const jsCallStackFeature = "DocumentPolicyIncludeJSCallStacksInCrashReports";
 // Runs synchronously from the entry module, before Chromium is ready: command-line switches only

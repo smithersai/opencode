@@ -10,14 +10,14 @@ import { useSettings } from "@/settings/model";
 import { syncWhileBooting, useProviders } from "../catalog/providers.js";
 import { Persist, persisted } from "@/runtime/persistence/storage";
 import { Persistence } from "@/runtime/persistence/schema";
-import { hasCustomAgent, resolveAgent } from "./agent";
-import { cycleModelVariant, getConfiguredAgentVariant, resolveModelVariant } from "./variant";
+import { hasCustomAgent, resolveAgent } from "./agent.js";
+import { cycleModelVariant, getConfiguredAgentVariant, resolveModelVariant } from "./variant.js";
 import { useWorkspaceLocation } from "@/workspaces/location";
 import { useData } from "@/runtime/server/current";
 import { normalizeAgentList } from "@/runtime/server/global-sync/utils";
 import { useServerSDK } from "@/runtime/server/client";
 import { ScopedKey } from "@/runtime/server/scope";
-import { useConfiguredModel } from "./configured";
+import { useConfiguredModel } from "./configured.js";
 const ModelKeySchema = Schema.Struct({
     providerID: Schema.String,
     modelID: Schema.String,

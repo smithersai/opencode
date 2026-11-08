@@ -18,9 +18,9 @@ import { fetchSessionExport, saveSessionExport, sessionExportFilename } from "@/
 import { usePlatform } from "@/runtime/platform/platform";
 import { sessionLabel, sessionTitle } from "@/session/title";
 import { showToast } from "@/shell/notifications/toast";
-import { archiveHomeSession } from "./archive";
-import { homeSessionsQuery } from "./queries";
-import { buildHomeSessionRecords, homeProjectForSession, homeSessionLocation } from "./records";
+import { archiveHomeSession } from "./archive.js";
+import { homeSessionsQuery } from "./queries.js";
+import { buildHomeSessionRecords, homeProjectForSession, homeSessionLocation } from "./records.js";
 export function createHomeSessionsController(home) {
     const tabs = useTabs();
     const command = useCommand();

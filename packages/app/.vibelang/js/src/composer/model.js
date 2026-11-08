@@ -3,7 +3,7 @@ import { ImagePreview } from "@opencode/ui/image-preview";
 import { useDialog } from "@opencode/ui/context/dialog";
 import { createComponent, createEffect, createMemo, createSignal, on, onCleanup } from "solid-js";
 import { Predicate } from "effect";
-import { createComposerEditor, createComposerEditorState } from "./editor/interaction";
+import { createComposerEditor, createComposerEditorState } from "./editor/interaction.js";
 import { selectionFromLines, useFile } from "@/workspaces/files/model";
 import { useComments } from "@/composer/comments";
 import { useCommand } from "@/shell/commands/command";
@@ -22,13 +22,13 @@ import { Session } from "@opencode/schema/session";
 import { abort } from "@opencode/util/abort";
 import { parseSessionMention } from "@opencode/util/session-mention";
 import { createKnownServerSessions, createServerSessionEntries } from "@/shell/commands/palette";
-import { matchesSessionTitle } from "./session-match";
-import { isAttachment } from "./prompt-parts";
-import { isCommentItem } from "./state";
-import { createComposerHistory } from "./history/store";
-import { createComposerSubmit } from "./submit";
-import { useAttachmentDestination } from "./attachments/destination";
-import { parseClientSlashCommand } from "./client-slash-command";
+import { matchesSessionTitle } from "./session-match.js";
+import { isAttachment } from "./prompt-parts.js";
+import { isCommentItem } from "./state.js";
+import { createComposerHistory } from "./history/store.js";
+import { createComposerSubmit } from "./submit.js";
+import { useAttachmentDestination } from "./attachments/destination.js";
+import { parseClientSlashCommand } from "./client-slash-command.js";
 const sendFailedTitle = {
     shell: "prompt.toast.shellSendFailed.title",
     command: "prompt.toast.commandSendFailed.title",

@@ -6,12 +6,12 @@ import { useTheme } from "@opencode/ui/theme/context";
 import { createEffect, createMemo, createResource, lazy, Show, Suspense } from "solid-js";
 import { createStore } from "solid-js/store";
 import { DesktopFirstLaunchOnboarding } from "./onboarding";
-import { createDesktopPlatform } from "./platform";
-import { bindDesktopMenu } from "./platform/menu";
-import { createSidecarResolver, initializationData, sidecarHttp } from "./startup/initialization";
-import { preloadStoredLocale } from "./startup/locale";
+import { createDesktopPlatform } from "./platform/index.js";
+import { bindDesktopMenu } from "./platform/menu.js";
+import { createSidecarResolver, initializationData, sidecarHttp } from "./startup/initialization.js";
+import { preloadStoredLocale } from "./startup/locale.js";
 import { LoadingSplash } from "./startup/splash";
-import { getLastActiveUrl } from "./window/route-storage";
+import { getLastActiveUrl } from "./window/route-storage.js";
 import { DesktopMemoryRouter } from "./window/router";
 const MigrationStatus = lazy(() => import("./migration-status").then((module) => ({ default: module.MigrationStatus })));
 export function DesktopApp(props) {

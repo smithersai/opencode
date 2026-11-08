@@ -4,7 +4,7 @@ import { Effect, Stream, Schema } from "effect";
 import { Sse } from "effect/encoding";
 import { HttpClientError } from "effect/http";
 import { HttpApiClient } from "effect/http-api";
-import { ClientApi } from "../../contract";
+import { ClientApi } from "../../contract.js";
 import { ClientError } from "./client-error.js";
 const mapClientError = (error) => HttpClientError.isHttpClientError(error) || Schema.isSchemaError(error) || Sse.Retry.is(error)
     ? new ClientError({ cause: error })

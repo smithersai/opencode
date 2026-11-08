@@ -52,6 +52,7 @@ export const event = Effect.fn("Client.Rpc.event")(function* <
   } as Rpc.EventPayload<D, Name>
 })
 
+/** @throws {never} */
 export function eventType<const D extends Rpc.Definition, const Name extends keyof D["events"] & string>(
   definition: D,
   name: Name,

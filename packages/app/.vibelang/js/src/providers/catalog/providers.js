@@ -6,9 +6,9 @@ import { isServiceUnavailableError } from "@opencode/client/promise";
 import { retry } from "@opencode/util/retry";
 import { Iterable, pipe } from "effect";
 import { createEffect, createMemo } from "solid-js";
-import { useIntegrations } from "./integrations";
-import { popularProviders } from "./order";
-export { popularProviders } from "./order";
+import { useIntegrations } from "./integrations.js";
+import { popularProviders } from "./order.js";
+export { popularProviders } from "./order.js";
 const emptyProviderCatalog = { all: new Map(), connected: [], default: {} };
 const popularProviderSet = new Set(popularProviders);
 // A cold Location lists its catalogs once its plugins activate, which can take longer than the server's 5 s wait.

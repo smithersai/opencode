@@ -2,7 +2,7 @@
 import { readFileSync } from "node:fs";
 import path from "node:path";
 import { app } from "electron";
-import { CHANNEL } from "../constants";
+import { CHANNEL } from "../constants.js";
 // The main thread idles between showing the first window and evaluating the main bundle, waiting
 // for the renderer's asset requests. That slot is long enough to find out whether a compatible
 // background service is already running, so the renderer's first data request is not the first

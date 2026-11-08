@@ -12,10 +12,10 @@ import { usePlatform } from "@/runtime/platform/platform";
 import { useGlobal } from "@/runtime/server/runtime";
 import { ProjectIcon } from "@/shell/layout/project-icon";
 import { useCommand } from "@/shell/commands/command";
-import { useSettingsServers } from "./servers/inventory";
+import { useSettingsServers } from "./servers/inventory.js";
 import { useSettingsSurface } from "./surface";
-import { rankSettings } from "./search-results";
-import { settingsSearchIndex } from "./search-index";
+import { rankSettings } from "./search-results.js";
+import { settingsSearchIndex } from "./search-index.js";
 import { SettingsSearchEmpty } from "./search-empty";
 export function SettingsSearch() {
     const language = useLanguage();

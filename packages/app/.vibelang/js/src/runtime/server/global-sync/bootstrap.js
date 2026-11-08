@@ -3,7 +3,7 @@ import { showToast } from "@/shell/notifications/toast";
 import { getFilename } from "@opencode/util/path";
 import { retry } from "@opencode/util/retry";
 import { reconcile } from "solid-js/store";
-import { normalizeProjectInfo } from "./utils";
+import { normalizeProjectInfo } from "./utils.js";
 import { formatServerError } from "@/runtime/server/errors";
 import { queryOptions } from "@tanstack/solid-query";
 import { withWorktreeInventory, worktreeInventoryKey } from "@/workspaces/inventory";

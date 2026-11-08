@@ -24,7 +24,7 @@ import { createModelUsage, ModelUsageTag } from "@/usage/model";
 import { createSafeTriangle } from "@/shell/commands/safe-triangle";
 import { formatKeybindParts, matchKeybind, parseKeybind } from "@/shell/commands/command";
 import { createEventListener } from "@solid-primitives/event-listener";
-import { matchesModelSearch } from "./search";
+import { matchesModelSearch } from "./search.js";
 import { SettingsList } from "@/settings/list";
 import { CONSOLE_GROUP_KEY, consoleModelGroup, ProviderModelIcon, ProviderModelSections, } from "@/providers/models/provider-group";
 import { consoleProviderName } from "@/providers/catalog/console";

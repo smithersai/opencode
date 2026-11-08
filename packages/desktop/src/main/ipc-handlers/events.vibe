@@ -8,7 +8,13 @@ export const eventHandlers = EventRpcs.toLayer(
     const handoff = try IpcPortHandoff
 
     return EventRpcs.of({
-      DesktopEvents: (_request, context) => ipcEventStream(sender(handoff, context).id),
+      DesktopEvents: (_request, context) =>
+        Stream.unwrap(effect {
+          const contents = try Effect.orDie(
+            Effect.try({ try: () => sender(handoff, context), catch: (error) => error }),
+          )
+          return ipcEventStream(contents.id)
+        }),
     })
   },
 )

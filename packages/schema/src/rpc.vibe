@@ -1,4 +1,4 @@
-export * as Rpc from "./rpc.vibe"
+export * as Rpc from "./rpc.js"
 
 import type { StandardSchemaV1 } from "@standard-schema/spec"
 import type { JsonSchema, Schema } from "effect"

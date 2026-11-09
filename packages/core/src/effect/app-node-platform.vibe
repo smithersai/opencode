@@ -30,4 +30,4 @@ export const webSocketConstructor = makeGlobalNode({
   deps: [],
 })
 
-export * as LayerNodePlatform from "./app-node-platform.vibe"
+export * as LayerNodePlatform from "./app-node-platform.js"

@@ -44,7 +44,7 @@ export interface TransportPrepareInput<Body> {
   readonly webSocket?: WebSocketChannelExecutor
 }
 
-export * as HttpTransport from "./http.vibe"
+export * as HttpTransport from "./http.js"
 export type { HttpHandler, HttpMiddleware } from "../executor.js"
 export type {
   ChannelCheckpoint,

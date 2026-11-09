@@ -436,4 +436,4 @@ export const route = Route.make({
   endpoint: Endpoint.path("/chat", { baseURL: DEFAULT_BASE_URL }),
   framing: Framing.sse,
 })
-export * as CohereChat from "./cohere-chat.vibe"
+export * as CohereChat from "./cohere-chat.js"

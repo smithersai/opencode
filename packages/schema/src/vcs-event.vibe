@@ -1,4 +1,4 @@
-export * as VcsEvent from "./vcs-event.vibe"
+export * as VcsEvent from "./vcs-event.js"
 
 import { optional } from "./schema.js"
 import { Event } from "./event.js"

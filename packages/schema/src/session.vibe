@@ -1,4 +1,4 @@
-export * as Session from "./session.vibe"
+export * as Session from "./session.js"
 
 import { Agent } from "./agent.js"
 import { Location } from "./location.js"

@@ -104,4 +104,4 @@ export const appendFields = (
   })
 }
 
-export * as MediaInput from "./media-input.vibe"
+export * as MediaInput from "./media-input.js"

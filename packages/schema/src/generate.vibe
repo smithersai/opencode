@@ -1,4 +1,4 @@
-export * as Generate from "./generate.vibe"
+export * as Generate from "./generate.js"
 
 import { Model } from "./model.js"
 import { Money } from "./money.js"

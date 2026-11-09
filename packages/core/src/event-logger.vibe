@@ -1,4 +1,4 @@
-export * as EventLogger from "./event-logger.vibe"
+export * as EventLogger from "./event-logger.js"
 
 import { Layer } from "effect"
 import { makeGlobalNode } from "@opencode/util/effect/app-node"

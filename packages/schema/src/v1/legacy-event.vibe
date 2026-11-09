@@ -1,4 +1,4 @@
-export * as LegacyEventV1 from "./legacy-event.vibe"
+export * as LegacyEventV1 from "./legacy-event.js"
 
 import { ephemeral, inventory } from "../event.js"
 import { SessionID } from "../session-id.js"

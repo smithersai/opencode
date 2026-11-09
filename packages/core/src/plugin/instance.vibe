@@ -1,4 +1,4 @@
-export * as InstancePlugins from "./instance.vibe"
+export * as InstancePlugins from "./instance.js"
 
 import type { Plugin } from "@opencode/plugin/effect/plugin"
 import { makeLocationNode } from "@opencode/util/effect/app-node"

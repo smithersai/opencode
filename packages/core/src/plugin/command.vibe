@@ -1,4 +1,4 @@
-export * as CommandPlugin from "./command.vibe"
+export * as CommandPlugin from "./command.js"
 
 import { define } from "@opencode/plugin/effect/plugin"
 import { Bus } from "../bus.js"

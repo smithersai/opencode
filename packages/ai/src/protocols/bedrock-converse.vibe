@@ -995,4 +995,4 @@ export const route = Route.make({
   framing,
 })
 
-export * as BedrockConverse from "./bedrock-converse.vibe"
+export * as BedrockConverse from "./bedrock-converse.js"

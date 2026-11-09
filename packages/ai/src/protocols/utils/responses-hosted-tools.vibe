@@ -62,4 +62,4 @@ export const onDone: (
   return [{ ...state, lifecycle }, events] satisfies OpenResponses.StepResult
 }
 
-export * as ResponsesHostedTools from "./responses-hosted-tools.vibe"
+export * as ResponsesHostedTools from "./responses-hosted-tools.js"

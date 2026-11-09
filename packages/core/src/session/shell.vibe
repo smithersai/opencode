@@ -1,4 +1,4 @@
-export * as SessionShell from "./shell.vibe"
+export * as SessionShell from "./shell.js"
 
 import type { Session } from "@opencode/schema/session"
 import { Instance } from "../instance/service.js"

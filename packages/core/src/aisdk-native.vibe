@@ -1,4 +1,4 @@
-export * as AISDKNative from "./aisdk-native.vibe"
+export * as AISDKNative from "./aisdk-native.js"
 
 import { Provider } from "./provider.js"
 

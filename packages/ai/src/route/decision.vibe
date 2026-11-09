@@ -145,4 +145,4 @@ const materialize = (part: DecisionPart, execute: Execute) =>
       |> Effect.map(%, (media) => ({ ...part, media })))
     : Effect.succeed(part)
 
-export * as DecisionRoute from "./decision.vibe"
+export * as DecisionRoute from "./decision.js"

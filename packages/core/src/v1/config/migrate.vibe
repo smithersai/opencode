@@ -1,4 +1,4 @@
-export * as ConfigMigrateV1 from "./migrate.vibe"
+export * as ConfigMigrateV1 from "./migrate.js"
 
 import { ConfigAgent } from "@opencode/schema/config/agent"
 import { ConfigAgentV1 } from "./agent.js"

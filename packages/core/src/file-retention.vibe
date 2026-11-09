@@ -1,4 +1,4 @@
-export * as FileRetention from "./file-retention.vibe"
+export * as FileRetention from "./file-retention.js"
 
 import { FSUtil } from "@opencode/util/fs-util"
 

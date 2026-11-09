@@ -1,4 +1,4 @@
-export * as ToolInputRepairPlugin from "./tool-input-repair.vibe"
+export * as ToolInputRepairPlugin from "./tool-input-repair.js"
 
 import { define } from "@opencode/plugin/effect/plugin"
 import { definition } from "../tool/runtime.js"

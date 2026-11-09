@@ -1,4 +1,4 @@
-export * as ConfigProviderV1 from "./provider.vibe"
+export * as ConfigProviderV1 from "./provider.js"
 
 import { Schema } from "effect"
 import { PositiveInt } from "../../schema.js"

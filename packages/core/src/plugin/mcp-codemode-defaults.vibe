@@ -1,4 +1,4 @@
-export * as McpCodeModeDefaultsPlugin from "./mcp-codemode-defaults.vibe"
+export * as McpCodeModeDefaultsPlugin from "./mcp-codemode-defaults.js"
 
 import { define } from "@opencode/plugin/effect/plugin"
 

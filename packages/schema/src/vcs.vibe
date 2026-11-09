@@ -1,4 +1,4 @@
-export * as Vcs from "./vcs.vibe"
+export * as Vcs from "./vcs.js"
 
 import { NonNegativeInt, optional } from "./schema.js"
 

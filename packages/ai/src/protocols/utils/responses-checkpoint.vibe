@@ -114,4 +114,4 @@ export const make = <Body>(body: RouteBody<Body>): TriggerCompactOperation =>
     return result
   })(), "ResponsesCheckpoint.execute")
 
-export * as ResponsesCheckpoint from "./responses-checkpoint.vibe"
+export * as ResponsesCheckpoint from "./responses-checkpoint.js"

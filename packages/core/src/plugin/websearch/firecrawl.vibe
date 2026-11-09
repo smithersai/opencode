@@ -1,4 +1,4 @@
-export * as WebSearchFirecrawl from "./firecrawl.vibe"
+export * as WebSearchFirecrawl from "./firecrawl.js"
 
 import { define } from "@opencode/plugin/effect/plugin"
 import { Scope } from "effect"

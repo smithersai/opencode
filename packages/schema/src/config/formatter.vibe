@@ -1,4 +1,4 @@
-export * as ConfigFormatter from "./formatter.vibe"
+export * as ConfigFormatter from "./formatter.js"
 
 import { optional } from "../schema.js"
 

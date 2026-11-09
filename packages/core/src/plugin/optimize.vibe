@@ -1,4 +1,4 @@
-export * as OptimizePlugin from "./optimize.vibe"
+export * as OptimizePlugin from "./optimize.js"
 
 import { define, type Context } from "@opencode/plugin/effect/plugin"
 import type { SessionHooks } from "@opencode/plugin/effect/session"

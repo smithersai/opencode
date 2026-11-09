@@ -1,4 +1,4 @@
-export * as WebSearchTinyFish from "./tinyfish.vibe"
+export * as WebSearchTinyFish from "./tinyfish.js"
 
 import { define } from "@opencode/plugin/effect/plugin"
 import { Scope } from "effect"

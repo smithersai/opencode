@@ -1,4 +1,4 @@
-export * as Project from "./project.vibe"
+export * as Project from "./project.js"
 
 import { ephemeral, inventory } from "./event.js"
 import { AbsolutePath, NonNegativeInt, optional } from "./schema.js"

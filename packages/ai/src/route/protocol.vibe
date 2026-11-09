@@ -85,4 +85,4 @@ export const make = <Body, Frame, Event, State>(
 
 export const jsonEvent = <const S extends Schema.Top>(schema: S) => Schema.fromJsonString(schema)
 
-export * as Protocol from "./protocol.vibe"
+export * as Protocol from "./protocol.js"

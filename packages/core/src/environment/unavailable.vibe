@@ -14,4 +14,4 @@ export const spawner = make(() =>
 
 export const layer = Layer.succeed(ChildProcessSpawner, spawner)
 
-export * as EnvironmentUnavailable from "./unavailable.vibe"
+export * as EnvironmentUnavailable from "./unavailable.js"

@@ -1,4 +1,4 @@
-export * as ConfigExperimental from "./experimental.vibe"
+export * as ConfigExperimental from "./experimental.js"
 
 import { NonNegativeInt, optional } from "../schema.js"
 import { ConfigPolicy } from "./policy.js"

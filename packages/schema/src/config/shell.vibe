@@ -1,4 +1,4 @@
-export * as ConfigShell from "./shell.vibe"
+export * as ConfigShell from "./shell.js"
 
 export const Option = Schema.Struct({
   path: Schema.String,

@@ -22,4 +22,4 @@ export const layer = layerWith(RequestExecutor.fetchLayer)
 
 export type Services = Layer.Success<typeof layer>
 
-export * as AIClient from "./ai-client.vibe"
+export * as AIClient from "./ai-client.js"

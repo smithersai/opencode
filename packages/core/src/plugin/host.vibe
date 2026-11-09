@@ -1,4 +1,4 @@
-export * as PluginHost from "./host.vibe"
+export * as PluginHost from "./host.js"
 
 import { Plugin } from "@opencode/plugin/effect"
 import type { IntegrationMethodRegistration } from "@opencode/plugin/effect/integration"

@@ -1,4 +1,4 @@
-export * as FileMutation from "./file-mutation.vibe"
+export * as FileMutation from "./file-mutation.js"
 
 import { makeLocationNode } from "@opencode/util/effect/app-node"
 import { KeyedMutex } from "./effect/keyed-mutex.js"

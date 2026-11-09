@@ -1,4 +1,4 @@
-export * as ConfigWebSearch from "./websearch.vibe"
+export * as ConfigWebSearch from "./websearch.js"
 
 import { WebSearch } from "../websearch.js"
 

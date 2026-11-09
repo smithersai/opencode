@@ -1,4 +1,4 @@
-export * as PtyTicket from "./pty-ticket.vibe"
+export * as PtyTicket from "./pty-ticket.js"
 
 import { PositiveInt } from "./schema.js"
 

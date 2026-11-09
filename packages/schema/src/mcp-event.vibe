@@ -1,4 +1,4 @@
-export * as McpEvent from "./mcp-event.vibe"
+export * as McpEvent from "./mcp-event.js"
 
 import { Event } from "./event.js"
 

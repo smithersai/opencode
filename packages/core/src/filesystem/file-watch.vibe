@@ -1,4 +1,4 @@
-export * as FileWatch from "./file-watch.vibe"
+export * as FileWatch from "./file-watch.js"
 
 import { makeGlobalNode } from "@opencode/util/effect/app-node"
 import { FSUtil } from "@opencode/util/fs-util"

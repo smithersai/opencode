@@ -1,4 +1,4 @@
-export * as BrowserFiles from "./files.vibe"
+export * as BrowserFiles from "./files.js"
 
 import * as $platform from "./files.platform.ts"
 import { Browser } from "./rpc.js"

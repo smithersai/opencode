@@ -74,4 +74,4 @@ export const protocol = Protocol.make({
   stream: OpenAIChat.protocol.stream,
 })
 
-export * as ZAIChat from "./zai-chat.vibe"
+export * as ZAIChat from "./zai-chat.js"

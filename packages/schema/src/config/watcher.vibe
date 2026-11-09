@@ -1,4 +1,4 @@
-export * as ConfigWatcher from "./watcher.vibe"
+export * as ConfigWatcher from "./watcher.js"
 
 import { optional } from "../schema.js"
 

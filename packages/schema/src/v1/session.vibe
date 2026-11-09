@@ -1,4 +1,4 @@
-export * as SessionV1 from "./session.vibe"
+export * as SessionV1 from "./session.js"
 
 import { durable, ephemeral, inventory } from "../event.js"
 import { Project } from "../project.js"

@@ -1,4 +1,4 @@
-export * as ConfigProviderPlugin from "./provider.vibe"
+export * as ConfigProviderPlugin from "./provider.js"
 
 import type { ModelEditor } from "@opencode/plugin/effect/model"
 import type { ProviderEditor } from "@opencode/plugin/effect/provider"

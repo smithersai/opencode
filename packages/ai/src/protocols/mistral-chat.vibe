@@ -770,4 +770,4 @@ export const route = Route.make({
   transport: httpTransport,
 })
 
-export * as MistralChat from "./mistral-chat.vibe"
+export * as MistralChat from "./mistral-chat.js"

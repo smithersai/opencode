@@ -1,4 +1,4 @@
-export * as SessionStats from "./session-stats.vibe"
+export * as SessionStats from "./session-stats.js"
 
 import { Model } from "./model.js"
 import { Money } from "./money.js"

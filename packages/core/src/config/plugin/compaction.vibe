@@ -1,4 +1,4 @@
-export * as ConfigCompactionPlugin from "./compaction.vibe"
+export * as ConfigCompactionPlugin from "./compaction.js"
 
 import { define } from "@opencode/plugin/effect/plugin"
 import { Config } from "../../config.js"

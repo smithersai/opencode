@@ -1,4 +1,4 @@
-export * as SessionCommand from "./command.vibe"
+export * as SessionCommand from "./command.js"
 
 import type { PromptInput } from "@opencode/schema/prompt-input"
 import type { Session } from "@opencode/schema/session"

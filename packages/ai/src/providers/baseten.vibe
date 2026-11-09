@@ -103,4 +103,4 @@ function config({ apiKey, baseURL, body, headers, ...providerOptions }: Settings
   }
 }
 
-export * as Baseten from "./baseten.vibe"
+export * as Baseten from "./baseten.js"

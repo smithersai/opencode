@@ -1,4 +1,4 @@
-export * as ConfigPlugin from "./plugin.vibe"
+export * as ConfigPlugin from "./plugin.js"
 
 import { optional } from "../schema.js"
 

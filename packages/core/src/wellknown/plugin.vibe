@@ -1,4 +1,4 @@
-export * as WellKnownPlugin from "./plugin.vibe"
+export * as WellKnownPlugin from "./plugin.js"
 
 import { define } from "@opencode/plugin/effect/plugin"
 import { Bus } from "../bus.js"

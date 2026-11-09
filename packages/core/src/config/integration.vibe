@@ -1,4 +1,4 @@
-export * as ConfigIntegration from "./integration.vibe"
+export * as ConfigIntegration from "./integration.js"
 
 import { Schema } from "effect"
 import { Config } from "@opencode/schema/config"

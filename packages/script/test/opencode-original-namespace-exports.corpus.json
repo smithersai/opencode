@@ -1,0 +1,2027 @@
+[
+  {
+    "source": "packages/ai/src/ai-client.vibe",
+    "exports": [
+      {
+        "namespace": "AIClient",
+        "specifier": "./ai-client.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/ai/src/media-client.vibe",
+    "exports": [
+      {
+        "namespace": "MediaClient",
+        "specifier": "./media-client.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/ai/src/protocols/alibaba-chat.vibe",
+    "exports": [
+      {
+        "namespace": "AlibabaChat",
+        "specifier": "./alibaba-chat.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/ai/src/protocols/alibaba-messages.vibe",
+    "exports": [
+      {
+        "namespace": "AlibabaMessages",
+        "specifier": "./alibaba-messages.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/ai/src/protocols/alibaba-responses.vibe",
+    "exports": [
+      {
+        "namespace": "AlibabaResponses",
+        "specifier": "./alibaba-responses.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/ai/src/protocols/bedrock-converse.vibe",
+    "exports": [
+      {
+        "namespace": "BedrockConverse",
+        "specifier": "./bedrock-converse.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/ai/src/protocols/cohere-chat.vibe",
+    "exports": [
+      {
+        "namespace": "CohereChat",
+        "specifier": "./cohere-chat.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/ai/src/protocols/meta-images.vibe",
+    "exports": [
+      {
+        "namespace": "MetaImages",
+        "specifier": "./meta-images.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/ai/src/protocols/meta-messages.vibe",
+    "exports": [
+      {
+        "namespace": "MetaMessages",
+        "specifier": "./meta-messages.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/ai/src/protocols/meta-responses.vibe",
+    "exports": [
+      {
+        "namespace": "MetaResponses",
+        "specifier": "./meta-responses.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/ai/src/protocols/mistral-chat.vibe",
+    "exports": [
+      {
+        "namespace": "MistralChat",
+        "specifier": "./mistral-chat.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/ai/src/protocols/open-responses-continuation.vibe",
+    "exports": [
+      {
+        "namespace": "OpenResponsesContinuation",
+        "specifier": "./open-responses-continuation.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/ai/src/protocols/openai-responses.vibe",
+    "exports": [
+      {
+        "namespace": "OpenAIResponses",
+        "specifier": "./openai-responses.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/ai/src/protocols/utils/bedrock-cache.vibe",
+    "exports": [
+      {
+        "namespace": "BedrockCache",
+        "specifier": "./bedrock-cache.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/ai/src/protocols/utils/bedrock-media.vibe",
+    "exports": [
+      {
+        "namespace": "BedrockMedia",
+        "specifier": "./bedrock-media.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/ai/src/protocols/utils/fal-queue.vibe",
+    "exports": [
+      {
+        "namespace": "FalQueue",
+        "specifier": "./fal-queue.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/ai/src/protocols/utils/gemini-generate-content.vibe",
+    "exports": [
+      {
+        "namespace": "GeminiGenerateContent",
+        "specifier": "./gemini-generate-content.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/ai/src/protocols/utils/image-sizing.vibe",
+    "exports": [
+      {
+        "namespace": "ImageSizing",
+        "specifier": "./image-sizing.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/ai/src/protocols/utils/media-input.vibe",
+    "exports": [
+      {
+        "namespace": "MediaInput",
+        "specifier": "./media-input.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/ai/src/protocols/utils/open-responses-options.vibe",
+    "exports": [
+      {
+        "namespace": "OpenResponsesOptions",
+        "specifier": "./open-responses-options.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/ai/src/protocols/utils/responses-checkpoint.vibe",
+    "exports": [
+      {
+        "namespace": "ResponsesCheckpoint",
+        "specifier": "./responses-checkpoint.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/ai/src/protocols/utils/responses-compaction.vibe",
+    "exports": [
+      {
+        "namespace": "ResponsesCompaction",
+        "specifier": "./responses-compaction.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/ai/src/protocols/utils/responses-hosted-tools.vibe",
+    "exports": [
+      {
+        "namespace": "ResponsesHostedTools",
+        "specifier": "./responses-hosted-tools.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/ai/src/protocols/utils/speech-stream.vibe",
+    "exports": [
+      {
+        "namespace": "SpeechStream",
+        "specifier": "./speech-stream.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/ai/src/protocols/utils/tool-stream.vibe",
+    "exports": [
+      {
+        "namespace": "ToolStream",
+        "specifier": "./tool-stream.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/ai/src/protocols/venice-chat.vibe",
+    "exports": [
+      {
+        "namespace": "VeniceChat",
+        "specifier": "./venice-chat.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/ai/src/protocols/xai-responses.vibe",
+    "exports": [
+      {
+        "namespace": "XAIResponses",
+        "specifier": "./xai-responses.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/ai/src/protocols/zai-chat.vibe",
+    "exports": [
+      {
+        "namespace": "ZAIChat",
+        "specifier": "./zai-chat.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/ai/src/protocols/zai-messages.vibe",
+    "exports": [
+      {
+        "namespace": "ZAIMessages",
+        "specifier": "./zai-messages.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/ai/src/providers/alibaba.vibe",
+    "exports": [
+      {
+        "namespace": "Alibaba",
+        "specifier": "./alibaba.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/ai/src/providers/baseten.vibe",
+    "exports": [
+      {
+        "namespace": "Baseten",
+        "specifier": "./baseten.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/ai/src/providers/cloudflare-ai-gateway.vibe",
+    "exports": [
+      {
+        "namespace": "CloudflareAIGateway",
+        "specifier": "./cloudflare-ai-gateway.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/ai/src/providers/groq.vibe",
+    "exports": [
+      {
+        "namespace": "Groq",
+        "specifier": "./groq.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/ai/src/providers/minimax.vibe",
+    "exports": [
+      {
+        "namespace": "MiniMax",
+        "specifier": "./minimax.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/ai/src/providers/moonshot.vibe",
+    "exports": [
+      {
+        "namespace": "Moonshot",
+        "specifier": "./moonshot.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/ai/src/providers/vercel-ai-gateway.vibe",
+    "exports": [
+      {
+        "namespace": "VercelAIGateway",
+        "specifier": "./vercel-ai-gateway.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/ai/src/route/auth-options.vibe",
+    "exports": [
+      {
+        "namespace": "AuthOptions",
+        "specifier": "./auth-options.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/ai/src/route/auth.vibe",
+    "exports": [
+      {
+        "namespace": "Auth",
+        "specifier": "./auth.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/ai/src/route/decision.vibe",
+    "exports": [
+      {
+        "namespace": "DecisionRoute",
+        "specifier": "./decision.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/ai/src/route/executor.vibe",
+    "exports": [
+      {
+        "namespace": "RequestExecutor",
+        "specifier": "./executor.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/ai/src/route/framing.vibe",
+    "exports": [
+      {
+        "namespace": "Framing",
+        "specifier": "./framing.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/ai/src/route/media-protocol.vibe",
+    "exports": [
+      {
+        "namespace": "MediaProtocol",
+        "specifier": "./media-protocol.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/ai/src/route/media.vibe",
+    "exports": [
+      {
+        "namespace": "MediaRoute",
+        "specifier": "./media.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/ai/src/route/protocol.vibe",
+    "exports": [
+      {
+        "namespace": "Protocol",
+        "specifier": "./protocol.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/ai/src/route/transport/index.vibe",
+    "exports": [
+      {
+        "namespace": "HttpTransport",
+        "specifier": "./http.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/ai/src/tool.vibe",
+    "exports": [
+      {
+        "namespace": "Tool",
+        "specifier": "./tool.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/client/src/effect/rpc.vibe",
+    "exports": [
+      {
+        "namespace": "RpcClientRuntime",
+        "specifier": "./rpc.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/codemode/src/tool-runtime.vibe",
+    "exports": [
+      {
+        "namespace": "ToolRuntime",
+        "specifier": "./tool-runtime.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/core/src/agent.vibe",
+    "exports": [
+      {
+        "namespace": "Agent",
+        "specifier": "./agent.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/core/src/aisdk-native.vibe",
+    "exports": [
+      {
+        "namespace": "AISDKNative",
+        "specifier": "./aisdk-native.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/core/src/app.vibe",
+    "exports": [
+      {
+        "namespace": "App",
+        "specifier": "./app.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/core/src/codemode/catalog.vibe",
+    "exports": [
+      {
+        "namespace": "CodeModeCatalog",
+        "specifier": "./catalog.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/core/src/codemode/instructions.vibe",
+    "exports": [
+      {
+        "namespace": "CodeModeInstructions",
+        "specifier": "./instructions.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/core/src/codemode/tool.vibe",
+    "exports": [
+      {
+        "namespace": "CodeModeTool",
+        "specifier": "./tool.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/core/src/command.vibe",
+    "exports": [
+      {
+        "namespace": "Command",
+        "specifier": "./command.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/core/src/config/integration.vibe",
+    "exports": [
+      {
+        "namespace": "ConfigIntegration",
+        "specifier": "./integration.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/core/src/config/plugin/compaction.vibe",
+    "exports": [
+      {
+        "namespace": "ConfigCompactionPlugin",
+        "specifier": "./compaction.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/core/src/config/plugin/entry-observer.vibe",
+    "exports": [
+      {
+        "namespace": "ConfigEntryObserver",
+        "specifier": "./entry-observer.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/core/src/config/plugin/formatter.vibe",
+    "exports": [
+      {
+        "namespace": "ConfigFormatterPlugin",
+        "specifier": "./formatter.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/core/src/config/plugin/image.vibe",
+    "exports": [
+      {
+        "namespace": "ConfigImagePlugin",
+        "specifier": "./image.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/core/src/config/plugin/location-watcher.vibe",
+    "exports": [
+      {
+        "namespace": "ConfigLocationWatcherPlugin",
+        "specifier": "./location-watcher.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/core/src/config/plugin/mcp.vibe",
+    "exports": [
+      {
+        "namespace": "ConfigMcpPlugin",
+        "specifier": "./mcp.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/core/src/config/plugin/provider.vibe",
+    "exports": [
+      {
+        "namespace": "ConfigProviderPlugin",
+        "specifier": "./provider.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/core/src/config/plugin/shell.vibe",
+    "exports": [
+      {
+        "namespace": "ConfigShellPlugin",
+        "specifier": "./shell.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/core/src/config/plugin/snapshot.vibe",
+    "exports": [
+      {
+        "namespace": "ConfigSnapshotPlugin",
+        "specifier": "./snapshot.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/core/src/config/plugin/tool-output.vibe",
+    "exports": [
+      {
+        "namespace": "ConfigToolOutputPlugin",
+        "specifier": "./tool-output.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/core/src/config/plugin/websearch.vibe",
+    "exports": [
+      {
+        "namespace": "ConfigWebSearchPlugin",
+        "specifier": "./websearch.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/core/src/database/sqlite.vibe",
+    "exports": [
+      {
+        "namespace": "Sqlite",
+        "specifier": "./sqlite.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/core/src/effect/app-node-platform.vibe",
+    "exports": [
+      {
+        "namespace": "LayerNodePlatform",
+        "specifier": "./app-node-platform.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/core/src/environment/driver.vibe",
+    "exports": [
+      {
+        "namespace": "EnvironmentDriver",
+        "specifier": "./driver.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/core/src/environment/unavailable.vibe",
+    "exports": [
+      {
+        "namespace": "EnvironmentUnavailable",
+        "specifier": "./unavailable.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/core/src/event-logger.vibe",
+    "exports": [
+      {
+        "namespace": "EventLogger",
+        "specifier": "./event-logger.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/core/src/file-mutation.vibe",
+    "exports": [
+      {
+        "namespace": "FileMutation",
+        "specifier": "./file-mutation.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/core/src/file-retention.vibe",
+    "exports": [
+      {
+        "namespace": "FileRetention",
+        "specifier": "./file-retention.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/core/src/filesystem/file-watch.vibe",
+    "exports": [
+      {
+        "namespace": "FileWatch",
+        "specifier": "./file-watch.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/core/src/filesystem/location-watcher-policy.vibe",
+    "exports": [
+      {
+        "namespace": "LocationWatcherPolicy",
+        "specifier": "./location-watcher-policy.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/core/src/generate.vibe",
+    "exports": [
+      {
+        "namespace": "Generate",
+        "specifier": "./generate.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/core/src/image.vibe",
+    "exports": [
+      {
+        "namespace": "Image",
+        "specifier": "./image.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/core/src/instance/service.vibe",
+    "exports": [
+      {
+        "namespace": "Instance",
+        "specifier": "./service.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/core/src/kv.vibe",
+    "exports": [
+      {
+        "namespace": "KV",
+        "specifier": "./kv.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/core/src/location-activity.vibe",
+    "exports": [
+      {
+        "namespace": "LocationActivity",
+        "specifier": "./location-activity.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/core/src/location-lifecycle.vibe",
+    "exports": [
+      {
+        "namespace": "LocationLifecycle",
+        "specifier": "./location-lifecycle.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/core/src/mcp/instructions.vibe",
+    "exports": [
+      {
+        "namespace": "McpInstructions",
+        "specifier": "./instructions.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/core/src/mcp/socket-client.vibe",
+    "exports": [
+      {
+        "namespace": "McpSocketClient",
+        "specifier": "./socket-client.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/core/src/model-retry.vibe",
+    "exports": [
+      {
+        "namespace": "ModelRetry",
+        "specifier": "./model-retry.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/core/src/permission/saved.vibe",
+    "exports": [
+      {
+        "namespace": "PermissionSaved",
+        "specifier": "./saved.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/core/src/plugin/agent.vibe",
+    "exports": [
+      {
+        "namespace": "AgentPlugin",
+        "specifier": "./agent.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/core/src/plugin/command.vibe",
+    "exports": [
+      {
+        "namespace": "CommandPlugin",
+        "specifier": "./command.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/core/src/plugin/hooks.vibe",
+    "exports": [
+      {
+        "namespace": "PluginHooks",
+        "specifier": "./hooks.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/core/src/plugin/host.vibe",
+    "exports": [
+      {
+        "namespace": "PluginHost",
+        "specifier": "./host.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/core/src/plugin/identity.vibe",
+    "exports": [
+      {
+        "namespace": "IdentityPlugin",
+        "specifier": "./identity.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/core/src/plugin/instance.vibe",
+    "exports": [
+      {
+        "namespace": "InstancePlugins",
+        "specifier": "./instance.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/core/src/plugin/internal.vibe",
+    "exports": [
+      {
+        "namespace": "PluginInternal",
+        "specifier": "./internal.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/core/src/plugin/mcp-codemode-defaults.vibe",
+    "exports": [
+      {
+        "namespace": "McpCodeModeDefaultsPlugin",
+        "specifier": "./mcp-codemode-defaults.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/core/src/plugin/optimize.vibe",
+    "exports": [
+      {
+        "namespace": "OptimizePlugin",
+        "specifier": "./optimize.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/core/src/plugin/sdk.vibe",
+    "exports": [
+      {
+        "namespace": "SdkPlugins",
+        "specifier": "./sdk.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/core/src/plugin/service.vibe",
+    "exports": [
+      {
+        "namespace": "Plugin",
+        "specifier": "./service.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/core/src/plugin/tool-input-repair.vibe",
+    "exports": [
+      {
+        "namespace": "ToolInputRepairPlugin",
+        "specifier": "./tool-input-repair.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/core/src/plugin/update.vibe",
+    "exports": [
+      {
+        "namespace": "PluginUpdate",
+        "specifier": "./update.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/core/src/plugin/websearch/exa.vibe",
+    "exports": [
+      {
+        "namespace": "WebSearchExa",
+        "specifier": "./exa.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/core/src/plugin/websearch/firecrawl.vibe",
+    "exports": [
+      {
+        "namespace": "WebSearchFirecrawl",
+        "specifier": "./firecrawl.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/core/src/plugin/websearch/parallel.vibe",
+    "exports": [
+      {
+        "namespace": "WebSearchParallel",
+        "specifier": "./parallel.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/core/src/plugin/websearch/tavily.vibe",
+    "exports": [
+      {
+        "namespace": "WebSearchTavily",
+        "specifier": "./tavily.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/core/src/plugin/websearch/tinyfish.vibe",
+    "exports": [
+      {
+        "namespace": "WebSearchTinyFish",
+        "specifier": "./tinyfish.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/core/src/reference/instructions.vibe",
+    "exports": [
+      {
+        "namespace": "ReferenceInstructions",
+        "specifier": "./instructions.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/core/src/session/command.vibe",
+    "exports": [
+      {
+        "namespace": "SessionCommand",
+        "specifier": "./command.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/core/src/session/compaction.vibe",
+    "exports": [
+      {
+        "namespace": "SessionCompaction",
+        "specifier": "./compaction.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/core/src/session/environment.vibe",
+    "exports": [
+      {
+        "namespace": "SessionEnvironment",
+        "specifier": "./environment.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/core/src/session/error.vibe",
+    "exports": [
+      {
+        "namespace": "SessionErrors",
+        "specifier": "./error.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/core/src/session/execution/restart.vibe",
+    "exports": [
+      {
+        "namespace": "SessionRestart",
+        "specifier": "./restart.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/core/src/session/message-updater.vibe",
+    "exports": [
+      {
+        "namespace": "SessionMessageUpdater",
+        "specifier": "./message-updater.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/core/src/session/run-coordinator.vibe",
+    "exports": [
+      {
+        "namespace": "SessionRunCoordinator",
+        "specifier": "./run-coordinator.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/core/src/session/runner/index.vibe",
+    "exports": [
+      {
+        "namespace": "SessionRunner",
+        "specifier": "./index.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/core/src/session/runner/retry.vibe",
+    "exports": [
+      {
+        "namespace": "SessionRunnerRetry",
+        "specifier": "./retry.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/core/src/session/shell.vibe",
+    "exports": [
+      {
+        "namespace": "SessionShell",
+        "specifier": "./shell.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/core/src/session/skill.vibe",
+    "exports": [
+      {
+        "namespace": "SessionSkill",
+        "specifier": "./skill.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/core/src/session/stored.vibe",
+    "exports": [
+      {
+        "namespace": "SessionStored",
+        "specifier": "./stored.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/core/src/session/subagent-completion.vibe",
+    "exports": [
+      {
+        "namespace": "SubagentCompletion",
+        "specifier": "./subagent-completion.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/core/src/session/subagent-job.vibe",
+    "exports": [
+      {
+        "namespace": "SubagentJob",
+        "specifier": "./subagent-job.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/core/src/tool.vibe",
+    "exports": [
+      {
+        "namespace": "Tool",
+        "specifier": "./tool.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/core/src/tool/plugin/edit.vibe",
+    "exports": [
+      {
+        "namespace": "EditTool",
+        "specifier": "./edit.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/core/src/tool/plugin/mcp-resource.vibe",
+    "exports": [
+      {
+        "namespace": "McpResourceTools",
+        "specifier": "./mcp-resource.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/core/src/tool/plugin/opencode.vibe",
+    "exports": [
+      {
+        "namespace": "OpenCodeTools",
+        "specifier": "./opencode.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/core/src/tool/plugin/patch.vibe",
+    "exports": [
+      {
+        "namespace": "PatchTool",
+        "specifier": "./patch.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/core/src/tool/plugin/question.vibe",
+    "exports": [
+      {
+        "namespace": "QuestionTool",
+        "specifier": "./question.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/core/src/tool/plugin/skill.vibe",
+    "exports": [
+      {
+        "namespace": "SkillTool",
+        "specifier": "./skill.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/core/src/tool/plugin/todo.vibe",
+    "exports": [
+      {
+        "namespace": "TodoTool",
+        "specifier": "./todo.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/core/src/tool/plugin/websearch.vibe",
+    "exports": [
+      {
+        "namespace": "WebSearchTool",
+        "specifier": "./websearch.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/core/src/tool/plugin/write.vibe",
+    "exports": [
+      {
+        "namespace": "WriteTool",
+        "specifier": "./write.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/core/src/usage-limits.vibe",
+    "exports": [
+      {
+        "namespace": "UsageLimits",
+        "specifier": "./usage-limits.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/core/src/v1/config/agent.vibe",
+    "exports": [
+      {
+        "namespace": "ConfigAgentV1",
+        "specifier": "./agent.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/core/src/v1/config/command.vibe",
+    "exports": [
+      {
+        "namespace": "ConfigCommandV1",
+        "specifier": "./command.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/core/src/v1/config/mcp.vibe",
+    "exports": [
+      {
+        "namespace": "ConfigMCPV1",
+        "specifier": "./mcp.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/core/src/v1/config/migrate.vibe",
+    "exports": [
+      {
+        "namespace": "ConfigMigrateV1",
+        "specifier": "./migrate.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/core/src/v1/config/permission.vibe",
+    "exports": [
+      {
+        "namespace": "ConfigPermissionV1",
+        "specifier": "./permission.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/core/src/v1/config/plugin.vibe",
+    "exports": [
+      {
+        "namespace": "ConfigPluginV1",
+        "specifier": "./plugin.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/core/src/v1/config/provider.vibe",
+    "exports": [
+      {
+        "namespace": "ConfigProviderV1",
+        "specifier": "./provider.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/core/src/voice.vibe",
+    "exports": [
+      {
+        "namespace": "Voice",
+        "specifier": "./voice.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/core/src/wellknown/plugin.vibe",
+    "exports": [
+      {
+        "namespace": "WellKnownPlugin",
+        "specifier": "./plugin.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/core/src/worktree/directory.vibe",
+    "exports": [
+      {
+        "namespace": "WorktreeDirectory",
+        "specifier": "./directory.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/http-recorder/src/cassette/model.vibe",
+    "exports": [
+      {
+        "namespace": "CassetteModel",
+        "specifier": "./model.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/http-recorder/src/http/matching.vibe",
+    "exports": [
+      {
+        "namespace": "HttpMatching",
+        "specifier": "./matching.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/http-recorder/src/http/model.vibe",
+    "exports": [
+      {
+        "namespace": "HttpModel",
+        "specifier": "./model.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/plugin-browser/src/files.vibe",
+    "exports": [
+      {
+        "namespace": "BrowserFiles",
+        "specifier": "./files.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/plugin-browser/src/rpc.vibe",
+    "exports": [
+      {
+        "namespace": "Browser",
+        "specifier": "./rpc.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/plugin/src/gui/main.vibe",
+    "exports": [
+      {
+        "namespace": "Plugin",
+        "specifier": "./plugin.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/schema/src/command.vibe",
+    "exports": [
+      {
+        "namespace": "Command",
+        "specifier": "./command.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/schema/src/config.vibe",
+    "exports": [
+      {
+        "namespace": "Config",
+        "specifier": "./config.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/schema/src/config/agent.vibe",
+    "exports": [
+      {
+        "namespace": "ConfigAgent",
+        "specifier": "./agent.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/schema/src/config/command.vibe",
+    "exports": [
+      {
+        "namespace": "ConfigCommand",
+        "specifier": "./command.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/schema/src/config/compaction.vibe",
+    "exports": [
+      {
+        "namespace": "ConfigCompaction",
+        "specifier": "./compaction.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/schema/src/config/experimental.vibe",
+    "exports": [
+      {
+        "namespace": "ConfigExperimental",
+        "specifier": "./experimental.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/schema/src/config/formatter.vibe",
+    "exports": [
+      {
+        "namespace": "ConfigFormatter",
+        "specifier": "./formatter.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/schema/src/config/mcp.vibe",
+    "exports": [
+      {
+        "namespace": "ConfigMCP",
+        "specifier": "./mcp.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/schema/src/config/media.vibe",
+    "exports": [
+      {
+        "namespace": "ConfigMedia",
+        "specifier": "./media.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/schema/src/config/model.vibe",
+    "exports": [
+      {
+        "namespace": "ConfigModel",
+        "specifier": "./model.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/schema/src/config/plugin.vibe",
+    "exports": [
+      {
+        "namespace": "ConfigPlugin",
+        "specifier": "./plugin.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/schema/src/config/policy.vibe",
+    "exports": [
+      {
+        "namespace": "ConfigPolicy",
+        "specifier": "./policy.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/schema/src/config/provider.vibe",
+    "exports": [
+      {
+        "namespace": "ConfigProvider",
+        "specifier": "./provider.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/schema/src/config/reference.vibe",
+    "exports": [
+      {
+        "namespace": "ConfigReference",
+        "specifier": "./reference.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/schema/src/config/shell.vibe",
+    "exports": [
+      {
+        "namespace": "ConfigShell",
+        "specifier": "./shell.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/schema/src/config/tool-output.vibe",
+    "exports": [
+      {
+        "namespace": "ConfigToolOutput",
+        "specifier": "./tool-output.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/schema/src/config/warming.vibe",
+    "exports": [
+      {
+        "namespace": "ConfigWarming",
+        "specifier": "./warming.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/schema/src/config/watcher.vibe",
+    "exports": [
+      {
+        "namespace": "ConfigWatcher",
+        "specifier": "./watcher.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/schema/src/config/websearch.vibe",
+    "exports": [
+      {
+        "namespace": "ConfigWebSearch",
+        "specifier": "./websearch.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/schema/src/config/worktree.vibe",
+    "exports": [
+      {
+        "namespace": "ConfigWorktree",
+        "specifier": "./worktree.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/schema/src/connection.vibe",
+    "exports": [
+      {
+        "namespace": "Connection",
+        "specifier": "./connection.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/schema/src/credential-legacy.vibe",
+    "exports": [
+      {
+        "namespace": "CredentialLegacy",
+        "specifier": "./credential-legacy.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/schema/src/credential.vibe",
+    "exports": [
+      {
+        "namespace": "Credential",
+        "specifier": "./credential.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/schema/src/event-log.vibe",
+    "exports": [
+      {
+        "namespace": "EventLog",
+        "specifier": "./event-log.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/schema/src/event-manifest.vibe",
+    "exports": [
+      {
+        "namespace": "EventManifest",
+        "specifier": "./event-manifest.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/schema/src/event.vibe",
+    "exports": [
+      {
+        "namespace": "Event",
+        "specifier": "./event.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/schema/src/file-diff.vibe",
+    "exports": [
+      {
+        "namespace": "FileDiff",
+        "specifier": "./file-diff.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/schema/src/filesystem.vibe",
+    "exports": [
+      {
+        "namespace": "FileSystem",
+        "specifier": "./filesystem.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/schema/src/form.vibe",
+    "exports": [
+      {
+        "namespace": "Form",
+        "specifier": "./form.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/schema/src/generate.vibe",
+    "exports": [
+      {
+        "namespace": "Generate",
+        "specifier": "./generate.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/schema/src/installation-event.vibe",
+    "exports": [
+      {
+        "namespace": "InstallationEvent",
+        "specifier": "./installation-event.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/schema/src/instruction-entry.vibe",
+    "exports": [
+      {
+        "namespace": "InstructionEntry",
+        "specifier": "./instruction-entry.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/schema/src/instruction.vibe",
+    "exports": [
+      {
+        "namespace": "Instruction",
+        "specifier": "./instruction.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/schema/src/llm.vibe",
+    "exports": [
+      {
+        "namespace": "LLM",
+        "specifier": "./llm.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/schema/src/location.vibe",
+    "exports": [
+      {
+        "namespace": "Location",
+        "specifier": "./location.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/schema/src/mcp-event.vibe",
+    "exports": [
+      {
+        "namespace": "McpEvent",
+        "specifier": "./mcp-event.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/schema/src/mcp.vibe",
+    "exports": [
+      {
+        "namespace": "Mcp",
+        "specifier": "./mcp.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/schema/src/money.vibe",
+    "exports": [
+      {
+        "namespace": "Money",
+        "specifier": "./money.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/schema/src/permission-saved.vibe",
+    "exports": [
+      {
+        "namespace": "PermissionSaved",
+        "specifier": "./permission-saved.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/schema/src/permission.vibe",
+    "exports": [
+      {
+        "namespace": "Permission",
+        "specifier": "./permission.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/schema/src/persistent-pty.vibe",
+    "exports": [
+      {
+        "namespace": "PersistentPty",
+        "specifier": "./persistent-pty.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/schema/src/plugin.vibe",
+    "exports": [
+      {
+        "namespace": "Plugin",
+        "specifier": "./plugin.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/schema/src/project.vibe",
+    "exports": [
+      {
+        "namespace": "Project",
+        "specifier": "./project.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/schema/src/prompt-input.vibe",
+    "exports": [
+      {
+        "namespace": "PromptInput",
+        "specifier": "./prompt-input.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/schema/src/pty-ticket.vibe",
+    "exports": [
+      {
+        "namespace": "PtyTicket",
+        "specifier": "./pty-ticket.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/schema/src/pty.vibe",
+    "exports": [
+      {
+        "namespace": "Pty",
+        "specifier": "./pty.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/schema/src/question.vibe",
+    "exports": [
+      {
+        "namespace": "Question",
+        "specifier": "./question.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/schema/src/reference.vibe",
+    "exports": [
+      {
+        "namespace": "Reference",
+        "specifier": "./reference.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/schema/src/rpc.vibe",
+    "exports": [
+      {
+        "namespace": "Rpc",
+        "specifier": "./rpc.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/schema/src/session-error.vibe",
+    "exports": [
+      {
+        "namespace": "SessionError",
+        "specifier": "./session-error.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/schema/src/session-event.vibe",
+    "exports": [
+      {
+        "namespace": "SessionEvent",
+        "specifier": "./session-event.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/schema/src/session-fork.vibe",
+    "exports": [
+      {
+        "namespace": "SessionFork",
+        "specifier": "./session-fork.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/schema/src/session-inbox.vibe",
+    "exports": [
+      {
+        "namespace": "SessionInbox",
+        "specifier": "./session-inbox.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/schema/src/session-message.vibe",
+    "exports": [
+      {
+        "namespace": "SessionMessage",
+        "specifier": "./session-message.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/schema/src/session-stats.vibe",
+    "exports": [
+      {
+        "namespace": "SessionStats",
+        "specifier": "./session-stats.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/schema/src/session-status-event.vibe",
+    "exports": [
+      {
+        "namespace": "SessionStatusEvent",
+        "specifier": "./session-status-event.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/schema/src/session-transfer.vibe",
+    "exports": [
+      {
+        "namespace": "SessionTransfer",
+        "specifier": "./session-transfer.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/schema/src/session.vibe",
+    "exports": [
+      {
+        "namespace": "Session",
+        "specifier": "./session.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/schema/src/shell.vibe",
+    "exports": [
+      {
+        "namespace": "Shell",
+        "specifier": "./shell.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/schema/src/skill.vibe",
+    "exports": [
+      {
+        "namespace": "Skill",
+        "specifier": "./skill.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/schema/src/snapshot.vibe",
+    "exports": [
+      {
+        "namespace": "Snapshot",
+        "specifier": "./snapshot.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/schema/src/token-usage.vibe",
+    "exports": [
+      {
+        "namespace": "TokenUsage",
+        "specifier": "./token-usage.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/schema/src/tool.vibe",
+    "exports": [
+      {
+        "namespace": "Tool",
+        "specifier": "./tool.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/schema/src/tui-event.vibe",
+    "exports": [
+      {
+        "namespace": "TuiEvent",
+        "specifier": "./tui-event.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/schema/src/usage-limits.vibe",
+    "exports": [
+      {
+        "namespace": "UsageLimits",
+        "specifier": "./usage-limits.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/schema/src/v1/filesystem.vibe",
+    "exports": [
+      {
+        "namespace": "FileSystemV1",
+        "specifier": "./filesystem.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/schema/src/v1/legacy-event.vibe",
+    "exports": [
+      {
+        "namespace": "LegacyEventV1",
+        "specifier": "./legacy-event.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/schema/src/v1/permission.vibe",
+    "exports": [
+      {
+        "namespace": "PermissionV1",
+        "specifier": "./permission.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/schema/src/v1/session.vibe",
+    "exports": [
+      {
+        "namespace": "SessionV1",
+        "specifier": "./session.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/schema/src/vcs-event.vibe",
+    "exports": [
+      {
+        "namespace": "VcsEvent",
+        "specifier": "./vcs-event.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/schema/src/vcs.vibe",
+    "exports": [
+      {
+        "namespace": "Vcs",
+        "specifier": "./vcs.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/schema/src/websearch.vibe",
+    "exports": [
+      {
+        "namespace": "WebSearch",
+        "specifier": "./websearch.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/schema/src/workspace-event.vibe",
+    "exports": [
+      {
+        "namespace": "WorkspaceEvent",
+        "specifier": "./workspace-event.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/schema/src/workspace.vibe",
+    "exports": [
+      {
+        "namespace": "Workspace",
+        "specifier": "./workspace.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/schema/src/worktree-event.vibe",
+    "exports": [
+      {
+        "namespace": "WorktreeEvent",
+        "specifier": "./worktree-event.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/schema/src/worktree.vibe",
+    "exports": [
+      {
+        "namespace": "Worktree",
+        "specifier": "./worktree.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/util/src/bom.vibe",
+    "exports": [
+      {
+        "namespace": "Bom",
+        "specifier": "./bom.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/util/src/effect/app-node-platform.vibe",
+    "exports": [
+      {
+        "namespace": "LayerNodePlatform",
+        "specifier": "./app-node-platform.js"
+      }
+    ]
+  },
+  {
+    "source": "packages/util/src/patch.vibe",
+    "exports": [
+      {
+        "namespace": "Patch",
+        "specifier": "./patch.js"
+      }
+    ]
+  }
+]

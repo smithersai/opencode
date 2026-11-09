@@ -1,4 +1,4 @@
-export * as SessionInbox from "./session-inbox.vibe"
+export * as SessionInbox from "./session-inbox.js"
 
 import { Location } from "./location.js"
 import { Project } from "./project.js"

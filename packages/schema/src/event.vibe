@@ -1,4 +1,4 @@
-export * as Event from "./event.vibe"
+export * as Event from "./event.js"
 
 import { optional } from "./schema.js"
 import { ascending } from "./identifier.js"

@@ -1,4 +1,4 @@
-export * as Image from "./image.vibe"
+export * as Image from "./image.js"
 
 import { makeLocationNode } from "@opencode/util/effect/app-node"
 import { Effect, Schema } from "effect"

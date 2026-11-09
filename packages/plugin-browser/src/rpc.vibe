@@ -1,4 +1,4 @@
-export * as Browser from "./rpc.vibe"
+export * as Browser from "./rpc.js"
 
 import { Rpc } from "@opencode/schema/rpc"
 import { Session } from "@opencode/schema/session"

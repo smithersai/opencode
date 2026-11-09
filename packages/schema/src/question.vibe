@@ -1,4 +1,4 @@
-export * as Question from "./question.vibe"
+export * as Question from "./question.js"
 
 import { optional } from "./schema.js"
 

@@ -1,4 +1,4 @@
-export * as Mcp from "./mcp.vibe"
+export * as Mcp from "./mcp.js"
 
 import { optional, PositiveInt } from "./schema.js"
 import { IntegrationID } from "./integration-id.js"

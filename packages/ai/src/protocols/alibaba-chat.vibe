@@ -90,4 +90,4 @@ export const protocol = Protocol.make({
   stream: OpenAIChat.protocol.stream,
 })
 
-export * as AlibabaChat from "./alibaba-chat.vibe"
+export * as AlibabaChat from "./alibaba-chat.js"

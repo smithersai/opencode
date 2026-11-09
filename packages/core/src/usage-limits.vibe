@@ -1,4 +1,4 @@
-export * as UsageLimits from "./usage-limits.vibe"
+export * as UsageLimits from "./usage-limits.js"
 
 import { Model } from "@opencode/schema/model"
 import { Money } from "@opencode/schema/money"

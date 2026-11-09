@@ -14,7 +14,7 @@ import {
 
 export * from "./core.js"
 
-export * as Plugin from "./plugin.ts"
+export * as Plugin from "./plugin.js"
 
 /** The app's main windows. */
 export interface Windows {

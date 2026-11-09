@@ -1,4 +1,4 @@
-export * as Patch from "./patch.vibe"
+export * as Patch from "./patch.js"
 
 import { Result, Schema } from "effect"
 import { Bom } from "./bom.js"

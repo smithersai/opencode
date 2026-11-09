@@ -1,4 +1,4 @@
-export * as PluginInternal from "./internal.vibe"
+export * as PluginInternal from "./internal.js"
 
 import { LLMClient } from "@opencode/ai/effect"
 import type { Plugin } from "@opencode/plugin/effect/plugin"

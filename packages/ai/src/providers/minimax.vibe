@@ -148,4 +148,4 @@ export const messages = provider.messages
 export const chat = provider.chat
 export const responses = provider.responses
 
-export * as MiniMax from "./minimax.vibe"
+export * as MiniMax from "./minimax.js"

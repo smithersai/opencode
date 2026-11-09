@@ -1,4 +1,4 @@
-export * as ConfigWarming from "./warming.vibe"
+export * as ConfigWarming from "./warming.js"
 
 import { optional } from "../schema.js"
 

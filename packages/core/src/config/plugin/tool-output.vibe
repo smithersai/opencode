@@ -1,4 +1,4 @@
-export * as ConfigToolOutputPlugin from "./tool-output.vibe"
+export * as ConfigToolOutputPlugin from "./tool-output.js"
 
 import { define } from "@opencode/plugin/effect/plugin"
 import { Config } from "../../config.js"

@@ -1,4 +1,4 @@
-export * as ConfigMcpPlugin from "./mcp.vibe"
+export * as ConfigMcpPlugin from "./mcp.js"
 
 import { define } from "@opencode/plugin/effect/plugin"
 import { Document, type Entry } from "@opencode/schema/config"

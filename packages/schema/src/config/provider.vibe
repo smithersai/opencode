@@ -1,4 +1,4 @@
-export * as ConfigProvider from "./provider.vibe"
+export * as ConfigProvider from "./provider.js"
 
 import { Money } from "../money.js"
 import { Capabilities, Compatibility, Family, ID, Model, Type, VariantID } from "../model.js"

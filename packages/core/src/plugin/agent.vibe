@@ -1,4 +1,4 @@
-export * as AgentPlugin from "./agent.vibe"
+export * as AgentPlugin from "./agent.js"
 
 import { define } from "@opencode/plugin/effect/plugin"
 import { Agent } from "../agent.js"

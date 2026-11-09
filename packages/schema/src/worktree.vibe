@@ -1,4 +1,4 @@
-export * as Worktree from "./worktree.vibe"
+export * as Worktree from "./worktree.js"
 
 import { durable, ephemeral, inventory } from "./event.js"
 import { AbsolutePath, optional } from "./schema.js"

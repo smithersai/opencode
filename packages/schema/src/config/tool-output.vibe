@@ -1,4 +1,4 @@
-export * as ConfigToolOutput from "./tool-output.vibe"
+export * as ConfigToolOutput from "./tool-output.js"
 
 import { optional, PositiveInt } from "../schema.js"
 

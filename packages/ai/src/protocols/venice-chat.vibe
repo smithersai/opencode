@@ -345,4 +345,4 @@ export const protocol = Protocol.make({
   },
 })
 
-export * as VeniceChat from "./venice-chat.vibe"
+export * as VeniceChat from "./venice-chat.js"

@@ -270,4 +270,4 @@ const project = (
 
 export { ToolFailure }
 
-export * as Tool from "./tool.vibe"
+export * as Tool from "./tool.js"

@@ -201,4 +201,4 @@ const replayMedia = (value: string, fallbackType: string) =>
   Media.parseDataUrl(value)
     ?? (/^https?:\/\//.test(value) ? Media.url(value, { mediaType: fallbackType }) : Media.base64(value, fallbackType))
 
-export * as ResponsesCompaction from "./responses-compaction.vibe"
+export * as ResponsesCompaction from "./responses-compaction.js"

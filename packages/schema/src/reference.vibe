@@ -1,4 +1,4 @@
-export * as Reference from "./reference.vibe"
+export * as Reference from "./reference.js"
 
 import { optional } from "./schema.js"
 import { ephemeral, inventory } from "./event.js"

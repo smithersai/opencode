@@ -24,4 +24,4 @@ export const HttpInteractionSchema = Schema.Struct({
 
 export interface HttpInteraction extends Schema.Schema.Type<typeof HttpInteractionSchema> {}
 
-export * as HttpModel from "./model.vibe"
+export * as HttpModel from "./model.js"

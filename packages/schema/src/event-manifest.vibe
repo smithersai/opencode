@@ -1,4 +1,4 @@
-export * as EventManifest from "./event-manifest.vibe"
+export * as EventManifest from "./event-manifest.js"
 
 import { Agent } from "./agent.js"
 import { Command } from "./command.js"

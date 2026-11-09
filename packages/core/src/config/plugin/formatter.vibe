@@ -1,4 +1,4 @@
-export * as ConfigFormatterPlugin from "./formatter.vibe"
+export * as ConfigFormatterPlugin from "./formatter.js"
 
 import { define } from "@opencode/plugin/effect/plugin"
 import type { Entry } from "@opencode/schema/config"

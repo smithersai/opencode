@@ -107,4 +107,4 @@ export const headerUsage = (type: "characters" | "credits", value: string | unde
   return type === "credits" ? { type, credits: amount } : { type, characters: amount }
 }
 
-export * as SpeechStream from "./speech-stream.vibe"
+export * as SpeechStream from "./speech-stream.js"

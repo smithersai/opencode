@@ -114,4 +114,4 @@ const describe = (size: Size) => {
 
 const gcd = (a: number, b: number): number => (b === 0 ? a : gcd(b, a % b))
 
-export * as ImageSizing from "./image-sizing.vibe"
+export * as ImageSizing from "./image-sizing.js"

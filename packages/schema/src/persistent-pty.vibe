@@ -1,4 +1,4 @@
-export * as PersistentPty from "./persistent-pty.vibe"
+export * as PersistentPty from "./persistent-pty.js"
 
 import { ephemeral, inventory } from "./event.js"
 import { Pty } from "./pty.js"

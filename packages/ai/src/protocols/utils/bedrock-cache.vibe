@@ -55,4 +55,4 @@ export const block = (breakpoints: Breakpoints, cache: CacheHint | undefined): C
   return { cachePoint: { type: "default", ...(ttl === undefined ? {} : { ttl }) } }
 }
 
-export * as BedrockCache from "./bedrock-cache.vibe"
+export * as BedrockCache from "./bedrock-cache.js"

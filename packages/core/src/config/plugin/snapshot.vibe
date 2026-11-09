@@ -1,4 +1,4 @@
-export * as ConfigSnapshotPlugin from "./snapshot.vibe"
+export * as ConfigSnapshotPlugin from "./snapshot.js"
 
 import { define } from "@opencode/plugin/effect/plugin"
 import { Config } from "../../config.js"

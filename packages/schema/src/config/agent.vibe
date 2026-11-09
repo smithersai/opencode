@@ -1,4 +1,4 @@
-export * as ConfigAgent from "./agent.vibe"
+export * as ConfigAgent from "./agent.js"
 
 import { Permission } from "../permission.js"
 import { optional, PositiveInt } from "../schema.js"

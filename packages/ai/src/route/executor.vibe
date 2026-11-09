@@ -261,4 +261,4 @@ export const middleware = (fn: HttpMiddleware, executor: Layer.Layer<Service> = 
     },
   ).pipe(Layer.provide(executor))
 
-export * as RequestExecutor from "./executor.vibe"
+export * as RequestExecutor from "./executor.js"

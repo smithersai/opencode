@@ -1,4 +1,4 @@
-export * as SubagentCompletion from "./subagent-completion.vibe"
+export * as SubagentCompletion from "./subagent-completion.js"
 
 import type { Job } from "../job.js"
 import type { Session } from "../session.js"

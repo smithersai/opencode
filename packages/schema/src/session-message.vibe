@@ -1,4 +1,4 @@
-export * as SessionMessage from "./session-message.vibe"
+export * as SessionMessage from "./session-message.js"
 
 import { optional } from "./schema.js"
 import { Content } from "./tool.js"

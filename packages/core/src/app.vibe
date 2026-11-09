@@ -1,4 +1,4 @@
-export * as App from "./app.vibe"
+export * as App from "./app.js"
 
 import { makeGlobalNode } from "@opencode/util/effect/app-node"
 

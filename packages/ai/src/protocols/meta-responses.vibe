@@ -230,4 +230,4 @@ export const protocol = Protocol.make({
 
 export const httpTransport = OpenResponses.httpTransport
 
-export * as MetaResponses from "./meta-responses.vibe"
+export * as MetaResponses from "./meta-responses.js"

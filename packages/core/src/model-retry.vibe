@@ -1,4 +1,4 @@
-export * as ModelRetry from "./model-retry.vibe"
+export * as ModelRetry from "./model-retry.js"
 
 import { AIError, isRetryable } from "@opencode/ai/effect"
 

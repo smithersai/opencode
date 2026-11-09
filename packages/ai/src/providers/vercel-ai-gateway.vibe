@@ -287,4 +287,4 @@ function config({ apiKey, baseURL, headers, body, ...providerOptions }: Settings
   }
 }
 
-export * as VercelAIGateway from "./vercel-ai-gateway.vibe"
+export * as VercelAIGateway from "./vercel-ai-gateway.js"

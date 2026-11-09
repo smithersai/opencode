@@ -1,4 +1,4 @@
-export * as WorkspaceEvent from "./workspace-event.vibe"
+export * as WorkspaceEvent from "./workspace-event.js"
 
 import { Event } from "./event.js"
 import { WorkspaceID } from "./workspace-id.js"

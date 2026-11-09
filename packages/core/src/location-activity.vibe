@@ -1,4 +1,4 @@
-export * as LocationActivity from "./location-activity.vibe"
+export * as LocationActivity from "./location-activity.js"
 
 import { Context, Duration, Layer } from "effect"
 import type { Document } from "@opencode/schema/config"

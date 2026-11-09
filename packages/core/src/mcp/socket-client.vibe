@@ -1,4 +1,4 @@
-export * as McpSocketClient from "./socket-client.vibe"
+export * as McpSocketClient from "./socket-client.js"
 
 import { deserializeMessage, type JSONRPCMessage, type Transport } from "@modelcontextprotocol/client"
 

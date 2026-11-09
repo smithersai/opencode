@@ -1,4 +1,4 @@
-export * as QuestionTool from "./question.vibe"
+export * as QuestionTool from "./question.js"
 
 import type { Context } from "@opencode/plugin/effect/plugin"
 import { ToolFailure } from "@opencode/ai/effect"

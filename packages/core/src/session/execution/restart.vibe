@@ -1,4 +1,4 @@
-export * as SessionRestart from "./restart.vibe"
+export * as SessionRestart from "./restart.js"
 
 import { Effect, Layer } from "effect"
 import { makeGlobalNode } from "@opencode/util/effect/app-node"

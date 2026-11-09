@@ -1,4 +1,4 @@
-export * as Skill from "./skill.vibe"
+export * as Skill from "./skill.js"
 
 import { optional } from "./schema.js"
 import { AbsolutePath } from "./schema.js"

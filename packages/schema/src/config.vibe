@@ -1,4 +1,4 @@
-export * as Config from "./config.vibe"
+export * as Config from "./config.js"
 
 import { ephemeral, inventory } from "./event.js"
 import { Permission } from "./permission.js"

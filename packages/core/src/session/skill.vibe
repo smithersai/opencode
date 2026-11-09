@@ -1,4 +1,4 @@
-export * as SessionSkill from "./skill.vibe"
+export * as SessionSkill from "./skill.js"
 
 import type { Session } from "@opencode/schema/session"
 import { Instance } from "../instance/service.js"

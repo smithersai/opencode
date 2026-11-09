@@ -1,4 +1,4 @@
-export * as SessionFork from "./session-fork.vibe"
+export * as SessionFork from "./session-fork.js"
 
 import { SessionMessage } from "./session-message.js"
 

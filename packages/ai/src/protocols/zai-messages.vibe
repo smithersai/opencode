@@ -39,4 +39,4 @@ export const protocol = Protocol.make({
   stream: AnthropicMessages.protocol.stream,
 })
 
-export * as ZAIMessages from "./zai-messages.vibe"
+export * as ZAIMessages from "./zai-messages.js"

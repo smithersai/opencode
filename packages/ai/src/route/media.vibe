@@ -466,4 +466,4 @@ const rejectUnsupported = <Request extends object>(
   )
 }
 
-export * as MediaRoute from "./media.vibe"
+export * as MediaRoute from "./media.js"

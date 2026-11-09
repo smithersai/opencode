@@ -1,4 +1,4 @@
-export * as PluginUpdate from "./update.vibe"
+export * as PluginUpdate from "./update.js"
 
 import { Npm } from "@opencode/util/npm"
 import { EffectFlock } from "@opencode/util/effect-flock"

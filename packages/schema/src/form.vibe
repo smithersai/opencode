@@ -1,4 +1,4 @@
-export * as Form from "./form.vibe"
+export * as Form from "./form.js"
 
 import { ephemeral, inventory } from "./event.js"
 import { ascending } from "./identifier.js"

@@ -1,4 +1,4 @@
-export * as Agent from "./agent.vibe"
+export * as Agent from "./agent.js"
 
 import { makeLocationNode } from "@opencode/util/effect/app-node"
 import { Array, Effect, Types } from "effect"

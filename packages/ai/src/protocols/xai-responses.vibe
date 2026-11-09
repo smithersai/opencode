@@ -117,4 +117,4 @@ export const compact = ResponsesCompaction.make(adapter, effect (request) =>
   try OpenResponses.lowerTools(try Effect.orDie(Effect.try({ try: () => ProviderShared.flattenTools(request.tools), catch: (e) => e })), adapter),
 )
 
-export * as XAIResponses from "./xai-responses.vibe"
+export * as XAIResponses from "./xai-responses.js"

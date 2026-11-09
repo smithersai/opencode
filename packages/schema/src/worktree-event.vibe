@@ -1,4 +1,4 @@
-export * as WorktreeEvent from "./worktree-event.vibe"
+export * as WorktreeEvent from "./worktree-event.js"
 
 import { optional } from "./schema.js"
 import { Event } from "./event.js"

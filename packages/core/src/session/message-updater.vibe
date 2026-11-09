@@ -505,4 +505,4 @@ export function update(adapter: Adapter, event: SessionEvent.DurableEvent) {
   return project(event)
 }
 
-export * as SessionMessageUpdater from "./message-updater.vibe"
+export * as SessionMessageUpdater from "./message-updater.js"

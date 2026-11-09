@@ -1,4 +1,4 @@
-export * as ConfigEntryObserver from "./entry-observer.vibe"
+export * as ConfigEntryObserver from "./entry-observer.js"
 
 import type { EventDomain } from "@opencode/plugin/effect/event"
 import { Effect } from "effect"

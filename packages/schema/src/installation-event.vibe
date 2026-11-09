@@ -1,4 +1,4 @@
-export * as InstallationEvent from "./installation-event.vibe"
+export * as InstallationEvent from "./installation-event.js"
 
 import { Event } from "./event.js"
 

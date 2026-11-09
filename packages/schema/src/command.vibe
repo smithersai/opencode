@@ -1,4 +1,4 @@
-export * as Command from "./command.vibe"
+export * as Command from "./command.js"
 
 import { ephemeral, inventory } from "./event.js"
 import { optional } from "./schema.js"

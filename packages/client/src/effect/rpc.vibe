@@ -1,4 +1,4 @@
-export * as RpcClientRuntime from "./rpc.vibe"
+export * as RpcClientRuntime from "./rpc.js"
 
 import type { Rpc } from "@opencode/schema/rpc"
 import type { RpcError, RpcInternalError } from "@opencode/protocol/errors"

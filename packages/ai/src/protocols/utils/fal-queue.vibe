@@ -91,4 +91,4 @@ export const protocol = <Request, Response>(
   })
 }
 
-export * as FalQueue from "./fal-queue.vibe"
+export * as FalQueue from "./fal-queue.js"

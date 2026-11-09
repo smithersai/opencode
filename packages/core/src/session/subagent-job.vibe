@@ -1,4 +1,4 @@
-export * as SubagentJob from "./subagent-job.vibe"
+export * as SubagentJob from "./subagent-job.js"
 
 import { Node } from "@opencode/util/effect/app-node"
 import type { LayerNode } from "@opencode/util/effect/layer-node"

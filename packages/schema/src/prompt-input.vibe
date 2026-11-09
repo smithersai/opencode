@@ -1,4 +1,4 @@
-export * as PromptInput from "./prompt-input.vibe"
+export * as PromptInput from "./prompt-input.js"
 
 import { AgentAttachment, PromptMention } from "./prompt.js"
 import { optional } from "./schema.js"

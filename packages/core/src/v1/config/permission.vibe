@@ -1,4 +1,4 @@
-export * as ConfigPermissionV1 from "./permission.vibe"
+export * as ConfigPermissionV1 from "./permission.js"
 
 import { Schema } from "effect"
 

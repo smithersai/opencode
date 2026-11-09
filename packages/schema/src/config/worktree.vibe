@@ -1,4 +1,4 @@
-export * as ConfigWorktree from "./worktree.vibe"
+export * as ConfigWorktree from "./worktree.js"
 
 export const Info = Schema.Struct({
   directory: Schema.Trim.pipe(Schema.check(Schema.isNonEmpty())).annotate({

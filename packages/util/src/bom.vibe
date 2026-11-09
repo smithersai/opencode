@@ -1,4 +1,4 @@
-export * as Bom from "./bom.vibe"
+export * as Bom from "./bom.js"
 
 import type { FSUtil } from "./fs-util.js"
 

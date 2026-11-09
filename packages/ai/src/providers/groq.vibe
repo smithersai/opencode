@@ -115,4 +115,4 @@ export const model: ProviderPackage.Definition<Settings, ProviderOptions>["model
     providerOptions,
   }).model(modelID)
 
-export * as Groq from "./groq.vibe"
+export * as Groq from "./groq.js"

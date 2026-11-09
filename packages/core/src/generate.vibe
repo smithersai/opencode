@@ -1,4 +1,4 @@
-export * as Generate from "./generate.vibe"
+export * as Generate from "./generate.js"
 
 import { plainJson } from "./generate.native.ts"
 import { AIError, Decision, DecisionClient, Image, ImageClient, LLM, LLMClient, Media } from "@opencode/ai/effect"

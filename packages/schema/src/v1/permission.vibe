@@ -1,4 +1,4 @@
-export * as PermissionV1 from "./permission.vibe"
+export * as PermissionV1 from "./permission.js"
 
 import { ephemeral, inventory } from "../event.js"
 import { ascending } from "../identifier.js"

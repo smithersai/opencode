@@ -152,4 +152,4 @@ export const model: ProviderPackage.Definition<Settings, ChatOptionsInput>["mode
     providerOptions,
   }).model(modelID)
 
-export * as Moonshot from "./moonshot.vibe"
+export * as Moonshot from "./moonshot.js"

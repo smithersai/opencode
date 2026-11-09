@@ -1,4 +1,4 @@
-export * as WebSearch from "./websearch.vibe"
+export * as WebSearch from "./websearch.js"
 
 import { ephemeral, inventory } from "./event.js"
 import { optional } from "./schema.js"

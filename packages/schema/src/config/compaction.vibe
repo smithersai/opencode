@@ -1,4 +1,4 @@
-export * as ConfigCompaction from "./compaction.vibe"
+export * as ConfigCompaction from "./compaction.js"
 
 import { NonNegativeInt, optional } from "../schema.js"
 

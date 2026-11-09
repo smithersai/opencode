@@ -1,4 +1,4 @@
-export * as SessionError from "./session-error.vibe"
+export * as SessionError from "./session-error.js"
 
 import { NonNegativeInt, optional } from "./schema.js"
 

@@ -1,4 +1,4 @@
-export * as Connection from "./connection.vibe"
+export * as Connection from "./connection.js"
 
 import { Credential } from "./credential.js"
 import { optional } from "./schema.js"

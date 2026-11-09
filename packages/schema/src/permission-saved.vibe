@@ -1,4 +1,4 @@
-export * as PermissionSaved from "./permission-saved.vibe"
+export * as PermissionSaved from "./permission-saved.js"
 
 import { ascending } from "./identifier.js"
 import { ProjectID } from "./project-id.js"

@@ -4,7 +4,7 @@
  * absolute external paths retain mutation capability through a separate
  * external_directory approval before edit approval.
  */
-export * as EditTool from "./edit.vibe"
+export * as EditTool from "./edit.js"
 
 import type { Context } from "@opencode/plugin/effect/plugin"
 import { ToolFailure } from "@opencode/ai/effect"

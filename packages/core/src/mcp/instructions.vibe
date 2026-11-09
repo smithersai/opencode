@@ -1,4 +1,4 @@
-export * as McpInstructions from "./instructions.vibe"
+export * as McpInstructions from "./instructions.js"
 
 import { makeLocationNode } from "@opencode/util/effect/app-node"
 import { Effect, Layer, Schema } from "effect"

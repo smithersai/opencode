@@ -1,4 +1,4 @@
-export * as InstructionEntry from "./instruction-entry.vibe"
+export * as InstructionEntry from "./instruction-entry.js"
 
 /**
  * Slash-free client-facing key for one API-managed instruction entry. The server

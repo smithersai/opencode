@@ -1,4 +1,4 @@
-export * as Instruction from "./instruction.vibe"
+export * as Instruction from "./instruction.js"
 
 export const Key = Schema.String.check(Schema.isPattern(/^[a-z0-9][a-z0-9._-]*\/[a-z0-9][a-z0-9._/-]*$/u)).pipe(
   Schema.brand("Instruction.Key"),

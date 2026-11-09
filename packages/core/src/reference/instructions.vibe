@@ -1,4 +1,4 @@
-export * as ReferenceInstructions from "./instructions.vibe"
+export * as ReferenceInstructions from "./instructions.js"
 
 import { makeLocationNode } from "@opencode/util/effect/app-node"
 import { Effect } from "effect"

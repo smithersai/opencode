@@ -1,4 +1,4 @@
-export * as Tool from "./tool.vibe"
+export * as Tool from "./tool.js"
 
 import type { StandardSchemaV1 } from "@standard-schema/spec"
 import type { Agent } from "./agent.js"

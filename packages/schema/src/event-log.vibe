@@ -1,4 +1,4 @@
-export * as EventLog from "./event-log.vibe"
+export * as EventLog from "./event-log.js"
 
 import { Event } from "./event.js"
 import { optional } from "./schema.js"

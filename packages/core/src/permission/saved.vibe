@@ -1,4 +1,4 @@
-export * as PermissionSaved from "./saved.vibe"
+export * as PermissionSaved from "./saved.js"
 
 import { eq } from "drizzle-orm"
 import { isSqlError } from "effect/sql/SqlError"

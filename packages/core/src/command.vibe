@@ -1,4 +1,4 @@
-export * as Command from "./command.vibe"
+export * as Command from "./command.js"
 
 import { Command } from "@opencode/schema/command"
 import type { PromptInput } from "@opencode/schema/prompt-input"

@@ -1,4 +1,4 @@
-export * as Plugin from "./plugin.vibe"
+export * as Plugin from "./plugin.js"
 
 import { ephemeral, inventory } from "./event.js"
 import { optional } from "./schema.js"

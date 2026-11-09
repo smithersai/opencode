@@ -1,4 +1,4 @@
-export * as SessionStored from "./stored.vibe"
+export * as SessionStored from "./stored.js"
 
 import { FileAttachment, MediaRef } from "@opencode/schema/prompt"
 import { optional } from "@opencode/schema/schema"

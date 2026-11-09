@@ -1,4 +1,4 @@
-export * as TokenUsage from "./token-usage.vibe"
+export * as TokenUsage from "./token-usage.js"
 
 export interface Info extends Schema.Schema.Type<typeof Info> {}
 export const Info = Schema.Struct({

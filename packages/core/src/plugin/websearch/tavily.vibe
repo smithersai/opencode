@@ -1,4 +1,4 @@
-export * as WebSearchTavily from "./tavily.vibe"
+export * as WebSearchTavily from "./tavily.js"
 
 import { define } from "@opencode/plugin/effect/plugin"
 import { Scope } from "effect"

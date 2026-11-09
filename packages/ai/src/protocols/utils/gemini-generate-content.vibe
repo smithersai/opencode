@@ -145,4 +145,4 @@ export const mediaPart = (
     |> Effect.map(%, (media) => ({ inlineData: { mimeType: media.mime, data: media.base64 } }))
 }
 
-export * as GeminiGenerateContent from "./gemini-generate-content.vibe"
+export * as GeminiGenerateContent from "./gemini-generate-content.js"

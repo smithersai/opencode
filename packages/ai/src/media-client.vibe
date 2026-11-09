@@ -76,4 +76,4 @@ export const make = <Self, Req extends RoutedRequest<Req, Event, Response>, Even
   resume: (model: Req["model"], token: unknown) => service.use((client) => client.resume(model, token)),
 })
 
-export * as MediaClient from "./media-client.vibe"
+export * as MediaClient from "./media-client.js"

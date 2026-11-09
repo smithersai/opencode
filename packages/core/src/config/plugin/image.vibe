@@ -1,4 +1,4 @@
-export * as ConfigImagePlugin from "./image.vibe"
+export * as ConfigImagePlugin from "./image.js"
 
 import { define } from "@opencode/plugin/effect/plugin"
 import { Config } from "../../config.js"

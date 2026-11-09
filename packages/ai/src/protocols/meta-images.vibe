@@ -169,4 +169,4 @@ export const model = (input: MediaRoute.ModelInput) =>
     input,
   )
 
-export * as MetaImages from "./meta-images.vibe"
+export * as MetaImages from "./meta-images.js"

@@ -116,4 +116,4 @@ export const lower = effect (part: MediaPart, documentNames: Set<string>) => {
   throw try Effect.orDie(Effect.try({ try: () => ProviderShared.invalidRequest(`Bedrock Converse does not support media type ${part.media.mediaType}`), catch: (e) => e }))
 }
 
-export * as BedrockMedia from "./bedrock-media.vibe"
+export * as BedrockMedia from "./bedrock-media.js"

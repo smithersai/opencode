@@ -1,4 +1,4 @@
-export * as Location from "./location.vibe"
+export * as Location from "./location.js"
 
 import { AbsolutePath, optional } from "./schema.js"
 import { ProjectID } from "./project-id.js"

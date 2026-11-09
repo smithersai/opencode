@@ -1,4 +1,4 @@
-export * as CodeModeCatalog from "./catalog.vibe"
+export * as CodeModeCatalog from "./catalog.js"
 
 export type Tool = {
   readonly type: "tool"

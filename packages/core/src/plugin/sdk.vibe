@@ -1,4 +1,4 @@
-export * as SdkPlugins from "./sdk.vibe"
+export * as SdkPlugins from "./sdk.js"
 
 import type { Plugin } from "@opencode/plugin/effect/plugin"
 import { Effect, Layer } from "effect"

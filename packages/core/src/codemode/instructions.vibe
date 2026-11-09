@@ -1,4 +1,4 @@
-export * as CodeModeInstructions from "./instructions.vibe"
+export * as CodeModeInstructions from "./instructions.js"
 
 import { searchSignature, toolExpression } from "@opencode/codemode"
 import { Instructions } from "../instructions/index.js"

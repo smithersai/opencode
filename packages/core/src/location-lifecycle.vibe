@@ -1,4 +1,4 @@
-export * as LocationLifecycle from "./location-lifecycle.vibe"
+export * as LocationLifecycle from "./location-lifecycle.js"
 
 import { Effect } from "effect"
 import { makeLocationNode } from "@opencode/util/effect/app-node"

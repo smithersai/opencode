@@ -1,4 +1,4 @@
-export * as ConfigCommand from "./command.vibe"
+export * as ConfigCommand from "./command.js"
 
 import { optional } from "../schema.js"
 import { ConfigModel } from "./model.js"

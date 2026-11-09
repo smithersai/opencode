@@ -1,4 +1,4 @@
-export * as SessionStatusEvent from "./session-status-event.vibe"
+export * as SessionStatusEvent from "./session-status-event.js"
 
 import { optional } from "./schema.js"
 import { Event } from "./event.js"

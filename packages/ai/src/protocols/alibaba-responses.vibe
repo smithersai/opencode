@@ -87,4 +87,4 @@ export const protocol = Protocol.make({
   },
 })
 
-export * as AlibabaResponses from "./alibaba-responses.vibe"
+export * as AlibabaResponses from "./alibaba-responses.js"

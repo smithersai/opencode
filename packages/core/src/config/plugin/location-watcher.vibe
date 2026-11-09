@@ -1,4 +1,4 @@
-export * as ConfigLocationWatcherPlugin from "./location-watcher.vibe"
+export * as ConfigLocationWatcherPlugin from "./location-watcher.js"
 
 import { define } from "@opencode/plugin/effect/plugin"
 import { Config } from "../../config.js"

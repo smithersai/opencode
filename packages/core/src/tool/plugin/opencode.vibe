@@ -1,4 +1,4 @@
-export * as OpenCodeTools from "./opencode.vibe"
+export * as OpenCodeTools from "./opencode.js"
 
 import { SystemPart, ToolFailure } from "@opencode/ai/effect"
 import type { Context } from "@opencode/plugin/effect/plugin"

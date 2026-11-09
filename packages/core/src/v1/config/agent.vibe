@@ -1,4 +1,4 @@
-export * as ConfigAgentV1 from "./agent.vibe"
+export * as ConfigAgentV1 from "./agent.js"
 
 import { Schema } from "effect"
 import { PositiveInt } from "../../schema.js"

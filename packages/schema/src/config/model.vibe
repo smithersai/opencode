@@ -1,4 +1,4 @@
-export * as ConfigModel from "./model.vibe"
+export * as ConfigModel from "./model.js"
 
 import { Model } from "../model.js"
 import { Provider } from "../provider.js"

@@ -76,4 +76,4 @@ export const resolve = (request: LLMRequest): Resolved => {
   }
 }
 
-export * as OpenResponsesOptions from "./open-responses-options.vibe"
+export * as OpenResponsesOptions from "./open-responses-options.js"

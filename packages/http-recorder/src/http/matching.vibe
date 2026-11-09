@@ -76,4 +76,4 @@ export const selectFirstMatching = (
   return { _tag: "Unmatched", detail: requestDiff(firstUnused.request, incoming).join("\n") }
 }
 
-export * as HttpMatching from "./matching.vibe"
+export * as HttpMatching from "./matching.js"

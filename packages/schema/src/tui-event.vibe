@@ -1,4 +1,4 @@
-export * as TuiEvent from "./tui-event.vibe"
+export * as TuiEvent from "./tui-event.js"
 
 import { optional } from "./schema.js"
 import { Event } from "./event.js"

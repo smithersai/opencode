@@ -1,4 +1,4 @@
-export * as WebSearchExa from "./exa.vibe"
+export * as WebSearchExa from "./exa.js"
 
 import { define } from "@opencode/plugin/effect/plugin"
 import { Scope } from "effect"

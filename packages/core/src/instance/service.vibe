@@ -1,4 +1,4 @@
-export * as Instance from "./service.vibe"
+export * as Instance from "./service.js"
 export type { Services } from "../instance.js"
 
 import { type Effect } from "effect"

@@ -109,4 +109,4 @@ export const document: Definition<string> = {
   frame: (bytes) => Stream.fromEffect(Stream.mkString(bytes.pipe(Stream.decodeText()))),
 }
 
-export * as Framing from "./framing.vibe"
+export * as Framing from "./framing.js"

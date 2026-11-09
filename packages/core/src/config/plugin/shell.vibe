@@ -1,4 +1,4 @@
-export * as ConfigShellPlugin from "./shell.vibe"
+export * as ConfigShellPlugin from "./shell.js"
 
 import { define } from "@opencode/plugin/effect/plugin"
 import { Config } from "../../config.js"

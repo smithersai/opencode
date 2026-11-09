@@ -1,4 +1,4 @@
-export * as ConfigMCP from "./mcp.vibe"
+export * as ConfigMCP from "./mcp.js"
 
 import { Mcp } from "../mcp.js"
 import { optional } from "../schema.js"

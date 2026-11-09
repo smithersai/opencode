@@ -1,4 +1,4 @@
-export * as FileDiff from "./file-diff.vibe"
+export * as FileDiff from "./file-diff.js"
 
 import { NonNegativeInt, optional } from "./schema.js"
 

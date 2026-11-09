@@ -450,7 +450,7 @@ export const make = <R>(
   }
 }
 
-export * as ToolRuntime from "./tool-runtime.vibe"
+export * as ToolRuntime from "./tool-runtime.js"
 
 module $throw$ts {
 export function raise(value: unknown): never { throw value }

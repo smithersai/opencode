@@ -1,4 +1,4 @@
-export * as SessionEvent from "./session-event.vibe"
+export * as SessionEvent from "./session-event.js"
 
 import { optional } from "./schema.js"
 import { Event } from "./event.js"

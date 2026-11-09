@@ -49,4 +49,4 @@ export const bearer = (
     .bearer()
 }
 
-export * as AuthOptions from "./auth-options.vibe"
+export * as AuthOptions from "./auth-options.js"

@@ -1,4 +1,4 @@
-export * as KV from "./kv.vibe"
+export * as KV from "./kv.js"
 
 import { and, asc, eq, gt, gte, lt } from "drizzle-orm"
 import { Database } from "./database/database.js"

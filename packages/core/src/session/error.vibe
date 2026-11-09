@@ -1,4 +1,4 @@
-export * as SessionErrors from "./error.vibe"
+export * as SessionErrors from "./error.js"
 
 import { Agent } from "@opencode/schema/agent"
 import { Skill } from "@opencode/schema/skill"

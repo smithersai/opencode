@@ -172,4 +172,4 @@ const toAIError = (error: AuthError): AIError => {
 export const toEffect = (input: Definition) => (authInput: AuthInput): Headers.Headers!AIError =>
   input.apply(authInput) |> Effect.mapError(%, toAIError)
 
-export * as Auth from "./auth.vibe"
+export * as Auth from "./auth.js"

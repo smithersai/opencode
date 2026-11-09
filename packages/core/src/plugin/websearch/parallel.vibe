@@ -1,4 +1,4 @@
-export * as WebSearchParallel from "./parallel.vibe"
+export * as WebSearchParallel from "./parallel.js"
 
 import { define } from "@opencode/plugin/effect/plugin"
 import { Scope } from "effect"

@@ -1,4 +1,4 @@
-export * as SessionRunCoordinator from "./run-coordinator.vibe"
+export * as SessionRunCoordinator from "./run-coordinator.js"
 
 import type { Promotable } from "./inbox.js"
 

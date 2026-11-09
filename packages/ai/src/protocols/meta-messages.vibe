@@ -65,4 +65,4 @@ export const protocol = Protocol.make({
   stream: AnthropicMessages.protocol.stream,
 })
 
-export * as MetaMessages from "./meta-messages.vibe"
+export * as MetaMessages from "./meta-messages.js"

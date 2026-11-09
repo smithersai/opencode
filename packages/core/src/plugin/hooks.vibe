@@ -1,4 +1,4 @@
-export * as PluginHooks from "./hooks.vibe"
+export * as PluginHooks from "./hooks.js"
 
 import type { AISDKHooks } from "@opencode/plugin/effect/aisdk"
 import type { SessionHooks } from "@opencode/plugin/effect/session"

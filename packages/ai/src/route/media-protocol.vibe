@@ -337,4 +337,4 @@ export const expiringUrl = (url: string, retention: Duration.Duration, options?:
   Clock.currentTimeMillis
   |> Effect.map(%, (now) => Media.url(url, { ...options, expiresAt: now + Duration.toMillis(retention) }))
 
-export * as MediaProtocol from "./media-protocol.vibe"
+export * as MediaProtocol from "./media-protocol.js"

@@ -1,4 +1,4 @@
-export * as PatchTool from "./patch.vibe"
+export * as PatchTool from "./patch.js"
 
 import type { Context } from "@opencode/plugin/effect/plugin"
 import type { SessionHooks } from "@opencode/plugin/effect/session"

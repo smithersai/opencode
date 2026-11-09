@@ -1,4 +1,4 @@
-export * as SkillTool from "./skill.vibe"
+export * as SkillTool from "./skill.js"
 
 import type { Context } from "@opencode/plugin/effect/plugin"
 import { ToolFailure } from "@opencode/ai/effect"

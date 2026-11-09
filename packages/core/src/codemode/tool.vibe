@@ -1,4 +1,4 @@
-export * as CodeModeTool from "./tool.vibe"
+export * as CodeModeTool from "./tool.js"
 
 import { CodeMode, Namespace, Tool } from "@opencode/codemode"
 import type {

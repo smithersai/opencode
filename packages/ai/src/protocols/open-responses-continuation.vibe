@@ -227,4 +227,4 @@ export const driver = (input: DriverInput): WebSocketChannelDriver => {
   }
 }
 
-export * as OpenResponsesContinuation from "./open-responses-continuation.vibe"
+export * as OpenResponsesContinuation from "./open-responses-continuation.js"

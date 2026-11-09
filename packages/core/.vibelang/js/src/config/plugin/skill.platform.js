@@ -9,7 +9,7 @@ export function dirname(target) {
     return path.dirname(target);
 }
 /** @throws {never} */
-export function join(directory, name) {
+export function joinPath(directory, name) {
     return path.join(directory, name);
 }
 /** @throws {never} */

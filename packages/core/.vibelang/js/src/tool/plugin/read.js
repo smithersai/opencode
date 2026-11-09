@@ -10,7 +10,7 @@ import { SessionInstructions } from "../../session/instructions.js";
 import { AbsolutePath } from "../../schema.js";
 import { ReadToolFileSystem } from "../read-filesystem.js";
 import { Environment } from "../../environment/index.js";
-import { basename, dirname, join as joinPath } from "./read.platform.js";
+import { basename, dirname, joinPath } from "./read.platform.js";
 export const name = "read";
 const FILENAME = "AGENTS.md";
 const LocationInput = Schema.Struct({

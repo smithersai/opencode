@@ -13,3 +13,4 @@ export function utf8(buffer) {
 export function withUtf8(buffer, f) {
     return f(buffer.toString("utf8"));
 }
+export const Host = { emptyBuffer, concat, utf8, withUtf8 };

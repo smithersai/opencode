@@ -14,7 +14,7 @@ import { ConfigMigrateV1 } from "../../v1/config/migrate.js";
 import { Global } from "@opencode/util/global";
 import { Permission } from "../../permission.js";
 import { AbsolutePath } from "../../schema.js";
-import { join as joinPath, joinHome, relative } from "./agent.platform.js";
+import { joinPath, joinHome, relative } from "./agent.platform.js";
 const legacySources = [
     { pattern: "{agent,agents}/**/*.md", primary: false },
     { pattern: "{mode,modes}/*.md", primary: true },

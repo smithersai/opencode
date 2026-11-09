@@ -12,7 +12,7 @@ import { Watcher } from "../../filesystem/watcher.js";
 import { InstructionDiscovery } from "../../instruction-discovery.js";
 import { Instructions } from "../../instructions/index.js";
 import { Location } from "../../location.js";
-import { basename, dirname, isAbsolute, join as joinPath, toGlobSeparators } from "./instruction.platform.js";
+import { basename, dirname, isAbsolute, joinPath, toGlobSeparators } from "./instruction.platform.js";
 export const Plugin = define({
     id: "opencode.config.instruction",
     effect: Effect.fn((ctx) => {

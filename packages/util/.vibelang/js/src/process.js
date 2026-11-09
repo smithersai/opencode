@@ -5,7 +5,7 @@ import { Context, Duration, Effect, Fiber, Layer, Schema, Stream } from "effect"
 import { ChildProcess } from "effect/process";
 import { ChildProcessSpawner } from "effect/process/ChildProcessSpawner";
 import { CrossSpawnSpawner } from "./cross-spawn-spawner.js";
-import * as Host from "./process.platform.js";
+import { Host } from "./process.platform.js";
 import { makeGlobalNode } from "./effect/app-node.js";
 export class AppProcessError extends Schema.TaggedError()("AppProcessError", {
     command: Schema.String,

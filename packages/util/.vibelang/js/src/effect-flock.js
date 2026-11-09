@@ -2,8 +2,8 @@
 import { ensuring, fn, withSpan } from "effect/Effect";
 import * as Effect_1 from "effect/Effect";
 import * as runtime from "vibelang-runtime/internal";
-import { Context, Effect, Function as EffectFunction, Layer, Option, Schedule, Schema } from "effect";
-import * as Host from "./effect-flock.platform.js";
+import { Context, Effect, Function, Layer, Option, Schedule, Schema } from "effect";
+import { Host } from "./effect-flock.platform.js";
 import { FSUtil } from "./fs-util.js";
 import { Global } from "./global.js";
 import { makeGlobalNode } from "./effect/app-node.js";
@@ -196,7 +196,7 @@ export var EffectFlock;
                 return Effect_1.die(e_1);
             }
         });
-        const withLock = EffectFunction.dual((args) => Effect.isEffect(args[0]), (body, key, dir) => Effect.scoped(Effect_1.gen(function* () {
+        const withLock = Function.dual((args) => Effect.isEffect(args[0]), (body, key, dir) => Effect.scoped(Effect_1.gen(function* () {
             yield* acquire(key, dir);
             return yield* body;
         })));

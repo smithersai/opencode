@@ -1,8 +1,7 @@
 export * as Npm from "./npm.js"
 
-import path from "path"
-import { createHash, randomUUID } from "node:crypto"
 import { Clock, Effect, Schema, Context, Layer, Option, FileSystem } from "effect"
+import * as Host from "./npm.platform.js"
 import { FSUtil } from "./fs-util.js"
 import { Global } from "./global.js"
 import { EffectFlock } from "./effect-flock.js"
@@ -33,7 +32,7 @@ export interface Interface {
 
 export class Service extends Context.Service<Service, Interface>()("@opencode/Npm") {}
 
-const illegal = process.platform === "win32" ? new Set(["<", ">", ":", '"', "|", "?", "*"]) : undefined
+const illegal = Host.platform() === "win32" ? new Set(["<", ">", ":", '"', "|", "?", "*"]) : undefined
 
 export function sanitize(pkg: string) {
   if (!illegal) return pkg
@@ -81,8 +80,7 @@ async function parse(pkg: string): Promise<Target | undefined> {
 }
 
 function key(pkg: string, target: Target | undefined) {
-  if (target?.type === "git")
-    return `git-${target.slug}-${createHash("sha256").update(pkg).digest("hex").slice(0, 12)}`
+  if (target?.type === "git") return `git-${target.slug}-${Host.sha256Hex(pkg).slice(0, 12)}`
   if (target?.type === "registry") return sanitize(`${target.name}@${target.spec}`)
   return sanitize(pkg)
 }
@@ -131,14 +129,14 @@ const stagingRetention = 60 * 60 * 1_000
 
 const layer = Layer.effect(
   Service,
-  Effect.gen(function* () {
-    const afs = yield* FSUtil.Service
-    const global = yield* Global.Service
-    const fs = yield* FileSystem.FileSystem
-    const flock = yield* EffectFlock.Service
-    const directory = (pkg: string, target: Target | undefined) => path.join(global.cache, "npm", key(pkg, target))
-    const generations = Effect.fnUntraced(function* (dir: string) {
-      return yield* fs.readDirectory(dir).pipe(
+  effect {
+    const afs = try FSUtil.Service
+    const global = try Global.Service
+    const fs = try FileSystem.FileSystem
+    const flock = try EffectFlock.Service
+    const directory = (pkg: string, target: Target | undefined) => Host.join(global.cache, "npm", key(pkg, target))
+    const generations = effect (dir: string) => {
+      return try fs.readDirectory(dir).pipe(
         Effect.orElseSucceed(() => [] as string[]),
         Effect.map((entries) =>
           entries
@@ -146,11 +144,11 @@ const layer = Layer.effect(
             .toSorted((a, b) => Number(a) - Number(b)),
         ),
       )
-    })
-    const current = Effect.fnUntraced(function* (dir: string) {
-      const latest = (yield* generations(dir)).at(-1)
-      return latest ? path.join(dir, latest) : undefined
-    })
+    }
+    const current = effect (dir: string) => {
+      const latest = (try generations(dir)).at(-1)
+      return latest ? Host.join(dir, latest) : undefined
+    }
     const mkdir = (dir: string) =>
       fs.makeDirectory(dir, { recursive: true }).pipe(
         Effect.mapError((cause) => new InstallFailedError({ dir, cause })),
@@ -161,27 +159,27 @@ const layer = Layer.effect(
       )
     const rename = (from: string, to: string, dir: string) =>
       fs.rename(from, to).pipe(Effect.mapError((cause) => new InstallFailedError({ dir, cause })))
-    const installedName = Effect.fnUntraced(function* (pkg: string, dir: string, target?: Target) {
+    const installedName = effect (pkg: string, dir: string, target?: Target) => {
       if (target?.name) return target.name
-      const manifest = yield* afs
-        .readJson(path.join(dir, "package.json"))
+      const manifest = try afs
+        .readJson(Host.join(dir, "package.json"))
         .pipe(Effect.flatMap(Schema.decodeUnknownEffect(PackageJson)), Effect.option)
       if (Option.isSome(manifest)) {
         const name = Object.keys(manifest.value.dependencies ?? {})[0]
         if (name) return name
       }
       return pkg
-    })
-    const installedRevision = Effect.fnUntraced(function* (root: string, name: string, target: Target) {
-      const dir = path.join(root, "node_modules", name)
+    }
+    const installedRevision = effect (root: string, name: string, target: Target) => {
+      const dir = Host.join(root, "node_modules", name)
       if (target.type === "registry") {
-        const manifest = yield* afs
-          .readJson(path.join(dir, "package.json"))
+        const manifest = try afs
+          .readJson(Host.join(dir, "package.json"))
           .pipe(Effect.flatMap(Schema.decodeUnknownEffect(PackageJson)), Effect.option)
         return Option.isSome(manifest) ? manifest.value.version : undefined
       }
-      for (const file of [path.join(root, "package-lock.json"), path.join(root, "node_modules", ".package-lock.json")]) {
-        const lock = yield* afs
+      for (const file of [Host.join(root, "package-lock.json"), Host.join(root, "node_modules", ".package-lock.json")]) {
+        const lock = try afs
           .readJson(file)
           .pipe(Effect.flatMap(Schema.decodeUnknownEffect(PackageLock)), Effect.option)
         const revision = gitRevision(
@@ -189,13 +187,13 @@ const layer = Layer.effect(
         )
         if (revision) return revision
       }
-    })
-    const metadata = Effect.fnUntraced(function* (root: string, name: string, dir: string, target: Target | undefined) {
-      const manifest = yield* afs
-        .readJson(path.join(dir, "package.json"))
+    }
+    const metadata = effect (root: string, name: string, dir: string, target: Target | undefined) => {
+      const manifest = try afs
+        .readJson(Host.join(dir, "package.json"))
         .pipe(Effect.flatMap(Schema.decodeUnknownEffect(PackageJson)), Effect.option)
       const manifestVersion = Option.isSome(manifest) ? manifest.value.version : undefined
-      const revision = target ? (yield* installedRevision(root, name, target)) ?? manifestVersion : undefined
+      const revision = target ? (try installedRevision(root, name, target)) ?? manifestVersion : undefined
       const version = target?.type === "git" ? revision : manifestVersion
       return {
         directory: dir,
@@ -203,128 +201,130 @@ const layer = Layer.effect(
         ...(version ? { version } : {}),
         ...(revision ? { revision } : {}),
       }
-    })
+    }
     const reify = (input: { dir: string; config?: string; add?: string[]; update?: boolean }) =>
-      Effect.gen(function* () {
-        const { Arborist } = yield* Effect.promise(() => import("@npmcli/arborist"))
-        const add = input.add ?? []
-        const options = {
-          ...(yield* NpmConfig.load(input.config ?? input.dir)),
-          ...(input.update ? { preferOnline: true, noGitRevCache: true } : {}),
-          // Audit reports are unused here, but Arborist waits for them before completing an install.
-          audit: false,
-          windowsHide: true,
-        }
-        const arborist = new Arborist({
-          ...options,
-          path: input.dir,
-          binLinks: true,
-          progress: false,
-          savePrefix: "",
-          ignoreScripts: true,
-        })
-        return yield* Effect.tryPromise({
-          try: () =>
-            arborist.reify({
-              ...options,
-              add,
-              update: input.update,
-              save: true,
-              saveType: "prod",
-            }),
-          catch: (cause) =>
-            new InstallFailedError({
-              cause,
-              add,
-              dir: input.dir,
-            }),
-        }) as Effect.Effect<ArboristTree, InstallFailedError>
-      }).pipe(
-        Effect.withSpan("Npm.reify", {
+      withSpan(
+        effect {
+          const { Arborist } = try promise(() => import("@npmcli/arborist"))
+          const add = input.add ?? []
+          const options = {
+            ...(try NpmConfig.load(input.config ?? input.dir)),
+            ...(input.update ? { preferOnline: true, noGitRevCache: true } : {}),
+            // Audit reports are unused here, but Arborist waits for them before completing an install.
+            audit: false,
+            windowsHide: true,
+          }
+          const arborist = try Effect.try({
+            try: () =>
+              new Arborist({
+                ...options,
+                path: input.dir,
+                binLinks: true,
+                progress: false,
+                savePrefix: "",
+                ignoreScripts: true,
+              }),
+            catch: (cause) => cause,
+          }).pipe(Effect.orDie)
+          return try (Effect.tryPromise({
+            try: () =>
+              arborist.reify({
+                ...options,
+                add,
+                update: input.update,
+                save: true,
+                saveType: "prod",
+              }),
+            catch: (cause) =>
+              new InstallFailedError({
+                cause,
+                add,
+                dir: input.dir,
+              }),
+          }) as Effect.Effect<ArboristTree, InstallFailedError>)
+        },
+        "Npm.reify",
+        {
           attributes: input,
-        }),
+        },
       )
 
-    const install = Effect.fnUntraced(function* (
-      pkg: string,
-      target: Target | undefined,
-      dir: string,
-      update: boolean,
-    ) {
-      yield* flock.acquire(`npm-install:${dir}`)
-      const active = yield* current(dir)
-      const name = yield* installedName(pkg, active ?? dir, target)
-      if (active && !update && (yield* afs.existsSafe(path.join(active, "node_modules", name)))) {
-        return yield* metadata(active, name, path.join(active, "node_modules", name), target)
+    const install = effect (pkg: string, target: Target | undefined, dir: string, update: boolean) => {
+      try flock.acquire(`npm-install:${dir}`)
+      const active = try current(dir)
+      const name = try installedName(pkg, active ?? dir, target)
+      if (active && !update && (try afs.existsSafe(Host.join(active, "node_modules", name)))) {
+        return try metadata(active, name, Host.join(active, "node_modules", name), target)
       }
 
-      yield* mkdir(dir)
-      const startedAt = yield* Clock.currentTimeMillis
+      try mkdir(dir)
+      const startedAt = try Clock.currentTimeMillis
       // Arborist keys lockfile entries relative to the root's real path. When the cache
       // directory is reached through a symlink (macOS `/var` → `/private/var`, a linked
       // XDG cache), the keys become `../../…` paths that installedRevision never finds,
       // so Git checks report "not installed" and updates go undetected. Stage under the
       // resolved directory so the root path and real path agree.
-      const root = yield* fs.realPath(dir).pipe(Effect.mapError((cause) => new InstallFailedError({ dir, cause })))
-      const staging = path.join(root, `.staging-${startedAt}-${randomUUID()}`)
-      const staged = yield* Effect.gen(function* () {
-        const tree = yield* reify({ dir: staging, config: dir, add: [pkg], update })
-        const installed = tree.edgesOut.values().next().value?.to
-        const installedNameValue = installed?.name ?? (yield* installedName(pkg, staging, target))
-        const result = yield* metadata(
-          staging,
-          installedNameValue,
-          installed?.path ?? path.join(staging, "node_modules", installedNameValue),
-          target,
-        )
-        if (!installed && !(yield* afs.isDir(result.directory)))
-          return yield* new InstallFailedError({ add: [pkg], dir: staging })
-        const links =
-          process.platform === "win32"
-            ? Array.from(tree.inventory.values()).filter(
-                (node) => node.isLink && FSUtil.contains(staging, node.path) && FSUtil.contains(staging, node.realpath),
-              )
-            : []
-        return { result, links }
-      }).pipe(Effect.onError(() => remove(staging, dir).pipe(Effect.ignore)))
+      const root = try fs.realPath(dir).pipe(Effect.mapError((cause) => new InstallFailedError({ dir, cause })))
+      const uuid = try Effect.try({ try: () => Host.randomUUID(), catch: (cause) => cause }).pipe(Effect.orDie)
+      const staging = Host.join(root, `.staging-${startedAt}-${uuid}`)
+      const staged = try onError(
+        effect {
+          const tree = try reify({ dir: staging, config: dir, add: [pkg], update })
+          const installed = tree.edgesOut.values().next().value?.to
+          const installedNameValue = installed?.name ?? (try installedName(pkg, staging, target))
+          const result = try metadata(
+            staging,
+            installedNameValue,
+            installed?.path ?? Host.join(staging, "node_modules", installedNameValue),
+            target,
+          )
+          if (!installed && !(try afs.isDir(result.directory)))
+            throw new InstallFailedError({ add: [pkg], dir: staging })
+          const links =
+            Host.platform() === "win32"
+              ? Array.from(tree.inventory.values()).filter(
+                  (node) => node.isLink && FSUtil.contains(staging, node.path) && FSUtil.contains(staging, node.realpath),
+                )
+              : []
+          return { result, links }
+        },
+        () => remove(staging, dir).pipe(Effect.ignore),
+      )
 
       if (active) {
-        const activeEntry = yield* metadata(active, name, path.join(active, "node_modules", name), target)
+        const activeEntry = try metadata(active, name, Host.join(active, "node_modules", name), target)
         if (activeEntry.revision && activeEntry.revision === staged.result.revision) {
-          yield* remove(staging, dir)
+          try remove(staging, dir)
           return activeEntry
         }
       }
 
-      const completedAt = yield* Clock.currentTimeMillis
-      const newest = Number((yield* generations(dir)).at(-1) ?? 0)
-      const generation = path.join(dir, String(Math.max(completedAt, newest + 1)))
+      const completedAt = try Clock.currentTimeMillis
+      const newest = Number((try generations(dir)).at(-1) ?? 0)
+      const generation = Host.join(dir, String(Math.max(completedAt, newest + 1)))
       // Windows junctions use absolute targets, so rebase internal links before publishing the generation.
       if (staged.links.length > 0) {
-        const { unlink, symlink } = yield* Effect.promise(() => import("node:fs/promises"))
-        yield* Effect.forEach(
+        const files = try promise(() => Host.filePromises())
+        try Effect.forEach(
           staged.links,
           (link) =>
             Effect.tryPromise({
-              try: async () => {
-                await unlink(link.path)
-                await symlink(path.join(generation, path.relative(staging, link.realpath)), link.path, "junction")
-              },
+              try: () => Host.relink(files, link.path, Host.join(generation, Host.relative(staging, link.realpath))),
               catch: (cause) => new InstallFailedError({ dir, cause }),
             }),
           { discard: true },
         ).pipe(Effect.onError(() => remove(staging, dir).pipe(Effect.ignore)))
       }
-      yield* rename(staging, generation, dir)
-      return { ...staged.result, directory: path.join(generation, "node_modules", staged.result.name) }
-    })
+      try rename(staging, generation, dir)
+      return { ...staged.result, directory: Host.join(generation, "node_modules", staged.result.name) }
+    }
 
-    const collect = Effect.fnUntraced(function* (dir: string) {
-      const now = yield* Clock.currentTimeMillis
-      const completed = yield* generations(dir)
+    const collect = effect (dir: string) => {
+      const now = try Clock.currentTimeMillis
+      const completed = try generations(dir)
       const keep = new Set(completed.slice(-2))
-      const entries = yield* fs.readDirectory(dir).pipe(Effect.orElseSucceed(() => [] as string[]))
-      yield* Effect.forEach(
+      const entries = try fs.readDirectory(dir).pipe(Effect.orElseSucceed(() => [] as string[]))
+      try Effect.forEach(
         entries,
         (name) => {
           const timestamp = /^\d+$/.test(name)
@@ -332,123 +332,125 @@ const layer = Layer.effect(
             : Number(name.match(/^\.staging-(\d+)-/)?.[1] ?? Number.NaN)
           const maximumAge = name.startsWith(".staging-") ? stagingRetention : retention
           if (!Number.isFinite(timestamp) || keep.has(name) || now - timestamp <= maximumAge) return Effect.void
-          return remove(path.join(dir, name), dir).pipe(
+          return remove(Host.join(dir, name), dir).pipe(
             Effect.catchCause((cause) => Effect.logWarning("failed to remove stale npm generation", { dir, name, cause })),
           )
         },
         { concurrency: "unbounded", discard: true },
       )
-    })
+    }
 
-    const add = Effect.fn("Npm.add")(function* (pkg: string) {
-      const target = yield* Effect.promise(() => parse(pkg))
+    const add = fn("Npm.add")(effect (pkg: string) => {
+      const target = try promise(() => parse(pkg))
       const dir = directory(pkg, target)
-      return yield* install(pkg, target, dir, false)
+      return try install(pkg, target, dir, false)
     }, Effect.scoped)
 
-    const resolve = Effect.fn("Npm.resolve")(function* (pkg: string) {
-      const target = yield* Effect.promise(() => parse(pkg))
+    const resolve = fn("Npm.resolve")(effect (pkg: string) => {
+      const target = try promise(() => parse(pkg))
       const root = directory(pkg, target)
-      const generation = yield* current(root)
-      const name = yield* installedName(pkg, generation ?? root, target)
-      const dir = path.join(generation ?? root, "node_modules", name)
-      if (!(yield* afs.existsSafe(dir))) return { directory: dir, name }
-      return yield* metadata(generation ?? root, name, dir, target)
+      const generation = try current(root)
+      const name = try installedName(pkg, generation ?? root, target)
+      const dir = Host.join(generation ?? root, "node_modules", name)
+      if (!(try afs.existsSafe(dir))) return { directory: dir, name }
+      return try metadata(generation ?? root, name, dir, target)
     })
 
-    const check = Effect.fn("Npm.check")(function* (pkg: string) {
-      const target = yield* Effect.promise(() => parse(pkg))
+    const check = fn("Npm.check")(effect (pkg: string) => {
+      const target = try promise(() => parse(pkg))
       const root = directory(pkg, target)
       if (!target)
-        return yield* new InstallFailedError({
+        throw new InstallFailedError({
           dir: root,
           cause: new Error("Package checks only support registry and Git package specs"),
         })
       if (!target.mutable) return false
-      const generation = yield* current(root)
-      const name = yield* installedName(pkg, generation ?? root, target)
-      const installed = generation ? yield* installedRevision(generation, name, target) : undefined
+      const generation = try current(root)
+      const name = try installedName(pkg, generation ?? root, target)
+      const installed = generation ? try installedRevision(generation, name, target) : undefined
       if (!installed)
-        return yield* new InstallFailedError({ dir: root, cause: new Error(`Package is not installed: ${pkg}`) })
-      const { manifest, resolve } = yield* Effect.promise(() => import("pacote"))
+        throw new InstallFailedError({ dir: root, cause: new Error(`Package is not installed: ${pkg}`) })
+      const { manifest, resolve } = try promise(() => import("pacote"))
       const options = {
-        ...(yield* NpmConfig.load(root)),
+        ...(try NpmConfig.load(root)),
         preferOnline: true,
         noGitRevCache: true,
         ignoreScripts: true,
         // Pacote spawns Git directly rather than through AppProcess.
         windowsHide: true,
       }
-      const available = yield* Effect.tryPromise({
+      const available = try Effect.tryPromise({
         try: async () =>
           target.type === "git" ? gitRevision(await resolve(pkg, options)) : (await manifest(pkg, options)).version,
         catch: (cause) => new InstallFailedError({ dir: root, cause }),
       })
       if (!available)
-        return yield* new InstallFailedError({ dir: root, cause: new Error(`Package revision not found: ${pkg}`) })
+        throw new InstallFailedError({ dir: root, cause: new Error(`Package revision not found: ${pkg}`) })
       return installed !== available
     })
 
-    const update = Effect.fn("Npm.update")(function* (pkg: string) {
-      const target = yield* Effect.promise(() => parse(pkg))
+    const update = fn("Npm.update")(effect (pkg: string) => {
+      const target = try promise(() => parse(pkg))
       const dir = directory(pkg, target)
       if (!target)
-        return yield* new InstallFailedError({
+        throw new InstallFailedError({
           dir,
           cause: new Error("Package updates only support registry and Git package specs"),
         })
-      if (!target.mutable) return yield* add(pkg)
-      const installed = yield* install(pkg, target, dir, true)
-      yield* collect(dir)
+      if (!target.mutable) return try add(pkg)
+      const installed = try install(pkg, target, dir, true)
+      try collect(dir)
       return installed
     }, Effect.scoped)
 
-    const which = Effect.fn("Npm.which")(function* (pkg: string, bin?: string) {
-      const target = yield* Effect.promise(() => parse(pkg))
+    const which = fn("Npm.which")(effect (pkg: string, bin?: string) => {
+      const target = try promise(() => parse(pkg))
       const root = directory(pkg, target)
 
-      const pick = Effect.fnUntraced(function* (dir: string) {
-        const binDir = path.join(dir, "node_modules", ".bin")
-        const files = yield* fs.readDirectory(binDir).pipe(Effect.orElseSucceed(() => [] as string[]))
+      const pick = effect (dir: string) => {
+        const binDir = Host.join(dir, "node_modules", ".bin")
+        const files = try fs.readDirectory(binDir).pipe(Effect.orElseSucceed(() => [] as string[]))
 
         if (files.length === 0) return Option.none<string>()
         // Caller picked a specific bin (e.g. pyright exposes both `pyright` and
         // `pyright-langserver`); trust the hint if the package provides it.
-        if (bin) return files.includes(bin) ? Option.some(path.join(binDir, bin)) : Option.none<string>()
-        if (files.length === 1) return Option.some(path.join(binDir, files[0]))
+        if (bin) return files.includes(bin) ? Option.some(Host.join(binDir, bin)) : Option.none<string>()
+        if (files.length === 1) return Option.some(Host.join(binDir, files[0]))
 
         const packageName = target?.name ?? pkg
-        const pkgJson = yield* afs.readJson(path.join(dir, "node_modules", packageName, "package.json")).pipe(Effect.option)
+        const pkgJson = try afs.readJson(Host.join(dir, "node_modules", packageName, "package.json")).pipe(Effect.option)
 
         if (Option.isSome(pkgJson)) {
           const parsed = pkgJson.value as { bin?: string | Record<string, string> }
           if (parsed?.bin) {
             const unscoped = packageName.startsWith("@") ? packageName.split("/")[1] : packageName
             const parsedBin = parsed.bin
-            if (typeof parsedBin === "string") return Option.some(path.join(binDir, unscoped))
+            if (typeof parsedBin === "string") return Option.some(Host.join(binDir, unscoped))
             const keys = Object.keys(parsedBin)
             const selected = parsedBin[unscoped] ? unscoped : keys[0]
-            return selected ? Option.some(path.join(binDir, selected)) : Option.none<string>()
+            return selected ? Option.some(Host.join(binDir, selected)) : Option.none<string>()
           }
         }
 
-        return Option.some(path.join(binDir, files[0]))
-      })
+        return Option.some(Host.join(binDir, files[0]))
+      }
 
       return Option.getOrUndefined(
-        yield* Effect.gen(function* () {
-          const generation = yield* current(root)
-          const selected = generation ? yield* pick(generation) : Option.none<string>()
-          if (Option.isSome(selected)) return selected
+        try Effect.orElseSucceed(
+          scoped(
+            effect {
+              const generation = try current(root)
+              const selected = generation ? try pick(generation) : Option.none<string>()
+              if (Option.isSome(selected)) return selected
 
-          yield* add(pkg)
+              try add(pkg)
 
-          const installed = yield* current(root)
-          if (!installed) return Option.none<string>()
-          return yield* pick(installed)
-        }).pipe(
-          Effect.scoped,
-          Effect.orElseSucceed(() => Option.none<string>()),
+              const installed = try current(root)
+              if (!installed) return Option.none<string>()
+              return try pick(installed)
+            },
+          ),
+          () => Option.none<string>(),
         ),
       )
     })
@@ -460,7 +462,7 @@ const layer = Layer.effect(
       update,
       which,
     })
-  }),
+  },
 )
 
 export const node = makeGlobalNode({

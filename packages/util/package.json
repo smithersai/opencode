@@ -47,6 +47,21 @@
       "vibelang-source": "./src/npm-config.vibe",
       "default": "./.vibelang/js/src/npm-config.js"
     },
+    "./effect-flock": {
+      "types": "./src/effect-flock.d.vibe.ts",
+      "vibelang-source": "./src/effect-flock.vibe",
+      "default": "./.vibelang/js/src/effect-flock.js"
+    },
+    "./npm": {
+      "types": "./src/npm.d.vibe.ts",
+      "vibelang-source": "./src/npm.vibe",
+      "default": "./.vibelang/js/src/npm.js"
+    },
+    "./process": {
+      "types": "./src/process.d.vibe.ts",
+      "vibelang-source": "./src/process.vibe",
+      "default": "./.vibelang/js/src/process.js"
+    },
     "./*": {
       "types": "./src/*.ts",
       "vibelang-source": "./src/*.ts",
@@ -59,7 +74,10 @@
     "./heap-snapshot.platform": null,
     "./npm-config.platform": null,
     "./bom.vibe.-24-call-24-ts": null,
-    "./patch.vibe.-24-throw-24-ts": null
+    "./patch.vibe.-24-throw-24-ts": null,
+    "./effect-flock.platform": null,
+    "./npm.platform": null,
+    "./process.platform": null
   },
   "imports": {
     "#global-roots": {

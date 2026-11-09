@@ -3,6 +3,7 @@ import type { PlatformError } from "effect/PlatformError"
 import { ChildProcess } from "effect/process"
 import { ChildProcessSpawner } from "effect/process/ChildProcessSpawner"
 import { CrossSpawnSpawner } from "./cross-spawn-spawner.js"
+import * as Host from "./process.platform.js"
 import { makeGlobalNode } from "./effect/app-node.js"
 
 export class AppProcessError extends Schema.TaggedError<AppProcessError>()("AppProcessError", {
@@ -59,12 +60,14 @@ export class Service extends Context.Service<Service, Interface>()("@opencode/Ap
 export const requireSuccess = (result: RunResult): Effect.Effect<RunResult, AppProcessError> =>
   result.exitCode === 0
     ? Effect.succeed(result)
-    : Effect.fail(
-        new AppProcessError({
-          command: result.command,
-          exitCode: result.exitCode,
-          stderr: result.stderr.toString("utf8"),
-        }),
+    : Host.withUtf8(result.stderr, (stderr) =>
+        Effect.fail(
+          new AppProcessError({
+            command: result.command,
+            exitCode: result.exitCode,
+            stderr,
+          }),
+        ),
       )
 
 export const requireExitIn =
@@ -72,12 +75,14 @@ export const requireExitIn =
   (result: RunResult): Effect.Effect<RunResult, AppProcessError> =>
     codes.includes(result.exitCode)
       ? Effect.succeed(result)
-      : Effect.fail(
-          new AppProcessError({
-            command: result.command,
-            exitCode: result.exitCode,
-            stderr: result.stderr.toString("utf8"),
-          }),
+      : Host.withUtf8(result.stderr, (stderr) =>
+          Effect.fail(
+            new AppProcessError({
+              command: result.command,
+              exitCode: result.exitCode,
+              stderr,
+            }),
+          ),
         )
 
 const describeCommand = (command: ChildProcess.Command): string => {
@@ -134,20 +139,26 @@ export const collectStream = (stream: Stream.Stream<Uint8Array, PlatformError>, 
       acc.truncated = acc.truncated || acc.bytes > maxOutputBytes
       return acc
     },
-  ).pipe(Effect.map((x) => ({ buffer: Buffer.concat(x.chunks), truncated: x.truncated })))
+  ).pipe(
+    Effect.flatMap((x) =>
+      Effect.try({ try: () => ({ buffer: Host.concat(x.chunks), truncated: x.truncated }), catch: (cause) => cause }).pipe(
+        Effect.orDie,
+      ),
+    ),
+  )
 
 const layer = Layer.effect(
   Service,
-  Effect.gen(function* () {
-    const spawner = yield* ChildProcessSpawner
+  effect {
+    const spawner = try ChildProcessSpawner
 
     const runCommand = (command: ChildProcess.Command, options?: RunOptions) => {
       const description = describeCommand(command)
       const collect = Effect.scoped(
-        Effect.gen(function* () {
-          const handle = yield* spawner.spawn(command)
+        effect {
+          const handle = try spawner.spawn(command)
           if (options?.combineOutput) {
-            const [output, exitCode] = yield* Effect.all(
+            const [output, exitCode] = try Effect.all(
               [collectStream(handle.all, options.maxOutputBytes), handle.exitCode],
               { concurrency: "unbounded" },
             )
@@ -155,14 +166,14 @@ const layer = Layer.effect(
               command: description,
               exitCode,
               output: output.buffer,
-              stdout: Buffer.alloc(0),
-              stderr: Buffer.alloc(0),
+              stdout: Host.emptyBuffer(),
+              stderr: Host.emptyBuffer(),
               outputTruncated: output.truncated,
               stdoutTruncated: false,
               stderrTruncated: false,
             } satisfies RunResult
           }
-          const [stdout, stderr, exitCode] = yield* Effect.all(
+          const [stdout, stderr, exitCode] = try Effect.all(
             [
               collectStream(handle.stdout, options?.maxOutputBytes),
               collectStream(handle.stderr, options?.maxErrorBytes),
@@ -178,7 +189,7 @@ const layer = Layer.effect(
             stdoutTruncated: stdout.truncated,
             stderrTruncated: stderr.truncated,
           } satisfies RunResult
-        }),
+        },
       )
       const timed = options?.timeout
         ? Effect.timeoutOrElse(collect, {
@@ -196,10 +207,10 @@ const layer = Layer.effect(
       return aborted.pipe(Effect.mapError((cause) => wrapError(description, cause)))
     }
 
-    const run = Effect.fn("AppProcess.run")(function* (command: ChildProcess.Command, options?: RunOptions) {
-      if (options?.stdin === undefined) return yield* runCommand(command, options)
+    const run = fn("AppProcess.run")(effect (command: ChildProcess.Command, options?: RunOptions) => {
+      if (options?.stdin === undefined) return try runCommand(command, options)
       if (command._tag !== "StandardCommand") {
-        return yield* new AppProcessError({
+        throw new AppProcessError({
           command: describeCommand(command),
           cause: new Error("stdin option only supports StandardCommand; received PipedCommand"),
         })
@@ -208,7 +219,7 @@ const layer = Layer.effect(
         ...command.options,
         stdin: normalizeStdin(options.stdin),
       })
-      return yield* runCommand(next, options)
+      return try runCommand(next, options)
     })
 
     const runStream = (
@@ -218,11 +229,11 @@ const layer = Layer.effect(
       const description = describeCommand(command)
       const okExitCodes = options?.okExitCodes
       const built: Stream.Stream<string, AppProcessError | PlatformError> = Stream.unwrap(
-        Effect.gen(function* () {
-          const handle = yield* spawner.spawn(command)
+        effect {
+          const handle = try spawner.spawn(command)
           const streams =
             options?.includeStderr === true
-              ? yield* handle.stderr.pipe(
+              ? try handle.stderr.pipe(
                   Stream.broadcastN({ n: 2, capacity: 16 }),
                   Effect.map((copies) => ({
                     source: Stream.merge(handle.stdout, copies[0]),
@@ -230,9 +241,11 @@ const layer = Layer.effect(
                   })),
                 )
               : { source: handle.stdout, diagnostics: handle.stderr }
-          const stderrFiber = yield* Effect.forkScoped(
+          const stderrFiber = try Effect.forkScoped(
             collectStream(streams.diagnostics, options?.maxErrorBytes).pipe(
-              Effect.map((x) => x.buffer.toString("utf8")),
+              Effect.flatMap((x) =>
+                Effect.try({ try: () => Host.utf8(x.buffer), catch: (cause) => cause }).pipe(Effect.orDie),
+              ),
             ),
           )
           const lines = streams.source.pipe(
@@ -241,17 +254,17 @@ const layer = Layer.effect(
             Stream.filter((line) => line.length > 0),
           )
           const tail = Stream.unwrap(
-            Effect.gen(function* () {
-              const code = yield* handle.exitCode
+            effect {
+              const code = try handle.exitCode
               if (okExitCodes && okExitCodes.length > 0 && !okExitCodes.includes(code)) {
-                const stderr = yield* Fiber.join(stderrFiber)
+                const stderr = try Fiber.join(stderrFiber)
                 return Stream.fail(new AppProcessError({ command: description, exitCode: code, stderr }))
               }
               return Stream.empty
-            }),
+            },
           )
           return Stream.concat(lines, tail) as Stream.Stream<string, AppProcessError | PlatformError>
-        }),
+        },
       )
       const mapped = built.pipe(Stream.mapError((cause) => wrapError(description, cause)))
       if (!options?.signal) return mapped
@@ -262,7 +275,7 @@ const layer = Layer.effect(
     }
 
     return Service.of({ ...spawner, run, runStream })
-  }),
+  },
 )
 
 export const node = makeGlobalNode({ service: Service, layer: layer, deps: [CrossSpawnSpawner.node] })

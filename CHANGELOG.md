@@ -6,6 +6,8 @@ Release notes for OpenCode V2, newest first.
 
 ### Changed
 
+- Lock, npm install and process helpers in the util package now use VibeLang while preserving their declarations.
+
 - The Durable Object SQLite adapter now uses VibeLang with unchanged transaction and blob behavior.
 
 - Recording credential setup now uses VibeLang while keeping status checks read-only.

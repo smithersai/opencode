@@ -6,7 +6,7 @@ import {
   MAX_HISTORY_ENTRIES,
   parsePromptHistory,
   type PromptInfo,
-} from "../../src/prompt/history"
+} from "../../src/prompt/history.vibex"
 
 const entry = (text: string, files: PromptInfo["files"] = []): PromptInfo => ({
   text,

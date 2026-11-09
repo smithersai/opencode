@@ -6,6 +6,8 @@ Release notes for OpenCode V2, newest first.
 
 ### Changed
 
+- TUI prompt history now uses VibeLang while preserving stored history behavior.
+
 - Client generation now uses VibeLang while preserving generated sources.
 
 - Database migration implementations now use VibeLang while preserving their existing declarations.

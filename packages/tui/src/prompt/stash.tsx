@@ -4,7 +4,7 @@ import { createStore, produce, unwrap } from "solid-js/store"
 import { createSimpleContext } from "../context/helper"
 import { useTuiPaths } from "../context/runtime"
 import { appendText, readText, writeText } from "../util/persistence"
-import { parsePromptInfo, type PromptInfo } from "./history"
+import { parsePromptInfo, type PromptInfo } from "./history.vibex"
 
 export type StashEntry = {
   prompt: PromptInfo

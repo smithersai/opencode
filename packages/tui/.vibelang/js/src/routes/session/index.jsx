@@ -42,7 +42,7 @@ import { useToast } from "../../ui/toast";
 import stripAnsi from "strip-ansi";
 import { usePromptRef } from "../../context/prompt";
 import { projectedPromptInput } from "../../prompt/codec.js";
-import { appendPrompt } from "../../prompt/history";
+import { appendPrompt } from "../../prompt/history.jsx";
 import { deduplicateVisibleImages } from "../../prompt/attachment.js";
 import { useEpilogue } from "../../context/epilogue";
 import { normalizePath } from "../../util/path.js";

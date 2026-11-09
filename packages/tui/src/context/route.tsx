@@ -1,7 +1,7 @@
 import { createStore, reconcile } from "solid-js/store"
 import type { LocationRef } from "@opencode/client"
 import { createSimpleContext } from "./helper"
-import type { PromptInfo } from "../prompt/history"
+import type { PromptInfo } from "../prompt/history.vibex"
 import { useTuiStartup } from "./runtime"
 
 export type HomeRoute = {

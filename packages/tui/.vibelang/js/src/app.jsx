@@ -57,7 +57,7 @@ import { clickedLink } from "./ui/link";
 import { ThemeErrorToast } from "./component/theme-error-toast";
 import { createThemeSource, ThemeProvider, useTheme, useThemes } from "./context/theme";
 import { Home } from "./routes/home";
-import { PromptHistoryProvider } from "./prompt/history";
+import { PromptHistoryProvider } from "./prompt/history.jsx";
 import { FrecencyProvider } from "./prompt/frecency";
 import { PromptStashProvider } from "./prompt/stash";
 import { Toast, ToastProvider, useToast } from "./ui/toast";

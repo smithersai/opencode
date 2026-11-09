@@ -80,7 +80,7 @@ const layer = Layer.effect(
     }))
     const loadAdapter = try Effect.cached(
       Effect.tryPromise({
-        try: () => import("./image/photon.vibe"),
+        try: () => import("./image/photon.js"),
         catch: () => new ResizerUnavailableError(),
       }) |> Effect.flatMap(%, (adapter) => adapter.make),
     )

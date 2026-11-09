@@ -2760,5 +2760,59 @@
     "imports": [
       "./bom.js"
     ]
+  },
+  {
+    "source": "packages/ai/script/setup-recording-env.vibe",
+    "imports": [
+      "../src/providers/cloudflare-ai-gateway.js",
+      "../src/providers/cloudflare-workers-ai.js"
+    ]
+  },
+  {
+    "source": "packages/core/src/config/plugin/agent.vibe",
+    "imports": [
+      "../../agent.js",
+      "../../tool/plugin/edit.js",
+      "../../v1/config/agent.js",
+      "../../v1/config/migrate.js"
+    ]
+  },
+  {
+    "source": "packages/core/src/database/sqlite.workerd.vibe",
+    "imports": [
+      "./sqlite.js"
+    ]
+  },
+  {
+    "source": "packages/core/src/image/photon.vibe",
+    "imports": [
+      "../image.js"
+    ]
+  },
+  {
+    "source": "packages/core/src/plugin/provider/local.vibe",
+    "imports": [
+      "../../environment/unavailable.js",
+      "../internal.js",
+      "./configured.js"
+    ]
+  },
+  {
+    "source": "packages/core/src/plugin/verbosity.vibe",
+    "imports": [
+      "./internal.js"
+    ]
+  },
+  {
+    "source": "packages/core/src/worktree.vibe",
+    "imports": [
+      "./worktree/directory.js"
+    ]
+  },
+  {
+    "source": "packages/util/src/npm.vibe",
+    "imports": [
+      "./npm-config.js"
+    ]
   }
 ]

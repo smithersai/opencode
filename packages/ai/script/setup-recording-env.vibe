@@ -6,8 +6,8 @@ import { confirm, multiselect, password, text } from "@clack/prompts"
 import { AwsV4Signer } from "aws4fetch"
 import { FetchHttpClient, HttpClient, HttpClientRequest, type HttpClientResponse } from "effect/http"
 import { ProviderShared } from "../src/protocols/shared.ts"
-import { CloudflareAIGateway } from "../src/providers/cloudflare-ai-gateway.vibe"
-import { CloudflareWorkersAI } from "../src/providers/cloudflare-workers-ai.ts"
+import { CloudflareAIGateway } from "../src/providers/cloudflare-ai-gateway.js"
+import { CloudflareWorkersAI } from "../src/providers/cloudflare-workers-ai.js"
 
 type Provider = {
   readonly id: string

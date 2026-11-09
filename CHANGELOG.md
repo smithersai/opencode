@@ -6,6 +6,8 @@ Release notes for OpenCode V2, newest first.
 
 ### Bugs fixed
 
+- Debug bar component previews could load the retired TypeScript entry; their source links now load the native module.
+
 - Native SQLite implementation helpers could be reached through the package wildcard; those helper subpaths now stay private.
 
 - SDK package verification could lose relative local dependencies when installing its isolated consumer; it now resolves those archives from their source package.

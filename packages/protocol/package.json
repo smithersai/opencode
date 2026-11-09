@@ -224,8 +224,8 @@
   "scripts": {
     "build": "bun run script/build.ts",
     "pack": "bun run script/pack.ts",
-    "generate": "bun run script/generate-openapi.ts",
-    "check:generated": "bun run script/generate-openapi.ts --check",
+    "generate": "bun run script/generate-openapi.vibe",
+    "check:generated": "bun run script/generate-openapi.vibe --check",
     "test": "bun test --only-failures",
     "typecheck": "bun check --no-script",
     "typecheck:tsc": "vibelang --noEmit"

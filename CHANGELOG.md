@@ -14,7 +14,7 @@ Release notes for OpenCode V2, newest first.
 
 - Core VCS, provider, skill, planning and warming plugins, skill discovery, PTY tickets and Photon image resizing now use VibeLang while keeping their package entry points and host behavior.
 
-- Config plugins, the read, grep and glob tools, and the bounded HTTP body reader now use VibeLang, with path and buffer access in native platform files.
+- Config plugins and the read, grep and glob tools now use VibeLang, with path and buffer access in native platform files.
 
 - The CLI server process and ACP session registry now use VibeLang while keeping host access and throwing host calls native.
 

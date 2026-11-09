@@ -761,11 +761,6 @@
       "vibelang-source": "./src/tool/plugin/glob.vibe",
       "default": "./.vibelang/js/src/tool/plugin/glob.js"
     },
-    "./tool/http-body": {
-      "types": "./src/tool/http-body.d.vibe.ts",
-      "vibelang-source": "./src/tool/http-body.vibe",
-      "default": "./.vibelang/js/src/tool/http-body.js"
-    },
     "./config/plugin/instruction.platform": null,
     "./config/plugin/agent.platform": null,
     "./config/plugin/compatibility.platform": null,
@@ -776,7 +771,6 @@
     "./tool/plugin/read.platform": null,
     "./tool/plugin/grep.platform": null,
     "./tool/plugin/glob.platform": null,
-    "./tool/http-body.platform": null,
     "./database/sqlite.bun.platform": null,
     "./database/sqlite.node.platform": null,
     "./plugin/vcs/git.platform": null,

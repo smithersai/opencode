@@ -1,9 +1,9 @@
 export * as SessionStats from "./session-stats.vibe"
 
-import { Model } from "./model.ts"
-import { Money } from "./money.vibe"
-import { DateTimeUtcFromMillis, NonNegativeInt, optional } from "./schema.vibe"
-import { TokenUsage } from "./token-usage.vibe"
+import { Model } from "./model.js"
+import { Money } from "./money.js"
+import { DateTimeUtcFromMillis, NonNegativeInt, optional } from "./schema.js"
+import { TokenUsage } from "./token-usage.js"
 
 export const Activity = Schema.Struct({
   date: Schema.String,

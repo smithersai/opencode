@@ -28,6 +28,8 @@ Release notes for OpenCode V2, newest first.
 
 ### Bugs fixed
 
+- Migrated modules could change import paths in published TypeScript declarations; converted sources now retain their original runtime import spellings.
+
 - CLI bundling could reject the prompt history export after migration; prompt history now retains its native source until JSX module loading supports it.
 
 - Generated native helpers could leak through published exports and declaration files; release archives now keep their runtime files internal and exclude their private declarations.

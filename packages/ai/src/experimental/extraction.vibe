@@ -1,7 +1,7 @@
-import { MediaModel, tryRequest } from "../media-model.vibe"
-import { RequestExecutor } from "../route/executor.vibe"
-import type { MediaRoute } from "../route/media.vibe"
-import { AIError, HttpOptions, ProviderMetadata, ProviderOptions, Usage, type OpenString } from "../schema/index.ts"
+import { MediaModel, tryRequest } from "../media-model.js"
+import { RequestExecutor } from "../route/executor.js"
+import type { MediaRoute } from "../route/media.js"
+import { AIError, HttpOptions, ProviderMetadata, ProviderOptions, Usage, type OpenString } from "../schema/index.js"
 
 // ---------------------------------------------------------------------------
 // Answers

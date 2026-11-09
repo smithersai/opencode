@@ -1,9 +1,9 @@
 export * as Generate from "./generate.vibe"
 
-import { Model } from "./model.ts"
-import { Money } from "./money.vibe"
-import { Base64 } from "./prompt.vibe"
-import { PositiveInt, optional } from "./schema.vibe"
+import { Model } from "./model.js"
+import { Money } from "./money.js"
+import { Base64 } from "./prompt.js"
+import { PositiveInt, optional } from "./schema.js"
 
 const description = (text: string) => ({ description: text })
 

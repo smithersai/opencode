@@ -1,7 +1,7 @@
 import { Model } from "@opencode/schema/model"
 import { Location } from "@opencode/schema/location"
-import { ServiceUnavailableError } from "../errors.vibe"
-import { LocationQuery, locationQueryOpenApi } from "./location.vibe"
+import { ServiceUnavailableError } from "../errors.js"
+import { LocationQuery, locationQueryOpenApi } from "./location.js"
 
 const ListQuery = Schema.Struct({
   ...LocationQuery.fields,

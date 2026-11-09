@@ -1,7 +1,7 @@
 // Type-level contract of `Plugin.define`, checked by `bun typecheck`. Nothing imports this file. Each `@ts-expect-error`
 // fails the typecheck if its line stops being an error.
 
-import { Command, Contract, Ipc, Plugin, Store } from "./index.ts"
+import { Command, Contract, Ipc, Plugin, Store } from "./index.js"
 
 const Notes = Contract.define<{ count(): number }, "acme.notes">("acme.notes")
 

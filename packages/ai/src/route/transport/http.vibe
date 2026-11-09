@@ -1,8 +1,8 @@
-import { Auth } from "../auth.vibe"
-import { render as renderEndpoint } from "../endpoint.ts"
-import { Framing } from "../framing.vibe"
-import type { HttpMiddleware, Transport, TransportPrepareInput } from "./index.vibe"
-import * as ProviderShared from "../../protocols/shared.ts"
+import { Auth } from "../auth.js"
+import { render as renderEndpoint } from "../endpoint.js"
+import { Framing } from "../framing.js"
+import type { HttpMiddleware, Transport, TransportPrepareInput } from "./index.js"
+import * as ProviderShared from "../../protocols/shared.js"
 import {
   AIError,
   DEFAULT_CHUNK_TIMEOUT_MS,
@@ -12,8 +12,8 @@ import {
   type HttpContext,
   type HttpTimeout,
   type LLMRequest,
-} from "../../schema/index.ts"
-import { RequestExecutor } from "../executor.vibe"
+} from "../../schema/index.js"
+import { RequestExecutor } from "../executor.js"
 
 export type JsonRequestInput<Body> = TransportPrepareInput<Body>
 

@@ -1,9 +1,9 @@
-import { Framing } from "../route/framing.vibe"
-import { MediaProtocol } from "../route/media-protocol.vibe"
-import { MediaRoute } from "../route/media.vibe"
-import { mergeJsonRecords, tokenUsage, type MediaUsage } from "../schema/index.ts"
-import { SpeechModel, type SpeechEvent, type SpeechRequestFor } from "../speech.ts"
-import { SpeechStream } from "./utils/speech-stream.vibe"
+import { Framing } from "../route/framing.js"
+import { MediaProtocol } from "../route/media-protocol.js"
+import { MediaRoute } from "../route/media.js"
+import { mergeJsonRecords, tokenUsage, type MediaUsage } from "../schema/index.js"
+import { SpeechModel, type SpeechEvent, type SpeechRequestFor } from "../speech.js"
+import { SpeechStream } from "./utils/speech-stream.js"
 
 const route = MediaProtocol.identity({ id: "openai-speech", name: "OpenAI Speech", provider: "openai" })
 export const DEFAULT_BASE_URL = "https://api.openai.com/v1"

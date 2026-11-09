@@ -1,5 +1,5 @@
-import { make, type Tool } from "../tool.vibe"
-import { invoke } from "./runtime.vibe"
+import { make, type Tool } from "../tool.js"
+import { invoke } from "./runtime.js"
 import {
   componentDefinitions,
   hasDirectionalSchemas,
@@ -15,8 +15,8 @@ import {
   securitySchemes,
   specServerUrl,
   validateBaseUrl,
-} from "./spec.vibe"
-import type { Operation, Options, Result, Skipped, Tools } from "./types.vibe"
+} from "./spec.js"
+import type { Operation, Options, Result, Skipped, Tools } from "./types.js"
 
 export type {
   AuthResolver,
@@ -28,7 +28,7 @@ export type {
   SecurityScheme,
   Skipped,
   Tools,
-} from "./types.vibe"
+} from "./types.js"
 
 /**
  * Builds one CodeMode tool per representable OpenAPI 3.x operation. Auth remains host-side,

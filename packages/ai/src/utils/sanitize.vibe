@@ -1,5 +1,5 @@
-import { Media } from "../media.ts"
-import { isRecord } from "./record.ts"
+import { Media } from "../media.js"
+import { isRecord } from "./record.js"
 
 /**
  * Replace lone UTF-16 surrogates in every string, key and nested value. Unchanged

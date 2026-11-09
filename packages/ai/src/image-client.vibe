@@ -1,11 +1,11 @@
-import { MediaClient } from "./media-client.vibe"
+import { MediaClient } from "./media-client.js"
 import {
   ImageOutputEvent,
   ImageFinishEvent,
   type ImageEvent,
   type ImageRequestFor,
   type ImageResponse,
-} from "./image.ts"
+} from "./image.js"
 
 export type Interface = MediaClient.Interface<ImageRequestFor, ImageEvent, ImageResponse>
 

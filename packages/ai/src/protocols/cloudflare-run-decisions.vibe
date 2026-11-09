@@ -1,7 +1,7 @@
-import { DecisionRoute } from "../route/decision.vibe"
+import { DecisionRoute } from "../route/decision.js"
 import { Endpoint } from "../route/endpoint.js"
-import { MediaProtocol } from "../route/media-protocol.vibe"
-import { SystemOne } from "./system-one.vibe"
+import { MediaProtocol } from "../route/media-protocol.js"
+import { SystemOne } from "./system-one.js"
 
 const ID = "cloudflare-run-decisions"
 const NAME = "Cloudflare Run"

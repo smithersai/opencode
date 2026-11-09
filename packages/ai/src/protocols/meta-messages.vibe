@@ -1,8 +1,8 @@
-import { Protocol } from "../route/protocol.vibe"
-import { CacheTTL, type LLMRequest } from "../schema/index.ts"
-import { AnthropicMessages } from "./anthropic-messages.ts"
-import { MetaResponses } from "./meta-responses.vibe"
-import { JsonObject, optionalArray, ProviderShared } from "./shared.ts"
+import { Protocol } from "../route/protocol.js"
+import { CacheTTL, type LLMRequest } from "../schema/index.js"
+import { AnthropicMessages } from "./anthropic-messages.js"
+import { MetaResponses } from "./meta-responses.js"
+import { JsonObject, optionalArray, ProviderShared } from "./shared.js"
 
 const WebSearch = Schema.Struct({
   type: Schema.Literal("web_search"),

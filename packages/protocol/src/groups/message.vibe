@@ -1,7 +1,7 @@
 import { Session } from "@opencode/schema/session"
 import { SessionMessage } from "@opencode/schema/session-message"
 import { Location } from "@opencode/schema/location"
-import { InvalidCursorError, SessionNotFoundError, UnknownError } from "../errors.vibe"
+import { InvalidCursorError, SessionNotFoundError, UnknownError } from "../errors.js"
 
 // Keyed by message type so a new message type cannot be left out of the filter.
 const MessageTypes = {

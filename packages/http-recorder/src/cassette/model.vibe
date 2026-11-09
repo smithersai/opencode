@@ -1,8 +1,8 @@
-import type { JsonValue } from "../api.ts"
-import { HttpInteractionSchema } from "../http/model.vibe"
-import { WebSocketInteractionSchema } from "../websocket/model.vibe"
+import type { JsonValue } from "../api.js"
+import { HttpInteractionSchema } from "../http/model.js"
+import { WebSocketInteractionSchema } from "../websocket/model.js"
 
-export type { CassetteMetadata, JsonValue } from "../api.ts"
+export type { CassetteMetadata, JsonValue } from "../api.js"
 
 const JsonValueSchema = Schema.suspend(
   (): Schema.Codec<JsonValue> =>

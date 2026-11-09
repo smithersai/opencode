@@ -3,8 +3,8 @@ export * as WebSearchParallel from "./parallel.vibe"
 import { define } from "@opencode/plugin/effect/plugin"
 import { Scope } from "effect"
 import { HttpClient } from "effect/http"
-import { App } from "../../app.vibe"
-import { WebSearchMcp } from "./mcp.ts"
+import { App } from "../../app.js"
+import { WebSearchMcp } from "./mcp.js"
 
 import { trusted } from "vibelang-runtime"
 

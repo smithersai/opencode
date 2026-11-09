@@ -1,6 +1,6 @@
 export * as ConfigCompaction from "./compaction.vibe"
 
-import { NonNegativeInt, optional } from "../schema.vibe"
+import { NonNegativeInt, optional } from "../schema.js"
 
 export class Keep extends Schema.Class<Keep>("Config.Compaction.Keep")({
   tokens: NonNegativeInt.pipe(optional),

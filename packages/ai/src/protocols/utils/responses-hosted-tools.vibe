@@ -1,6 +1,6 @@
-import { LLMEvent, type AIError, type ToolResultPart } from "../../schema/index.ts"
-import { OpenResponses } from "../open-responses.ts"
-import { Lifecycle } from "./lifecycle.ts"
+import { LLMEvent, type AIError, type ToolResultPart } from "../../schema/index.js"
+import { OpenResponses } from "../open-responses.js"
+import { Lifecycle } from "./lifecycle.js"
 
 export type Item = OpenResponses.OutputItem & {
   readonly status?: string

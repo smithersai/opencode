@@ -5,7 +5,7 @@ export const RequestSnapshotSchema = Schema.Struct({
   body: Schema.String,
 })
 
-export type { RequestSnapshot } from "../api.ts"
+export type { RequestSnapshot } from "../api.js"
 
 export const ResponseSnapshotSchema = Schema.Struct({
   status: Schema.Number,

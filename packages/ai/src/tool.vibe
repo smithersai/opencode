@@ -3,9 +3,9 @@ import type {
   ToolCallPart,
   ToolDefinition as ToolDefinitionClass,
   ToolOutput as ToolOutputType,
-} from "./schema/index.ts"
-import { ToolDefinition, ToolFailure, ToolOutput } from "./schema/index.ts"
-import { isRecord } from "./utils/record.ts"
+} from "./schema/index.js"
+import { ToolDefinition, ToolFailure, ToolOutput } from "./schema/index.js"
+import { isRecord } from "./utils/record.js"
 
 /**
  * Schema constraint for tool parameters / success values: no decoding or

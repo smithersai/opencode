@@ -1,8 +1,8 @@
 export * as SubagentCompletion from "./subagent-completion.vibe"
 
-import type { Job } from "../job.ts"
-import type { Session } from "../session.ts"
-import type { SessionMessage } from "./message.ts"
+import type { Job } from "../job.js"
+import type { Session } from "../session.js"
+import type { SessionMessage } from "./message.js"
 
 export const NO_TEXT = "Subagent completed without a text response."
 

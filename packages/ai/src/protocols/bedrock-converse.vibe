@@ -1,6 +1,6 @@
 import { Route } from "../route/client.js"
 import { Endpoint } from "../route/endpoint.js"
-import { Protocol } from "../route/protocol.vibe"
+import { Protocol } from "../route/protocol.js"
 import {
   AIError,
   LLMEvent,
@@ -18,15 +18,15 @@ import {
   type ToolResultPart,
 } from "../schema/index.js"
 import { BedrockEventStream } from "./bedrock-event-stream.js"
-import { classifyProviderFailure } from "../provider-error.vibe"
+import { classifyProviderFailure } from "../provider-error.js"
 import { JsonObject, optionalArray, ProviderShared } from "./shared.js"
 import { BedrockAuth } from "./utils/bedrock-auth.js"
-import { BedrockCache } from "./utils/bedrock-cache.vibe"
-import { BedrockMedia } from "./utils/bedrock-media.vibe"
+import { BedrockCache } from "./utils/bedrock-cache.js"
+import { BedrockMedia } from "./utils/bedrock-media.js"
 import { claudeVersion, supportsThinkingBlockBinding, THINKING_BINDING_BETA } from "./utils/claude-model.js"
 import { Lifecycle } from "./utils/lifecycle.js"
 import { MistralToolID } from "./utils/mistral-tool-id.js"
-import { ToolStream } from "./utils/tool-stream.vibe"
+import { ToolStream } from "./utils/tool-stream.js"
 import { concatBytes } from "../utils/bytes.js"
 
 const ADAPTER = "bedrock-converse"

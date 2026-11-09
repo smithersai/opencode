@@ -1,6 +1,6 @@
 export * as ConfigWebSearch from "./websearch.vibe"
 
-import { WebSearch } from "../websearch.vibe"
+import { WebSearch } from "../websearch.js"
 
 export class Info extends Schema.Class<Info>("ConfigWebSearch.Info")({
   provider: Schema.Union([

@@ -25,9 +25,9 @@
  * SOFTWARE.
  */
 
-import { decodeJson } from "../../utils/json.vibe"
-import { Allow } from "./partial-json-options.ts"
-export * from "./partial-json-options.ts"
+import { decodeJson } from "../../utils/json.js"
+import { Allow } from "./partial-json-options.js"
+export * from "./partial-json-options.js"
 
 export class PartialJSON extends Error {}
 export class MalformedJSON extends Error {}

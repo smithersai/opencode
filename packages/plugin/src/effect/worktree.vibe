@@ -1,7 +1,7 @@
 import type { WorktreeApi } from "@opencode/client/effect/api"
 import type { Effect } from "effect"
-import type { WorktreeCreateInput, WorktreeEntry, WorktreeRemoveInput, WorktreeResult } from "../worktree.ts"
-import type { Transform } from "./registration.vibe"
+import type { WorktreeCreateInput, WorktreeEntry, WorktreeRemoveInput, WorktreeResult } from "../worktree.js"
+import type { Transform } from "./registration.js"
 
 export interface WorktreeDefinition {
   readonly id: string

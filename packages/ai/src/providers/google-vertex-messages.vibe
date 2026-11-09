@@ -1,11 +1,11 @@
-import type { ProviderPackage } from "../provider-package.ts"
-import { AnthropicMessages } from "../protocols/anthropic-messages.ts"
-import { Auth } from "../route/auth.vibe"
-import { Route, type RouteDefaultsInput } from "../route/client.ts"
-import { Endpoint } from "../route/endpoint.ts"
-import { Protocol } from "../route/protocol.vibe"
-import { ProviderConfigurationError, ProviderID, type ModelID } from "../schema/index.ts"
-import { GoogleVertexShared } from "./google-vertex-shared.ts"
+import type { ProviderPackage } from "../provider-package.js"
+import { AnthropicMessages } from "../protocols/anthropic-messages.js"
+import { Auth } from "../route/auth.js"
+import { Route, type RouteDefaultsInput } from "../route/client.js"
+import { Endpoint } from "../route/endpoint.js"
+import { Protocol } from "../route/protocol.js"
+import { ProviderConfigurationError, ProviderID, type ModelID } from "../schema/index.js"
+import { GoogleVertexShared } from "./google-vertex-shared.js"
 
 export type AnthropicOptionsInput = AnthropicMessages.OptionsInput
 export type AnthropicProviderOptionsInput = AnthropicMessages.ProviderOptionsInput

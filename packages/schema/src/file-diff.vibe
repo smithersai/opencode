@@ -1,6 +1,6 @@
 export * as FileDiff from "./file-diff.vibe"
 
-import { NonNegativeInt, optional } from "./schema.vibe"
+import { NonNegativeInt, optional } from "./schema.js"
 
 export const Info = Schema.Struct({
   file: Schema.String,

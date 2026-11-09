@@ -2,7 +2,7 @@ import type { VcsApi } from "@opencode/client/effect/api"
 import type { FileDiff } from "@opencode/schema/file-diff"
 import type { Vcs } from "@opencode/schema/vcs"
 import type { Effect } from "effect"
-import type { Transform } from "./registration.vibe"
+import type { Transform } from "./registration.js"
 
 export interface VcsScope {
   readonly directory: string

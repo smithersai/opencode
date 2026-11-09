@@ -1,5 +1,5 @@
 import { Project } from "@opencode/schema/project"
-import { ProjectNotFoundError } from "../errors.vibe"
+import { ProjectNotFoundError } from "../errors.js"
 
 const root = "/api/project"
 const UpdatePayload = Schema.Struct(Struct.omit(Project.UpdateInput.fields, ["projectID"]))

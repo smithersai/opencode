@@ -1,7 +1,7 @@
 export * as BrowserFiles from "./files.vibe"
 
 import * as $platform from "./files.platform.ts"
-import { Browser } from "./rpc.vibe"
+import { Browser } from "./rpc.js"
 import { Tool } from "@opencode/schema/tool"
 
 // Files cross machines as bytes. Only this endpoint interprets its local paths.

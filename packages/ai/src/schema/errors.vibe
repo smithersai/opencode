@@ -1,6 +1,6 @@
 import { NonNegativeInt } from "@opencode/schema"
 import { Tool } from "@opencode/schema/tool"
-import { ModelID, ProviderID, RouteID } from "./ids.vibe"
+import { ModelID, ProviderID, RouteID } from "./ids.js"
 
 export schema ProviderFailureClassification = "context-overflow" | "payload-too-large"
 

@@ -3,9 +3,9 @@ export * as WebSearchTinyFish from "./tinyfish.vibe"
 import { define } from "@opencode/plugin/effect/plugin"
 import { Scope } from "effect"
 import { HttpClient } from "effect/http"
-import { App } from "../../app.vibe"
-import { collectBoundedResponseBody } from "../../tool/http-body.ts"
-import { WebSearchMcp } from "./mcp.ts"
+import { App } from "../../app.js"
+import { collectBoundedResponseBody } from "../../tool/http-body.js"
+import { WebSearchMcp } from "./mcp.js"
 
 import { trusted } from "vibelang-runtime"
 

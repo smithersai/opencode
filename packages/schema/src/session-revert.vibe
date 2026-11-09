@@ -1,7 +1,7 @@
-import { FileDiff } from "./file-diff.vibe"
-import { optional } from "./schema.vibe"
-import { SessionMessage } from "./session-message.vibe"
-import { Snapshot } from "./snapshot.vibe"
+import { FileDiff } from "./file-diff.js"
+import { optional } from "./schema.js"
+import { SessionMessage } from "./session-message.js"
+import { Snapshot } from "./snapshot.js"
 
 export interface Revert extends Schema.Schema.Type<typeof Revert> {}
 export const Revert = Schema.Struct({

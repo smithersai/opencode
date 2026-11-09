@@ -1,5 +1,5 @@
 import { Route, type RouteBody, type TriggerCompactOperation } from "../../route/client.js"
-import { Protocol } from "../../route/protocol.vibe"
+import { Protocol } from "../../route/protocol.js"
 import { CompactionCheckpointResponse, LLMEvent, LLMRequest } from "../../schema/index.js"
 import { OpenResponses } from "../open-responses.js"
 import { ProviderShared } from "../shared.js"

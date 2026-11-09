@@ -1,10 +1,10 @@
-import { MediaProtocol } from "../route/media-protocol.vibe"
-import { MediaRoute } from "../route/media.vibe"
-import { mergeJsonRecords, type OpenString } from "../schema/index.ts"
-import { TranscriptionModel, type TranscriptionRequestFor, TranscriptionResponse } from "../transcription.ts"
-import { ProviderShared } from "./shared.ts"
-import { MediaInput } from "./utils/media-input.vibe"
-import { SpeakerTurns } from "./utils/speaker-turns.ts"
+import { MediaProtocol } from "../route/media-protocol.js"
+import { MediaRoute } from "../route/media.js"
+import { mergeJsonRecords, type OpenString } from "../schema/index.js"
+import { TranscriptionModel, type TranscriptionRequestFor, TranscriptionResponse } from "../transcription.js"
+import { ProviderShared } from "./shared.js"
+import { MediaInput } from "./utils/media-input.js"
+import { SpeakerTurns } from "./utils/speaker-turns.js"
 
 const route = MediaProtocol.identity({ id: "deepgram-transcription", name: "Deepgram", provider: "deepgram" })
 export const DEFAULT_BASE_URL = "https://api.deepgram.com"

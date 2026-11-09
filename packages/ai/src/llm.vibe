@@ -1,5 +1,5 @@
-import { tryRequest } from "./media-model.vibe"
-import { LLMClient, Service, type StreamOptions } from "./route/client.ts"
+import { tryRequest } from "./media-model.js"
+import { LLMClient, Service, type StreamOptions } from "./route/client.js"
 import {
   GenerationOptions,
   HttpOptions,
@@ -16,9 +16,9 @@ import {
   type ContentPart,
   type LanguageModelProviderOptions,
   type ToolEntryInput,
-} from "./schema/index.ts"
-import { make as makeTool, toDefinitions, type ExecutableTools, type ToolSchema } from "./tool.vibe"
-import { ToolRuntime } from "./tool-runtime.vibe"
+} from "./schema/index.js"
+import { make as makeTool, toDefinitions, type ExecutableTools, type ToolSchema } from "./tool.js"
+import { ToolRuntime } from "./tool-runtime.js"
 
 /** Input accepted by `LLM.request`, normalized into the canonical `LLMRequest` class. */
 export type RequestInput<SelectedLanguageModel extends LanguageModel = LanguageModel> =

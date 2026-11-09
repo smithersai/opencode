@@ -1,6 +1,6 @@
 export * as Bom from "./bom.vibe"
 
-import type { FSUtil } from "./fs-util.ts"
+import type { FSUtil } from "./fs-util.js"
 
 const code = 0xfeff
 const value = String.fromCharCode(code)

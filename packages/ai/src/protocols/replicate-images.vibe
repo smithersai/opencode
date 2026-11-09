@@ -1,10 +1,10 @@
-import type { Status } from "../generation.vibe"
-import { ImageModel, type ImageRequestFor, ImageResponse } from "../image.ts"
-import { Media } from "../media.ts"
-import { MediaProtocol } from "../route/media-protocol.vibe"
-import { MediaRoute } from "../route/media.vibe"
-import { type AIError, mergeJsonRecords } from "../schema/index.ts"
-import { optionalNull, ProviderShared } from "./shared.ts"
+import type { Status } from "../generation.js"
+import { ImageModel, type ImageRequestFor, ImageResponse } from "../image.js"
+import { Media } from "../media.js"
+import { MediaProtocol } from "../route/media-protocol.js"
+import { MediaRoute } from "../route/media.js"
+import { type AIError, mergeJsonRecords } from "../schema/index.js"
+import { optionalNull, ProviderShared } from "./shared.js"
 
 const route = MediaProtocol.identity({ id: "replicate-images", name: "Replicate", provider: "replicate" })
 export const DEFAULT_BASE_URL = "https://api.replicate.com"

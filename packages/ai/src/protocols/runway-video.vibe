@@ -1,10 +1,10 @@
-import type { Status } from "../generation.vibe"
-import { Media } from "../media.ts"
-import { MediaProtocol } from "../route/media-protocol.vibe"
-import { MediaRoute } from "../route/media.vibe"
-import { mergeJsonRecords, type OpenString } from "../schema/index.ts"
-import { VideoModel, type VideoRequestFor, VideoResponse } from "../video.ts"
-import { optionalArray, optionalNull, ProviderShared } from "./shared.ts"
+import type { Status } from "../generation.js"
+import { Media } from "../media.js"
+import { MediaProtocol } from "../route/media-protocol.js"
+import { MediaRoute } from "../route/media.js"
+import { mergeJsonRecords, type OpenString } from "../schema/index.js"
+import { VideoModel, type VideoRequestFor, VideoResponse } from "../video.js"
+import { optionalArray, optionalNull, ProviderShared } from "./shared.js"
 
 const route = MediaProtocol.identity({ id: "runway-video", name: "Runway", provider: "runway" })
 export const DEFAULT_BASE_URL = "https://api.dev.runwayml.com/v1"

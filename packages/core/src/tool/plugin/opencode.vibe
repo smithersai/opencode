@@ -7,10 +7,10 @@ import { Model } from "@opencode/schema/model"
 import { AbsolutePath } from "@opencode/schema/schema"
 import { Session } from "@opencode/schema/session"
 import { Effect, Schema } from "effect"
-import { FileAccess } from "../../file-access.ts"
-import { Git } from "../../git.ts"
-import { Permission } from "../../permission.ts"
-import { Worktree } from "../../worktree.ts"
+import { FileAccess } from "../../file-access.js"
+import { Git } from "../../git.js"
+import { Permission } from "../../permission.js"
+import { Worktree } from "../../worktree.js"
 
 export const RenameInput = Schema.Struct({
   sessionID: Schema.optionalKey(Session.ID).annotate({ description: "Omit to rename the current session." }),

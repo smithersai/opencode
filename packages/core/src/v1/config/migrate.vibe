@@ -1,14 +1,14 @@
 export * as ConfigMigrateV1 from "./migrate.vibe"
 
 import { ConfigAgent } from "@opencode/schema/config/agent"
-import { ConfigAgentV1 } from "./agent.vibe"
-import { ConfigCommandV1 } from "./command.vibe"
-import { ConfigMCPV1 } from "./mcp.vibe"
-import { ConfigPermissionV1 } from "./permission.vibe"
-import { ConfigProviderV1 } from "./provider.vibe"
-import { ConfigProviderOptionsV1 } from "./provider-options.ts"
-import { Provider } from "../../provider.ts"
-import { Model } from "../../model.ts"
+import { ConfigAgentV1 } from "./agent.js"
+import { ConfigCommandV1 } from "./command.js"
+import { ConfigMCPV1 } from "./mcp.js"
+import { ConfigPermissionV1 } from "./permission.js"
+import { ConfigProviderV1 } from "./provider.js"
+import { ConfigProviderOptionsV1 } from "./provider-options.js"
+import { Provider } from "../../provider.js"
+import { Model } from "../../model.js"
 
 const decodeOptions = { errors: "all", onExcessProperty: "ignore" } as const
 const decodeAgent = Schema.decodeUnknownSync(Schema.fromJsonString(ConfigAgent.Info), decodeOptions)

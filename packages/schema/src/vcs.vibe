@@ -1,6 +1,6 @@
 export * as Vcs from "./vcs.vibe"
 
-import { NonNegativeInt, optional } from "./schema.vibe"
+import { NonNegativeInt, optional } from "./schema.js"
 
 export const Branch = Schema.Struct({
   current: optional(Schema.String),

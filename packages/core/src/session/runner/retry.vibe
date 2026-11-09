@@ -4,12 +4,12 @@ import { AIError, isRetryable } from "@opencode/ai/effect"
 import { Agent } from "@opencode/schema/agent"
 import { Model } from "@opencode/schema/model"
 import { SessionError } from "@opencode/schema/session-error"
-import { Bus } from "../../bus.ts"
-import { ModelRetry } from "../../model-retry.vibe"
-import type { PluginHooks } from "../../plugin/hooks.vibe"
-import { SessionEvent } from "../event.ts"
-import { SessionMessage } from "../message.ts"
-import { SessionSchema } from "../schema.ts"
+import { Bus } from "../../bus.js"
+import { ModelRetry } from "../../model-retry.js"
+import type { PluginHooks } from "../../plugin/hooks.js"
+import { SessionEvent } from "../event.js"
+import { SessionMessage } from "../message.js"
+import { SessionSchema } from "../schema.js"
 
 export { isRetryable }
 

@@ -1,8 +1,8 @@
 export * as ConfigModel from "./model.vibe"
 
-import { Model } from "../model.ts"
-import { Provider } from "../provider.ts"
-import { optional } from "../schema.vibe"
+import { Model } from "../model.js"
+import { Provider } from "../provider.js"
+import { optional } from "../schema.js"
 
 const ProviderID = Provider.ID.check(Schema.isPattern(/^[^/#]+$/u))
 const ModelID = Model.ID.check(Schema.isPattern(/^[^#]+$/u))

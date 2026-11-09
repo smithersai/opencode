@@ -1,8 +1,8 @@
 import { FileSystem } from "@opencode/schema/filesystem"
 import { Location } from "@opencode/schema/location"
 import { PositiveInt } from "@opencode/schema/schema"
-import { FileNotFoundError, ServiceUnavailableError } from "../errors.vibe"
-import { LocationQuery, locationQueryOpenApi } from "./location.vibe"
+import { FileNotFoundError, ServiceUnavailableError } from "../errors.js"
+import { LocationQuery, locationQueryOpenApi } from "./location.js"
 
 const ListQuery = Schema.Struct({
   ...LocationQuery.fields,

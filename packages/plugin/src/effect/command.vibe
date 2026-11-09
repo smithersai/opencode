@@ -3,7 +3,7 @@ import type { PromptInput } from "@opencode/schema/prompt-input"
 import type { Session } from "@opencode/schema/session"
 import type { SessionInbox } from "@opencode/schema/session-inbox"
 import type { Effect } from "effect"
-import type { Transform } from "./registration.vibe"
+import type { Transform } from "./registration.js"
 
 export interface CommandInvocation {
   readonly sessionID: Session.ID

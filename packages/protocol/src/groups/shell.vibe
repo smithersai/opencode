@@ -1,7 +1,7 @@
 import { Shell } from "@opencode/schema/shell"
 import { Location } from "@opencode/schema/location"
-import { ShellNotFoundError } from "../errors.vibe"
-import { LocationQuery, locationQueryOpenApi } from "./location.vibe"
+import { ShellNotFoundError } from "../errors.js"
+import { LocationQuery, locationQueryOpenApi } from "./location.js"
 
 export const ShellGroup = HttpApiGroup.make("server.shell")
   .add(

@@ -1,8 +1,8 @@
-import { classifyProviderFailure } from "../provider-error.vibe"
-import { Framing } from "../route/framing.vibe"
-import { MediaProtocol } from "../route/media-protocol.vibe"
-import { MediaRoute } from "../route/media.vibe"
-import { AIError, mergeJsonRecords, tokenUsage, type MediaUsage } from "../schema/index.ts"
+import { classifyProviderFailure } from "../provider-error.js"
+import { Framing } from "../route/framing.js"
+import { MediaProtocol } from "../route/media-protocol.js"
+import { MediaRoute } from "../route/media.js"
+import { AIError, mergeJsonRecords, tokenUsage, type MediaUsage } from "../schema/index.js"
 import {
   TranscriptionFinishEvent,
   TranscriptionModel,
@@ -11,10 +11,10 @@ import {
   type TranscriptionEvent,
   type TranscriptionRequestFor,
   type TranscriptionSegment,
-} from "../transcription.ts"
-import { mediaTypeExtension } from "../utils/media-type.ts"
-import { ProviderShared } from "./shared.ts"
-import { MediaInput } from "./utils/media-input.vibe"
+} from "../transcription.js"
+import { mediaTypeExtension } from "../utils/media-type.js"
+import { ProviderShared } from "./shared.js"
+import { MediaInput } from "./utils/media-input.js"
 
 const route = MediaProtocol.identity({ id: "openai-transcription", name: "OpenAI Transcription", provider: "openai" })
 export const DEFAULT_BASE_URL = "https://api.openai.com/v1"

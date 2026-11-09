@@ -1,9 +1,9 @@
-import { MediaProtocol } from "../route/media-protocol.vibe"
-import { MediaRoute } from "../route/media.vibe"
-import { mergeJsonRecords, type OpenString } from "../schema/index.ts"
-import { SpeechModel, type SpeechEvent, type SpeechRequestFor } from "../speech.ts"
-import { MediaInput } from "./utils/media-input.vibe"
-import { SpeechStream } from "./utils/speech-stream.vibe"
+import { MediaProtocol } from "../route/media-protocol.js"
+import { MediaRoute } from "../route/media.js"
+import { mergeJsonRecords, type OpenString } from "../schema/index.js"
+import { SpeechModel, type SpeechEvent, type SpeechRequestFor } from "../speech.js"
+import { MediaInput } from "./utils/media-input.js"
+import { SpeechStream } from "./utils/speech-stream.js"
 
 const route = MediaProtocol.identity({ id: "deepgram-speech", name: "Deepgram", provider: "deepgram" })
 export const DEFAULT_BASE_URL = "https://api.deepgram.com"

@@ -1,6 +1,6 @@
 import { Plugin } from "@opencode/plugin/effect"
-import { BrowserConnection } from "./connection.ts"
-import { BrowserTools } from "./tools.ts"
+import { BrowserConnection } from "./connection.js"
+import { BrowserTools } from "./tools.js"
 
 export default Plugin.define({
   id: "opencode.browser",

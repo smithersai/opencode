@@ -3,8 +3,8 @@ import type { LocationRef, OpenCodeClient, ProjectListOutput, WorktreeDirectory 
 import type { Schema } from "effect"
 import type { JSX } from "solid-js"
 import type { Store } from "solid-js/store"
-import type { Cleanup, OS, Persisted, StoreFrom } from "./core.ts"
-import type { IconName, Link, SessionPanelMenuItem } from "./registries.ts"
+import type { Cleanup, OS, Persisted, StoreFrom } from "./core.js"
+import type { IconName, Link, SessionPanelMenuItem } from "./registries.js"
 
 /**
  * A server the app lists. One ref per id that follows the live connection: read `client`, `data` and `url` from it

@@ -1,8 +1,8 @@
 export * as CodeModeInstructions from "./instructions.vibe"
 
 import { searchSignature, toolExpression } from "@opencode/codemode"
-import { Instructions } from "../instructions/index.ts"
-import { CodeModeCatalog } from "./catalog.vibe"
+import { Instructions } from "../instructions/index.js"
+import { CodeModeCatalog } from "./catalog.js"
 
 // prettier-ignore
 const prompt = (hasMoreTools: boolean) =>

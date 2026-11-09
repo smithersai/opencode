@@ -1,9 +1,9 @@
 export * as PersistentPty from "./persistent-pty.vibe"
 
-import { ephemeral, inventory } from "./event.vibe"
-import { Pty } from "./pty.vibe"
-import { NonNegativeInt, PositiveInt, optional } from "./schema.vibe"
-import { Session } from "./session.vibe"
+import { ephemeral, inventory } from "./event.js"
+import { Pty } from "./pty.js"
+import { NonNegativeInt, PositiveInt, optional } from "./schema.js"
+import { Session } from "./session.js"
 
 export const Info = Schema.Struct({
   ...Pty.Info.fields,

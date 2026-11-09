@@ -1,8 +1,8 @@
 import { Pty } from "@opencode/schema/pty"
 import { PtyTicket } from "@opencode/schema/pty-ticket"
 import { Location } from "@opencode/schema/location"
-import { ForbiddenError, LocationNotFoundError, PtyNotFoundError } from "../errors.vibe"
-import { LocationQuery, locationQueryOpenApi } from "./location.vibe"
+import { ForbiddenError, LocationNotFoundError, PtyNotFoundError } from "../errors.js"
+import { LocationQuery, locationQueryOpenApi } from "./location.js"
 
 export const PTY_CONNECT_TICKET_QUERY = "ticket"
 export const PTY_CONNECT_TOKEN_HEADER = "x-opencode-ticket"

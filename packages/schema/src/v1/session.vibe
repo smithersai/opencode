@@ -1,15 +1,15 @@
 export * as SessionV1 from "./session.vibe"
 
-import { durable, ephemeral, inventory } from "../event.vibe"
-import { Project } from "../project.vibe"
-import { Provider } from "../provider.ts"
-import { Model } from "../model.ts"
-import { NonNegativeInt, optional, statics } from "../schema.vibe"
-import { ascending } from "../identifier.ts"
-import { SessionID } from "../session-id.vibe"
-import { WorkspaceID } from "../workspace-id.vibe"
-import { PermissionV1 } from "./permission.vibe"
-import { FileDiff } from "../file-diff.vibe"
+import { durable, ephemeral, inventory } from "../event.js"
+import { Project } from "../project.js"
+import { Provider } from "../provider.js"
+import { Model } from "../model.js"
+import { NonNegativeInt, optional, statics } from "../schema.js"
+import { ascending } from "../identifier.js"
+import { SessionID } from "../session-id.js"
+import { WorkspaceID } from "../workspace-id.js"
+import { PermissionV1 } from "./permission.js"
+import { FileDiff } from "../file-diff.js"
 
 const Timestamp = Schema.Finite.check(Schema.isGreaterThanOrEqualTo(0))
 

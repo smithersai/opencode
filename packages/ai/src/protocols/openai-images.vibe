@@ -7,14 +7,14 @@ import {
   type ImageRequestFor,
 } from "../image.js"
 import { Media } from "../media.js"
-import { classifyProviderFailure } from "../provider-error.vibe"
-import { Framing } from "../route/framing.vibe"
-import { MediaProtocol } from "../route/media-protocol.vibe"
-import { MediaRoute } from "../route/media.vibe"
+import { classifyProviderFailure } from "../provider-error.js"
+import { Framing } from "../route/framing.js"
+import { MediaProtocol } from "../route/media-protocol.js"
+import { MediaRoute } from "../route/media.js"
 import { AIError, mergeJsonRecords, ProviderID, tokenUsage, type MediaUsage, type OpenString } from "../schema/index.js"
 import { optionalNull, ProviderShared } from "./shared.js"
-import { ImageSizing } from "./utils/image-sizing.vibe"
-import { MediaInput } from "./utils/media-input.vibe"
+import { ImageSizing } from "./utils/image-sizing.js"
+import { MediaInput } from "./utils/media-input.js"
 
 const route = MediaProtocol.identity({ id: "openai-images", name: "OpenAI Images", provider: "openai" })
 export const DEFAULT_BASE_URL = "https://api.openai.com/v1"

@@ -1,5 +1,5 @@
-import type { Namespace } from "./namespace.ts"
-import type { Tools } from "./tools.ts"
+import type { Namespace } from "./namespace.js"
+import type { Tools } from "./tools.js"
 
 /**
  * JSON Schema subset for model-visible signatures. CodeMode does not validate values against

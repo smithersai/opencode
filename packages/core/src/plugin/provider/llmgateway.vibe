@@ -1,5 +1,5 @@
 import { define } from "@opencode/plugin/effect/plugin"
-import { Integration } from "../../integration.ts"
+import { Integration } from "../../integration.js"
 
 export const LLMGatewayPlugin = define({
   id: "opencode.provider.llmgateway",

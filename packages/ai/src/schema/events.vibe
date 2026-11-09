@@ -1,5 +1,5 @@
 import { LLM } from "@opencode/schema/llm"
-import { ContentBlockID, ToolCallID } from "./ids.vibe"
+import { ContentBlockID, ToolCallID } from "./ids.js"
 import {
   Message,
   CompactionPart,
@@ -8,9 +8,9 @@ import {
   ToolResultPart,
   ToolResultValue,
   type ContentPart,
-} from "./messages.vibe"
-import { ProviderMetadata } from "./options.vibe"
-import { ProviderFailureClassification } from "./errors.vibe"
+} from "./messages.js"
+import { ProviderMetadata } from "./options.js"
+import { ProviderFailureClassification } from "./errors.js"
 import { Media } from "../media.js"
 
 export const FinishReason = LLM.FinishReason

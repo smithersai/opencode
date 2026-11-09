@@ -1,6 +1,6 @@
-import { DecisionClient, Service, type Execute } from "./decision-client.vibe"
-import { Media } from "./media.ts"
-import { tryRequest } from "./media-model.vibe"
+import { DecisionClient, Service, type Execute } from "./decision-client.js"
+import { Media } from "./media.js"
+import { tryRequest } from "./media-model.js"
 import {
   AIError,
   HttpOptions,
@@ -9,7 +9,7 @@ import {
   ProviderMetadata,
   ProviderOptions,
   type OpenString,
-} from "./schema/index.ts"
+} from "./schema/index.js"
 
 // ---------------------------------------------------------------------------
 // Input

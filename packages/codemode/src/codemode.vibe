@@ -1,9 +1,9 @@
-import type { Extension } from "./extension.ts"
-import { executeProgram } from "./interpreter/execute.ts"
-import { extensionGlobals } from "./interpreter/extensions.vibe"
-import { globalNames } from "./interpreter/globals.ts"
-import { type Services, type ToolDescription, ToolRuntime } from "./tool-runtime.vibe"
-import type { Tools } from "./tools.ts"
+import type { Extension } from "./extension.js"
+import { executeProgram } from "./interpreter/execute.js"
+import { extensionGlobals } from "./interpreter/extensions.js"
+import { globalNames } from "./interpreter/globals.js"
+import { type Services, type ToolDescription, ToolRuntime } from "./tool-runtime.js"
+import type { Tools } from "./tools.js"
 
 /** A tool call admitted during an execution. */
 export type {
@@ -13,9 +13,9 @@ export type {
   ToolCall,
   ToolDescription,
   ToolInvocation,
-} from "./tool-runtime.vibe"
+} from "./tool-runtime.js"
 /** Signature-construction helpers for host-owned catalog instructions. */
-export { searchSignature, toolExpression } from "./tool-runtime.vibe"
+export { searchSignature, toolExpression } from "./tool-runtime.js"
 
 /** Resource budgets enforced independently during each CodeMode program execution. */
 export type ExecutionLimits = {

@@ -1,6 +1,6 @@
 export * as ConfigFormatter from "./formatter.vibe"
 
-import { optional } from "../schema.vibe"
+import { optional } from "../schema.js"
 
 export class Entry extends Schema.Class<Entry>("Config.Formatter.Entry")({
   disabled: Schema.Boolean.pipe(optional),

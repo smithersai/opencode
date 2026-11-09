@@ -8,15 +8,15 @@ import {
   Message,
   type ContentPart,
   mergeJsonRecords,
-} from "../../schema/index.ts"
-import type { CompactOperation } from "../../route/client.ts"
-import { stripEffortUpdates } from "../../effort-updates.ts"
-import { Endpoint } from "../../route/endpoint.ts"
-import { RequestExecutor } from "../../route/executor.vibe"
-import { HttpTransport } from "../../route/transport/index.vibe"
-import { OpenResponses } from "../open-responses.ts"
-import { JsonObject, optionalNull, ProviderShared } from "../shared.ts"
-import { Media } from "../../media.ts"
+} from "../../schema/index.js"
+import type { CompactOperation } from "../../route/client.js"
+import { stripEffortUpdates } from "../../effort-updates.js"
+import { Endpoint } from "../../route/endpoint.js"
+import { RequestExecutor } from "../../route/executor.js"
+import { HttpTransport } from "../../route/transport/index.js"
+import { OpenResponses } from "../open-responses.js"
+import { JsonObject, optionalNull, ProviderShared } from "../shared.js"
+import { Media } from "../../media.js"
 
 // /compact has a smaller wire contract than /responses; keep the request controls it accepts.
 const Body = Schema.Struct({

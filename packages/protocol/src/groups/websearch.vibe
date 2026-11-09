@@ -1,7 +1,7 @@
 import { Location } from "@opencode/schema/location"
 import { WebSearch } from "@opencode/schema/websearch"
-import { InvalidRequestError, ServiceUnavailableError } from "../errors.vibe"
-import { LocationQuery, locationQueryOpenApi } from "./location.vibe"
+import { InvalidRequestError, ServiceUnavailableError } from "../errors.js"
+import { LocationQuery, locationQueryOpenApi } from "./location.js"
 
 export const WebSearchGroup = HttpApiGroup.make("server.websearch")
   .add(

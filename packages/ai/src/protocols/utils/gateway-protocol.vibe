@@ -1,6 +1,6 @@
-import { Protocol } from "../../route/protocol.vibe"
-import { LLMEvent, mergeJsonRecords, type AIError, type LLMRequest } from "../../schema/index.ts"
-import { JsonObject, lenient } from "../shared.ts"
+import { Protocol } from "../../route/protocol.js"
+import { LLMEvent, mergeJsonRecords, type AIError, type LLMRequest } from "../../schema/index.js"
+import { JsonObject, lenient } from "../shared.js"
 
 interface ParserState<Inner> {
   readonly inner: Inner

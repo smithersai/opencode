@@ -1,10 +1,10 @@
-import { Media } from "../media.ts"
-import { MediaProtocol } from "../route/media-protocol.vibe"
-import { MediaRoute } from "../route/media.vibe"
-import { mergeJsonRecords, type OpenString } from "../schema/index.ts"
-import { VideoModel, type VideoRequestFor, VideoResponse } from "../video.ts"
-import { optionalNull } from "./shared.ts"
-import { FalQueue } from "./utils/fal-queue.vibe"
+import { Media } from "../media.js"
+import { MediaProtocol } from "../route/media-protocol.js"
+import { MediaRoute } from "../route/media.js"
+import { mergeJsonRecords, type OpenString } from "../schema/index.js"
+import { VideoModel, type VideoRequestFor, VideoResponse } from "../video.js"
+import { optionalNull } from "./shared.js"
+import { FalQueue } from "./utils/fal-queue.js"
 
 const route = MediaProtocol.identity({ id: "fal-video", name: "fal Video", provider: "fal" })
 

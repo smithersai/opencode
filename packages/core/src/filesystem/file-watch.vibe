@@ -4,8 +4,8 @@ import { makeGlobalNode } from "@opencode/util/effect/app-node"
 import { FSUtil } from "@opencode/util/fs-util"
 import { FileSystem } from "@opencode/schema/filesystem"
 import type { Location } from "@opencode/schema/location"
-import { Bus } from "../bus.ts"
-import { Watcher } from "./watcher.ts"
+import { Bus } from "../bus.js"
+import { Watcher } from "./watcher.js"
 
 export const TTL = Duration.hours(24)
 export const SWEEP_INTERVAL = Duration.minutes(5)

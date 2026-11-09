@@ -8,7 +8,7 @@ import {
   ProviderRequestError,
   ServiceUnavailableError,
   UnsupportedModelError,
-} from "../errors.vibe"
+} from "../errors.js"
 
 const errors = [
   InvalidRequestError,

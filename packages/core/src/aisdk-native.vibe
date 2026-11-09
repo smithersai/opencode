@@ -1,6 +1,6 @@
 export * as AISDKNative from "./aisdk-native.vibe"
 
-import { Provider } from "./provider.ts"
+import { Provider } from "./provider.js"
 
 type Overlays = {
   settings?: Provider.Settings

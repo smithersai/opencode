@@ -1,6 +1,6 @@
 import { Command } from "@opencode/schema/command"
 import { Location } from "@opencode/schema/location"
-import { LocationQuery, locationQueryOpenApi } from "./location.vibe"
+import { LocationQuery, locationQueryOpenApi } from "./location.js"
 
 export const CommandGroup = HttpApiGroup.make("server.command")
   .add(

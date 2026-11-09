@@ -1,8 +1,8 @@
-import { LocationNotFoundError, InvalidRequestError, SessionNotFoundError } from "./errors.vibe"
-import { makeDefaultApi } from "./api.vibe"
-import type { Api } from "./api.vibe"
+import { LocationNotFoundError, InvalidRequestError, SessionNotFoundError } from "./errors.js"
+import { makeDefaultApi } from "./api.js"
+import type { Api } from "./api.js"
 import type { Context } from "effect"
-import type { EventGroup } from "./groups/event.vibe"
+import type { EventGroup } from "./groups/event.js"
 
 class LocationMiddleware extends HttpApiMiddleware.Service<LocationMiddleware>()(
   "@opencode/client/LocationMiddleware",

@@ -2,8 +2,8 @@ export * as SessionErrors from "./error.vibe"
 
 import { Agent } from "@opencode/schema/agent"
 import { Skill } from "@opencode/schema/skill"
-import { SessionMessage } from "./message.ts"
-import { SessionSchema } from "./schema.ts"
+import { SessionMessage } from "./message.js"
+import { SessionSchema } from "./schema.js"
 import { SessionError } from "@opencode/schema/session-error"
 
 export class NotFoundError extends Schema.TaggedError<NotFoundError>()("Session.NotFoundError", {

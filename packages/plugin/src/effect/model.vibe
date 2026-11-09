@@ -1,8 +1,8 @@
 import type { ModelApi } from "@opencode/client/effect/api"
 import type { Model } from "@opencode/schema/model"
 import type { Effect, Types } from "effect"
-import type { ProviderRecord } from "./provider.vibe"
-import type { Transform } from "./registration.vibe"
+import type { ProviderRecord } from "./provider.js"
+import type { Transform } from "./registration.js"
 
 export interface ModelEditor {
   /** Candidates from available providers, including models disabled by earlier transforms. */

@@ -1,5 +1,5 @@
-import { ReasoningEffort, ReasoningEfforts, type LLMRequest } from "../../schema/index.ts"
-import { lenient, ProviderShared } from "../shared.ts"
+import { ReasoningEffort, ReasoningEfforts, type LLMRequest } from "../../schema/index.js"
+import { lenient, ProviderShared } from "../shared.js"
 
 export { ReasoningEffort, ReasoningEfforts }
 

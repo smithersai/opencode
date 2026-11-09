@@ -1,17 +1,17 @@
-import { AnthropicMessages } from "../protocols/anthropic-messages.ts"
-import { OpenAIChat } from "../protocols/openai-chat.ts"
-import { OpenResponses } from "../protocols/open-responses.ts"
-import { OpenAIDecisions } from "../protocols/openai-decisions.vibe"
-import { OpenAIImages } from "../protocols/openai-images.vibe"
-import { ProviderShared } from "../protocols/shared.ts"
-import { gatewayProtocol } from "../protocols/utils/gateway-protocol.vibe"
-import type { ProviderPackage } from "../provider-package.ts"
-import { AuthOptions, type ProviderAuthOption } from "../route/auth-options.vibe"
-import { Route, type RouteDefaultsInput } from "../route/client.ts"
-import { Endpoint } from "../route/endpoint.ts"
-import { Framing } from "../route/framing.vibe"
-import { MediaRoute } from "../route/media.vibe"
-import type { Protocol } from "../route/protocol.vibe"
+import { AnthropicMessages } from "../protocols/anthropic-messages.js"
+import { OpenAIChat } from "../protocols/openai-chat.js"
+import { OpenResponses } from "../protocols/open-responses.js"
+import { OpenAIDecisions } from "../protocols/openai-decisions.js"
+import { OpenAIImages } from "../protocols/openai-images.js"
+import { ProviderShared } from "../protocols/shared.js"
+import { gatewayProtocol } from "../protocols/utils/gateway-protocol.js"
+import type { ProviderPackage } from "../provider-package.js"
+import { AuthOptions, type ProviderAuthOption } from "../route/auth-options.js"
+import { Route, type RouteDefaultsInput } from "../route/client.js"
+import { Endpoint } from "../route/endpoint.js"
+import { Framing } from "../route/framing.js"
+import { MediaRoute } from "../route/media.js"
+import type { Protocol } from "../route/protocol.js"
 import {
   LLMRequest,
   ModelID,
@@ -19,8 +19,8 @@ import {
   ProviderMetadata,
   ReasoningEffort,
   type ProviderOptions,
-} from "../schema/index.ts"
-import type { OpenResponsesProviderOptionsInput } from "./open-responses-options.ts"
+} from "../schema/index.js"
+import type { OpenResponsesProviderOptionsInput } from "./open-responses-options.js"
 
 export const id = ProviderID.make("vercel-ai-gateway")
 const baseURL = "https://ai-gateway.vercel.sh/v1"

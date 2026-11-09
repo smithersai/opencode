@@ -1,11 +1,11 @@
-import { MediaClient } from "./media-client.vibe"
+import { MediaClient } from "./media-client.js"
 import {
   SpeechTimestampsEvent,
   SpeechFinishEvent,
   type SpeechEvent,
   type SpeechRequestFor,
   type SpeechResponse,
-} from "./speech.ts"
+} from "./speech.js"
 
 export type Interface = MediaClient.Interface<SpeechRequestFor, SpeechEvent, SpeechResponse>
 

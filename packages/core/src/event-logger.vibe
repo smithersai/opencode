@@ -2,7 +2,7 @@ export * as EventLogger from "./event-logger.vibe"
 
 import { Layer } from "effect"
 import { makeGlobalNode } from "@opencode/util/effect/app-node"
-import { Bus } from "./bus.ts"
+import { Bus } from "./bus.js"
 
 const EVENT_TYPES = new Set(["agent.updated", "provider.updated", "model.updated", "command.updated", "config.updated"])
 

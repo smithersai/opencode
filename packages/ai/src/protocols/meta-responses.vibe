@@ -1,8 +1,8 @@
-import { Protocol } from "../route/protocol.vibe"
+import { Protocol } from "../route/protocol.js"
 import { LLMEvent, LLMRequest, Message, ToolResultPart } from "../schema/index.js"
 import { OpenResponses } from "./open-responses.js"
 import { JsonObject, optionalArray, optionalNull, ProviderShared } from "./shared.js"
-import { ResponsesHostedTools } from "./utils/responses-hosted-tools.vibe"
+import { ResponsesHostedTools } from "./utils/responses-hosted-tools.js"
 import { detectMediaType } from "../utils/media-type.js"
 
 const ADAPTER = "meta-responses"

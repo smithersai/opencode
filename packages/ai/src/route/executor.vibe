@@ -1,9 +1,9 @@
-import { HttpContext, HttpRateLimitDetails, AIError, TransportError } from "../schema/index.ts"
-import { classifyProviderFailure, providerErrorMessage } from "../provider-error.vibe"
-import { headerDetails, responseHttp, Service, type HttpMiddleware, type Interface } from "./executor-service.vibe"
+import { HttpContext, HttpRateLimitDetails, AIError, TransportError } from "../schema/index.js"
+import { classifyProviderFailure, providerErrorMessage } from "../provider-error.js"
+import { headerDetails, responseHttp, Service, type HttpMiddleware, type Interface } from "./executor-service.js"
 
-export { responseHttp, Service } from "./executor-service.vibe"
-export type { HttpHandler, HttpMiddleware, Interface, RequestExecutorService } from "./executor-service.vibe"
+export { responseHttp, Service } from "./executor-service.js"
+export type { HttpHandler, HttpMiddleware, Interface, RequestExecutorService } from "./executor-service.js"
 
 const normalizedHeaders = (headers: Headers.Headers) =>
   Object.fromEntries(Object.entries(headers).map(([key, value]) => [key.toLowerCase(), value]))

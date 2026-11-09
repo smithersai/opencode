@@ -1,6 +1,6 @@
 export * as ConfigPlugin from "./plugin.vibe"
 
-import { optional } from "../schema.vibe"
+import { optional } from "../schema.js"
 
 export class Entry extends Schema.Class<Entry>("Config.Plugin.Entry")({
   package: Schema.String,

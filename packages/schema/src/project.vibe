@@ -1,8 +1,8 @@
 export * as Project from "./project.vibe"
 
-import { ephemeral, inventory } from "./event.vibe"
-import { AbsolutePath, NonNegativeInt, optional } from "./schema.vibe"
-import { ProjectID } from "./project-id.vibe"
+import { ephemeral, inventory } from "./event.js"
+import { AbsolutePath, NonNegativeInt, optional } from "./schema.js"
+import { ProjectID } from "./project-id.js"
 
 export schema ID = ProjectID
 

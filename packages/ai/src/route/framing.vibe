@@ -1,5 +1,5 @@
 import { makeParser } from "effect/encoding/Sse"
-import { AIError, InvalidProviderOutputError } from "../schema/index.ts"
+import { AIError, InvalidProviderOutputError } from "../schema/index.js"
 
 /**
  * Decode a streaming HTTP response body into provider-protocol frames.

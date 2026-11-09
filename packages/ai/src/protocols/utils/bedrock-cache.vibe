@@ -1,5 +1,5 @@
-import { CacheTTL, type CacheHint, type LLMRequest } from "../../schema/index.ts"
-import { newBreakpoints } from "./cache.ts"
+import { CacheTTL, type CacheHint, type LLMRequest } from "../../schema/index.js"
+import { newBreakpoints } from "./cache.js"
 
 // Bedrock cache markers are positional: emit a `cachePoint` block immediately
 // after the content the caller wants treated as a cacheable prefix. Bedrock

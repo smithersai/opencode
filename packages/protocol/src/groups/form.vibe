@@ -1,6 +1,6 @@
 import { Form } from "@opencode/schema/form"
 import { Location } from "@opencode/schema/location"
-import { LocationQuery, locationQueryOpenApi } from "./location.vibe"
+import { LocationQuery, locationQueryOpenApi } from "./location.js"
 
 export const makeFormGroup = <LocationId extends HttpApiMiddleware.AnyId, LocationService>(
   locationMiddleware: Context.Key<LocationId, LocationService>,

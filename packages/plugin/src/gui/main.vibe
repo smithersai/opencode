@@ -10,9 +10,9 @@ import {
   type IpcProvider,
   type IpcSpec,
   type Persisted,
-} from "./core.ts"
+} from "./core.js"
 
-export * from "./core.ts"
+export * from "./core.js"
 
 export * as Plugin from "./plugin.ts"
 

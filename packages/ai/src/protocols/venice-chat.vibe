@@ -1,10 +1,10 @@
-import { Protocol } from "../route/protocol.vibe"
+import { Protocol } from "../route/protocol.js"
 import { AIError, LLMEvent, type LanguageModelCompatibility, type LLMRequest } from "../schema/index.js"
-import { classifyProviderFailure } from "../provider-error.vibe"
+import { classifyProviderFailure } from "../provider-error.js"
 import { OpenAIChat } from "./openai-chat.js"
 import { JsonObject, optionalArray, optionalNull, ProviderShared } from "./shared.js"
 import { cacheControl } from "./utils/cache.js"
-import { OpenResponsesOptions } from "./utils/open-responses-options.vibe"
+import { OpenResponsesOptions } from "./utils/open-responses-options.js"
 
 // ---------------------------------------------------------------------------
 // Public options and request body

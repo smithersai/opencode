@@ -1,8 +1,8 @@
 export * as Reference from "./reference.vibe"
 
-import { optional } from "./schema.vibe"
-import { ephemeral, inventory } from "./event.vibe"
-import { AbsolutePath } from "./schema.vibe"
+import { optional } from "./schema.js"
+import { ephemeral, inventory } from "./event.js"
+import { AbsolutePath } from "./schema.js"
 
 const Updated = ephemeral({ type: "reference.updated", schema: {} })
 export const Event = { Updated, Definitions: inventory(Updated) }

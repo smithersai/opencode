@@ -1,7 +1,7 @@
 import { Provider } from "@opencode/schema/provider"
 import { Location } from "@opencode/schema/location"
-import { ProviderNotFoundError, ServiceUnavailableError } from "../errors.vibe"
-import { LocationQuery, locationQueryOpenApi } from "./location.vibe"
+import { ProviderNotFoundError, ServiceUnavailableError } from "../errors.js"
+import { LocationQuery, locationQueryOpenApi } from "./location.js"
 
 export const ProviderGroup = HttpApiGroup.make("server.provider")
   .add(

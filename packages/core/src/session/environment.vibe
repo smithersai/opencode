@@ -1,7 +1,7 @@
 export * as SessionEnvironment from "./environment.vibe"
 
 import { makeGlobalNode } from "@opencode/util/effect/app-node"
-import { SessionSchema } from "./schema.ts"
+import { SessionSchema } from "./schema.js"
 
 export type Variables = Readonly<Record<string, string>>
 

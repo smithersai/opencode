@@ -1,7 +1,7 @@
 export * as AgentPlugin from "./agent.vibe"
 
 import { define } from "@opencode/plugin/effect/plugin"
-import { Agent } from "../agent.vibe"
+import { Agent } from "../agent.js"
 
 const PROMPT_EXPLORE = `You are a file search specialist. You excel at thoroughly navigating and exploring codebases.
 

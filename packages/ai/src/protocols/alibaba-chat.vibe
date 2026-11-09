@@ -1,9 +1,9 @@
-import { Protocol } from "../route/protocol.vibe"
+import { Protocol } from "../route/protocol.js"
 import type { LanguageModelCompatibility } from "../schema/index.js"
 import { OpenAIChat } from "./openai-chat.js"
 import { JsonObject, ProviderShared } from "./shared.js"
 import { cacheControl } from "./utils/cache.js"
-import { OpenResponsesOptions } from "./utils/open-responses-options.vibe"
+import { OpenResponsesOptions } from "./utils/open-responses-options.js"
 
 export type ReasoningEffort = OpenResponsesOptions.ReasoningEffort
 

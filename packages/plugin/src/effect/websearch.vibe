@@ -1,7 +1,7 @@
 import type { WebSearch } from "@opencode/schema/websearch"
 import type { WebSearchApi } from "@opencode/client/effect/api"
 import type { Effect } from "effect"
-import type { Transform } from "./registration.vibe"
+import type { Transform } from "./registration.js"
 
 export interface WebSearchDefinition {
   readonly id: string

@@ -1,6 +1,6 @@
 import { Location } from "@opencode/schema/location"
 import { Reference } from "@opencode/schema/reference"
-import { LocationQuery, locationQueryOpenApi } from "./location.vibe"
+import { LocationQuery, locationQueryOpenApi } from "./location.js"
 
 const PublicLocalSource = Schema.Struct(Struct.omit(Reference.LocalSource.fields, ["description", "hidden"])).annotate({
   identifier: "Reference.LocalSource",

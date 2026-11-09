@@ -1,9 +1,9 @@
 export * as SessionStatusEvent from "./session-status-event.vibe"
 
-import { optional } from "./schema.vibe"
-import { Event } from "./event.vibe"
-import { NonNegativeInt } from "./schema.vibe"
-import { SessionID } from "./session-id.vibe"
+import { optional } from "./schema.js"
+import { Event } from "./event.js"
+import { NonNegativeInt } from "./schema.js"
+import { SessionID } from "./session-id.js"
 
 export const Info = Schema.Union([
   Schema.Struct({

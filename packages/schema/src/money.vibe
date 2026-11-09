@@ -1,6 +1,6 @@
 export * as Money from "./money.vibe"
 
-import { statics } from "./schema.vibe"
+import { statics } from "./schema.js"
 
 export const USD = Schema.Finite.pipe(
   Schema.brand("Money.USD"),

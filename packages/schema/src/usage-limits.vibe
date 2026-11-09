@@ -1,9 +1,9 @@
 export * as UsageLimits from "./usage-limits.vibe"
 
-import { Model } from "./model.ts"
-import { Money } from "./money.vibe"
-import { Provider } from "./provider.ts"
-import { optional } from "./schema.vibe"
+import { Model } from "./model.js"
+import { Money } from "./money.js"
+import { Provider } from "./provider.js"
+import { optional } from "./schema.js"
 
 const Percent = Schema.Finite.check(Schema.isBetween({ minimum: 0, maximum: 100 }))
 const Instant = Schema.Finite.annotate({ description: "Milliseconds since the Unix epoch" })

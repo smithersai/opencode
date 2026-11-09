@@ -122,3 +122,7 @@ Automated checks flag missing templates, placeholder text, AI-generated walls of
 ### Private release helpers
 
 Package build scripts list extracted native helpers in the shared packer's `privateModules` option. Their runtime files remain available to relative internal imports, while package exports deny those subpaths and release archives omit their declaration files. Packing restores the original build declarations and manifest afterward, including when packing fails. Add packed-archive and consumer checks when introducing another helper.
+
+### Preserve declaration imports during migration
+
+Keep the original written `.js` or `.jsx` module specifiers when converting a source to `.vibe` or `.vibex`. Source resolution finds the migrated implementation, while public declarations preserve the original module paths. Compare published declarations after conversion; equivalent runtime behavior alone does not establish declaration identity.

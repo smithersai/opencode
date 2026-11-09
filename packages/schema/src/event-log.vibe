@@ -1,7 +1,7 @@
 export * as EventLog from "./event-log.vibe"
 
-import { Event } from "./event.vibe"
-import { optional } from "./schema.vibe"
+import { Event } from "./event.js"
+import { optional } from "./schema.js"
 
 /**
  * Replay-to-live boundary marker for a durable log read. The reader now holds

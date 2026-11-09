@@ -1,6 +1,6 @@
 export * as SessionFork from "./session-fork.vibe"
 
-import { SessionMessage } from "./session-message.vibe"
+import { SessionMessage } from "./session-message.js"
 
 export const Boundary = Schema.Union([
   Schema.Struct({ type: Schema.Literal("before"), messageID: SessionMessage.ID }),

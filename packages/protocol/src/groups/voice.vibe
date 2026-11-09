@@ -1,4 +1,4 @@
-import { InvalidRequestError, LocationNotFoundError, ServiceUnavailableError } from "../errors.vibe"
+import { InvalidRequestError, LocationNotFoundError, ServiceUnavailableError } from "../errors.js"
 
 export const VoiceTransportType = Schema.Literals(["webrtc", "websocket"]).annotate({
   identifier: "VoiceTransportType",

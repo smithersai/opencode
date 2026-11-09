@@ -1,7 +1,7 @@
 export * as Connection from "./connection.vibe"
 
-import { Credential } from "./credential.vibe"
-import { optional } from "./schema.vibe"
+import { Credential } from "./credential.js"
+import { optional } from "./schema.js"
 
 /**
  * Runtime problem an integration reported for a connection. `needs_auth` asks the user to sign in again:

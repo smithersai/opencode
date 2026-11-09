@@ -1,7 +1,7 @@
 import type { McpApi } from "@opencode/client/promise/api"
 import type { Mcp } from "@opencode/schema/mcp"
 import type { Types } from "effect"
-import type { Transform } from "./registration.ts"
+import type { Transform } from "./registration.js"
 
 export interface MCPEditor {
   list(): readonly [string, Types.DeepMutable<Mcp.ServerConfig>][]

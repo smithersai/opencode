@@ -6,8 +6,8 @@ import {
   IntegrationMethodNotFoundError,
   IntegrationNotFoundError,
   InvalidRequestError,
-} from "../errors.vibe"
-import { LocationQuery, locationQueryOpenApi } from "./location.vibe"
+} from "../errors.js"
+import { LocationQuery, locationQueryOpenApi } from "./location.js"
 
 export const IntegrationGroup = HttpApiGroup.make("server.integration")
   .add(

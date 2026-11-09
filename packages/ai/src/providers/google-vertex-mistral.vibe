@@ -1,12 +1,12 @@
-import type { ProviderPackage } from "../provider-package.ts"
-import { MistralChat } from "../protocols/mistral-chat.vibe"
-import { Auth } from "../route/auth.vibe"
-import { Route, type RouteDefaultsInput } from "../route/client.ts"
-import { Endpoint } from "../route/endpoint.ts"
-import { Protocol } from "../route/protocol.vibe"
-import { HttpTransport } from "../route/transport/index.vibe"
-import { ProviderConfigurationError, ProviderID, type ModelID } from "../schema/index.ts"
-import { GoogleVertexShared } from "./google-vertex-shared.ts"
+import type { ProviderPackage } from "../provider-package.js"
+import { MistralChat } from "../protocols/mistral-chat.js"
+import { Auth } from "../route/auth.js"
+import { Route, type RouteDefaultsInput } from "../route/client.js"
+import { Endpoint } from "../route/endpoint.js"
+import { Protocol } from "../route/protocol.js"
+import { HttpTransport } from "../route/transport/index.js"
+import { ProviderConfigurationError, ProviderID, type ModelID } from "../schema/index.js"
+import { GoogleVertexShared } from "./google-vertex-shared.js"
 
 export const id = ProviderID.make("google-vertex")
 

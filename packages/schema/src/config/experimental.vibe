@@ -1,7 +1,7 @@
 export * as ConfigExperimental from "./experimental.vibe"
 
-import { NonNegativeInt, optional } from "../schema.vibe"
-import { ConfigPolicy } from "./policy.vibe"
+import { NonNegativeInt, optional } from "../schema.js"
+import { ConfigPolicy } from "./policy.js"
 
 export class Info extends Schema.Class<Info>("ConfigExperimental.Info")({
   portable_shell_scanner: Schema.Boolean.pipe(optional).annotate({

@@ -1,4 +1,4 @@
-import type { Tool, JsonSchema } from "../tool.vibe"
+import type { Tool, JsonSchema } from "../tool.js"
 
 /** A parsed OpenAPI 3.x document. YAML must be parsed by the ctx. */
 export type Document = Record<string, unknown>

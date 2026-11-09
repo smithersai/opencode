@@ -1,5 +1,5 @@
 import type { Config, Redacted } from "effect"
-import { Auth } from "./auth.vibe"
+import { Auth } from "./auth.js"
 
 export type ApiKeyMode = "optional" | "required"
 

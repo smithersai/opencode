@@ -1,6 +1,6 @@
 import { RGBA } from "@opentui/core"
-import { expandTheme, mergeTheme } from "./expand.ts"
-import { ActionState, ActionVariant, HueStep, SurfaceName, ThemeDefinition, ThemeDocument } from "./schema.vibe"
+import { expandTheme, mergeTheme } from "./expand.js"
+import { ActionState, ActionVariant, HueStep, SurfaceName, ThemeDefinition, ThemeDocument } from "./schema.js"
 import type {
   ActionStateKey,
   ActionStates,
@@ -12,8 +12,8 @@ import type {
   StatefulColor,
   StatefulColorDefinition,
   ThemeTokensDefinition,
-} from "./index.ts"
-import { selectThemeMode, themeModes } from "./select.ts"
+} from "./index.js"
+import { selectThemeMode, themeModes } from "./select.js"
 
 type ResolvedHue = ResolvedThemeTokens["hue"] & Readonly<Record<string, HueScale>>
 

@@ -1,6 +1,6 @@
 export * as ConfigReference from "./reference.vibe"
 
-import { optional } from "../schema.vibe"
+import { optional } from "../schema.js"
 
 export class Git extends Schema.Class<Git>("Config.Reference.Git")({
   repository: Schema.String,

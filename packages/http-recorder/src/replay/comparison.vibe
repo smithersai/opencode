@@ -1,5 +1,5 @@
-import { REDACTED } from "../redaction/redactor.vibe"
-import { secretFindings } from "../redaction/secrets.ts"
+import { REDACTED } from "../redaction/redactor.js"
+import { secretFindings } from "../redaction/secrets.js"
 
 export const decodeJson = Schema.decodeUnknownOption(Schema.fromJsonString(Schema.Unknown))
 const isRecord = (value: unknown): value is Record<string, unknown> =>

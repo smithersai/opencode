@@ -7,11 +7,11 @@ import { Money } from "@opencode/schema/money"
 import { SessionID } from "@opencode/schema/session-id"
 import { RequestExecutor } from "@opencode/ai/route"
 import { makeLocationNode } from "@opencode/util/effect/app-node"
-import { llmClient, requestExecutor } from "./effect/app-node-platform.vibe"
+import { llmClient, requestExecutor } from "./effect/app-node-platform.js"
 import { Integration } from "./integration.js"
 import { ModelResolver } from "./model-resolver.js"
 import { Model } from "./model.js"
-import { ModelRetry } from "./model-retry.vibe"
+import { ModelRetry } from "./model-retry.js"
 
 export interface TextInput {
   readonly prompt: string

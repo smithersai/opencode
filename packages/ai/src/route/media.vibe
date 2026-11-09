@@ -1,11 +1,11 @@
-import { Auth, type AuthInput } from "./auth.vibe"
-import { Endpoint } from "./endpoint.ts"
-import { RequestExecutorService, type Interface } from "./executor-service.vibe"
-import { RequestExecutor } from "./executor.vibe"
-import { MediaProtocol } from "./media-protocol.vibe"
-import { Generation, isTerminal } from "../generation.vibe"
-import type { Media } from "../media.ts"
-import { isRetryable } from "../provider-error.vibe"
+import { Auth, type AuthInput } from "./auth.js"
+import { Endpoint } from "./endpoint.js"
+import { RequestExecutorService, type Interface } from "./executor-service.js"
+import { RequestExecutor } from "./executor.js"
+import { MediaProtocol } from "./media-protocol.js"
+import { Generation, isTerminal } from "../generation.js"
+import type { Media } from "../media.js"
+import { isRetryable } from "../provider-error.js"
 import {
   AIError,
   AIErrorReason,
@@ -16,9 +16,9 @@ import {
   mergeHttpOptions,
   mergeProviderOptions,
   type ProviderOptions,
-} from "../schema/index.ts"
-import { encodeJson } from "../utils/json.vibe"
-import { sanitizeSurrogates } from "../utils/sanitize.vibe"
+} from "../schema/index.js"
+import { encodeJson } from "../utils/json.js"
+import { sanitizeSurrogates } from "../utils/sanitize.js"
 
 export type Execute = Interface["execute"]
 

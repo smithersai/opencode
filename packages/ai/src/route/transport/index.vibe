@@ -1,9 +1,9 @@
 import type { Effect, Scope, Stream } from "effect"
-import { Endpoint } from "../endpoint.ts"
-import { Auth } from "../auth.vibe"
-import type { HttpMiddleware, Interface as RequestExecutorInterface } from "../executor.vibe"
-import type { WebSocketChannelExecutor } from "./websocket-channel.vibe"
-import type { AIError, HttpContext, LLMRequest } from "../../schema/index.ts"
+import { Endpoint } from "../endpoint.js"
+import { Auth } from "../auth.js"
+import type { HttpMiddleware, Interface as RequestExecutorInterface } from "../executor.js"
+import type { WebSocketChannelExecutor } from "./websocket-channel.js"
+import type { AIError, HttpContext, LLMRequest } from "../../schema/index.js"
 
 export interface TransportRuntime {
   readonly http: RequestExecutorInterface
@@ -45,7 +45,7 @@ export interface TransportPrepareInput<Body> {
 }
 
 export * as HttpTransport from "./http.vibe"
-export type { HttpHandler, HttpMiddleware } from "../executor.vibe"
+export type { HttpHandler, HttpMiddleware } from "../executor.js"
 export type {
   ChannelCheckpoint,
   ChannelCreate,
@@ -54,6 +54,6 @@ export type {
   WebSocketChannelExchange,
   WebSocketChannelExecution,
   WebSocketChannelExecutor,
-} from "./websocket-channel.vibe"
-export type { WebSocketConnection, WebSocketConnector, WebSocketRequest } from "./websocket.ts"
-export { WebSocketTransport } from "./websocket.ts"
+} from "./websocket-channel.js"
+export type { WebSocketConnection, WebSocketConnector, WebSocketRequest } from "./websocket.js"
+export { WebSocketTransport } from "./websocket.js"

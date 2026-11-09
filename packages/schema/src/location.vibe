@@ -1,8 +1,8 @@
 export * as Location from "./location.vibe"
 
-import { AbsolutePath, optional } from "./schema.vibe"
-import { ProjectID } from "./project-id.vibe"
-import { WorkspaceID } from "./workspace-id.vibe"
+import { AbsolutePath, optional } from "./schema.js"
+import { ProjectID } from "./project-id.js"
+import { WorkspaceID } from "./workspace-id.js"
 
 export interface Ref extends Schema.Schema.Type<typeof Ref> {}
 export const Ref = Schema.Struct({

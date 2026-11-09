@@ -1,9 +1,9 @@
 export * as Tool from "./tool.vibe"
 
 import type { StandardSchemaV1 } from "@standard-schema/spec"
-import type { Agent } from "./agent.ts"
-import type { Session } from "./session.vibe"
-import type { SessionMessage } from "./session-message.vibe"
+import type { Agent } from "./agent.js"
+import type { Session } from "./session.js"
+import type { SessionMessage } from "./session-message.js"
 
 export type Metadata = Readonly<Record<string, any>>
 

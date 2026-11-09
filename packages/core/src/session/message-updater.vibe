@@ -1,7 +1,7 @@
 import { castDraft, produce, type WritableDraft } from "immer"
 import { pipe } from "effect"
-import { SessionEvent } from "./event.ts"
-import { SessionMessage } from "./message.ts"
+import { SessionEvent } from "./event.js"
+import { SessionMessage } from "./message.js"
 
 export interface Adapter {
   readonly getAgent: () => (SessionMessage.AgentSelected["agent"] | undefined)!!

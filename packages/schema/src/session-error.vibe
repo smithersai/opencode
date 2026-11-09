@@ -1,6 +1,6 @@
 export * as SessionError from "./session-error.vibe"
 
-import { NonNegativeInt, optional } from "./schema.vibe"
+import { NonNegativeInt, optional } from "./schema.js"
 
 export interface Error extends Schema.Schema.Type<typeof Error> {}
 export const Error = Schema.Struct({

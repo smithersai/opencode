@@ -1,12 +1,12 @@
 export * as SessionRunner from "./index.vibe"
 
-import type { FileSystem } from "../../filesystem.ts"
+import type { FileSystem } from "../../filesystem.js"
 import type { AIError } from "@opencode/ai/effect"
-import { SessionSchema } from "../schema.ts"
-import type { Promotable } from "../inbox.ts"
-import type { AgentNotFoundError, MessageDecodeError, StepFailedError } from "../error.vibe"
-import { SessionRunnerModel } from "./model.ts"
-import type { Instructions } from "../../instructions/index.ts"
+import { SessionSchema } from "../schema.js"
+import type { Promotable } from "../inbox.js"
+import type { AgentNotFoundError, MessageDecodeError, StepFailedError } from "../error.js"
+import { SessionRunnerModel } from "./model.js"
+import type { Instructions } from "../../instructions/index.js"
 
 export type RunError =
   | AIError

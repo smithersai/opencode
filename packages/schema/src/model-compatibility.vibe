@@ -1,4 +1,4 @@
-import { optional } from "./schema.vibe"
+import { optional } from "./schema.js"
 
 // Shared by model and provider schemas; kept separate because model.vibe imports provider.ts.
 export type ReasoningField = "reasoning" | "reasoning_content" | "reasoning_text" | (string & {})

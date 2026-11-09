@@ -3,8 +3,8 @@ export * as Agent from "./agent.vibe"
 import { makeLocationNode } from "@opencode/util/effect/app-node"
 import { Array, Effect, Types } from "effect"
 import { Agent } from "@opencode/schema/agent"
-import { Bus } from "./bus.ts"
-import { State } from "./state.ts"
+import { Bus } from "./bus.js"
+import { State } from "./state.js"
 
 export schema ID = Agent.ID
 export const Name = Agent.Name

@@ -1,7 +1,7 @@
 export * as LocationWatcherPolicy from "./location-watcher-policy.vibe"
 
 import { makeLocationNode } from "@opencode/util/effect/app-node"
-import { State } from "../state.ts"
+import { State } from "../state.js"
 
 type Data = {
   ignore: string[]

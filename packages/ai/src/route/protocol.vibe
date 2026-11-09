@@ -1,5 +1,5 @@
 import { type Effect } from "effect"
-import type { AIError, LanguageModelSanitizerCompatibility, LLMEvent, LLMRequest, ProtocolID } from "../schema/index.ts"
+import type { AIError, LanguageModelSanitizerCompatibility, LLMEvent, LLMRequest, ProtocolID } from "../schema/index.js"
 
 /**
  * The semantic API contract of one model server family.

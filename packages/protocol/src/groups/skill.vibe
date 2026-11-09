@@ -1,6 +1,6 @@
 import { Skill } from "@opencode/schema/skill"
 import { Location } from "@opencode/schema/location"
-import { LocationQuery, locationQueryOpenApi } from "./location.vibe"
+import { LocationQuery, locationQueryOpenApi } from "./location.js"
 
 export const SkillGroup = HttpApiGroup.make("server.skill")
   .add(

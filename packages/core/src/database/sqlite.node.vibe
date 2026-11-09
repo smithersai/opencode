@@ -3,7 +3,7 @@ import { makeNativeConnection, openNativeDatabase, closeNativeDatabase, enableNa
 import { Effect, Layer } from "effect"
 import { Reactivity } from "effect/reactivity"
 import { SqlClient } from "effect/sql"
-import { Sqlite } from "./sqlite.vibe"
+import { Sqlite } from "./sqlite.js"
 
 const TypeId = "~@opencode/core/database/SqliteNode" as const
 

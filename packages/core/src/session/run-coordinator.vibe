@@ -1,6 +1,6 @@
 export * as SessionRunCoordinator from "./run-coordinator.vibe"
 
-import type { Promotable } from "./inbox.ts"
+import type { Promotable } from "./inbox.js"
 
 /** Serializes execution for each key while allowing different keys to run concurrently. */
 export interface Coordinator<Key, E, Reason = never> {

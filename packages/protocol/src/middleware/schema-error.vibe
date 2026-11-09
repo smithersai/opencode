@@ -1,4 +1,4 @@
-import { InvalidRequestError } from "../errors.vibe"
+import { InvalidRequestError } from "../errors.js"
 
 export class SchemaErrorMiddleware extends HttpApiMiddleware.Service<SchemaErrorMiddleware>()(
   "@opencode/HttpApiSchemaError",

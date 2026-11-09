@@ -1,4 +1,4 @@
-import { AIError, TimeoutError } from "./schema/errors.vibe"
+import { AIError, TimeoutError } from "./schema/errors.js"
 
 export const Status = Schema.Literals(["queued", "running", "completed", "failed", "cancelled", "expired"])
 export type Status = Schema.Schema.Type<typeof Status>

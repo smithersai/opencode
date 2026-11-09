@@ -1,6 +1,6 @@
 import { Worktree } from "@opencode/schema/worktree"
 import { Project } from "@opencode/schema/project"
-import { ProjectNotFoundError } from "../errors.vibe"
+import { ProjectNotFoundError } from "../errors.js"
 
 const root = "/api/worktree"
 

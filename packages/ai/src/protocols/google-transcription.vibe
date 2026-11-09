@@ -1,6 +1,6 @@
-import { MediaProtocol } from "../route/media-protocol.vibe"
-import { MediaRoute } from "../route/media.vibe"
-import { mergeJsonRecords, type OpenString } from "../schema/index.ts"
+import { MediaProtocol } from "../route/media-protocol.js"
+import { MediaRoute } from "../route/media.js"
+import { mergeJsonRecords, type OpenString } from "../schema/index.js"
 import {
   TranscriptionFinishEvent,
   TranscriptionModel,
@@ -10,8 +10,8 @@ import {
   type TranscriptionSegment,
   type TranscriptionWord,
   type TranscriptionEvent,
-} from "../transcription.ts"
-import { GeminiGenerateContent } from "./utils/gemini-generate-content.vibe"
+} from "../transcription.js"
+import { GeminiGenerateContent } from "./utils/gemini-generate-content.js"
 
 const route = MediaProtocol.identity({ id: "google-transcription", name: "Google Transcription", provider: "google" })
 export const DEFAULT_BASE_URL = "https://generativelanguage.googleapis.com/v1beta"

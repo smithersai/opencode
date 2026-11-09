@@ -1,9 +1,9 @@
 import type { HttpClientResponse } from "effect/http"
-import type { Status } from "../../generation.vibe"
-import type { Media } from "../../media.ts"
-import { MediaProtocol } from "../../route/media-protocol.vibe"
-import type { AIError } from "../../schema/index.ts"
-import { ProviderShared, optionalNull } from "../shared.ts"
+import type { Status } from "../../generation.js"
+import type { Media } from "../../media.js"
+import { MediaProtocol } from "../../route/media-protocol.js"
+import type { AIError } from "../../schema/index.js"
+import { ProviderShared, optionalNull } from "../shared.js"
 
 export const DEFAULT_BASE_URL = "https://queue.fal.run"
 

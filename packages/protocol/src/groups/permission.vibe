@@ -10,8 +10,8 @@ import {
   PermissionNotFoundError,
   PermissionSavedNotFoundError,
   SessionNotFoundError,
-} from "../errors.vibe"
-import { LocationQuery, locationQueryOpenApi } from "./location.vibe"
+} from "../errors.js"
+import { LocationQuery, locationQueryOpenApi } from "./location.js"
 
 export const makePermissionGroup = <
   LocationId extends HttpApiMiddleware.AnyId,

@@ -1,6 +1,6 @@
 export * as ConfigWatcher from "./watcher.vibe"
 
-import { optional } from "../schema.vibe"
+import { optional } from "../schema.js"
 
 export class Info extends Schema.Class<Info>("Config.Watcher")({
   ignore: Schema.String.pipe(Schema.Array, optional),

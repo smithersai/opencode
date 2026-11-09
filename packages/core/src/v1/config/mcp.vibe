@@ -1,7 +1,7 @@
 export * as ConfigMCPV1 from "./mcp.vibe"
 
 import { Schema } from "effect"
-import { PositiveInt } from "../../schema.ts"
+import { PositiveInt } from "../../schema.js"
 
 export const Local = Schema.Struct({
   type: Schema.Literal("local").annotate({ description: "Type of MCP server connection" }),

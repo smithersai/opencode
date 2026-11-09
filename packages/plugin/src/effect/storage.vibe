@@ -1,5 +1,5 @@
 import type { Effect, Schema } from "effect"
-import type { StorageScanOptions, StorageScanResult } from "../storage.vibe"
+import type { StorageScanOptions, StorageScanResult } from "../storage.js"
 
 export interface StorageDomain {
   readonly get: (key: string) => (Schema.Json | undefined)!!

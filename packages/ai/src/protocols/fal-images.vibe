@@ -1,11 +1,11 @@
-import { ImageModel, type ImageRequestFor, ImageResponse } from "../image.ts"
-import { Media } from "../media.ts"
-import { MediaProtocol } from "../route/media-protocol.vibe"
-import { MediaRoute } from "../route/media.vibe"
-import { mergeJsonRecords, type OpenString } from "../schema/index.ts"
-import { optionalNull } from "./shared.ts"
-import { FalQueue } from "./utils/fal-queue.vibe"
-import { ImageSizing } from "./utils/image-sizing.vibe"
+import { ImageModel, type ImageRequestFor, ImageResponse } from "../image.js"
+import { Media } from "../media.js"
+import { MediaProtocol } from "../route/media-protocol.js"
+import { MediaRoute } from "../route/media.js"
+import { mergeJsonRecords, type OpenString } from "../schema/index.js"
+import { optionalNull } from "./shared.js"
+import { FalQueue } from "./utils/fal-queue.js"
+import { ImageSizing } from "./utils/image-sizing.js"
 
 const route = MediaProtocol.identity({ id: "fal-images", name: "fal Images", provider: "fal" })
 

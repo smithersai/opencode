@@ -1,9 +1,9 @@
 export * as TuiEvent from "./tui-event.vibe"
 
-import { optional } from "./schema.vibe"
-import { Event } from "./event.vibe"
-import { PositiveInt } from "./schema.vibe"
-import { SessionID } from "./session-id.vibe"
+import { optional } from "./schema.js"
+import { Event } from "./event.js"
+import { PositiveInt } from "./schema.js"
+import { SessionID } from "./session-id.js"
 
 const DEFAULT_TOAST_DURATION = 5000
 

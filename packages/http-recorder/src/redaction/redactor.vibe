@@ -1,7 +1,7 @@
-import type { RequestSnapshot, ResponseSnapshot } from "../http/model.vibe"
-import type { RedactOptions } from "../options.ts"
+import type { RequestSnapshot, ResponseSnapshot } from "../http/model.js"
+import type { RedactOptions } from "../options.js"
 
-export type { RedactOptions } from "../options.ts"
+export type { RedactOptions } from "../options.js"
 export const REDACTED = "[REDACTED]"
 
 const DEFAULT_REDACT_HEADERS = [

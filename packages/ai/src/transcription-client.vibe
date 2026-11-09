@@ -1,10 +1,10 @@
-import { MediaClient } from "./media-client.vibe"
+import { MediaClient } from "./media-client.js"
 import {
   TranscriptionFinishEvent,
   type TranscriptionEvent,
   type TranscriptionRequestFor,
   type TranscriptionResponse,
-} from "./transcription.ts"
+} from "./transcription.js"
 
 export type Interface = MediaClient.Interface<TranscriptionRequestFor, TranscriptionEvent, TranscriptionResponse>
 

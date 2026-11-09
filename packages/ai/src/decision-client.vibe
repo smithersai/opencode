@@ -5,9 +5,9 @@ import type {
   DecisionQuestions,
   DecisionRequestFor,
   DecisionResponseFor,
-} from "./decision.vibe"
-import { RequestExecutor } from "./route/executor.vibe"
-import { AIError, InvalidProviderOutputError } from "./schema/index.ts"
+} from "./decision.js"
+import { RequestExecutor } from "./route/executor.js"
+import { AIError, InvalidProviderOutputError } from "./schema/index.js"
 
 export type Execute = RequestExecutor.Interface["execute"]
 

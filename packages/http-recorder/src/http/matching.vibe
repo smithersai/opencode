@@ -1,8 +1,8 @@
-import type { RequestMatcher, RequestSnapshot } from "../api.ts"
-import { canonicalizeJson, decodeJson, isJsonRecord, jsonBody, safeText } from "../replay/comparison.vibe"
-import type { HttpInteraction } from "./model.vibe"
+import type { RequestMatcher, RequestSnapshot } from "../api.js"
+import { canonicalizeJson, decodeJson, isJsonRecord, jsonBody, safeText } from "../replay/comparison.js"
+import type { HttpInteraction } from "./model.js"
 
-export type { RequestMatcher } from "../api.ts"
+export type { RequestMatcher } from "../api.js"
 
 export const canonicalSnapshot = (snapshot: RequestSnapshot): string =>
   JSON.stringify({

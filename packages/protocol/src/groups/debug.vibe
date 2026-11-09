@@ -1,6 +1,6 @@
 import { Location } from "@opencode/schema/location"
-import { InvalidRequestError, UnknownError } from "../errors.vibe"
-import { LocationQuery, locationQueryOpenApi } from "./location.vibe"
+import { InvalidRequestError, UnknownError } from "../errors.js"
+import { LocationQuery, locationQueryOpenApi } from "./location.js"
 
 export const DebugGroup = HttpApiGroup.make("server.debug")
   .add(

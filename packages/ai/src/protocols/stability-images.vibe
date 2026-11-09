@@ -1,9 +1,9 @@
-import { ImageModel, ImageResponse, type ImageRequestFor } from "../image.ts"
-import { MediaProtocol } from "../route/media-protocol.vibe"
-import { MediaRoute } from "../route/media.vibe"
-import { mergeJsonRecords, type OpenString } from "../schema/index.ts"
-import { ProviderShared } from "./shared.ts"
-import { MediaInput } from "./utils/media-input.vibe"
+import { ImageModel, ImageResponse, type ImageRequestFor } from "../image.js"
+import { MediaProtocol } from "../route/media-protocol.js"
+import { MediaRoute } from "../route/media.js"
+import { mergeJsonRecords, type OpenString } from "../schema/index.js"
+import { ProviderShared } from "./shared.js"
+import { MediaInput } from "./utils/media-input.js"
 
 const route = MediaProtocol.identity({ id: "stability-images", name: "Stability AI", provider: "stability" })
 const upscaleRoute = MediaProtocol.identity({ id: "stability-upscale", name: "Stability AI", provider: "stability" })

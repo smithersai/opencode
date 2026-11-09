@@ -1,7 +1,7 @@
 export * as VcsEvent from "./vcs-event.vibe"
 
-import { optional } from "./schema.vibe"
-import { Event } from "./event.vibe"
+import { optional } from "./schema.js"
+import { Event } from "./event.js"
 
 export const BranchUpdated = Event.ephemeral({
   type: "vcs.branch.updated",

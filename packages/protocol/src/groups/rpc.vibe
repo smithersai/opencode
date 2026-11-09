@@ -1,6 +1,6 @@
 import { optional } from "@opencode/schema/schema"
-import { RpcError, RpcInternalError } from "../errors.vibe"
-import { LocationQuery, locationQueryOpenApi } from "./location.vibe"
+import { RpcError, RpcInternalError } from "../errors.js"
+import { LocationQuery, locationQueryOpenApi } from "./location.js"
 
 export const RpcInput = Schema.Struct({ input: optional(Schema.Unknown) }).annotate({ identifier: "Rpc.Input" })
 export const RpcOutput = Schema.Struct({ output: Schema.optionalKey(Schema.Unknown) }).annotate({

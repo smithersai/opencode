@@ -6,13 +6,13 @@ import {
   type DecisionPart,
   type DecisionRequestFor,
   type DecisionResponse,
-} from "../decision.vibe"
-import { HttpOptions, ProviderID, type AIError, type ProviderOptions } from "../schema/index.ts"
-import { Auth } from "./auth.vibe"
-import { Endpoint } from "./endpoint.ts"
-import { RequestExecutorService } from "./executor-service.vibe"
-import { MediaProtocol } from "./media-protocol.vibe"
-import { MediaRoute, type Execute } from "./media.vibe"
+} from "../decision.js"
+import { HttpOptions, ProviderID, type AIError, type ProviderOptions } from "../schema/index.js"
+import { Auth } from "./auth.js"
+import { Endpoint } from "./endpoint.js"
+import { RequestExecutorService } from "./executor-service.js"
+import { MediaProtocol } from "./media-protocol.js"
+import { MediaRoute, type Execute } from "./media.js"
 
 /** One decision API: how a request becomes its JSON body and how its response becomes a `DecisionResponse`. */
 export interface Protocol {

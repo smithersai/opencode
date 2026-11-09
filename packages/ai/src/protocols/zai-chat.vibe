@@ -1,8 +1,8 @@
-import { Protocol } from "../route/protocol.vibe"
-import type { LanguageModelCompatibility, LLMRequest } from "../schema/index.ts"
-import { OpenAIChat } from "./openai-chat.ts"
-import { ProviderShared } from "./shared.ts"
-import { OpenResponsesOptions } from "./utils/open-responses-options.vibe"
+import { Protocol } from "../route/protocol.js"
+import type { LanguageModelCompatibility, LLMRequest } from "../schema/index.js"
+import { OpenAIChat } from "./openai-chat.js"
+import { ProviderShared } from "./shared.js"
+import { OpenResponsesOptions } from "./utils/open-responses-options.js"
 
 export type ReasoningEffort = OpenResponsesOptions.ReasoningEffort
 

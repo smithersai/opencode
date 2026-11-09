@@ -1,6 +1,6 @@
 import { Config } from "@opencode/schema/config"
 import { ConfigShell } from "@opencode/schema/config/shell"
-import { LocationQuery, locationQueryOpenApi } from "./location.vibe"
+import { LocationQuery, locationQueryOpenApi } from "./location.js"
 
 export const ConfigGroup = HttpApiGroup.make("server.config")
   .add(

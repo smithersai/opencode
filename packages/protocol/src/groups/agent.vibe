@@ -1,7 +1,7 @@
 import { Agent } from "@opencode/schema/agent"
 import { Location } from "@opencode/schema/location"
-import { LocationQuery, locationQueryOpenApi } from "./location.vibe"
-import { AgentNotFoundError, ServiceUnavailableError } from "../errors.vibe"
+import { LocationQuery, locationQueryOpenApi } from "./location.js"
+import { AgentNotFoundError, ServiceUnavailableError } from "../errors.js"
 
 export const AgentGroup = HttpApiGroup.make("server.agent")
   .add(

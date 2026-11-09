@@ -1,7 +1,7 @@
 export * as ToolInputRepairPlugin from "./tool-input-repair.vibe"
 
 import { define } from "@opencode/plugin/effect/plugin"
-import { definition } from "../tool/runtime.vibe"
+import { definition } from "../tool/runtime.js"
 
 import { trusted } from "vibelang-runtime"
 

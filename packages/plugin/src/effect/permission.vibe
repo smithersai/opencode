@@ -4,8 +4,8 @@ import type { Permission } from "@opencode/schema/permission"
 import type { Session } from "@opencode/schema/session"
 import type { Tool } from "@opencode/schema/tool"
 import type { Effect } from "effect"
-import type { AssertInput } from "../permission.vibe"
-import type { Hooks } from "./registration.vibe"
+import type { AssertInput } from "../permission.js"
+import type { Hooks } from "./registration.js"
 
 export interface PermissionEvaluation {
   readonly sessionID: Session.ID

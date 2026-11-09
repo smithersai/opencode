@@ -10,8 +10,8 @@ import { Config } from "../../config.js"
 import { Model } from "../../model.js"
 import { Provider } from "../../provider.js"
 import { Variant } from "../../variant.js"
-import { ConfigIntegration } from "../integration.vibe"
-import { ConfigEntryObserver } from "./entry-observer.vibe"
+import { ConfigIntegration } from "../integration.js"
+import { ConfigEntryObserver } from "./entry-observer.js"
 
 export const Plugin = define({
   id: "opencode.config.provider",

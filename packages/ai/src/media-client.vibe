@@ -1,8 +1,8 @@
 import { type Context, Effect, Layer, Stream } from "effect"
-import { resultEvents, type AwaitOptions, type Generation, type Observation } from "./generation.vibe"
-import { RequestExecutor } from "./route/executor.vibe"
-import type { MediaRoute } from "./route/media.vibe"
-import { AIError, UnsupportedOperationError } from "./schema/index.ts"
+import { resultEvents, type AwaitOptions, type Generation, type Observation } from "./generation.js"
+import { RequestExecutor } from "./route/executor.js"
+import type { MediaRoute } from "./route/media.js"
+import { AIError, UnsupportedOperationError } from "./schema/index.js"
 
 /** A media request whose model carries the route that executes it. */
 export interface RoutedRequest<Self extends MediaRoute.MediaRequest, Event, Response> extends MediaRoute.MediaRequest {

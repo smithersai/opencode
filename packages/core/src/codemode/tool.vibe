@@ -10,9 +10,9 @@ import type {
   Namespace as ToolNamespace,
   Result,
 } from "@opencode/schema/tool"
-import { definition, normalizedName } from "../tool/runtime.vibe"
-import { CodeModeCatalog } from "./catalog.vibe"
-import { CodeModeWeb } from "./web.ts"
+import { definition, normalizedName } from "../tool/runtime.js"
+import { CodeModeCatalog } from "./catalog.js"
+import { CodeModeWeb } from "./web.js"
 
 const ExecuteFile = Schema.Struct({
   data: Schema.String,

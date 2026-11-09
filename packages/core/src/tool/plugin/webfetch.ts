@@ -68,7 +68,9 @@ const isCloudflareChallenge = (error: unknown) => {
 const request = (url: string, format: Format, userAgent = openCodeUserAgent) =>
   HttpClientRequest.get(url).pipe(HttpClientRequest.setHeaders(headers(format, userAgent)))
 
-const isHttpUrl = (url: URL) => url.protocol === "http:" || url.protocol === "https:"
+const assertHttpUrl = (url: URL) => {
+  if (url.protocol !== "http:" && url.protocol !== "https:") throw new Error("URL must use http:// or https://")
+}
 
 export const MAX_REDIRECTS = 10
 const redirectStatuses = new Set([301, 302, 303, 307, 308])
@@ -76,28 +78,30 @@ const redirectStatuses = new Set([301, 302, 303, 307, 308])
 // Follows redirects here instead of in fetch so each new URL is checked against the permission rules first.
 const execute = (
   http: HttpClient.HttpClient,
-  check: (url: string) => void!Error,
+  check: (url: string) => Effect.Effect<void, Error>,
   url: string,
   format: Format,
   userAgent = openCodeUserAgent,
   redirects = 0,
-): HttpClientResponse.HttpClientResponse!Error =>
+): Effect.Effect<HttpClientResponse.HttpClientResponse, Error> =>
   http.execute(request(url, format, userAgent)).pipe(
     Effect.provideService(FetchHttpClient.RequestInit, { redirect: "manual" }),
     Effect.flatMap((response) => {
       const location = response.headers.location
       if (!redirectStatuses.has(response.status) || !location) return HttpClientResponse.filterStatusOk(response)
       if (redirects >= MAX_REDIRECTS) return Effect.fail(new Error(`Too many redirects (more than ${MAX_REDIRECTS})`))
-      return effect {
-        const target = try Effect.try({
-          try: () => new URL(location, url),
+      return Effect.gen(function* () {
+        const next = yield* Effect.try({
+          try: () => {
+            const target = new URL(location, url)
+            assertHttpUrl(target)
+            return target.href
+          },
           catch: (error) => (error instanceof Error ? error : new Error(String(error))),
         })
-        if (!isHttpUrl(target)) throw new Error("URL must use http:// or https://")
-        const next = target.href
-        try check(next)
-        return try execute(http, check, next, format, userAgent, redirects + 1)
-      }
+        yield* check(next)
+        return yield* execute(http, check, next, format, userAgent, redirects + 1)
+      })
     }),
   )
 
@@ -120,11 +124,11 @@ const convert = (content: string, contentType: string, format: Format) => {
 
 export const Plugin = {
   id: "opencode.tool.webfetch",
-  effect: Effect.fn("WebFetchTool.Plugin")(effect (ctx: Context) => {
-    const http = try HttpClient.HttpClient
-    const permission = try Permission.Service
+  effect: Effect.fn("WebFetchTool.Plugin")(function* (ctx: Context) {
+    const http = yield* HttpClient.HttpClient
+    const permission = yield* Permission.Service
 
-    try ctx.tool
+    yield* ctx.tool
       .transform((editor) =>
         editor.add({
           name,
@@ -133,14 +137,13 @@ export const Plugin = {
           input: Input,
           output: Output,
           execute: (input, context) =>
-            (effect {
-              const url = try Effect.try({
-                try: () => new URL(input.url),
+            Effect.gen(function* () {
+              yield* Effect.try({
+                try: () => assertHttpUrl(new URL(input.url)),
                 catch: (error) => error,
               })
-              if (!isHttpUrl(url)) throw new Error("URL must use http:// or https://")
 
-              try permission.assert({
+              yield* permission.assert({
                 action: name,
                 resources: [input.url],
                 save: ["*"],
@@ -150,7 +153,7 @@ export const Plugin = {
                 source: { type: "tool", messageID: context.messageID, id: context.id },
               })
 
-              const { body, contentType } = try (effect {
+              const { body, contentType } = yield* Effect.gen(function* () {
                 const check = (url: string) =>
                   permission.assertNotDenied({
                     action: name,
@@ -160,17 +163,18 @@ export const Plugin = {
                     agent: context.agent,
                     source: { type: "tool", messageID: context.messageID, id: context.id },
                   })
-                const response = try execute(http, check, input.url, input.format).pipe(
+                const response = yield* execute(http, check, input.url, input.format).pipe(
                   Effect.catchIf(isCloudflareChallenge, () =>
                     execute(http, check, input.url, input.format, "opencode"),
                   ),
                 )
                 const contentType = response.headers["content-type"] || ""
                 const mime = mimeFrom(contentType)
-                if (isImageAttachment(mime)) throw new Error(`Unsupported fetched image content type: ${mime}`)
-                const textual = try Effect.try({ try: () => Mime.isTextual(mime), catch: (cause) => cause }).pipe(Effect.orDie)
-                if (!textual) throw new Error(`Unsupported fetched file content type: ${mime}`)
-                return { body: try collectBody(response), contentType }
+                if (isImageAttachment(mime))
+                  return yield* Effect.fail(new Error(`Unsupported fetched image content type: ${mime}`))
+                if (!Mime.isTextual(mime))
+                  return yield* Effect.fail(new Error(`Unsupported fetched file content type: ${mime}`))
+                return { body: yield* collectBody(response), contentType }
               }).pipe(
                 Effect.timeoutOrElse({
                   duration: Duration.seconds(input.timeout ?? DEFAULT_TIMEOUT_SECONDS),
@@ -178,7 +182,7 @@ export const Plugin = {
                 }),
               )
               const content = new TextDecoder().decode(body)
-              const output = try Effect.try({
+              const output = yield* Effect.try({
                 try: () => convert(content, contentType, input.format),
                 catch: (error) => error,
               })

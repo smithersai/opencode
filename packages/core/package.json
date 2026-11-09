@@ -746,11 +746,6 @@
       "vibelang-source": "./src/config/plugin/worktree.vibe",
       "default": "./.vibelang/js/src/config/plugin/worktree.js"
     },
-    "./tool/plugin/webfetch": {
-      "types": "./src/tool/plugin/webfetch.d.vibe.ts",
-      "vibelang-source": "./src/tool/plugin/webfetch.vibe",
-      "default": "./.vibelang/js/src/tool/plugin/webfetch.js"
-    },
     "./tool/plugin/read": {
       "types": "./src/tool/plugin/read.d.vibe.ts",
       "vibelang-source": "./src/tool/plugin/read.vibe",

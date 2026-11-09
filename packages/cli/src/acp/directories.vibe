@@ -1,5 +1,5 @@
-import { isAbsolute, join, resolve } from "node:path"
-import { isDeepStrictEqual } from "node:util"
+import { isAbsolute, join, resolve } from "./directories.platform"
+import { isDeepStrictEqual } from "./directories.platform"
 import type { OpenCodeClient } from "@opencode/client/effect"
 import type { Permission } from "@opencode/schema/permission"
 import { AbsolutePath } from "@opencode/schema/schema"
@@ -13,21 +13,27 @@ const key = "opencode.acp.additionalDirectories"
 const decodeStored = Schema.decodeUnknownOption(Schema.Array(Schema.String))
 
 // Permission resources treat `*` and `?` as wildcards.
-export const parse = Effect.fnUntraced(function* (cwd: string, directories: readonly string[] = []) {
-  yield* parseCwd(cwd)
+export const parse = effect function(cwd: string, directories: readonly string[] = []) {
+  try parseCwd(cwd)
   const invalid = directories.find((directory) => !isAbsolute(directory) || /[*?]/.test(directory))
-  if (invalid !== undefined) return yield* new ACPError.InvalidAdditionalDirectoryError({ directory: invalid })
-  const root = FSUtil.resolve(cwd)
+  if (invalid !== undefined) return try new ACPError.InvalidAdditionalDirectoryError({ directory: invalid })
+  const root =
+    try ((args: Parameters<typeof FSUtil.resolve>) => Effect.try(() => FSUtil.resolve(...args)).pipe(Effect.orDie))([
+      cwd,
+    ])
   return [...new Set(directories.map((directory) => resolve(FSUtil.windowsPath(directory))))].filter(
     (directory) => FSUtil.resolve(directory) !== root,
   )
-})
+}
 
-export const parseCwd = Effect.fnUntraced(function* (cwd: string) {
-  if (!isAbsolute(cwd))
-    return yield* new ACPError.InvalidRequestError({ message: `cwd must be an absolute path: ${cwd}`, field: "cwd" })
+export const parseCwd = effect function(cwd: string) {
+  if (
+    !(try ((args: Parameters<typeof isAbsolute>) => Effect.try(() => isAbsolute(...args)).pipe(Effect.orDie))([cwd]))
+  ) {
+    return try new ACPError.InvalidRequestError({ message: `cwd must be an absolute path: ${cwd}`, field: "cwd" })
+  }
   return AbsolutePath.make(cwd)
-})
+}
 
 export function grant(directories: readonly string[]) {
   if (directories.length === 0) return {}
@@ -38,7 +44,7 @@ export function list(session: Pick<Session.Info, "metadata">) {
   return [...Option.getOrElse(decodeStored(session.metadata?.[key]), () => [])]
 }
 
-export const activate = Effect.fnUntraced(function* (
+export const activate = effect function(
   client: OpenCodeClient,
   session: Session.Info,
   directories: readonly string[],
@@ -55,17 +61,21 @@ export const activate = Effect.fnUntraced(function* (
     ...Object.fromEntries(Object.entries(session.metadata ?? {}).filter(([name]) => name !== key)),
     ...(directories.length > 0 ? { [key]: [...directories] } : {}),
   }
-  const permissionsChanged = !isDeepStrictEqual(permissions, current)
-  const metadataChanged = !isDeepStrictEqual(previous, directories)
+  const permissionsChanged =
+    !(try ((args: Parameters<typeof isDeepStrictEqual>) =>
+      Effect.try(() => isDeepStrictEqual(...args)).pipe(Effect.orDie))([permissions, current]))
+  const metadataChanged =
+    !(try ((args: Parameters<typeof isDeepStrictEqual>) =>
+      Effect.try(() => isDeepStrictEqual(...args)).pipe(Effect.orDie))([previous, directories]))
   if (!permissionsChanged && !metadataChanged) return
-  yield* client.session
+  try client.session
     .update({
       sessionID: session.id,
       ...(permissionsChanged ? { permissions } : {}),
       ...(metadataChanged ? { metadata } : {}),
     })
     .pipe(Effect.catch(ACPClient.classify))
-})
+}
 
 // Tools compare the written path without following symlinks, so both spellings of a root are granted.
 function rules(directories: readonly string[]): Permission.Rule[] {
@@ -76,4 +86,4 @@ function rules(directories: readonly string[]): Permission.Rule[] {
   }))
 }
 
-export * as ACPDirectories from "./directories"
+export * as ACPDirectories from "./directories.vibe"

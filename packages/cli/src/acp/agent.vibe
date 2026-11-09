@@ -16,46 +16,45 @@ import { ACPCatalog } from "./catalog"
 import { ACPClient } from "./client.vibe"
 import { ACPConnection } from "./connection"
 import { ACPError } from "./error.vibe"
-import { ACPService } from "./service"
+import { ACPService } from "./service.vibe"
 import { ACPSessions } from "./sessions"
-import { ACPTurn } from "./turn"
+import { ACPTurn } from "./turn.vibe"
 
 type HandlerContext<Params> = AgentHandlerContext<Params> & { readonly requestId?: JsonRpcId }
 
 // Untraced so request spans parent to the caller's span instead of a setup span that has already ended.
-export const connect = Effect.fnUntraced(function* (client: OpenCodeClient, stream: Stream) {
-  const run = Effect.runPromiseWith(yield* Effect.context<Scope.Scope>())
-  const catalog = yield* ACPCatalog.make(client)
+export const connect = effect function(client: OpenCodeClient, stream: Stream) {
+  const run = Effect.runPromiseWith(try Effect.context<Scope.Scope>())
+  const catalog = try ACPCatalog.make(client)
   // Requests can dispatch before the service below is built.
-  const ready = yield* Deferred.make<{
+  const ready = try Deferred.make<{
     readonly service: ACPService.Interface
     readonly connection: ACPConnection.Interface
   }>()
-  const handle =
-    <Params, A>(
-      call: (service: ACPService.Interface, ctx: AgentHandlerContext<Params>) => Effect.Effect<A, ACPError.Failure>,
-    ) =>
-    (name: string) => {
-      const handler = Effect.fn(name)(
-        function* (ctx: HandlerContext<Params>) {
-          const connected = yield* Deferred.await(ready)
-          if (ctx.requestId === undefined) return yield* call(connected.service, ctx)
-          return yield* call(connected.service, ctx).pipe(
-            Effect.provideService(ACPConnection.Responded, connected.connection.responded(ctx.requestId)),
-          )
-        },
-        Effect.catchTags({
-          ACPCatalogLoadError: (error) => ACPClient.classify(error.cause),
-          ACPCatalogNotReadyError: (error) =>
-            Effect.fail(new ACPError.ServiceFailureError({ safeMessage: error.message, errorName: "CatalogNotReady" })),
-        }),
-        Effect.mapError((error) => (error instanceof RequestError ? error : ACPError.toRequestError(error))),
-        Effect.tapCauseIf(Cause.hasDies, (cause) => Effect.logError("ACP request failed", cause)),
-        Effect.catchDefect((defect) => Effect.fail(ACPError.toRequestError(ACPError.fromUnknown(defect)))),
-      )
-      return (ctx: HandlerContext<Params>) => run(handler(ctx))
-    }
-  const app = agent({ name: "opencode" })
+  const handle = <Params, A>(
+    call: (service: ACPService.Interface, ctx: AgentHandlerContext<Params>) => Effect.Effect<A, ACPError.Failure>,
+  ) =>
+  (name: string) => {
+    const handler = Effect.fn(name)(
+      effect function(ctx: HandlerContext<Params>) {
+        const connected = try Deferred.await(ready)
+        if (ctx.requestId === undefined) return try call(connected.service, ctx)
+        return try call(connected.service, ctx).pipe(
+          Effect.provideService(ACPConnection.Responded, connected.connection.responded(ctx.requestId)),
+        )
+      },
+      Effect.catchTags({
+        ACPCatalogLoadError: (error) => ACPClient.classify(error.cause),
+        ACPCatalogNotReadyError: (error) =>
+          Effect.fail(new ACPError.ServiceFailureError({ safeMessage: error.message, errorName: "CatalogNotReady" })),
+      }),
+      Effect.mapError((error) => (error instanceof RequestError ? error : ACPError.toRequestError(error))),
+      Effect.tapCauseIf(Cause.hasDies, (cause) => Effect.logError("ACP request failed", cause)),
+      Effect.catchDefect((defect) => Effect.fail(ACPError.toRequestError(ACPError.fromUnknown(defect)))),
+    )
+    return (ctx: HandlerContext<Params>) => run(handler(ctx))
+  }
+  const app = try Effect.try(() => agent({ name: "opencode" })).pipe(Effect.orDie)
   const request = <Method extends AgentRequestMethod>(
     method: Method,
     make: (name: string) => AgentRequestHandlersByMethod[Method],
@@ -117,18 +116,18 @@ export const connect = Effect.fnUntraced(function* (client: OpenCodeClient, stre
     "session/cancel",
     handle((service, ctx) => service.cancel(ctx.params)),
   )
-  const acp = ACPConnection.make(app, stream)
+  const acp = try Effect.try(() => ACPConnection.make(app, stream)).pipe(Effect.orDie)
   const connection = acp.connection
-  const sessions = yield* ACPSessions.make({ client, connection, catalog })
-  const capabilities = yield* Ref.make(ACPCapabilities.parse(undefined))
-  const turn = yield* ACPTurn.make({ client, connection, sessions, catalog, capabilities })
-  yield* Deferred.succeed(ready, {
+  const sessions = try ACPSessions.make({ client, connection, catalog })
+  const capabilities = try Ref.make(try Effect.try(() => ACPCapabilities.parse(undefined)).pipe(Effect.orDie))
+  const turn = try ACPTurn.make({ client, connection, sessions, catalog, capabilities })
+  try Deferred.succeed(ready, {
     service: ACPService.make({ client, connection, catalog, sessions, capabilities, turn }),
     connection,
   })
   return acp.agent
-})
+}
 
 const spanName = (method: string) => `cli.acp.${method.replaceAll("/", ".")}`
 
-export * as ACP from "./agent"
+export * as ACP from "./agent.vibe"

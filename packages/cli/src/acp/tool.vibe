@@ -1,4 +1,4 @@
-import { isAbsolute, resolve } from "node:path"
+import { isAbsolute, resolve } from "./tool.platform"
 import type { ToolCall, ToolCallContent, ToolCallLocation, ToolCallUpdate, ToolKind } from "@agentclientprotocol/sdk"
 import type { Tool } from "@opencode/schema/tool"
 import { readDisplayText } from "@opencode/tui/mini/tool"
@@ -109,10 +109,9 @@ export function completedToolUpdate(input: {
   const firstText = input.content.find((part) => part.type === "text")
   const read = canonicalName(input.toolName) === "read" && firstText ? readDisplayText(firstText.text) : undefined
   const images = normalized.filter((part) => part.type === "content" && part.content.type === "image")
-  const primary =
-    read === undefined
-      ? normalized.filter((part) => !images.includes(part))
-      : [{ type: "content" as const, content: { type: "text" as const, text: read } }]
+  const primary = read === undefined
+    ? normalized.filter((part) => !images.includes(part))
+    : [{ type: "content" as const, content: { type: "text" as const, text: read } }]
   return {
     toolCallId: input.toolCallId,
     status: "completed",

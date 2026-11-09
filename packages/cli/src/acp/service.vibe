@@ -37,13 +37,13 @@ import { OPENCODE_VERSION } from "../version.ts"
 import { ACPCapabilities, type Capabilities } from "./capabilities"
 import type { ACPCatalog } from "./catalog"
 import { ACPClient } from "./client.vibe"
-import { configOptions, resolveChange } from "./config-option"
+import { configOptions, resolveChange } from "./config-option.vibe"
 import type { ACPConnection } from "./connection"
-import { ACPDirectories } from "./directories.ts"
+import { ACPDirectories } from "./directories.vibe"
 import { ACPError } from "./error.vibe"
 import { ACPReplay } from "./replay.vibe"
 import type { ACPSessions, Attached, SupportedMcpServer } from "./sessions"
-import type { ACPTurn } from "./turn"
+import type { ACPTurn } from "./turn.vibe"
 
 const AuthMethodID = "opencode-login"
 
@@ -73,9 +73,9 @@ export function make(input: {
   readonly capabilities: Ref.Ref<Capabilities>
   readonly turn: ACPTurn.Interface
 }): Interface {
-  const currentOptions = Effect.fnUntraced(function* (attached: Attached) {
-    return configOptions(yield* input.catalog.get(attached.cwd), yield* Ref.get(attached.selection))
-  })
+  const currentOptions = effect function(attached: Attached) {
+    return configOptions(try input.catalog.get(attached.cwd), try Ref.get(attached.selection))
+  }
 
   const withReload = <A>(attached: Attached, attempt: Effect.Effect<A, ACPError.Failure>) => {
     const retry = () => input.catalog.reload(attached.cwd).pipe(Effect.andThen(attempt))
@@ -84,27 +84,34 @@ export function make(input: {
     )
   }
 
-  const select = Effect.fnUntraced(function* (attached: Attached, configId: string, value: string) {
-    const change = yield* resolveChange(
-      yield* input.catalog.get(attached.cwd),
-      yield* Ref.get(attached.selection),
+  const select = effect function(attached: Attached, configId: string, value: string) {
+    const change = try resolveChange(
+      try input.catalog.get(attached.cwd),
+      try Ref.get(attached.selection),
       configId,
       value,
     )
-    yield* input.sessions.select(attached, change)
-  })
+    try input.sessions.select(attached, change)
+  }
 
-  const getSession = Effect.fnUntraced(function* (sessionId: string, cwd: string) {
-    const sessionID = yield* ACPClient.decodeSessionID(sessionId)
-    const session = yield* input.client.session.get({ sessionID }).pipe(Effect.catch(ACPClient.classify))
-    if (FSUtil.resolve(cwd) !== FSUtil.resolve(session.location.directory))
-      return yield* new ACPError.SessionDirectoryMismatchError({ sessionId, cwd })
+  const getSession = effect function(sessionId: string, cwd: string) {
+    const sessionID = try ACPClient.decodeSessionID(sessionId)
+    const session = try input.client.session.get({ sessionID }).pipe(Effect.catch(ACPClient.classify))
+    if (
+      (try Effect.try(() => FSUtil.resolve(cwd)).pipe(Effect.orDie))
+        !== (try Effect.try(() => FSUtil.resolve(session.location.directory)).pipe(Effect.orDie))
+    ) {
+      return try new ACPError.SessionDirectoryMismatchError({ sessionId, cwd })
+    }
     return session
-  })
+  }
 
   return {
-    initialize: Effect.fnUntraced(function* (params) {
-      yield* Ref.set(input.capabilities, ACPCapabilities.parse(params.clientCapabilities))
+    initialize: effect function(params) {
+      try Ref.set(
+        input.capabilities,
+        try Effect.try(() => ACPCapabilities.parse(params.clientCapabilities)).pipe(Effect.orDie),
+      )
       const authMethod: AuthMethod = {
         description: "Run `opencode auth login` in the terminal",
         name: "Login with opencode",
@@ -128,45 +135,49 @@ export function make(input: {
         authMethods: [authMethod],
         agentInfo: { name: "OpenCode", version: OPENCODE_VERSION },
       }
-    }),
-    authenticate: Effect.fnUntraced(function* (params) {
-      if (params.methodId !== AuthMethodID)
-        return yield* new ACPError.UnknownAuthMethodError({ methodId: params.methodId })
+    },
+    authenticate: effect function(params) {
+      if (params.methodId !== AuthMethodID) {
+        return try new ACPError.UnknownAuthMethodError({ methodId: params.methodId })
+      }
       return {}
-    }),
-    newSession: Effect.fnUntraced(function* (params) {
-      const directories = yield* ACPDirectories.parse(params.cwd, params.additionalDirectories)
-      const mcpServers = yield* supportedMcpServers(params.mcpServers)
+    },
+    newSession: effect function(params) {
+      const directories = try ACPDirectories.parse(params.cwd, params.additionalDirectories)
+      const mcpServers = try supportedMcpServers(params.mcpServers)
       // Load first so a catalog failure leaves no session.
-      yield* input.catalog.get(params.cwd)
-      const created = yield* input.client.session
-        .create({ location: { directory: AbsolutePath.make(params.cwd) }, ...ACPDirectories.grant(directories) })
+      try input.catalog.get(params.cwd)
+      const created = try input.client.session
+        .create({
+          location: { directory: AbsolutePath.make(params.cwd) },
+          ...(try Effect.try(() => ACPDirectories.grant(directories)).pipe(Effect.orDie)),
+        })
         .pipe(Effect.catch(ACPClient.classify))
-      const attachment = yield* input.sessions.attach(created, params.cwd, mcpServers)
+      const attachment = try input.sessions.attach(created, params.cwd, mcpServers)
       return { sessionId: attachment.attached.id, configOptions: attachment.configOptions }
-    }),
-    loadSession: Effect.fnUntraced(function* (params) {
-      const directories = yield* ACPDirectories.parse(params.cwd, params.additionalDirectories)
-      const mcpServers = yield* supportedMcpServers(params.mcpServers)
-      const session = yield* getSession(params.sessionId, params.cwd)
-      yield* ACPDirectories.activate(input.client, session, directories)
-      const attachment = yield* input.sessions.attach(session, session.location.directory, mcpServers)
-      return yield* ACPReplay.history(
+    },
+    loadSession: effect function(params) {
+      const directories = try ACPDirectories.parse(params.cwd, params.additionalDirectories)
+      const mcpServers = try supportedMcpServers(params.mcpServers)
+      const session = try getSession(params.sessionId, params.cwd)
+      try ACPDirectories.activate(input.client, session, directories)
+      const attachment = try input.sessions.attach(session, session.location.directory, mcpServers)
+      return try ACPReplay.history(
         input.client,
         input.connection,
         attachment.attached,
-        yield* Ref.get(input.capabilities),
+        try Ref.get(input.capabilities),
       ).pipe(
         Effect.andThen(currentOptions(attachment.attached)),
         Effect.map((configOptions) => ({ configOptions })),
         Effect.onError(() => input.sessions.release(attachment.attached)),
       )
-    }),
-    listSessions: Effect.fnUntraced(function* (params) {
-      const page = yield* input.client.session
+    },
+    listSessions: effect function(params) {
+      const page = try input.client.session
         .list({
           ...(params.cwd !== undefined && params.cwd !== null
-            ? { directory: yield* ACPDirectories.parseCwd(params.cwd) }
+            ? { directory: try ACPDirectories.parseCwd(params.cwd) }
             : {}),
           order: "desc",
           limit: 100,
@@ -189,67 +200,68 @@ export function make(input: {
         }),
         ...(page.cursor.next ? { nextCursor: page.cursor.next } : {}),
       }
-    }),
-    deleteSession: Effect.fnUntraced(function* (params) {
-      yield* input.turn.cancel({ sessionId: params.sessionId })
-      yield* ACPClient.decodeSessionID(params.sessionId).pipe(
+    },
+    deleteSession: effect function(params) {
+      try input.turn.cancel({ sessionId: params.sessionId })
+      try ACPClient.decodeSessionID(params.sessionId).pipe(
         Effect.flatMap((sessionID) => input.client.session.remove({ sessionID })),
         Effect.catchTag(["ACPInvalidRequestError", "SessionNotFoundError"], () => Effect.void),
         Effect.catch(ACPClient.classify),
       )
-      yield* input.sessions.detach(params.sessionId)
+      try input.sessions.detach(params.sessionId)
       return {}
-    }),
-    resumeSession: Effect.fnUntraced(function* (params) {
-      const directories = yield* ACPDirectories.parse(params.cwd, params.additionalDirectories)
-      const mcpServers = yield* supportedMcpServers(params.mcpServers)
-      const session = yield* getSession(params.sessionId, params.cwd)
-      yield* ACPDirectories.activate(input.client, session, directories)
-      const attachment = yield* input.sessions.attach(session, session.location.directory, mcpServers)
+    },
+    resumeSession: effect function(params) {
+      const directories = try ACPDirectories.parse(params.cwd, params.additionalDirectories)
+      const mcpServers = try supportedMcpServers(params.mcpServers)
+      const session = try getSession(params.sessionId, params.cwd)
+      try ACPDirectories.activate(input.client, session, directories)
+      const attachment = try input.sessions.attach(session, session.location.directory, mcpServers)
       return { configOptions: attachment.configOptions }
-    }),
-    closeSession: Effect.fnUntraced(function* (params) {
-      yield* input.turn.close(params.sessionId)
-      yield* input.sessions.detach(params.sessionId)
+    },
+    closeSession: effect function(params) {
+      try input.turn.close(params.sessionId)
+      try input.sessions.detach(params.sessionId)
       return {}
-    }),
-    forkSession: Effect.fnUntraced(function* (params) {
-      const directories = yield* ACPDirectories.parse(params.cwd, params.additionalDirectories)
-      const mcpServers = yield* supportedMcpServers(params.mcpServers)
-      const session = yield* getSession(params.sessionId, params.cwd)
-      const forked = yield* input.client.session.fork({ sessionID: session.id }).pipe(Effect.catch(ACPClient.classify))
+    },
+    forkSession: effect function(params) {
+      const directories = try ACPDirectories.parse(params.cwd, params.additionalDirectories)
+      const mcpServers = try supportedMcpServers(params.mcpServers)
+      const session = try getSession(params.sessionId, params.cwd)
+      const forked = try input.client.session.fork({ sessionID: session.id }).pipe(Effect.catch(ACPClient.classify))
       // Forks inherit the source's grants; replace them with this request's.
-      yield* ACPDirectories.activate(input.client, forked, directories)
-      const attachment = yield* input.sessions.attach(forked, forked.location.directory, mcpServers)
+      try ACPDirectories.activate(input.client, forked, directories)
+      const attachment = try input.sessions.attach(forked, forked.location.directory, mcpServers)
       return { sessionId: attachment.attached.id, configOptions: attachment.configOptions }
-    }),
-    setSessionConfigOption: Effect.fnUntraced(function* (params) {
-      const attached = yield* input.sessions.require(params.sessionId)
+    },
+    setSessionConfigOption: effect function(params) {
+      const attached = try input.sessions.require(params.sessionId)
       const value = params.value
-      if (typeof value !== "string") return yield* new ACPError.InvalidConfigOptionError({ configId: params.configId })
-      yield* withReload(attached, select(attached, params.configId, value))
-      return { configOptions: yield* currentOptions(attached) }
-    }),
-    setSessionMode: Effect.fnUntraced(function* (params) {
-      const attached = yield* input.sessions.require(params.sessionId)
-      yield* withReload(attached, select(attached, "mode", params.modeId))
+      if (typeof value !== "string") return try new ACPError.InvalidConfigOptionError({ configId: params.configId })
+      try withReload(attached, select(attached, params.configId, value))
+      return { configOptions: try currentOptions(attached) }
+    },
+    setSessionMode: effect function(params) {
+      const attached = try input.sessions.require(params.sessionId)
+      try withReload(attached, select(attached, "mode", params.modeId))
       return {}
-    }),
+    },
     prompt: input.turn.prompt,
     cancel: input.turn.cancel,
   }
 }
 
-const supportedMcpServers = Effect.fnUntraced(function* (servers: readonly McpServer[] = []) {
+const supportedMcpServers = effect function(servers: readonly McpServer[] = []) {
   const supported = servers.filter(
     (server): server is SupportedMcpServer => !("type" in server) || server.type === "http",
   )
-  if (supported.length < servers.length)
-    return yield* new ACPError.InvalidRequestError({
+  if (supported.length < servers.length) {
+    return try new ACPError.InvalidRequestError({
       message: "Only stdio and HTTP MCP servers are supported",
       field: "mcpServers",
     })
+  }
   return supported
-})
+}
 
-export * as ACPService from "./service"
+export * as ACPService from "./service.vibe"

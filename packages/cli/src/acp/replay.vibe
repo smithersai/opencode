@@ -6,10 +6,10 @@ import { ACPClient } from "./client.vibe"
 import { ACPCompaction } from "./compaction.ts"
 import type { ACPConnection } from "./connection.ts"
 import { partsToContentChunks } from "./content.ts"
-import { ACPPermission } from "./permission.ts"
+import { ACPPermission } from "./permission.vibe"
 import type { Attached } from "./sessions.ts"
 import { ACPTranslate } from "./translate.ts"
-import { completedToolUpdate, errorToolUpdate, pendingToolCall, runningToolUpdate } from "./tool.ts"
+import { completedToolUpdate, errorToolUpdate, pendingToolCall, runningToolUpdate } from "./tool.vibe"
 
 export function history(
   client: OpenCodeClient,

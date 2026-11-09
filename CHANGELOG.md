@@ -6,6 +6,8 @@ Release notes for OpenCode V2, newest first.
 
 ### Changed
 
+- ACP helper implementations now use VibeLang while preserving their protocol behavior.
+
 - Server handler implementations now use VibeLang while preserving the existing native declaration boundaries.
 
 - Command helpers and additional handlers now use VibeLang while preserving existing command behavior.

@@ -35,22 +35,22 @@ export function configOptions(catalog: Catalog, selection: Selection): SessionCo
     },
     ...(variants.length > 0
       ? [
-          {
-            id: "effort",
-            name: "Effort",
-            description: "Available effort levels for this model",
-            category: "thought_level",
-            type: "select",
-            currentValue: selectVariant(model.variant, variants),
-            options: [...new Set([...variants, DEFAULT_VARIANT_VALUE])].map((variant) => ({
-              value: variant,
-              name: variant
-                .split(/[_-]/)
-                .map((part) => (part ? part.charAt(0).toUpperCase() + part.slice(1) : part))
-                .join(" "),
-            })),
-          } satisfies SessionConfigOption,
-        ]
+        {
+          id: "effort",
+          name: "Effort",
+          description: "Available effort levels for this model",
+          category: "thought_level",
+          type: "select",
+          currentValue: selectVariant(model.variant, variants),
+          options: [...new Set([...variants, DEFAULT_VARIANT_VALUE])].map((variant) => ({
+            value: variant,
+            name: variant
+              .split(/[_-]/)
+              .map((part) => (part ? part.charAt(0).toUpperCase() + part.slice(1) : part))
+              .join(" "),
+          })),
+        } satisfies SessionConfigOption,
+      ]
       : []),
     {
       id: "mode",
@@ -74,7 +74,7 @@ export function availableCommands(catalog: Catalog) {
   ]
 }
 
-export const resolveChange = Effect.fnUntraced(function* (
+export const resolveChange = effect function(
   catalog: Catalog,
   selection: Selection,
   configId: string,
@@ -83,22 +83,23 @@ export const resolveChange = Effect.fnUntraced(function* (
   const current = currentModel(catalog, selection)
   switch (configId) {
     case "model":
-      return { model: yield* requireModel(catalog, value, current) }
+      return { model: try requireModel(catalog, value, current) }
     case "effort": {
-      const model = findModel(catalog.models, current)
-      if (!model || (value !== DEFAULT_VARIANT_VALUE && !model.variants.some((variant) => variant.id === value)))
-        return yield* new ACPError.InvalidEffortError({ effort: value })
+      const model = try Effect.try(() => findModel(catalog.models, current)).pipe(Effect.orDie)
+      if (!model || (value !== DEFAULT_VARIANT_VALUE && !model.variants.some((variant) => variant.id === value))) {
+        return try new ACPError.InvalidEffortError({ effort: value })
+      }
       return { model: { ...current, variant: Model.VariantID.make(value) } }
     }
     case "mode": {
       const mode = catalog.modes.find((item) => item.id === value)
-      if (!mode) return yield* new ACPError.InvalidModeError({ mode: value })
+      if (!mode) return try new ACPError.InvalidModeError({ mode: value })
       return { modeID: mode.id }
     }
     default:
-      return yield* new ACPError.InvalidConfigOptionError({ configId })
+      return try new ACPError.InvalidConfigOptionError({ configId })
   }
-})
+}
 
 export function parseModelSelection(value: string, models: ReadonlyArray<Model.Info>): Model.Ref {
   const exact = models.find((model) => advertisedModel(model) === value)
@@ -115,21 +116,21 @@ export function parseModelSelection(value: string, models: ReadonlyArray<Model.I
   return { providerID: Provider.ID.make(value.slice(0, providerEnd)), id: Model.ID.make(value.slice(providerEnd + 1)) }
 }
 
-const requireModel = Effect.fnUntraced(function* (catalog: Catalog, value: string, current: Model.Ref) {
+const requireModel = effect function(catalog: Catalog, value: string, current: Model.Ref) {
   const selected = parseModelSelection(value, catalog.models)
-  const model = findModel(catalog.models, selected)
-  if (!model) return yield* new ACPError.InvalidModelError({ providerId: selected.providerID, modelId: value })
+  const model = try Effect.try(() => findModel(catalog.models, selected)).pipe(Effect.orDie)
+  if (!model) return try new ACPError.InvalidModelError({ providerId: selected.providerID, modelId: value })
   const selectedVariant = model.variants.find((variant) => variant.id === selected.variant)
-  if (selected.variant && !selectedVariant) return yield* new ACPError.InvalidEffortError({ effort: selected.variant })
-  const variant =
-    selectedVariant?.id ??
-    (current.providerID === model.providerID &&
-    current.id === model.id &&
-    (current.variant === DEFAULT_VARIANT_VALUE || model.variants.some((variant) => variant.id === current.variant))
+  if (selected.variant && !selectedVariant) return try new ACPError.InvalidEffortError({ effort: selected.variant })
+  const variant = selectedVariant?.id
+    ?? (current.providerID === model.providerID
+        && current.id === model.id
+        && (current.variant === DEFAULT_VARIANT_VALUE
+          || model.variants.some((variant) => variant.id === current.variant))
       ? current.variant
       : undefined)
   return { providerID: model.providerID, id: model.id, variant } satisfies Model.Ref
-})
+}
 
 function advertisedModel(model: { readonly providerID: string; readonly id: string }) {
   return `${model.providerID}/${model.id}`

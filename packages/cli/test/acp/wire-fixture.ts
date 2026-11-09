@@ -32,8 +32,8 @@ import type { BunRequest } from "bun"
 import { createTwoFilesPatch } from "diff"
 import { Duration, Effect, Exit, Logger, Option, Schema, Scope } from "effect"
 import { FetchHttpClient } from "effect/http"
-import { ACP } from "../../src/acp/agent"
-import { ACPTurn } from "../../src/acp/turn"
+import { ACP } from "../../src/acp/agent.vibe"
+import { ACPTurn } from "../../src/acp/turn.vibe"
 
 // The fake server sends and stores the wire form of each value.
 type OpenCodeEvent = OpenCodeEventEncoded

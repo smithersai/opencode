@@ -5,23 +5,22 @@ import { Api } from "../api"
 import { awaitPlugins, response } from "../location"
 
 export const ModelHandler = HttpApiBuilder.group(Api, "server.model", (handlers) =>
-  Effect.gen(function* () {
+  effect {
     return handlers
       .handle(
         "model.list",
-        Effect.fn(function* (ctx) {
-          yield* awaitPlugins
-          const models = yield* Model.Service
-          return yield* response(models.available(ctx.query.types))
+        Effect.fn(effect function(ctx) {
+          try awaitPlugins
+          const models = try Model.Service
+          return try response(models.available(ctx.query.types))
         }),
       )
       .handle(
         "model.default",
-        Effect.fn(function* () {
-          yield* awaitPlugins
-          const models = yield* Model.Service
-          return yield* response(models.default())
+        Effect.fn(effect function() {
+          try awaitPlugins
+          const models = try Model.Service
+          return try response(models.default())
         }),
       )
-  }),
-)
+  })

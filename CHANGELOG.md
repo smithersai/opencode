@@ -6,9 +6,13 @@ Release notes for OpenCode V2, newest first.
 
 ### Changed
 
+- Server handler implementations now use VibeLang while preserving the existing native declaration boundaries.
+
 - Command helper implementations now use VibeLang while preserving the existing command behavior.
 
 ### Bugs fixed
+
+- Internal Server helpers could be imported through generated export routes; those helper subpaths now stay private.
 
 - Debug bar component previews could load the retired TypeScript entry; their source links now load the native module.
 

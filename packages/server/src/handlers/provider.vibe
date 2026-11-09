@@ -6,28 +6,28 @@ import { Api } from "../api"
 import { awaitPlugins, response } from "../location"
 
 export const ProviderHandler = HttpApiBuilder.group(Api, "server.provider", (handlers) =>
-  Effect.gen(function* () {
+  effect {
     return handlers
       .handle(
         "provider.list",
-        Effect.fn(function* () {
-          yield* awaitPlugins
-          const providers = yield* Provider.Service
-          return yield* response(providers.available())
+        Effect.fn(effect function() {
+          try awaitPlugins
+          const providers = try Provider.Service
+          return try response(providers.available())
         }),
       )
       .handle(
         "provider.get",
-        Effect.fn(function* (ctx) {
-          const providers = yield* Provider.Service
-          const provider = yield* providers.get(ctx.params.providerID)
-          if (!provider)
-            return yield* new ProviderNotFoundError({
+        Effect.fn(effect function(ctx) {
+          const providers = try Provider.Service
+          const provider = try providers.get(ctx.params.providerID)
+          if (!provider) {
+            return try new ProviderNotFoundError({
               providerID: ctx.params.providerID,
               message: `Provider not found: ${ctx.params.providerID}`,
             })
-          return yield* response(Effect.succeed(provider))
+          }
+          return try response(Effect.succeed(provider))
         }),
       )
-  }),
-)
+  })

@@ -6,14 +6,14 @@ import { Api } from "../api"
 import { awaitPlugins, response } from "../location"
 
 export const UsageHandler = HttpApiBuilder.group(Api, "server.usage", (handlers) =>
-  Effect.gen(function* () {
+  effect {
     return handlers.handle(
       "usage.limits",
-      Effect.fn("server.usage.limits")(function* () {
+      Effect.fn("server.usage.limits")(effect function() {
         // The OpenCode Console plugin registers the sign-in method that refreshes an expired credential.
-        yield* awaitPlugins
-        const limits = yield* UsageLimits.Service
-        return yield* response(
+        try awaitPlugins
+        const limits = try UsageLimits.Service
+        return try response(
           limits.get().pipe(
             Effect.map((info) => info ?? null),
             Effect.mapError((error) => new ServiceUnavailableError({ message: error.message, service: "opencode" })),
@@ -21,5 +21,4 @@ export const UsageHandler = HttpApiBuilder.group(Api, "server.usage", (handlers)
         )
       }),
     )
-  }),
-)
+  })

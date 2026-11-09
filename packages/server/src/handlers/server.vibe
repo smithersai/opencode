@@ -1,4 +1,4 @@
-import { hostname } from "node:os"
+import { hostname, pid } from "./server.platform"
 import { Duration, Effect } from "effect"
 import { HttpServerRequest, HttpServerResponse } from "effect/http"
 import { HttpApiBuilder } from "effect/http-api"
@@ -10,34 +10,35 @@ import { ServerInfo } from "../server-info"
 import { ServerPairing } from "../pairing"
 
 export const ServerHandler = HttpApiBuilder.group(Api, "server.server", (handlers) =>
-  Effect.gen(function* () {
-    const pairing = yield* ServerPairing.Service
-    const auth = yield* ServerAuth.Config
+  effect {
+    const pairing = try ServerPairing.Service
+    const auth = try ServerAuth.Config
 
     return handlers
       .handle("server.info", () =>
-        Effect.gen(function* () {
-          const info = yield* ServerInfo.Service
+        effect {
+          const info = try ServerInfo.Service
           return {
             version: info.app.version ?? "unknown",
-            pid: process.pid ?? 0,
-            hostname: hostname() || undefined,
-            urls: info.urls(),
+            pid: (try pid) ?? 0,
+            hostname: (try hostname) || undefined,
+            urls: (try Effect.try(() => info.urls()).pipe(Effect.orDie)),
             paths: info.paths,
             capabilities: { persistentPty: PersistentPty.available },
           }
-        }),
-      )
+        })
       .handle("server.pair", () => pairing.issue())
       .handle(
         "server.connect",
-        Effect.fn(function* (ctx) {
-          const request = yield* HttpServerRequest.HttpServerRequest
+        Effect.fn(effect function(ctx) {
+          const request = try HttpServerRequest.HttpServerRequest
           // Browser navigations ask for HTML; everything else is an API client that wants the token.
           const browser = request.headers.accept?.includes("text/html") === true
-          const token = (yield* pairing.consume(ctx.params.code)) ? ServerAuth.issueSession(auth) : undefined
+          const token = (try pairing.consume(ctx.params.code))
+            ? (try Effect.try(() => ServerAuth.issueSession(auth)).pipe(Effect.orDie))
+            : undefined
           if (token === undefined) {
-            if (!browser) return yield* new UnauthorizedError({ message: "Pairing link expired or already used" })
+            if (!browser) return try new UnauthorizedError({ message: "Pairing link expired or already used" })
             return HttpServerResponse.text(
               "This pairing link expired or was already used. Run `opencode pair` to get a new one.",
               { status: 401 },
@@ -45,14 +46,17 @@ export const ServerHandler = HttpApiBuilder.group(Api, "server.server", (handler
           }
           if (!browser) return { token }
           return HttpServerResponse.redirect("/").pipe(
-            HttpServerResponse.setCookieUnsafe(ServerAuth.sessionCookieName(request.headers.host), token, {
-              path: "/",
-              httpOnly: true,
-              sameSite: "lax",
-              maxAge: Duration.seconds(ServerAuth.SESSION_TTL_SECONDS),
-            }),
+            HttpServerResponse.setCookieUnsafe(
+              try Effect.try(() => ServerAuth.sessionCookieName(request.headers.host)).pipe(Effect.orDie),
+              token,
+              {
+                path: "/",
+                httpOnly: true,
+                sameSite: "lax",
+                maxAge: Duration.seconds(ServerAuth.SESSION_TTL_SECONDS),
+              },
+            ),
           )
         }),
       )
-  }),
-)
+  })

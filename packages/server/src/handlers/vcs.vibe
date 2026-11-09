@@ -13,94 +13,92 @@ import { Api } from "../api"
 import { response } from "../location"
 
 export const VcsHandler = HttpApiBuilder.group(Api, "server.vcs", (handlers) =>
-  Effect.gen(function* () {
-    const project = yield* Project.Service
-    const bus = yield* Bus.Service
-    const locations = yield* LocationServiceMap.Service
+  effect {
+    const project = try Project.Service
+    const bus = try Bus.Service
+    const locations = try LocationServiceMap.Service
     return handlers
       .handle("vcs.init", (ctx) =>
-        Effect.gen(function* () {
-          const location = yield* Location.Service
+        effect {
+          const location = try Location.Service
           const directory = location.project.directory
           const providerID = ctx.query.provider ?? "git"
-          yield* Plugin.awaitActivation
-          const vcs = yield* Vcs.Service
-          yield* vcs.initialize(providerID).pipe(
+          try Plugin.awaitActivation
+          const vcs = try Vcs.Service
+          try vcs.initialize(providerID).pipe(
             Effect.mapError((error) => {
-              if (error.kind === "missing")
+              if (error.kind === "missing") {
                 return new InvalidRequestError({ message: "Project directory does not exist", field: "location" })
-              if (error.kind === "conflict")
+              }
+              if (error.kind === "conflict") {
                 return new ConflictError({ message: "Project already has version control", resource: directory })
-              if (error.kind === "unknown")
+              }
+              if (error.kind === "unknown") {
                 return new InvalidRequestError({
                   message: "Unknown VCS provider",
                   field: "provider",
                 })
-              if (error.kind === "unsupported")
+              }
+              if (error.kind === "unsupported") {
                 return new VcsInitNotSupportedError({
                   providerID,
                   message: "VCS provider does not support initialization",
                 })
+              }
               return new ServiceUnavailableError({ service: providerID, message: "VCS initialization failed" })
             }),
           )
-          const resolved = yield* project.resolve(directory)
-          if (!resolved.vcs)
-            return yield* new ServiceUnavailableError({ service: providerID, message: "VCS initialization failed" })
-          yield* locations.invalidate(
+          const resolved = try project.resolve(directory)
+          if (!resolved.vcs) {
+            return try new ServiceUnavailableError({ service: providerID, message: "VCS initialization failed" })
+          }
+          try locations.invalidate(
             Location.Ref.make({ directory: location.directory, workspaceID: location.workspaceID }),
           )
-          yield* bus.publish(Worktree.Event.Updated, { projectID: resolved.id })
+          try bus.publish(Worktree.Event.Updated, { projectID: resolved.id })
           return HttpApiSchema.NoContent.make()
-        }),
-      )
+        })
       .handle("vcs.get", () =>
         response(
-          Effect.gen(function* () {
-            const vcs = yield* Vcs.Service
-            return yield* vcs.info()
-          }),
-        ),
-      )
+          effect {
+            const vcs = try Vcs.Service
+            return try vcs.info()
+          },
+        ))
       .handle("vcs.base", () =>
         response(
-          Effect.gen(function* () {
-            const vcs = yield* Vcs.Service
-            return yield* vcs
+          effect {
+            const vcs = try Vcs.Service
+            return try vcs
               .base()
               .pipe(Effect.mapError((error) => new ServiceUnavailableError({ service: "vcs", message: error.message })))
-          }),
-        ),
-      )
+          },
+        ))
       .handle("vcs.status", () =>
         response(
-          Effect.gen(function* () {
-            const vcs = yield* Vcs.Service
-            return yield* vcs.status()
-          }),
-        ),
-      )
+          effect {
+            const vcs = try Vcs.Service
+            return try vcs.status()
+          },
+        ))
       .handle("vcs.branch.list", (ctx) =>
         response(
-          Effect.gen(function* () {
-            const vcs = yield* Vcs.Service
-            return yield* vcs.branches({ search: ctx.query.search, limit: Math.min(ctx.query.limit ?? 50, 100) })
-          }),
-        ),
-      )
+          effect {
+            const vcs = try Vcs.Service
+            return try vcs.branches({ search: ctx.query.search, limit: Math.min(ctx.query.limit ?? 50, 100) })
+          },
+        ))
       .handle("vcs.diff", (ctx) =>
         response(
-          Effect.gen(function* () {
-            const vcs = yield* Vcs.Service
-            return yield* vcs
+          effect {
+            const vcs = try Vcs.Service
+            return try vcs
               .diff(ctx.query.mode, {
                 context: ctx.query.context,
                 base: ctx.query.base,
                 untracked: ctx.query.untracked,
               })
               .pipe(Effect.mapError((error) => new ServiceUnavailableError({ service: "vcs", message: error.message })))
-          }),
-        ),
-      )
-  }),
-)
+          },
+        ))
+  })

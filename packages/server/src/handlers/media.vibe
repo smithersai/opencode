@@ -12,13 +12,20 @@ const SECURITY_HEADERS = {
 }
 
 /** `media.get` in the `server.experimental` group; serves only blobs a message or inbox item still references. */
-export const makeMediaGet = Effect.gen(function* () {
-  const { db } = yield* Database.Service
+export const makeMediaGet: Effect.Effect<
+  (
+    hash: string,
+    request: HttpServerRequest.HttpServerRequest,
+  ) => Effect.Effect<HttpServerResponse.HttpServerResponse, FileNotFoundError, never>,
+  never,
+  Database.Service
+> = effect {
+  const { db } = try Database.Service
   return (hash: string, request: HttpServerRequest.HttpServerRequest) =>
-    Effect.gen(function* () {
+    effect {
       const path = `/api/experimental/media/${hash}`
-      const blob = yield* SessionBlob.read(db, hash)
-      if (!blob) return yield* new FileNotFoundError({ path, message: `Media blob not found: ${hash}` })
+      const blob = try SessionBlob.read(db, hash)
+      if (!blob) return try new FileNotFoundError({ path, message: `Media blob not found: ${hash}` })
       const etag = `"${hash}"`
       const inline = INLINE_IMAGE_MIMES.has(blob.mime)
       const headers = {
@@ -27,15 +34,16 @@ export const makeMediaGet = Effect.gen(function* () {
         ...SECURITY_HEADERS,
         ...(inline ? {} : { "content-disposition": "attachment" }),
       }
-      if (matchesIfNoneMatch(request.headers["if-none-match"], etag))
+      if (matchesIfNoneMatch(request.headers["if-none-match"], etag)) {
         return HttpServerResponse.empty({ status: 304, headers })
+      }
       return HttpServerResponse.uint8Array(blob.data, {
         status: 200,
         contentType: inline ? blob.mime : "application/octet-stream",
         headers,
       })
-    })
-})
+    }
+}
 
 function matchesIfNoneMatch(ifNoneMatch: string | undefined, etag: string) {
   if (ifNoneMatch === undefined) return false

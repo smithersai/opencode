@@ -6,22 +6,22 @@ import { Api } from "../api"
 import { awaitPlugins, response } from "../location"
 
 export const WebSearchHandler = HttpApiBuilder.group(Api, "server.websearch", (handlers) =>
-  Effect.gen(function* () {
+  effect {
     return handlers
       .handle(
         "websearch.providers",
-        Effect.fn("server.websearch.providers")(function* () {
-          const websearch = yield* WebSearch.Service
-          return yield* response(websearch.providers())
+        Effect.fn("server.websearch.providers")(effect function() {
+          const websearch = try WebSearch.Service
+          return try response(websearch.providers())
         }),
       )
       .handle(
         "websearch.query",
-        Effect.fn("server.websearch.query")(function* (request) {
+        Effect.fn("server.websearch.query")(effect function(request) {
           // A cold Location must finish activating plugins before their providers can be resolved.
-          yield* awaitPlugins
-          const websearch = yield* WebSearch.Service
-          return yield* response(
+          try awaitPlugins
+          const websearch = try WebSearch.Service
+          return try response(
             websearch.query(request.payload).pipe(
               Effect.catchTags({
                 "WebSearch.ProviderRequired": () =>
@@ -48,5 +48,4 @@ export const WebSearchHandler = HttpApiBuilder.group(Api, "server.websearch", (h
           )
         }),
       )
-  }),
-)
+  })

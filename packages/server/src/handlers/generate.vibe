@@ -18,39 +18,40 @@ import { Api } from "../api"
 import { awaitPlugins, locationErrors } from "../location"
 
 export const GenerateHandler = HttpApiBuilder.group(Api, "server.generate", (handlers) =>
-  Effect.gen(function* () {
-    const global = yield* Global.Service
-    const locations = yield* LocationServiceMap.Service
+  effect {
+    const global = try Global.Service
+    const locations = try LocationServiceMap.Service
     const services = locations.get(Location.Ref.make({ directory: AbsolutePath.make(global.config) }))
     const text = Effect.fn("server.generate.text")(
-      function* (request: { readonly payload: { readonly prompt: string; readonly model?: Model.Ref } }) {
-        yield* awaitPlugins
-        const generate = yield* Generate.Service
-        return { data: { text: yield* generate.text(request.payload).pipe(Effect.mapError(generateError)) } }
+      effect function(request: { readonly payload: { readonly prompt: string; readonly model?: Model.Ref } }) {
+        try awaitPlugins
+        const generate = try Generate.Service
+        return { data: { text: try generate.text(request.payload).pipe(Effect.mapError(generateError)) } }
       },
       Effect.provide(services),
       locationErrors,
     )
     const image = Effect.fn("server.generate.image")(
-      function* (request: { readonly payload: ImageRequest }) {
-        yield* awaitPlugins
-        const generate = yield* Generate.Service
-        return { data: yield* generate.image(request.payload).pipe(Effect.mapError(generateError)) }
+      effect function(request: { readonly payload: ImageRequest }) {
+        try awaitPlugins
+        const generate = try Generate.Service
+        return { data: try generate.image(request.payload).pipe(Effect.mapError(generateError)) }
       },
       Effect.provide(services),
       locationErrors,
     )
     const decisions = Effect.fn("server.generate.decisions")(
-      function* (request: { readonly payload: DecisionRequest }) {
+      effect function(request: { readonly payload: DecisionRequest }) {
         const names = new Set(request.payload.questions.map((question) => question.name))
-        if (names.size !== request.payload.questions.length)
-          return yield* new InvalidRequestError({
+        if (names.size !== request.payload.questions.length) {
+          return try new InvalidRequestError({
             message: "Decision question names must be unique",
             field: "questions",
           })
-        yield* awaitPlugins
-        const generate = yield* Generate.Service
-        return { data: yield* generate.decisions(request.payload).pipe(Effect.mapError(generateError)) }
+        }
+        try awaitPlugins
+        const generate = try Generate.Service
+        return { data: try generate.decisions(request.payload).pipe(Effect.mapError(generateError)) }
       },
       Effect.provide(services),
       locationErrors,
@@ -60,8 +61,7 @@ export const GenerateHandler = HttpApiBuilder.group(Api, "server.generate", (han
       .handle("generate.textLegacy", text)
       .handle("generate.image", image)
       .handle("generate.decisions", decisions)
-  }),
-)
+  })
 
 function generateError(error: Generate.Error) {
   switch (error._tag) {

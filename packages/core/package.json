@@ -415,6 +415,11 @@
       "vibelang-source": "./src/location-lifecycle.vibe",
       "default": "./.vibelang/js/src/location-lifecycle.js"
     },
+    "./session/stats": {
+      "types": "./src/session/stats.d.vibe.ts",
+      "vibelang-source": "./src/session/stats.vibe",
+      "default": "./.vibelang/js/src/session/stats.js"
+    },
     "./session/compaction": {
       "types": "./src/session/compaction.d.vibe.ts",
       "vibelang-source": "./src/session/compaction.vibe",
@@ -530,6 +535,12 @@
       "vibelang-source": "./src/reference/instructions.vibe",
       "default": "./.vibelang/js/src/reference/instructions.js"
     },
+    "./worktree": {
+      "types": "./src/worktree.d.vibe.ts",
+      "vibelang-source": "./src/worktree.vibe",
+      "default": "./.vibelang/js/src/worktree.js"
+    },
+    "./worktree.platform": null,
     "./worktree/directory": {
       "types": "./src/worktree/directory.d.vibe.ts",
       "vibelang-source": "./src/worktree/directory.vibe",

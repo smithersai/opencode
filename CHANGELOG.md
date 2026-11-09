@@ -6,6 +6,8 @@ Release notes for OpenCode V2, newest first.
 
 ### Changed
 
+- Worktree management and session statistics now use VibeLang while preserving their declarations and native path access.
+
 - Lock, npm install and process helpers in the util package now use VibeLang while preserving their declarations.
 
 - The Durable Object SQLite adapter now uses VibeLang with unchanged transaction and blob behavior.

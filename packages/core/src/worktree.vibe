@@ -2,7 +2,7 @@ export * as Worktree from "./worktree.js"
 
 import { Context, Effect, Layer, Schema } from "effect"
 import { and, asc, desc, eq, isNull, sql } from "drizzle-orm"
-import path from "path"
+import { isWindows, joinPath } from "./worktree.platform.js"
 import { AbsolutePath } from "./schema.js"
 import { FSUtil } from "@opencode/util/fs-util"
 import { Git } from "./git.js"
@@ -105,129 +105,151 @@ export class Service extends Context.Service<Service, Interface>()("@opencode/Wo
 
 const layer = Layer.effect(
   Service,
-  Effect.gen(function* () {
-    const fs = yield* FSUtil.Service
-    const database = yield* Database.Service
+  effect {
+    const fs = try FSUtil.Service
+    const database = try Database.Service
     const db = database.db
-    const bus = yield* Bus.Service
-    const processService = yield* AppProcess.Service
-    const locations = yield* LocationServiceMap.Service
-    const project = Effect.fnUntraced(function* (projectID: Project.ID) {
-      const row = yield* db.select().from(ProjectTable).where(eq(ProjectTable.id, projectID)).get().pipe(Effect.orDie)
-      if (!row) return yield* new Project.NotFoundError({ projectID })
+    const bus = try Bus.Service
+    const processService = try AppProcess.Service
+    const locations = try LocationServiceMap.Service
+    const project = effect (projectID: Project.ID) => {
+      const query = try Effect.try({
+        try: () => db.select().from(ProjectTable).where(eq(ProjectTable.id, projectID)),
+        catch: (cause) => cause,
+      }).pipe(Effect.orDie)
+      const row = try query.get().pipe(Effect.orDie)
+      if (!row) throw new Project.NotFoundError({ projectID })
       return row
-    })
-
-    const load = Effect.fnUntraced(function* (directory: AbsolutePath, current?: WorktreeStrategies.Interface) {
-      if (!(yield* fs.isDir(directory))) return yield* new DirectoryUnavailableError({ directory })
-      if (current?.directory === directory) return current.get()
-      const { Plugin } = yield* Effect.promise(() => import("./plugin.js"))
-      const context = yield* locations.contextEffect(Location.Ref.make({ directory }))
-      yield* Context.get(context, Plugin.Service).awaitActivation
-      return Context.get(context, WorktreeStrategies.Service).get()
-    })
-
-    const changed = Effect.fnUntraced(function* (projectID: Project.ID, update: boolean) {
-      if (update) yield* bus.publish(Event.Updated, { projectID })
-    })
-
-    const ops = {
-      list: Effect.fnUntraced(function* (projectID: Project.ID) {
-        const rows = yield* db
-          .select({ directory: WorktreeTable.directory, strategy: WorktreeTable.strategy })
-          .from(WorktreeTable)
-          .where(eq(WorktreeTable.project_id, projectID))
-          .orderBy(desc(WorktreeTable.time_created), asc(WorktreeTable.directory))
-          .all()
-          .pipe(Effect.orDie)
-        return rows.map((row) => ({ directory: row.directory, strategy: row.strategy ?? undefined }))
-      }),
-      find: Effect.fnUntraced(function* (projectID: Project.ID, directory: AbsolutePath) {
-        const row = yield* db
-          .select({ directory: WorktreeTable.directory, strategy: WorktreeTable.strategy })
-          .from(WorktreeTable)
-          .where(and(eq(WorktreeTable.project_id, projectID), eq(WorktreeTable.directory, directory)))
-          .get()
-          .pipe(Effect.orDie)
-        return row ? { directory: row.directory, strategy: row.strategy ?? undefined } : undefined
-      }),
-      create: (projectID: Project.ID, input: StoredInput, tx?: Transaction) =>
-        (tx ?? db)
-          .insert(WorktreeTable)
-          .values({
-            project_id: projectID,
-            directory: input.directory,
-            strategy: input.strategy,
-          })
-          .onConflictDoUpdate({
-            target: [WorktreeTable.project_id, WorktreeTable.directory],
-            set: {
-              strategy: input.strategy ?? null,
-            },
-            // Discovery may claim an unowned row, but never replace another strategy's ownership.
-            setWhere: input.replace ? undefined : input.strategy ? isNull(WorktreeTable.strategy) : sql`false`,
-          })
-          .returning({ directory: WorktreeTable.directory })
-          .get()
-          .pipe(
-            Effect.orDie,
-            Effect.map((row) => row !== undefined),
-          ),
-      remove: (projectID: Project.ID, directory: AbsolutePath, tx?: Transaction) =>
-        (tx ?? db)
-          .delete(WorktreeTable)
-          .where(and(eq(WorktreeTable.project_id, projectID), eq(WorktreeTable.directory, directory)))
-          .returning({ directory: WorktreeTable.directory })
-          .get()
-          .pipe(
-            Effect.orDie,
-            Effect.map((row) => row !== undefined),
-          ),
     }
 
-    const source = Effect.fnUntraced(function* (projectID: Project.ID, sourceDirectory: AbsolutePath) {
-      const resolved = yield* canonical(fs, sourceDirectory)
-      if ((yield* ops.find(projectID, resolved)) === undefined)
-        return yield* new SourceDirectoryNotFoundError({ projectID, directory: resolved })
-      return resolved
-    })
+    const load = effect (directory: AbsolutePath, current?: WorktreeStrategies.Interface) => {
+      if (!(try fs.isDir(directory))) throw new DirectoryUnavailableError({ directory })
+      if (current?.directory === directory)
+        return try Effect.try({ try: () => current.get(), catch: (cause) => cause }).pipe(Effect.orDie)
+      const { Plugin } = try Effect.promise(() => import("./plugin.js"))
+      const context = try locations.contextEffect(Location.Ref.make({ directory }))
+      try Context.get(context, Plugin.Service).awaitActivation
+      return try Effect.try({
+        try: () => Context.get(context, WorktreeStrategies.Service).get(),
+        catch: (cause) => cause,
+      }).pipe(Effect.orDie)
+    }
 
-    const getStrategy = Effect.fnUntraced(function* (
+    const changed = effect (projectID: Project.ID, update: boolean) => {
+      if (update) try bus.publish(Event.Updated, { projectID })
+    }
+
+    const ops = {
+      list: effect (projectID: Project.ID) => {
+        const query = try Effect.try({
+          try: () =>
+            db
+              .select({ directory: WorktreeTable.directory, strategy: WorktreeTable.strategy })
+              .from(WorktreeTable)
+              .where(eq(WorktreeTable.project_id, projectID))
+              .orderBy(desc(WorktreeTable.time_created), asc(WorktreeTable.directory)),
+          catch: (cause) => cause,
+        }).pipe(Effect.orDie)
+        const rows = try query.all().pipe(Effect.orDie)
+        return rows.map((row) => ({ directory: row.directory, strategy: row.strategy ?? undefined }))
+      },
+      find: effect (projectID: Project.ID, directory: AbsolutePath) => {
+        const query = try Effect.try({
+          try: () =>
+            db
+              .select({ directory: WorktreeTable.directory, strategy: WorktreeTable.strategy })
+              .from(WorktreeTable)
+              .where(and(eq(WorktreeTable.project_id, projectID), eq(WorktreeTable.directory, directory))),
+          catch: (cause) => cause,
+        }).pipe(Effect.orDie)
+        const row = try query.get().pipe(Effect.orDie)
+        return row ? { directory: row.directory, strategy: row.strategy ?? undefined } : undefined
+      },
+      create: effect (projectID: Project.ID, input: StoredInput, tx?: Transaction) => {
+        const query = try Effect.try({
+          try: () =>
+            (tx ?? db)
+              .insert(WorktreeTable)
+              .values({
+                project_id: projectID,
+                directory: input.directory,
+                strategy: input.strategy,
+              })
+              .onConflictDoUpdate({
+                target: [WorktreeTable.project_id, WorktreeTable.directory],
+                set: {
+                  strategy: input.strategy ?? null,
+                },
+                // Discovery may claim an unowned row, but never replace another strategy's ownership.
+                setWhere: input.replace ? undefined : input.strategy ? isNull(WorktreeTable.strategy) : sql`false`,
+              })
+              .returning({ directory: WorktreeTable.directory }),
+          catch: (cause) => cause,
+        }).pipe(Effect.orDie)
+        return try query.get().pipe(
+          Effect.orDie,
+          Effect.map((row) => row !== undefined),
+        )
+      },
+      remove: effect (projectID: Project.ID, directory: AbsolutePath, tx?: Transaction) => {
+        const query = try Effect.try({
+          try: () =>
+            (tx ?? db)
+              .delete(WorktreeTable)
+              .where(and(eq(WorktreeTable.project_id, projectID), eq(WorktreeTable.directory, directory)))
+              .returning({ directory: WorktreeTable.directory }),
+          catch: (cause) => cause,
+        }).pipe(Effect.orDie)
+        return try query.get().pipe(
+          Effect.orDie,
+          Effect.map((row) => row !== undefined),
+        )
+      },
+    }
+
+    const source = effect (projectID: Project.ID, sourceDirectory: AbsolutePath) => {
+      const resolved = try canonical(fs, sourceDirectory)
+      if ((try ops.find(projectID, resolved)) === undefined)
+        throw new SourceDirectoryNotFoundError({ projectID, directory: resolved })
+      return resolved
+    }
+
+    const getStrategy = effect (
       id: StrategyID,
       strategies: ReadonlyMap<StrategyID, WorktreeStrategies.Strategy>,
-    ) {
+    ) => {
       const found = strategies.get(id)
-      if (!found) return yield* new StrategyUnavailableError({ strategy: id })
+      if (!found) throw new StrategyUnavailableError({ strategy: id })
       return found
-    })
+    }
 
-    const create = Effect.fn("Worktree.create")(function* (input: CreateInput, current?: WorktreeStrategies.Interface) {
-      const row = yield* project(input.projectID)
-      const settings = yield* load(row.worktree, current)
-      const selected = yield* getStrategy(settings.selected, settings.strategies)
+    const create = Effect.fn("Worktree.create")(effect (input: CreateInput, current?: WorktreeStrategies.Interface) => {
+      const row = try project(input.projectID)
+      const settings = try load(row.worktree, current)
+      const selected = try getStrategy(settings.selected, settings.strategies)
       const directory = input.directory ?? settings.directory
-      const sourceDirectory = yield* source(input.projectID, input.from ?? row.worktree)
-      yield* fs.makeDirectory(directory, { recursive: true }).pipe(Effect.orDie)
-      const name = input.name ?? Slug.create()
+      const sourceDirectory = try source(input.projectID, input.from ?? row.worktree)
+      try fs.makeDirectory(directory, { recursive: true }).pipe(Effect.orDie)
+      const name = input.name ?? (try Effect.try({ try: () => Slug.create(), catch: (cause) => cause }).pipe(Effect.orDie))
       let suffix = 1
-      let worktreeDirectory = AbsolutePath.make(path.join(directory, name))
-      while (yield* fs.existsSafe(worktreeDirectory)) {
+      let worktreeDirectory = AbsolutePath.make(joinPath(directory, name))
+      while (try fs.existsSafe(worktreeDirectory)) {
         suffix++
-        if (suffix > 10) return yield* new DestinationExistsError({ directory: worktreeDirectory })
-        worktreeDirectory = AbsolutePath.make(path.join(directory, `${name}-${suffix}`))
+        if (suffix > 10) throw new DestinationExistsError({ directory: worktreeDirectory })
+        worktreeDirectory = AbsolutePath.make(joinPath(directory, `${name}-${suffix}`))
       }
 
-      const created = yield* selected
+      const created = try selected
         .create({
           directory: worktreeDirectory,
           sourceDirectory,
           branch: input.branch,
         })
         .pipe(Effect.mapError((error) => operationError(selected.id, "create", error)))
-      const result = { directory: yield* canonical(fs, created.directory) }
-      yield* changed(
+      const result = { directory: try canonical(fs, created.directory) }
+      try changed(
         input.projectID,
-        yield* ops.create(input.projectID, {
+        try ops.create(input.projectID, {
           directory: result.directory,
           strategy: selected.id,
           replace: true,
@@ -235,8 +257,8 @@ const layer = Layer.effect(
       )
       const command = row.commands?.start?.trim()
       if (command) {
-        const windows = process.platform === "win32"
-        yield* processService
+        const windows = isWindows()
+        try processService
           .run(
             ChildProcess.make(windows ? command : "bash", windows ? [] : ["-lc", command], {
               cwd: result.directory,
@@ -254,30 +276,30 @@ const layer = Layer.effect(
       return result
     }, Effect.scoped)
 
-    const remove = Effect.fn("Worktree.remove")(function* (input: RemoveInput, current?: WorktreeStrategies.Interface) {
-      const row = yield* project(input.projectID)
-      const worktreeDirectory = yield* canonical(fs, input.directory)
-      const stored = yield* ops.find(input.projectID, worktreeDirectory)
-      if (!stored?.strategy) return yield* new InvalidDirectoryError({ directory: worktreeDirectory })
-      const settings = yield* load(row.worktree, current)
-      const strategy = yield* getStrategy(stored.strategy, settings.strategies)
-      yield* strategy
+    const remove = Effect.fn("Worktree.remove")(effect (input: RemoveInput, current?: WorktreeStrategies.Interface) => {
+      const row = try project(input.projectID)
+      const worktreeDirectory = try canonical(fs, input.directory)
+      const stored = try ops.find(input.projectID, worktreeDirectory)
+      if (!stored?.strategy) throw new InvalidDirectoryError({ directory: worktreeDirectory })
+      const settings = try load(row.worktree, current)
+      const strategy = try getStrategy(stored.strategy, settings.strategies)
+      try strategy
         .remove({
           directory: worktreeDirectory,
           force: input.force,
         })
         .pipe(Effect.mapError((error) => operationError(strategy.id, "remove", error)))
-      yield* changed(input.projectID, yield* ops.remove(input.projectID, worktreeDirectory))
+      try changed(input.projectID, try ops.remove(input.projectID, worktreeDirectory))
     }, Effect.scoped)
 
-    const refresh = Effect.fn("Worktree.refresh")(function* (
+    const refresh = Effect.fn("Worktree.refresh")(effect (
       input: { projectID: Project.ID },
       current?: WorktreeStrategies.Interface,
-    ) {
-      const row = yield* project(input.projectID)
-      const settings = yield* load(row.worktree, current)
-      const stored = yield* ops.list(input.projectID)
-      const checked = yield* Effect.forEach(
+    ) => {
+      const row = try project(input.projectID)
+      const settings = try load(row.worktree, current)
+      const stored = try ops.list(input.projectID)
+      const checked = try Effect.forEach(
         stored,
         (item) => fs.isDir(item.directory).pipe(Effect.map((exists) => ({ ...item, exists }))),
         { concurrency: "unbounded" },
@@ -290,9 +312,9 @@ const layer = Layer.effect(
         ...checked.filter((item) => item.exists && !item.strategy).map((item) => item.directory),
       ])
       for (const directory of roots) {
-        if (!(yield* fs.isDir(directory))) continue
+        if (!(try fs.isDir(directory))) continue
         for (const strategy of strategies) {
-          const entries = yield* strategy.list(directory).pipe(
+          const entries = try strategy.list(directory).pipe(
             Effect.mapError((error) => operationError(strategy.id, "list", error)),
             Effect.catch((error) =>
               Effect.logWarning("worktree discovery failed", { directory, strategy: strategy.id, error }).pipe(
@@ -301,7 +323,7 @@ const layer = Layer.effect(
             ),
           )
           for (const entry of entries) {
-            const directory = yield* canonical(fs, entry.directory).pipe(
+            const directory = try canonical(fs, entry.directory).pipe(
               Effect.catchTag("Worktree.DirectoryUnavailableError", () => Effect.undefined),
             )
             if (!directory || discovered.has(directory)) continue
@@ -313,7 +335,7 @@ const layer = Layer.effect(
         }
       }
       const removed = checked.filter((item) => !item.exists).map((item) => item.directory)
-      const changes = yield* db
+      const changes = try db
         .transaction((tx) =>
           Effect.all({
             updated: Effect.filter(Array.from(discovered.values()), (item) =>
@@ -323,19 +345,19 @@ const layer = Layer.effect(
           }),
         )
         .pipe(Effect.orDie)
-      yield* changed(input.projectID, changes.updated.length > 0 || changes.removed.length > 0)
+      try changed(input.projectID, changes.updated.length > 0 || changes.removed.length > 0)
     }, Effect.scoped)
 
     return Service.of({
-      list: Effect.fn("Worktree.list")(function* (input) {
-        yield* project(input.projectID)
-        return yield* ops.list(input.projectID)
+      list: Effect.fn("Worktree.list")(effect (input) => {
+        try project(input.projectID)
+        return try ops.list(input.projectID)
       }),
       create,
       remove,
       refresh,
     })
-  }),
+  },
 )
 
 export const node: LayerNode.Provider<Service, never, typeof Node.tags.values.global> = Node.makeGlobalNode({

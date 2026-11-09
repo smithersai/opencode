@@ -77,16 +77,20 @@ export class InvalidRangeError extends Schema.TaggedError<InvalidRangeError>()("
   to: Schema.Finite,
 }) {}
 
-export const get = Effect.fn("SessionStats.get")(function* (input: Input = {}) {
-  const db = (yield* Database.Service).db
+export const get = Effect.fn("SessionStats.get")(effect (input: Input = {}) => {
+  const db = (try Database.Service).db
   const to = input.to ?? Date.now()
-  if (input.from !== undefined && input.from >= to) return yield* new InvalidRangeError({ from: input.from, to })
-  const project = input.projectID === undefined ? sql`` : sql`AND session.project_id = ${input.projectID}`
+  if (input.from !== undefined && input.from >= to) throw new InvalidRangeError({ from: input.from, to })
+  const project = try Effect.try({
+    try: () => (input.projectID === undefined ? sql`` : sql`AND session.project_id = ${input.projectID}`),
+    catch: (cause) => cause,
+  }).pipe(Effect.orDie)
   const from =
     input.from ??
-    (yield* db
+    (try db
       .get<{ time: number | null }>(
-        sql`
+        try Effect.try({
+          try: () => sql`
         SELECT min(message.time_created) AS time
         FROM ${SessionMessageTable} AS message
         JOIN ${SessionTable} AS session ON session.id = message.session_id
@@ -95,6 +99,8 @@ export const get = Effect.fn("SessionStats.get")(function* (input: Input = {}) {
           AND (session.fork_session_id IS NULL OR message.time_created >= session.time_created)
           ${project}
       `,
+          catch: (cause) => cause,
+        }).pipe(Effect.orDie),
       )
       .pipe(Effect.orDie))?.time ??
     to
@@ -114,12 +120,11 @@ export const get = Effect.fn("SessionStats.get")(function* (input: Input = {}) {
   const toolTotals = { calls: 0, succeeded: 0, failed: 0, unfinished: 0 }
   const dateKey = makeDateKey(input.timezone)
 
-  yield* Effect.forEach(
+  try Effect.forEach(
     ranges,
-    (range) =>
-      db
-        .all<MessageRow>(
-          sql`
+    effect (range) => {
+      const query = try Effect.try({
+        try: () => sql`
           SELECT
             message.session_id AS sessionID,
             session.parent_id AS parentID,
@@ -142,56 +147,57 @@ export const get = Effect.fn("SessionStats.get")(function* (input: Input = {}) {
             AND (session.fork_session_id IS NULL OR message.time_created >= session.time_created)
             ${project}
         `,
-        )
-        .pipe(
-          Effect.orDie,
-          Effect.tap((rows) =>
-            Effect.sync(() => {
-              rows.forEach((row) => {
-                if (row.parentID === null) sessions.add(row.sessionID)
-                else subagents.add(row.sessionID)
-                if (row.type === "user") {
-                  if (row.parentID === null) totals.prompts++
-                  return
-                }
+        catch: (cause) => cause,
+      }).pipe(Effect.orDie)
+      return try db.all<MessageRow>(query).pipe(
+        Effect.orDie,
+        Effect.tap((rows) =>
+          Effect.sync(() => {
+            rows.forEach((row) => {
+              if (row.parentID === null) sessions.add(row.sessionID)
+              else subagents.add(row.sessionID)
+              if (row.type === "user") {
+                if (row.parentID === null) totals.prompts++
+                return
+              }
 
-                totals.steps++
-                const tokens = rowTokens(row)
-                addTokens(totals.tokens, tokens)
-                totals.cost += row.cost ?? 0
-                const day = dateKey(row.timeCreated)
-                activity.set(day, (activity.get(day) ?? 0) + 1)
-                if (!row.providerID || !row.modelID) return
-                const key = `${row.providerID}/${row.modelID}#${row.variant ?? ""}`
-                const model = models.get(key) ?? {
-                  model: {
-                    providerID: Provider.ID.make(row.providerID),
-                    id: Model.ID.make(row.modelID),
-                    variant: row.variant ? Model.VariantID.make(row.variant) : undefined,
-                  },
-                  steps: 0,
-                  tokens: emptyTokens(),
-                  cost: 0,
-                }
-                models.set(key, model)
-                model.steps++
-                model.cost += row.cost ?? 0
-                addTokens(model.tokens, tokens)
-              })
-            }),
-          ),
+              totals.steps++
+              const tokens = rowTokens(row)
+              addTokens(totals.tokens, tokens)
+              totals.cost += row.cost ?? 0
+              const day = dateKey(row.timeCreated)
+              activity.set(day, (activity.get(day) ?? 0) + 1)
+              if (!row.providerID || !row.modelID) return
+              const key = `${row.providerID}/${row.modelID}#${row.variant ?? ""}`
+              const model = models.get(key) ?? {
+                model: {
+                  providerID: Provider.ID.make(row.providerID),
+                  id: Model.ID.make(row.modelID),
+                  variant: row.variant ? Model.VariantID.make(row.variant) : undefined,
+                },
+                steps: 0,
+                tokens: emptyTokens(),
+                cost: 0,
+              }
+              models.set(key, model)
+              model.steps++
+              model.cost += row.cost ?? 0
+              addTokens(model.tokens, tokens)
+            })
+          }),
         ),
+      )
+    },
     { concurrency: 1, discard: true },
   )
 
   if (toolMode !== "none")
-    yield* Effect.forEach(
+    try Effect.forEach(
       ranges,
-      (range) => {
-        if (toolMode === "summary")
-          return db
-            .get<ToolSummaryRow>(
-              sql`
+      effect (range) => {
+        if (toolMode === "summary") {
+          const query = try Effect.try({
+            try: () => sql`
             WITH calls AS MATERIALIZED (
               SELECT json_extract(content.value, '$.state.status') AS status
               FROM ${SessionMessageTable} AS message
@@ -211,23 +217,24 @@ export const get = Effect.fn("SessionStats.get")(function* (input: Input = {}) {
               count(*) FILTER (WHERE status IS NULL OR status NOT IN ('completed', 'error')) AS unfinished
             FROM calls
           `,
-            )
-            .pipe(
-              Effect.orDie,
-              Effect.tap((row) =>
-                Effect.sync(() => {
-                  if (!row) return
-                  toolTotals.calls += row.calls
-                  toolTotals.succeeded += row.succeeded
-                  toolTotals.failed += row.failed
-                  toolTotals.unfinished += row.unfinished
-                }),
-              ),
-              Effect.asVoid,
-            )
-        return db
-          .all<ToolRow>(
-            sql`
+            catch: (cause) => cause,
+          }).pipe(Effect.orDie)
+          return try db.get<ToolSummaryRow>(query).pipe(
+            Effect.orDie,
+            Effect.tap((row) =>
+              Effect.sync(() => {
+                if (!row) return
+                toolTotals.calls += row.calls
+                toolTotals.succeeded += row.succeeded
+                toolTotals.failed += row.failed
+                toolTotals.unfinished += row.unfinished
+              }),
+            ),
+            Effect.asVoid,
+          )
+        }
+        const query = try Effect.try({
+          try: () => sql`
           SELECT
             json_extract(content.value, '$.name') AS name,
             json_extract(content.value, '$.state.status') AS status,
@@ -246,60 +253,68 @@ export const get = Effect.fn("SessionStats.get")(function* (input: Input = {}) {
             AND json_extract(content.value, '$.type') = 'tool'
             ${project}
         `,
-          )
-          .pipe(
-            Effect.orDie,
-            Effect.tap((rows) =>
-              Effect.sync(() => {
-                rows.forEach((row) => {
-                  addToolStatus(toolTotals, row.status)
-                  if (!row.name) return
-                  const tool = tools.get(row.name) ?? {
-                    name: row.name,
-                    calls: 0,
-                    succeeded: 0,
-                    failed: 0,
-                    unfinished: 0,
-                    durations: [],
-                  }
-                  tools.set(row.name, tool)
-                  addToolStatus(tool, row.status)
-                  if (row.duration !== null) tool.durations.push(row.duration)
-                })
-              }),
-            ),
-            Effect.asVoid,
-          )
+          catch: (cause) => cause,
+        }).pipe(Effect.orDie)
+        return try db.all<ToolRow>(query).pipe(
+          Effect.orDie,
+          Effect.tap((rows) =>
+            Effect.sync(() => {
+              rows.forEach((row) => {
+                addToolStatus(toolTotals, row.status)
+                if (!row.name) return
+                const tool = tools.get(row.name) ?? {
+                  name: row.name,
+                  calls: 0,
+                  succeeded: 0,
+                  failed: 0,
+                  unfinished: 0,
+                  durations: [],
+                }
+                tools.set(row.name, tool)
+                addToolStatus(tool, row.status)
+                if (row.duration !== null) tool.durations.push(row.duration)
+              })
+            }),
+          ),
+          Effect.asVoid,
+        )
       },
       { concurrency: 1, discard: true },
     )
 
-  const ids = yield* db
-    .select({ id: SessionTable.id })
-    .from(SessionTable)
-    .where(input.projectID === undefined ? undefined : eq(SessionTable.project_id, input.projectID))
-    .all()
-    .pipe(Effect.orDie)
-  const events = (yield* Effect.forEach(
-    batches(ids.map((row) => row.id)),
-    (batch) =>
+  const idsQuery = try Effect.try({
+    try: () =>
       db
-        .select({ data: EventTable.data })
-        .from(EventTable)
-        .where(
-          and(
-            inArray(EventTable.aggregate_id, batch),
-            eq(
-              EventTable.type,
-              Event.versionedType(SessionEvent.UsageRecorded.type, SessionEvent.UsageRecorded.durable.version),
+        .select({ id: SessionTable.id })
+        .from(SessionTable)
+        .where(input.projectID === undefined ? undefined : eq(SessionTable.project_id, input.projectID)),
+    catch: (cause) => cause,
+  }).pipe(Effect.orDie)
+  const ids = try idsQuery.all().pipe(Effect.orDie)
+  const events = (try Effect.forEach(
+    batches(ids.map((row) => row.id)),
+    effect (batch) => {
+      const query = try Effect.try({
+        try: () =>
+          db
+            .select({ data: EventTable.data })
+            .from(EventTable)
+            .where(
+              and(
+                inArray(EventTable.aggregate_id, batch),
+                eq(
+                  EventTable.type,
+                  Event.versionedType(SessionEvent.UsageRecorded.type, SessionEvent.UsageRecorded.durable.version),
+                ),
+                sql`json_extract(${EventTable.data}, '$.source') = 'compaction'`,
+                gte(EventTable.created, from),
+                lt(EventTable.created, to),
+              ),
             ),
-            sql`json_extract(${EventTable.data}, '$.source') = 'compaction'`,
-            gte(EventTable.created, from),
-            lt(EventTable.created, to),
-          ),
-        )
-        .all()
-        .pipe(Effect.orDie),
+        catch: (cause) => cause,
+      }).pipe(Effect.orDie)
+      return try query.all().pipe(Effect.orDie)
+    },
     { concurrency: 4 },
   )).flat()
   events.forEach((row) => {

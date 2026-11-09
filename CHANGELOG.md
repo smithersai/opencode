@@ -6,6 +6,8 @@ Release notes for OpenCode V2, newest first.
 
 ### Changed
 
+- Desktop window appearance now uses VibeLang while preserving platform behavior.
+
 - OpenAPI generation now uses VibeLang while preserving generated output.
 
 - App model selection now uses VibeLang while preserving its schemas and behavior.

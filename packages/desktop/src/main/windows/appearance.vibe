@@ -1,3 +1,4 @@
+import { systemPlatform, resourcePath } from "./appearance.platform.ts"
 import { app, BrowserWindow, nativeImage, nativeTheme } from "electron"
 import type { DesktopZoomLevel } from "@opencode/app/desktop-menu"
 import type { Path } from "effect"
@@ -40,7 +41,7 @@ export function windowAppearance(path: Path.Path, paths: DesktopPaths.Resolved) 
 }
 
 export function setDockIcon(path: Path.Path, paths: DesktopPaths.Resolved) {
-  if (process.platform !== "darwin") return
+  if (systemPlatform() !== "darwin") return
   const icon = nativeImage.createFromPath(path.join(iconsDir(path, paths), "dock.png"))
 
   if (!icon.isEmpty()) app.dock?.setIcon(icon)
@@ -54,7 +55,7 @@ export function setBackgroundColor(color: string) {
   BrowserWindow.getAllWindows().forEach((win) => {
     win.setBackgroundColor(color)
 
-    if (process.platform === "darwin") win.invalidateShadow()
+    if (systemPlatform() === "darwin") win.invalidateShadow()
   })
 }
 
@@ -66,7 +67,7 @@ export function setTitlebar(win: BrowserWindow, theme: Partial<TitlebarTheme> = 
   titlebarThemes.set(win, theme)
 
   // Native window controls follow nativeTheme, not the renderer theme.
-  if (process.platform === "darwin" || process.platform === "win32") {
+  if (systemPlatform() === "darwin" || systemPlatform() === "win32") {
     nativeTheme.themeSource = theme.scheme ?? theme.mode ?? "system"
   }
 
@@ -74,12 +75,12 @@ export function setTitlebar(win: BrowserWindow, theme: Partial<TitlebarTheme> = 
 }
 
 export function setTrafficLightsPosition(win: BrowserWindow, position: { x: number; y: number }) {
-  if (process.platform !== "darwin") return
+  if (systemPlatform() !== "darwin") return
   win.setWindowButtonPosition({ x: Math.round(position.x), y: Math.round(position.y) })
 }
 
 export function updateTitlebar(win: BrowserWindow) {
-  if (process.platform !== "win32") return
+  if (systemPlatform() !== "win32") return
   win.setTitleBarOverlay(overlay(titlebarThemes.get(win), win.webContents.getZoomFactor()))
 }
 
@@ -148,11 +149,11 @@ export function wireFocus(win: BrowserWindow) {
 }
 
 function iconsDir(path: Path.Path, paths: DesktopPaths.Resolved) {
-  return app.isPackaged ? path.join(process.resourcesPath, "icons") : path.join(paths.developmentResourcesRoot, "icons")
+  return app.isPackaged ? path.join(resourcePath(), "icons") : path.join(paths.developmentResourcesRoot, "icons")
 }
 
 function iconPath(path: Path.Path, paths: DesktopPaths.Resolved) {
-  return path.join(iconsDir(path, paths), `icon.${process.platform === "win32" ? "ico" : "png"}`)
+  return path.join(iconsDir(path, paths), `icon.${systemPlatform() === "win32" ? "ico" : "png"}`)
 }
 
 function overlay(theme: Partial<TitlebarTheme> = {}, zoom = 1) {

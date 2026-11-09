@@ -24,7 +24,7 @@ import {
   wireFocus,
   wireFullscreen,
   wireZoom,
-} from "./appearance"
+} from "./appearance.vibe"
 import { registerRendererProtocol, setProtocolReporter } from "./protocol"
 import { loadWindow } from "./scheme"
 import { createWindowRegistry } from "./registry"

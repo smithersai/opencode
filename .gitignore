@@ -60,3 +60,6 @@ tsconfig.tsbuildinfo
 **/*.d.vibex.ts
 **/*.vibe.platform.d.ts
 **/*.vibex.platform.d.ts
+
+# Loader records depend on the locally installed native compiler.
+**/.vibelang/js/.loader/

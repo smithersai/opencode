@@ -14,6 +14,8 @@ Release notes for OpenCode V2, newest first.
 
 ### Bugs fixed
 
+- A fresh source checkout could time out starting a service while compiling migrated modules; normal setup now prepares runtime projects before commands and tests.
+
 - Internal Server helpers could be imported through generated export routes; those helper subpaths now stay private.
 
 - Debug bar component previews could load the retired TypeScript entry; their source links now load the native module.
@@ -531,15 +533,15 @@ Version 2.1 makes intentional changes to public SDK, HTTP message/event, and plu
 
 Provider-owned replay data previously used different names on different surfaces. Read and write `native` instead; a tool's execution `state` and UI `metadata` are separate and are not renamed.
 
-| Surface | Before | After |
-| --- | --- | --- |
-| Text and reasoning parts | `state` | `native` |
-| Assistant and compaction messages | `providerState` | `native` |
-| Text/reasoning lifecycle events and `session.tool.called` | `state` | `native` |
-| `session.step.ended`, `session.step.failed`, and `session.compaction.ended` | `providerState` | `native` |
-| `session.tool.success` and `session.tool.failed` | `resultState` | `native` |
-| Exported replay-data schema | `SessionMessage.ProviderState` | `SessionMessage.Native` |
-| Plugin compaction hook result | `SessionCompactionResult.providerState` | `SessionCompactionResult.native` |
+| Surface                                                                     | Before                                  | After                            |
+| --------------------------------------------------------------------------- | --------------------------------------- | -------------------------------- |
+| Text and reasoning parts                                                    | `state`                                 | `native`                         |
+| Assistant and compaction messages                                           | `providerState`                         | `native`                         |
+| Text/reasoning lifecycle events and `session.tool.called`                   | `state`                                 | `native`                         |
+| `session.step.ended`, `session.step.failed`, and `session.compaction.ended` | `providerState`                         | `native`                         |
+| `session.tool.success` and `session.tool.failed`                            | `resultState`                           | `native`                         |
+| Exported replay-data schema                                                 | `SessionMessage.ProviderState`          | `SessionMessage.Native`          |
+| Plugin compaction hook result                                               | `SessionCompactionResult.providerState` | `SessionCompactionResult.native` |
 
 #### Tool call and result data share `tool.native`
 

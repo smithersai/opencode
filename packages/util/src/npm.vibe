@@ -1,7 +1,7 @@
 export * as Npm from "./npm.js"
 
 import { Clock, Effect, Schema, Context, Layer, Option, FileSystem } from "effect"
-import * as Host from "./npm.platform.js"
+import { Host } from "./npm.platform.js"
 import { FSUtil } from "./fs-util.js"
 import { Global } from "./global.js"
 import { EffectFlock } from "./effect-flock.js"

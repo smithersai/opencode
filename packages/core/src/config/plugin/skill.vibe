@@ -13,7 +13,7 @@ import { Skill } from "../../skill.js"
 import { SkillDiscovery } from "../../skill/discovery.js"
 import { SkillFile } from "./skill-file.js"
 import { SkillScan } from "./skill-scan.js"
-import { dirname, isAbsolute, join as joinPath, resolve } from "./skill.platform.ts"
+import { dirname, isAbsolute, joinPath, resolve } from "./skill.platform.ts"
 
 type Source = Skill.DirectorySource | Skill.UrlSource
 

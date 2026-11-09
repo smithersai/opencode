@@ -2,7 +2,7 @@ export * as SkillScan from "./skill-scan.js"
 
 import { FSUtil } from "@opencode/util/fs-util"
 import { Effect } from "effect"
-import { join as joinPath } from "./skill-scan.platform.ts"
+import { joinPath } from "./skill-scan.platform.ts"
 
 const MAX_DEPTH = 6
 

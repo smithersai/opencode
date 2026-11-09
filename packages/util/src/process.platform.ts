@@ -17,3 +17,5 @@ export function utf8(buffer: Buffer) {
 export function withUtf8<A, E>(buffer: Buffer, f: (text: string) => Effect.Effect<A, E>): Effect.Effect<A, E> {
   return f(buffer.toString("utf8"))
 }
+
+export const Host = { emptyBuffer, concat, utf8, withUtf8 }

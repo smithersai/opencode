@@ -1,7 +1,7 @@
-import { Context, Effect, Function as EffectFunction, Layer, Option, Schedule, Schema } from "effect"
+import { Context, Effect, Function, Layer, Option, Schedule, Schema } from "effect"
 import type { FileSystem, Scope } from "effect"
 import type { PlatformError } from "effect/PlatformError"
-import * as Host from "./effect-flock.platform.js"
+import { Host } from "./effect-flock.platform.js"
 import { FSUtil } from "./fs-util.js"
 import { Global } from "./global.js"
 import { makeGlobalNode } from "./effect/app-node.js"
@@ -292,7 +292,7 @@ export namespace EffectFlock {
         )
       })
 
-      const withLock: Interface["withLock"] = EffectFunction.dual(
+      const withLock: Interface["withLock"] = Function.dual(
         (args) => Effect.isEffect(args[0]),
         <A, E, R>(body: Effect.Effect<A, E, R>, key: string, dir?: string): Effect.Effect<A, E | LockError, R> =>
           Effect.scoped(

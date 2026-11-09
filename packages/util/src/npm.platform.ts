@@ -1,5 +1,5 @@
 import path from "path"
-import { createHash, randomUUID as nodeRandomUUID } from "node:crypto"
+import crypto, { createHash } from "node:crypto"
 
 /** @throws {never} */
 export function platform() {
@@ -22,7 +22,7 @@ export function sha256Hex(input: string) {
 }
 
 export function randomUUID() {
-  return nodeRandomUUID()
+  return crypto.randomUUID()
 }
 
 /** @throws {never} */
@@ -35,3 +35,5 @@ export async function relink(files: typeof import("node:fs/promises"), link: str
   await files.unlink(link)
   await files.symlink(target, link, "junction")
 }
+
+export const Host = { platform, join, relative, sha256Hex, randomUUID, filePromises, relink }

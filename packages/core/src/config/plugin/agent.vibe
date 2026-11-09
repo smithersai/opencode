@@ -16,7 +16,7 @@ import type { FileAccess } from "../../file-access.js"
 import type { ReadTool } from "../../tool/plugin/read.js"
 import type { EditTool } from "../../tool/plugin/edit.js"
 import { AbsolutePath } from "../../schema.js"
-import { join as joinPath, joinHome, relative } from "./agent.platform.ts"
+import { joinPath, joinHome, relative } from "./agent.platform.ts"
 
 const legacySources = [
   { pattern: "{agent,agents}/**/*.md", primary: false },

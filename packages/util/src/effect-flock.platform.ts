@@ -1,6 +1,6 @@
 import path from "path"
 import os from "os"
-import { randomUUID as nodeRandomUUID } from "crypto"
+import crypto from "crypto"
 
 /** Joins path segments; string segments never throw. @throws {never} */
 export function join(...segments: string[]) {
@@ -12,7 +12,7 @@ export function hostname() {
 }
 
 export function randomUUID() {
-  return nodeRandomUUID()
+  return crypto.randomUUID()
 }
 
 /** @throws {never} */
@@ -24,3 +24,5 @@ export function pid() {
 export function wall() {
   return performance.timeOrigin + performance.now()
 }
+
+export const Host = { join, hostname, randomUUID, pid, wall }

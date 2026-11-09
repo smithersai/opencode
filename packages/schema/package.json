@@ -564,7 +564,11 @@
       },
       "vibelang-source": "./src/session-v1.ts",
       "default": "./.vibelang/js/src/session-v1.js"
-    }
+    },
+    "./event.vibe.-24-throw-24-ts": null,
+    "./event.vibe.$throw$ts": null,
+    "./rpc.vibe.-24-throw-24-ts": null,
+    "./rpc.vibe.$throw$ts": null
   },
   "scripts": {
     "build": "bun run script/build.ts",

@@ -30,6 +30,8 @@ Release notes for OpenCode V2, newest first.
 
 - CLI bundling could reject the prompt history export after migration; prompt history now retains its native source until JSX module loading supports it.
 
+- Generated native helpers could leak through published exports and declaration files; release archives now keep their runtime files internal and exclude their private declarations.
+
 - A migration adapter could become reachable through Core exports; its runtime stays internal and its private declaration is excluded from release output.
 
 - Native command bridges could introduce aliased imports that failed lint; they now use unaliased imports with the same exports.

@@ -1,0 +1,23 @@
+[
+  {
+    "module": "./native/host.platform",
+    "nestedTypes": false,
+    "conditions": []
+  },
+  {
+    "module": "./effect/api.native",
+    "nestedTypes": true,
+    "conditions": [
+      "node",
+      "types"
+    ]
+  },
+  {
+    "module": "./tool.vibe.-24-throw-24-ts",
+    "nestedTypes": false,
+    "conditions": [
+      "browser",
+      "vibelang-source"
+    ]
+  }
+]

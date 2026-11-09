@@ -118,3 +118,7 @@ Examples:
 Bug reports and feature requests must use their issue templates. Blank issues are not allowed; ask support and how-to questions in the [Discord community](https://discord.gg/opencode).
 
 Automated checks flag missing templates, placeholder text, AI-generated walls of text, and missing meaningful content. You have two hours to correct a flagged issue before it closes automatically. Ask a maintainer if an issue was flagged incorrectly.
+
+### Private release helpers
+
+Package build scripts list extracted native helpers in the shared packer's `privateModules` option. Their runtime files remain available to relative internal imports, while package exports deny those subpaths and release archives omit their declaration files. Packing restores the original build declarations and manifest afterward, including when packing fails. Add packed-archive and consumer checks when introducing another helper.

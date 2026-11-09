@@ -57,7 +57,9 @@
     "./npm-config.host.platform": null,
     "./heap-snapshot.host.platform": null,
     "./heap-snapshot.platform": null,
-    "./npm-config.platform": null
+    "./npm-config.platform": null,
+    "./bom.vibe.-24-call-24-ts": null,
+    "./patch.vibe.-24-throw-24-ts": null
   },
   "imports": {
     "#global-roots": {

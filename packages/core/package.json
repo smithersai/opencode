@@ -902,7 +902,11 @@
       "vibelang-source": "./src/database/migration/20260805200742_import_legacy_credentials.vibe",
       "default": "./.vibelang/js/src/database/migration/20260805200742_import_legacy_credentials.js"
     },
-    "./database/migration/20260805200742_import_legacy_credentials.platform": null
+    "./database/migration/20260805200742_import_legacy_credentials.platform": null,
+    "./effect/keyed-mutex.native": null,
+    "./generate.native": null,
+    "./tool/runtime.vibe.-24-throw-24-ts": null,
+    "./tool/runtime.vibe.$throw$ts": null
   },
   "imports": {
     "#sqlite": {

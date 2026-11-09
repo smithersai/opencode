@@ -1,6 +1,7 @@
 import { assertPublishableDeclarations } from "./declaration-routes.js"
 import { $ } from "bun"
-import { mkdir, rm } from "node:fs/promises"
+import { copyFile, mkdir, mkdtemp, rm } from "node:fs/promises"
+import { tmpdir } from "node:os"
 import path from "node:path"
 
 const root = path.resolve(import.meta.dir, "../../..")
@@ -24,8 +25,12 @@ type Manifest = {
  */
 export async function pack(
   directory: string,
-  options: { types?: string; source?: boolean; workspaceOnly?: readonly string[] } = {},
+  options: { types?: string; source?: boolean; workspaceOnly?: readonly string[]; privateModules?: readonly string[] } = {},
 ) {
+  const privateModules = options.privateModules ?? []
+  for (const name of privateModules)
+    if (!name.startsWith("./") || name.includes("\\") || name.slice(2).split("/").some((part) => !part || part === ".."))
+      throw new Error("Invalid private package module: " + name)
   const types = options.types ?? "./dist/"
   const file = path.join(directory, "package.json")
   const original = await Bun.file(file).text()
@@ -68,7 +73,7 @@ export async function pack(
     }),
   )
   // Private paths need explicit masks when a broader wildcard would expose them.
-  for (const key of options.workspaceOnly ?? []) exports[key] = null
+  for (const key of [...(options.workspaceOnly ?? []), ...privateModules]) exports[key] = null
 
   const imports = pkg.imports
     ? Object.fromEntries(
@@ -107,12 +112,24 @@ export async function pack(
 
   await mkdir(npmDir, { recursive: true })
   await rm(tarball, { force: true })
-  await Bun.write(file, JSON.stringify({ ...pkg, exports, ...(imports ? { imports } : {}) }, null, 2) + "\n")
 
+  const staged: { original: string; saved: string }[] = []
+  const staging = privateModules.length ? await mkdtemp(path.join(tmpdir(), "opencode-private-declarations-")) : undefined
   try {
+    await Bun.write(file, JSON.stringify({ ...pkg, exports, ...(imports ? { imports } : {}) }, null, 2) + "\n")
+    for (const [index, name] of privateModules.entries()) {
+      const header = path.join(directory, types, name.slice(2) + ".d.ts")
+      if (!(await Bun.file(header).exists())) continue
+      const saved = path.join(staging!, index + ".d.ts")
+      await copyFile(header, saved)
+      staged.push({ original: header, saved })
+      await rm(header)
+    }
     await $`bun pm pack --destination ${npmDir}`.cwd(directory)
   } finally {
     await Bun.write(file, original)
+    for (const header of staged) await copyFile(header.saved, header.original)
+    if (staging) await rm(staging, { recursive: true, force: true })
   }
 
   return tarball

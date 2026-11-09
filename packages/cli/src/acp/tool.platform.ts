@@ -1,7 +1,6 @@
-import { isAbsolute as hostIsAbsolute } from "node:path"
+import { isAbsolute, resolve } from "node:path"
 
-export const isAbsolute = (...args: Parameters<typeof hostIsAbsolute>) => hostIsAbsolute(...args)
+const platformIsAbsolute = (...args: Parameters<typeof isAbsolute>) => isAbsolute(...args)
+const platformResolve = (...args: Parameters<typeof resolve>) => resolve(...args)
 
-import { resolve as hostResolve } from "node:path"
-
-export const resolve = (...args: Parameters<typeof hostResolve>) => hostResolve(...args)
+export { platformIsAbsolute as isAbsolute, platformResolve as resolve }

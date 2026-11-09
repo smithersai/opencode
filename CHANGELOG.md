@@ -16,6 +16,8 @@ Release notes for OpenCode V2, newest first.
 
 ### Bugs fixed
 
+- Native command bridges could introduce aliased imports that failed lint; they now use unaliased imports with the same exports.
+
 - A fresh source checkout could time out starting a service while compiling migrated modules; normal setup now prepares runtime projects before commands and tests.
 
 - Internal Server helpers could be imported through generated export routes; those helper subpaths now stay private.

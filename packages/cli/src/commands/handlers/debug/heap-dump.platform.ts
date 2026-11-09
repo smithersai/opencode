@@ -4,9 +4,11 @@ export const writeOutput = (...args: Parameters<typeof process.stdout.write>) =>
 
 export const setExitCode = (code: typeof process.exitCode) => (process.exitCode = code)
 
-import { EOL as hostEOL } from "node:os"
+import { EOL } from "node:os"
 
-export const EOL = hostEOL
+const lineEnding = EOL
+
+export { lineEnding as EOL }
 
 import hostPath from "node:path"
 

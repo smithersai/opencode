@@ -1,6 +1,8 @@
 export const outputColumns = () => process.stdout.columns
 
-import { stripVTControlCharacters as hostStripVTControlCharacters } from "node:util"
+import { stripVTControlCharacters } from "node:util"
 
-export const stripVTControlCharacters = (...args: Parameters<typeof hostStripVTControlCharacters>) =>
-  hostStripVTControlCharacters(...args)
+const stripControlCharacters = (...args: Parameters<typeof stripVTControlCharacters>) =>
+  stripVTControlCharacters(...args)
+
+export { stripControlCharacters as stripVTControlCharacters }

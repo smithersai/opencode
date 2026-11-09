@@ -1,11 +1,8 @@
-import { access as hostAccess } from "node:fs/promises"
+import { access, constants } from "node:fs/promises"
+import { fileURLToPath } from "node:url"
 
-export const access = (...args: Parameters<typeof hostAccess>) => hostAccess(...args)
+const platformAccess = (...args: Parameters<typeof access>) => access(...args)
+const platformConstants = constants
+const platformFileURLToPath = (...args: Parameters<typeof fileURLToPath>) => fileURLToPath(...args)
 
-import { constants as hostConstants } from "node:fs/promises"
-
-export const constants = hostConstants
-
-import { fileURLToPath as hostFileURLToPath } from "node:url"
-
-export const fileURLToPath = (...args: Parameters<typeof hostFileURLToPath>) => hostFileURLToPath(...args)
+export { platformAccess as access, platformConstants as constants, platformFileURLToPath as fileURLToPath }

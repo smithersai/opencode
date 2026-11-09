@@ -8,6 +8,8 @@ export const outputIsTTY = () => process.stdout.isTTY
 
 export const setExitCode = (code: typeof process.exitCode) => (process.exitCode = code)
 
-import { EOL as hostEOL } from "os"
+import { EOL } from "os"
 
-export const EOL = hostEOL
+const lineEnding = EOL
+
+export { lineEnding as EOL }

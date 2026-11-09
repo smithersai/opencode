@@ -2,8 +2,9 @@
 export const writeError = (...args) => process.stderr.write(...args);
 export const writeOutput = (...args) => process.stdout.write(...args);
 export const setExitCode = (code) => (process.exitCode = code);
-import { EOL as hostEOL } from "node:os";
-export const EOL = hostEOL;
+import { EOL } from "node:os";
+const lineEnding = EOL;
+export { lineEnding as EOL };
 import hostPath from "node:path";
 export const path = {
     isAbsolute: (...args) => hostPath.isAbsolute(...args),

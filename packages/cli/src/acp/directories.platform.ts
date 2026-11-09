@@ -1,15 +1,14 @@
-import { isAbsolute as hostIsAbsolute } from "node:path"
+import { isAbsolute, join, resolve } from "node:path"
+import { isDeepStrictEqual } from "node:util"
 
-export const isAbsolute = (...args: Parameters<typeof hostIsAbsolute>) => hostIsAbsolute(...args)
+const platformIsAbsolute = (...args: Parameters<typeof isAbsolute>) => isAbsolute(...args)
+const platformJoin = (...args: Parameters<typeof join>) => join(...args)
+const platformResolve = (...args: Parameters<typeof resolve>) => resolve(...args)
+const platformIsDeepStrictEqual = (...args: Parameters<typeof isDeepStrictEqual>) => isDeepStrictEqual(...args)
 
-import { join as hostJoin } from "node:path"
-
-export const join = (...args: Parameters<typeof hostJoin>) => hostJoin(...args)
-
-import { resolve as hostResolve } from "node:path"
-
-export const resolve = (...args: Parameters<typeof hostResolve>) => hostResolve(...args)
-
-import { isDeepStrictEqual as hostIsDeepStrictEqual } from "node:util"
-
-export const isDeepStrictEqual = (...args: Parameters<typeof hostIsDeepStrictEqual>) => hostIsDeepStrictEqual(...args)
+export {
+  platformIsAbsolute as isAbsolute,
+  platformJoin as join,
+  platformResolve as resolve,
+  platformIsDeepStrictEqual as isDeepStrictEqual,
+}

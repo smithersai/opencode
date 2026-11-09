@@ -630,6 +630,11 @@
       "vibelang-source": "./src/database/sqlite.node.vibe",
       "default": "./.vibelang/js/src/database/sqlite.node.js"
     },
+    "./database/sqlite.workerd": {
+      "types": "./src/database/sqlite.workerd.d.vibe.ts",
+      "vibelang-source": "./src/database/sqlite.workerd.vibe",
+      "default": "./.vibelang/js/src/database/sqlite.workerd.js"
+    },
     "./database/sqlite.bun.platform": null,
     "./database/sqlite.node.platform": null,
     "./database/migration/20260127222353_familiar_lady_ursula": {
@@ -911,8 +916,8 @@
   "imports": {
     "#sqlite": {
       "workerd": {
-        "types": "./src/database/sqlite.workerd.ts",
-        "vibelang-source": "./src/database/sqlite.workerd.ts",
+        "types": "./src/database/sqlite.workerd.d.vibe.ts",
+        "vibelang-source": "./src/database/sqlite.workerd.vibe",
         "default": "./.vibelang/js/src/database/sqlite.workerd.js"
       },
       "bun": {

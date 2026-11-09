@@ -74,7 +74,7 @@ const makeWithTransaction =
     connection: Connection,
     semaphore: Semaphore.Semaphore,
   ): SqlClient.SqlClient["withTransaction"] =>
-  <A, E, R>(effect: Effect.Effect<A, E, R>): Effect.Effect<A, E | SqlError, R> =>
+  <A, E, R>(effect: A!E!R): A!(E | SqlError)!R =>
     Effect.withFiber((fiber) => {
       const services = fiber.context
       if (Context.getOption(services, WorkerdTransaction)._tag === "Some")
@@ -121,8 +121,8 @@ const makeWithTransaction =
     })
 
 const make = (options: Config) =>
-  Effect.gen(function* () {
-    const native = (yield* Sqlite.Native) as DurableObjectStorage
+  effect {
+    const native = (try Sqlite.Native) as DurableObjectStorage
 
     const compiler = Statement.makeCompilerSqlite(options.transformQueryNames)
     const transformRows = options.transformResultNames
@@ -168,7 +168,7 @@ const make = (options: Config) =>
 
     const connection = Sqlite.makeConnection(run, runValues, {})
 
-    const semaphore = yield* Semaphore.make(1)
+    const semaphore = try Semaphore.make(1)
     const acquirer = semaphore.withPermits(1)(Effect.succeed(connection))
     const transactionAcquirer = Effect.uninterruptibleMask((restore) => {
       const fiber = Fiber.getCurrent()!
@@ -180,7 +180,7 @@ const make = (options: Config) =>
     })
 
     const client = Object.assign(
-      (yield* SqlClient.make({
+      (try SqlClient.make({
         acquirer,
         compiler,
         transactionAcquirer,
@@ -203,7 +203,7 @@ const make = (options: Config) =>
     ) satisfies NativeTransactionSqlClient
 
     return client
-  })
+  }
 
 // Defends against the shared path-based Database.layer, which passes a
 // filename instead of storage when resolved under the workerd condition.

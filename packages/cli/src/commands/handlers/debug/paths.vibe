@@ -1,4 +1,4 @@
-import { EOL } from "os"
+import { EOL, write } from "./paths.platform"
 import { Effect, Option } from "effect"
 import { Global } from "@opencode/util/global"
 import { Commands } from "../../commands.ts"
@@ -7,14 +7,14 @@ import { databasePath } from "../../../database-path"
 
 export default Runtime.handler(
   Commands.commands.debug.commands.paths,
-  Effect.fn("cli.debug.paths")(function* (input) {
-    const global = yield* Global.Service
-    const paths = { ...global, db: databasePath(global.data) }
+  Effect.fn("cli.debug.paths")(effect function(input) {
+    const global = try Global.Service
+    const paths = { ...global, db: try Effect.try(() => databasePath(global.data)) }
     if (Option.isSome(input.name)) {
-      process.stdout.write(paths[input.name.value] + EOL)
+      try write(paths[input.name.value] + EOL)
       return
     }
-    process.stdout.write(
+    try write(
       Object.entries(paths)
         .map(([key, value]) => `${key.padEnd(10)} ${value}${EOL}`)
         .join(""),

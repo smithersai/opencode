@@ -6,7 +6,7 @@ import type { Session } from "@opencode/schema/session"
 import { Cause, Deferred, Effect, Exit, Queue, Ref, Scope, Stream } from "effect"
 import type { ACPCatalog, Catalog } from "./catalog"
 import { ACPClient } from "./client.vibe"
-import { availableCommands, configOptions, type Change, type Selection } from "./config-option"
+import { availableCommands, configOptions, type Change, type Selection } from "./config-option.ts"
 import { ACPConnection } from "./connection"
 import { ACPError } from "./error.vibe"
 

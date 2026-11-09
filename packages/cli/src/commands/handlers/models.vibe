@@ -1,0 +1,26 @@
+import { EOL, directory, write } from "./models.platform"
+import { OpenCode } from "@opencode/client"
+import { Service } from "@opencode/client/effect/service"
+import { Effect } from "effect"
+import { Commands } from "../commands.ts"
+import { Runtime } from "../../framework/runtime"
+import { ServerConnection } from "../../services/server-connection"
+
+export default Runtime.handler(
+  Commands.commands.models,
+  Effect.fn("cli.models")(effect function() {
+    const currentDirectory = try directory
+    const server = try ServerConnection.resolve()
+    const client = try Effect.try(() =>
+      OpenCode.make({
+        baseUrl: server.endpoint.url,
+        headers: Service.headers(server.endpoint),
+      })
+    )
+    const response = try Effect.promise(() => client.model.list({ location: { directory: currentDirectory } }))
+    const models = response.data
+      .map((model) => `${model.providerID}/${model.id}`)
+      .toSorted((a, b) => a.localeCompare(b))
+    if (models.length > 0) try write(models.join(EOL) + EOL)
+  }),
+)

@@ -4,6 +4,10 @@ Release notes for OpenCode V2, newest first.
 
 ## Unreleased
 
+### Changed
+
+- Command helper implementations now use VibeLang while preserving the existing command behavior.
+
 ### Bugs fixed
 
 - Debug bar component previews could load the retired TypeScript entry; their source links now load the native module.

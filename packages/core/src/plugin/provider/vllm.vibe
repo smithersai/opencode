@@ -1,4 +1,4 @@
-import { createLocalProviderPlugin } from "./local.js"
+import { createLocalProviderPlugin } from "./local.vibe"
 
 const providerID = "vllm"
 

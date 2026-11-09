@@ -6,6 +6,7 @@ import type { FileSystem } from "../filesystem.js"
 import { DecodeError, ResizerUnavailableError, SizeError, type Limits } from "../image.vibe"
 import { PhotonNormalize } from "./photon-normalize.js"
 import type { Reply, Request } from "./photon-worker.js"
+import { cancelIdleTimer, startIdleTimer, startWorker, type IdleTimer } from "./photon.platform.ts"
 
 // The worker holds photon's wasm heap (hundreds of MB after a large image);
 // terminating it when idle returns that memory to the OS.
@@ -21,25 +22,7 @@ export class WorkerUnavailableError extends Schema.TaggedError<WorkerUnavailable
 // is unavailable, and a worker that never got ready is terminated.
 export const spawnWorker = (url?: URL) =>
   Effect.tryPromise({
-    try: async (signal) => {
-      const { Worker } = await import("node:worker_threads")
-      const worker = new Worker(url ?? new URL("./photon-worker.js", import.meta.url))
-      // Only fires on interruption, which discards the worker even if it just got ready.
-      const abort = () => void worker.terminate()
-      if (signal.aborted) abort()
-      signal.addEventListener("abort", abort, { once: true })
-      try {
-        await new Promise<void>((resolve, reject) => {
-          worker.once("message", () => resolve())
-          worker.once("error", reject)
-          worker.once("exit", (code) => reject(new Error(`photon worker exited with code ${code}`)))
-        })
-      } catch (cause) {
-        void worker.terminate()
-        throw cause
-      }
-      return worker
-    },
+    try: (signal) => startWorker(url, signal),
     catch: (cause) => new WorkerUnavailableError({ cause }),
   })
 
@@ -71,7 +54,7 @@ export function makeWith(spawn: Effect.Effect<Worker, WorkerUnavailableError>, i
   // take down with it, and a stale reply can never answer the next request.
   const permit = Semaphore.makeUnsafe(1)
   let current: Worker | undefined
-  let idle: ReturnType<typeof setTimeout> | undefined
+  let idle: IdleTimer | undefined
   let useWorker = true
   let photon: Promise<PhotonNormalize.Photon> | undefined
 
@@ -96,20 +79,19 @@ export function makeWith(spawn: Effect.Effect<Worker, WorkerUnavailableError>, i
   // poisoned, or the worker is still busy with a reply nobody will read.
   const inWorker = (content: PhotonNormalize.Content, limits: Readonly<Limits>) =>
     Effect.uninterruptibleMask((restore) =>
-      Effect.gen(function* () {
-        clearTimeout(idle)
-        const worker = current ?? (yield* restore(spawn).pipe(Effect.flatMap(track)))
-        return yield* restore(request(worker, content, limits)).pipe(
+      effect {
+        cancelIdleTimer(idle)
+        const worker = current ?? (try restore(spawn).pipe(Effect.flatMap(track)))
+        return try restore(request(worker, content, limits)).pipe(
           Effect.onExit((exit) =>
             Effect.sync(() => {
               if (Exit.isFailure(exit)) return discard(worker)
               // Unref'd so an idle worker never holds the process open.
-              idle = setTimeout(() => discard(worker), idleMillis)
-              idle.unref()
+              idle = startIdleTimer(() => discard(worker), idleMillis)
             }),
           ),
         )
-      }),
+      },
     ).pipe(permit.withPermits(1))
   const inProcess = (content: PhotonNormalize.Content, limits: Readonly<Limits>) =>
     Effect.tryPromise({
@@ -117,17 +99,17 @@ export function makeWith(spawn: Effect.Effect<Worker, WorkerUnavailableError>, i
       catch: () => new ResizerUnavailableError(),
     }).pipe(Effect.map((photon) => PhotonNormalize.normalize(photon, content, limits)))
 
-  return Effect.fn("Image.Photon.normalize")(function* (
+  return Effect.fn("Image.Photon.normalize")(effect (
     resource: string,
     content: FileSystem.Content & { readonly encoding: "base64" },
     limits: Readonly<Limits>,
-  ) {
+  ) => {
     // Fail typed before touching URLs, workers or module loading: workerd has
     // no photon artifact, and a throw outside the typed path (its undefined
     // import.meta.url was one) turns any image-bearing prompt into a 500.
-    if (!PhotonNormalize.available) return yield* new ResizerUnavailableError()
+    if (!PhotonNormalize.available) throw new ResizerUnavailableError()
     const result = useWorker
-      ? yield* inWorker(content, limits).pipe(
+      ? try inWorker(content, limits).pipe(
           Effect.catchTag("Image.Photon.WorkerUnavailableError", (error) => {
             if (!useWorker) return inProcess(content, limits)
             useWorker = false
@@ -136,17 +118,17 @@ export function makeWith(spawn: Effect.Effect<Worker, WorkerUnavailableError>, i
             }).pipe(Effect.andThen(inProcess(content, limits)))
           }),
         )
-      : yield* inProcess(content, limits)
+      : try inProcess(content, limits)
     switch (result._tag) {
       case "Unchanged":
         return content
       case "Content":
         return result.content
       case "DecodeError":
-        return yield* new DecodeError({ resource })
+        throw new DecodeError({ resource })
       case "SizeError": {
         const { _tag, ...size } = result
-        return yield* new SizeError({ resource, ...size })
+        throw new SizeError({ resource, ...size })
       }
     }
   })

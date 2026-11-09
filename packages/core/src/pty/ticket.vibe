@@ -3,8 +3,9 @@ export * as PtyTicket from "./ticket.js"
 import type { Workspace } from "@opencode/schema/workspace"
 import { PtyTicket } from "@opencode/schema/pty-ticket"
 import type { Pty } from "@opencode/schema/pty"
-import { Cache, Context, Duration, Effect, Layer } from "effect"
+import { Cache, Duration, Effect, Layer } from "effect"
 import { makeGlobalNode } from "@opencode/util/effect/app-node"
+import { randomTicket } from "./ticket.platform.ts"
 
 const DEFAULT_TTL = Duration.seconds(60)
 const CAPACITY = 10_000
@@ -32,7 +33,7 @@ export interface Interface {
   consume(input: Scope & { readonly ticket: string }): Effect.Effect<boolean>
 }
 
-export class Service extends Context.Service<Service, Interface>()("@opencode/PtyTicket") {}
+export service Service: Interface { static readonly key = "@opencode/PtyTicket" }
 
 function stored(scope: Scope): Stored {
   return {
@@ -54,20 +55,23 @@ const noLookup = () => Effect.die(new Error("PtyTicket cache must be used via se
 
 // Visible for tests so the TTL can be shortened. Production uses `layer` with the default TTL.
 export const make = (ttl: Duration.Input = DEFAULT_TTL) =>
-  Effect.gen(function* () {
-    const cache = yield* Cache.make<string, Stored>({ capacity: CAPACITY, lookup: noLookup, timeToLive: ttl })
-    const expiresIn = Math.max(1, Math.round(Duration.toSeconds(Duration.fromInputUnsafe(ttl))))
+  effect {
+    const cache = try Cache.make<string, Stored>({ capacity: CAPACITY, lookup: noLookup, timeToLive: ttl })
+    const expiresIn = try Effect.try({
+      try: () => Math.max(1, Math.round(Duration.toSeconds(Duration.fromInputUnsafe(ttl)))),
+      catch: (cause) => cause,
+    }).pipe(Effect.orDie)
     return Service.of({
-      issue: Effect.fn("PtyTicket.issue")(function* (input) {
-        const ticket = crypto.randomUUID()
-        yield* Cache.set(cache, ticket, stored(input))
+      issue: Effect.fn("PtyTicket.issue")(effect (input) => {
+        const ticket = randomTicket()
+        try Cache.set(cache, ticket, stored(input))
         return { ticket, expires_in: expiresIn }
       }),
-      consume: Effect.fn("PtyTicket.consume")(function* (input) {
-        return yield* Cache.invalidateWhen(cache, input.ticket, (record) => matches(record, stored(input)))
+      consume: Effect.fn("PtyTicket.consume")(effect (input) => {
+        return try Cache.invalidateWhen(cache, input.ticket, (record) => matches(record, stored(input)))
       }),
     })
-  })
+  }
 
 const layer = Layer.effect(Service, make())
 

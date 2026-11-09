@@ -556,6 +556,66 @@
       "vibelang-source": "./src/plugin/internal.vibe",
       "default": "./.vibelang/js/src/plugin/internal.js"
     },
+    "./plugin/vcs/git": {
+      "types": "./src/plugin/vcs/git.d.vibe.ts",
+      "vibelang-source": "./src/plugin/vcs/git.vibe",
+      "default": "./.vibelang/js/src/plugin/vcs/git.js"
+    },
+    "./plugin/vcs/hg": {
+      "types": "./src/plugin/vcs/hg.d.vibe.ts",
+      "vibelang-source": "./src/plugin/vcs/hg.vibe",
+      "default": "./.vibelang/js/src/plugin/vcs/hg.js"
+    },
+    "./plugin/provider/local": {
+      "types": "./src/plugin/provider/local.d.vibe.ts",
+      "vibelang-source": "./src/plugin/provider/local.vibe",
+      "default": "./.vibelang/js/src/plugin/provider/local.js"
+    },
+    "./config/plugin/skill": {
+      "types": "./src/config/plugin/skill.d.vibe.ts",
+      "vibelang-source": "./src/config/plugin/skill.vibe",
+      "default": "./.vibelang/js/src/config/plugin/skill.js"
+    },
+    "./skill/discovery": {
+      "types": "./src/skill/discovery.d.vibe.ts",
+      "vibelang-source": "./src/skill/discovery.vibe",
+      "default": "./.vibelang/js/src/skill/discovery.js"
+    },
+    "./image/photon": {
+      "types": "./src/image/photon.d.vibe.ts",
+      "vibelang-source": "./src/image/photon.vibe",
+      "default": "./.vibelang/js/src/image/photon.js"
+    },
+    "./plugin/warming": {
+      "types": "./src/plugin/warming.d.vibe.ts",
+      "vibelang-source": "./src/plugin/warming.vibe",
+      "default": "./.vibelang/js/src/plugin/warming.js"
+    },
+    "./plugin/plan": {
+      "types": "./src/plugin/plan.d.vibe.ts",
+      "vibelang-source": "./src/plugin/plan.vibe",
+      "default": "./.vibelang/js/src/plugin/plan.js"
+    },
+    "./plugin/skill": {
+      "types": "./src/plugin/skill.d.vibe.ts",
+      "vibelang-source": "./src/plugin/skill.vibe",
+      "default": "./.vibelang/js/src/plugin/skill.js"
+    },
+    "./pty/ticket": {
+      "types": "./src/pty/ticket.d.vibe.ts",
+      "vibelang-source": "./src/pty/ticket.vibe",
+      "default": "./.vibelang/js/src/pty/ticket.js"
+    },
+    "./plugin/websearch/mcp": {
+      "types": "./src/plugin/websearch/mcp.d.vibe.ts",
+      "vibelang-source": "./src/plugin/websearch/mcp.vibe",
+      "default": "./.vibelang/js/src/plugin/websearch/mcp.js"
+    },
+    "./plugin/verbosity": {
+      "types": "./src/plugin/verbosity.d.vibe.ts",
+      "vibelang-source": "./src/plugin/verbosity.vibe",
+      "default": "./.vibelang/js/src/plugin/verbosity.js"
+    },
     "./*": {
       "types": "./src/*.ts",
       "vibelang-source": "./src/*.ts",
@@ -648,6 +708,14 @@
     },
     "./database/sqlite.bun.platform": null,
     "./database/sqlite.node.platform": null,
+    "./plugin/vcs/git.platform": null,
+    "./plugin/vcs/hg.platform": null,
+    "./config/plugin/skill.platform": null,
+    "./skill/discovery.platform": null,
+    "./image/photon.platform": null,
+    "./plugin/plan.platform": null,
+    "./plugin/skill.platform": null,
+    "./pty/ticket.platform": null,
     "./database/migration/20260127222353_familiar_lady_ursula": {
       "types": "./src/database/migration/20260127222353_familiar_lady_ursula.d.vibe.ts",
       "vibelang-source": "./src/database/migration/20260127222353_familiar_lady_ursula.vibe",

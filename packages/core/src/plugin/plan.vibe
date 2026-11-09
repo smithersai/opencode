@@ -6,8 +6,8 @@ import { Agent } from "@opencode/schema/agent"
 import type { SessionEvent } from "@opencode/schema/session-event"
 import { Global } from "@opencode/util/global"
 import { Effect, Stream } from "effect"
-import path from "path"
 import { Permission } from "../permission.js"
+import { joinPath } from "./plan.platform.ts"
 
 const plan = Agent.ID.make("plan")
 
@@ -26,22 +26,22 @@ You are NO LONGER in Plan mode. The previous Plan restrictions no longer apply. 
 
 export const Plugin = define({
   id: "opencode.plan",
-  effect: Effect.fn(function* (ctx) {
-    const global = yield* Global.Service
-    const directory = path.join(global.home, ".opencode", "plan")
+  effect: Effect.fn(effect (ctx) => {
+    const global = try Global.Service
+    const directory = joinPath(global.home, ".opencode", "plan")
     const enterReminder = enter(directory)
-    yield* ctx.agent.transform((editor) => {
+    try ctx.agent.transform((editor) => {
       editor.update(plan, (item) => {
         item.name = Agent.Name.make("Plan")
         item.description = "Read-only agent for exploring the codebase and planning work before implementation."
         item.mode = "primary"
         item.permissions.push({ action: "question", resource: "*", effect: "allow" })
         item.permissions.push({ action: "edit", resource: "*", effect: "deny" })
-        item.permissions.push({ action: "edit", resource: path.join(directory, "*"), effect: "allow" })
+        item.permissions.push({ action: "edit", resource: joinPath(directory, "*"), effect: "allow" })
       })
     })
 
-    yield* ctx.tool.hook("execute.after", (event) => {
+    try ctx.tool.hook("execute.after", (event) => {
       if (event.agent !== plan) return Effect.void
       if (event.status !== "error") return Effect.void
       if (event.tool !== "edit" && event.tool !== "write" && event.tool !== "patch") return Effect.void
@@ -54,7 +54,7 @@ export const Plugin = define({
 
     // Compaction and committed reverts can strip reminders while the session's agent stays
     // put. Reconcile per request, appending near the tail so the cached prefix stays warm.
-    yield* ctx.session.hook("context", (event) => {
+    try ctx.session.hook("context", (event) => {
       const reminder = lastReminder(event.messages, enterReminder)
       const missing = event.agent === plan && reminder !== enterReminder
       const stale = event.agent !== plan && reminder === enterReminder
@@ -72,7 +72,7 @@ export const Plugin = define({
         )
     })
 
-    yield* ctx.event.subscribe({ types: ["session.created", "session.agent.selected"] }).pipe(
+    try ctx.event.subscribe({ types: ["session.created", "session.agent.selected"] }).pipe(
       Stream.runForEach((event) => {
         const text = switchReminder(event, enterReminder)
         if (!text) return Effect.void

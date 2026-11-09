@@ -13,16 +13,16 @@ export const parseResponse = <F extends Schema.Struct.Fields>(body: string, resu
     if (!trimmed.startsWith("{")) return Effect.undefined
     return decode(trimmed).pipe(Effect.map((response) => response.result))
   }
-  return Effect.gen(function* () {
+  return effect {
     const trimmed = body.trim()
-    const direct = trimmed ? yield* parse(trimmed) : undefined
+    const direct = trimmed ? try parse(trimmed) : undefined
     if (direct) return direct
     for (const line of body.split("\n")) {
       if (!line.startsWith("data: ")) continue
-      const data = yield* parse(line.substring(6))
+      const data = try parse(line.substring(6))
       if (data) return data
     }
-  })
+  }
 }
 
 export const call = <F extends Schema.Struct.Fields, R extends Schema.Struct.Fields>(
@@ -33,8 +33,8 @@ export const call = <F extends Schema.Struct.Fields, R extends Schema.Struct.Fie
   value: Schema.Struct.Type<F>,
   headers: Record<string, string> = {},
 ) =>
-  Effect.gen(function* () {
-    const request = yield* HttpClientRequest.post(url).pipe(
+  effect {
+    const request = try HttpClientRequest.post(url).pipe(
       HttpClientRequest.accept("application/json, text/event-stream"),
       HttpClientRequest.setHeaders(headers),
       HttpClientRequest.schemaBodyJson(
@@ -51,14 +51,14 @@ export const call = <F extends Schema.Struct.Fields, R extends Schema.Struct.Fie
         params: { name: tool, arguments: value },
       }),
     )
-    return yield* Effect.gen(function* () {
-      const response = yield* HttpClient.withScope(HttpClient.filterStatusOk(http)).execute(request)
-      const body = yield* collectBoundedResponseBody(
+    return try (effect {
+      const response = try HttpClient.withScope(HttpClient.filterStatusOk(http)).execute(request)
+      const body = try collectBoundedResponseBody(
         response,
         MAX_RESPONSE_BYTES,
         () => new Error(`${tool} response exceeded ${MAX_RESPONSE_BYTES} bytes`),
       )
-      return yield* parseResponse(body.toString("utf8"), schema.output)
+      return try parseResponse(body.toString("utf8"), schema.output)
     }).pipe(
       Effect.scoped,
       Effect.timeoutOrElse({
@@ -66,4 +66,4 @@ export const call = <F extends Schema.Struct.Fields, R extends Schema.Struct.Fie
         orElse: () => Effect.fail(new Error(`${tool} request timed out`)),
       }),
     )
-  })
+  }

@@ -1,4 +1,4 @@
-import { createLocalProviderPlugin } from "./local.js"
+import { createLocalProviderPlugin } from "./local.vibe"
 
 const Details = Schema.Struct({
   parent_model: Schema.String.pipe(Schema.optional),

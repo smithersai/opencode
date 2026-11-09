@@ -12,6 +12,8 @@ Release notes for OpenCode V2, newest first.
 
 - The Durable Object SQLite adapter now uses VibeLang with unchanged transaction and blob behavior.
 
+- Core VCS, provider, skill, planning and warming plugins, skill discovery, PTY tickets and Photon image resizing now use VibeLang while keeping their package entry points and host behavior.
+
 - Recording credential setup now uses VibeLang while keeping status checks read-only.
 
 - PTY handlers now use VibeLang while preserving replay and native callback failures.

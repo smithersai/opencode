@@ -28,7 +28,7 @@ export function createLocalProviderPlugin<Discovered>(input: {
   readonly name: string
   readonly origin: string
   readonly stripPathSuffix?: RegExp
-  readonly discover: (client: LocalDiscoveryClient) => Effect.Effect<readonly Discovered[], unknown>
+  readonly discover: (client: LocalDiscoveryClient) => readonly Discovered[]!unknown
   readonly model: (item: NoInfer<Discovered>) => LocalModel
 }) {
   const discovery = new Map<string, { checked: number; apiKey?: string; models?: readonly Discovered[] }>()
@@ -38,11 +38,11 @@ export function createLocalProviderPlugin<Discovered>(input: {
   return function make(origin?: string, interval: Duration.Input = "30 seconds") {
     return define({
       id: input.id,
-      effect: Effect.fn(function* (ctx) {
-        const http = HttpClient.filterStatusOk(yield* HttpClient.HttpClient)
-        const config = yield* Config.Service
-        const environment = yield* Effect.serviceOption(Environment.Service)
-        const location = yield* Effect.serviceOption(Location.Service)
+      effect: effect (ctx) => {
+        const http = HttpClient.filterStatusOk(try HttpClient.HttpClient)
+        const config = try Config.Service
+        const environment = try Effect.serviceOption(Environment.Service)
+        const location = try Effect.serviceOption(Location.Service)
         const defaultOrigin =
           origin ??
           (shellParserWasm.bash === "" ||
@@ -50,15 +50,15 @@ export function createLocalProviderPlugin<Discovered>(input: {
           (Option.isSome(environment) && environment.value.spawner === EnvironmentUnavailable.spawner)
             ? undefined
             : input.origin)
-        const source = { current: configured(yield* config.entries(), input.providerID, defaultOrigin, suffix) }
+        const source = { current: configured(try config.entries(), input.providerID, defaultOrigin, suffix) }
         const loaded = { models: [] as readonly Discovered[], hash: "[]" }
 
-        yield* ctx.integration.transform((integrations) => {
+        try ctx.integration.transform((integrations) => {
           if (loaded.models.length === 0) return
           integrations.remove(input.providerID)
         })
 
-        yield* ctx.provider.transform((providers) => {
+        try ctx.provider.transform((providers) => {
           if (loaded.models.length === 0) return
           for (const model of providers.get(input.providerID)?.models.values() ?? []) {
             providers.models.remove(input.providerID, model.id)
@@ -90,11 +90,11 @@ export function createLocalProviderPlugin<Discovered>(input: {
           }
         })
 
-        const discover = Effect.fn("LocalProviderPlugin.discover")(function* () {
+        const discover = fn("LocalProviderPlugin.discover")(effect () => {
           const current = source.current
           if (!current.endpoint) return undefined
-          return yield* discoveryLock.withPermit(
-            Effect.gen(function* () {
+          return try discoveryLock.withPermit(
+            effect {
               const cached = discovery.get(current.root)
               if (
                 cached &&
@@ -107,28 +107,28 @@ export function createLocalProviderPlugin<Discovered>(input: {
                 apiKey: current.apiKey,
                 models: cached && cached.apiKey === current.apiKey ? cached.models : undefined,
               })
-              const models = yield* input.discover(createClient(http, current.root, current.apiKey, current.endpoint))
+              const models = try input.discover(createClient(http, current.root, current.apiKey, current.endpoint))
               discovery.set(current.root, { checked: Date.now(), apiKey: current.apiKey, models })
               return { source: current, models }
-            }),
+            },
           )
         })
 
-        const refresh = Effect.fn("LocalProviderPlugin.refresh")(function* () {
-          const result = yield* discover()
+        const refresh = fn("LocalProviderPlugin.refresh")(effect () => {
+          const result = try discover()
           if (!result?.models || result.source !== source.current) return
-          const hash = JSON.stringify(result.models)
+          const hash = try Effect.try({ try: () => JSON.stringify(result.models), catch: (cause) => cause }).pipe(Effect.orDie)
           if (hash === loaded.hash) return
           loaded.models = result.models
           loaded.hash = hash
-          yield* ctx.integration.reload()
-          yield* ctx.provider.reload()
+          try ctx.integration.reload()
+          try ctx.provider.reload()
         })
 
         // Keep the last successful inventory through transient outages instead of flickering model availability.
-        yield* refresh().pipe(Effect.ignore, Effect.repeat(Schedule.spaced(interval)), Effect.forkScoped)
-        const reload = Effect.fn("LocalProviderPlugin.reload")(function* () {
-          const next = configured(yield* config.entries(), input.providerID, defaultOrigin, suffix)
+        try refresh().pipe(Effect.ignore, Effect.repeat(Schedule.spaced(interval)), Effect.forkScoped)
+        const reload = fn("LocalProviderPlugin.reload")(effect () => {
+          const next = configured(try config.entries(), input.providerID, defaultOrigin, suffix)
           if (
             next.baseURL === source.current.baseURL &&
             next.apiKey === source.current.apiKey &&
@@ -138,14 +138,14 @@ export function createLocalProviderPlugin<Discovered>(input: {
           source.current = next
           loaded.models = []
           loaded.hash = "[]"
-          yield* ctx.integration.reload()
-          yield* ctx.provider.reload()
-          yield* refresh().pipe(Effect.ignore)
+          try ctx.integration.reload()
+          try ctx.provider.reload()
+          try refresh().pipe(Effect.ignore)
         })
-        yield* ctx.event
+        try ctx.event
           .subscribe({ types: ["config.updated"] })
           .pipe(Stream.runForEach(reload), Effect.forkScoped({ startImmediately: true }))
-      }),
+      },
     } satisfies PluginInternal.InternalPlugin)
   }
 }

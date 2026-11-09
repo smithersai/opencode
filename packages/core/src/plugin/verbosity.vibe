@@ -21,12 +21,12 @@ const gateways = new Set([
 
 export const Plugin = define({
   id: "opencode.prompt.verbosity",
-  effect: Effect.fn("VerbosityPlugin")(function* (ctx) {
-    const models = yield* Model.Service
+  effect: Effect.fn("VerbosityPlugin")(effect (ctx) => {
+    const models = try Model.Service
     const hook = (event: SessionRequest) =>
-      Effect.gen(function* () {
+      effect {
         if (event.options.textVerbosity !== undefined) return
-        const model = yield* models.get(event.model.providerID, event.model.id)
+        const model = try models.get(event.model.providerID, event.model.id)
         if (!model) return
         const id = openAIModelID(model)
         if (!id || !supportsVerbosity(id)) return
@@ -34,11 +34,11 @@ export const Plugin = define({
         const variant = model.variants.find((item) => item.id === event.model.variant)
         if (variant?.settings?.textVerbosity !== undefined) return
         event.options.textVerbosity = "low"
-      })
-    yield* ctx.session.hook("context", hook)
-    yield* ctx.session.hook("compaction", hook)
-    yield* ctx.session.hook("generate", hook)
-    yield* ctx.session.hook("title", hook)
+      }
+    try ctx.session.hook("context", hook)
+    try ctx.session.hook("compaction", hook)
+    try ctx.session.hook("generate", hook)
+    try ctx.session.hook("title", hook)
   }),
 } satisfies PluginInternal.InternalPlugin)
 

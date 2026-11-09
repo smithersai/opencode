@@ -6,7 +6,7 @@ import { useToast } from "../../ui/toast"
 import { useClient } from "../../context/client"
 import { errorMessage } from "../../util/error"
 import { DialogFork } from "./dialog-fork"
-import type { PromptInfo } from "../../prompt/history.vibex"
+import type { PromptInfo } from "../../prompt/history"
 import { projectedPromptInput } from "#vibelang/emitted/src/prompt/codec"
 import { useNewDesigns } from "../../config"
 

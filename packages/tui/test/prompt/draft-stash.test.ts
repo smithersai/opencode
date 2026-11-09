@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test"
 import { saveDraft, takeDraft } from "../../src/component/prompt/draft-stash"
-import { emptyPrompt } from "../../src/prompt/history.vibex"
+import { emptyPrompt } from "../../src/prompt/history"
 
 // The Prompt component stashes an unsent draft in onCleanup and takes it back
 // in onMount across route remounts, keyed by sessionID or undefined for home.

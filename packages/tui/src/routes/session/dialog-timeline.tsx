@@ -4,7 +4,7 @@ import { DialogSelect, type DialogSelectOption } from "../../ui/dialog-select"
 import { Locale } from "../../util/locale"
 import { DialogMessage } from "./dialog-message"
 import { useDialog } from "../../ui/dialog"
-import type { PromptInfo } from "../../prompt/history.vibex"
+import type { PromptInfo } from "../../prompt/history"
 
 export function DialogTimeline(props: {
   sessionID: string

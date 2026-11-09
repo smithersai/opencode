@@ -21,7 +21,7 @@ import { useExit } from "../../context/exit";
 import { expandPromptInputPastedText, realignPromptInputMentions } from "../../prompt/mention.js";
 import { parseSlashHead } from "../../prompt/parse.js";
 import { createStore, produce, unwrap } from "solid-js/store";
-import { emptyPrompt, usePromptHistory } from "../../prompt/history.jsx";
+import { emptyPrompt, usePromptHistory } from "../../prompt/history";
 import { saveDraft, takeDraft } from "./draft-stash.js";
 import { Skill } from "@opencode/schema/skill";
 import { computePromptTraits } from "../../prompt/traits.js";

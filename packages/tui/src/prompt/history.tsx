@@ -1,4 +1,4 @@
-import { promptHistoryPath } from "./history.platform.ts"
+import path from "path"
 import { measureEditText, type WidthMethod } from "@opentui/core"
 import { onMount } from "solid-js"
 import { createStore, produce, unwrap } from "solid-js/store"
@@ -90,7 +90,7 @@ export const { use: usePromptHistory, provider: PromptHistoryProvider } = create
   name: "PromptHistory",
   init: () => {
     const paths = useTuiPaths()
-    const historyPath = promptHistoryPath(paths.state)
+    const historyPath = path.join(paths.state, "prompt-history.jsonl")
     onMount(async () => {
       const lines = parsePromptHistory(await readText(historyPath).catch(() => ""))
       setStore("history", lines)

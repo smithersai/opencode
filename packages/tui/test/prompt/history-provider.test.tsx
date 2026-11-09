@@ -4,7 +4,7 @@ import { expect, test } from "bun:test"
 import { mkdir } from "node:fs/promises"
 import path from "node:path"
 import { TuiPathsProvider } from "../../src/context/runtime"
-import { PromptHistoryProvider, usePromptHistory } from "../../src/prompt/history.vibex"
+import { PromptHistoryProvider, usePromptHistory } from "../../src/prompt/history"
 import { tmpdir } from "../fixture/fixture"
 
 test("down rejects at the newest history item with an empty prompt", async () => {

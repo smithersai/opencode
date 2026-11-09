@@ -12,8 +12,6 @@ Release notes for OpenCode V2, newest first.
 
 - App model selection now uses VibeLang while preserving its schemas and behavior.
 
-- TUI prompt history now uses VibeLang while preserving stored history behavior.
-
 - Client generation now uses VibeLang while preserving generated sources.
 
 - Database migration implementations now use VibeLang while preserving their existing declarations.
@@ -25,6 +23,8 @@ Release notes for OpenCode V2, newest first.
 - Command helpers and additional handlers now use VibeLang while preserving existing command behavior.
 
 ### Bugs fixed
+
+- CLI bundling could reject the prompt history export after migration; prompt history now retains its native source until JSX module loading supports it.
 
 - A migration adapter could become reachable through Core exports; its runtime stays internal and its private declaration is excluded from release output.
 

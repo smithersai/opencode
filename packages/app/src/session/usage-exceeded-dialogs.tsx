@@ -8,7 +8,7 @@ import { useSessionLayout } from "./session-layout"
 import { useDialog, useI18n } from "@opencode/ui/context"
 import { DialogUsageExceeded } from "@/providers/connect/usage-exceeded"
 import { GoUpsellHero } from "@/providers/connect/go-upsell-hero"
-import { useLocal, type ModelSelection } from "../providers/models/selection.vibex"
+import { useLocal, type ModelSelection } from "@/providers/models/selection"
 
 const GO_UPSELL_FREE_TIER_LAST_SEEN_AT = "go_upsell_last_seen_at"
 

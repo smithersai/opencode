@@ -17,7 +17,7 @@ import { useData } from "@/runtime/server/current";
 import { useServerSDK } from "@/runtime/server/client";
 import { showToast } from "@/shell/notifications/toast";
 import { errorMessage } from "@/shell/layout/helpers";
-import { useLocal } from "../../providers/models/selection.jsx";
+import { useLocal } from "@/providers/models/selection";
 import { usePlatform } from "@/runtime/platform/platform";
 import { uuid } from "@/runtime/persistence/uuid";
 import { contextItemKey } from "../../composer/schema.js";

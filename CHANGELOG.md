@@ -16,8 +16,6 @@ Release notes for OpenCode V2, newest first.
 
 - OpenAPI generation now uses VibeLang while preserving generated output.
 
-- App model selection now uses VibeLang while preserving its schemas and behavior.
-
 - Client generation now uses VibeLang while preserving generated sources.
 
 - Database migration implementations now use VibeLang while preserving their existing declarations.

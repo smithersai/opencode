@@ -7,7 +7,7 @@ import { useComposerState } from "@/composer/persistence";
 import { createComposerControls, createComposerModelSelection } from "@/composer/selection";
 import { createComposerProjectControls } from "./project/controller.js";
 import { useLanguage } from "@/runtime/i18n/language";
-import { useLocal } from "../providers/models/selection.jsx";
+import { useLocal } from "@/providers/models/selection";
 import { useData, useServer } from "@/runtime/server/current";
 import { useServerSDK } from "@/runtime/server/client";
 import { useTabs } from "@/shell/tabs/tabs";

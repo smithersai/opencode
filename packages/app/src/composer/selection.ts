@@ -1,7 +1,7 @@
 import { batch, createEffect, createMemo, on } from "solid-js"
 import { createStore } from "solid-js/store"
 import type { ComposerControls } from "./adapter"
-import { useLocal, type ModelKey, type ModelSelection } from "../providers/models/selection.vibex"
+import { useLocal, type ModelKey, type ModelSelection } from "@/providers/models/selection"
 import { useWorkspaceLocation } from "@/workspaces/location"
 import { useProviders } from "../providers/catalog/providers.ts"
 import { useData } from "@/runtime/server/current"

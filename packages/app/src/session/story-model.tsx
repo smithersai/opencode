@@ -1,4 +1,4 @@
-import type { ModelSelection } from "../providers/models/selection.vibex"
+import type { ModelSelection } from "@/providers/models/selection"
 import { Composer } from "@/composer/composer"
 import type { ComposerModel } from "@/composer/model"
 import { SessionHeaderActions } from "@/session/header/session-header-actions"

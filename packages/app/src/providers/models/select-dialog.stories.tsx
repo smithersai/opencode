@@ -2,7 +2,7 @@ import { Button } from "@opencode/ui/button"
 import { useDialog } from "@opencode/ui/context/dialog"
 import { onMount } from "solid-js"
 import { createStore } from "solid-js/store"
-import type { ModelSelection } from "./selection.vibex"
+import type { ModelSelection } from "./selection"
 import { DialogSelectModel } from "./select-dialog"
 
 const chatgpt = {

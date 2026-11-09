@@ -3,7 +3,7 @@ import { batch, createMemo, createEffect, createRenderEffect, createRoot, create
 import { useComments } from "@/composer/comments";
 import { createComposerEditorActions } from "@/composer/editor/actions";
 import { useComposerState } from "@/composer/persistence";
-import { useLocal } from "../../providers/models/selection.jsx";
+import { useLocal } from "@/providers/models/selection";
 import { useServer } from "@/runtime/server/current";
 import { ServerConnection, useServers } from "@/runtime/server/registry";
 import { sessionInWorkspace, sessionProject } from "@/session/model";

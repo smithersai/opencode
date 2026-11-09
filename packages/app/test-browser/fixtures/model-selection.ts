@@ -3,7 +3,7 @@ import { createRequire } from "node:module"
 import { createComponent, createRoot } from "solid-js"
 import { createStore } from "solid-js/store"
 import type { Agent } from "@/runtime/server/types"
-import type { ModelKey } from "../../src/providers/models/selection.vibex"
+import type { ModelKey } from "@/providers/models/selection"
 import { ServerScope } from "@/runtime/server/scope"
 
 // Bun does not compile Solid JSX. Compile the real context provider with the

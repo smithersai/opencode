@@ -11,7 +11,7 @@ import { buildPromptRequest, noteComment, quoteComment } from "./request"
 import { setCursorPosition } from "./editor/dom"
 import { blobDataUrl, resolveBlobUrl } from "@/runtime/persistence/drafts"
 import { isAttachment } from "./prompt-parts"
-import type { ModelSelection } from "../providers/models/selection.vibex"
+import type { ModelSelection } from "@/providers/models/selection"
 import { parseSlashCommand } from "./client-slash-command"
 
 const submitting = new WeakSet<object>()

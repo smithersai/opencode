@@ -28,6 +28,7 @@ process.chdir(fileURLToPath(new URL("..", import.meta.url)))
 
 await rm("dist", { recursive: true, force: true })
 await $`bun vibelang -p tsconfig.build.json`
+await rm("dist/types/database/migration/20260805200742_import_legacy_credentials.platform.d.ts", { force: true })
 
 const root = path.resolve("src")
 const files = await Array.fromAsync(new __vibelangBuildGlob("**/*.{ts,vibe}").scan({ cwd: root, absolute: true }))

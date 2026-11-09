@@ -896,7 +896,13 @@
       "types": "./src/database/migration/20261025154125_drop_session_pending.d.vibe.ts",
       "vibelang-source": "./src/database/migration/20261025154125_drop_session_pending.vibe",
       "default": "./.vibelang/js/src/database/migration/20261025154125_drop_session_pending.js"
-    }
+    },
+    "./database/migration/20260805200742_import_legacy_credentials": {
+      "types": "./src/database/migration/20260805200742_import_legacy_credentials.d.vibe.ts",
+      "vibelang-source": "./src/database/migration/20260805200742_import_legacy_credentials.vibe",
+      "default": "./.vibelang/js/src/database/migration/20260805200742_import_legacy_credentials.js"
+    },
+    "./database/migration/20260805200742_import_legacy_credentials.platform": null
   },
   "imports": {
     "#sqlite": {

@@ -18,6 +18,8 @@ Release notes for OpenCode V2, newest first.
 
 ### Bugs fixed
 
+- A migration adapter could become reachable through Core exports; its runtime stays internal and its private declaration is excluded from release output.
+
 - Native command bridges could introduce aliased imports that failed lint; they now use unaliased imports with the same exports.
 
 - A fresh source checkout could time out starting a service while compiling migrated modules; normal setup now prepares runtime projects before commands and tests.

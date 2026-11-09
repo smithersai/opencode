@@ -679,6 +679,11 @@
       "types": "./src/handlers/config.d.vibe.ts",
       "vibelang-source": "./src/handlers/config.vibe",
       "default": "./.vibelang/js/src/handlers/config.js"
+    },
+    "#vibelang/emitted/src/handlers/pty": {
+      "types": "./src/handlers/pty.d.vibe.ts",
+      "vibelang-source": "./src/handlers/pty.vibe",
+      "default": "./.vibelang/js/src/handlers/pty.js"
     }
   }
 }

@@ -10,17 +10,17 @@ import { ConfigEntryObserver } from "#vibelang/emitted/src/config/plugin/entry-o
 
 export const Plugin = define({
   id: "opencode.config.policy",
-  effect: Effect.fn(function* (ctx) {
-    const config = yield* Config.Service
+  effect: Effect.fn(effect (ctx) => {
+    const config = try Config.Service
     const reload = State.batch(
       Effect.all([ctx.provider.reload(), ctx.mcp.reload(), ctx.skill.reload()], { discard: true }),
     )
-    const loaded = yield* ConfigEntryObserver.observe(config, ctx.event, reload)
+    const loaded = try ConfigEntryObserver.observe(config, ctx.event, reload)
     // Documents reverse so earlier-loaded policy wins: managed policy, then a Console config document, then user
     // and project files.
     const policies = () => ManagedPolicy.statements(loaded.entries)
-    const runSync = Effect.runSyncWith(yield* Effect.context())
-    yield* ctx.provider.transform((providers) => {
+    const runSync = Effect.runSyncWith(try Effect.context())
+    try ctx.provider.transform((providers) => {
       const current = policies()
       const denied: string[] = []
       for (const record of providers.list()) {
@@ -34,19 +34,19 @@ export const Plugin = define({
       }
       if (denied.length) runSync(Effect.logDebug("providers denied by policy", { providers: denied }))
     })
-    yield* ctx.mcp.transform((servers) => {
+    try ctx.mcp.transform((servers) => {
       const current = policies()
       for (const [name] of servers.list()) {
         if (ManagedPolicy.decision(current, "integration.use", `mcp:${name}`) === "deny") servers.remove(name)
       }
     })
-    yield* ctx.skill.transform((skills) => {
+    try ctx.skill.transform((skills) => {
       const current = policies()
       for (const skill of skills.list()) {
         if (ManagedPolicy.decision(current, "integration.use", `skill:${skill.id}`) === "deny") skills.remove(skill.id)
       }
     })
-    yield* ctx.permission.hook("evaluate", (event) =>
+    try ctx.permission.hook("evaluate", (event) =>
       Effect.sync(() => {
         const current = policies()
         const denied = event.resources

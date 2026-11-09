@@ -706,6 +706,82 @@
       "vibelang-source": "./src/database/sqlite.workerd.vibe",
       "default": "./.vibelang/js/src/database/sqlite.workerd.js"
     },
+    "./config/plugin/instruction": {
+      "types": "./src/config/plugin/instruction.d.vibe.ts",
+      "vibelang-source": "./src/config/plugin/instruction.vibe",
+      "default": "./.vibelang/js/src/config/plugin/instruction.js"
+    },
+    "./config/plugin/agent": {
+      "types": "./src/config/plugin/agent.d.vibe.ts",
+      "vibelang-source": "./src/config/plugin/agent.vibe",
+      "default": "./.vibelang/js/src/config/plugin/agent.js"
+    },
+    "./config/plugin/compatibility": {
+      "types": "./src/config/plugin/compatibility.d.vibe.ts",
+      "vibelang-source": "./src/config/plugin/compatibility.vibe",
+      "default": "./.vibelang/js/src/config/plugin/compatibility.js"
+    },
+    "./config/plugin/reference": {
+      "types": "./src/config/plugin/reference.d.vibe.ts",
+      "vibelang-source": "./src/config/plugin/reference.vibe",
+      "default": "./.vibelang/js/src/config/plugin/reference.js"
+    },
+    "./config/plugin/policy": {
+      "types": "./src/config/plugin/policy.d.vibe.ts",
+      "vibelang-source": "./src/config/plugin/policy.vibe",
+      "default": "./.vibelang/js/src/config/plugin/policy.js"
+    },
+    "./config/plugin/skill-file": {
+      "types": "./src/config/plugin/skill-file.d.vibe.ts",
+      "vibelang-source": "./src/config/plugin/skill-file.vibe",
+      "default": "./.vibelang/js/src/config/plugin/skill-file.js"
+    },
+    "./config/plugin/skill-scan": {
+      "types": "./src/config/plugin/skill-scan.d.vibe.ts",
+      "vibelang-source": "./src/config/plugin/skill-scan.vibe",
+      "default": "./.vibelang/js/src/config/plugin/skill-scan.js"
+    },
+    "./config/plugin/worktree": {
+      "types": "./src/config/plugin/worktree.d.vibe.ts",
+      "vibelang-source": "./src/config/plugin/worktree.vibe",
+      "default": "./.vibelang/js/src/config/plugin/worktree.js"
+    },
+    "./tool/plugin/webfetch": {
+      "types": "./src/tool/plugin/webfetch.d.vibe.ts",
+      "vibelang-source": "./src/tool/plugin/webfetch.vibe",
+      "default": "./.vibelang/js/src/tool/plugin/webfetch.js"
+    },
+    "./tool/plugin/read": {
+      "types": "./src/tool/plugin/read.d.vibe.ts",
+      "vibelang-source": "./src/tool/plugin/read.vibe",
+      "default": "./.vibelang/js/src/tool/plugin/read.js"
+    },
+    "./tool/plugin/grep": {
+      "types": "./src/tool/plugin/grep.d.vibe.ts",
+      "vibelang-source": "./src/tool/plugin/grep.vibe",
+      "default": "./.vibelang/js/src/tool/plugin/grep.js"
+    },
+    "./tool/plugin/glob": {
+      "types": "./src/tool/plugin/glob.d.vibe.ts",
+      "vibelang-source": "./src/tool/plugin/glob.vibe",
+      "default": "./.vibelang/js/src/tool/plugin/glob.js"
+    },
+    "./tool/http-body": {
+      "types": "./src/tool/http-body.d.vibe.ts",
+      "vibelang-source": "./src/tool/http-body.vibe",
+      "default": "./.vibelang/js/src/tool/http-body.js"
+    },
+    "./config/plugin/instruction.platform": null,
+    "./config/plugin/agent.platform": null,
+    "./config/plugin/compatibility.platform": null,
+    "./config/plugin/reference.platform": null,
+    "./config/plugin/skill-file.platform": null,
+    "./config/plugin/skill-scan.platform": null,
+    "./config/plugin/worktree.platform": null,
+    "./tool/plugin/read.platform": null,
+    "./tool/plugin/grep.platform": null,
+    "./tool/plugin/glob.platform": null,
+    "./tool/http-body.platform": null,
     "./database/sqlite.bun.platform": null,
     "./database/sqlite.node.platform": null,
     "./plugin/vcs/git.platform": null,

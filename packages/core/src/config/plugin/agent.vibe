@@ -3,7 +3,6 @@ export * as ConfigAgentPlugin from "./agent.js"
 import { define } from "@opencode/plugin/effect/plugin"
 import { Document, Info, type Entry } from "@opencode/schema/config"
 import { ConfigAgent } from "@opencode/schema/config/agent"
-import path from "path"
 import { Effect, Option, PubSub, Schema, Stream } from "effect"
 import { Agent } from "../../agent.vibe"
 import { Config } from "../../config.js"
@@ -17,6 +16,7 @@ import type { FileAccess } from "../../file-access.js"
 import type { ReadTool } from "../../tool/plugin/read.js"
 import type { EditTool } from "../../tool/plugin/edit.vibe"
 import { AbsolutePath } from "../../schema.js"
+import { join as joinPath, joinHome, relative } from "./agent.platform.ts"
 
 const legacySources = [
   { pattern: "{agent,agents}/**/*.md", primary: false },
@@ -34,10 +34,10 @@ const nativeKeys = ["permissions", "request", "system", "disabled"]
 
 export const Plugin = define({
   id: "opencode.config.agent",
-  effect: Effect.fn(function* (ctx) {
-    const config = yield* Config.Service
-    const fs = yield* FSUtil.Service
-    const global = yield* Global.Service
+  effect: Effect.fn(effect (ctx) => {
+    const config = try Config.Service
+    const fs = try FSUtil.Service
+    const global = try Global.Service
     const loadEntry = Effect.fnUntraced(function* (entry: Entry) {
       if (entry.type === "document") return [entry]
       if (entry.type !== "directory") return []
@@ -49,8 +49,8 @@ export const Plugin = define({
         ),
       ).pipe(Effect.map((documents) => documents.filter((document): document is Document => document !== undefined)))
     })
-    const load = Effect.fn("ConfigAgentPlugin.load")(function* () {
-      return yield* Effect.forEach(yield* config.entries(), loadEntry).pipe(Effect.map((documents) => documents.flat()))
+    const load = Effect.fn("ConfigAgentPlugin.load")(effect () => {
+      return try Effect.forEach(try config.entries(), loadEntry).pipe(Effect.map((documents) => documents.flat()))
     })
     const loaded = { documents: [] as Document[] }
     const reload = load().pipe(
@@ -62,24 +62,24 @@ export const Plugin = define({
     // trigger a rebuild. Each source is subscribed eagerly on its own fiber
     // (Stream.merge and Stream.debounce both open upstream a fiber hop later)
     // so no update slips through while the debounce starts its pull.
-    const changes = yield* PubSub.sliding<void>(1)
+    const changes = try PubSub.sliding<void>(1)
     const notify = () => PubSub.publish(changes, undefined)
-    yield* config.changes().pipe(
+    try config.changes().pipe(
       Stream.filterEffect((update) => Effect.map(config.entries(), (entries) => isAgentSource(entries, update.path))),
       Stream.runForEach(notify),
       Effect.forkScoped({ startImmediately: true }),
     )
-    yield* ctx.event
+    try ctx.event
       .subscribe({ types: ["config.updated"] })
       .pipe(Stream.runForEach(notify), Effect.forkScoped({ startImmediately: true }))
-    const updates = yield* PubSub.subscribe(changes)
-    yield* Stream.fromSubscription(updates).pipe(
+    const updates = try PubSub.subscribe(changes)
+    try Stream.fromSubscription(updates).pipe(
       Stream.debounce("100 millis"),
       Stream.runForEach(() => reload),
       Effect.forkScoped({ startImmediately: true }),
     )
-    loaded.documents = yield* load()
-    yield* ctx.agent.transform((editor) => {
+    loaded.documents = try load()
+    try ctx.agent.transform((editor) => {
       const permissions = expandPermissions(
         loaded.documents.flatMap((document) => document.info.permissions ?? []),
         global.home,
@@ -133,7 +133,7 @@ function isAgentSource(entries: Entry[], file: string) {
   return entries.some(
     (entry) =>
       entry.type === "directory" &&
-      sourceDirectories.some((name) => FSUtil.contains(path.join(entry.path, name), file)),
+      sourceDirectories.some((name) => FSUtil.contains(joinPath(entry.path, name), file)),
   )
 }
 
@@ -156,7 +156,7 @@ function expandHome(resource: string, home: string) {
     : resource.startsWith("$HOME/") || resource.startsWith("$HOME\\")
       ? resource.slice(6)
       : undefined
-  if (relative !== undefined) return (path.posix.isAbsolute(home) ? path.posix : path.win32).join(home, relative)
+  if (relative !== undefined) return joinHome(home, relative)
   return resource
 }
 
@@ -177,10 +177,13 @@ const decode = Effect.fnUntraced(function* (
   file: { directory: string; filepath: string; primary: boolean },
   content: string,
 ) {
-  const markdown = ConfigMarkdown.parseOption(content)
+  const markdown = yield* Effect.try({ try: () => ConfigMarkdown.parseOption(content), catch: (cause) => cause }).pipe(
+    Effect.orDie,
+  )
   if (!markdown) return
-  const name = path
-    .relative(file.directory, file.filepath)
+  const name = (yield* Effect.try({ try: () => relative(file.directory, file.filepath), catch: (cause) => cause }).pipe(
+    Effect.orDie,
+  ))
     .replaceAll("\\", "/")
     .replace(/^(agent|agents|mode|modes)\//, "")
     .replace(/\.md$/, "")

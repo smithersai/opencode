@@ -1,11 +1,11 @@
 export * as SkillFile from "./skill-file.js"
 
-import path from "path"
 import { isRecord } from "@opencode/util/record"
 import { Result, Schema, type SchemaIssue, SchemaParser } from "effect"
 import { ConfigMarkdown } from "../markdown.js"
 import { AbsolutePath } from "../../schema.js"
 import { Skill } from "../../skill.js"
+import { skillId } from "./skill-file.platform.ts"
 
 const Frontmatter = Schema.Struct({
   name: Schema.String.pipe(Schema.optional),
@@ -41,10 +41,7 @@ export function parse(directory: string, filepath: string, content: string): Par
   const decoded = decodeFrontmatter(markdown.data)
   if (Result.isFailure(decoded)) return { _tag: "Skipped", reason: "frontmatter", issue: decoded.failure }
   const frontmatter = decoded.success
-  const id =
-    path.dirname(filepath) === directory && path.basename(filepath) !== "SKILL.md"
-      ? path.basename(filepath, ".md")
-      : path.basename(path.dirname(filepath))
+  const id = skillId(directory, filepath)
   const opencodeAutoinvoke = metadataBoolean(frontmatter.metadata, "opencode/autoinvoke")
   const disableModelInvocation = booleanValue(frontmatter["disable-model-invocation"])
   const autoinvoke = opencodeAutoinvoke ?? (disableModelInvocation ? false : undefined)

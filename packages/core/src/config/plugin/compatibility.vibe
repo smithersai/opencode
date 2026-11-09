@@ -2,35 +2,35 @@ export * as ConfigCompatibilityPlugin from "./compatibility.js"
 
 import { define } from "@opencode/plugin/effect/plugin"
 import { FSUtil } from "@opencode/util/fs-util"
-import path from "path"
 import { Effect, FiberMap, PubSub, Semaphore, Stream } from "effect"
 import { Config } from "../../config.js"
 import { Watcher } from "../../filesystem/watcher.js"
 import { Skill } from "../../skill.js"
 import { SkillFile } from "./skill-file.js"
 import { SkillScan } from "./skill-scan.js"
+import { basename, join as joinPath } from "./compatibility.platform.ts"
 
 export const Plugin = define({
   id: "opencode.config.compatibility",
-  effect: Effect.fn(function* (ctx) {
-    const config = yield* Config.Service
-    const fs = yield* FSUtil.Service
-    const watcher = yield* Watcher.Service
-    const watches = yield* FiberMap.make<string>()
-    const changes = yield* PubSub.sliding<string>(1)
+  effect: Effect.fn(effect (ctx) => {
+    const config = try Config.Service
+    const fs = try FSUtil.Service
+    const watcher = try Watcher.Service
+    const watches = try FiberMap.make<string>()
+    const changes = try PubSub.sliding<string>(1)
     const lock = Semaphore.makeUnsafe(1)
     const skills: Skill.Info[] = []
     const compatibility = () =>
       config.compatibility ? config.compatibility() : Effect.succeed({ claude: [], agents: [] })
 
-    const watch = Effect.fn("ConfigCompatibilityPlugin.watch")(function* (
+    const watch = Effect.fn("ConfigCompatibilityPlugin.watch")(effect (
       target: string,
       type: "file" | "directory",
-    ) {
-      const updates = yield* watcher.subscribe(
+    ) => {
+      const updates = try watcher.subscribe(
         type === "directory" ? { path: target, type, ignore: SkillScan.ignore } : { path: target, type },
       )
-      yield* FiberMap.run(
+      try FiberMap.run(
         watches,
         `${type}:${target}`,
         updates.pipe(Stream.runForEach((update) => PubSub.publish(changes, update.path).pipe(Effect.asVoid))),
@@ -39,17 +39,17 @@ export const Plugin = define({
     })
 
     const refresh = Effect.fn("ConfigCompatibilityPlugin.refresh")(
-      function* () {
-        yield* FiberMap.clear(watches)
-        const roots = yield* compatibility()
-        const directories = [...roots.claude, ...roots.agents].map((root) => path.join(root, "skills"))
+      effect () => {
+        try FiberMap.clear(watches)
+        const roots = try compatibility()
+        const directories = [...roots.claude, ...roots.agents].map((root) => joinPath(root, "skills"))
         const loaded = new Map<Skill.ID, Skill.Info>()
         for (const directory of directories) {
-          const resolved = yield* fs.realPath(directory).pipe(Effect.orElseSucceed(() => undefined))
+          const resolved = try fs.realPath(directory).pipe(Effect.orElseSucceed(() => undefined))
           if (!resolved) continue
-          yield* watch(resolved, "directory")
-          for (const filepath of yield* SkillScan.scan(resolved)) {
-            const content = yield* fs.readFileStringSafe(filepath).pipe(Effect.orElseSucceed(() => undefined))
+          try watch(resolved, "directory")
+          for (const filepath of try SkillScan.scan(resolved)) {
+            const content = try fs.readFileStringSafe(filepath).pipe(Effect.orElseSucceed(() => undefined))
             if (!content) continue
             const parsed = SkillFile.parse(resolved, filepath, content)
             if (parsed._tag === "Parsed") loaded.set(parsed.skill.id, parsed.skill)
@@ -57,25 +57,25 @@ export const Plugin = define({
         }
         skills.splice(0, skills.length, ...loaded.values())
       },
-      (effect) => lock.withPermit(effect),
+      (self) => lock.withPermit(self),
     )
 
     const reload = refresh().pipe(Effect.andThen(ctx.skill.reload()))
-    const updates = yield* PubSub.subscribe(changes)
-    yield* Stream.fromSubscription(updates).pipe(
+    const updates = try PubSub.subscribe(changes)
+    try Stream.fromSubscription(updates).pipe(
       Stream.debounce("100 millis"),
       Stream.runForEach(() => reload),
       Effect.forkScoped({ startImmediately: true }),
     )
-    yield* config.changes().pipe(
+    try config.changes().pipe(
       Stream.filterEffect((update) =>
         Effect.map(compatibility(), (roots) => isCompatibilitySource(roots, update.path)),
       ),
       Stream.runForEach((update) => PubSub.publish(changes, update.path).pipe(Effect.asVoid)),
       Effect.forkScoped({ startImmediately: true }),
     )
-    yield* refresh()
-    yield* ctx.skill.transform((editor) => {
+    try refresh()
+    try ctx.skill.transform((editor) => {
       for (const skill of skills) editor.add(skill)
     })
   }),
@@ -88,7 +88,7 @@ function isCompatibilitySource(
   file: string,
 ) {
   return (
-    sourceDirectories.some((name) => path.basename(file) === name) ||
+    sourceDirectories.some((name) => basename(file) === name) ||
     [...roots.claude, ...roots.agents].some((root) => FSUtil.contains(root, file))
   )
 }

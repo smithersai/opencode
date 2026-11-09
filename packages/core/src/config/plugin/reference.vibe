@@ -3,7 +3,6 @@ export * as ConfigReferencePlugin from "./reference.js"
 import { define } from "@opencode/plugin/effect/plugin"
 import { Document } from "@opencode/schema/config"
 import { ConfigReference } from "@opencode/schema/config/reference"
-import path from "path"
 import { Effect } from "effect"
 import { Config } from "../../config.js"
 import { Reference } from "../../reference.js"
@@ -11,17 +10,18 @@ import { AbsolutePath } from "../../schema.js"
 import { Global } from "@opencode/util/global"
 import { Location } from "../../location.js"
 import { ConfigEntryObserver } from "#vibelang/emitted/src/config/plugin/entry-observer"
+import { dirname, localPath } from "./reference.platform.ts"
 
 export const Plugin = define({
   id: "opencode.config.reference",
-  effect: Effect.fn(function* (ctx) {
-    const config = yield* Config.Service
-    const location = yield* Location.Service
-    const global = yield* Global.Service
-    const loaded = yield* ConfigEntryObserver.observe(config, ctx.event, ctx.reference.reload())
-    yield* ctx.reference.transform((editor) => {
+  effect: Effect.fn(effect (ctx) => {
+    const config = try Config.Service
+    const location = try Location.Service
+    const global = try Global.Service
+    const loaded = try ConfigEntryObserver.observe(config, ctx.event, ctx.reference.reload())
+    try ctx.reference.transform((editor) => {
       for (const doc of loaded.entries.filter((entry): entry is Document => entry.type === "document")) {
-        const directory = doc.path ? path.dirname(doc.path) : location.directory
+        const directory = doc.path ? dirname(doc.path) : location.directory
         for (const [name, entry] of Object.entries(doc.info.references ?? {})) {
           if (!validAlias(name)) continue
           const description = typeof entry === "string" ? undefined : entry.description
@@ -59,9 +59,4 @@ function local(entry: ConfigReference.Entry): entry is string | ConfigReference.
   return typeof entry === "string"
     ? entry.startsWith(".") || entry.startsWith("/") || entry.startsWith("~")
     : "path" in entry
-}
-
-function localPath(directory: string, home: string, value: string) {
-  if (value.startsWith("~/")) return path.join(home, value.slice(2))
-  return path.isAbsolute(value) ? value : path.resolve(directory, value)
 }

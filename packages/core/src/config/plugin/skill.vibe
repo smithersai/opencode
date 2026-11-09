@@ -13,7 +13,7 @@ import { Skill } from "../../skill.js"
 import { SkillDiscovery } from "../../skill/discovery.js"
 import { SkillFile } from "./skill-file.js"
 import { SkillScan } from "./skill-scan.js"
-import { directoryName, isAbsolutePath, joinPath, resolvePath } from "./skill.platform.ts"
+import { dirname, isAbsolute, join as joinPath, resolve } from "./skill.platform.ts"
 
 type Source = Skill.DirectorySource | Skill.UrlSource
 
@@ -35,7 +35,7 @@ export const Plugin = define({
     const lock = Semaphore.makeUnsafe(1)
 
     const watch = Effect.fn("ConfigSkillPlugin.watch")(effect (directory: string, type: "file" | "directory") => {
-      const target = resolvePath(directory)
+      const target = try Effect.try({ try: () => resolve(directory), catch: (cause) => cause }).pipe(Effect.orDie)
       const updates = try watcher.subscribe(
         type === "directory" ? { path: target, type, ignore: SkillScan.ignore } : { path: target, type },
       )
@@ -47,16 +47,16 @@ export const Plugin = define({
       )
     })
 
-    function firstMissing(target: string): Effect.Effect<string | undefined> {
-      const parent = directoryName(target)
+    function firstMissing(target: string): (string | undefined)!! {
+      const parent = dirname(target)
       if (parent === target) return Effect.undefined
       return fs.isDir(parent).pipe(Effect.flatMap((exists) => (exists ? Effect.succeed(target) : firstMissing(parent))))
     }
 
-    const watchDirectory: (directory: string) => Effect.Effect<string[]> = Effect.fn(
+    const watchDirectory: (directory: string) => string[]!! = Effect.fn(
       "ConfigSkillPlugin.watchDirectory",
     )(effect (directory: string) => {
-      const target = resolvePath(directory)
+      const target = try Effect.try({ try: () => resolve(directory), catch: (cause) => cause }).pipe(Effect.orDie)
       const resolved = try fs.realPath(directory).pipe(Effect.orElseSucceed(() => undefined))
       if (resolved) {
         try watch(resolved, "directory")
@@ -71,7 +71,10 @@ export const Plugin = define({
           Effect.orElseSucceed(() => false),
         )
       ) {
-        if (missing) try FiberMap.remove(watches, `file:${resolvePath(missing)}`)
+        if (missing) {
+          const key = try Effect.try({ try: () => resolve(missing), catch: (cause) => cause }).pipe(Effect.orDie)
+          try FiberMap.remove(watches, `file:${key}`)
+        }
         return try watchDirectory(directory)
       }
       return [target]
@@ -98,7 +101,7 @@ export const Plugin = define({
         add(
           Skill.DirectorySource.make({
             type: "directory",
-            path: AbsolutePath.make(isAbsolutePath(expanded) ? expanded : joinPath(location.directory, expanded)),
+            path: AbsolutePath.make(isAbsolute(expanded) ? expanded : joinPath(location.directory, expanded)),
           }),
         )
       }
@@ -125,7 +128,7 @@ export const Plugin = define({
           if (!roots.some((root) => FSUtil.contains(root, resolved))) try watch(resolved, "file")
           const content = try fs.readFileStringSafe(filepath).pipe(Effect.orElseSucceed(() => undefined))
           if (!content) continue
-          const parsed = try Effect.try({ try: () => SkillFile.parse(directory, filepath, content), catch: (cause) => cause }).pipe(Effect.orDie)
+          const parsed = SkillFile.parse(directory, filepath, content)
           if (parsed._tag === "Skipped") {
             try Effect.logDebug("skill file skipped", {
               filepath,

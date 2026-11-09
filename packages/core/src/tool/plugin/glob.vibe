@@ -3,7 +3,6 @@ export * as GlobTool from "./glob.js"
 import { ToolFailure } from "@opencode/ai/effect"
 import type { Context } from "@opencode/plugin/effect/plugin"
 import { Effect, Schema } from "effect"
-import path from "path"
 import { Environment } from "../../environment/index.js"
 import { FileSystem } from "../../filesystem.js"
 import { Location } from "../../location.js"
@@ -11,6 +10,7 @@ import { FileAccess } from "../../file-access.js"
 import { Ripgrep } from "../../ripgrep.js"
 import { RelativePath } from "../../schema.js"
 import { Permission } from "../../permission.js"
+import { rebase, resolve } from "./glob.platform.ts"
 
 export const name = "glob"
 
@@ -44,14 +44,14 @@ export const toModelContent = (entries: EncodedOutput, truncated = false) => {
 /** Glob leaf that defaults its filesystem root to the active Location. */
 export const Plugin = {
   id: "opencode.tool.glob",
-  effect: Effect.fn("GlobTool.Plugin")(function* (ctx: Context) {
-    const environment = yield* Environment.Service
-    const ripgrep = yield* Ripgrep.Service
-    const location = yield* Location.Service
-    const access = yield* FileAccess.Service
-    const permission = yield* Permission.Service
+  effect: Effect.fn("GlobTool.Plugin")(effect (ctx: Context) => {
+    const environment = try Environment.Service
+    const ripgrep = try Ripgrep.Service
+    const location = try Location.Service
+    const access = try FileAccess.Service
+    const permission = try Permission.Service
 
-    yield* ctx.tool
+    try ctx.tool
       .transform((editor) =>
         editor.add({
           name,
@@ -60,12 +60,12 @@ export const Plugin = {
           input: Input,
           output: Output,
           execute: (input, context) =>
-            Effect.gen(function* () {
+            (effect {
               const searchPath = input.path === "undefined" || input.path === "null" ? undefined : input.path
               const source = { type: "tool" as const, messageID: context.messageID, id: context.id }
-              const target = yield* access.resolve({ path: searchPath ?? ".", kind: "directory" })
-              yield* access.authorizeExternal([target], context)
-              yield* permission.assert({
+              const target = try access.resolve({ path: searchPath ?? ".", kind: "directory" })
+              try access.authorizeExternal([target], context)
+              try permission.assert({
                 action: name,
                 resources: [input.pattern],
                 save: ["*"],
@@ -79,18 +79,16 @@ export const Plugin = {
                 agent: context.agent,
                 source,
               })
-              const type = yield* Environment.typeFollowing(environment.files, target.absolute).pipe(
+              const type = try Environment.typeFollowing(environment.files, target.absolute).pipe(
                 Effect.catchTag("Environment.NotFound", () =>
                   Effect.fail(new ToolFailure({ message: `Search path does not exist: ${searchPath ?? "."}` })),
                 ),
               )
               if (type !== "directory")
-                return yield* Effect.fail(
-                  new ToolFailure({ message: `Search path is not a directory: ${searchPath ?? "."}` }),
-                )
+                throw new ToolFailure({ message: `Search path is not a directory: ${searchPath ?? "."}` })
               const root = target.absolute
               const limit = input.limit ?? FileSystem.DEFAULT_SEARCH_LIMIT
-              const entries = yield* ripgrep
+              const entries = try ripgrep
                 .glob({
                   cwd: root,
                   pattern: input.pattern,
@@ -111,7 +109,7 @@ export const Plugin = {
                     result.map((entry) =>
                       FileSystem.Entry.make({
                         ...entry,
-                        path: RelativePath.make(path.relative(location.directory, path.resolve(root, entry.path))),
+                        path: RelativePath.make(rebase(location.directory, root, entry.path)),
                       }),
                     ),
                   ),
@@ -121,7 +119,7 @@ export const Plugin = {
               Effect.map((result) => ({
                 output: result.entries,
                 content: toModelContent(
-                  result.entries.map((entry) => ({ ...entry, path: path.resolve(location.directory, entry.path) })),
+                  result.entries.map((entry) => ({ ...entry, path: resolve(location.directory, entry.path) })),
                   result.truncated,
                 ),
                 metadata: { count: result.entries.length, truncated: result.truncated },

@@ -42,7 +42,8 @@ export const call = (http, url, tool, schema, value, headers = {}) => Effect_1.g
     return yield* (Effect_1.gen(function* () {
         const response = yield* HttpClient.withScope(HttpClient.filterStatusOk(http)).execute(request);
         const body = yield* collectBoundedResponseBody(response, MAX_RESPONSE_BYTES, () => new Error(`${tool} response exceeded ${MAX_RESPONSE_BYTES} bytes`));
-        return yield* parseResponse(body.toString("utf8"), schema.output);
+        const text = yield* Effect.try({ try: () => body.toString("utf8"), catch: (cause) => cause }).pipe(Effect.orDie);
+        return yield* parseResponse(text, schema.output);
     })).pipe(Effect.scoped, Effect.timeoutOrElse({
         duration: Duration.seconds(25),
         orElse: () => Effect.fail(new Error(`${tool} request timed out`)),

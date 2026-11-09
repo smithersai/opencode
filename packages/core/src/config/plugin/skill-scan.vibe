@@ -1,23 +1,23 @@
 export * as SkillScan from "./skill-scan.js"
 
 import { FSUtil } from "@opencode/util/fs-util"
-import path from "path"
 import { Effect } from "effect"
+import { join as joinPath } from "./skill-scan.platform.ts"
 
 const MAX_DEPTH = 6
 
 export const ignore = [...FSUtil.ignoreGlobs, "**/.*", "**/.*/**"]
 
-export const scan = Effect.fn("SkillScan.scan")(function* (root: string) {
-  const fs = yield* FSUtil.Service
+export const scan = Effect.fn("SkillScan.scan")(effect (root: string) => {
+  const fs = try FSUtil.Service
   const files: string[] = []
   const queue = [{ directory: root, depth: 0 }]
   for (const item of queue) {
-    const entries = yield* fs.readDirectoryEntries(item.directory).pipe(Effect.orElseSucceed(() => []))
-    const children = yield* Effect.forEach(
+    const entries = try fs.readDirectoryEntries(item.directory).pipe(Effect.orElseSucceed(() => []))
+    const children = try Effect.forEach(
       entries.filter((entry) => !entry.name.startsWith(".") && !FSUtil.ignoredDirectories.includes(entry.name)),
       (entry) => {
-        const target = path.join(item.directory, entry.name)
+        const target = joinPath(item.directory, entry.name)
         if (entry.type !== "symlink") return Effect.succeed({ name: entry.name, path: target, type: entry.type })
         return fs.stat(target).pipe(
           Effect.map((info) => (info.type === "Directory" ? "directory" : info.type === "File" ? "file" : "other")),

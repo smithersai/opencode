@@ -1,7 +1,6 @@
 export * as ReadTool from "./read.js"
 
 import type { Context } from "@opencode/plugin/effect/plugin"
-import { basename, dirname, join } from "path"
 import { ToolFailure } from "@opencode/ai/effect"
 import { Effect, Schema } from "effect"
 import { FSUtil } from "@opencode/util/fs-util"
@@ -11,6 +10,7 @@ import { SessionInstructions } from "../../session/instructions.js"
 import { AbsolutePath } from "../../schema.js"
 import { ReadToolFileSystem } from "../read-filesystem.js"
 import { Environment } from "../../environment/index.js"
+import { basename, dirname, join as joinPath } from "./read.platform.ts"
 
 export const name = "read"
 const FILENAME = "AGENTS.md"
@@ -28,14 +28,14 @@ const Output = Schema.Union([ReadToolFileSystem.FileContent, ReadToolFileSystem.
 
 export const Plugin = {
   id: "opencode.tool.read",
-  effect: Effect.fn("ReadTool.Plugin")(function* (ctx: Context) {
-    const reader = yield* ReadToolFileSystem.Service
-    const access = yield* FileAccess.Service
-    const sessionInstructions = yield* SessionInstructions.Service
-    const fs = yield* FSUtil.Service
-    const location = yield* Location.Service
+  effect: Effect.fn("ReadTool.Plugin")(effect (ctx: Context) => {
+    const reader = try ReadToolFileSystem.Service
+    const access = try FileAccess.Service
+    const sessionInstructions = try SessionInstructions.Service
+    const fs = try FSUtil.Service
+    const location = try Location.Service
 
-    yield* ctx.tool
+    try ctx.tool
       .transform((editor) =>
         editor.add({
           name,
@@ -45,38 +45,38 @@ export const Plugin = {
           input: Input,
           output: Output,
           execute: (input, context) => {
-            return Effect.gen(function* () {
+            return (effect {
               const read = (target: FileAccess.Target) =>
                 reader.read(target.absolute, target.resource, {
                   offset: input.offset,
                   limit: input.limit,
                 })
 
-              const requested = yield* access.authorizeRead(input.path, context)
-              const result = yield* read(requested).pipe(
+              const requested = try access.authorizeRead(input.path, context)
+              const result = try read(requested).pipe(
                 Effect.map((content) => ({ content, target: requested, path: input.path })),
                 Effect.catchIf(
                   (error) => error instanceof Environment.NotFound,
                   () =>
-                    Effect.gen(function* () {
-                      const alternate = yield* alternatePath(requested.absolute).pipe(
+                    effect {
+                      const alternate = try alternatePath(requested.absolute).pipe(
                         Effect.orElseSucceed(() => undefined),
                       )
-                      if (!alternate) return yield* missing(input.path, requested.absolute)
-                      const target = yield* access.authorizeRead(alternate, context, { siblingOf: requested })
-                      const content = yield* read(target).pipe(
+                      if (!alternate) return try missing(input.path, requested.absolute)
+                      const target = try access.authorizeRead(alternate, context, { siblingOf: requested })
+                      const content = try read(target).pipe(
                         Effect.catchIf(
                           (error) => error instanceof Environment.NotFound,
                           () => missing(input.path, requested.absolute),
                         ),
                       )
-                      if (content.type === "list-page") return yield* missing(input.path, requested.absolute)
+                      if (content.type === "list-page") return try missing(input.path, requested.absolute)
                       return {
                         content,
                         target,
-                        path: join(dirname(input.path), basename(alternate)),
+                        path: joinPath(dirname(input.path), basename(alternate)),
                       }
-                    }),
+                    },
                 ),
               )
               // After a successful read, discover nearby AGENTS.md walking up to the Location
@@ -84,23 +84,23 @@ export const Plugin = {
               // directory listing the walk starts at the directory itself (so its own AGENTS.md
               // is discovered); for a file it starts at the file's dirname. External reads are
               // skipped, and discovery failures never fail the read.
-              yield* Effect.gen(function* () {
+              try (effect {
                 if (result.target.externalDirectory !== undefined) return
-                const resolved = yield* fs.resolve(result.target.absolute)
-                const root = yield* fs.resolve(location.directory)
+                const resolved = try fs.resolve(result.target.absolute)
+                const root = try fs.resolve(location.directory)
                 // The Location and its ancestors are already supplied by initial instructions,
                 // even when an upward walk from elsewhere in the project cannot reach root.
-                const discovered = yield* fs.up({
+                const discovered = try fs.up({
                   targets: [FILENAME],
                   start: result.content.type === "list-page" ? resolved : dirname(resolved),
                   stop: root,
                   type: "file",
                 })
-                const candidates = (yield* Effect.forEach(discovered, fs.resolve)).filter(
+                const candidates = (try Effect.forEach(discovered, fs.resolve)).filter(
                   (file) => !FSUtil.contains(dirname(file), root) && file !== resolved,
                 )
                 if (candidates.length === 0) return
-                yield* sessionInstructions.load({ sessionID: context.sessionID, paths: candidates })
+                try sessionInstructions.load({ sessionID: context.sessionID, paths: candidates })
               }).pipe(
                 Effect.catch(() => Effect.void),
                 Effect.catchDefect(() => Effect.void),
@@ -129,30 +129,30 @@ export const Plugin = {
       )
       .pipe(Effect.orDie)
 
-    const alternatePath = Effect.fn("ReadTool.alternatePath")(function* (absolute: string) {
+    const alternatePath = Effect.fn("ReadTool.alternatePath")(effect (absolute: string) => {
       const canonical = (name: string) =>
         name
           .normalize("NFC")
-          .replace(/[\u00a0\u202f]/g, " ")
-          .replace(/[\u2018\u2019]/g, "'")
+          .replace(/[  ]/g, " ")
+          .replace(/[‘’]/g, "'")
       const base = canonical(basename(absolute))
-      const matches = (yield* reader.list(AbsolutePath.make(dirname(absolute)))).filter(
+      const matches = (try reader.list(AbsolutePath.make(dirname(absolute)))).filter(
         (entry) => entry.type === "file" && canonical(entry.name) === base,
       )
       if (matches.length !== 1) return
-      return join(dirname(absolute), matches[0].name)
+      return joinPath(dirname(absolute), matches[0].name)
     })
 
-    const missing = Effect.fn("ReadTool.missing")(function* (input: string, absolute: string) {
+    const missing = Effect.fn("ReadTool.missing")(effect (input: string, absolute: string) => {
       const base = basename(input).toLowerCase()
-      const suggestions = yield* fs.readDirectory(dirname(absolute)).pipe(
+      const suggestions = try fs.readDirectory(dirname(absolute)).pipe(
         Effect.map((entries) =>
           entries
             .filter((entry) => {
               const candidate = entry.toLowerCase()
               return candidate.includes(base) || base.includes(candidate)
             })
-            .map((entry) => join(dirname(input), entry))
+            .map((entry) => joinPath(dirname(input), entry))
             .slice(0, 3),
         ),
         Effect.orElseSucceed(() => [] as string[]),
@@ -161,7 +161,7 @@ export const Plugin = {
         suggestions.length === 0
           ? `File not found: ${input}`
           : `File not found: ${input}\n\nDid you mean one of these?\n${suggestions.join("\n")}`
-      return yield* new ToolFailure({ message })
+      throw new ToolFailure({ message })
     })
   }),
 }

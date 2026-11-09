@@ -1,23 +1,21 @@
-// The platform code of skill.vibe: host paths, which a .vibe file does not import (EK4402).
-
 import path from "path"
 
-/** @throws {never} */
-export function resolvePath(...parts: string[]): string {
-  return path.resolve(...parts)
+/** Resolves a directory against the process working directory, which may be unavailable. */
+export function resolve(directory: string) {
+  return path.resolve(directory)
 }
 
 /** @throws {never} */
-export function joinPath(...parts: string[]): string {
-  return path.join(...parts)
-}
-
-/** @throws {never} */
-export function directoryName(target: string): string {
+export function dirname(target: string) {
   return path.dirname(target)
 }
 
 /** @throws {never} */
-export function isAbsolutePath(target: string): boolean {
+export function join(directory: string, name: string) {
+  return path.join(directory, name)
+}
+
+/** @throws {never} */
+export function isAbsolute(target: string) {
   return path.isAbsolute(target)
 }

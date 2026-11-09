@@ -58,7 +58,8 @@ export const call = <F extends Schema.Struct.Fields, R extends Schema.Struct.Fie
         MAX_RESPONSE_BYTES,
         () => new Error(`${tool} response exceeded ${MAX_RESPONSE_BYTES} bytes`),
       )
-      return try parseResponse(body.toString("utf8"), schema.output)
+      const text = try Effect.try({ try: () => body.toString("utf8"), catch: (cause) => cause }).pipe(Effect.orDie)
+      return try parseResponse(text, schema.output)
     }).pipe(
       Effect.scoped,
       Effect.timeoutOrElse({

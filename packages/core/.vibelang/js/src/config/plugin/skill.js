@@ -13,7 +13,7 @@ import { Skill } from "../../skill.js";
 import { SkillDiscovery } from "../../skill/discovery.js";
 import { SkillFile } from "./skill-file.js";
 import { SkillScan } from "./skill-scan.js";
-import { directoryName, isAbsolutePath, joinPath, resolvePath } from "./skill.platform.js";
+import { dirname, isAbsolute, join as joinPath, resolve } from "./skill.platform.js";
 export const Plugin = define({
     id: "opencode.config.skill",
     effect: Effect.fn((ctx) => {
@@ -33,20 +33,20 @@ export const Plugin = define({
             const lock = Semaphore.makeUnsafe(1);
             const watch = Effect.fn("ConfigSkillPlugin.watch")((directory, type) => {
                 return Effect_1.gen(function* () {
-                    const target = resolvePath(directory);
+                    const target = yield* Effect.try({ try: () => resolve(directory), catch: (cause) => cause }).pipe(Effect.orDie);
                     const updates = yield* watcher.subscribe(type === "directory" ? { path: target, type, ignore: SkillScan.ignore } : { path: target, type });
                     yield* FiberMap.run(watches, `${type}:${target}`, updates.pipe(Stream.runForEach((update) => PubSub.publish(changes, update.path).pipe(Effect.asVoid))), { onlyIfMissing: true, startImmediately: true });
                 });
             });
             function firstMissing(target) {
-                const parent = directoryName(target);
+                const parent = dirname(target);
                 if (parent === target)
                     return Effect.undefined;
                 return fs.isDir(parent).pipe(Effect.flatMap((exists) => (exists ? Effect.succeed(target) : firstMissing(parent))));
             }
             const watchDirectory = Effect.fn("ConfigSkillPlugin.watchDirectory")((directory) => {
                 return Effect_1.gen(function* () {
-                    const target = resolvePath(directory);
+                    const target = yield* Effect.try({ try: () => resolve(directory), catch: (cause) => cause }).pipe(Effect.orDie);
                     const resolved = yield* fs.realPath(directory).pipe(Effect.orElseSucceed(() => undefined));
                     if (resolved) {
                         yield* watch(resolved, "directory");
@@ -58,8 +58,10 @@ export const Plugin = define({
                     if (missing)
                         yield* watch(missing, "file");
                     if (yield* fs.realPath(directory).pipe(Effect.as(true), Effect.orElseSucceed(() => false))) {
-                        if (missing)
-                            yield* FiberMap.remove(watches, `file:${resolvePath(missing)}`);
+                        if (missing) {
+                            const key = yield* Effect.try({ try: () => resolve(missing), catch: (cause) => cause }).pipe(Effect.orDie);
+                            yield* FiberMap.remove(watches, `file:${key}`);
+                        }
                         return yield* watchDirectory(directory);
                     }
                     return [target];
@@ -86,7 +88,7 @@ export const Plugin = define({
                     const expanded = item.startsWith("~/") ? joinPath(global.home, item.slice(2)) : item;
                     add(Skill.DirectorySource.make({
                         type: "directory",
-                        path: AbsolutePath.make(isAbsolutePath(expanded) ? expanded : joinPath(location.directory, expanded)),
+                        path: AbsolutePath.make(isAbsolute(expanded) ? expanded : joinPath(location.directory, expanded)),
                     }));
                 }
                 return result;
@@ -109,7 +111,7 @@ export const Plugin = define({
                             const content = yield* fs.readFileStringSafe(filepath).pipe(Effect.orElseSucceed(() => undefined));
                             if (!content)
                                 continue;
-                            const parsed = yield* Effect.try({ try: () => SkillFile.parse(directory, filepath, content), catch: (cause) => cause }).pipe(Effect.orDie);
+                            const parsed = SkillFile.parse(directory, filepath, content);
                             if (parsed._tag === "Skipped") {
                                 yield* Effect.logDebug("skill file skipped", {
                                     filepath,

@@ -6,6 +6,8 @@ Release notes for OpenCode V2, newest first.
 
 ### Changed
 
+- Timeline projection now uses VibeLang behind its existing package entry point.
+
 - Desktop window appearance now uses VibeLang while preserving platform behavior.
 
 - OpenAPI generation now uses VibeLang while preserving generated output.

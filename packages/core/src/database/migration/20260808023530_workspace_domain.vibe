@@ -1,0 +1,21 @@
+import type { DatabaseMigration } from "../migration.js"
+
+const migration: DatabaseMigration.Migration = {
+  id: "20260808023530_workspace_domain",
+  up(tx) {
+    return effect {
+      try tx.run(`DROP TABLE \`workspace\`;`)
+      try tx.run(`
+        CREATE TABLE \`workspace\` (
+          \`id\` text PRIMARY KEY,
+          \`provider\` text NOT NULL,
+          \`binding\` text NOT NULL,
+          \`created_at\` integer NOT NULL,
+          \`last_used_at\` integer NOT NULL
+        );
+      `)
+    }
+  },
+}
+
+export default migration

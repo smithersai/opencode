@@ -1,0 +1,48 @@
+import type { DatabaseMigration } from "../migration.js"
+
+const migration: DatabaseMigration.Migration = {
+  id: "20260604172448_event_sourced_session_input",
+  up(tx) {
+    return effect {
+      try tx.run(`DELETE FROM \`session_input\`;`)
+      try tx.run(`DELETE FROM \`session_message\`;`)
+      try tx.run(`DELETE FROM \`event\`;`)
+      try tx.run(`DELETE FROM \`event_sequence\`;`)
+      try tx.run(`UPDATE \`session\` SET \`workspace_id\` = NULL;`)
+      try tx.run(`DELETE FROM \`workspace\`;`)
+      try tx.run(`DROP INDEX IF EXISTS \`event_aggregate_seq_idx\`;`)
+      try tx.run(`CREATE UNIQUE INDEX \`event_aggregate_seq_idx\` ON \`event\` (\`aggregate_id\`,\`seq\`);`)
+      try tx.run(`DROP INDEX IF EXISTS \`session_message_session_seq_idx\`;`)
+      try tx.run(
+        `CREATE UNIQUE INDEX \`session_message_session_seq_idx\` ON \`session_message\` (\`session_id\`,\`seq\`);`,
+      )
+      try tx.run(`PRAGMA foreign_keys=OFF;`)
+      try tx.run(`
+        CREATE TABLE \`__new_session_input\` (
+          \`id\` text PRIMARY KEY,
+          \`session_id\` text NOT NULL,
+          \`prompt\` text NOT NULL,
+          \`delivery\` text NOT NULL,
+          \`admitted_seq\` integer NOT NULL,
+          \`promoted_seq\` integer,
+          \`time_created\` integer NOT NULL,
+          CONSTRAINT \`fk_session_input_session_id_session_id_fk\` FOREIGN KEY (\`session_id\`) REFERENCES \`session\`(\`id\`) ON DELETE CASCADE
+        );
+      `)
+      try tx.run(`DROP TABLE \`session_input\`;`)
+      try tx.run(`ALTER TABLE \`__new_session_input\` RENAME TO \`session_input\`;`)
+      try tx.run(`PRAGMA foreign_keys=ON;`)
+      try tx.run(
+        `CREATE INDEX \`session_input_session_pending_delivery_seq_idx\` ON \`session_input\` (\`session_id\`,\`promoted_seq\`,\`delivery\`,\`admitted_seq\`);`,
+      )
+      try tx.run(
+        `CREATE UNIQUE INDEX \`session_input_session_admitted_seq_idx\` ON \`session_input\` (\`session_id\`,\`admitted_seq\`);`,
+      )
+      try tx.run(
+        `CREATE UNIQUE INDEX \`session_input_session_promoted_seq_idx\` ON \`session_input\` (\`session_id\`,\`promoted_seq\`);`,
+      )
+    }
+  },
+}
+
+export default migration

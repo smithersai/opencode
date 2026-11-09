@@ -631,7 +631,272 @@
       "default": "./.vibelang/js/src/database/sqlite.node.js"
     },
     "./database/sqlite.bun.platform": null,
-    "./database/sqlite.node.platform": null
+    "./database/sqlite.node.platform": null,
+    "./database/migration/20260127222353_familiar_lady_ursula": {
+      "types": "./src/database/migration/20260127222353_familiar_lady_ursula.d.vibe.ts",
+      "vibelang-source": "./src/database/migration/20260127222353_familiar_lady_ursula.vibe",
+      "default": "./.vibelang/js/src/database/migration/20260127222353_familiar_lady_ursula.js"
+    },
+    "./database/migration/20260211171708_add_project_commands": {
+      "types": "./src/database/migration/20260211171708_add_project_commands.d.vibe.ts",
+      "vibelang-source": "./src/database/migration/20260211171708_add_project_commands.vibe",
+      "default": "./.vibelang/js/src/database/migration/20260211171708_add_project_commands.js"
+    },
+    "./database/migration/20260213144116_wakeful_the_professor": {
+      "types": "./src/database/migration/20260213144116_wakeful_the_professor.d.vibe.ts",
+      "vibelang-source": "./src/database/migration/20260213144116_wakeful_the_professor.vibe",
+      "default": "./.vibelang/js/src/database/migration/20260213144116_wakeful_the_professor.js"
+    },
+    "./database/migration/20260225215848_workspace": {
+      "types": "./src/database/migration/20260225215848_workspace.d.vibe.ts",
+      "vibelang-source": "./src/database/migration/20260225215848_workspace.vibe",
+      "default": "./.vibelang/js/src/database/migration/20260225215848_workspace.js"
+    },
+    "./database/migration/20260227213759_add_session_workspace_id": {
+      "types": "./src/database/migration/20260227213759_add_session_workspace_id.d.vibe.ts",
+      "vibelang-source": "./src/database/migration/20260227213759_add_session_workspace_id.vibe",
+      "default": "./.vibelang/js/src/database/migration/20260227213759_add_session_workspace_id.js"
+    },
+    "./database/migration/20260228203230_blue_harpoon": {
+      "types": "./src/database/migration/20260228203230_blue_harpoon.d.vibe.ts",
+      "vibelang-source": "./src/database/migration/20260228203230_blue_harpoon.vibe",
+      "default": "./.vibelang/js/src/database/migration/20260228203230_blue_harpoon.js"
+    },
+    "./database/migration/20260303231226_add_workspace_fields": {
+      "types": "./src/database/migration/20260303231226_add_workspace_fields.d.vibe.ts",
+      "vibelang-source": "./src/database/migration/20260303231226_add_workspace_fields.vibe",
+      "default": "./.vibelang/js/src/database/migration/20260303231226_add_workspace_fields.js"
+    },
+    "./database/migration/20260309230000_move_org_to_state": {
+      "types": "./src/database/migration/20260309230000_move_org_to_state.d.vibe.ts",
+      "vibelang-source": "./src/database/migration/20260309230000_move_org_to_state.vibe",
+      "default": "./.vibelang/js/src/database/migration/20260309230000_move_org_to_state.js"
+    },
+    "./database/migration/20260312043431_session_message_cursor": {
+      "types": "./src/database/migration/20260312043431_session_message_cursor.d.vibe.ts",
+      "vibelang-source": "./src/database/migration/20260312043431_session_message_cursor.vibe",
+      "default": "./.vibelang/js/src/database/migration/20260312043431_session_message_cursor.js"
+    },
+    "./database/migration/20260323234822_events": {
+      "types": "./src/database/migration/20260323234822_events.d.vibe.ts",
+      "vibelang-source": "./src/database/migration/20260323234822_events.vibe",
+      "default": "./.vibelang/js/src/database/migration/20260323234822_events.js"
+    },
+    "./database/migration/20260410174513_workspace-name": {
+      "types": "./src/database/migration/20260410174513_workspace-name.d.vibe.ts",
+      "vibelang-source": "./src/database/migration/20260410174513_workspace-name.vibe",
+      "default": "./.vibelang/js/src/database/migration/20260410174513_workspace-name.js"
+    },
+    "./database/migration/20260413175956_chief_energizer": {
+      "types": "./src/database/migration/20260413175956_chief_energizer.d.vibe.ts",
+      "vibelang-source": "./src/database/migration/20260413175956_chief_energizer.vibe",
+      "default": "./.vibelang/js/src/database/migration/20260413175956_chief_energizer.js"
+    },
+    "./database/migration/20260423070820_add_icon_url_override": {
+      "types": "./src/database/migration/20260423070820_add_icon_url_override.d.vibe.ts",
+      "vibelang-source": "./src/database/migration/20260423070820_add_icon_url_override.vibe",
+      "default": "./.vibelang/js/src/database/migration/20260423070820_add_icon_url_override.js"
+    },
+    "./database/migration/20260427172553_slow_nightmare": {
+      "types": "./src/database/migration/20260427172553_slow_nightmare.d.vibe.ts",
+      "vibelang-source": "./src/database/migration/20260427172553_slow_nightmare.vibe",
+      "default": "./.vibelang/js/src/database/migration/20260427172553_slow_nightmare.js"
+    },
+    "./database/migration/20260428004200_add_session_path": {
+      "types": "./src/database/migration/20260428004200_add_session_path.d.vibe.ts",
+      "vibelang-source": "./src/database/migration/20260428004200_add_session_path.vibe",
+      "default": "./.vibelang/js/src/database/migration/20260428004200_add_session_path.js"
+    },
+    "./database/migration/20260501142318_next_venus": {
+      "types": "./src/database/migration/20260501142318_next_venus.d.vibe.ts",
+      "vibelang-source": "./src/database/migration/20260501142318_next_venus.vibe",
+      "default": "./.vibelang/js/src/database/migration/20260501142318_next_venus.js"
+    },
+    "./database/migration/20260504145000_add_sync_owner": {
+      "types": "./src/database/migration/20260504145000_add_sync_owner.d.vibe.ts",
+      "vibelang-source": "./src/database/migration/20260504145000_add_sync_owner.vibe",
+      "default": "./.vibelang/js/src/database/migration/20260504145000_add_sync_owner.js"
+    },
+    "./database/migration/20260507164347_add_workspace_time": {
+      "types": "./src/database/migration/20260507164347_add_workspace_time.d.vibe.ts",
+      "vibelang-source": "./src/database/migration/20260507164347_add_workspace_time.vibe",
+      "default": "./.vibelang/js/src/database/migration/20260507164347_add_workspace_time.js"
+    },
+    "./database/migration/20260510033149_session_usage": {
+      "types": "./src/database/migration/20260510033149_session_usage.d.vibe.ts",
+      "vibelang-source": "./src/database/migration/20260510033149_session_usage.vibe",
+      "default": "./.vibelang/js/src/database/migration/20260510033149_session_usage.js"
+    },
+    "./database/migration/20260511000411_data_migration_state": {
+      "types": "./src/database/migration/20260511000411_data_migration_state.d.vibe.ts",
+      "vibelang-source": "./src/database/migration/20260511000411_data_migration_state.vibe",
+      "default": "./.vibelang/js/src/database/migration/20260511000411_data_migration_state.js"
+    },
+    "./database/migration/20260511173437_session-metadata": {
+      "types": "./src/database/migration/20260511173437_session-metadata.d.vibe.ts",
+      "vibelang-source": "./src/database/migration/20260511173437_session-metadata.vibe",
+      "default": "./.vibelang/js/src/database/migration/20260511173437_session-metadata.js"
+    },
+    "./database/migration/20260601010001_normalize_storage_paths": {
+      "types": "./src/database/migration/20260601010001_normalize_storage_paths.d.vibe.ts",
+      "vibelang-source": "./src/database/migration/20260601010001_normalize_storage_paths.vibe",
+      "default": "./.vibelang/js/src/database/migration/20260601010001_normalize_storage_paths.js"
+    },
+    "./database/migration/20260601202201_amazing_prowler": {
+      "types": "./src/database/migration/20260601202201_amazing_prowler.d.vibe.ts",
+      "vibelang-source": "./src/database/migration/20260601202201_amazing_prowler.vibe",
+      "default": "./.vibelang/js/src/database/migration/20260601202201_amazing_prowler.js"
+    },
+    "./database/migration/20260602002951_lowly_union_jack": {
+      "types": "./src/database/migration/20260602002951_lowly_union_jack.d.vibe.ts",
+      "vibelang-source": "./src/database/migration/20260602002951_lowly_union_jack.vibe",
+      "default": "./.vibelang/js/src/database/migration/20260602002951_lowly_union_jack.js"
+    },
+    "./database/migration/20260602182828_add_project_directories": {
+      "types": "./src/database/migration/20260602182828_add_project_directories.d.vibe.ts",
+      "vibelang-source": "./src/database/migration/20260602182828_add_project_directories.vibe",
+      "default": "./.vibelang/js/src/database/migration/20260602182828_add_project_directories.js"
+    },
+    "./database/migration/20260603001617_session_message_projection_indexes": {
+      "types": "./src/database/migration/20260603001617_session_message_projection_indexes.d.vibe.ts",
+      "vibelang-source": "./src/database/migration/20260603001617_session_message_projection_indexes.vibe",
+      "default": "./.vibelang/js/src/database/migration/20260603001617_session_message_projection_indexes.js"
+    },
+    "./database/migration/20260603040000_session_message_projection_order": {
+      "types": "./src/database/migration/20260603040000_session_message_projection_order.d.vibe.ts",
+      "vibelang-source": "./src/database/migration/20260603040000_session_message_projection_order.vibe",
+      "default": "./.vibelang/js/src/database/migration/20260603040000_session_message_projection_order.js"
+    },
+    "./database/migration/20260603141458_session_input_inbox": {
+      "types": "./src/database/migration/20260603141458_session_input_inbox.d.vibe.ts",
+      "vibelang-source": "./src/database/migration/20260603141458_session_input_inbox.vibe",
+      "default": "./.vibelang/js/src/database/migration/20260603141458_session_input_inbox.js"
+    },
+    "./database/migration/20260603160727_jittery_ezekiel_stane": {
+      "types": "./src/database/migration/20260603160727_jittery_ezekiel_stane.d.vibe.ts",
+      "vibelang-source": "./src/database/migration/20260603160727_jittery_ezekiel_stane.vibe",
+      "default": "./.vibelang/js/src/database/migration/20260603160727_jittery_ezekiel_stane.js"
+    },
+    "./database/migration/20260604172448_event_sourced_session_input": {
+      "types": "./src/database/migration/20260604172448_event_sourced_session_input.d.vibe.ts",
+      "vibelang-source": "./src/database/migration/20260604172448_event_sourced_session_input.vibe",
+      "default": "./.vibelang/js/src/database/migration/20260604172448_event_sourced_session_input.js"
+    },
+    "./database/migration/20260605003541_add_session_context_snapshot": {
+      "types": "./src/database/migration/20260605003541_add_session_context_snapshot.d.vibe.ts",
+      "vibelang-source": "./src/database/migration/20260605003541_add_session_context_snapshot.vibe",
+      "default": "./.vibelang/js/src/database/migration/20260605003541_add_session_context_snapshot.js"
+    },
+    "./database/migration/20260605042240_add_context_epoch_agent": {
+      "types": "./src/database/migration/20260605042240_add_context_epoch_agent.d.vibe.ts",
+      "vibelang-source": "./src/database/migration/20260605042240_add_context_epoch_agent.vibe",
+      "default": "./.vibelang/js/src/database/migration/20260605042240_add_context_epoch_agent.js"
+    },
+    "./database/migration/20260611035744_credential": {
+      "types": "./src/database/migration/20260611035744_credential.d.vibe.ts",
+      "vibelang-source": "./src/database/migration/20260611035744_credential.vibe",
+      "default": "./.vibelang/js/src/database/migration/20260611035744_credential.js"
+    },
+    "./database/migration/20260611192811_lush_chimera": {
+      "types": "./src/database/migration/20260611192811_lush_chimera.d.vibe.ts",
+      "vibelang-source": "./src/database/migration/20260611192811_lush_chimera.vibe",
+      "default": "./.vibelang/js/src/database/migration/20260611192811_lush_chimera.js"
+    },
+    "./database/migration/20260612174303_project_dir_strategy": {
+      "types": "./src/database/migration/20260612174303_project_dir_strategy.d.vibe.ts",
+      "vibelang-source": "./src/database/migration/20260612174303_project_dir_strategy.vibe",
+      "default": "./.vibelang/js/src/database/migration/20260612174303_project_dir_strategy.js"
+    },
+    "./database/migration/20260622142730_simplify_session_context_epoch": {
+      "types": "./src/database/migration/20260622142730_simplify_session_context_epoch.d.vibe.ts",
+      "vibelang-source": "./src/database/migration/20260622142730_simplify_session_context_epoch.vibe",
+      "default": "./.vibelang/js/src/database/migration/20260622142730_simplify_session_context_epoch.js"
+    },
+    "./database/migration/20260622170816_reset_v2_session_state": {
+      "types": "./src/database/migration/20260622170816_reset_v2_session_state.d.vibe.ts",
+      "vibelang-source": "./src/database/migration/20260622170816_reset_v2_session_state.vibe",
+      "default": "./.vibelang/js/src/database/migration/20260622170816_reset_v2_session_state.js"
+    },
+    "./database/migration/20260622202450_simplify_session_input": {
+      "types": "./src/database/migration/20260622202450_simplify_session_input.d.vibe.ts",
+      "vibelang-source": "./src/database/migration/20260622202450_simplify_session_input.vibe",
+      "default": "./.vibelang/js/src/database/migration/20260622202450_simplify_session_input.js"
+    },
+    "./database/migration/20260804233008_loose_psylocke": {
+      "types": "./src/database/migration/20260804233008_loose_psylocke.d.vibe.ts",
+      "vibelang-source": "./src/database/migration/20260804233008_loose_psylocke.vibe",
+      "default": "./.vibelang/js/src/database/migration/20260804233008_loose_psylocke.js"
+    },
+    "./database/migration/20260808023530_workspace_domain": {
+      "types": "./src/database/migration/20260808023530_workspace_domain.d.vibe.ts",
+      "vibelang-source": "./src/database/migration/20260808023530_workspace_domain.vibe",
+      "default": "./.vibelang/js/src/database/migration/20260808023530_workspace_domain.js"
+    },
+    "./database/migration/20260811161259_execution_claim_attempts": {
+      "types": "./src/database/migration/20260811161259_execution_claim_attempts.d.vibe.ts",
+      "vibelang-source": "./src/database/migration/20260811161259_execution_claim_attempts.vibe",
+      "default": "./.vibelang/js/src/database/migration/20260811161259_execution_claim_attempts.js"
+    },
+    "./database/migration/20260812181746_session_inbox": {
+      "types": "./src/database/migration/20260812181746_session_inbox.d.vibe.ts",
+      "vibelang-source": "./src/database/migration/20260812181746_session_inbox.vibe",
+      "default": "./.vibelang/js/src/database/migration/20260812181746_session_inbox.js"
+    },
+    "./database/migration/20260812213948_worktree": {
+      "types": "./src/database/migration/20260812213948_worktree.d.vibe.ts",
+      "vibelang-source": "./src/database/migration/20260812213948_worktree.vibe",
+      "default": "./.vibelang/js/src/database/migration/20260812213948_worktree.js"
+    },
+    "./database/migration/20260819222447_session_viewed_state": {
+      "types": "./src/database/migration/20260819222447_session_viewed_state.d.vibe.ts",
+      "vibelang-source": "./src/database/migration/20260819222447_session_viewed_state.vibe",
+      "default": "./.vibelang/js/src/database/migration/20260819222447_session_viewed_state.js"
+    },
+    "./database/migration/20260823191254_nullable_workspace_binding": {
+      "types": "./src/database/migration/20260823191254_nullable_workspace_binding.d.vibe.ts",
+      "vibelang-source": "./src/database/migration/20260823191254_nullable_workspace_binding.vibe",
+      "default": "./.vibelang/js/src/database/migration/20260823191254_nullable_workspace_binding.js"
+    },
+    "./database/migration/20260910120000_clear_v1_session_permission": {
+      "types": "./src/database/migration/20260910120000_clear_v1_session_permission.d.vibe.ts",
+      "vibelang-source": "./src/database/migration/20260910120000_clear_v1_session_permission.vibe",
+      "default": "./.vibelang/js/src/database/migration/20260910120000_clear_v1_session_permission.js"
+    },
+    "./database/migration/20260923013825_project_time_active": {
+      "types": "./src/database/migration/20260923013825_project_time_active.d.vibe.ts",
+      "vibelang-source": "./src/database/migration/20260923013825_project_time_active.vibe",
+      "default": "./.vibelang/js/src/database/migration/20260923013825_project_time_active.js"
+    },
+    "./database/migration/20261007190000_azure_cli_external_credential": {
+      "types": "./src/database/migration/20261007190000_azure_cli_external_credential.d.vibe.ts",
+      "vibelang-source": "./src/database/migration/20261007190000_azure_cli_external_credential.vibe",
+      "default": "./.vibelang/js/src/database/migration/20261007190000_azure_cli_external_credential.js"
+    },
+    "./database/migration/20261010180456_project_time_archived": {
+      "types": "./src/database/migration/20261010180456_project_time_archived.d.vibe.ts",
+      "vibelang-source": "./src/database/migration/20261010180456_project_time_archived.vibe",
+      "default": "./.vibelang/js/src/database/migration/20261010180456_project_time_archived.js"
+    },
+    "./database/migration/20261024002554_session_allowance": {
+      "types": "./src/database/migration/20261024002554_session_allowance.d.vibe.ts",
+      "vibelang-source": "./src/database/migration/20261024002554_session_allowance.vibe",
+      "default": "./.vibelang/js/src/database/migration/20261024002554_session_allowance.js"
+    },
+    "./database/migration/20261024175301_drop_session_allowance": {
+      "types": "./src/database/migration/20261024175301_drop_session_allowance.d.vibe.ts",
+      "vibelang-source": "./src/database/migration/20261024175301_drop_session_allowance.vibe",
+      "default": "./.vibelang/js/src/database/migration/20261024175301_drop_session_allowance.js"
+    },
+    "./database/migration/20261025123711_blob": {
+      "types": "./src/database/migration/20261025123711_blob.d.vibe.ts",
+      "vibelang-source": "./src/database/migration/20261025123711_blob.vibe",
+      "default": "./.vibelang/js/src/database/migration/20261025123711_blob.js"
+    },
+    "./database/migration/20261025154125_drop_session_pending": {
+      "types": "./src/database/migration/20261025154125_drop_session_pending.d.vibe.ts",
+      "vibelang-source": "./src/database/migration/20261025154125_drop_session_pending.vibe",
+      "default": "./.vibelang/js/src/database/migration/20261025154125_drop_session_pending.js"
+    }
   },
   "imports": {
     "#sqlite": {

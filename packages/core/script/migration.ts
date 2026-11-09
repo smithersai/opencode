@@ -1,6 +1,7 @@
 #!/usr/bin/env bun
 
 import fs from "fs/promises"
+import { existsSync } from "node:fs"
 import os from "os"
 import path from "path"
 import { pathToFileURL } from "url"
@@ -11,22 +12,22 @@ const snapshot = path.join(root, "packages/core/schema.json")
 const tsDir = path.join(root, "packages/core/src/database/migration")
 const registry = path.join(root, "packages/core/src/database/migration.gen.ts")
 const schema = path.join(root, "packages/core/src/database/schema.gen.ts")
-const args = parseArgs({
-  args: process.argv.slice(2),
-  options: {
-    check: { type: "boolean" },
-    name: { type: "string" },
-  },
-})
-
-if (args.values.check) {
-  await check()
-  process.exit(0)
+if (import.meta.main) {
+  const args = parseArgs({
+    args: process.argv.slice(2),
+    options: {
+      check: { type: "boolean" },
+      name: { type: "string" },
+    },
+  })
+  if (args.values.check) {
+    await check()
+    process.exit(0)
+  }
+  await generate(args.values.name)
 }
 
-await generate()
-
-async function generate() {
+async function generate(migrationName?: string) {
   const temporary = await fs.mkdtemp(path.join(os.tmpdir(), "opencode-core-migration-"))
   const incremental = path.join(temporary, "incremental")
   const full = path.join(temporary, "full")
@@ -34,7 +35,7 @@ async function generate() {
     await fs.mkdir(incremental)
     await fs.mkdir(path.join(incremental, "baseline"))
     await fs.copyFile(snapshot, path.join(incremental, "baseline/snapshot.json"))
-    await drizzle(temporary, incremental, args.values.name)
+    await drizzle(temporary, incremental, migrationName)
 
     const generated = await generatedMigrations(incremental)
     if (generated.length > 1) throw new Error(`Expected one generated migration, found ${generated.length}.`)
@@ -122,9 +123,10 @@ async function generatedSql(directory: string) {
   return Bun.file(path.join(directory, generated[0]!, "migration.sql")).text()
 }
 
-async function typescriptMigrations() {
-  return (await Array.fromAsync(new Bun.Glob("*.ts").scan({ cwd: tsDir })))
-    .map((file) => path.basename(file, ".ts"))
+export async function typescriptMigrations(directory = tsDir) {
+  return (await Array.fromAsync(new Bun.Glob("*.{ts,vibe}").scan({ cwd: directory })))
+    .filter((file) => !/\.(?:d\.vibe|platform)\.ts$/.test(file))
+    .map((file) => file.replace(/\.(?:ts|vibe)$/, ""))
     .sort()
 }
 
@@ -205,9 +207,9 @@ async function formatJson(input: string) {
   })
 }
 
-function renderRegistry(names: string[]) {
+export function renderRegistry(names: string[], directory = tsDir) {
   return `import type { DatabaseMigration } from "./migration.js"
-${names.map((name, index) => `import m${index.toString().padStart(2, "0")} from "./migration/${name}.js"`).join("\n")}
+${names.map((name, index) => `import m${index.toString().padStart(2, "0")} from "./migration/${name}${existsSync(path.join(directory, name + ".vibe")) ? ".vibe" : ".js"}"`).join("\n")}
 
 export const migrations = [
 ${names.map((_, index) => `  m${index.toString().padStart(2, "0")},`).join("\n")}

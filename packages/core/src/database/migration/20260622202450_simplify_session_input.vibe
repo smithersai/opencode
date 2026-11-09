@@ -1,0 +1,18 @@
+import type { DatabaseMigration } from "../migration.js"
+
+const migration: DatabaseMigration.Migration = {
+  id: "20260622202450_simplify_session_input",
+  up(tx) {
+    return effect {
+      try tx.run(`DELETE FROM \`session_context_epoch\`;`)
+      try tx.run(`DELETE FROM \`session_input\`;`)
+      try tx.run(`DELETE FROM \`session_message\`;`)
+      try tx.run(`DELETE FROM \`event\`;`)
+      try tx.run(`DELETE FROM \`event_sequence\`;`)
+      try tx.run(`UPDATE \`session\` SET \`workspace_id\` = NULL WHERE \`workspace_id\` IS NOT NULL;`)
+      try tx.run(`DELETE FROM \`workspace\`;`)
+    }
+  },
+}
+
+export default migration

@@ -1,0 +1,17 @@
+import type { DatabaseMigration } from "../migration.js"
+
+const migration: DatabaseMigration.Migration = {
+  id: "20260312043431_session_message_cursor",
+  up(tx) {
+    return effect {
+      try tx.run(`DROP INDEX IF EXISTS \`message_session_idx\`;`)
+      try tx.run(`DROP INDEX IF EXISTS \`part_message_idx\`;`)
+      try tx.run(
+        `CREATE INDEX \`message_session_time_created_id_idx\` ON \`message\` (\`session_id\`,\`time_created\`,\`id\`);`,
+      )
+      try tx.run(`CREATE INDEX \`part_message_id_id_idx\` ON \`part\` (\`message_id\`,\`id\`);`)
+    }
+  },
+}
+
+export default migration

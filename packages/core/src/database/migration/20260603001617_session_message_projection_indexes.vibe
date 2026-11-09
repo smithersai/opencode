@@ -1,0 +1,20 @@
+import type { DatabaseMigration } from "../migration.js"
+
+const migration: DatabaseMigration.Migration = {
+  id: "20260603001617_session_message_projection_indexes",
+  up(tx) {
+    return effect {
+      try tx.run(`DROP INDEX IF EXISTS \`session_message_session_idx\`;`)
+      try tx.run(`DROP INDEX IF EXISTS \`session_message_session_type_idx\`;`)
+      try tx.run(`CREATE INDEX \`event_aggregate_seq_idx\` ON \`event\` (\`aggregate_id\`,\`seq\`);`)
+      try tx.run(
+        `CREATE INDEX \`session_message_session_time_created_id_idx\` ON \`session_message\` (\`session_id\`,\`time_created\`,\`id\`);`,
+      )
+      try tx.run(
+        `CREATE INDEX \`session_message_session_type_time_created_id_idx\` ON \`session_message\` (\`session_id\`,\`type\`,\`time_created\`,\`id\`);`,
+      )
+    }
+  },
+}
+
+export default migration

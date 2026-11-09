@@ -14,7 +14,7 @@ import {
   onCleanup,
 } from "solid-js"
 import { createStore } from "solid-js/store"
-import { useLocal, type ModelSelection } from "@/providers/models/selection"
+import { useLocal, type ModelSelection } from "./selection.vibex"
 import { isFreeModel } from "@/providers/models/models"
 import { useDialog } from "@opencode/ui/context/dialog"
 import { popularProviders } from "../catalog/providers.ts"

@@ -4,7 +4,7 @@ import { useLanguage } from "@/runtime/i18n/language";
 import { DialogSelectModel } from "@/providers/models/select-dialog";
 import { DialogSelectModelNext } from "@/providers/models/select-dialog-next";
 import { useSettings } from "@/settings/model";
-import { useLocal } from "@/providers/models/selection";
+import { useLocal } from "../providers/models/selection.jsx";
 import { useDialog } from "@opencode/ui/context/dialog";
 import { useSessionLayout } from "@/session/session-layout";
 import { createSessionOwnership } from "@/session/session-ownership";

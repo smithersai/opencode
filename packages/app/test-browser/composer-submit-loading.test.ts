@@ -3,7 +3,7 @@ import { createRoot, createSignal } from "solid-js"
 import type { ActiveComposerAdapter, ComposerSession } from "@/composer/adapter"
 import { createMemoryComposerState } from "@/composer/state"
 import { createComposerSubmit } from "@/composer/submit"
-import type { ModelSelection } from "@/providers/models/selection"
+import type { ModelSelection } from "../src/providers/models/selection.vibex"
 
 // SAFETY: submission reads only the selected model's id and provider id.
 const model = { id: "model-1", provider: { id: "provider-1" } } as NonNullable<ReturnType<ModelSelection["current"]>>

@@ -8,7 +8,7 @@ import { useSessionLayout } from "./session-layout.js";
 import { useDialog, useI18n } from "@opencode/ui/context";
 import { DialogUsageExceeded } from "@/providers/connect/usage-exceeded";
 import { GoUpsellHero } from "@/providers/connect/go-upsell-hero";
-import { useLocal } from "@/providers/models/selection";
+import { useLocal } from "../providers/models/selection.jsx";
 const GO_UPSELL_FREE_TIER_LAST_SEEN_AT = "go_upsell_last_seen_at";
 const GO_UPSELL_FREE_TIER_DONT_SHOW = "go_upsell_dont_show";
 const GO_UPSELL_ACCOUNT_RATE_LIMIT_LAST_SEEN_AT = "go_upsell_account_rate_limit_last_seen_at";

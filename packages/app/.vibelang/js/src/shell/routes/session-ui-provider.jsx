@@ -5,7 +5,7 @@ import { useNavigate, useParams } from "@solidjs/router";
 import { useQuery } from "@tanstack/solid-query";
 import { createMemo, onCleanup } from "solid-js";
 import { useProviders } from "../../providers/catalog/providers.js";
-import { LocalProvider } from "@/providers/models/selection";
+import { LocalProvider } from "../../providers/models/selection.jsx";
 import { sessionHref } from "@/shell/routes/session";
 import { useData } from "@/runtime/server/current";
 import { useServerSDK } from "@/runtime/server/client";

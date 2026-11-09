@@ -6,7 +6,7 @@ import { TextInput } from "@opencode/ui/text-input";
 import { useFilteredList } from "@opencode/ui/hooks";
 import { createMemo, For, Show } from "solid-js";
 import { createStore } from "solid-js/store";
-import { useLocal } from "@/providers/models/selection";
+import { useLocal } from "./selection.jsx";
 import { popularProviders } from "../catalog/providers.js";
 import { useLanguage } from "@/runtime/i18n/language";
 import { useDialog } from "@opencode/ui/context/dialog";

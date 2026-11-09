@@ -1,7 +1,7 @@
 import { describe, expect, test } from "bun:test"
 import { Schema } from "effect"
 import { WorkspaceOnboardingSchema, ProviderTipSchema } from "@/new-session/view"
-import { ModelSelectionSchema } from "@/providers/models/selection"
+import { ModelSelectionSchema } from "../../providers/models/selection.vibex"
 import { Persistence } from "@/runtime/persistence/schema"
 import { FileViewsSchema } from "../../workspaces/files/view-cache.vibe"
 import { languageSchema } from "@/runtime/i18n/language"

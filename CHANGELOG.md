@@ -6,6 +6,8 @@ Release notes for OpenCode V2, newest first.
 
 ### Changed
 
+- App model selection now uses VibeLang while preserving its schemas and behavior.
+
 - TUI prompt history now uses VibeLang while preserving stored history behavior.
 
 - Client generation now uses VibeLang while preserving generated sources.

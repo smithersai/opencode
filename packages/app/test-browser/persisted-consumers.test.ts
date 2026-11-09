@@ -1,6 +1,6 @@
 import { expect, test } from "bun:test"
 import { createRoot } from "solid-js"
-import { ModelSelectionSchema } from "@/providers/models/selection"
+import { ModelSelectionSchema } from "../src/providers/models/selection.vibex"
 import { flushPersisted } from "@/runtime/persistence/persist"
 import { persisted } from "@/runtime/persistence/storage"
 

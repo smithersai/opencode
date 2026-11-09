@@ -7,7 +7,7 @@ import { Tooltip } from "@opencode/ui/tooltip";
 import { useDialog } from "@opencode/ui/context/dialog";
 import { useTheme } from "@opencode/ui/theme";
 import { createMemo, onCleanup, onMount, For, Show } from "solid-js";
-import { useLocal } from "@/providers/models/selection";
+import { useLocal } from "./selection.jsx";
 import { isFreeModel } from "@/providers/models/models";
 import { useIntegrations } from "@/providers/catalog/integrations";
 import { decode64 } from "@/runtime/persistence/base64";

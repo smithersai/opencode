@@ -3,7 +3,7 @@ import { Icon } from "@opencode/ui/icon"
 import type { IconName } from "@opencode/ui/icons/catalog"
 import { useLanguage } from "@/runtime/i18n/language"
 import type { ModelUsageLabel } from "@/usage/model"
-import type { ModelSelection } from "./selection"
+import type { ModelSelection } from "./selection.vibex"
 import { ProviderModelIcon } from "./provider-group"
 
 type ModelInfo = NonNullable<ReturnType<ModelSelection["current"]>>

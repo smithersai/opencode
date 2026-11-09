@@ -1,4 +1,3 @@
-import { isDeepStrictEqual } from "node:util"
 import type { McpServer, SessionConfigOption } from "@agentclientprotocol/sdk"
 import type { OpenCodeClient, OpenCodeEvent } from "@opencode/client/effect"
 import { Mcp } from "@opencode/schema/mcp"
@@ -9,6 +8,7 @@ import { ACPClient } from "./client.vibe"
 import { availableCommands, configOptions, type Change, type Selection } from "./config-option.vibe"
 import { ACPConnection } from "./connection"
 import { ACPError } from "./error.vibe"
+import { isDeepStrictEqual } from "./sessions.platform"
 
 export type SupportedMcpServer = Exclude<McpServer, { readonly type: "acp" | "sse" }>
 
@@ -39,19 +39,19 @@ type Entry = {
 
 type SelectedEvent = Extract<OpenCodeEvent, { type: "session.model.selected" | "session.agent.selected" }>
 
-export const make = Effect.fnUntraced(function* (input: {
+export const make = effect function(input: {
   readonly client: OpenCodeClient
   readonly connection: ACPConnection.Interface
   readonly catalog: ACPCatalog.Interface
 }) {
-  const scope = yield* Effect.scope
+  const scope = try Effect.scope
   const sessions = new Map<string, Entry>()
   // Outlives entries so re-attaching does not re-add servers.
   const registeredMcpBySession = new Map<string, Map<string, Mcp.ServerConfig>>()
-  const connected = yield* Deferred.make<void>()
+  const connected = try Deferred.make<void>()
 
   // Subscribe before any attach so a switch right after `sessions.set` reaches the session.
-  yield* input.client.event.subscribe().pipe(
+  try input.client.event.subscribe().pipe(
     Stream.tap((event) => (event.type === "server.connected" ? Deferred.succeed(connected, undefined) : Effect.void)),
     Stream.filter(
       (event): event is SelectedEvent =>
@@ -78,17 +78,17 @@ export const make = Effect.fnUntraced(function* (input: {
       update: { sessionUpdate: "available_commands_update", availableCommands: availableCommands(catalog) },
     })
 
-  const changed = Effect.fnUntraced(function* (attached: Attached, previous: Catalog, next: Catalog, patch: Selection) {
-    const selection = yield* Ref.getAndUpdate(attached.selection, (current) => ({ ...current, ...patch }))
+  const changed = effect function(attached: Attached, previous: Catalog, next: Catalog, patch: Selection) {
+    const selection = try Ref.getAndUpdate(attached.selection, (current) => ({ ...current, ...patch }))
     const options = configOptions(next, { ...selection, ...patch })
-    if (!isDeepStrictEqual(options, configOptions(previous, selection))) {
-      yield* input.connection.sessionUpdate({
+    if (!(try equal(options, configOptions(previous, selection)))) {
+      try input.connection.sessionUpdate({
         sessionId: attached.id,
         update: { sessionUpdate: "config_option_update", configOptions: options },
       })
     }
-    if (!isDeepStrictEqual(next.commands, previous.commands)) yield* sendCommands(attached.id, next)
-  })
+    if (!(try equal(next.commands, previous.commands))) try sendCommands(attached.id, next)
+  }
 
   const registerMcp = (attached: Attached, servers: readonly SupportedMcpServer[]) =>
     Effect.suspend(() => {
@@ -97,16 +97,16 @@ export const make = Effect.fnUntraced(function* (input: {
       return Effect.forEach(
         servers,
         (server) =>
-          Effect.suspend(() => {
+          effect {
             const config = mcpConfig(server)
-            if (isDeepStrictEqual(registered.get(server.name), config)) return Effect.void
+            if (try equal(registered.get(server.name), config)) return
             registered.set(server.name, config)
-            return input.client.mcp.add({ server: server.name, location: { directory: attached.cwd }, config }).pipe(
+            return try input.client.mcp.add({ server: server.name, location: { directory: attached.cwd }, config }).pipe(
               Effect.catch(ACPClient.classify),
               Effect.onError(() => Effect.sync(() => registered.delete(server.name))),
               Effect.uninterruptible,
             )
-          }),
+          },
         { concurrency: "unbounded", discard: true },
       )
     })
@@ -121,30 +121,30 @@ export const make = Effect.fnUntraced(function* (input: {
     })
 
   return {
-    attach: Effect.fn("cli.acp.sessions.attach")(function* (session, cwd, mcpServers) {
-      yield* Deferred.await(connected)
-      const current = yield* input.catalog.get(cwd)
+    attach: Effect.fn("cli.acp.sessions.attach")(effect function(session, cwd, mcpServers) {
+      try Deferred.await(connected)
+      const current = try input.catalog.get(cwd)
       const entry: Entry = {
         attached: {
           id: session.id,
           cwd,
-          selection: yield* Ref.make<Selection>({ model: session.model, modeID: session.agent }),
+          selection: try Ref.make<Selection>({ model: session.model, modeID: session.agent }),
         },
         scope: Scope.forkUnsafe(scope),
-        selected: yield* Queue.unbounded<Change>(),
+        selected: try Queue.unbounded<Change>(),
       }
       // Swap synchronously so concurrent attaches of one ID cannot both keep a scope.
       const replaced = sessions.get(session.id)
       sessions.set(session.id, entry)
-      if (replaced) yield* Scope.close(replaced.scope, Exit.void)
-      yield* registerMcp(entry.attached, mcpServers).pipe(Effect.onError(() => remove(session.id, entry)))
-      const responded = yield* ACPConnection.Responded
+      if (replaced) try Scope.close(replaced.scope, Exit.void)
+      try registerMcp(entry.attached, mcpServers).pipe(Effect.onError(() => remove(session.id, entry)))
+      const responded = try ACPConnection.Responded
       // `changes` replays the latest catalog, so a reload since `current` still pushes.
       // One fold keeps catalog and selection consistent.
-      yield* Effect.gen(function* () {
-        yield* responded
-        yield* sendCommands(session.id, current)
-        yield* Stream.merge(
+      try effect {
+        try responded
+        try sendCommands(session.id, current)
+        try Stream.merge(
           input.catalog.changes(cwd).pipe(Stream.map((catalog) => ({ catalog, patch: {} }))),
           Stream.fromQueue(entry.selected).pipe(Stream.map((patch) => ({ catalog: undefined, patch }))),
         ).pipe(
@@ -156,41 +156,46 @@ export const make = Effect.fnUntraced(function* (input: {
             },
           ),
         )
-      }).pipe(Effect.ignore, Effect.forkIn(entry.scope))
+      }.pipe(Effect.ignore, Effect.forkIn(entry.scope))
       return {
         attached: entry.attached,
-        configOptions: configOptions(current, yield* Ref.get(entry.attached.selection)),
+        configOptions: configOptions(current, try Ref.get(entry.attached.selection)),
       }
     }),
-    detach: Effect.fn("cli.acp.sessions.detach")(function* (sessionID) {
+    detach: Effect.fn("cli.acp.sessions.detach")(effect function(sessionID) {
       const entry = sessions.get(sessionID)
-      if (entry) yield* remove(sessionID, entry)
+      if (entry) try remove(sessionID, entry)
     }),
-    release: Effect.fn("cli.acp.sessions.release")(function* (attached) {
+    release: Effect.fn("cli.acp.sessions.release")(effect function(attached) {
       const entry = sessions.get(attached.id)
-      if (entry?.attached === attached) yield* remove(attached.id, entry)
+      if (entry?.attached === attached) try remove(attached.id, entry)
     }),
-    require: Effect.fnUntraced(function* (sessionID) {
+    require: effect function(sessionID) {
       const entry = sessions.get(sessionID)
-      if (!entry) return yield* new ACPError.SessionNotFoundError({ sessionId: sessionID })
+      if (!entry) return try new ACPError.SessionNotFoundError({ sessionId: sessionID })
       return entry.attached
-    }),
-    fork: Effect.fn("cli.acp.sessions.fork")(function* (attached, effect) {
+    },
+    fork: Effect.fn("cli.acp.sessions.fork")(effect function(attached, effect) {
       const entry = sessions.get(attached.id)
-      if (entry?.attached !== attached) return yield* new ACPError.SessionNotFoundError({ sessionId: attached.id })
-      yield* Effect.forkIn(effect, entry.scope, { startImmediately: true })
+      if (entry?.attached !== attached) return try new ACPError.SessionNotFoundError({ sessionId: attached.id })
+      try Effect.forkIn(effect, entry.scope, { startImmediately: true })
     }),
     // Update selection before switching so the echoed event is a no-op.
-    select: Effect.fnUntraced(function* (attached, change) {
-      yield* Ref.update(attached.selection, (selection) => ({ ...selection, ...change }))
-      yield* (
+    select: effect function(attached, change) {
+      try Ref.update(attached.selection, (selection) => ({ ...selection, ...change }))
+      try (
         "model" in change
           ? input.client.session.switchModel({ sessionID: attached.id, model: change.model })
           : input.client.session.switchAgent({ sessionID: attached.id, agent: change.modeID })
       ).pipe(Effect.catch(ACPClient.classify))
-    }),
+    },
   } satisfies Interface
-})
+}
+
+// isDeepStrictEqual may throw from a getter or proxy; such a throw stays a defect, as it was in the generator.
+function equal(left: unknown, right: unknown) {
+  return Effect.try({ try: () => isDeepStrictEqual(left, right), catch: (cause) => cause }).pipe(Effect.orDie)
+}
 
 function mcpConfig(server: SupportedMcpServer) {
   if ("type" in server) {

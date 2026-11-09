@@ -16,6 +16,8 @@ Release notes for OpenCode V2, newest first.
 
 - Config plugins, the read, grep, glob and webfetch tools, and the bounded HTTP body reader now use VibeLang, with path and buffer access in native platform files.
 
+- The CLI server process and ACP session registry now use VibeLang while keeping host access and throwing host calls native.
+
 - Recording credential setup now uses VibeLang while keeping status checks read-only.
 
 - PTY handlers now use VibeLang while preserving replay and native callback failures.

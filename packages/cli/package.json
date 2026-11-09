@@ -14,7 +14,11 @@
   "exports": {
     "./vite-host": "./dev/host.js",
     "./run": "./src/run/index.ts",
-    "./server-process": "./src/server-process.ts"
+    "./server-process": {
+      "types": "./src/server-process.d.vibe.ts",
+      "vibelang-source": "./src/server-process.vibe",
+      "default": "./.vibelang/js/src/server-process.js"
+    }
   },
   "scripts": {
     "build": "bun run script/build.ts",

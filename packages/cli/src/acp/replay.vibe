@@ -7,7 +7,7 @@ import { ACPCompaction } from "./compaction.ts"
 import type { ACPConnection } from "./connection.ts"
 import { partsToContentChunks } from "./content.ts"
 import { ACPPermission } from "./permission.vibe"
-import type { Attached } from "./sessions.ts"
+import type { Attached } from "./sessions.vibe"
 import { ACPTranslate } from "./translate.ts"
 import { completedToolUpdate, errorToolUpdate, pendingToolCall, runningToolUpdate } from "./tool.vibe"
 

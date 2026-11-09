@@ -1,0 +1,6 @@
+[
+  { "file": null, "shell": null, "status": "missing" },
+  { "file": "fixture_file_value", "shell": null, "status": "file" },
+  { "file": null, "shell": "fixture_shell_value", "status": "shell" },
+  { "file": "fixture_file_value", "shell": "fixture_shell_value", "status": "file" }
+]

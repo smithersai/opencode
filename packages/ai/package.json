@@ -5,10 +5,10 @@
   "type": "module",
   "license": "MIT",
   "scripts": {
-    "setup:recording-env": "bun run script/setup-recording-env.ts",
+    "setup:recording-env": "VIBELANG_PROJECT=tsconfig.scripts.json bun run script/setup-recording-env.vibe",
     "test": "bun test --timeout 30000 --only-failures",
     "typecheck": "bun check --no-script && bun check --no-script -p tsconfig.types.json",
-    "typecheck:tsc": "vibelang --noEmit && vibelang --noEmit -p tsconfig.types.json",
+    "typecheck:tsc": "vibelang --noEmit && vibelang --noEmit -p tsconfig.types.json && vibelang -p tsconfig.scripts.json",
     "build": "vibelang -p tsconfig.build.json",
     "pack": "bun run script/pack.ts"
   },

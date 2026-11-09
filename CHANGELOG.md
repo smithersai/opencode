@@ -6,6 +6,8 @@ Release notes for OpenCode V2, newest first.
 
 ### Changed
 
+- Recording credential setup now uses VibeLang while keeping status checks read-only.
+
 - PTY handlers now use VibeLang while preserving replay and native callback failures.
 
 - Timeline projection now uses VibeLang behind its existing package entry point.

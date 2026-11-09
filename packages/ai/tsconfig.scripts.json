@@ -1,0 +1,14 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "composite": false,
+    "incremental": false,
+    "noEmit": true,
+    "rootDir": "."
+  },
+  "include": [
+    "script/setup-recording-env.vibe",
+    "script/setup-recording-env.platform.ts"
+  ],
+  "exclude": []
+}

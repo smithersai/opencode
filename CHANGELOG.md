@@ -6,6 +6,8 @@ Release notes for OpenCode V2, newest first.
 
 ### Changed
 
+- Client generation now uses VibeLang while preserving generated sources.
+
 - Database migration implementations now use VibeLang while preserving their existing declarations.
 
 - ACP helper implementations now use VibeLang while preserving their protocol behavior.

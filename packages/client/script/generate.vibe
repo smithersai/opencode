@@ -41,8 +41,7 @@ import { UsageLimits } from "@opencode/schema/usage-limits"
 import { Vcs } from "@opencode/schema/vcs"
 import { WebSearch } from "@opencode/schema/websearch"
 import { Workspace } from "@opencode/schema/workspace"
-import { Effect, Schema } from "effect"
-import { fileURLToPath } from "url"
+import { generatedPath } from "./generate.platform.ts"
 
 const promiseContract = compile(ClientApi, { groupNames, omitEndpoints: promiseOmitEndpoints })
 const effectContract = compile(ClientApi, { groupNames, omitEndpoints: effectOmitEndpoints })
@@ -94,14 +93,14 @@ const effectTypeReferences = [
   typeReference("RelativePath", "@opencode/schema/schema", RelativePath),
 ]
 
-await Effect.runPromise(
-  Effect.all(
+await runPromise(
+  all(
     [
       write(
         emitPromise(promiseContract, {
           mutableOutputs: true,
         }),
-        fileURLToPath(new URL("../src/promise/generated", import.meta.url)),
+        generatedPath("../src/promise/generated"),
       ),
       write(
         emitEffectImported(effectContract, {
@@ -109,7 +108,7 @@ await Effect.runPromise(
           api: "ClientApi",
           shapeModule: "../api/api.js",
         }),
-        fileURLToPath(new URL("../src/effect/generated", import.meta.url)),
+        generatedPath("../src/effect/generated"),
       ),
       write(
         emitEffectShape(effectContract, {
@@ -121,7 +120,7 @@ await Effect.runPromise(
             },
           },
         }),
-        fileURLToPath(new URL("../src/effect/api", import.meta.url)),
+        generatedPath("../src/effect/api"),
       ),
     ],
     { concurrency: 3, discard: true },

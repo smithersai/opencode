@@ -54,7 +54,7 @@
      "relative": "packages/client/src"
     },
     null,
-    "VloGER-83l-TTuNotJVgwiWgvgQq3uEEew3KwHtd_wE",
+    "LwZnQEDZa5Uy3Rh4scd01wXYRwhHWHJn77hbeU3mmyM",
     []
    ],
    [
@@ -62,7 +62,7 @@
      "relative": "packages/client/src/effect"
     },
     null,
-    "T7AwcGzGMLuOjLp6B1BD3EQh6M7d5Qd5gucq_HHK3VE",
+    "_IDPoCp37m37AHC7WEU3FeiJNo5mtvXt9gF8ZgfGWqQ",
     []
    ],
    [
@@ -207,8 +207,8 @@
     "path": {
      "relative": "bun.lock"
     },
-    "size": 739288,
-    "hash": "KqqT_a6jHIY17bE_AdCkDX4tTG5fSGUCdZkUFO_BXCo"
+    "size": 739662,
+    "hash": "kkobRm2xcvSFmj8PSS9FGVn2Rv5_V-8Qp4UBaBR7M3A"
    },
    {
     "path": {
@@ -227,7 +227,7 @@
    },
    {
     "path": {
-     "relative": "node_modules/.bun/vibelang-runtime@.vibelang-toolchain+vibelang-runtime-0.0.13-89b143f8885a.tgz+2c777828e7eddba9/node_modules/vibelang-runtime/package.json"
+     "relative": "node_modules/.bun/vibelang-runtime@.vibelang-toolchain+vibelang-runtime-0.0.13-89b143f8885a.tgz+3183b44d2ba27203/node_modules/vibelang-runtime/package.json"
     },
     "size": 7285,
     "hash": "2ezKbbr_73QzO3IiWWq52T567nsHhcY1EzNXyd43DAs"
@@ -236,15 +236,15 @@
     "path": {
      "relative": "packages/schema/package.json"
     },
-    "size": 19909,
-    "hash": "oCr4AmkT9qadNtgjYztyE-Ia10Xo9z53nonSziqm_l8"
+    "size": 19930,
+    "hash": "JjxWDVJ1UheMFLVxbA7aGlWdgTiAhNBlOAFBTc7Ixto"
    },
    {
     "path": {
      "relative": "packages/protocol/package.json"
     },
-    "size": 8834,
-    "hash": "C3FxsyhgPOTNClRurK0KcMZZaVj9f9tBukU7Y9zOnyk"
+    "size": 8868,
+    "hash": "PWXKZhszdbvVN0SouZSQfycHbDVv4cIQwGfrzL0V830"
    },
    {
     "path": {
@@ -257,8 +257,8 @@
     "path": {
      "relative": "packages/client/package.json"
     },
-    "size": 2871,
-    "hash": "2bB79KLk-mbPKsGpIOASygIqTdGy7lpohVXY_sdeY3A"
+    "size": 2873,
+    "hash": "B4D41kANNFurJlcY7PxytZoFY8uOc6A5TCBA-Y3wf2o"
    },
    {
     "path": {
@@ -1440,126 +1440,126 @@
    },
    {
     "path": {
-     "relative": "node_modules/.bun/vibelang-runtime@.vibelang-toolchain+vibelang-runtime-0.0.13-89b143f8885a.tgz+2c777828e7eddba9/node_modules/vibelang-runtime/dist/version.d.ts"
+     "relative": "node_modules/.bun/vibelang-runtime@.vibelang-toolchain+vibelang-runtime-0.0.13-89b143f8885a.tgz+3183b44d2ba27203/node_modules/vibelang-runtime/dist/version.d.ts"
     },
     "size": 91,
     "hash": "OLhx74xVvRMxcl4krcVslmdZGXNsTNFw1VSQRYH3mpc"
    },
    {
     "path": {
-     "relative": "node_modules/.bun/vibelang-runtime@.vibelang-toolchain+vibelang-runtime-0.0.13-89b143f8885a.tgz+2c777828e7eddba9/node_modules/vibelang-runtime/dist/calls.d.ts"
+     "relative": "node_modules/.bun/vibelang-runtime@.vibelang-toolchain+vibelang-runtime-0.0.13-89b143f8885a.tgz+3183b44d2ba27203/node_modules/vibelang-runtime/dist/calls.d.ts"
     },
     "size": 1383,
     "hash": "uAwhDPR2CFdUic_UDD997dkpJaNZ3R1T_jqRSG4Cclo"
    },
    {
     "path": {
-     "relative": "node_modules/.bun/vibelang-runtime@.vibelang-toolchain+vibelang-runtime-0.0.13-89b143f8885a.tgz+2c777828e7eddba9/node_modules/vibelang-runtime/dist/fastcalls.d.ts"
+     "relative": "node_modules/.bun/vibelang-runtime@.vibelang-toolchain+vibelang-runtime-0.0.13-89b143f8885a.tgz+3183b44d2ba27203/node_modules/vibelang-runtime/dist/fastcalls.d.ts"
     },
     "size": 4751,
     "hash": "9wxoIynrlvPe4VAUQN_yG-rNp1lwbKvt-AZOat2MRdY"
    },
    {
     "path": {
-     "relative": "node_modules/.bun/vibelang-runtime@.vibelang-toolchain+vibelang-runtime-0.0.13-89b143f8885a.tgz+2c777828e7eddba9/node_modules/vibelang-runtime/dist/regions.d.ts"
+     "relative": "node_modules/.bun/vibelang-runtime@.vibelang-toolchain+vibelang-runtime-0.0.13-89b143f8885a.tgz+3183b44d2ba27203/node_modules/vibelang-runtime/dist/regions.d.ts"
     },
     "size": 6387,
     "hash": "wHQs6G-mP3lEKiqUEa8esaj1EIdtBxzBWiKUXvaoBbY"
    },
    {
     "path": {
-     "relative": "node_modules/.bun/vibelang-runtime@.vibelang-toolchain+vibelang-runtime-0.0.13-89b143f8885a.tgz+2c777828e7eddba9/node_modules/vibelang-runtime/dist/fork.d.ts"
+     "relative": "node_modules/.bun/vibelang-runtime@.vibelang-toolchain+vibelang-runtime-0.0.13-89b143f8885a.tgz+3183b44d2ba27203/node_modules/vibelang-runtime/dist/fork.d.ts"
     },
     "size": 1522,
     "hash": "ckaaRg51IcfZbr740uLdup3qFuKS3TxgVYGSFOW2Q54"
    },
    {
     "path": {
-     "relative": "node_modules/.bun/vibelang-runtime@.vibelang-toolchain+vibelang-runtime-0.0.13-89b143f8885a.tgz+2c777828e7eddba9/node_modules/vibelang-runtime/dist/kernel/internals.d.ts"
+     "relative": "node_modules/.bun/vibelang-runtime@.vibelang-toolchain+vibelang-runtime-0.0.13-89b143f8885a.tgz+3183b44d2ba27203/node_modules/vibelang-runtime/dist/kernel/internals.d.ts"
     },
     "size": 1238,
     "hash": "IMzEvVGIaf37peHrkUH2HsmoOemwj7YAPgBI1bNG6tk"
    },
    {
     "path": {
-     "relative": "node_modules/.bun/vibelang-runtime@.vibelang-toolchain+vibelang-runtime-0.0.13-89b143f8885a.tgz+2c777828e7eddba9/node_modules/vibelang-runtime/dist/kernel/kernel.d.ts"
+     "relative": "node_modules/.bun/vibelang-runtime@.vibelang-toolchain+vibelang-runtime-0.0.13-89b143f8885a.tgz+3183b44d2ba27203/node_modules/vibelang-runtime/dist/kernel/kernel.d.ts"
     },
     "size": 6338,
     "hash": "XGJbPTQadKfJQPfra4kFdQXvD8XgBQQ6eH-by456KBs"
    },
    {
     "path": {
-     "relative": "node_modules/.bun/vibelang-runtime@.vibelang-toolchain+vibelang-runtime-0.0.13-89b143f8885a.tgz+2c777828e7eddba9/node_modules/vibelang-runtime/dist/services.d.ts"
+     "relative": "node_modules/.bun/vibelang-runtime@.vibelang-toolchain+vibelang-runtime-0.0.13-89b143f8885a.tgz+3183b44d2ba27203/node_modules/vibelang-runtime/dist/services.d.ts"
     },
     "size": 3346,
     "hash": "JxhNAxkLVY33Lxqyh_Vd-mqQSE8dmceO3rEnpBJTbEY"
    },
    {
     "path": {
-     "relative": "node_modules/.bun/vibelang-runtime@.vibelang-toolchain+vibelang-runtime-0.0.13-89b143f8885a.tgz+2c777828e7eddba9/node_modules/vibelang-runtime/dist/handlers.d.ts"
+     "relative": "node_modules/.bun/vibelang-runtime@.vibelang-toolchain+vibelang-runtime-0.0.13-89b143f8885a.tgz+3183b44d2ba27203/node_modules/vibelang-runtime/dist/handlers.d.ts"
     },
     "size": 4479,
     "hash": "ZzQU78bLBWIppynLZgOBgDkcijiAJJq_TQpkNW-JrCY"
    },
    {
     "path": {
-     "relative": "node_modules/.bun/vibelang-runtime@.vibelang-toolchain+vibelang-runtime-0.0.13-89b143f8885a.tgz+2c777828e7eddba9/node_modules/vibelang-runtime/dist/producers.d.ts"
+     "relative": "node_modules/.bun/vibelang-runtime@.vibelang-toolchain+vibelang-runtime-0.0.13-89b143f8885a.tgz+3183b44d2ba27203/node_modules/vibelang-runtime/dist/producers.d.ts"
     },
     "size": 2721,
     "hash": "ndVPafzb3N5wWv25-4h-4Omv5tqD3POjx2v8_p9Erko"
    },
    {
     "path": {
-     "relative": "node_modules/.bun/vibelang-runtime@.vibelang-toolchain+vibelang-runtime-0.0.13-89b143f8885a.tgz+2c777828e7eddba9/node_modules/vibelang-runtime/dist/iterators.d.ts"
+     "relative": "node_modules/.bun/vibelang-runtime@.vibelang-toolchain+vibelang-runtime-0.0.13-89b143f8885a.tgz+3183b44d2ba27203/node_modules/vibelang-runtime/dist/iterators.d.ts"
     },
     "size": 307,
     "hash": "R_32U0PMqjIgXtbB6rzs2OaY3x5NurDOaidBkv7uhfE"
    },
    {
     "path": {
-     "relative": "node_modules/.bun/vibelang-runtime@.vibelang-toolchain+vibelang-runtime-0.0.13-89b143f8885a.tgz+2c777828e7eddba9/node_modules/vibelang-runtime/dist/binding-iterator.d.ts"
+     "relative": "node_modules/.bun/vibelang-runtime@.vibelang-toolchain+vibelang-runtime-0.0.13-89b143f8885a.tgz+3183b44d2ba27203/node_modules/vibelang-runtime/dist/binding-iterator.d.ts"
     },
     "size": 521,
     "hash": "a5GFo1F3YhIqtKzebc3H9jA8z8NZhbnUT6KJQHrwj5Q"
    },
    {
     "path": {
-     "relative": "node_modules/.bun/vibelang-runtime@.vibelang-toolchain+vibelang-runtime-0.0.13-89b143f8885a.tgz+2c777828e7eddba9/node_modules/vibelang-runtime/dist/boundaries.d.ts"
+     "relative": "node_modules/.bun/vibelang-runtime@.vibelang-toolchain+vibelang-runtime-0.0.13-89b143f8885a.tgz+3183b44d2ba27203/node_modules/vibelang-runtime/dist/boundaries.d.ts"
     },
     "size": 2237,
     "hash": "BZIaO-QAJ9Z6Fu4irKqOzSRsUYSLuUQiW1zKjGvuXfI"
    },
    {
     "path": {
-     "relative": "node_modules/.bun/vibelang-runtime@.vibelang-toolchain+vibelang-runtime-0.0.13-89b143f8885a.tgz+2c777828e7eddba9/node_modules/vibelang-runtime/dist/hatches.d.ts"
+     "relative": "node_modules/.bun/vibelang-runtime@.vibelang-toolchain+vibelang-runtime-0.0.13-89b143f8885a.tgz+3183b44d2ba27203/node_modules/vibelang-runtime/dist/hatches.d.ts"
     },
     "size": 4288,
     "hash": "SHvw3j3NmkBQey39qbFcwin5cLqgq9PF9msgmFzaYKE"
    },
    {
     "path": {
-     "relative": "node_modules/.bun/vibelang-runtime@.vibelang-toolchain+vibelang-runtime-0.0.13-89b143f8885a.tgz+2c777828e7eddba9/node_modules/vibelang-runtime/dist/fibers.d.ts"
+     "relative": "node_modules/.bun/vibelang-runtime@.vibelang-toolchain+vibelang-runtime-0.0.13-89b143f8885a.tgz+3183b44d2ba27203/node_modules/vibelang-runtime/dist/fibers.d.ts"
     },
     "size": 7629,
     "hash": "EiZ7kFH915KwfM4-KJZsdiawtJ_7Ty4raruq4BAIkGU"
    },
    {
     "path": {
-     "relative": "node_modules/.bun/vibelang-runtime@.vibelang-toolchain+vibelang-runtime-0.0.13-89b143f8885a.tgz+2c777828e7eddba9/node_modules/vibelang-runtime/dist/provide.d.ts"
+     "relative": "node_modules/.bun/vibelang-runtime@.vibelang-toolchain+vibelang-runtime-0.0.13-89b143f8885a.tgz+3183b44d2ba27203/node_modules/vibelang-runtime/dist/provide.d.ts"
     },
     "size": 2355,
     "hash": "DTx-GtW-_UHyzfF40aMg8o-NybtpBLPa3q1ln3Jpa5s"
    },
    {
     "path": {
-     "relative": "node_modules/.bun/vibelang-runtime@.vibelang-toolchain+vibelang-runtime-0.0.13-89b143f8885a.tgz+2c777828e7eddba9/node_modules/vibelang-runtime/dist/primitives.d.ts"
+     "relative": "node_modules/.bun/vibelang-runtime@.vibelang-toolchain+vibelang-runtime-0.0.13-89b143f8885a.tgz+3183b44d2ba27203/node_modules/vibelang-runtime/dist/primitives.d.ts"
     },
     "size": 2785,
     "hash": "IWg8HZdD_h5bezhO5VO0Oat3-GL3h98xoW06v-EAWOs"
    },
    {
     "path": {
-     "relative": "node_modules/.bun/vibelang-runtime@.vibelang-toolchain+vibelang-runtime-0.0.13-89b143f8885a.tgz+2c777828e7eddba9/node_modules/vibelang-runtime/dist/match.d.ts"
+     "relative": "node_modules/.bun/vibelang-runtime@.vibelang-toolchain+vibelang-runtime-0.0.13-89b143f8885a.tgz+3183b44d2ba27203/node_modules/vibelang-runtime/dist/match.d.ts"
     },
     "size": 6984,
     "hash": "2FsfAhYwF1fwC5e0LU4278-JVGYlmyyiLdE2ulgu2A0"
@@ -1573,70 +1573,70 @@
    },
    {
     "path": {
-     "relative": "node_modules/.bun/vibelang-runtime@.vibelang-toolchain+vibelang-runtime-0.0.13-89b143f8885a.tgz+2c777828e7eddba9/node_modules/vibelang-runtime/dist/main.d.ts"
+     "relative": "node_modules/.bun/vibelang-runtime@.vibelang-toolchain+vibelang-runtime-0.0.13-89b143f8885a.tgz+3183b44d2ba27203/node_modules/vibelang-runtime/dist/main.d.ts"
     },
     "size": 1370,
     "hash": "S2GqpFmzvnikrJrgw5lzEqtFJy_7i20jzGlMr4mt88Y"
    },
    {
     "path": {
-     "relative": "node_modules/.bun/vibelang-runtime@.vibelang-toolchain+vibelang-runtime-0.0.13-89b143f8885a.tgz+2c777828e7eddba9/node_modules/vibelang-runtime/dist/prelude-core.d.ts"
+     "relative": "node_modules/.bun/vibelang-runtime@.vibelang-toolchain+vibelang-runtime-0.0.13-89b143f8885a.tgz+3183b44d2ba27203/node_modules/vibelang-runtime/dist/prelude-core.d.ts"
     },
     "size": 2772,
     "hash": "-F09SO-52bZw9ht9RpKGlrIWz0y1TQwQS5E6DXxUPQQ"
    },
    {
     "path": {
-     "relative": "node_modules/.bun/vibelang-runtime@.vibelang-toolchain+vibelang-runtime-0.0.13-89b143f8885a.tgz+2c777828e7eddba9/node_modules/vibelang-runtime/dist/resources.d.ts"
+     "relative": "node_modules/.bun/vibelang-runtime@.vibelang-toolchain+vibelang-runtime-0.0.13-89b143f8885a.tgz+3183b44d2ba27203/node_modules/vibelang-runtime/dist/resources.d.ts"
     },
     "size": 1670,
     "hash": "jWScKmw8idFbB3itet51UYKNCRN74Mmu_uzZqy3V28w"
    },
    {
     "path": {
-     "relative": "node_modules/.bun/vibelang-runtime@.vibelang-toolchain+vibelang-runtime-0.0.13-89b143f8885a.tgz+2c777828e7eddba9/node_modules/vibelang-runtime/dist/legacy-await-types.d.ts"
+     "relative": "node_modules/.bun/vibelang-runtime@.vibelang-toolchain+vibelang-runtime-0.0.13-89b143f8885a.tgz+3183b44d2ba27203/node_modules/vibelang-runtime/dist/legacy-await-types.d.ts"
     },
     "size": 2033,
     "hash": "-FCwl_PxDin1gwAopKVXXRBoJCDUdKxfzIl4qN9DSoc"
    },
    {
     "path": {
-     "relative": "node_modules/.bun/vibelang-runtime@.vibelang-toolchain+vibelang-runtime-0.0.13-89b143f8885a.tgz+2c777828e7eddba9/node_modules/vibelang-runtime/dist/match-cache.d.ts"
+     "relative": "node_modules/.bun/vibelang-runtime@.vibelang-toolchain+vibelang-runtime-0.0.13-89b143f8885a.tgz+3183b44d2ba27203/node_modules/vibelang-runtime/dist/match-cache.d.ts"
     },
     "size": 1848,
     "hash": "--YGTy05Qg7JNLPVUPyXp00E4F2Em5j1uTY_Bfe8lIQ"
    },
    {
     "path": {
-     "relative": "node_modules/.bun/vibelang-runtime@.vibelang-toolchain+vibelang-runtime-0.0.13-89b143f8885a.tgz+2c777828e7eddba9/node_modules/vibelang-runtime/dist/core.d.ts"
+     "relative": "node_modules/.bun/vibelang-runtime@.vibelang-toolchain+vibelang-runtime-0.0.13-89b143f8885a.tgz+3183b44d2ba27203/node_modules/vibelang-runtime/dist/core.d.ts"
     },
     "size": 1612,
     "hash": "7teQjEXxfbpg3ExxV-mnuvIVLHwt2HKWK5u_wNRmvi0"
    },
    {
     "path": {
-     "relative": "node_modules/.bun/vibelang-runtime@.vibelang-toolchain+vibelang-runtime-0.0.13-89b143f8885a.tgz+2c777828e7eddba9/node_modules/vibelang-runtime/dist/experimental/Animations.d.ts"
+     "relative": "node_modules/.bun/vibelang-runtime@.vibelang-toolchain+vibelang-runtime-0.0.13-89b143f8885a.tgz+3183b44d2ba27203/node_modules/vibelang-runtime/dist/experimental/Animations.d.ts"
     },
     "size": 4126,
     "hash": "LIh_ITVpztxGdctQldXDsjoilz47SeJfVYCfdklEYtE"
    },
    {
     "path": {
-     "relative": "node_modules/.bun/vibelang-runtime@.vibelang-toolchain+vibelang-runtime-0.0.13-89b143f8885a.tgz+2c777828e7eddba9/node_modules/vibelang-runtime/dist/experimental/BrowserInfo.d.ts"
+     "relative": "node_modules/.bun/vibelang-runtime@.vibelang-toolchain+vibelang-runtime-0.0.13-89b143f8885a.tgz+3183b44d2ba27203/node_modules/vibelang-runtime/dist/experimental/BrowserInfo.d.ts"
     },
     "size": 1989,
     "hash": "mO2jTu2b39Dco34MEBt0o6UTMBWA4gEIAtZHi1IW46I"
    },
    {
     "path": {
-     "relative": "node_modules/.bun/vibelang-runtime@.vibelang-toolchain+vibelang-runtime-0.0.13-89b143f8885a.tgz+2c777828e7eddba9/node_modules/vibelang-runtime/dist/experimental/ChildProcess.d.ts"
+     "relative": "node_modules/.bun/vibelang-runtime@.vibelang-toolchain+vibelang-runtime-0.0.13-89b143f8885a.tgz+3183b44d2ba27203/node_modules/vibelang-runtime/dist/experimental/ChildProcess.d.ts"
     },
     "size": 3133,
     "hash": "vtz-lrM1qVNbYlFgzi89KmoPI076rUvhtNoYs2UqjCE"
    },
    {
     "path": {
-     "relative": "node_modules/.bun/vibelang-runtime@.vibelang-toolchain+vibelang-runtime-0.0.13-89b143f8885a.tgz+2c777828e7eddba9/node_modules/vibelang-runtime/dist/experimental/Crypto.d.ts"
+     "relative": "node_modules/.bun/vibelang-runtime@.vibelang-toolchain+vibelang-runtime-0.0.13-89b143f8885a.tgz+3183b44d2ba27203/node_modules/vibelang-runtime/dist/experimental/Crypto.d.ts"
     },
     "size": 6627,
     "hash": "XwHusiTQVjE4hwkTA3zAFGJPZll6iaWLc-hZp7hAFPk"
@@ -1657,14 +1657,14 @@
    },
    {
     "path": {
-     "relative": "node_modules/.bun/vibelang-runtime@.vibelang-toolchain+vibelang-runtime-0.0.13-89b143f8885a.tgz+2c777828e7eddba9/node_modules/vibelang-runtime/dist/experimental/Dns.d.ts"
+     "relative": "node_modules/.bun/vibelang-runtime@.vibelang-toolchain+vibelang-runtime-0.0.13-89b143f8885a.tgz+3183b44d2ba27203/node_modules/vibelang-runtime/dist/experimental/Dns.d.ts"
     },
     "size": 2094,
     "hash": "a8V4vRrBPQWD6J1ZDSVUngqy4VPQYhwXW_4wp7dZbDw"
    },
    {
     "path": {
-     "relative": "node_modules/.bun/vibelang-runtime@.vibelang-toolchain+vibelang-runtime-0.0.13-89b143f8885a.tgz+2c777828e7eddba9/node_modules/vibelang-runtime/dist/experimental/Document.d.ts"
+     "relative": "node_modules/.bun/vibelang-runtime@.vibelang-toolchain+vibelang-runtime-0.0.13-89b143f8885a.tgz+3183b44d2ba27203/node_modules/vibelang-runtime/dist/experimental/Document.d.ts"
     },
     "size": 2970,
     "hash": "wgJNU0rjtPZ9wCQ1vOFM17UzIMNuxXkAnRL6Y6k91UM"
@@ -1776,56 +1776,56 @@
    },
    {
     "path": {
-     "relative": "node_modules/.bun/vibelang-runtime@.vibelang-toolchain+vibelang-runtime-0.0.13-89b143f8885a.tgz+2c777828e7eddba9/node_modules/vibelang-runtime/dist/experimental/Encoding.d.ts"
+     "relative": "node_modules/.bun/vibelang-runtime@.vibelang-toolchain+vibelang-runtime-0.0.13-89b143f8885a.tgz+3183b44d2ba27203/node_modules/vibelang-runtime/dist/experimental/Encoding.d.ts"
     },
     "size": 852,
     "hash": "6JHF6GIvlFYBICb2qrmb-bGQDaH1t16tgPW4ET7lViM"
    },
    {
     "path": {
-     "relative": "node_modules/.bun/vibelang-runtime@.vibelang-toolchain+vibelang-runtime-0.0.13-89b143f8885a.tgz+2c777828e7eddba9/node_modules/vibelang-runtime/dist/experimental/FileReader.d.ts"
+     "relative": "node_modules/.bun/vibelang-runtime@.vibelang-toolchain+vibelang-runtime-0.0.13-89b143f8885a.tgz+3183b44d2ba27203/node_modules/vibelang-runtime/dist/experimental/FileReader.d.ts"
     },
     "size": 3271,
     "hash": "Izc4Lg3SrR_vTOYfWz0LwZeU40DjL8144EqjrGxp8AU"
    },
    {
     "path": {
-     "relative": "node_modules/.bun/vibelang-runtime@.vibelang-toolchain+vibelang-runtime-0.0.13-89b143f8885a.tgz+2c777828e7eddba9/node_modules/vibelang-runtime/dist/experimental/Headers.d.ts"
+     "relative": "node_modules/.bun/vibelang-runtime@.vibelang-toolchain+vibelang-runtime-0.0.13-89b143f8885a.tgz+3183b44d2ba27203/node_modules/vibelang-runtime/dist/experimental/Headers.d.ts"
     },
     "size": 1481,
     "hash": "y3AcQqeGN8mxkJ58iTbWOmyXNdK5dRRTEUogxbFXy0s"
    },
    {
     "path": {
-     "relative": "node_modules/.bun/vibelang-runtime@.vibelang-toolchain+vibelang-runtime-0.0.13-89b143f8885a.tgz+2c777828e7eddba9/node_modules/vibelang-runtime/dist/experimental/FileSystem.d.ts"
+     "relative": "node_modules/.bun/vibelang-runtime@.vibelang-toolchain+vibelang-runtime-0.0.13-89b143f8885a.tgz+3183b44d2ba27203/node_modules/vibelang-runtime/dist/experimental/FileSystem.d.ts"
     },
     "size": 4237,
     "hash": "GscyJs1q8_cVZgxDm-u1CJwscBRKw-f5XSRJdUxCAP8"
    },
    {
     "path": {
-     "relative": "node_modules/.bun/vibelang-runtime@.vibelang-toolchain+vibelang-runtime-0.0.13-89b143f8885a.tgz+2c777828e7eddba9/node_modules/vibelang-runtime/dist/experimental/Locks.d.ts"
+     "relative": "node_modules/.bun/vibelang-runtime@.vibelang-toolchain+vibelang-runtime-0.0.13-89b143f8885a.tgz+3183b44d2ba27203/node_modules/vibelang-runtime/dist/experimental/Locks.d.ts"
     },
     "size": 5678,
     "hash": "vA5GYo8h7qcs5a-fuxQPj_Xrbx1iP5fNyo4v0SJHAKk"
    },
    {
     "path": {
-     "relative": "node_modules/.bun/vibelang-runtime@.vibelang-toolchain+vibelang-runtime-0.0.13-89b143f8885a.tgz+2c777828e7eddba9/node_modules/vibelang-runtime/dist/experimental/MediaQuery.d.ts"
+     "relative": "node_modules/.bun/vibelang-runtime@.vibelang-toolchain+vibelang-runtime-0.0.13-89b143f8885a.tgz+3183b44d2ba27203/node_modules/vibelang-runtime/dist/experimental/MediaQuery.d.ts"
     },
     "size": 2800,
     "hash": "H2TsmsCxrAVQFpn2-nEjFgeAxGOVseTq6FcGaP1wfeE"
    },
    {
     "path": {
-     "relative": "node_modules/.bun/vibelang-runtime@.vibelang-toolchain+vibelang-runtime-0.0.13-89b143f8885a.tgz+2c777828e7eddba9/node_modules/vibelang-runtime/dist/experimental/NetAddress.d.ts"
+     "relative": "node_modules/.bun/vibelang-runtime@.vibelang-toolchain+vibelang-runtime-0.0.13-89b143f8885a.tgz+3183b44d2ba27203/node_modules/vibelang-runtime/dist/experimental/NetAddress.d.ts"
     },
     "size": 444,
     "hash": "SgsPPjdFtiCOl0YW0Hfd-hH9BkaSftHcBv_ygK67A4U"
    },
    {
     "path": {
-     "relative": "node_modules/.bun/vibelang-runtime@.vibelang-toolchain+vibelang-runtime-0.0.13-89b143f8885a.tgz+2c777828e7eddba9/node_modules/vibelang-runtime/dist/experimental/NodeStream.d.ts"
+     "relative": "node_modules/.bun/vibelang-runtime@.vibelang-toolchain+vibelang-runtime-0.0.13-89b143f8885a.tgz+3183b44d2ba27203/node_modules/vibelang-runtime/dist/experimental/NodeStream.d.ts"
     },
     "size": 3224,
     "hash": "-Om0tHTgAHL2dgmRlVlG--oBT8d5mftOLPyo-yrHdSk"
@@ -1853,14 +1853,14 @@
    },
    {
     "path": {
-     "relative": "node_modules/.bun/vibelang-runtime@.vibelang-toolchain+vibelang-runtime-0.0.13-89b143f8885a.tgz+2c777828e7eddba9/node_modules/vibelang-runtime/dist/experimental/Process.d.ts"
+     "relative": "node_modules/.bun/vibelang-runtime@.vibelang-toolchain+vibelang-runtime-0.0.13-89b143f8885a.tgz+3183b44d2ba27203/node_modules/vibelang-runtime/dist/experimental/Process.d.ts"
     },
     "size": 8241,
     "hash": "oiIVYvpaIUKJOP6geMxc4B8Dl0_JFBNWkR9ZIAKCyHs"
    },
    {
     "path": {
-     "relative": "node_modules/.bun/vibelang-runtime@.vibelang-toolchain+vibelang-runtime-0.0.13-89b143f8885a.tgz+2c777828e7eddba9/node_modules/vibelang-runtime/dist/experimental/ResizeObserver.d.ts"
+     "relative": "node_modules/.bun/vibelang-runtime@.vibelang-toolchain+vibelang-runtime-0.0.13-89b143f8885a.tgz+3183b44d2ba27203/node_modules/vibelang-runtime/dist/experimental/ResizeObserver.d.ts"
     },
     "size": 2495,
     "hash": "uUMxJ3p5sbc-qhqfyWNUwnitOJtINeXL_9M1xJLWz30"
@@ -1874,49 +1874,49 @@
    },
    {
     "path": {
-     "relative": "node_modules/.bun/vibelang-runtime@.vibelang-toolchain+vibelang-runtime-0.0.13-89b143f8885a.tgz+2c777828e7eddba9/node_modules/vibelang-runtime/dist/experimental/Stdio.d.ts"
+     "relative": "node_modules/.bun/vibelang-runtime@.vibelang-toolchain+vibelang-runtime-0.0.13-89b143f8885a.tgz+3183b44d2ba27203/node_modules/vibelang-runtime/dist/experimental/Stdio.d.ts"
     },
     "size": 1504,
     "hash": "6TcF16KKXbLqEGWumgFgvLQ7WkOiGr_cWBw27JoJX6Q"
    },
    {
     "path": {
-     "relative": "node_modules/.bun/vibelang-runtime@.vibelang-toolchain+vibelang-runtime-0.0.13-89b143f8885a.tgz+2c777828e7eddba9/node_modules/vibelang-runtime/dist/experimental/Window.d.ts"
+     "relative": "node_modules/.bun/vibelang-runtime@.vibelang-toolchain+vibelang-runtime-0.0.13-89b143f8885a.tgz+3183b44d2ba27203/node_modules/vibelang-runtime/dist/experimental/Window.d.ts"
     },
     "size": 2301,
     "hash": "Jgz07Sov3RhBpS50HAW-g5wQmxTspcjGXzQUavlym-g"
    },
    {
     "path": {
-     "relative": "node_modules/.bun/vibelang-runtime@.vibelang-toolchain+vibelang-runtime-0.0.13-89b143f8885a.tgz+2c777828e7eddba9/node_modules/vibelang-runtime/dist/experimental/AudioContext.d.ts"
+     "relative": "node_modules/.bun/vibelang-runtime@.vibelang-toolchain+vibelang-runtime-0.0.13-89b143f8885a.tgz+3183b44d2ba27203/node_modules/vibelang-runtime/dist/experimental/AudioContext.d.ts"
     },
     "size": 2205,
     "hash": "z0dedL-zpn1GrXaOgFyOHm7DMb1z3zCMaIMqGqR6tUk"
    },
    {
     "path": {
-     "relative": "node_modules/.bun/vibelang-runtime@.vibelang-toolchain+vibelang-runtime-0.0.13-89b143f8885a.tgz+2c777828e7eddba9/node_modules/vibelang-runtime/dist/experimental/Request.d.ts"
+     "relative": "node_modules/.bun/vibelang-runtime@.vibelang-toolchain+vibelang-runtime-0.0.13-89b143f8885a.tgz+3183b44d2ba27203/node_modules/vibelang-runtime/dist/experimental/Request.d.ts"
     },
     "size": 1649,
     "hash": "KRg2WDevqFgPetJq4CxDHh8edm0srjqhWRN7lTSenyY"
    },
    {
     "path": {
-     "relative": "node_modules/.bun/vibelang-runtime@.vibelang-toolchain+vibelang-runtime-0.0.13-89b143f8885a.tgz+2c777828e7eddba9/node_modules/vibelang-runtime/dist/experimental/index.d.ts"
+     "relative": "node_modules/.bun/vibelang-runtime@.vibelang-toolchain+vibelang-runtime-0.0.13-89b143f8885a.tgz+3183b44d2ba27203/node_modules/vibelang-runtime/dist/experimental/index.d.ts"
     },
     "size": 1574,
     "hash": "hcZRaVCidu8HYX0HvnTobrHo2cQDv4U1txmpSQ0GSa0"
    },
    {
     "path": {
-     "relative": "node_modules/.bun/vibelang-runtime@.vibelang-toolchain+vibelang-runtime-0.0.13-89b143f8885a.tgz+2c777828e7eddba9/node_modules/vibelang-runtime/dist/prelude.d.ts"
+     "relative": "node_modules/.bun/vibelang-runtime@.vibelang-toolchain+vibelang-runtime-0.0.13-89b143f8885a.tgz+3183b44d2ba27203/node_modules/vibelang-runtime/dist/prelude.d.ts"
     },
     "size": 129,
     "hash": "Tqy755Tt4ZuJDGVpmxUCXsPlRUgHYXa4ktmztNdW1DY"
    },
    {
     "path": {
-     "relative": "node_modules/.bun/vibelang-runtime@.vibelang-toolchain+vibelang-runtime-0.0.13-89b143f8885a.tgz+2c777828e7eddba9/node_modules/vibelang-runtime/dist/index.d.ts"
+     "relative": "node_modules/.bun/vibelang-runtime@.vibelang-toolchain+vibelang-runtime-0.0.13-89b143f8885a.tgz+3183b44d2ba27203/node_modules/vibelang-runtime/dist/index.d.ts"
     },
     "size": 107,
     "hash": "kHyPbTEwJDNbyrr9EJDBtS42mtLKhF1zop-5XYfg38g"
@@ -2933,8 +2933,8 @@
     "path": {
      "relative": "packages/schema/src/session-revert.vibe"
     },
-    "size": 2906,
-    "hash": "IJ9xP9YV7xDCBNBoRxY898IfjT5460KZdrCyn9VwGuU"
+    "size": 2951,
+    "hash": "S26a0wZHT7Wuq6EMrpGLfpAfVaFDREunJkG4gvBl0g4"
    },
    {
     "path": {
@@ -3031,8 +3031,8 @@
     "path": {
      "relative": "packages/protocol/src/groups/message.vibe"
     },
-    "size": 4807,
-    "hash": "QITAxbtcBXDCn2bCdreCxjfSNf0Ov8rw6ONXVymBe98"
+    "size": 4813,
+    "hash": "YnQi-tSyesDfhfFdYYvs_SJkI64Pwa1js4Ui3vF0HZ8"
    },
    {
     "path": {
@@ -3304,8 +3304,8 @@
     "path": {
      "relative": "packages/schema/src/config/policy.vibe"
     },
-    "size": 205,
-    "hash": "kbZwfVvbZoDDqsNqvla1apyz_235Nx1ElXz_dZFMoKE"
+    "size": 232,
+    "hash": "bOKET1tkamumja4RCAhuwRQz9xcn393EMoB23PF5f-E"
    },
    {
     "path": {
@@ -3323,10 +3323,10 @@
    },
    {
     "path": {
-     "relative": "packages/schema/src/config/lsp.vibe"
+     "relative": "packages/schema/src/config/lsp.ts"
     },
-    "size": 651,
-    "hash": "WGgoyAlysq_bFzXz7-9uAaAzHAun8XgEenMleykA3lQ"
+    "size": 705,
+    "hash": "tWrySS6Vpvw17bbCWbsjuRCFrXiCRO8yr7bgqjEWR2s"
    },
    {
     "path": {
@@ -3402,8 +3402,8 @@
     "path": {
      "relative": "packages/schema/src/config.vibe"
     },
-    "size": 6042,
-    "hash": "kygVGfnkNk86UUmoScdXxu59f9qcfP3GfYoWQjQGcYI"
+    "size": 6040,
+    "hash": "e0NpeLYbsrABB-yZoQCIMhHfBRHfd9EIANeqmZ2pOKo"
    },
    {
     "path": {
@@ -3451,8 +3451,8 @@
     "path": {
      "relative": "packages/schema/src/v1/session.vibe"
     },
-    "size": 19932,
-    "hash": "XMOF0_HTRQZiBFXzXOvwPcMPgnoM_1Q3bNPyWpmcVig"
+    "size": 19995,
+    "hash": "KnsjpDSR78Ghsh9TFAZFZFR0aH1BthFj4T69-I8YJf8"
    },
    {
     "path": {
@@ -3780,8 +3780,8 @@
     "path": {
      "relative": "packages/client/src/promise/generated/types.ts"
     },
-    "size": 132628,
-    "hash": "eOQg9xpmQSAGmjSf65Q9SutH1cY_xX-50U2OTxCxQY4"
+    "size": 136056,
+    "hash": "eGcdfpZ8Ut9jmLzawJ3lhtY-Zh1SjO64CVMJOF9nasE"
    },
    {
     "path": {
@@ -3862,10 +3862,10 @@
    },
    {
     "path": {
-     "relative": "packages/client/src/rpc-runtime.ts"
+     "relative": "packages/client/src/rpc-runtime.vibe"
     },
-    "size": 2220,
-    "hash": "Gd4qWPFNzjhiePmy-R92jI8xVTWrNc8Q9GX7HDYKqOw"
+    "size": 2135,
+    "hash": "HFc21lPceKMgKTc_DHYW1lcHVtrMvizSaAuXdY6ZgnA"
    },
    {
     "path": {
@@ -3892,8 +3892,8 @@
     "path": {
      "relative": "packages/client/src/effect/rpc.vibe"
     },
-    "size": 4025,
-    "hash": "UlfXiyv1ZDYDM4ee2KHtwcSWR4ICOZmjWgqfYf2cKfY"
+    "size": 4027,
+    "hash": "QYxtHORrgWAc4ffw1-1Iiw8UJQfkwzhh48JwSTBY100"
    },
    {
     "path": {
@@ -3901,6 +3901,13 @@
     },
     "size": 249,
     "hash": "eznF1CmX1fjmAQqLV4BopAB4tu_r3AXMO6WYK8V7bmY"
+   },
+   {
+    "path": {
+     "relative": "packages/client/src/effect/client.platform.ts"
+    },
+    "size": 186,
+    "hash": "r_67yyeBOBQ0FNoNWU7P9VIn5h2bLBCo9-YEpo3Op8g"
    },
    {
     "path": {
@@ -3974,10 +3981,10 @@
    },
    {
     "path": {
-     "relative": "packages/client/src/effect/client.ts"
+     "relative": "packages/client/src/effect/client.vibe"
     },
-    "size": 2340,
-    "hash": "9m1TufAjhAtcODNMBOzBBX9g1kLdDjpnr742I_CEc2M"
+    "size": 3047,
+    "hash": "u-Pb2FUzpQjzA-N5xUYXQIt9wbZBtdeoD_HEcchy5mM"
    },
    {
     "path": {
@@ -3990,8 +3997,8 @@
     "path": {
      "relative": "packages/client/src/effect/index.vibe"
     },
-    "size": 2277,
-    "hash": "wE0vp_YtoG4qGnpHzxic8AmVSRAL_YhTyxYK5YNGq-A"
+    "size": 2281,
+    "hash": "hVgI3fEMQpF2NVx8feOikjfvJpQOvzTfE5gX38oKQLE"
    },
    {
     "path": {
@@ -5358,7 +5365,7 @@
     "relative": "packages/schema/src/config/formatter.vibe"
    },
    {
-    "relative": "packages/schema/src/config/lsp.vibe"
+    "relative": "packages/schema/src/config/lsp.ts"
    },
    {
     "relative": "packages/schema/src/mcp.vibe"
@@ -5580,7 +5587,7 @@
     "relative": "packages/client/src/pty-handoff.ts"
    },
    {
-    "relative": "packages/client/src/rpc-runtime.ts"
+    "relative": "packages/client/src/rpc-runtime.vibe"
    },
    {
     "relative": "packages/client/src/service-contender.ts"
@@ -5598,6 +5605,9 @@
     "relative": "packages/client/src/effect/api.ts"
    },
    {
+    "relative": "packages/client/src/effect/client.platform.ts"
+   },
+   {
     "relative": "packages/client/src/effect/generated/client-error.ts"
    },
    {
@@ -5607,7 +5617,7 @@
     "relative": "packages/client/src/effect/generated/index.ts"
    },
    {
-    "relative": "packages/client/src/effect/client.ts"
+    "relative": "packages/client/src/effect/client.vibe"
    },
    {
     "relative": "packages/schema/src/question.vibe"
@@ -5645,6 +5655,26 @@
    {
     "paths": [
      {
+      "relative": "packages/client/src/rpc-runtime.vibe"
+     }
+    ],
+    "code": "import * as Effect_1 from \"effect/Effect\";\nexport * as RpcRuntime from \"./rpc-runtime.js\";\nimport { RpcError, RpcInternalError } from \"@opencode/protocol/errors\";\nimport { Effect, Schema } from \"effect\";\nexport function read(schema, value) {\n    // Standard Schema results have already been parsed by the server.\n    return Schema.isSchema(schema) ? Schema.decodeUnknownEffect(schema)(value) : Effect.succeed(value);\n}\nexport function readError(method, error) {\n    if (!(error instanceof RpcError) && !(error instanceof RpcInternalError))\n        return Effect.fail(error);\n    if (!method.errors || !Object.hasOwn(method.errors, error.type)) {\n        return Effect.fail(error.data === undefined\n            ? { type: error.type, message: error.message }\n            : { type: error.type, message: error.message, data: error.data });\n    }\n    return read(method.errors[error.type], error.data).pipe(Effect.orDie, Effect.flatMap((data) => Effect.fail(data === undefined\n        ? { type: error.type, message: error.message }\n        : { type: error.type, message: error.message, data })));\n}\nexport const event = Effect.fn(\"Client.Rpc.event\")(function (definition, name, schema, event) {\n    return Effect_1.gen(function* () {\n        const data = yield* read(schema.schema, event.data);\n        // SAFETY: The event type was selected by the caller and data was decoded with this event's schema.\n        // oxlint-disable-next-line typescript-eslint/no-unsafe-type-assertion\n        return {\n            ...event,\n            type: eventType(definition, name),\n            data,\n        };\n    });\n});\nexport function eventType(definition, name) {\n    return `rpc.${definition.id}.${name}`;\n}\n",
+    "map": {
+     "version": 3,
+     "file": "rpc-runtime.js",
+     "sourceRoot": "",
+     "sources": [
+      {
+       "relative": "packages/client/src/rpc-runtime.vibe"
+      }
+     ],
+     "names": [],
+     "mappings": ";AAAA,OAAO,KAAK,UAAU,MAAM,kBAAkB,CAAA;AAI9C,OAAO,EAAE,QAAQ,EAAE,gBAAgB,EAAE,MAAM,2BAA2B,CAAA;AACtE,OAAO,EAAE,MAAM,EAAE,MAAM,EAAE,MAAM,QAAQ,CAAA;AAIvC,MAAM,UAAU,IAAI,CAAC,MAA4B,EAAE,KAAc;IAC/D,kEAAkE;IAClE,OAAO,MAAM,CAAC,QAAQ,CAAC,MAAM,CAAC,CAAC,CAAC,CAAC,MAAM,CAAC,mBAAmB,CAAC,MAAM,CAAC,CAAC,KAAK,CAAC,CAAC,CAAC,CAAC,MAAM,CAAC,OAAO,CAAC,KAAK,CAAC,CAAA;AACpG,CAAC;AAED,MAAM,UAAU,SAAS,CAAC,MAAkB,EAAE,KAAc;IAC1D,IAAI,CAAC,CAAC,KAAK,YAAY,QAAQ,CAAC,IAAI,CAAC,CAAC,KAAK,YAAY,gBAAgB,CAAC;QAAE,OAAO,MAAM,CAAC,IAAI,CAAC,KAAK,CAAC,CAAA;IACnG,IAAI,CAAC,MAAM,CAAC,MAAM,IAAI,CAAC,MAAM,CAAC,MAAM,CAAC,MAAM,CAAC,MAAM,EAAE,KAAK,CAAC,IAAI,CAAC,EAAE,CAAC;QAChE,OAAO,MAAM,CAAC,IAAI,CAChB,KAAK,CAAC,IAAI,KAAK,SAAS;YACtB,CAAC,CAAC,EAAE,IAAI,EAAE,KAAK,CAAC,IAAI,EAAE,OAAO,EAAE,KAAK,CAAC,OAAO,EAAE;YAC9C,CAAC,CAAC,EAAE,IAAI,EAAE,KAAK,CAAC,IAAI,EAAE,OAAO,EAAE,KAAK,CAAC,OAAO,EAAE,IAAI,EAAE,KAAK,CAAC,IAAI,EAAE,CACnE,CAAA;IACH,CAAC;IACD,OAAO,IAAI,CAAC,MAAM,CAAC,MAAM,CAAC,KAAK,CAAC,IAAI,CAAC,EAAE,KAAK,CAAC,IAAI,CAAC,CAAC,IAAI,CACrD,MAAM,CAAC,KAAK,EACZ,MAAM,CAAC,OAAO,CAAC,CAAC,IAAI,EAAE,EAAE,CACtB,MAAM,CAAC,IAAI,CACT,IAAI,KAAK,SAAS;QAChB,CAAC,CAAC,EAAE,IAAI,EAAE,KAAK,CAAC,IAAI,EAAE,OAAO,EAAE,KAAK,CAAC,OAAO,EAAE;QAC9C,CAAC,CAAC,EAAE,IAAI,EAAE,KAAK,CAAC,IAAI,EAAE,OAAO,EAAE,KAAK,CAAC,OAAO,EAAE,IAAI,EAAE,CACvD,CACF,CACF,CAAA;AACH,CAAC;AAED,MAAM,CAAC,MAAM,KAAK,GAAG,MAAM,CAAC,EAAE,CAAC,kBAAkB,CAAC,CAAC,UAIjD,UAAa,EACb,IAAU,EACV,MAA2B,EAC3B,KAAe;GAAA,C,CAAA,mB,CAAA;QAEf,MAAM,IAAI,UAAO,IAAI,CAAC,MAAM,CAAC,MAAM,EAAE,KAAK,CAAC,IAAI,CAAC,CAAA;QAChD,mGAAmG;QACnG,sEAAsE;QACtE,OAAO;YACL,GAAG,KAAK;YACR,IAAI,EAAE,SAAS,CAAC,UAAU,EAAE,IAAI,CAAC;YACjC,IAAI;SACwB,CAAA;IAChC,CAAC;CAAA,CAAC,CAAA;AAEF,MAAM,UAAU,SAAS,CACvB,UAAa,EACb,IAAU;IAEV,OAAO,OAAO,UAAU,CAAC,EAAE,IAAI,IAAI,EAAE,CAAA;AACvC,CAAC"
+    }
+   },
+   {
+    "paths": [
+     {
       "relative": "packages/client/src/effect/rpc.vibe"
      }
     ],
@@ -5659,7 +5689,27 @@
       }
      ],
      "names": [],
-     "mappings": ";;;AAAA,OAAO,KAAK,gBAAgB,MAAM,UAAY,CAAA;AAK9C,OAAO,EAAE,MAAM,EAAE,MAAM,EAAE,MAAM,EAAE,MAAM,QAAQ,CAAA;AAE/C,OAAO,EAAE,UAAU,EAAE,MAAM,mBAAmB,CAAA;AA8B9C,MAAM,UAAU,IAAI,CAClB,IAAgF,EAChF,SAAyD;IAEzD,OAAO,CAA2B,UAAa,EAAE,EAAE;QACjD,MAAM,OAAO,GAAG,MAAM,CAAC,WAAW,CAChC,MAAM,CAAC,OAAO,CAAC,UAAU,CAAC,OAAO,CAAC,CAAC,GAAG,CAAC,CAAC,CAAC,IAAI,EAAE,MAAM,CAAC,EAAE,EAAE,CAAC;YACzD,IAAI;YACJ,CAAC,KAAe,EAAE,OAAwB,EAAE,EAAE;gBAC7B,IAAA,IAAE,CAAA;gBAAC,CAAC;oBACjB,MAAM,YAAY,GAAG,a,CAAA,S,CAAA;wBACnB,MAAM,QAAQ,UAAO,IAAI,CACvB;4BACE,KAAK,EAAE,UAAU,CAAC,EAAE;4BACpB,MAAM,EAAE,IAAI;4BACZ,KAAK;4BACL,QAAQ,EAAE,OAAO,EAAE,QAAQ;yBAC5B,EACD,OAAO,CACR,CAAA;wBACD,cAAW,UAAU,CAAC,IAAI,CAAC,MAAM,CAAC,MAAM,EAAE,QAAQ,CAAC,MAAM,CAAC,CAAA;oBAC5D,CAAC,CAAA,CAAA;oBACD,IAEC;;4BAFD,a,CAAA;gCACE,qC,CAAA,O,CAAA,oB,CAAA,O,CAAA,MAAO,YAAY,OAAA,KAAO,CAAQ,KAAK;mCAAA,C,CAAA,mB,CAAA,4BAAS,UAAU,CAAC,SAAS,CAAC,MAAM,EAAE,KAAK,CAAC;iCAAA,EAAA;4BACrF,CAAC,CAAA,CAAA;gBACH,CAAC;gBAhBD,MAAM,MAAM,GAAG,IAgBd,CAAA;gBACD,MAAM,MAAM,GAAG,OAAO,EAAE,MAAM,CAAA;gBAC9B,IAAI,CAAC,MAAM;oBAAE,OAAO,MAAM,CAAA;gBAC1B,OAAO,MAAM,CAAC,OAAO,CAAC,GAAG,EAAE,CACzB,MAAM,CAAC,OAAO;oBACZ,CAAC,CAAC,MAAM,CAAC,SAAS;oBAClB,CAAC,CAAC,MAAM,CAAC,SAAS,CAAC,MAAM,EAAE,MAAM,CAAC,OAAO,CAAC,OAAO,CAAC,MAAM,CAAC,EAAE,MAAM,CAAC,SAAS,CAAC,CAAC,CAChF,CAAA;YACH,CAAC;SACF,CAAC,CACH,CAAA;QACD,oHAAoH;QACpH,sEAAsE;QACtE,OAAO,MAAM,CAAC,MAAM,CAAC,OAAO,EAAE;YAC5B,MAAM,EAAE;gBACN,SAAS,EAAE,CAAC,IAAgC,EAAE,EAAE;oBAC9C,MAAM,IAAI,GAAG,UAAU,CAAC,SAAS,CAAC,UAAU,EAAE,IAAI,CAAC,CAAA;oBACnD,IAAI,CAAC,MAAM,CAAC,MAAM,CAAC,UAAU,CAAC,MAAM,EAAE,IAAI,CAAC;wBAAE,OAAO,MAAM,CAAC,IAAI,CAAC,IAAI,KAAK,CAAC,sBAAsB,IAAI,EAAE,CAAC,CAAC,CAAA;oBACxG,MAAM,MAAM,GAAG,UAAU,CAAC,MAAM,CAAC,IAAI,CAAC,CAAA;oBACtC,OAAO,SAAS,EAAE,CAAC,IAAI,CACrB,MAAM,CAAC,MAAM,CAAC,CAAC,KAAK,EAAqB,EAAE,CAAC,KAAK,CAAC,IAAI,KAAK,IAAI,CAAC,EAChE,MAAM,CAAC,SAAS,CAAC,CAAC,KAAK,EAAE,EAAE,CAAC,UAAU,CAAC,KAAK,CAAC,UAAU,EAAE,IAAI,EAAE,MAAM,EAAE,KAAK,CAAC,CAAC,CAC/E,CAAA;gBACH,CAAC;aACF;SACF,CAAgH,CAAA;IACnH,CAAC,CAAA;AACH,CAAC;AAED,MAAM,UAAU,OAAO,CAAC,MAAmB;IACzC,OAAO,MAAM,CAAC,QAAQ,CAAO,CAAC,MAAM,EAAE,EAAE;QACtC,IAAI,MAAM,CAAC,OAAO;YAAE,OAAO,MAAM,CAAC,MAAM,CAAC,IAAI,CAAC,CAAA;QAC9C,MAAM,KAAK,GAAG,GAAG,EAAE,CAAC,MAAM,CAAC,MAAM,CAAC,IAAI,CAAC,CAAA;QACvC,MAAM,CAAC,gBAAgB,CAAC,OAAO,EAAE,KAAK,EAAE,EAAE,IAAI,EAAE,IAAI,EAAE,CAAC,CAAA;QACvD,OAAO,MAAM,CAAC,IAAI,CAAC,GAAG,EAAE,CAAC,MAAM,CAAC,mBAAmB,CAAC,OAAO,EAAE,KAAK,CAAC,CAAC,CAAA;IACtE,CAAC,CAAC,CAAA;AACJ,CAAC"
+     "mappings": "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"
+    }
+   },
+   {
+    "paths": [
+     {
+      "relative": "packages/client/src/effect/client.vibe"
+     }
+    ],
+    "code": "import * as Effect_1 from \"effect/Effect\";\nexport * as OpenCode from \"./client.js\";\nimport { Cause, Context, Effect, Stream } from \"effect\";\nimport { HttpClient, HttpClientRequest } from \"effect/http\";\nimport { SharedEvents } from \"../shared-events.js\";\nimport { ClientError, OpenCode } from \"./generated/index.js\";\nimport { RpcClientRuntime } from \"./rpc.js\";\nimport { fetchHeaders } from \"./client.platform.js\";\nconst CurrentHeaders = Context.Reference(\"@opencode/client/effect/rpc/headers\", {\n    defaultValue: () => undefined,\n});\nexport const make = Effect.fn(\"OpenCode.make\")(function (options) {\n    return Effect_1.gen(function* () {\n        const httpClient = yield* HttpClient.HttpClient;\n        const raw = yield* OpenCode.make(options).pipe(Effect.provideService(HttpClient.HttpClient, HttpClient.mapRequestEffect(httpClient, (request) => Effect.flatMap(CurrentHeaders, (headers) => headers\n            ? // Invalid headers stay the defect the Fetch constructor raised.\n                Effect.orDie(Effect.try({\n                    try: () => HttpClientRequest.setHeaders(request, fetchHeaders(headers)),\n                    catch: (cause) => cause,\n                }))\n            : Effect.succeed(request)))));\n        const context = yield* Effect.context();\n        const native = raw.event.subscribe();\n        // Async iterators throw a squashed cause; retain the native typed failures and defects intact.\n        class EventFailure {\n            cause;\n            constructor(cause) {\n                this.cause = cause;\n            }\n        }\n        // A throw from the native event hub stays the defect it was before conversion.\n        const shared = yield* Effect.orDie(Effect.try({\n            try: () => SharedEvents.make((signal) => Stream.toAsyncIterableWith(native.pipe(Stream.interruptWhen(RpcClientRuntime.aborted(signal)), Stream.catchCause((cause) => Stream.fail(new EventFailure(cause)))), context)),\n            catch: (cause) => cause,\n        }));\n        const subscribe = (input) => Stream.unwrap(Effect.orDie(Effect.try({ try: () => shared.subscribe({ types: input?.types }), catch: (cause) => cause })).pipe(Effect.map((events) => Stream.fromAsyncIterable(events, (error) => error)))).pipe(Stream.catch((error) => Stream.failCause(error instanceof EventFailure ? error.cause : Cause.fail(new ClientError({ cause: error })))));\n        return {\n            ...raw,\n            event: { ...raw.event, subscribe },\n            rpc: Object.assign(RpcClientRuntime.make((input, options) => raw.rpc.call(input).pipe(Effect.provideService(CurrentHeaders, options?.headers)), subscribe), raw.rpc),\n        };\n    });\n});\n",
+    "map": {
+     "version": 3,
+     "file": "client.js",
+     "sourceRoot": "",
+     "sources": [
+      {
+       "relative": "packages/client/src/effect/client.vibe"
+      }
+     ],
+     "names": [],
+     "mappings": "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"
     }
    },
    {
@@ -5679,7 +5729,7 @@
       }
      ],
      "names": [],
-     "mappings": "AAKA,cAAc,sBAAsB,CAAA;AACpC,OAAO,EAAE,QAAQ,EAAE,MAAM,aAAa,CAAA;AAkBtC,OAAO,EAAE,KAAK,EAAE,MAAM,wBAAwB,CAAA;AAC9C,OAAO,EAAE,OAAO,EAAE,MAAM,0BAA0B,CAAA;AAClD,OAAO,EAAE,MAAM,EAAE,MAAM,yBAAyB,CAAA;AAChD,OAAO,EAAE,UAAU,EAAE,MAAM,6BAA6B,CAAA;AACxD,OAAO,EAAE,KAAK,EAAE,MAAM,wBAAwB,CAAA;AAC9C,OAAO,EAAE,QAAQ,EAAE,MAAM,4BAA4B,CAAA;AACrD,OAAO,EAAE,UAAU,EAAE,MAAM,6BAA6B,CAAA;AACxD,OAAO,EAAE,IAAI,EAAE,MAAM,uBAAuB,CAAA;AAC5C,OAAO,EAAE,WAAW,EAAE,MAAM,8BAA8B,CAAA;AAC1D,OAAO,EAAE,QAAQ,EAAE,MAAM,2BAA2B,CAAA;AACpD,OAAO,EAAE,KAAK,EAAE,MAAM,wBAAwB,CAAA;AAC9C,OAAO,EAAE,UAAU,EAAE,MAAM,6BAA6B,CAAA;AACxD,OAAO,EAAE,eAAe,EAAE,MAAM,mCAAmC,CAAA;AACnE,OAAO,EAAE,OAAO,EAAE,MAAM,0BAA0B,CAAA;AAClD,OAAO,EAAE,QAAQ,EAAE,MAAM,2BAA2B,CAAA;AACpD,OAAO,EAAE,GAAG,EAAE,MAAM,sBAAsB,CAAA;AAC1C,OAAO,EAAE,QAAQ,EAAE,MAAM,2BAA2B,CAAA;AACpD,OAAO,EAAE,GAAG,EAAE,MAAM,sBAAsB,CAAA;AAC1C,OAAO,EAAE,QAAQ,EAAE,MAAM,2BAA2B,CAAA;AACpD,OAAO,EAAE,SAAS,EAAE,MAAM,4BAA4B,CAAA;AACtD,OAAO,EAAE,SAAS,EAAE,MAAM,4BAA4B,CAAA;AACtD,OAAO,EAAE,YAAY,EAAE,YAAY,EAAE,MAAM,yBAAyB,CAAA;AACpE,OAAO,EAAE,OAAO,EAAE,MAAM,0BAA0B,CAAA;AAClD,OAAO,EAAE,YAAY,EAAE,MAAM,gCAAgC,CAAA;AAC7D,OAAO,EAAE,cAAc,EAAE,MAAM,kCAAkC,CAAA;AACjE,OAAO,EAAE,KAAK,EAAE,MAAM,wBAAwB,CAAA;AAC9C,OAAO,EAAE,MAAM,EAAE,MAAM,yBAAyB,CAAA;AAChD,OAAO,EAAE,WAAW,EAAE,MAAM,+BAA+B,CAAA"
+     "mappings": "AAKA,cAAc,sBAAsB,CAAA;AACpC,OAAO,EAAE,QAAQ,EAAE,MAAM,aAAe,CAAA;AAkBxC,OAAO,EAAE,KAAK,EAAE,MAAM,wBAAwB,CAAA;AAC9C,OAAO,EAAE,OAAO,EAAE,MAAM,0BAA0B,CAAA;AAClD,OAAO,EAAE,MAAM,EAAE,MAAM,yBAAyB,CAAA;AAChD,OAAO,EAAE,UAAU,EAAE,MAAM,6BAA6B,CAAA;AACxD,OAAO,EAAE,KAAK,EAAE,MAAM,wBAAwB,CAAA;AAC9C,OAAO,EAAE,QAAQ,EAAE,MAAM,4BAA4B,CAAA;AACrD,OAAO,EAAE,UAAU,EAAE,MAAM,6BAA6B,CAAA;AACxD,OAAO,EAAE,IAAI,EAAE,MAAM,uBAAuB,CAAA;AAC5C,OAAO,EAAE,WAAW,EAAE,MAAM,8BAA8B,CAAA;AAC1D,OAAO,EAAE,QAAQ,EAAE,MAAM,2BAA2B,CAAA;AACpD,OAAO,EAAE,KAAK,EAAE,MAAM,wBAAwB,CAAA;AAC9C,OAAO,EAAE,UAAU,EAAE,MAAM,6BAA6B,CAAA;AACxD,OAAO,EAAE,eAAe,EAAE,MAAM,mCAAmC,CAAA;AACnE,OAAO,EAAE,OAAO,EAAE,MAAM,0BAA0B,CAAA;AAClD,OAAO,EAAE,QAAQ,EAAE,MAAM,2BAA2B,CAAA;AACpD,OAAO,EAAE,GAAG,EAAE,MAAM,sBAAsB,CAAA;AAC1C,OAAO,EAAE,QAAQ,EAAE,MAAM,2BAA2B,CAAA;AACpD,OAAO,EAAE,GAAG,EAAE,MAAM,sBAAsB,CAAA;AAC1C,OAAO,EAAE,QAAQ,EAAE,MAAM,2BAA2B,CAAA;AACpD,OAAO,EAAE,SAAS,EAAE,MAAM,4BAA4B,CAAA;AACtD,OAAO,EAAE,SAAS,EAAE,MAAM,4BAA4B,CAAA;AACtD,OAAO,EAAE,YAAY,EAAE,YAAY,EAAE,MAAM,yBAAyB,CAAA;AACpE,OAAO,EAAE,OAAO,EAAE,MAAM,0BAA0B,CAAA;AAClD,OAAO,EAAE,YAAY,EAAE,MAAM,gCAAgC,CAAA;AAC7D,OAAO,EAAE,cAAc,EAAE,MAAM,kCAAkC,CAAA;AACjE,OAAO,EAAE,KAAK,EAAE,MAAM,wBAAwB,CAAA;AAC9C,OAAO,EAAE,MAAM,EAAE,MAAM,yBAAyB,CAAA;AAChD,OAAO,EAAE,WAAW,EAAE,MAAM,+BAA+B,CAAA"
     }
    }
   ]

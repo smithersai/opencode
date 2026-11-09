@@ -18,6 +18,8 @@ Release notes for OpenCode V2, newest first.
 
 - The CLI server process and ACP session registry now use VibeLang while keeping host access and throwing host calls native.
 
+- Bedrock event-stream framing, the client RPC runtime and the Effect client now use VibeLang while preserving their declarations.
+
 - Recording credential setup now uses VibeLang while keeping status checks read-only.
 
 - PTY handlers now use VibeLang while preserving replay and native callback failures.

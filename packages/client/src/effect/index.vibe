@@ -1,10 +1,10 @@
 // TODO: Keep additional network capabilities inside Schema and Protocol as the client grows; /effect must never import
 // Core or Server. Preserve these datatype exports so internal model reorganizations do not require caller migrations.
 import type { Effect } from "effect"
-import type { OpenCode } from "./client.js"
+import type { OpenCode } from "./client.vibe"
 
 export * from "./generated/index.ts"
-export { OpenCode } from "./client.js"
+export { OpenCode } from "./client.vibe"
 export type {
   AgentApi,
   AppApi,

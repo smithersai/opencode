@@ -60,6 +60,9 @@ tsconfig.tsbuildinfo
 **/*.d.vibex.ts
 **/*.vibe.platform.d.ts
 **/*.vibex.platform.d.ts
+# Each x.vibe also gets x.d.ts, which re-exports x.d.vibe.ts so native importers resolve ./x.js.
+# Hand-written declarations are already tracked; new ones need git add -f.
+**/*.d.ts
 
 # Loader records depend on the locally installed native compiler.
 **/.vibelang/js/.loader/

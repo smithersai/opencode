@@ -616,6 +616,91 @@
       "vibelang-source": "./src/plugin/verbosity.vibe",
       "default": "./.vibelang/js/src/plugin/verbosity.js"
     },
+    "./plugin/provider/amazon-bedrock": {
+      "types": "./src/plugin/provider/amazon-bedrock.d.vibe.ts",
+      "vibelang-source": "./src/plugin/provider/amazon-bedrock.vibe",
+      "default": "./.vibelang/js/src/plugin/provider/amazon-bedrock.js"
+    },
+    "./plugin/provider/azure": {
+      "types": "./src/plugin/provider/azure.d.vibe.ts",
+      "vibelang-source": "./src/plugin/provider/azure.vibe",
+      "default": "./.vibelang/js/src/plugin/provider/azure.js"
+    },
+    "./plugin/provider/chatgpt": {
+      "types": "./src/plugin/provider/chatgpt.d.vibe.ts",
+      "vibelang-source": "./src/plugin/provider/chatgpt.vibe",
+      "default": "./.vibelang/js/src/plugin/provider/chatgpt.js"
+    },
+    "./plugin/provider/cloudflare-ai-gateway": {
+      "types": "./src/plugin/provider/cloudflare-ai-gateway.d.vibe.ts",
+      "vibelang-source": "./src/plugin/provider/cloudflare-ai-gateway.vibe",
+      "default": "./.vibelang/js/src/plugin/provider/cloudflare-ai-gateway.js"
+    },
+    "./plugin/provider/cloudflare-workers-ai": {
+      "types": "./src/plugin/provider/cloudflare-workers-ai.d.vibe.ts",
+      "vibelang-source": "./src/plugin/provider/cloudflare-workers-ai.vibe",
+      "default": "./.vibelang/js/src/plugin/provider/cloudflare-workers-ai.js"
+    },
+    "./plugin/provider/databricks": {
+      "types": "./src/plugin/provider/databricks.d.vibe.ts",
+      "vibelang-source": "./src/plugin/provider/databricks.vibe",
+      "default": "./.vibelang/js/src/plugin/provider/databricks.js"
+    },
+    "./plugin/provider/digitalocean": {
+      "types": "./src/plugin/provider/digitalocean.d.vibe.ts",
+      "vibelang-source": "./src/plugin/provider/digitalocean.vibe",
+      "default": "./.vibelang/js/src/plugin/provider/digitalocean.js"
+    },
+    "./plugin/provider/github-copilot": {
+      "types": "./src/plugin/provider/github-copilot.d.vibe.ts",
+      "vibelang-source": "./src/plugin/provider/github-copilot.vibe",
+      "default": "./.vibelang/js/src/plugin/provider/github-copilot.js"
+    },
+    "./plugin/provider/gitlab": {
+      "types": "./src/plugin/provider/gitlab.d.vibe.ts",
+      "vibelang-source": "./src/plugin/provider/gitlab.vibe",
+      "default": "./.vibelang/js/src/plugin/provider/gitlab.js"
+    },
+    "./plugin/provider/google-vertex": {
+      "types": "./src/plugin/provider/google-vertex.d.vibe.ts",
+      "vibelang-source": "./src/plugin/provider/google-vertex.vibe",
+      "default": "./.vibelang/js/src/plugin/provider/google-vertex.js"
+    },
+    "./plugin/provider/modal": {
+      "types": "./src/plugin/provider/modal.d.vibe.ts",
+      "vibelang-source": "./src/plugin/provider/modal.vibe",
+      "default": "./.vibelang/js/src/plugin/provider/modal.js"
+    },
+    "./plugin/provider/openai": {
+      "types": "./src/plugin/provider/openai.d.vibe.ts",
+      "vibelang-source": "./src/plugin/provider/openai.vibe",
+      "default": "./.vibelang/js/src/plugin/provider/openai.js"
+    },
+    "./plugin/provider/opencode": {
+      "types": "./src/plugin/provider/opencode.d.vibe.ts",
+      "vibelang-source": "./src/plugin/provider/opencode.vibe",
+      "default": "./.vibelang/js/src/plugin/provider/opencode.js"
+    },
+    "./plugin/provider/poe": {
+      "types": "./src/plugin/provider/poe.d.vibe.ts",
+      "vibelang-source": "./src/plugin/provider/poe.vibe",
+      "default": "./.vibelang/js/src/plugin/provider/poe.js"
+    },
+    "./plugin/provider/sap-ai-core": {
+      "types": "./src/plugin/provider/sap-ai-core.d.vibe.ts",
+      "vibelang-source": "./src/plugin/provider/sap-ai-core.vibe",
+      "default": "./.vibelang/js/src/plugin/provider/sap-ai-core.js"
+    },
+    "./plugin/provider/snowflake-cortex": {
+      "types": "./src/plugin/provider/snowflake-cortex.d.vibe.ts",
+      "vibelang-source": "./src/plugin/provider/snowflake-cortex.vibe",
+      "default": "./.vibelang/js/src/plugin/provider/snowflake-cortex.js"
+    },
+    "./plugin/provider/xai": {
+      "types": "./src/plugin/provider/xai.d.vibe.ts",
+      "vibelang-source": "./src/plugin/provider/xai.vibe",
+      "default": "./.vibelang/js/src/plugin/provider/xai.js"
+    },
     "./*": {
       "types": "./src/*.ts",
       "vibelang-source": "./src/*.ts",
@@ -781,6 +866,23 @@
     "./plugin/plan.platform": null,
     "./plugin/skill.platform": null,
     "./pty/ticket.platform": null,
+    "./plugin/provider/amazon-bedrock.platform": null,
+    "./plugin/provider/azure.platform": null,
+    "./plugin/provider/chatgpt.platform": null,
+    "./plugin/provider/cloudflare-ai-gateway.platform": null,
+    "./plugin/provider/cloudflare-workers-ai.platform": null,
+    "./plugin/provider/databricks.platform": null,
+    "./plugin/provider/digitalocean.platform": null,
+    "./plugin/provider/github-copilot.platform": null,
+    "./plugin/provider/gitlab.platform": null,
+    "./plugin/provider/google-vertex.platform": null,
+    "./plugin/provider/modal.platform": null,
+    "./plugin/provider/openai.platform": null,
+    "./plugin/provider/opencode.platform": null,
+    "./plugin/provider/poe.platform": null,
+    "./plugin/provider/sap-ai-core.platform": null,
+    "./plugin/provider/snowflake-cortex.platform": null,
+    "./plugin/provider/xai.platform": null,
     "./database/migration/20260127222353_familiar_lady_ursula": {
       "types": "./src/database/migration/20260127222353_familiar_lady_ursula.d.vibe.ts",
       "vibelang-source": "./src/database/migration/20260127222353_familiar_lady_ursula.vibe",

@@ -11,6 +11,7 @@ import { Model } from "../../model.js"
 import { OauthCallbackPage } from "../../oauth/page.js"
 import { Provider } from "../../provider.js"
 import type { PluginInternal } from "../internal.vibe"
+import { concatText, importHttp, randomBase64Url } from "./digitalocean.platform.js"
 
 const providerID = Provider.ID.make("digitalocean")
 const integrationID = Integration.ID.make("digitalocean")
@@ -46,10 +47,10 @@ const oauth = {
   },
   authorize: () =>
     Effect.gen(function* () {
-      const state = Buffer.from(crypto.getRandomValues(new Uint8Array(32))).toString("base64url")
+      const state = randomBase64Url()
       const token = yield* Deferred.make<{ access: string; expiresIn: number }, Error>()
       // Lazy so runtimes without a loopback listener (workerd) never evaluate node:http.
-      const { createServer } = yield* Effect.promise(() => import("node:http"))
+      const { createServer } = yield* Effect.promise(() => importHttp())
       const server = createServer((request, response) => {
         const url = new URL(request.url ?? "/", "http://localhost")
         if (request.method === "GET" && url.pathname === callbackPath) {
@@ -62,7 +63,7 @@ const oauth = {
           const chunks: Buffer[] = []
           request.on("data", (chunk: Buffer) => chunks.push(chunk))
           request.on("end", () => {
-            const body = Option.getOrUndefined(decodeCallback(Buffer.concat(chunks).toString("utf8")))
+            const body = Option.getOrUndefined(decodeCallback(concatText(chunks)))
             const error = body?.error_description || body?.error
             const access = body?.access_token
             if (error || !access || body?.state !== state) {

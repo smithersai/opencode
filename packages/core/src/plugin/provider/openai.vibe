@@ -12,6 +12,7 @@ import { Provider } from "../../provider.js"
 import { SessionAffinity } from "../../session/affinity.js"
 import type { PluginInternal } from "../internal.vibe"
 import { configuredSettings } from "./configured.vibe"
+import { base64UrlEncode, decodeBase64Url, importHttp, randomBytes, sha256, timeoutSignal } from "./openai.platform.js"
 
 const clientID = "app_EMoamEEZ73f0CkXaXp7hrann"
 const issuer = "https://auth.openai.com"
@@ -60,10 +61,10 @@ const browser = (app: App.Info) =>
     authorize: () =>
       Effect.gen(function* () {
         const pkce = yield* Effect.promise(generatePKCE)
-        const state = base64UrlEncode(crypto.getRandomValues(new Uint8Array(32)).buffer)
+        const state = base64UrlEncode(randomBytes(32).buffer)
         const code = yield* Deferred.make<string, Error>()
         // Lazy so runtimes without a loopback listener (workerd) never evaluate node:http.
-        const { createServer } = yield* Effect.promise(() => import("node:http"))
+        const { createServer } = yield* Effect.promise(() => importHttp())
         const server = createServer((request, response) => {
           const url = new URL(request.url ?? "/", "http://localhost")
           if (url.pathname !== "/auth/callback") {
@@ -158,7 +159,7 @@ function cancel(port: number) {
   return Effect.tryPromise({
     try: (signal) =>
       fetch(`http://localhost:${port}/cancel`, {
-        signal: AbortSignal.any([signal, AbortSignal.timeout(2000)]),
+        signal: AbortSignal.any([signal, timeoutSignal(2000)]),
       }),
     catch: (cause) => cause,
   })
@@ -388,13 +389,9 @@ function credential(methodID: Integration.MethodID, tokens: TokenResponse) {
 
 async function generatePKCE(): Promise<Pkce> {
   const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~"
-  const verifier = Array.from(crypto.getRandomValues(new Uint8Array(43)), (byte) => chars[byte % chars.length]).join("")
-  const challenge = base64UrlEncode(await crypto.subtle.digest("SHA-256", new TextEncoder().encode(verifier)))
+  const verifier = Array.from(randomBytes(43), (byte) => chars[byte % chars.length]).join("")
+  const challenge = base64UrlEncode(await sha256(verifier))
   return { verifier, challenge }
-}
-
-function base64UrlEncode(buffer: ArrayBuffer) {
-  return Buffer.from(buffer).toString("base64url")
 }
 
 function authorizeURL(redirect: string, pkce: Pkce, state: string) {
@@ -419,7 +416,7 @@ function extractAccountID(tokens: TokenResponse) {
 function claim(token: string) {
   const part = token.split(".")[1]
   if (!part) return
-  const claims = Option.getOrUndefined(decodeClaims(Buffer.from(part, "base64url").toString()))
+  const claims = Option.getOrUndefined(decodeClaims(decodeBase64Url(part)))
   if (!claims) return
   return (
     claims.chatgpt_account_id ??

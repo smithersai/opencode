@@ -1,0 +1,17 @@
+// The platform code of digitalocean.vibe: host randomness, Buffer encoding and the lazy node:http import, which a
+// .vibe file does not use directly (EK4402).
+
+/** 32 random bytes as base64url. @throws {never} */
+export function randomBase64Url(): string {
+  return Buffer.from(crypto.getRandomValues(new Uint8Array(32))).toString("base64url")
+}
+
+/** Loads node:http only when called, so runtimes without a loopback listener never evaluate it. @throws {never} */
+export function importHttp(): Promise<typeof import("node:http")> {
+  return import("node:http")
+}
+
+/** @throws {never} */
+export function concatText(chunks: Buffer[]): string {
+  return Buffer.concat(chunks).toString("utf8")
+}

@@ -14,6 +14,7 @@ import { define } from "@opencode/plugin/effect/plugin"
 import { Provider } from "../../provider.js"
 import { SessionAffinity } from "../../session/affinity.js"
 import type { PluginInternal } from "../internal.vibe"
+import { createHeaders, hostFetch } from "./github-copilot.platform.js"
 
 const clientID = "Ov23li8tweQw6odWQebz"
 const apiVersion = "2026-08-01"
@@ -323,7 +324,9 @@ export const GithubCopilotPlugin = define({
           if (!token) return
           const text = yield* Effect.promise(() => evt.request.clone().text())
           const body = Option.getOrUndefined(decodeBody(text))
-          applyHeaders(evt.request.headers, token, ctx.app, requestMetadata(evt.request.url, body), true)
+          yield* Effect.promise(() =>
+            applyHeaders(evt.request.headers, token, ctx.app, requestMetadata(evt.request.url, body), true),
+          )
         }),
       { providerID: Provider.ID.githubCopilot },
     )
@@ -431,7 +434,7 @@ export function utilityTitle(
   input: { baseURL: string; token: string; model: string; app: App.Info; fetch?: Fetch },
   request: Pick<SessionTitle, "sessionID" | "system" | "messages" | "options">,
 ) {
-  const send = input.fetch ?? fetch
+  const send = input.fetch ?? hostFetch
   const text = (parts: ReadonlyArray<{ type: string; text?: string | null }>) =>
     parts.flatMap((part) => (part.type === "text" && typeof part.text === "string" ? [part.text] : [])).join("\n")
   const messages = [
@@ -475,17 +478,18 @@ export function utilityTitle(
 }
 
 export function copilotFetch(token: string | undefined, upstream: Fetch | undefined, app: App.Info): Fetch {
-  const send = upstream ?? fetch
+  const send = upstream ?? hostFetch
   return async (input, init) => {
-    const requestHeaders = new Headers(init?.headers)
+    const requestHeaders = createHeaders(init?.headers)
     const url = input instanceof URL ? input.href : typeof input === "string" ? input : input.url
     const body = typeof init?.body === "string" ? Option.getOrUndefined(decodeBody(init.body)) : undefined
-    applyHeaders(requestHeaders, token, app, requestMetadata(url, body), false)
+    await applyHeaders(requestHeaders, token, app, requestMetadata(url, body), false)
     return send(input, { ...init, headers: requestHeaders })
   }
 }
 
-function applyHeaders(
+// Async because a Headers write rejects an invalid name or value; callers await it so that failure still surfaces.
+async function applyHeaders(
   headers: Headers,
   token: string | undefined,
   app: App.Info,

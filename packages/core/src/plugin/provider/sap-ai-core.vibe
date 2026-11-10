@@ -3,6 +3,7 @@ import { define } from "@opencode/plugin/effect/plugin"
 import { Npm } from "@opencode/util/npm"
 import { Provider } from "../../provider.js"
 import { loadSDKFactory } from "./sdk-factory.vibe"
+import { environmentValue, setEnvironmentValue } from "./sap-ai-core.platform.js"
 
 export const SapAICorePlugin = define({
   id: "opencode.provider.sap.ai.core",
@@ -13,9 +14,9 @@ export const SapAICorePlugin = define({
       Effect.fn(function* (evt) {
         if (evt.model.providerID !== Provider.ID.make("sap-ai-core")) return
         const serviceKey =
-          process.env.AICORE_SERVICE_KEY ??
+          environmentValue("AICORE_SERVICE_KEY") ??
           (typeof evt.options.serviceKey === "string" ? evt.options.serviceKey : undefined)
-        if (serviceKey && !process.env.AICORE_SERVICE_KEY) process.env.AICORE_SERVICE_KEY = serviceKey
+        if (serviceKey && !environmentValue("AICORE_SERVICE_KEY")) setEnvironmentValue("AICORE_SERVICE_KEY", serviceKey)
 
         const factory = yield* loadSDKFactory(npm, evt.package)
         if (typeof factory !== "function")
@@ -23,7 +24,10 @@ export const SapAICorePlugin = define({
 
         evt.sdk = factory(
           serviceKey
-            ? { deploymentId: process.env.AICORE_DEPLOYMENT_ID, resourceGroup: process.env.AICORE_RESOURCE_GROUP }
+            ? {
+                deploymentId: environmentValue("AICORE_DEPLOYMENT_ID"),
+                resourceGroup: environmentValue("AICORE_RESOURCE_GROUP"),
+              }
             : {},
         )
       }),

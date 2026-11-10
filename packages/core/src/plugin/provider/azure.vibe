@@ -14,6 +14,7 @@ import { Provider } from "../../provider.js"
 import { which } from "../../util/which.js"
 import type { PluginInternal } from "../internal.vibe"
 import { configuredSettings } from "./configured.vibe"
+import { environmentValue } from "./azure.platform.js"
 
 const cognitiveScope = "https://cognitiveservices.azure.com/.default"
 const foundryScope = "https://ai.azure.com/.default"
@@ -449,8 +450,13 @@ export function make(
             if (!authorization) return
             evt.request.headers.delete("api-key")
             evt.request.headers.delete("x-api-key")
-            evt.request.headers.set("authorization", authorization)
-            evt.request.headers.set("user-agent", App.useragent(ctx.app))
+            yield* Effect.try({
+              try: () => {
+                evt.request.headers.set("authorization", authorization)
+                evt.request.headers.set("user-agent", App.useragent(ctx.app))
+              },
+              catch: (cause) => cause,
+            }).pipe(Effect.orDie)
           }),
         { providerID: Provider.ID.azure },
       )
@@ -477,7 +483,9 @@ export const AzurePlugin = make()
 function resolveResourceName(settings: Readonly<Record<string, unknown>> | undefined, fallback?: string) {
   const configured = settings?.resourceName
   if (typeof configured === "string" && configured.trim() !== "") return configured
-  return fallback ?? process.env.AZURE_RESOURCE_NAME ?? process.env.AZURE_COGNITIVE_SERVICES_RESOURCE_NAME
+  return (
+    fallback ?? environmentValue("AZURE_RESOURCE_NAME") ?? environmentValue("AZURE_COGNITIVE_SERVICES_RESOURCE_NAME")
+  )
 }
 
 function expandResourceName(baseURL: string, resourceName: string) {

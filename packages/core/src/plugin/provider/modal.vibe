@@ -7,6 +7,7 @@ import { Integration } from "../../integration.js"
 import { ModalModels } from "../../modal/models.js"
 import { Provider } from "../../provider.js"
 import type { PluginInternal } from "../internal.vibe"
+import { environmentValue } from "./modal.platform.js"
 
 const providerID = Provider.ID.make("modal")
 
@@ -27,7 +28,7 @@ export const ModalPlugin = define({
       const credential = connection
         ? yield* ctx.integration.connection.resolve(connection).pipe(Effect.orElseSucceed(() => undefined))
         : undefined
-      const apiKey = credential?.type === "key" ? credential.key : process.env.MODAL_PROXY_TOKEN
+      const apiKey = credential?.type === "key" ? credential.key : environmentValue("MODAL_PROXY_TOKEN")
       const provider = yield* providers.get(providerID)
       const baseURL = typeof provider?.settings?.baseURL === "string" ? provider.settings.baseURL : undefined
       if (!apiKey || !baseURL) {

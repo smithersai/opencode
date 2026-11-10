@@ -1,4 +1,3 @@
-import os from "os"
 import { App } from "../../app.vibe"
 import { Clock, Deferred, Effect, Exit, Option, Schema, Semaphore, Stream } from "effect"
 import { HttpClient, HttpClientRequest, HttpClientResponse } from "effect/http"
@@ -14,6 +13,7 @@ import { Model } from "../../model.js"
 import { OauthCallbackPage } from "../../oauth/page.js"
 import { Provider } from "../../provider.js"
 import type { PluginInternal } from "../internal.vibe"
+import { environmentValue, importHttp, randomBase64Url, sha256Base64Url, systemDescription } from "./gitlab.platform.js"
 
 const providerID = Provider.ID.gitlab
 const integrationID = Integration.ID.make("gitlab")
@@ -148,7 +148,7 @@ export const GitLabPlugin = define({
           // client ID were issued by opencode-gitlab-auth, using GITLAB_OAUTH_CLIENT_ID or its default.
           const clientID =
             (typeof value.metadata?.clientID === "string" ? value.metadata.clientID : undefined) ||
-            process.env.GITLAB_OAUTH_CLIENT_ID?.trim() ||
+            environmentValue("GITLAB_OAUTH_CLIENT_ID")?.trim() ||
             legacyClientID
           return singleFlight(
             `${instanceUrl}\0${value.refresh}`,
@@ -165,7 +165,7 @@ export const GitLabPlugin = define({
           Effect.gen(function* () {
             // Capture once so the authorize request and the token exchange cannot
             // disagree if the environment changes mid-flow.
-            const override = process.env.GITLAB_OAUTH_CLIENT_ID?.trim()
+            const override = environmentValue("GITLAB_OAUTH_CLIENT_ID")?.trim()
             const clientID = override || bundledClientID
             const url = new URL(
               (typeof answer.instanceUrl === "string" ? answer.instanceUrl.trim() : "") || resolveDefaultInstanceUrl(),
@@ -180,14 +180,12 @@ export const GitLabPlugin = define({
                     ` scope (not marked "Confidential"), then set GITLAB_OAUTH_CLIENT_ID to its application ID.`,
                 ),
               )
-            const verifier = Buffer.from(crypto.getRandomValues(new Uint8Array(32))).toString("base64url")
-            const challenge = Buffer.from(
-              yield* Effect.promise(() => crypto.subtle.digest("SHA-256", new TextEncoder().encode(verifier))),
-            ).toString("base64url")
-            const state = Buffer.from(crypto.getRandomValues(new Uint8Array(32))).toString("base64url")
+            const verifier = randomBase64Url(32)
+            const challenge = yield* Effect.promise(() => sha256Base64Url(verifier))
+            const state = randomBase64Url(32)
 
             const callback = yield* Deferred.make<{ code: string; response: ServerResponse }, Error>()
-            const { createServer } = yield* Effect.promise(() => import("node:http"))
+            const { createServer } = yield* Effect.promise(() => importHttp())
             const server = createServer((request, response) => {
               const url = new URL(request.url ?? "/", `http://${callbackHost}`)
               if (request.method !== "GET" || url.pathname !== "/callback") {
@@ -300,10 +298,10 @@ export const GitLabPlugin = define({
           instanceUrl:
             typeof evt.options.instanceUrl === "string"
               ? evt.options.instanceUrl
-              : (process.env.GITLAB_INSTANCE_URL ?? "https://gitlab.com"),
-          apiKey: typeof evt.options.apiKey === "string" ? evt.options.apiKey : process.env.GITLAB_TOKEN,
+              : (environmentValue("GITLAB_INSTANCE_URL") ?? "https://gitlab.com"),
+          apiKey: typeof evt.options.apiKey === "string" ? evt.options.apiKey : environmentValue("GITLAB_TOKEN"),
           aiGatewayHeaders: {
-            "User-Agent": `${App.useragent(ctx.app)} gitlab-ai-provider/${mod.VERSION} (${os.platform()} ${os.release()}; ${os.arch()})`,
+            "User-Agent": `${App.useragent(ctx.app)} gitlab-ai-provider/${mod.VERSION} (${systemDescription()})`,
             "anthropic-beta": "context-1m-2025-08-07",
             ...evt.options.aiGatewayHeaders,
           },
@@ -348,7 +346,7 @@ export const GitLabPlugin = define({
 } satisfies PluginInternal.InternalPlugin)
 
 function resolveDefaultInstanceUrl() {
-  return process.env.GITLAB_INSTANCE_URL ?? "https://gitlab.com"
+  return environmentValue("GITLAB_INSTANCE_URL") ?? "https://gitlab.com"
 }
 
 function credentialInstanceUrl(metadata: Readonly<Record<string, unknown>> | undefined) {

@@ -1,5 +1,6 @@
 import { Effect } from "effect"
 import { define } from "@opencode/plugin/effect/plugin"
+import { environmentValue } from "./databricks.platform.js"
 
 export const DatabricksPlugin = define({
   id: "opencode.provider.databricks",
@@ -10,7 +11,9 @@ export const DatabricksPlugin = define({
     })
     yield* ctx.provider.transform((evt) => {
       // The template adds its own scheme, but Databricks tooling documents DATABRICKS_HOST with one.
-      const host = process.env.DATABRICKS_HOST?.replace(/^https?:\/\//i, "").replace(/\/+$/, "")
+      const host = environmentValue("DATABRICKS_HOST")
+        ?.replace(/^https?:\/\//i, "")
+        .replace(/\/+$/, "")
       if (!host) return
       const baseURL = evt.get("databricks")?.provider.settings?.baseURL
       if (typeof baseURL !== "string" || !baseURL.includes("${DATABRICKS_HOST}")) return

@@ -16,6 +16,7 @@ import { Provider } from "../../provider.js"
 import { SessionAffinity } from "../../session/affinity.js"
 import type { PluginInternal } from "../internal.vibe"
 import { configuredSettings } from "./configured.vibe"
+import { base64UrlEncode, importHttp, randomBytes, randomUUID, sha256 } from "./chatgpt.platform.js"
 
 // First-time sign-in registers a user-owned client; OpenAI returns its issued client ID on the callback.
 const registrationClientID = "dynamic_agent_client"
@@ -103,7 +104,7 @@ const signIn = (app: App.Info, savedClientID: () => string | undefined, storage:
     authorize: () =>
       Effect.gen(function* () {
         const storedHostID = yield* storage.get("chatgpt-agent-host-id")
-        const hostID = typeof storedHostID === "string" ? storedHostID : `urn:uuid:${crypto.randomUUID()}`
+        const hostID = typeof storedHostID === "string" ? storedHostID : `urn:uuid:${randomUUID()}`
         if (typeof storedHostID !== "string") yield* storage.set("chatgpt-agent-host-id", hostID)
         const pkce = yield* Effect.promise(generatePKCE)
         const state = randomValue()
@@ -111,7 +112,7 @@ const signIn = (app: App.Info, savedClientID: () => string | undefined, storage:
         const savedID = savedClientID()
         const received = yield* Deferred.make<{ code: string; clientID?: string; response: ServerResponse }, Error>()
         // Lazy so runtimes without a loopback listener (workerd) never evaluate node:http.
-        const { createServer } = yield* Effect.promise(() => import("node:http"))
+        const { createServer } = yield* Effect.promise(() => importHttp())
         const server = createServer((request, response) => {
           const url = new URL(request.url ?? "/", "http://127.0.0.1")
           if (url.pathname !== "/auth/callback") {
@@ -506,17 +507,13 @@ function credential(tokens: TokenResponse, clientID: string, scopes?: ReadonlyAr
 
 async function generatePKCE(): Promise<Pkce> {
   const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~"
-  const verifier = Array.from(crypto.getRandomValues(new Uint8Array(43)), (byte) => chars[byte % chars.length]).join("")
-  const challenge = base64UrlEncode(await crypto.subtle.digest("SHA-256", new TextEncoder().encode(verifier)))
+  const verifier = Array.from(randomBytes(43), (byte) => chars[byte % chars.length]).join("")
+  const challenge = base64UrlEncode(await sha256(verifier))
   return { verifier, challenge }
 }
 
 function randomValue() {
-  return base64UrlEncode(crypto.getRandomValues(new Uint8Array(32)).buffer)
-}
-
-function base64UrlEncode(buffer: ArrayBuffer) {
-  return Buffer.from(buffer).toString("base64url")
+  return base64UrlEncode(randomBytes(32).buffer)
 }
 
 function authorizeURL(

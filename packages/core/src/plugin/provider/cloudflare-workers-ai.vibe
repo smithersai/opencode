@@ -3,6 +3,7 @@ import { define } from "@opencode/plugin/effect/plugin"
 import { Form } from "@opencode/schema/form"
 import { Provider } from "../../provider.js"
 import { configuredSettings } from "./configured.vibe"
+import { environmentValue } from "./cloudflare-workers-ai.platform.js"
 
 const providerID = Provider.ID.make("cloudflare-workers-ai")
 
@@ -53,7 +54,7 @@ export const CloudflareWorkersAIPlugin = define({
 })
 
 function resolveAccountId(options: Record<string, unknown>) {
-  return stringOption(options, "accountId") ?? process.env.CLOUDFLARE_ACCOUNT_ID
+  return stringOption(options, "accountId") ?? environmentValue("CLOUDFLARE_ACCOUNT_ID")
 }
 
 function workersEndpoint(accountId: string) {

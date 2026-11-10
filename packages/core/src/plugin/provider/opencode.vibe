@@ -14,6 +14,7 @@ import { Integration } from "../../integration.js"
 import { IntegrationConnection } from "../../integration/connection.js"
 import { Provider } from "../../provider.js"
 import { WebSearch } from "../../websearch.js"
+import { environmentValue, jsonResponse } from "./opencode.platform.js"
 
 const clientID = "opencode-cli"
 const methodID = Integration.MethodID.make("device")
@@ -90,14 +91,12 @@ function oauth(http: HttpClient.HttpClient) {
           Device,
         )
         const verification = yield* Effect.try({
-          try: () => {
-            const url = new URL(device.verification_uri_complete, `${server}/`)
-            if (url.protocol !== "http:" && url.protocol !== "https:") throw new Error("expected HTTP(S)")
-            return url
-          },
+          try: () => new URL(device.verification_uri_complete, `${server}/`),
           catch: (cause) =>
             new Error(`Invalid device verification URL: ${cause instanceof Error ? cause.message : String(cause)}`),
         })
+        if (verification.protocol !== "http:" && verification.protocol !== "https:")
+          return yield* Effect.fail(new Error("Invalid device verification URL: expected HTTP(S)"))
         return {
           mode: "auto" as const,
           url: verification.href,
@@ -145,7 +144,7 @@ function oauth(http: HttpClient.HttpClient) {
 export const OpencodePlugin = define<HttpClient.HttpClient | Bus.Service | Config.Service | Scope.Scope>({
   id: "opencode.provider.opencode",
   effect: Effect.fn(function* (ctx) {
-    const disableFree = ["1", "true"].includes(process.env.OPENCODE_DISABLE_FREE_MODELS?.toLowerCase() ?? "")
+    const disableFree = ["1", "true"].includes(environmentValue("OPENCODE_DISABLE_FREE_MODELS")?.toLowerCase() ?? "")
     const bus = yield* Bus.Service
     const client = yield* HttpClient.HttpClient
     // Every request here goes to the Console, which reads the User-Agent to tell which OpenCode a member runs
@@ -299,7 +298,9 @@ export const OpencodePlugin = define<HttpClient.HttpClient | Bus.Service | Confi
     yield* ctx.provider.transform((providers) => {
       const item = providers.get(Provider.ID.opencode)
       if (!item) return
-      const hasKey = Boolean(process.env.OPENCODE_API_KEY || snapshot.connection || item.provider.settings?.apiKey)
+      const hasKey = Boolean(
+        environmentValue("OPENCODE_API_KEY") || snapshot.connection || item.provider.settings?.apiKey,
+      )
       providers.update(item.provider.id, (provider) => {
         if (!hasKey && !disableFree) {
           provider.activation = "enabled"
@@ -311,7 +312,7 @@ export const OpencodePlugin = define<HttpClient.HttpClient | Bus.Service | Confi
       const item = models.provider.get(Provider.ID.opencode)
       if (!item) return
       const hasKey = Boolean(
-        process.env.OPENCODE_API_KEY ||
+        environmentValue("OPENCODE_API_KEY") ||
           snapshot.connection ||
           (item.provider.settings?.apiKey && item.provider.settings.apiKey !== "public"),
       )
@@ -364,15 +365,19 @@ export const OpencodePlugin = define<HttpClient.HttpClient | Bus.Service | Confi
         const status = reported
         if (!status) return
         void event.response.body?.cancel()
-        event.response = Response.json(
-          {
-            error: {
-              type: "authentication_error",
-              message: `${status.message}.`,
-            },
-          },
-          { status: event.response.status },
-        )
+        event.response = yield* Effect.try({
+          try: () =>
+            jsonResponse(
+              {
+                error: {
+                  type: "authentication_error",
+                  message: `${status.message}.`,
+                },
+              },
+              { status: event.response.status },
+            ),
+          catch: (cause) => cause,
+        }).pipe(Effect.orDie)
       })
     // Hooks are scoped per provider so requests to unrelated providers skip the HTTP hook path.
     const guard = Effect.fn("OpencodePlugin.guard")(function* (next: typeof snapshot) {
@@ -410,35 +415,37 @@ export const OpencodePlugin = define<HttpClient.HttpClient | Bus.Service | Confi
 
 function fetchConfig(http: HttpClient.HttpClient, value: Credential.Key | Credential.OAuth) {
   // Scoped so responses whose body is never read (404, errors) are released here instead of by a GC-time abort.
-  return HttpClient.withScope(http)
-    .execute(
-      HttpClientRequest.get(`${ConsoleAccess.server(value)}/api/v2/config`).pipe(
-        HttpClientRequest.acceptJson,
-        HttpClientRequest.setHeaders(ConsoleAccess.headers(value)),
+  return Effect.try({ try: () => ConsoleAccess.server(value), catch: (cause) => cause }).pipe(
+    Effect.orDie,
+    Effect.flatMap((server) =>
+      HttpClient.withScope(http).execute(
+        HttpClientRequest.get(`${server}/api/v2/config`).pipe(
+          HttpClientRequest.acceptJson,
+          HttpClientRequest.setHeaders(ConsoleAccess.headers(value)),
+        ),
       ),
-    )
-    .pipe(
-      Effect.flatMap((response) =>
-        Effect.gen(function* () {
-          if (response.status === 404) return undefined
-          if (response.status === 401) {
-            const body = yield* HttpClientResponse.schemaBodyJson(Unauthorized)(response).pipe(Effect.option)
-            if (Option.isSome(body)) return yield* new SignedOutError()
-          }
-          if (response.status === 403) {
-            const body = yield* HttpClientResponse.schemaBodyJson(SsoRequired)(response).pipe(Effect.option)
-            if (Option.isSome(body))
-              return yield* new SsoRequiredError({
-                organization: organizationName(value),
-                url: yield* ssoUrl(ConsoleAccess.server(value), body.value.connectionId),
-              })
-          }
-          const body = yield* HttpClientResponse.filterStatusOk(response).pipe(Effect.flatMap((ok) => ok.json))
-          return yield* Schema.decodeUnknownEffect(ConfigIntegration.Remote)(body)
-        }),
-      ),
-      Effect.scoped,
-    )
+    ),
+    Effect.flatMap((response) =>
+      Effect.gen(function* () {
+        if (response.status === 404) return undefined
+        if (response.status === 401) {
+          const body = yield* HttpClientResponse.schemaBodyJson(Unauthorized)(response).pipe(Effect.option)
+          if (Option.isSome(body)) return yield* new SignedOutError()
+        }
+        if (response.status === 403) {
+          const body = yield* HttpClientResponse.schemaBodyJson(SsoRequired)(response).pipe(Effect.option)
+          if (Option.isSome(body))
+            return yield* new SsoRequiredError({
+              organization: organizationName(value),
+              url: yield* ssoUrl(ConsoleAccess.server(value), body.value.connectionId),
+            })
+        }
+        const body = yield* HttpClientResponse.filterStatusOk(response).pipe(Effect.flatMap((ok) => ok.json))
+        return yield* Schema.decodeUnknownEffect(ConfigIntegration.Remote)(body)
+      }),
+    ),
+    Effect.scoped,
+  )
 }
 
 function ssoUrl(server: string, connectionID: string) {
@@ -471,15 +478,16 @@ function organizationName(credential: Credential.Value) {
 }
 
 function normalizeServer(input: unknown) {
-  return Effect.try({
-    try: () => {
-      if (typeof input !== "string") throw new Error("expected string")
-      const url = new URL(input)
-      if (url.protocol !== "http:" && url.protocol !== "https:") throw new Error("expected HTTP(S)")
-      return `${url.origin}${url.pathname.replace(/\/+$/, "")}`
-    },
-    catch: (cause) =>
-      new Error(`Invalid OpenCode server URL: ${cause instanceof Error ? cause.message : String(cause)}`),
+  return Effect.gen(function* () {
+    if (typeof input !== "string") return yield* Effect.fail(new Error("Invalid OpenCode server URL: expected string"))
+    const url = yield* Effect.try({
+      try: () => new URL(input),
+      catch: (cause) =>
+        new Error(`Invalid OpenCode server URL: ${cause instanceof Error ? cause.message : String(cause)}`),
+    })
+    if (url.protocol !== "http:" && url.protocol !== "https:")
+      return yield* Effect.fail(new Error("Invalid OpenCode server URL: expected HTTP(S)"))
+    return `${url.origin}${url.pathname.replace(/\/+$/, "")}`
   })
 }
 

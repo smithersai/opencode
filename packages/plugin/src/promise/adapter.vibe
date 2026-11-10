@@ -44,11 +44,11 @@ class ReturnedRpcError extends Error {
   }
 }
 
-const makeStreams = Effect.fn("Plugin.Event.makeStreams")(function* () {
-  const context = yield* Effect.context<Scope.Scope>()
+const makeStreams = Effect.fn("Plugin.Event.makeStreams")(effect function () {
+  const context = try Effect.context<Scope.Scope>()
   const subscriptions = new Set<() => Promise<IteratorResult<unknown>>>()
   // Async iterators own separate scopes, so close them when the plugin unloads.
-  yield* Effect.addFinalizer(() => Effect.promise(() => Promise.all(Array.from(subscriptions, (close) => close()))))
+  try Effect.addFinalizer(() => Effect.promise(() => Promise.all(Array.from(subscriptions, (close) => close()))))
 
   return (<A, E>(stream: Stream.Stream<A, E>, options?: { readonly signal?: AbortSignal }): AsyncIterable<A> => ({
     [Symbol.asyncIterator]() {
@@ -76,8 +76,8 @@ const makeStreams = Effect.fn("Plugin.Event.makeStreams")(function* () {
   })) satisfies StreamAdapter
 })
 
-const rpcFromEffect = Effect.fn("Plugin.Rpc.fromEffect")(function* (host: HostRpc, streams: StreamAdapter) {
-  const context = yield* Effect.context<Scope.Scope>()
+const rpcFromEffect = Effect.fn("Plugin.Rpc.fromEffect")(effect function (host: HostRpc, streams: StreamAdapter) {
+  const context = try Effect.context<Scope.Scope>()
   const run = Effect.runPromiseWith(context)
 
   const client = (definition: Rpc.PortableDefinition) => {
@@ -171,13 +171,14 @@ function hostRpcError(context: HostRpcCallContext, error: unknown) {
   return context.error(error.type, error.message, error.data)
 }
 
-function compileEndpoint(endpoint: HttpApiEndpoint.Top) {
+effect function compileEndpoint(endpoint: HttpApiEndpoint.Top) {
   const cached = compiledEndpoints.get(endpoint)
   if (cached) return cached
   const payloadSchemas = Array.from(endpoint.payload.values()).flatMap(({ schemas }) => schemas)
   const successSchemas = Array.from(endpoint.success)
   if (payloadSchemas.length > 1 || successSchemas.length > 1) {
-    throw new Error(`Unsupported API schema cardinality: ${endpoint.identifier}`)
+    // A schema the adapter cannot map is a defect of the API definition, not a plugin failure.
+    return try Effect.die(new Error(`Unsupported API schema cardinality: ${endpoint.identifier}`))
   }
   const inputs = [
     endpoint.params,
@@ -221,9 +222,8 @@ function compileEndpoint(endpoint: HttpApiEndpoint.Top) {
 export function fromPromise(plugin: Plugin) {
   return define({
     id: plugin.id,
-    effect: (host) =>
-      Effect.gen(function* () {
-        const [{ ClientApi }, { OpenCodeEvent }] = yield* Effect.promise(() =>
+    effect: effect (host) => {
+        const [{ ClientApi }, { OpenCodeEvent }] = try Effect.promise(() =>
           Promise.all([import("@opencode/protocol/client"), import("@opencode/protocol/groups/event")]),
         )
         const encodeOpenCodeEvent = Schema.encodeUnknownEffect(OpenCodeEvent)
@@ -244,8 +244,8 @@ export function fromPromise(plugin: Plugin) {
         const VcsEndpoints = ClientApi.groups["server.vcs"].endpoints
         const WebSearchEndpoints = ClientApi.groups["server.websearch"].endpoints
         const WorktreeEndpoints = ClientApi.groups["server.worktree"].endpoints
-        const runtime = yield* Effect.context<Scope.Scope>()
-        const streams = yield* makeStreams()
+        const runtime = try Effect.context<Scope.Scope>()
+        const streams = try makeStreams()
 
         // Run a hook registration on the plugin scope and resolve once it is registered.
         const register = (effect: Effect.Effect<HostRegistration, never, Scope.Scope>): Promise<Registration> =>
@@ -267,22 +267,20 @@ export function fromPromise(plugin: Plugin) {
             )
 
         const adaptApiMethod = <PromiseMethod>(
-          endpoint: HttpApiEndpoint.Top,
+          compiled: CompiledEndpoint,
           method: (input: never) => Effect.Effect<unknown, unknown>,
-        ) => {
-          const compiled = compileEndpoint(endpoint)
-          return ((input?: unknown) =>
-            Effect.gen(function* () {
+        ) =>
+          ((input?: unknown) =>
+            Effect.runPromiseWith(runtime)(effect {
               // Match the generated Promise client, whose request body crosses JSON before endpoint decoding.
-              const normalized = yield* Schema.encodeUnknownEffect(JsonInput)(input ?? {}).pipe(
+              const normalized = try Schema.encodeUnknownEffect(JsonInput)(input ?? {}).pipe(
                 Effect.flatMap(Schema.decodeUnknownEffect(JsonInput)),
               )
-              const decoded = yield* Effect.forEach(compiled.decode, (decode) => decode(normalized))
-              const result = yield* method(Object.assign({}, ...decoded) as never)
+              const decoded = try Effect.forEach(compiled.decode, (decode) => decode(normalized))
+              const result = try method(Object.assign({}, ...decoded) as never)
               if (compiled.noContent) return undefined
-              return yield* compiled.encode(result)
-            }).pipe(Effect.runPromiseWith(runtime))) as PromiseMethod
-        }
+              return try compiled.encode(result)
+            })) as PromiseMethod
 
         const transform =
           <Editor>(domain: {
@@ -300,8 +298,8 @@ export function fromPromise(plugin: Plugin) {
           location: host.location,
           options: host.options,
           agent: {
-            get: adaptApiMethod(AgentEndpoints["agent.get"], host.agent.get),
-            list: adaptApiMethod(AgentEndpoints["agent.list"], host.agent.list),
+            get: adaptApiMethod(try compileEndpoint(AgentEndpoints["agent.get"]), host.agent.get),
+            list: adaptApiMethod(try compileEndpoint(AgentEndpoints["agent.list"]), host.agent.list),
             transform: transform(host.agent),
             reload: () => run(host.agent.reload()),
           },
@@ -312,7 +310,7 @@ export function fromPromise(plugin: Plugin) {
               ),
           },
           command: {
-            list: adaptApiMethod(CommandEndpoints["command.list"], host.command.list),
+            list: adaptApiMethod(try compileEndpoint(CommandEndpoints["command.list"]), host.command.list),
             transform: (callback) =>
               register(
                 host.command.transform((editor) =>
@@ -329,7 +327,7 @@ export function fromPromise(plugin: Plugin) {
             reload: () => run(host.command.reload()),
           },
           credential: {
-            activate: adaptApiMethod(CredentialEndpoints["credential.activate"], host.credential.activate),
+            activate: adaptApiMethod(try compileEndpoint(CredentialEndpoints["credential.activate"]), host.credential.activate),
           },
           event: {
             subscribe: <Type extends Exclude<OpenCodeEvent["type"], "server.connected">>(
@@ -345,62 +343,62 @@ export function fromPromise(plugin: Plugin) {
           },
           experimental: {
             terminal: {
-              read: adaptApiMethod(ExperimentalEndpoints["persistentPty.read"], host.experimental.terminal.read),
+              read: adaptApiMethod(try compileEndpoint(ExperimentalEndpoints["persistentPty.read"]), host.experimental.terminal.read),
             },
             generate: {
-              text: adaptApiMethod(GenerateEndpoints["generate.text"], host.experimental.generate.text),
-              image: adaptApiMethod(GenerateEndpoints["generate.image"], host.experimental.generate.image),
-              decisions: adaptApiMethod(GenerateEndpoints["generate.decisions"], host.experimental.generate.decisions),
+              text: adaptApiMethod(try compileEndpoint(GenerateEndpoints["generate.text"]), host.experimental.generate.text),
+              image: adaptApiMethod(try compileEndpoint(GenerateEndpoints["generate.image"]), host.experimental.generate.image),
+              decisions: adaptApiMethod(try compileEndpoint(GenerateEndpoints["generate.decisions"]), host.experimental.generate.decisions),
             },
           },
           generate: {
-            text: adaptApiMethod(GenerateEndpoints["generate.text"], host.generate.text),
+            text: adaptApiMethod(try compileEndpoint(GenerateEndpoints["generate.text"]), host.generate.text),
           },
           model: {
-            list: adaptApiMethod(ModelEndpoints["model.list"], host.model.list),
-            default: adaptApiMethod(ModelEndpoints["model.default"], host.model.default),
+            list: adaptApiMethod(try compileEndpoint(ModelEndpoints["model.list"]), host.model.list),
+            default: adaptApiMethod(try compileEndpoint(ModelEndpoints["model.default"]), host.model.default),
             transform: transform(host.model),
             reload: () => run(host.model.reload()),
           },
           provider: {
-            list: adaptApiMethod(ProviderEndpoints["provider.list"], host.provider.list),
-            get: adaptApiMethod(ProviderEndpoints["provider.get"], host.provider.get),
+            list: adaptApiMethod(try compileEndpoint(ProviderEndpoints["provider.list"]), host.provider.list),
+            get: adaptApiMethod(try compileEndpoint(ProviderEndpoints["provider.get"]), host.provider.get),
             transform: transform(host.provider),
             reload: () => run(host.provider.reload()),
           },
           integration: {
-            list: adaptApiMethod(IntegrationEndpoints["integration.list"], host.integration.list),
-            get: adaptApiMethod(IntegrationEndpoints["integration.get"], host.integration.get),
+            list: adaptApiMethod(try compileEndpoint(IntegrationEndpoints["integration.list"]), host.integration.list),
+            get: adaptApiMethod(try compileEndpoint(IntegrationEndpoints["integration.get"]), host.integration.get),
             connect: {
-              key: adaptApiMethod(IntegrationEndpoints["integration.connect.key"], host.integration.connect.key),
+              key: adaptApiMethod(try compileEndpoint(IntegrationEndpoints["integration.connect.key"]), host.integration.connect.key),
               external: adaptApiMethod(
-                IntegrationEndpoints["integration.connect.external"],
+                try compileEndpoint(IntegrationEndpoints["integration.connect.external"]),
                 host.integration.connect.external,
               ),
             },
             oauth: {
               connect: adaptApiMethod(
-                IntegrationEndpoints["integration.oauth.connect"],
+                try compileEndpoint(IntegrationEndpoints["integration.oauth.connect"]),
                 host.integration.oauth.connect,
               ),
-              status: adaptApiMethod(IntegrationEndpoints["integration.oauth.status"], host.integration.oauth.status),
+              status: adaptApiMethod(try compileEndpoint(IntegrationEndpoints["integration.oauth.status"]), host.integration.oauth.status),
               complete: adaptApiMethod(
-                IntegrationEndpoints["integration.oauth.complete"],
+                try compileEndpoint(IntegrationEndpoints["integration.oauth.complete"]),
                 host.integration.oauth.complete,
               ),
-              cancel: adaptApiMethod(IntegrationEndpoints["integration.oauth.cancel"], host.integration.oauth.cancel),
+              cancel: adaptApiMethod(try compileEndpoint(IntegrationEndpoints["integration.oauth.cancel"]), host.integration.oauth.cancel),
             },
             command: {
               connect: adaptApiMethod(
-                IntegrationEndpoints["integration.command.connect"],
+                try compileEndpoint(IntegrationEndpoints["integration.command.connect"]),
                 host.integration.command.connect,
               ),
               status: adaptApiMethod(
-                IntegrationEndpoints["integration.command.status"],
+                try compileEndpoint(IntegrationEndpoints["integration.command.status"]),
                 host.integration.command.status,
               ),
               cancel: adaptApiMethod(
-                IntegrationEndpoints["integration.command.cancel"],
+                try compileEndpoint(IntegrationEndpoints["integration.command.cancel"]),
                 host.integration.command.cancel,
               ),
             },
@@ -452,30 +450,30 @@ export function fromPromise(plugin: Plugin) {
             },
           },
           mcp: {
-            list: adaptApiMethod(McpEndpoints["mcp.list"], host.mcp.list),
+            list: adaptApiMethod(try compileEndpoint(McpEndpoints["mcp.list"]), host.mcp.list),
             transform: transform(host.mcp),
             reload: () => run(host.mcp.reload()),
           },
           permission: {
             hook: (name, callback) =>
               register(host.permission.hook(name, (event) => Effect.promise(() => Promise.resolve(callback(event))))),
-            list: adaptApiMethod(PermissionEndpoints["session.permission.list"], host.permission.list),
-            get: adaptApiMethod(PermissionEndpoints["session.permission.get"], host.permission.get),
-            reply: adaptApiMethod(PermissionEndpoints["session.permission.reply"], host.permission.reply),
+            list: adaptApiMethod(try compileEndpoint(PermissionEndpoints["session.permission.list"]), host.permission.list),
+            get: adaptApiMethod(try compileEndpoint(PermissionEndpoints["session.permission.get"]), host.permission.get),
+            reply: adaptApiMethod(try compileEndpoint(PermissionEndpoints["session.permission.reply"]), host.permission.reply),
             assert: (input) =>
               run(Schema.decodeUnknownEffect(AssertInput)(input).pipe(Effect.flatMap(host.permission.assert))),
           },
           plugin: {
-            list: adaptApiMethod(PluginEndpoints["plugin.list"], host.plugin.list),
+            list: adaptApiMethod(try compileEndpoint(PluginEndpoints["plugin.list"]), host.plugin.list),
           },
           reference: {
-            list: adaptApiMethod(ReferenceEndpoints["reference.list"], host.reference.list),
+            list: adaptApiMethod(try compileEndpoint(ReferenceEndpoints["reference.list"]), host.reference.list),
             transform: transform(host.reference),
             reload: () => run(host.reference.reload()),
           },
-          rpc: yield* rpcFromEffect(host.rpc, streams),
+          rpc: try rpcFromEffect(host.rpc, streams),
           skill: {
-            list: adaptApiMethod(SkillEndpoints["skill.list"], host.skill.list),
+            list: adaptApiMethod(try compileEndpoint(SkillEndpoints["skill.list"]), host.skill.list),
             transform: transform(host.skill),
             reload: () => run(host.skill.reload()),
           },
@@ -528,13 +526,13 @@ export function fromPromise(plugin: Plugin) {
               register(host.tool.hook(name, (event) => toolHook[name](() => Promise.resolve(callback(event))))),
           },
           vcs: {
-            get: adaptApiMethod(VcsEndpoints["vcs.get"], host.vcs.get),
-            base: adaptApiMethod(VcsEndpoints["vcs.base"], host.vcs.base),
+            get: adaptApiMethod(try compileEndpoint(VcsEndpoints["vcs.get"]), host.vcs.get),
+            base: adaptApiMethod(try compileEndpoint(VcsEndpoints["vcs.base"]), host.vcs.base),
             branch: {
-              list: adaptApiMethod(VcsEndpoints["vcs.branch.list"], host.vcs.branch.list),
+              list: adaptApiMethod(try compileEndpoint(VcsEndpoints["vcs.branch.list"]), host.vcs.branch.list),
             },
-            status: adaptApiMethod(VcsEndpoints["vcs.status"], host.vcs.status),
-            diff: adaptApiMethod(VcsEndpoints["vcs.diff"], host.vcs.diff),
+            status: adaptApiMethod(try compileEndpoint(VcsEndpoints["vcs.status"]), host.vcs.status),
+            diff: adaptApiMethod(try compileEndpoint(VcsEndpoints["vcs.diff"]), host.vcs.diff),
             reload: () => run(host.vcs.reload()),
             transform: (callback) =>
               register(
@@ -560,8 +558,8 @@ export function fromPromise(plugin: Plugin) {
               ),
           },
           websearch: {
-            providers: adaptApiMethod(WebSearchEndpoints["websearch.providers"], host.websearch.providers),
-            query: adaptApiMethod(WebSearchEndpoints["websearch.query"], host.websearch.query),
+            providers: adaptApiMethod(try compileEndpoint(WebSearchEndpoints["websearch.providers"]), host.websearch.providers),
+            query: adaptApiMethod(try compileEndpoint(WebSearchEndpoints["websearch.query"]), host.websearch.query),
             reload: () => run(host.websearch.reload()),
             transform: (callback) =>
               register(
@@ -579,10 +577,10 @@ export function fromPromise(plugin: Plugin) {
               ),
           },
           worktree: {
-            list: adaptApiMethod(WorktreeEndpoints["worktree.list"], host.worktree.list),
-            create: adaptApiMethod(WorktreeEndpoints["worktree.create"], host.worktree.create),
-            remove: adaptApiMethod(WorktreeEndpoints["worktree.remove"], host.worktree.remove),
-            refresh: adaptApiMethod(WorktreeEndpoints["worktree.refresh"], host.worktree.refresh),
+            list: adaptApiMethod(try compileEndpoint(WorktreeEndpoints["worktree.list"]), host.worktree.list),
+            create: adaptApiMethod(try compileEndpoint(WorktreeEndpoints["worktree.create"]), host.worktree.create),
+            remove: adaptApiMethod(try compileEndpoint(WorktreeEndpoints["worktree.remove"]), host.worktree.remove),
+            refresh: adaptApiMethod(try compileEndpoint(WorktreeEndpoints["worktree.refresh"]), host.worktree.refresh),
             reload: () => run(host.worktree.reload()),
             transform: (callback) =>
               register(
@@ -604,34 +602,34 @@ export function fromPromise(plugin: Plugin) {
               register(
                 host.session.hook(name, (event) => Effect.promise(() => Promise.resolve(callback(event))), options),
               ),
-            list: adaptApiMethod(SessionEndpoints["session.list"], host.session.list),
-            create: adaptApiMethod(SessionEndpoints["session.create"], host.session.create),
-            get: adaptApiMethod(SessionEndpoints["session.get"], host.session.get),
-            remove: adaptApiMethod(SessionEndpoints["session.remove"], host.session.remove),
-            switchAgent: adaptApiMethod(SessionEndpoints["session.switchAgent"], host.session.switchAgent),
-            switchModel: adaptApiMethod(SessionEndpoints["session.switchModel"], host.session.switchModel),
-            prompt: adaptApiMethod(SessionEndpoints["session.prompt"], host.session.prompt),
-            generate: adaptApiMethod(SessionEndpoints["session.generate"], host.session.generate),
-            command: adaptApiMethod(SessionEndpoints["session.command"], host.session.command),
-            compact: adaptApiMethod(SessionEndpoints["session.compact"], host.session.compact),
-            synthetic: adaptApiMethod(SessionEndpoints["session.synthetic"], host.session.synthetic),
-            interrupt: adaptApiMethod(SessionEndpoints["session.interrupt"], host.session.interrupt),
-            update: adaptApiMethod(SessionEndpoints["session.update"], host.session.update),
-            move: adaptApiMethod(SessionEndpoints["session.move"], host.session.move),
-            wait: adaptApiMethod(SessionEndpoints["session.wait"], host.session.wait),
-            context: adaptApiMethod(SessionEndpoints["session.context"], host.session.context),
+            list: adaptApiMethod(try compileEndpoint(SessionEndpoints["session.list"]), host.session.list),
+            create: adaptApiMethod(try compileEndpoint(SessionEndpoints["session.create"]), host.session.create),
+            get: adaptApiMethod(try compileEndpoint(SessionEndpoints["session.get"]), host.session.get),
+            remove: adaptApiMethod(try compileEndpoint(SessionEndpoints["session.remove"]), host.session.remove),
+            switchAgent: adaptApiMethod(try compileEndpoint(SessionEndpoints["session.switchAgent"]), host.session.switchAgent),
+            switchModel: adaptApiMethod(try compileEndpoint(SessionEndpoints["session.switchModel"]), host.session.switchModel),
+            prompt: adaptApiMethod(try compileEndpoint(SessionEndpoints["session.prompt"]), host.session.prompt),
+            generate: adaptApiMethod(try compileEndpoint(SessionEndpoints["session.generate"]), host.session.generate),
+            command: adaptApiMethod(try compileEndpoint(SessionEndpoints["session.command"]), host.session.command),
+            compact: adaptApiMethod(try compileEndpoint(SessionEndpoints["session.compact"]), host.session.compact),
+            synthetic: adaptApiMethod(try compileEndpoint(SessionEndpoints["session.synthetic"]), host.session.synthetic),
+            interrupt: adaptApiMethod(try compileEndpoint(SessionEndpoints["session.interrupt"]), host.session.interrupt),
+            update: adaptApiMethod(try compileEndpoint(SessionEndpoints["session.update"]), host.session.update),
+            move: adaptApiMethod(try compileEndpoint(SessionEndpoints["session.move"]), host.session.move),
+            wait: adaptApiMethod(try compileEndpoint(SessionEndpoints["session.wait"]), host.session.wait),
+            context: adaptApiMethod(try compileEndpoint(SessionEndpoints["session.context"]), host.session.context),
             instructions: {
               entry: {
                 list: adaptApiMethod(
-                  SessionEndpoints["session.instructions.entry.list"],
+                  try compileEndpoint(SessionEndpoints["session.instructions.entry.list"]),
                   host.session.instructions.entry.list,
                 ),
                 put: adaptApiMethod(
-                  SessionEndpoints["session.instructions.entry.put"],
+                  try compileEndpoint(SessionEndpoints["session.instructions.entry.put"]),
                   host.session.instructions.entry.put,
                 ),
                 remove: adaptApiMethod(
-                  SessionEndpoints["session.instructions.entry.remove"],
+                  try compileEndpoint(SessionEndpoints["session.instructions.entry.remove"]),
                   host.session.instructions.entry.remove,
                 ),
               },
@@ -643,11 +641,11 @@ export function fromPromise(plugin: Plugin) {
           },
         }
 
-        yield* Effect.acquireRelease(
+        try Effect.acquireRelease(
           Effect.promise(() => Promise.resolve(plugin.setup(context2))),
           (cleanup) => (cleanup ? Effect.promise(() => Promise.resolve(cleanup())) : Effect.void),
         )
-      }),
+    },
   })
 }
 

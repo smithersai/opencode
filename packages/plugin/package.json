@@ -54,8 +54,8 @@
       "default": "./.vibelang/js/src/gui/host.js"
     },
     "./gui/builtin": {
-      "types": "./src/gui/builtin.ts",
-      "vibelang-source": "./src/gui/builtin.ts",
+      "types": "./src/gui/builtin.d.vibe.ts",
+      "vibelang-source": "./src/gui/builtin.vibe",
       "default": "./.vibelang/js/src/gui/builtin.js"
     },
     "./gui/file": {
@@ -84,6 +84,7 @@
       "default": "./.vibelang/js/src/gui/vite.js"
     },
     "./gui/*": null,
+    "./gui/builtin.platform": null,
     "./effect/agent": {
       "types": "./src/effect/agent.d.vibe.ts",
       "vibelang-source": "./src/effect/agent.vibe",
@@ -198,6 +199,11 @@
       "types": "./src/permission.d.vibe.ts",
       "vibelang-source": "./src/permission.vibe",
       "default": "./.vibelang/js/src/permission.js"
+    },
+    "./promise/adapter": {
+      "types": "./src/promise/adapter.d.vibe.ts",
+      "vibelang-source": "./src/promise/adapter.vibe",
+      "default": "./.vibelang/js/src/promise/adapter.js"
     },
     "./promise/agent": {
       "types": "./src/promise/agent.d.vibe.ts",

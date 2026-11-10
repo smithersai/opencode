@@ -8,6 +8,7 @@ import type { Desktop, Layout, Locale, StorageScope, StoreOptions } from "./host
 import type { MainContext } from "./main.vibe"
 import type { Command, IconName, Panel, PanelTab, SlotMap } from "./registries.js"
 import { type JSX } from "solid-js"
+import { cancelIdleCallback, clearTimeout, hasIdleCallback, requestIdleCallback, setTimeout } from "./builtin.platform.js"
 
 /**
  * Runs fn when the main thread is idle (a short timeout where requestIdleCallback is missing, e.g. Safari). Load lazy
@@ -23,7 +24,7 @@ import { type JSX } from "solid-js"
  * ```
  */
 export function onIdle(fn: () => void) {
-  if (typeof requestIdleCallback !== "undefined") {
+  if (hasIdleCallback()) {
     const id = requestIdleCallback(fn)
 
     return () => cancelIdleCallback(id)

@@ -6,6 +6,8 @@ Release notes for OpenCode V2, newest first.
 
 ### Changed
 
+- The plugin SDK promise adapter and built-in plugin helpers now use VibeLang while preserving their declarations and native idle-callback access.
+
 - The HTTP recorder, secret scan and replay state now use VibeLang while preserving their declarations.
 
 - The simulation backend, Drive manifest and headless renderer now use VibeLang while preserving their declarations.

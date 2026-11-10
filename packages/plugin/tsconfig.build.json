@@ -13,7 +13,8 @@
     "src/**/*.typecheck.ts",
     "src/**/*.typecheck.vibe",
     "src/gui/host.ts",
-    "src/gui/builtin.ts",
+    "src/gui/builtin.vibe",
+    "src/gui/builtin.platform.ts",
     "src/gui/updater.ts"
   ]
 }

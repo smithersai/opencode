@@ -741,6 +741,18 @@
       "vibelang-source": "./src/plugin/verbosity.vibe",
       "default": "./.vibelang/js/src/plugin/verbosity.js"
     },
+    "./filesystem/watcher": {
+      "types": "./src/filesystem/watcher.d.vibe.ts",
+      "vibelang-source": "./src/filesystem/watcher.vibe",
+      "default": "./.vibelang/js/src/filesystem/watcher.js"
+    },
+    "./filesystem/location-watcher": {
+      "types": "./src/filesystem/location-watcher.d.vibe.ts",
+      "vibelang-source": "./src/filesystem/location-watcher.vibe",
+      "default": "./.vibelang/js/src/filesystem/location-watcher.js"
+    },
+    "./filesystem/location-watcher.platform": null,
+    "./filesystem/watcher.platform": null,
     "./plugin/provider/amazon-bedrock": {
       "types": "./src/plugin/provider/amazon-bedrock.d.vibe.ts",
       "vibelang-source": "./src/plugin/provider/amazon-bedrock.vibe",

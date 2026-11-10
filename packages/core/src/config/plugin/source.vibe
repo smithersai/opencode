@@ -6,12 +6,11 @@ import { FSUtil } from "@opencode/util/fs-util"
 import { Host } from "@opencode/plugin/host"
 import { makeLocationNode } from "@opencode/util/effect/app-node"
 import { Context, Effect, Layer, Option, PubSub, Scope, Stream } from "effect"
-import path from "path"
-import { fileURLToPath, pathToFileURL } from "url"
 import { Config } from "../../config.js"
 import { Watcher } from "../../filesystem/watcher.js"
 import { Location } from "../../location.js"
 import { PluginSourceDirectory } from "../../plugin/source-directory.js"
+import { dirname, fileURL, isAbsolute, joinPath, localPath, resolve } from "./source.platform.js"
 
 export type Operation =
   | {
@@ -52,7 +51,7 @@ export const layer = Layer.effect(
       operations: readonly Operation[],
     ) {
       for (const operation of operations) {
-        if (operation.type !== "add" || !path.isAbsolute(operation.target)) continue
+        if (operation.type !== "add" || !isAbsolute(operation.target)) continue
         if (watched.has(operation.target)) continue
         // The config change feed already covers {plugin,plugins} directories.
         if (isPluginSource(entries, operation.target)) continue
@@ -110,12 +109,13 @@ export const empty = makeLocationNode({
   deps: [],
 })
 
-function parse(input: ConfigPlugin.Plugin): Operation {
+// A bare "-" is a defect, as the throw inside the scanning generator was.
+effect function parse(input: ConfigPlugin.Plugin): Operation!! {
   if (typeof input !== "string") {
     return { type: "add", target: input.package, options: input.options ?? {} }
   }
   if (!input.startsWith("-")) return { type: "add", target: input, options: {} }
-  if (input.length === 1) throw new Error("Plugin remove operation requires a target")
+  if (input.length === 1) return try Effect.die(new Error("Plugin remove operation requires a target"))
   return { type: "remove", target: input.slice(1) }
 }
 
@@ -131,23 +131,32 @@ const scan = Effect.fn("ConfigPluginSource.scan")(function* (
         Effect.map((targets) => targets.map((target): Operation => ({ type: "add", target, options: {} }))),
       ),
   ).pipe(Effect.map((items) => items.flat()))
-  const configured = entries
-    .filter((entry): entry is Document => entry.type === "document")
-    .flatMap((entry) =>
-      (entry.info.plugins ?? []).map(parse).map((operation) => {
-        if (operation.type === "remove") return operation
-        const directory = entry.path ? path.dirname(entry.path) : location.directory
-        const target = operation.target.startsWith("file://")
-          ? fileURLToPath(operation.target)
-          : operation.target.startsWith("./") || operation.target.startsWith("../")
-            ? path.resolve(directory, operation.target)
-            : operation.target
-        return { ...operation, target }
-      }),
-    )
+  const configured = yield* Effect.forEach(
+    entries.filter((entry): entry is Document => entry.type === "document"),
+    (entry) =>
+      Effect.forEach(entry.info.plugins ?? [], parse).pipe(
+        Effect.flatMap((operations) =>
+          Effect.forEach(operations, (operation) =>
+            Effect.try({
+              try: (): Operation => {
+                if (operation.type === "remove") return operation
+                const directory = entry.path ? dirname(entry.path) : location.directory
+                const target = operation.target.startsWith("file://")
+                  ? localPath(operation.target)
+                  : operation.target.startsWith("./") || operation.target.startsWith("../")
+                    ? resolve(directory, operation.target)
+                    : operation.target
+                return { ...operation, target }
+              },
+              catch: (cause) => cause,
+            }).pipe(Effect.orDie),
+          ),
+        ),
+      ),
+  ).pipe(Effect.map((items) => items.flat()))
   const resolved = yield* Effect.forEach(configured, (operation) =>
     Effect.gen(function* () {
-      if (operation.type === "remove" || !path.isAbsolute(operation.target)) return Option.some(operation)
+      if (operation.type === "remove" || !isAbsolute(operation.target)) return Option.some(operation)
       if (yield* fs.isFile(operation.target)) {
         yield* Effect.logWarning("configured plugin path must be a directory", { target: operation.target })
         return Option.none<Operation>()
@@ -158,27 +167,33 @@ const scan = Effect.fn("ConfigPluginSource.scan")(function* (
   // Explicit config is applied last so it can remove auto-discovered packages.
   return yield* Effect.forEach([...discovered, ...resolved], (operation) =>
     Effect.gen(function* () {
-      if (operation.type === "remove" || !path.isAbsolute(operation.target)) return [operation]
+      if (operation.type === "remove" || !isAbsolute(operation.target)) return [operation]
       if (!(yield* fs.existsSafe(operation.target))) return [operation]
       const directory = yield* fs.isDir(operation.target)
       const entrypoints: Host.Entrypoints = directory
         ? yield* Effect.sync(() => Host.resolve({ directory: operation.target }))
-        : { server: pathToFileURL(operation.target).href }
+        : { server: fileURL(operation.target) }
       // A directory without a server part still lists for its GUI part. A TUI-only directory stays the TUI's own.
       const entrypoint = entrypoints.server ?? entrypoints.gui
       if (!entrypoint) return []
       if (directory) {
         const root = yield* fs.resolve(operation.target)
-        const resolved = yield* fs.resolve(fileURLToPath(entrypoint))
+        const resolved = yield* fs.resolve(
+          yield* Effect.try({ try: () => localPath(entrypoint), catch: (cause) => cause }).pipe(Effect.orDie),
+        )
         if (!FSUtil.contains(root, resolved)) return []
       }
-      const times = yield* Effect.forEach(
-        [
+      const files = yield* Effect.try({
+        try: () => [
           ...Object.values(entrypoints)
             .filter((entry) => entry !== undefined)
-            .map((entry) => fileURLToPath(entry)),
-          path.join(directory ? operation.target : path.dirname(operation.target), "package.json"),
+            .map((entry) => localPath(entry)),
+          joinPath(directory ? operation.target : dirname(operation.target), "package.json"),
         ],
+        catch: (cause) => cause,
+      }).pipe(Effect.orDie)
+      const times = yield* Effect.forEach(
+        files,
         (entry) =>
           fs.stat(entry).pipe(
             Effect.map((info) => Option.getOrElse(info.mtime, () => new Date(0)).getTime()),
@@ -194,6 +209,6 @@ function isPluginSource(entries: readonly Entry[], file: string) {
   return entries.some(
     (entry) =>
       entry.type === "directory" &&
-      PluginSourceDirectory.names.some((directory) => FSUtil.contains(path.join(entry.path, directory), file)),
+      PluginSourceDirectory.names.some((directory) => FSUtil.contains(joinPath(entry.path, directory), file)),
   )
 }

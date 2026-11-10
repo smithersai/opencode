@@ -1,10 +1,9 @@
 export * as ConfigVariable from "./variable.js"
 
-import os from "os"
-import path from "path"
 import { Effect } from "effect"
 import { type ParseError, parse } from "jsonc-parser"
 import { FSUtil } from "@opencode/util/fs-util"
+import { dirname, environmentVariable, homedir, isAbsolute, joinPath, resolve } from "./variable.platform.js"
 
 type ParseSource =
   | {
@@ -26,7 +25,7 @@ type SubstituteInput = ParseSource & {
 export const substitute = Effect.fn("ConfigVariable.substitute")(function* (input: SubstituteInput) {
   const env = (escape: boolean) =>
     input.text.replace(/\{env:([^}]+)\}/g, (_, name: string) => {
-      const value = (input.env?.[name] ?? process.env[name]) || ""
+      const value = (input.env?.[name] ?? environmentVariable(name)) || ""
       return escape ? JSON.stringify(value).slice(1, -1) : value
     })
   // Escape only when raw values break the JSON (e.g. Windows paths), so configs that parse today keep their meaning.
@@ -39,7 +38,7 @@ export const substitute = Effect.fn("ConfigVariable.substitute")(function* (inpu
 
 const substituteFiles = Effect.fnUntraced(function* (input: SubstituteInput, text: string) {
   const fs = yield* FSUtil.Service
-  const configDir = input.type === "path" ? path.dirname(input.path) : input.dir
+  const configDir = input.type === "path" ? dirname(input.path) : input.dir
   const configSource = input.type === "path" ? input.path : input.source
   let out = ""
   let cursor = 0
@@ -58,8 +57,8 @@ const substituteFiles = Effect.fnUntraced(function* (input: SubstituteInput, tex
     }
 
     const filePath = token.slice("{file:".length, -1)
-    const expandedPath = filePath.startsWith("~/") ? path.join(os.homedir(), filePath.slice(2)) : filePath
-    const resolvedPath = path.isAbsolute(expandedPath) ? expandedPath : path.resolve(configDir, expandedPath)
+    const expandedPath = filePath.startsWith("~/") ? joinPath(homedir(), filePath.slice(2)) : filePath
+    const resolvedPath = isAbsolute(expandedPath) ? expandedPath : resolve(configDir, expandedPath)
     // Like a missing {env:VAR}, a missing or unreadable file substitutes empty so one stale secret
     // reference cannot take down every Location that loads this config.
     const fileContent = yield* fs.readFileString(resolvedPath).pipe(

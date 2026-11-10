@@ -6,6 +6,8 @@ Release notes for OpenCode V2, newest first.
 
 ### Changed
 
+- Config variable substitution and the command and plugin source loaders now use VibeLang, with path and URL access in native platform files.
+
 - The persistent PTY daemon transport and service now use VibeLang, with sockets, process spawning and buffers in native platform files.
 
 - Session runner steps, model requests and transport, prompts, context, titles, instructions and generation now use VibeLang while preserving their declarations, with file URL, response and buffer access in native platform files.

@@ -1026,6 +1026,24 @@
     "./plugin/vcs/git.platform": null,
     "./plugin/vcs/hg.platform": null,
     "./config/plugin/skill.platform": null,
+    "./config/plugin/command": {
+      "types": "./src/config/plugin/command.d.vibe.ts",
+      "vibelang-source": "./src/config/plugin/command.vibe",
+      "default": "./.vibelang/js/src/config/plugin/command.js"
+    },
+    "./config/plugin/command.platform": null,
+    "./config/plugin/source": {
+      "types": "./src/config/plugin/source.d.vibe.ts",
+      "vibelang-source": "./src/config/plugin/source.vibe",
+      "default": "./.vibelang/js/src/config/plugin/source.js"
+    },
+    "./config/plugin/source.platform": null,
+    "./config/variable": {
+      "types": "./src/config/variable.d.vibe.ts",
+      "vibelang-source": "./src/config/variable.vibe",
+      "default": "./.vibelang/js/src/config/variable.js"
+    },
+    "./config/variable.platform": null,
     "./skill/discovery.platform": null,
     "./image/photon.platform": null,
     "./plugin/plan.platform": null,

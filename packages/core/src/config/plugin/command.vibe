@@ -4,7 +4,6 @@ import { define } from "@opencode/plugin/effect/plugin"
 import { Info, type Entry } from "@opencode/schema/config"
 import { ConfigCommand } from "@opencode/schema/config/command"
 import { AppProcess } from "@opencode/util/process"
-import path from "path"
 import { Effect, Option, PubSub, Schema, Stream } from "effect"
 import { ChildProcess } from "effect/process"
 import { Agent } from "../../agent.vibe"
@@ -15,6 +14,7 @@ import { SubagentJob } from "../../session/subagent-job.vibe"
 import { ShellSelect } from "../../shell/select.js"
 import { FSUtil } from "@opencode/util/fs-util"
 import { ConfigMarkdown } from "../markdown.js"
+import { joinPath, outputText, relative } from "./command.platform.js"
 
 const decodeCommand = Schema.decodeUnknownOption(ConfigCommand.Info)
 
@@ -143,7 +143,7 @@ function isCommandSource(entries: Entry[], file: string) {
   return entries.some(
     (entry) =>
       entry.type === "directory" &&
-      sourceDirectories.some((name) => FSUtil.contains(path.join(entry.path, name), file)),
+      sourceDirectories.some((name) => FSUtil.contains(joinPath(entry.path, name), file)),
   )
 }
 
@@ -171,8 +171,7 @@ function decode(directory: string, filepath: string, content: string) {
   const info = Option.getOrUndefined(decodeCommand({ ...markdown.data, template: markdown.content.trim() }))
   if (!info) return
   return {
-    name: path
-      .relative(directory, filepath)
+    name: relative(directory, filepath)
       .replaceAll("\\", "/")
       .replace(/^(command|commands)\//, "")
       .replace(/\.md$/, ""),
@@ -212,20 +211,22 @@ function evaluateTemplate(
       matches,
       (match) => {
         const source = match[1] ?? ""
-        return services.processes
-          .run(
-            ChildProcess.make(shell, ShellSelect.args(shell, source), {
-              cwd: services.location.directory,
-              stdin: "ignore",
-            }),
-            { combineOutput: true },
-          )
-          .pipe(
-            Effect.map((result) => (result.output ?? Buffer.concat([result.stdout, result.stderr])).toString("utf8")),
-            Effect.mapError(
-              (error) => new Error(`Shell interpolation failed for ${JSON.stringify(source)}: ${error.message}`),
+        return Effect.try({ try: () => ShellSelect.args(shell, source), catch: (cause) => cause }).pipe(
+          Effect.orDie,
+          Effect.flatMap((shellArgs) =>
+            services.processes.run(
+              ChildProcess.make(shell, shellArgs, {
+                cwd: services.location.directory,
+                stdin: "ignore",
+              }),
+              { combineOutput: true },
             ),
-          )
+          ),
+          Effect.map(outputText),
+          Effect.mapError(
+            (error) => new Error(`Shell interpolation failed for ${JSON.stringify(source)}: ${error.message}`),
+          ),
+        )
       },
       { concurrency: 2 },
     )

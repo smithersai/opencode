@@ -3,6 +3,7 @@ export * as BrowserTunnel from "./tunnel.js"
 import type { Socket } from "node:net"
 import { Effect } from "effect"
 import { Browser } from "./rpc.vibe"
+import { net, randomUUID } from "./tunnel.platform.js"
 
 export type Tunnels = ReturnType<typeof make>
 
@@ -19,7 +20,7 @@ export function make() {
 
   return {
     open: Effect.fn("BrowserTunnel.open")(function* (target: Browser.TunnelTarget) {
-      const { createConnection } = yield* Effect.promise(() => import("node:net"))
+      const { createConnection } = yield* Effect.promise(() => net())
       if (disposed) return yield* Effect.fail(new Error("Browser attachment is closed."))
       if (sockets.size >= 64)
         return yield* Effect.fail(new Error("Browser attachment has reached its 64-connection limit."))
@@ -27,7 +28,7 @@ export function make() {
         try: () => createConnection({ ...target, allowHalfOpen: true }),
         catch: (cause) => (cause instanceof Error ? cause : new Error(String(cause))),
       })
-      const id = crypto.randomUUID()
+      const id = randomUUID()
       const entry = { socket, reading: false, error: undefined as Error | undefined }
       socket.on("error", (error) => {
         entry.error = error

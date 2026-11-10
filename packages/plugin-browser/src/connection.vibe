@@ -7,6 +7,7 @@ import { Tool } from "@opencode/schema/tool"
 import { Deferred, Effect, Schema, Stream } from "effect"
 import { Browser } from "./rpc.vibe"
 import { BrowserSkill } from "./skill.js"
+import { randomUUID } from "./connection.platform.js"
 import { BrowserTunnel } from "./tunnel.js"
 
 type Attachment = {
@@ -221,7 +222,7 @@ const request = Effect.fn("BrowserConnection.request")(function* (
   files: readonly Browser.File[],
   inspection: Pick<Browser.Command, "inspect" | "target">,
 ) {
-  const requestID = crypto.randomUUID()
+  const requestID = randomUUID()
   const pending = yield* Deferred.make<Browser.Result, Tool.Error>()
   const command =
     (action.type === "files.upload" || action.type === "files.drop") && !inspection.inspect

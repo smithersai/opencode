@@ -29,8 +29,8 @@
       "default": "./.vibelang/js/src/rpc.js"
     },
     "./proxy": {
-      "types": "./src/proxy.ts",
-      "vibelang-source": "./src/proxy.ts",
+      "types": "./src/proxy.d.vibe.ts",
+      "vibelang-source": "./src/proxy.vibe",
       "default": "./.vibelang/js/src/proxy.js"
     }
   },

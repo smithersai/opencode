@@ -1,0 +1,6 @@
+// The platform code of tunnel.vibe, which VibeLang code does not use directly (EK4402).
+// The socket module loads on first use, as the dynamic import it replaces did.
+
+export const net = () => import("node:net")
+
+export const randomUUID = () => crypto.randomUUID()

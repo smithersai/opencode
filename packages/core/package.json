@@ -781,6 +781,31 @@
       "vibelang-source": "./src/websearch.vibe",
       "default": "./.vibelang/js/src/websearch.js"
     },
+    "./model": {
+      "types": "./src/model.d.vibe.ts",
+      "vibelang-source": "./src/model.vibe",
+      "default": "./.vibelang/js/src/model.js"
+    },
+    "./model-resolver": {
+      "types": "./src/model-resolver.d.vibe.ts",
+      "vibelang-source": "./src/model-resolver.vibe",
+      "default": "./.vibelang/js/src/model-resolver.js"
+    },
+    "./provider": {
+      "types": "./src/provider.d.vibe.ts",
+      "vibelang-source": "./src/provider.vibe",
+      "default": "./.vibelang/js/src/provider.js"
+    },
+    "./pty": {
+      "types": "./src/pty.d.vibe.ts",
+      "vibelang-source": "./src/pty.vibe",
+      "default": "./.vibelang/js/src/pty.js"
+    },
+    "./ripgrep": {
+      "types": "./src/ripgrep.d.vibe.ts",
+      "vibelang-source": "./src/ripgrep.vibe",
+      "default": "./.vibelang/js/src/ripgrep.js"
+    },
     "./file-access": {
       "types": "./src/file-access.d.vibe.ts",
       "vibelang-source": "./src/file-access.vibe",
@@ -1210,6 +1235,11 @@
     "./plugin/plan.platform": null,
     "./plugin/skill.platform": null,
     "./pty/ticket.platform": null,
+    "./model.platform": null,
+    "./model-resolver.platform": null,
+    "./provider.platform": null,
+    "./pty.platform": null,
+    "./ripgrep.platform": null,
     "./formatter.platform": null,
     "./tool-output.platform": null,
     "./filesystem.platform": null,

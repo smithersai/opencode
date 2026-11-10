@@ -17,6 +17,7 @@ import { Credential } from "@opencode/schema/credential"
 import { Location } from "./location.js"
 import { freeze } from "immer"
 import { AISDKNative } from "./aisdk-native.vibe"
+import { resolveSpecifier } from "./provider.platform.js"
 
 export const ID = Provider.ID
 export type ID = typeof ID.Type
@@ -184,11 +185,7 @@ export const loadPackage = Effect.fn("Provider.loadPackage")(function* (input: s
   if (builtin) return yield* importPackage(specifier, specifier, builtin)
   const resolved = yield* Effect.sync(() => {
     if (specifier.startsWith("file://") || specifier.startsWith("@opencode/ai/")) return specifier
-    try {
-      return import.meta.resolve(specifier)
-    } catch {
-      return undefined
-    }
+    return resolveSpecifier(specifier)
   })
   if (resolved) return yield* importPackage(specifier, resolved)
   if (!npm) {

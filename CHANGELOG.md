@@ -6,6 +6,8 @@ Release notes for OpenCode V2, newest first.
 
 ### Changed
 
+- Core model, model resolver, provider, PTY and ripgrep services now use VibeLang while preserving their declarations, with environment, platform, module resolution and buffer access in native platform files.
+
 - Core config, well-known config, filesystem, formatter, tool output, job, web search and instruction discovery services now use VibeLang while preserving their declarations, with path, environment and deep-equality access in native platform files.
 
 - Core models.dev, plugin, RPC and shell services now use VibeLang while preserving their declarations, with command line, file and buffer access in native platform files.

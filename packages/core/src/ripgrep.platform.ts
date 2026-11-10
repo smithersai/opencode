@@ -1,0 +1,6 @@
+// The platform code of ripgrep.vibe: UTF-8 buffers, which a .vibe file does not use (EK4402).
+
+/** Round-trips text through UTF-8 bytes, so a cut surrogate pair becomes a replacement character. @throws {never} */
+export function utf8(text: string) {
+  return Buffer.from(text, "utf8").toString()
+}

@@ -6,6 +6,8 @@ Release notes for OpenCode V2, newest first.
 
 ### Changed
 
+- The CLI heap and CPU profiles, shutdown deadline, and the uninstall, ACP, auth import, plugin list and session list and export handlers now use VibeLang while preserving native process, file and environment access.
+
 - The plugin GUI core contract now uses VibeLang while preserving its declarations.
 
 - The desktop renderer IPC client now uses VibeLang while preserving its declarations and native window access, and still loads without the Effect runtime.

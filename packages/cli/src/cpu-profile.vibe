@@ -2,26 +2,25 @@ export * as CpuProfile from "./cpu-profile"
 
 import { Global } from "@opencode/util/global"
 import { Effect, FileSystem, Queue } from "effect"
-import { Session } from "node:inspector"
-import path from "node:path"
+import { addSignalListener, path, pid, platform, removeSignalListener, Session, writeProfile } from "./cpu-profile.platform"
 
 export const listen = Effect.gen(function* () {
   const global = yield* Global.Service
-  if (process.platform === "win32") return
+  if (platform() === "win32") return
   const signals = yield* Queue.dropping<void>(1)
   yield* Effect.acquireRelease(
     Effect.sync(() => {
       const handler = () => Queue.offerUnsafe(signals, undefined)
-      process.on("SIGPROF", handler)
+      addSignalListener("SIGPROF", handler)
       return handler
     }),
-    (handler) => Effect.sync(() => process.off("SIGPROF", handler)),
+    (handler) => Effect.sync(() => removeSignalListener("SIGPROF", handler)),
   )
   yield* Effect.gen(function* () {
     yield* Queue.take(signals)
     const file = path.join(
       global.log,
-      `cpu-${process.pid}-${new Date().toISOString().replace(/[:.]/g, "")}.cpuprofile`,
+      `cpu-${pid()}-${new Date().toISOString().replace(/[:.]/g, "")}.cpuprofile`,
     )
     yield* run(file, Effect.sleep("10 seconds")).pipe(
       Effect.catchCause((cause) => Effect.logError("Failed to capture CPU profile", { path: file, cause })),
@@ -51,7 +50,7 @@ function run<A, E, R>(file: string, effect: Effect.Effect<A, E, R>) {
             session.post("Profiler.stop", (error, result) => {
               session.disconnect()
               if (error) return reject(error)
-              Bun.write(target, JSON.stringify(result.profile)).then(() => resolve(), reject)
+              writeProfile(target, JSON.stringify(result.profile)).then(() => resolve(), reject)
             })
           }),
       ).pipe(

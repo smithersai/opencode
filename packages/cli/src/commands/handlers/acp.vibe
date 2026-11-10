@@ -4,11 +4,11 @@ import { Service } from "@opencode/client/effect/service"
 import { CrossSpawnSpawner } from "@opencode/util/cross-spawn-spawner"
 import { Effect, Option } from "effect"
 import { FetchHttpClient, HttpClient, HttpClientRequest } from "effect/http"
-import { Writable } from "node:stream"
 import { ACP } from "../../acp/agent.vibe"
 import { Commands } from "../commands.ts"
 import { Runtime } from "../../framework/runtime.ts"
 import { Standalone } from "../../services/standalone"
+import { exit, setEnvironment, standardStreams, writeError } from "./acp.platform"
 
 export default Runtime.handler(
   Commands.commands.acp,
@@ -21,7 +21,7 @@ export default Runtime.handler(
         answer: [],
       })
     }
-    process.env.OPENCODE_CLIENT = "acp"
+    setEnvironment("OPENCODE_CLIENT", "acp")
     const endpoint = yield* Standalone.start()
     const client = yield* OpenCode.make({ baseUrl: endpoint.url }).pipe(
       Effect.provideServiceEffect(
@@ -32,7 +32,10 @@ export default Runtime.handler(
       ),
       Effect.provide(FetchHttpClient.layer),
     )
-    const connection = yield* ACP.connect(client, ndJsonStream(Writable.toWeb(process.stdout), Bun.stdin.stream()))
+    const [writable, readable] = yield* Effect.try({ try: () => standardStreams(), catch: (cause) => cause }).pipe(
+      Effect.orDie,
+    )
+    const connection = yield* ACP.connect(client, ndJsonStream(writable, readable))
     const failure = yield* Effect.raceFirst(
       Effect.promise(() => connection.closed).pipe(
         Effect.map(() =>
@@ -52,8 +55,8 @@ export default Runtime.handler(
     )
     // Exit directly: closing the scope would wait on the server's graceful shutdown, and its lease pipe ends it anyway.
     yield* Effect.sync(() => {
-      if (failure) process.stderr.write(`opencode acp: ${failure}\n`)
-      process.exit(failure ? 1 : 0)
+      if (failure) writeError(`opencode acp: ${failure}\n`)
+      exit(failure ? 1 : 0)
     })
   }),
 )

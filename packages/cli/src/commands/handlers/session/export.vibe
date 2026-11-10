@@ -2,18 +2,18 @@ import { autocomplete, cancel, intro, isCancel, log, outro } from "@clack/prompt
 import { OpenCode } from "@opencode/client"
 import { Service } from "@opencode/client/effect/service"
 import { Effect, Option } from "effect"
-import { EOL } from "node:os"
 import { Commands } from "../../commands.ts"
 import { Runtime } from "../../../framework/runtime.ts"
 import { ServerConnection } from "../../../services/server-connection.ts"
 import { errorMessage } from "../../../util/error"
+import { currentDirectory, EOL, setExitCode, standardError, stdinIsTTY, writeError, writeOutput } from "./export.platform"
 
 export default Runtime.handler(
   Commands.commands.session.commands.export,
   Effect.fn("cli.session.export")((input) =>
     Effect.gen(function* () {
       const requested = Option.getOrUndefined(input.session)
-      if (!requested && !process.stdin.isTTY) {
+      if (!requested && !stdinIsTTY()) {
         yield* Effect.fail(new Error("Pass a session ID when running without an interactive terminal"))
       }
       const server = yield* ServerConnection.resolve()
@@ -24,9 +24,9 @@ export default Runtime.handler(
       const sessionID = requested
         ? requested
         : yield* Effect.gen(function* () {
-            intro("Export session", { output: process.stderr })
+            intro("Export session", { output: standardError() })
             const location = yield* Effect.tryPromise({
-              try: () => client.location.get({ location: { directory: process.cwd() } }),
+              try: () => client.location.get({ location: { directory: currentDirectory() } }),
               catch: (cause) => cause,
             })
             const page = yield* Effect.tryPromise({
@@ -40,8 +40,8 @@ export default Runtime.handler(
               catch: (cause) => cause,
             })
             if (page.data.length === 0) {
-              log.error("No sessions found", { output: process.stderr })
-              outro("Done", { output: process.stderr })
+              log.error("No sessions found", { output: standardError() })
+              outro("Done", { output: standardError() })
               return undefined
             }
             const selected = yield* Effect.tryPromise({
@@ -54,16 +54,16 @@ export default Runtime.handler(
                     value: session.id,
                     hint: `${new Date(session.time.updated).toLocaleString()} - ${session.id.slice(-8)}`,
                   })),
-                  output: process.stderr,
+                  output: standardError(),
                 }),
               catch: (cause) => cause,
             })
             if (isCancel(selected)) {
-              cancel("Cancelled", { output: process.stderr })
-              process.exitCode = 130
+              cancel("Cancelled", { output: standardError() })
+              setExitCode(130)
               return undefined
             }
-            outro("Exporting session...", { output: process.stderr })
+            outro("Exporting session...", { output: standardError() })
             return selected
           })
       if (!sessionID) return
@@ -71,12 +71,14 @@ export default Runtime.handler(
         try: () => client.session.export({ sessionID, sanitize: input.sanitize }),
         catch: (cause) => cause,
       })
-      process.stdout.write(JSON.stringify(data, null, 2) + EOL)
+      yield* Effect.try({ try: () => writeOutput(JSON.stringify(data, null, 2) + EOL), catch: (cause) => cause }).pipe(
+        Effect.orDie,
+      )
     }).pipe(
       Effect.catch((error) =>
         Effect.sync(() => {
-          process.stderr.write(errorMessage(error) + EOL)
-          process.exitCode = 1
+          writeError(errorMessage(error) + EOL)
+          setExitCode(1)
         }),
       ),
     ),

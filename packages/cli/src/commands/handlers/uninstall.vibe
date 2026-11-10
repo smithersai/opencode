@@ -2,7 +2,6 @@ import { confirm, intro, log, outro, spinner } from "@clack/prompts"
 import { Service } from "@opencode/client/effect/service"
 import { Global } from "@opencode/util/global"
 import { Effect, FileSystem, Schedule } from "effect"
-import path from "node:path"
 import { Commands } from "../commands.ts"
 import { Runtime } from "../../framework/runtime.ts"
 import { ServerConnection } from "../../services/server-connection.ts"
@@ -10,6 +9,7 @@ import { RetainedImage } from "../../services/retained-image"
 import { Updater } from "../../services/updater"
 import { handlePromptErrors, prompt, requireInteractive } from "../../ui/prompt"
 import { errorMessage } from "../../util/error"
+import { environmentValue, executablePath, path, platform } from "./uninstall.platform"
 
 export default Runtime.handler(
   Commands.commands.uninstall,
@@ -36,7 +36,7 @@ export default Runtime.handler(
     )
     shell.forEach((file) => log.info(`  Shell PATH: ${file}`))
     if (removal) log.info(`  Package: ${removal.command.join(" ")}`)
-    if (method === "curl") log.info(`  Binary (manual removal): ${process.execPath}`)
+    if (method === "curl") log.info(`  Binary (manual removal): ${executablePath()}`)
     if (!method) log.warn("Could not detect the installation method. Remove the installation manually after cleanup.")
 
     if (input.dryRun) {
@@ -71,14 +71,14 @@ export default Runtime.handler(
     }
 
     // Links that keep an older OpenCode replaceable may still run; move them so the cache can go.
-    if (process.platform === "win32") yield* RetainedImage.relocate(global.cache, global.tmp)
+    if (platform() === "win32") yield* RetainedImage.relocate(global.cache, global.tmp)
     const errors: string[] = []
     progress.start("Removing Cache...")
     yield* fs.remove(global.cache, { recursive: true, force: true }).pipe(
       // Windows reports a terminated service as gone before it releases its file handles,
       // so the first removal can race that teardown.
       Effect.retry({
-        while: (error) => process.platform === "win32" && error.reason._tag === "Busy",
+        while: (error) => platform() === "win32" && error.reason._tag === "Busy",
         schedule: Schedule.max([Schedule.spaced("250 millis"), Schedule.recurs(40)]),
       }),
       Effect.tap(() => Effect.sync(() => progress.stop("Removed Cache"))),
@@ -110,7 +110,7 @@ export default Runtime.handler(
     }
     if (method === "curl") {
       log.message("To finish removing the binary, run:")
-      log.info(`  rm '${process.execPath.replaceAll("'", "'\\''")}'`)
+      log.info(`  rm '${executablePath().replaceAll("'", "'\\''")}'`)
     }
     if (errors.length) yield* Effect.fail(new Error(errors.join("\n")))
     outro("Done")
@@ -119,11 +119,11 @@ export default Runtime.handler(
 
 const shellConfigs = Effect.fnUntraced(function* (home: string) {
   const fs = yield* FileSystem.FileSystem
-  const bin = path.dirname(process.execPath)
+  const bin = path.dirname(executablePath())
   // V1 and V2 curl installs share a PATH entry; retain it while another binary uses it.
-  if ((yield* fs.readDirectory(bin)).some((name) => name !== path.basename(process.execPath))) return []
-  const xdg = process.env.XDG_CONFIG_HOME || path.join(home, ".config")
-  const zsh = process.env.ZDOTDIR || home
+  if ((yield* fs.readDirectory(bin)).some((name) => name !== path.basename(executablePath()))) return []
+  const xdg = environmentValue("XDG_CONFIG_HOME") || path.join(home, ".config")
+  const zsh = environmentValue("ZDOTDIR") || home
   const candidates: Record<string, string[]> = {
     fish: [path.join(home, ".config/fish/config.fish"), path.join(xdg, "fish/config.fish")],
     zsh: [
@@ -142,7 +142,7 @@ const shellConfigs = Effect.fnUntraced(function* (home: string) {
     ash: [path.join(home, ".ashrc"), path.join(home, ".profile")],
     sh: [path.join(home, ".ashrc"), path.join(home, ".profile")],
   }
-  const files = [...new Set(candidates[path.basename(process.env.SHELL || "bash")] ?? candidates.bash)]
+  const files = [...new Set(candidates[path.basename(environmentValue("SHELL") || "bash")] ?? candidates.bash)]
   return yield* Effect.filter(files, (file) =>
     fs.readFileString(file).pipe(
       Effect.map((content) => cleanShellConfig(content) !== content),

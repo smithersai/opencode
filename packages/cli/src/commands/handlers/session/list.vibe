@@ -1,11 +1,11 @@
 import { OpenCode, type SessionInfo } from "@opencode/client"
 import { Service } from "@opencode/client/effect/service"
 import { Effect, Option, Stream } from "effect"
-import { EOL } from "node:os"
 import { Commands } from "../../commands.ts"
 import { Runtime } from "../../../framework/runtime.ts"
 import { ServerConnection } from "../../../services/server-connection.ts"
 import { errorMessage } from "../../../util/error"
+import { currentDirectory, EOL, platform, setExitCode, stdoutIsTTY, writeError, writeOutput } from "./list.platform"
 
 const handler = Effect.fn("cli.session.list")(function* (
   input: Runtime.Input<typeof Commands.commands.session.commands.list>,
@@ -13,7 +13,7 @@ const handler = Effect.fn("cli.session.list")(function* (
   const server = yield* ServerConnection.resolve()
   const client = OpenCode.make({ baseUrl: server.endpoint.url, headers: Service.headers(server.endpoint) })
   const location = yield* Effect.tryPromise({
-    try: (signal) => client.location.get({ location: { directory: process.cwd() } }, { signal }),
+    try: (signal) => client.location.get({ location: { directory: currentDirectory() } }, { signal }),
     catch: (cause) => cause,
   })
   const page = yield* Effect.tryPromise({
@@ -48,10 +48,10 @@ const handler = Effect.fn("cli.session.list")(function* (
   const write = Effect.tryPromise(
     () =>
       new Promise<void>((resolve, reject) => {
-        process.stdout.write(output, (error) => (error ? reject(error) : resolve()))
+        writeOutput(output, (error) => (error ? reject(error) : resolve()))
       }),
   )
-  if (!process.stdout.isTTY || Option.isSome(input.maxCount) || input.format === "json") {
+  if (!stdoutIsTTY() || Option.isSome(input.maxCount) || input.format === "json") {
     yield* write
     return
   }
@@ -64,8 +64,8 @@ const handler = Effect.fn("cli.session.list")(function* (
     const pager = yield* processService
       .spawn(
         ChildProcess.make(
-          process.platform === "win32" ? "cmd" : "less",
-          process.platform === "win32" ? ["/c", "more"] : ["-R", "-S"],
+          platform() === "win32" ? "cmd" : "less",
+          platform() === "win32" ? ["/c", "more"] : ["-R", "-S"],
           {
             stdin: Stream.make(new TextEncoder().encode(output)),
             stdout: "inherit",
@@ -86,8 +86,8 @@ export default Runtime.handler(Commands.commands.session.commands.list, (input) 
   handler(input).pipe(
     Effect.catch((error) =>
       Effect.sync(() => {
-        process.stderr.write(errorMessage(error) + EOL)
-        process.exitCode = 1
+        writeError(errorMessage(error) + EOL)
+        setExitCode(1)
       }),
     ),
   ),

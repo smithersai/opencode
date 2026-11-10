@@ -1,4 +1,3 @@
-import { EOL } from "node:os"
 import { isConflictError, type CredentialCreateInput } from "@opencode/client"
 import { CredentialLegacy } from "@opencode/schema/credential-legacy"
 import { Effect, Option, Schema } from "effect"
@@ -7,13 +6,14 @@ import { Runtime } from "../../../framework/runtime.ts"
 import { createClient, request } from "./shared.vibe"
 import { errorMessage } from "../../../util/error"
 import { readStdin } from "../../../util/io"
+import { EOL, setExitCode, stdinIsTTY, writeError } from "./import.platform"
 
 export default Runtime.handler(
   Commands.commands.auth.commands.import,
   Effect.fn("cli.auth.import")(
     function* (input) {
       const file = Option.getOrUndefined(input.file)
-      if (!file && process.stdin.isTTY)
+      if (!file && stdinIsTTY())
         return yield* Effect.fail(new Error("Pipe auth export output into stdin or pass a file to import"))
       const text = yield* request(() => (file ? Bun.file(file).text() : readStdin()))
       const credentials = yield* Schema.decodeUnknownEffect(
@@ -40,20 +40,24 @@ export default Runtime.handler(
           ),
         ).pipe(
           Effect.as(true),
-          Effect.catchIf(isConflictError, () => Effect.succeed(false)),
+          Effect.catchIf((error) => isConflictError(error), () => Effect.succeed(false)),
         )
       })
       const imported = results.filter(Boolean).length
-      process.stderr.write(
-        `Imported ${imported} ${imported === 1 ? "credential" : "credentials"}` +
-          (results.length > imported ? `, skipped ${results.length - imported} already present` : "") +
-          EOL,
-      )
+      yield* Effect.try({
+        try: () =>
+          writeError(
+            `Imported ${imported} ${imported === 1 ? "credential" : "credentials"}` +
+              (results.length > imported ? `, skipped ${results.length - imported} already present` : "") +
+              EOL,
+          ),
+        catch: (cause) => cause,
+      }).pipe(Effect.orDie)
     },
     Effect.catch((error) =>
       Effect.sync(() => {
-        process.stderr.write(errorMessage(error) + EOL)
-        process.exitCode = 1
+        writeError(errorMessage(error) + EOL)
+        setExitCode(1)
       }),
     ),
   ),

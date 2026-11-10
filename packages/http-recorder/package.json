@@ -56,12 +56,12 @@
     "effect": "catalog:",
     "fast-check": "catalog:",
     "typescript": "catalog:",
-    "vibelang": "file:../../.vibelang-toolchain/0.0.14-pre.b9285da0f2be/tarballs/vibelang-0.0.14-pre.b9285da0f2be.tgz",
-    "vibelang-unplugin": "file:../../.vibelang-toolchain/0.0.14-pre.b9285da0f2be/tarballs/vibelang-unplugin-0.0.14-pre.b9285da0f2be.tgz"
+    "vibelang": "file:../../.vibelang-toolchain/0.0.14-pre.d955d06c6696/tarballs/vibelang-0.0.14-pre.d955d06c6696.tgz",
+    "vibelang-unplugin": "file:../../.vibelang-toolchain/0.0.14-pre.d955d06c6696/tarballs/vibelang-unplugin-0.0.14-pre.d955d06c6696.tgz"
   },
   "dependencies": {
     "@effect/platform-node-shared": "catalog:",
-    "vibelang-runtime": "file:../../.vibelang-toolchain/0.0.14-pre.b9285da0f2be/tarballs/vibelang-runtime-0.0.14-pre.b9285da0f2be.tgz"
+    "vibelang-runtime": "file:../../.vibelang-toolchain/0.0.14-pre.d955d06c6696/tarballs/vibelang-runtime-0.0.14-pre.d955d06c6696.tgz"
   },
   "peerDependencies": {
     "effect": "catalog:"

@@ -57,7 +57,7 @@
     "tree-sitter-powershell": "0.25.10",
     "web-tree-sitter": "0.25.10",
     "ws": "8.21.0",
-    "vibelang-runtime": "file:../../.vibelang-toolchain/0.0.14-pre.b9285da0f2be/tarballs/vibelang-runtime-0.0.14-pre.b9285da0f2be.tgz"
+    "vibelang-runtime": "file:../../.vibelang-toolchain/0.0.14-pre.d955d06c6696/tarballs/vibelang-runtime-0.0.14-pre.d955d06c6696.tgz"
   },
   "devDependencies": {
     "@opencode/script": "workspace:*",
@@ -89,9 +89,9 @@
     "solid-refresh": "0.6.3",
     "vite": "catalog:",
     "vite-plugin-solid": "catalog:",
-    "vibelang": "file:../../.vibelang-toolchain/0.0.14-pre.b9285da0f2be/tarballs/vibelang-0.0.14-pre.b9285da0f2be.tgz",
-    "vibelang-vite": "file:../../.vibelang-toolchain/0.0.14-pre.b9285da0f2be/tarballs/vibelang-vite-0.0.14-pre.b9285da0f2be.tgz",
-    "vibelang-unplugin": "file:../../.vibelang-toolchain/0.0.14-pre.b9285da0f2be/tarballs/vibelang-unplugin-0.0.14-pre.b9285da0f2be.tgz",
+    "vibelang": "file:../../.vibelang-toolchain/0.0.14-pre.d955d06c6696/tarballs/vibelang-0.0.14-pre.d955d06c6696.tgz",
+    "vibelang-vite": "file:../../.vibelang-toolchain/0.0.14-pre.d955d06c6696/tarballs/vibelang-vite-0.0.14-pre.d955d06c6696.tgz",
+    "vibelang-unplugin": "file:../../.vibelang-toolchain/0.0.14-pre.d955d06c6696/tarballs/vibelang-unplugin-0.0.14-pre.d955d06c6696.tgz",
     "fast-check": "catalog:"
   },
   "repository": {

@@ -1765,8 +1765,8 @@
     "@types/which": "3.0.4",
     "drizzle-kit": "catalog:",
     "fast-check": "catalog:",
-    "vibelang": "file:../../.vibelang-toolchain/0.0.14-pre.b9285da0f2be/tarballs/vibelang-0.0.14-pre.b9285da0f2be.tgz",
-    "vibelang-unplugin": "file:../../.vibelang-toolchain/0.0.14-pre.b9285da0f2be/tarballs/vibelang-unplugin-0.0.14-pre.b9285da0f2be.tgz",
+    "vibelang": "file:../../.vibelang-toolchain/0.0.14-pre.d955d06c6696/tarballs/vibelang-0.0.14-pre.d955d06c6696.tgz",
+    "vibelang-unplugin": "file:../../.vibelang-toolchain/0.0.14-pre.d955d06c6696/tarballs/vibelang-unplugin-0.0.14-pre.d955d06c6696.tgz",
     "typescript": "catalog:"
   },
   "dependencies": {
@@ -1809,6 +1809,6 @@
     "web-tree-sitter": "0.25.10",
     "which": "6.0.1",
     "zod": "catalog:",
-    "vibelang-runtime": "file:../../.vibelang-toolchain/0.0.14-pre.b9285da0f2be/tarballs/vibelang-runtime-0.0.14-pre.b9285da0f2be.tgz"
+    "vibelang-runtime": "file:../../.vibelang-toolchain/0.0.14-pre.d955d06c6696/tarballs/vibelang-runtime-0.0.14-pre.d955d06c6696.tgz"
   }
 }

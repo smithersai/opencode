@@ -1,4 +1,5 @@
 import { AwsV4Signer } from "aws4fetch"
+import { environmentValue } from "./bedrock-auth.platform.js"
 import { Effect } from "effect"
 import { Headers } from "effect/http"
 import { Auth, type AuthInput } from "../../route/auth.vibe"
@@ -117,7 +118,7 @@ export const resolveRegion = (input: {
   readonly region?: string
   readonly credentials?: { readonly region: string }
 }) =>
-  input.region ?? input.credentials?.region ?? process.env.AWS_REGION ?? process.env.AWS_DEFAULT_REGION ?? "us-east-1"
+  input.region ?? input.credentials?.region ?? environmentValue("AWS_REGION") ?? environmentValue("AWS_DEFAULT_REGION") ?? "us-east-1"
 
 export interface ResolveAuthInput {
   readonly apiKey?: string
@@ -138,7 +139,7 @@ export interface ResolveAuthOptions {
  * The region is applied to the SigV4 scope so it always matches the endpoint host.
  */
 export const resolveAuth = (input: ResolveAuthInput, region: string, options: ResolveAuthOptions = {}) => {
-  const apiKey = options.mode === "sigv4" ? undefined : (input.apiKey ?? process.env.AWS_BEARER_TOKEN_BEDROCK)
+  const apiKey = options.mode === "sigv4" ? undefined : (input.apiKey ?? environmentValue("AWS_BEARER_TOKEN_BEDROCK"))
   if (apiKey !== undefined) return Auth.bearer(apiKey)
   if (input.credentials !== undefined) return sigV4({ ...input.credentials, region }, options)
   return sigV4(defaultChain({ region, profile: input.profile }), options)

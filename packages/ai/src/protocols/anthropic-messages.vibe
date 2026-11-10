@@ -1,5 +1,5 @@
-import { Buffer } from "node:buffer"
 import { Effect, Option, Schema, SchemaGetter } from "effect"
+import { decodeBase64Utf8 } from "./anthropic-messages.platform.js"
 import { Tool } from "@opencode/schema/tool"
 import { Route } from "../route/client.js"
 import { Auth } from "../route/auth.vibe"
@@ -763,7 +763,7 @@ const lowerMedia = Effect.fnUntraced(function* (part: MediaPart, request: LLMReq
 
   // SDK PlainTextSource:2716 {type:"text", media_type:"text/plain", data}
   if (mime === "text/plain") {
-    const textData = Buffer.from(media.base64, "base64").toString("utf8")
+    const textData = decodeBase64Utf8(media.base64)
     return {
       type: "document" as const,
       source: { type: "text" as const, media_type: "text/plain" as const, data: textData },

@@ -1,4 +1,5 @@
 import { Effect, Layer, ManagedRuntime, Schema, Stream } from "effect"
+import { readFile, writeFile } from "./index.platform.js"
 import { AIClient } from "./ai-client.vibe"
 import { Decision, type DecisionModel, type DecisionQuestions, type DecisionRequestInput } from "./decision.vibe"
 import type { AwaitOptions, Event, Generation, Snapshot } from "./generation.vibe"
@@ -124,7 +125,6 @@ export const make = (options: Options = {}) => {
     materialize: (asset: Media.Asset, options?: RunOptions) => run(asset.materialize(), options),
     /** Read a file into an asset like `Media.file`: sniffed media type, then the extension's. */
     file: async (path: string, options?: Media.AssetOptions & RunOptions) => {
-      const { readFile } = await import("node:fs/promises")
       return run(
         Effect.tryPromise({
           try: (signal) => readFile(path, { signal }),
@@ -140,7 +140,6 @@ export const make = (options: Options = {}) => {
     },
     /** Write an asset's bytes like `Media.write`, downloading `url` sources through the executor. */
     write: async (asset: Media.Asset, path: string, options?: RunOptions) => {
-      const { writeFile } = await import("node:fs/promises")
       return run(
         asset.bytes().pipe(
           Effect.flatMap((data) =>

@@ -1,4 +1,5 @@
 import { Effect, Option, Schema } from "effect"
+import { randomUUID } from "./open-responses.platform.js"
 import type { Content } from "@opencode/schema/tool"
 import { HttpTransport } from "../route/transport/index.vibe"
 import { Protocol } from "../route/protocol.vibe"
@@ -867,7 +868,6 @@ const NO_EVENTS: StepResult["1"] = []
 // `finish` event; `response.failed` and `error` are hard failures. All four end
 // the stream, so keep this set aligned with `step` and the protocol's terminal predicate.
 const TERMINAL_TYPES = new Set(["error", "response.completed", "response.incomplete", "response.failed"])
-/** @throws {never} */
 export const terminal = (event: Event) => TERMINAL_TYPES.has(event.type)
 
 const onOutputTextDelta = (state: ParserState, event: Event, id: string): StepResult => {
@@ -924,7 +924,7 @@ const resolveItem = (
   id:
     item.id ??
     (index === undefined ? undefined : state.outputItems[index]) ??
-    `${ITEM_ID_PREFIX[item.type] ?? "item"}_${crypto.randomUUID().replaceAll("-", "")}`,
+    `${ITEM_ID_PREFIX[item.type] ?? "item"}_${randomUUID().replaceAll("-", "")}`,
 })
 
 // Registered output slots are authoritative for `item_id` routing, and items

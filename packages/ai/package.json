@@ -18,8 +18,8 @@
   ],
   "exports": {
     ".": {
-      "types": "./src/index.ts",
-      "vibelang-source": "./src/index.ts",
+      "types": "./src/index.d.vibe.ts",
+      "vibelang-source": "./src/index.vibe",
       "default": "./.vibelang/js/src/index.js"
     },
     "./effect": {
@@ -28,8 +28,8 @@
       "default": "./.vibelang/js/src/effect.js"
     },
     "./testing": {
-      "types": "./src/testing.ts",
-      "vibelang-source": "./src/testing.ts",
+      "types": "./src/testing.d.vibe.ts",
+      "vibelang-source": "./src/testing.vibe",
       "default": "./.vibelang/js/src/testing.js"
     },
     "./experimental": {
@@ -579,8 +579,8 @@
       "default": "./.vibelang/js/src/protocols/google-transcription.js"
     },
     "./protocols/openai-chat": {
-      "types": "./src/protocols/openai-chat.ts",
-      "vibelang-source": "./src/protocols/openai-chat.ts",
+      "types": "./src/protocols/openai-chat.d.vibe.ts",
+      "vibelang-source": "./src/protocols/openai-chat.vibe",
       "default": "./.vibelang/js/src/protocols/openai-chat.js"
     },
     "./protocols/openai-decisions": {

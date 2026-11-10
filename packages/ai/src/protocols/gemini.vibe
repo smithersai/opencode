@@ -1,4 +1,5 @@
 import { Effect, Option, Schema, Stream } from "effect"
+import { randomUUID } from "./gemini.platform.js"
 import { Tool } from "@opencode/schema/tool"
 import { Route } from "../route/client.js"
 import { Auth } from "../route/auth.vibe"
@@ -635,10 +636,10 @@ const finish = (state: ParserState): ReadonlyArray<LLMEvent> => {
   return events
 }
 
-const step = (state: ParserState, event: GeminiEvent | NextRequest) => {
+const step = effect (state: ParserState, event: GeminiEvent | NextRequest) => {
   // Usage is cumulative within one request, so the next request of the same response counts from zero.
   if (event instanceof NextRequest)
-    return Effect.succeed([
+    return [
       {
         ...state,
         finishReason: undefined,
@@ -647,18 +648,16 @@ const step = (state: ParserState, event: GeminiEvent | NextRequest) => {
         continuedUsage: [...(state.continuedUsage ?? []), state.usage ?? {}],
       },
       [],
-    ] as const)
+    ] as const
   if (event.error) {
     const body = ProviderShared.encodeJson(event)
-    return Effect.fail(
-      new AIError({
-        reason: classifyProviderFailure({
-          message: event.error.message || event.error.status || "Gemini provider error",
-          status: event.error.code,
-          rawBody: body,
-        }),
+    throw new AIError({
+      reason: classifyProviderFailure({
+        message: event.error.message || event.error.status || "Gemini provider error",
+        status: event.error.code,
+        rawBody: body,
       }),
-    )
+    })
   }
   const candidate = event.candidates?.[0]
   const nextState = {
@@ -669,25 +668,21 @@ const step = (state: ParserState, event: GeminiEvent | NextRequest) => {
   }
   // Gemini sporadically ends a valid request with MALFORMED_RESPONSE; continuing or resending it recovers.
   if (candidate?.finishReason === "MALFORMED_RESPONSE")
-    return Effect.fail(
-      new AIError({
-        reason: new InvalidProviderOutputError({
-          route: state.route,
-          message: `Gemini stopped with ${candidate.finishReason}`,
-          body: ProviderShared.encodeJson(event),
-          classification: "incomplete-stream",
-        }),
+    throw new AIError({
+      reason: new InvalidProviderOutputError({
+        route: state.route,
+        message: `Gemini stopped with ${candidate.finishReason}`,
+        body: ProviderShared.encodeJson(event),
+        classification: "incomplete-stream",
       }),
-    )
+    })
   if (candidate?.finishReason && mapFinishReason(candidate.finishReason, state.hasToolCalls) === "error")
-    return Effect.fail(
-      ProviderShared.eventError(
-        state.route,
-        `Gemini stopped with ${candidate.finishReason}`,
-        ProviderShared.encodeJson(event),
-      ),
+    throw ProviderShared.eventError(
+      state.route,
+      `Gemini stopped with ${candidate.finishReason}`,
+      ProviderShared.encodeJson(event),
     )
-  if (!candidate?.content) return Effect.succeed([nextState, []] as const)
+  if (!candidate?.content) return [nextState, []] as const
 
   const events: LLMEvent[] = []
   let hasToolCalls = nextState.hasToolCalls
@@ -712,9 +707,7 @@ const step = (state: ParserState, event: GeminiEvent | NextRequest) => {
       continue
     const decoded = decodeGeminiContentPart(input)
     if (Option.isNone(decoded))
-      return Effect.fail(
-        ProviderShared.eventError(ADAPTER, `Invalid ${state.route} stream event`, ProviderShared.encodeJson(event)),
-      )
+      throw ProviderShared.eventError(ADAPTER, `Invalid ${state.route} stream event`, ProviderShared.encodeJson(event))
     const part = decoded.value
     const signature = "thoughtSignature" in part && part.thoughtSignature ? part.thoughtSignature : undefined
     // Gemini attaches replay signatures to thought parts, visible text, or function calls;
@@ -723,10 +716,10 @@ const step = (state: ParserState, event: GeminiEvent | NextRequest) => {
     else if (signature !== undefined && "text" in part) textSignature = signature
     // Image-capable Gemini models return generated images as inline data parts; surface them as first-class output.
     if ("inlineData" in part) {
-      lifecycle = Lifecycle.stepStart(lifecycle, events)
+      lifecycle = try Effect.orDie(Effect.try({ try: () => Lifecycle.stepStart(lifecycle, events), catch: (e) => e }))
       events.push(
         LLMEvent.media({
-          media: Media.base64(part.inlineData.data, part.inlineData.mimeType),
+          media: try Effect.orDie(Effect.try({ try: () => Media.base64(part.inlineData.data, part.inlineData.mimeType), catch: (e) => e })),
           providerMetadata: signature
             ? providerMetadata(state.providerMetadataKey, { thoughtSignature: signature })
             : undefined,
@@ -737,14 +730,15 @@ const step = (state: ParserState, event: GeminiEvent | NextRequest) => {
     if ("text" in part && part.text.length > 0) {
       if (part.thought) {
         if (textId !== undefined) {
-          lifecycle = Lifecycle.textEnd(
+          const currentTextId = textId
+          lifecycle = try Effect.orDie(Effect.try({ try: () => Lifecycle.textEnd(
             lifecycle,
             events,
-            textId,
+            currentTextId,
             textSignature
               ? providerMetadata(state.providerMetadataKey, { thoughtSignature: textSignature })
               : undefined,
-          )
+          ), catch: (e) => e }))
           textId = undefined
           textSignature = undefined
         }
@@ -752,24 +746,26 @@ const step = (state: ParserState, event: GeminiEvent | NextRequest) => {
           reasoningId = `reasoning-${nextReasoningId}`
           nextReasoningId += 1
         }
-        lifecycle = Lifecycle.reasoningDelta(
+        const currentReasoningId = reasoningId
+        lifecycle = try Effect.orDie(Effect.try({ try: () => Lifecycle.reasoningDelta(
           lifecycle,
           events,
-          reasoningId,
+          currentReasoningId,
           part.text,
           signature ? providerMetadata(state.providerMetadataKey, { thoughtSignature: signature }) : undefined,
-        )
+        ), catch: (e) => e }))
         continue
       }
       if (reasoningId !== undefined) {
-        lifecycle = Lifecycle.reasoningEnd(
+        const currentReasoningId = reasoningId
+        lifecycle = try Effect.orDie(Effect.try({ try: () => Lifecycle.reasoningEnd(
           lifecycle,
           events,
-          reasoningId,
+          currentReasoningId,
           reasoningSignature
             ? providerMetadata(state.providerMetadataKey, { thoughtSignature: reasoningSignature })
             : undefined,
-        )
+        ), catch: (e) => e }))
         reasoningId = undefined
         reasoningSignature = undefined
       }
@@ -777,13 +773,14 @@ const step = (state: ParserState, event: GeminiEvent | NextRequest) => {
         textId = `text-${nextTextId}`
         nextTextId += 1
       }
-      lifecycle = Lifecycle.textDelta(
+      const currentTextId = textId
+      lifecycle = try Effect.orDie(Effect.try({ try: () => Lifecycle.textDelta(
         lifecycle,
         events,
-        textId,
+        currentTextId,
         part.text,
         textSignature ? providerMetadata(state.providerMetadataKey, { thoughtSignature: textSignature }) : undefined,
-      )
+      ), catch: (e) => e }))
       textSignature = undefined
       continue
     }
@@ -797,30 +794,32 @@ const step = (state: ParserState, event: GeminiEvent | NextRequest) => {
       const supplied = part.functionCall.id ?? undefined
       const duplicate = supplied !== undefined && seenCallIds.has(supplied)
       if (supplied !== undefined) seenCallIds.add(supplied)
-      const id = supplied !== undefined && !duplicate ? supplied : `tool_${crypto.randomUUID().replaceAll("-", "")}`
+      const id = supplied !== undefined && !duplicate ? supplied : `tool_${randomUUID().replaceAll("-", "")}`
       if (reasoningId !== undefined) {
-        lifecycle = Lifecycle.reasoningEnd(
+        const currentReasoningId = reasoningId
+        lifecycle = try Effect.orDie(Effect.try({ try: () => Lifecycle.reasoningEnd(
           lifecycle,
           events,
-          reasoningId,
+          currentReasoningId,
           reasoningSignature
             ? providerMetadata(state.providerMetadataKey, { thoughtSignature: reasoningSignature })
             : undefined,
-        )
+        ), catch: (e) => e }))
         reasoningId = undefined
         reasoningSignature = undefined
       }
       if (textId !== undefined) {
-        lifecycle = Lifecycle.textEnd(
+        const currentTextId = textId
+        lifecycle = try Effect.orDie(Effect.try({ try: () => Lifecycle.textEnd(
           lifecycle,
           events,
-          textId,
+          currentTextId,
           textSignature ? providerMetadata(state.providerMetadataKey, { thoughtSignature: textSignature }) : undefined,
-        )
+        ), catch: (e) => e }))
         textId = undefined
         textSignature = undefined
       }
-      lifecycle = Lifecycle.stepStart(lifecycle, events)
+      lifecycle = try Effect.orDie(Effect.try({ try: () => Lifecycle.stepStart(lifecycle, events), catch: (e) => e }))
       events.push(
         LLMEvent.toolCall({
           id,
@@ -835,7 +834,7 @@ const step = (state: ParserState, event: GeminiEvent | NextRequest) => {
     }
   }
 
-  return Effect.succeed([
+  return [
     {
       ...nextState,
       hasToolCalls,
@@ -849,7 +848,7 @@ const step = (state: ParserState, event: GeminiEvent | NextRequest) => {
       seenCallIds,
     },
     events,
-  ] as const)
+  ] as const
 }
 
 // =============================================================================

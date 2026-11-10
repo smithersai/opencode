@@ -537,7 +537,14 @@ const lowerToolMessages = Effect.fnUntraced(function* (
       toolMessage(options.toolCallID?.(part.id) ?? part.id, text.join("\n"), options.cacheControl?.(part.cache)),
     )
     const files = content.filter((item) => item.type === "file")
-    attachments.push(...(yield* Effect.forEach(files, (item) => lowerMedia(ProviderShared.toolFileMedia(item)))))
+    attachments.push(
+      ...(yield* Effect.forEach(files, (item) =>
+        Effect.try({ try: () => ProviderShared.toolFileMedia(item), catch: (cause) => cause }).pipe(
+          Effect.orDie,
+          Effect.flatMap(lowerMedia),
+        ),
+      )),
+    )
   }
   return { messages, attachments }
 })

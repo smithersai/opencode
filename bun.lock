@@ -27,7 +27,7 @@
         "sst": "catalog:",
         "turbo": "2.10.2",
         "typescript-eslint": "^8.69.0",
-        "vibelang": "file:.vibelang-toolchain/vibelang-0.0.13-637d08c93ff1.tgz",
+        "vibelang": "file:.vibelang-toolchain/0.0.14-pre.b9285da0f2be/tarballs/vibelang-0.0.14-pre.b9285da0f2be.tgz",
       },
     },
     "packages/ai": {
@@ -41,7 +41,7 @@
         "aws4fetch": "1.0.20",
         "effect": "catalog:",
         "google-auth-library": "10.5.0",
-        "vibelang-runtime": "file:../../.vibelang-toolchain/vibelang-runtime-0.0.13-89b143f8885a.tgz",
+        "vibelang-runtime": "file:../../.vibelang-toolchain/0.0.14-pre.b9285da0f2be/tarballs/vibelang-runtime-0.0.14-pre.b9285da0f2be.tgz",
       },
       "devDependencies": {
         "@clack/prompts": "1.0.0-alpha.1",
@@ -52,8 +52,8 @@
         "@typescript/native": "catalog:",
         "fast-check": "catalog:",
         "typescript": "catalog:",
-        "vibelang": "file:../../.vibelang-toolchain/vibelang-0.0.13-637d08c93ff1.tgz",
-        "vibelang-vite": "file:../../.vibelang-toolchain/vibelang-vite-0.0.13-4bdf1e25b72f.tgz",
+        "vibelang": "file:../../.vibelang-toolchain/0.0.14-pre.b9285da0f2be/tarballs/vibelang-0.0.14-pre.b9285da0f2be.tgz",
+        "vibelang-vite": "file:../../.vibelang-toolchain/0.0.14-pre.b9285da0f2be/tarballs/vibelang-vite-0.0.14-pre.b9285da0f2be.tgz",
       },
     },
     "packages/app": {
@@ -90,7 +90,7 @@
         "fuzzysort": "catalog:",
         "qr-scanner": "1.4.2",
         "solid-js": "catalog:",
-        "vibelang-runtime": "file:../../.vibelang-toolchain/vibelang-runtime-0.0.13-89b143f8885a.tgz",
+        "vibelang-runtime": "file:../../.vibelang-toolchain/0.0.14-pre.b9285da0f2be/tarballs/vibelang-runtime-0.0.14-pre.b9285da0f2be.tgz",
       },
       "devDependencies": {
         "@happy-dom/global-registrator": "20.0.11",
@@ -107,8 +107,8 @@
         "knobs": "npm:@kitlangton/knobs@0.4.0-next.22",
         "tailwindcss": "4.3.3",
         "tw-animate-css": "1.4.0",
-        "vibelang": "file:../../.vibelang-toolchain/vibelang-0.0.13-637d08c93ff1.tgz",
-        "vibelang-vite": "file:../../.vibelang-toolchain/vibelang-vite-0.0.13-4bdf1e25b72f.tgz",
+        "vibelang": "file:../../.vibelang-toolchain/0.0.14-pre.b9285da0f2be/tarballs/vibelang-0.0.14-pre.b9285da0f2be.tgz",
+        "vibelang-vite": "file:../../.vibelang-toolchain/0.0.14-pre.b9285da0f2be/tarballs/vibelang-vite-0.0.14-pre.b9285da0f2be.tgz",
         "vite": "8.2.2",
         "vite-plugin-pwa": "1.3.0",
         "vite-plugin-solid": "2.11.14",
@@ -146,7 +146,7 @@
         "solid-js": "catalog:",
         "tree-sitter-bash": "0.25.0",
         "tree-sitter-powershell": "0.25.10",
-        "vibelang-runtime": "file:../../.vibelang-toolchain/vibelang-runtime-0.0.13-89b143f8885a.tgz",
+        "vibelang-runtime": "file:../../.vibelang-toolchain/0.0.14-pre.b9285da0f2be/tarballs/vibelang-runtime-0.0.14-pre.b9285da0f2be.tgz",
         "web-tree-sitter": "0.25.10",
         "ws": "8.21.0",
       },
@@ -179,9 +179,9 @@
         "@yuuang/ffi-rs-win32-x64-msvc": "1.3.2",
         "fast-check": "catalog:",
         "solid-refresh": "0.6.3",
-        "vibelang": "file:../../.vibelang-toolchain/vibelang-0.0.13-637d08c93ff1.tgz",
-        "vibelang-unplugin": "file:../../.vibelang-toolchain/vibelang-unplugin-0.0.13-23b4ad6a3929.tgz",
-        "vibelang-vite": "file:../../.vibelang-toolchain/vibelang-vite-0.0.13-4bdf1e25b72f.tgz",
+        "vibelang": "file:../../.vibelang-toolchain/0.0.14-pre.b9285da0f2be/tarballs/vibelang-0.0.14-pre.b9285da0f2be.tgz",
+        "vibelang-unplugin": "file:../../.vibelang-toolchain/0.0.14-pre.b9285da0f2be/tarballs/vibelang-unplugin-0.0.14-pre.b9285da0f2be.tgz",
+        "vibelang-vite": "file:../../.vibelang-toolchain/0.0.14-pre.b9285da0f2be/tarballs/vibelang-vite-0.0.14-pre.b9285da0f2be.tgz",
         "vite": "catalog:",
         "vite-plugin-solid": "catalog:",
       },
@@ -192,7 +192,7 @@
       "dependencies": {
         "@opencode/protocol": "workspace:*",
         "@opencode/schema": "workspace:*",
-        "vibelang-runtime": "file:../../.vibelang-toolchain/vibelang-runtime-0.0.13-89b143f8885a.tgz",
+        "vibelang-runtime": "file:../../.vibelang-toolchain/0.0.14-pre.b9285da0f2be/tarballs/vibelang-runtime-0.0.14-pre.b9285da0f2be.tgz",
       },
       "devDependencies": {
         "@effect/platform-node": "catalog:",
@@ -203,8 +203,8 @@
         "@typescript/native": "catalog:",
         "effect": "catalog:",
         "solid-js": "catalog:",
-        "vibelang": "file:../../.vibelang-toolchain/vibelang-0.0.13-637d08c93ff1.tgz",
-        "vibelang-unplugin": "file:../../.vibelang-toolchain/vibelang-unplugin-0.0.13-23b4ad6a3929.tgz",
+        "vibelang": "file:../../.vibelang-toolchain/0.0.14-pre.b9285da0f2be/tarballs/vibelang-0.0.14-pre.b9285da0f2be.tgz",
+        "vibelang-unplugin": "file:../../.vibelang-toolchain/0.0.14-pre.b9285da0f2be/tarballs/vibelang-unplugin-0.0.14-pre.b9285da0f2be.tgz",
       },
       "peerDependencies": {
         "effect": "catalog:",
@@ -221,7 +221,7 @@
       "dependencies": {
         "acorn": "8.15.0",
         "effect": "catalog:",
-        "vibelang-runtime": "file:../../.vibelang-toolchain/vibelang-runtime-0.0.13-89b143f8885a.tgz",
+        "vibelang-runtime": "file:../../.vibelang-toolchain/0.0.14-pre.b9285da0f2be/tarballs/vibelang-runtime-0.0.14-pre.b9285da0f2be.tgz",
       },
       "devDependencies": {
         "@tsconfig/bun": "catalog:",
@@ -229,7 +229,7 @@
         "@typescript/native": "catalog:",
         "fast-check": "catalog:",
         "typescript": "catalog:",
-        "vibelang": "file:../../.vibelang-toolchain/vibelang-0.0.13-637d08c93ff1.tgz",
+        "vibelang": "file:../../.vibelang-toolchain/0.0.14-pre.b9285da0f2be/tarballs/vibelang-0.0.14-pre.b9285da0f2be.tgz",
       },
     },
     "packages/console/app": {
@@ -255,8 +255,8 @@
         "@typescript/native": "catalog:",
         "@webgpu/types": "0.1.54",
         "typescript": "catalog:",
-        "vibelang": "file:../../../.vibelang-toolchain/vibelang-0.0.13-637d08c93ff1.tgz",
-        "vibelang-vite": "file:../../../.vibelang-toolchain/vibelang-vite-0.0.13-4bdf1e25b72f.tgz",
+        "vibelang": "file:../../../.vibelang-toolchain/0.0.14-pre.b9285da0f2be/tarballs/vibelang-0.0.14-pre.b9285da0f2be.tgz",
+        "vibelang-vite": "file:../../../.vibelang-toolchain/0.0.14-pre.b9285da0f2be/tarballs/vibelang-vite-0.0.14-pre.b9285da0f2be.tgz",
         "wrangler": "4.50.0",
       },
     },
@@ -312,7 +312,7 @@
         "mime-types": "3.0.2",
         "tree-sitter-bash": "0.25.0",
         "tree-sitter-powershell": "0.25.10",
-        "vibelang-runtime": "file:../../.vibelang-toolchain/vibelang-runtime-0.0.13-89b143f8885a.tgz",
+        "vibelang-runtime": "file:../../.vibelang-toolchain/0.0.14-pre.b9285da0f2be/tarballs/vibelang-runtime-0.0.14-pre.b9285da0f2be.tgz",
         "web-tree-sitter": "0.25.10",
         "which": "6.0.1",
         "zod": "catalog:",
@@ -338,8 +338,8 @@
         "drizzle-kit": "catalog:",
         "fast-check": "catalog:",
         "typescript": "catalog:",
-        "vibelang": "file:../../.vibelang-toolchain/vibelang-0.0.13-637d08c93ff1.tgz",
-        "vibelang-unplugin": "file:../../.vibelang-toolchain/vibelang-unplugin-0.0.13-23b4ad6a3929.tgz",
+        "vibelang": "file:../../.vibelang-toolchain/0.0.14-pre.b9285da0f2be/tarballs/vibelang-0.0.14-pre.b9285da0f2be.tgz",
+        "vibelang-unplugin": "file:../../.vibelang-toolchain/0.0.14-pre.b9285da0f2be/tarballs/vibelang-unplugin-0.0.14-pre.b9285da0f2be.tgz",
       },
     },
     "packages/desktop": {
@@ -351,7 +351,7 @@
         "electron-log": "^5",
         "electron-updater": "6.8.9",
         "lighthouse": "13.4.1",
-        "vibelang-runtime": "file:../../.vibelang-toolchain/vibelang-runtime-0.0.13-89b143f8885a.tgz",
+        "vibelang-runtime": "file:../../.vibelang-toolchain/0.0.14-pre.b9285da0f2be/tarballs/vibelang-runtime-0.0.14-pre.b9285da0f2be.tgz",
       },
       "devDependencies": {
         "@brendonovich/vite-plugin-opencode": "0.1.3",
@@ -380,8 +380,8 @@
         "magic-string": "0.30.21",
         "solid-js": "catalog:",
         "typescript": "catalog:",
-        "vibelang": "file:../../.vibelang-toolchain/vibelang-0.0.13-637d08c93ff1.tgz",
-        "vibelang-vite": "file:../../.vibelang-toolchain/vibelang-vite-0.0.13-4bdf1e25b72f.tgz",
+        "vibelang": "file:../../.vibelang-toolchain/0.0.14-pre.b9285da0f2be/tarballs/vibelang-0.0.14-pre.b9285da0f2be.tgz",
+        "vibelang-vite": "file:../../.vibelang-toolchain/0.0.14-pre.b9285da0f2be/tarballs/vibelang-vite-0.0.14-pre.b9285da0f2be.tgz",
         "vite": "8.2.2",
       },
       "optionalDependencies": {
@@ -441,7 +441,7 @@
         "ghostty-web": "github:anomalyco/ghostty-web#e91e38a9ceb13c566ddfa15185a9393849f712a9",
         "knobs": "npm:@kitlangton/knobs@0.4.0-next.22",
         "solid-js": "catalog:",
-        "vibelang-runtime": "file:../../.vibelang-toolchain/vibelang-runtime-0.0.13-89b143f8885a.tgz",
+        "vibelang-runtime": "file:../../.vibelang-toolchain/0.0.14-pre.b9285da0f2be/tarballs/vibelang-runtime-0.0.14-pre.b9285da0f2be.tgz",
       },
       "devDependencies": {
         "@happy-dom/global-registrator": "20.0.11",
@@ -455,8 +455,8 @@
         "electron-updater": "6.8.9",
         "fast-check": "catalog:",
         "lighthouse": "13.4.1",
-        "vibelang": "file:../../.vibelang-toolchain/vibelang-0.0.13-637d08c93ff1.tgz",
-        "vibelang-vite": "file:../../.vibelang-toolchain/vibelang-vite-0.0.13-4bdf1e25b72f.tgz",
+        "vibelang": "file:../../.vibelang-toolchain/0.0.14-pre.b9285da0f2be/tarballs/vibelang-0.0.14-pre.b9285da0f2be.tgz",
+        "vibelang-vite": "file:../../.vibelang-toolchain/0.0.14-pre.b9285da0f2be/tarballs/vibelang-vite-0.0.14-pre.b9285da0f2be.tgz",
         "vite": "catalog:",
       },
     },
@@ -465,7 +465,7 @@
       "version": "2.2.0",
       "dependencies": {
         "@effect/platform-node-shared": "catalog:",
-        "vibelang-runtime": "file:../../.vibelang-toolchain/vibelang-runtime-0.0.13-89b143f8885a.tgz",
+        "vibelang-runtime": "file:../../.vibelang-toolchain/0.0.14-pre.b9285da0f2be/tarballs/vibelang-runtime-0.0.14-pre.b9285da0f2be.tgz",
       },
       "devDependencies": {
         "@effect/platform-node": "catalog:",
@@ -476,8 +476,8 @@
         "effect": "catalog:",
         "fast-check": "catalog:",
         "typescript": "catalog:",
-        "vibelang": "file:../../.vibelang-toolchain/vibelang-0.0.13-637d08c93ff1.tgz",
-        "vibelang-unplugin": "file:../../.vibelang-toolchain/vibelang-unplugin-0.0.13-23b4ad6a3929.tgz",
+        "vibelang": "file:../../.vibelang-toolchain/0.0.14-pre.b9285da0f2be/tarballs/vibelang-0.0.14-pre.b9285da0f2be.tgz",
+        "vibelang-unplugin": "file:../../.vibelang-toolchain/0.0.14-pre.b9285da0f2be/tarballs/vibelang-unplugin-0.0.14-pre.b9285da0f2be.tgz",
       },
       "peerDependencies": {
         "effect": "catalog:",
@@ -489,15 +489,15 @@
       "dependencies": {
         "effect": "catalog:",
         "prettier": "3.6.2",
-        "vibelang-runtime": "file:../../.vibelang-toolchain/vibelang-runtime-0.0.13-89b143f8885a.tgz",
+        "vibelang-runtime": "file:../../.vibelang-toolchain/0.0.14-pre.b9285da0f2be/tarballs/vibelang-runtime-0.0.14-pre.b9285da0f2be.tgz",
       },
       "devDependencies": {
         "@tsconfig/bun": "catalog:",
         "@types/bun": "catalog:",
         "@typescript/native": "catalog:",
         "fast-check": "catalog:",
-        "vibelang": "file:../../.vibelang-toolchain/vibelang-0.0.13-637d08c93ff1.tgz",
-        "vibelang-vite": "file:../../.vibelang-toolchain/vibelang-vite-0.0.13-4bdf1e25b72f.tgz",
+        "vibelang": "file:../../.vibelang-toolchain/0.0.14-pre.b9285da0f2be/tarballs/vibelang-0.0.14-pre.b9285da0f2be.tgz",
+        "vibelang-vite": "file:../../.vibelang-toolchain/0.0.14-pre.b9285da0f2be/tarballs/vibelang-vite-0.0.14-pre.b9285da0f2be.tgz",
       },
     },
     "packages/latex": {
@@ -512,7 +512,7 @@
         "@tsconfig/bun": "catalog:",
         "@types/bun": "catalog:",
         "@typescript/native": "catalog:",
-        "vibelang": "file:../../.vibelang-toolchain/vibelang-0.0.13-637d08c93ff1.tgz",
+        "vibelang": "file:../../.vibelang-toolchain/0.0.14-pre.b9285da0f2be/tarballs/vibelang-0.0.14-pre.b9285da0f2be.tgz",
       },
     },
     "packages/merman": {
@@ -528,7 +528,7 @@
         "@tsconfig/bun": "catalog:",
         "@types/bun": "catalog:",
         "@typescript/native": "catalog:",
-        "vibelang": "file:../../.vibelang-toolchain/vibelang-0.0.13-637d08c93ff1.tgz",
+        "vibelang": "file:../../.vibelang-toolchain/0.0.14-pre.b9285da0f2be/tarballs/vibelang-0.0.14-pre.b9285da0f2be.tgz",
       },
     },
     "packages/patchmark": {
@@ -555,7 +555,7 @@
         "@opencode/schema": "workspace:*",
         "@opencode/util": "workspace:*",
         "effect": "catalog:",
-        "vibelang-runtime": "file:../../.vibelang-toolchain/vibelang-runtime-0.0.13-89b143f8885a.tgz",
+        "vibelang-runtime": "file:../../.vibelang-toolchain/0.0.14-pre.b9285da0f2be/tarballs/vibelang-runtime-0.0.14-pre.b9285da0f2be.tgz",
       },
       "devDependencies": {
         "@opencode/theme": "workspace:*",
@@ -569,8 +569,8 @@
         "fast-check": "catalog:",
         "solid-js": "catalog:",
         "typescript": "catalog:",
-        "vibelang": "file:../../.vibelang-toolchain/vibelang-0.0.13-637d08c93ff1.tgz",
-        "vibelang-vite": "file:../../.vibelang-toolchain/vibelang-vite-0.0.13-4bdf1e25b72f.tgz",
+        "vibelang": "file:../../.vibelang-toolchain/0.0.14-pre.b9285da0f2be/tarballs/vibelang-0.0.14-pre.b9285da0f2be.tgz",
+        "vibelang-vite": "file:../../.vibelang-toolchain/0.0.14-pre.b9285da0f2be/tarballs/vibelang-vite-0.0.14-pre.b9285da0f2be.tgz",
         "vite": "catalog:",
         "vite-plugin-solid": "catalog:",
       },
@@ -600,7 +600,7 @@
         "@opencode/plugin": "workspace:*",
         "@opencode/schema": "workspace:*",
         "effect": "catalog:",
-        "vibelang-runtime": "file:../../.vibelang-toolchain/vibelang-runtime-0.0.13-89b143f8885a.tgz",
+        "vibelang-runtime": "file:../../.vibelang-toolchain/0.0.14-pre.b9285da0f2be/tarballs/vibelang-runtime-0.0.14-pre.b9285da0f2be.tgz",
       },
       "devDependencies": {
         "@tsconfig/bun": "catalog:",
@@ -608,7 +608,7 @@
         "@typescript/native": "catalog:",
         "fast-check": "catalog:",
         "typescript": "catalog:",
-        "vibelang": "file:../../.vibelang-toolchain/vibelang-0.0.13-637d08c93ff1.tgz",
+        "vibelang": "file:../../.vibelang-toolchain/0.0.14-pre.b9285da0f2be/tarballs/vibelang-0.0.14-pre.b9285da0f2be.tgz",
       },
     },
     "packages/plugins/figma": {
@@ -647,7 +647,7 @@
       "dependencies": {
         "@opencode/schema": "workspace:*",
         "effect": "catalog:",
-        "vibelang-runtime": "file:../../.vibelang-toolchain/vibelang-runtime-0.0.13-89b143f8885a.tgz",
+        "vibelang-runtime": "file:../../.vibelang-toolchain/0.0.14-pre.b9285da0f2be/tarballs/vibelang-runtime-0.0.14-pre.b9285da0f2be.tgz",
       },
       "devDependencies": {
         "@tsconfig/bun": "catalog:",
@@ -656,7 +656,7 @@
         "fast-check": "catalog:",
         "prettier": "3.6.2",
         "typescript": "catalog:",
-        "vibelang": "file:../../.vibelang-toolchain/vibelang-0.0.13-637d08c93ff1.tgz",
+        "vibelang": "file:../../.vibelang-toolchain/0.0.14-pre.b9285da0f2be/tarballs/vibelang-0.0.14-pre.b9285da0f2be.tgz",
       },
     },
     "packages/schema": {
@@ -665,7 +665,7 @@
       "dependencies": {
         "@standard-schema/spec": "catalog:",
         "effect": "catalog:",
-        "vibelang-runtime": "file:../../.vibelang-toolchain/vibelang-runtime-0.0.13-89b143f8885a.tgz",
+        "vibelang-runtime": "file:../../.vibelang-toolchain/0.0.14-pre.b9285da0f2be/tarballs/vibelang-runtime-0.0.14-pre.b9285da0f2be.tgz",
       },
       "devDependencies": {
         "@tsconfig/bun": "catalog:",
@@ -673,7 +673,7 @@
         "@typescript/native": "catalog:",
         "fast-check": "catalog:",
         "typescript": "catalog:",
-        "vibelang": "file:../../.vibelang-toolchain/vibelang-0.0.13-637d08c93ff1.tgz",
+        "vibelang": "file:../../.vibelang-toolchain/0.0.14-pre.b9285da0f2be/tarballs/vibelang-0.0.14-pre.b9285da0f2be.tgz",
       },
     },
     "packages/script": {
@@ -699,7 +699,7 @@
         "@opencode/server": "workspace:*",
         "@opencode/util": "workspace:*",
         "effect": "catalog:",
-        "vibelang-runtime": "file:../../.vibelang-toolchain/vibelang-runtime-0.0.13-89b143f8885a.tgz",
+        "vibelang-runtime": "file:../../.vibelang-toolchain/0.0.14-pre.b9285da0f2be/tarballs/vibelang-runtime-0.0.14-pre.b9285da0f2be.tgz",
       },
       "devDependencies": {
         "@opencode/ai": "workspace:*",
@@ -710,8 +710,8 @@
         "@typescript/native": "catalog:",
         "fast-check": "catalog:",
         "typescript": "catalog:",
-        "vibelang": "file:../../.vibelang-toolchain/vibelang-0.0.13-637d08c93ff1.tgz",
-        "vibelang-unplugin": "file:../../.vibelang-toolchain/vibelang-unplugin-0.0.13-23b4ad6a3929.tgz",
+        "vibelang": "file:../../.vibelang-toolchain/0.0.14-pre.b9285da0f2be/tarballs/vibelang-0.0.14-pre.b9285da0f2be.tgz",
+        "vibelang-unplugin": "file:../../.vibelang-toolchain/0.0.14-pre.b9285da0f2be/tarballs/vibelang-unplugin-0.0.14-pre.b9285da0f2be.tgz",
       },
     },
     "packages/server": {
@@ -726,7 +726,7 @@
         "@opencode/simulation": "workspace:*",
         "@opencode/util": "workspace:*",
         "effect": "catalog:",
-        "vibelang-runtime": "file:../../.vibelang-toolchain/vibelang-runtime-0.0.13-89b143f8885a.tgz",
+        "vibelang-runtime": "file:../../.vibelang-toolchain/0.0.14-pre.b9285da0f2be/tarballs/vibelang-runtime-0.0.14-pre.b9285da0f2be.tgz",
       },
       "devDependencies": {
         "@opencode-ai/pty": "0.3.1",
@@ -736,8 +736,8 @@
         "@types/bun": "catalog:",
         "@typescript/native": "catalog:",
         "fast-check": "catalog:",
-        "vibelang": "file:../../.vibelang-toolchain/vibelang-0.0.13-637d08c93ff1.tgz",
-        "vibelang-unplugin": "file:../../.vibelang-toolchain/vibelang-unplugin-0.0.13-23b4ad6a3929.tgz",
+        "vibelang": "file:../../.vibelang-toolchain/0.0.14-pre.b9285da0f2be/tarballs/vibelang-0.0.14-pre.b9285da0f2be.tgz",
+        "vibelang-unplugin": "file:../../.vibelang-toolchain/0.0.14-pre.b9285da0f2be/tarballs/vibelang-unplugin-0.0.14-pre.b9285da0f2be.tgz",
       },
     },
     "packages/session-ui": {
@@ -761,7 +761,7 @@
         "marked": "catalog:",
         "pele": "1.7.0",
         "solid-js": "catalog:",
-        "vibelang-runtime": "file:../../.vibelang-toolchain/vibelang-runtime-0.0.13-89b143f8885a.tgz",
+        "vibelang-runtime": "file:../../.vibelang-toolchain/0.0.14-pre.b9285da0f2be/tarballs/vibelang-runtime-0.0.14-pre.b9285da0f2be.tgz",
       },
       "devDependencies": {
         "@happy-dom/global-registrator": "20.0.11",
@@ -770,8 +770,8 @@
         "@types/bun": "catalog:",
         "@typescript/native": "catalog:",
         "fast-check": "catalog:",
-        "vibelang": "file:../../.vibelang-toolchain/vibelang-0.0.13-637d08c93ff1.tgz",
-        "vibelang-vite": "file:../../.vibelang-toolchain/vibelang-vite-0.0.13-4bdf1e25b72f.tgz",
+        "vibelang": "file:../../.vibelang-toolchain/0.0.14-pre.b9285da0f2be/tarballs/vibelang-0.0.14-pre.b9285da0f2be.tgz",
+        "vibelang-vite": "file:../../.vibelang-toolchain/0.0.14-pre.b9285da0f2be/tarballs/vibelang-vite-0.0.14-pre.b9285da0f2be.tgz",
         "vite": "catalog:",
         "vite-plugin-solid": "catalog:",
       },
@@ -787,7 +787,7 @@
         "@opencode/util": "workspace:*",
         "@opentui/core": "catalog:",
         "effect": "catalog:",
-        "vibelang-runtime": "file:../../.vibelang-toolchain/vibelang-runtime-0.0.13-89b143f8885a.tgz",
+        "vibelang-runtime": "file:../../.vibelang-toolchain/0.0.14-pre.b9285da0f2be/tarballs/vibelang-runtime-0.0.14-pre.b9285da0f2be.tgz",
         "ws": "8.21.0",
       },
       "devDependencies": {
@@ -796,7 +796,7 @@
         "@types/ws": "8.18.1",
         "@typescript/native": "catalog:",
         "fast-check": "catalog:",
-        "vibelang": "file:../../.vibelang-toolchain/vibelang-0.0.13-637d08c93ff1.tgz",
+        "vibelang": "file:../../.vibelang-toolchain/0.0.14-pre.b9285da0f2be/tarballs/vibelang-0.0.14-pre.b9285da0f2be.tgz",
       },
     },
     "packages/stats/app": {
@@ -816,7 +816,7 @@
         "nitro": "3.0.1-alpha.1",
         "solid-js": "catalog:",
         "sst": "catalog:",
-        "vibelang-runtime": "file:../../../.vibelang-toolchain/vibelang-runtime-0.0.13-89b143f8885a.tgz",
+        "vibelang-runtime": "file:../../../.vibelang-toolchain/0.0.14-pre.b9285da0f2be/tarballs/vibelang-runtime-0.0.14-pre.b9285da0f2be.tgz",
         "vite": "catalog:",
       },
       "devDependencies": {
@@ -824,8 +824,8 @@
         "@types/d3-scale": "4.0.9",
         "@typescript/native": "catalog:",
         "typescript": "catalog:",
-        "vibelang": "file:../../../.vibelang-toolchain/vibelang-0.0.13-637d08c93ff1.tgz",
-        "vibelang-vite": "file:../../../.vibelang-toolchain/vibelang-vite-0.0.13-4bdf1e25b72f.tgz",
+        "vibelang": "file:../../../.vibelang-toolchain/0.0.14-pre.b9285da0f2be/tarballs/vibelang-0.0.14-pre.b9285da0f2be.tgz",
+        "vibelang-vite": "file:../../../.vibelang-toolchain/0.0.14-pre.b9285da0f2be/tarballs/vibelang-vite-0.0.14-pre.b9285da0f2be.tgz",
       },
     },
     "packages/stats/core": {
@@ -836,7 +836,7 @@
         "drizzle-orm": "catalog:",
         "effect": "catalog:",
         "sst": "catalog:",
-        "vibelang-runtime": "file:../../../.vibelang-toolchain/vibelang-runtime-0.0.13-89b143f8885a.tgz",
+        "vibelang-runtime": "file:../../../.vibelang-toolchain/0.0.14-pre.b9285da0f2be/tarballs/vibelang-runtime-0.0.14-pre.b9285da0f2be.tgz",
       },
       "devDependencies": {
         "@tsconfig/node22": "catalog:",
@@ -845,8 +845,8 @@
         "@typescript/native": "catalog:",
         "drizzle-kit": "catalog:",
         "typescript": "catalog:",
-        "vibelang": "file:../../../.vibelang-toolchain/vibelang-0.0.13-637d08c93ff1.tgz",
-        "vibelang-vite": "file:../../../.vibelang-toolchain/vibelang-vite-0.0.13-4bdf1e25b72f.tgz",
+        "vibelang": "file:../../../.vibelang-toolchain/0.0.14-pre.b9285da0f2be/tarballs/vibelang-0.0.14-pre.b9285da0f2be.tgz",
+        "vibelang-vite": "file:../../../.vibelang-toolchain/0.0.14-pre.b9285da0f2be/tarballs/vibelang-vite-0.0.14-pre.b9285da0f2be.tgz",
       },
     },
     "packages/stats/server": {
@@ -857,7 +857,7 @@
         "@opencode/stats-core": "workspace:*",
         "effect": "catalog:",
         "sst": "catalog:",
-        "vibelang-runtime": "file:../../../.vibelang-toolchain/vibelang-runtime-0.0.13-89b143f8885a.tgz",
+        "vibelang-runtime": "file:../../../.vibelang-toolchain/0.0.14-pre.b9285da0f2be/tarballs/vibelang-runtime-0.0.14-pre.b9285da0f2be.tgz",
       },
       "devDependencies": {
         "@tsconfig/node22": "catalog:",
@@ -865,7 +865,7 @@
         "@types/node": "catalog:",
         "@typescript/native": "catalog:",
         "typescript": "catalog:",
-        "vibelang": "file:../../../.vibelang-toolchain/vibelang-0.0.13-637d08c93ff1.tgz",
+        "vibelang": "file:../../../.vibelang-toolchain/0.0.14-pre.b9285da0f2be/tarballs/vibelang-0.0.14-pre.b9285da0f2be.tgz",
       },
     },
     "packages/stories": {
@@ -882,8 +882,8 @@
         "@types/node": "catalog:",
         "solid-js": "catalog:",
         "typescript": "catalog:",
-        "vibelang": "file:../../.vibelang-toolchain/vibelang-0.0.13-637d08c93ff1.tgz",
-        "vibelang-vite": "file:../../.vibelang-toolchain/vibelang-vite-0.0.13-4bdf1e25b72f.tgz",
+        "vibelang": "file:../../.vibelang-toolchain/0.0.14-pre.b9285da0f2be/tarballs/vibelang-0.0.14-pre.b9285da0f2be.tgz",
+        "vibelang-vite": "file:../../.vibelang-toolchain/0.0.14-pre.b9285da0f2be/tarballs/vibelang-vite-0.0.14-pre.b9285da0f2be.tgz",
         "vite": "7.3.6",
         "vite-plugin-solid": "2.11.12",
       },
@@ -894,7 +894,7 @@
       "dependencies": {
         "@opentui/core": "catalog:",
         "effect": "catalog:",
-        "vibelang-runtime": "file:../../.vibelang-toolchain/vibelang-runtime-0.0.13-89b143f8885a.tgz",
+        "vibelang-runtime": "file:../../.vibelang-toolchain/0.0.14-pre.b9285da0f2be/tarballs/vibelang-runtime-0.0.14-pre.b9285da0f2be.tgz",
       },
       "devDependencies": {
         "@tsconfig/bun": "catalog:",
@@ -902,8 +902,8 @@
         "@typescript/native": "catalog:",
         "fast-check": "catalog:",
         "typescript": "catalog:",
-        "vibelang": "file:../../.vibelang-toolchain/vibelang-0.0.13-637d08c93ff1.tgz",
-        "vibelang-vite": "file:../../.vibelang-toolchain/vibelang-vite-0.0.13-4bdf1e25b72f.tgz",
+        "vibelang": "file:../../.vibelang-toolchain/0.0.14-pre.b9285da0f2be/tarballs/vibelang-0.0.14-pre.b9285da0f2be.tgz",
+        "vibelang-vite": "file:../../.vibelang-toolchain/0.0.14-pre.b9285da0f2be/tarballs/vibelang-vite-0.0.14-pre.b9285da0f2be.tgz",
       },
     },
     "packages/tui": {
@@ -931,13 +931,13 @@
         "solid-js": "catalog:",
         "string-width": "catalog:",
         "strip-ansi": "7.1.2",
-        "vibelang-runtime": "file:../../.vibelang-toolchain/vibelang-runtime-0.0.13-89b143f8885a.tgz",
+        "vibelang-runtime": "file:../../.vibelang-toolchain/0.0.14-pre.b9285da0f2be/tarballs/vibelang-runtime-0.0.14-pre.b9285da0f2be.tgz",
       },
       "devDependencies": {
         "@tsconfig/bun": "catalog:",
         "@types/bun": "catalog:",
         "@typescript/native": "catalog:",
-        "vibelang": "file:../../.vibelang-toolchain/vibelang-0.0.13-637d08c93ff1.tgz",
+        "vibelang": "file:../../.vibelang-toolchain/0.0.14-pre.b9285da0f2be/tarballs/vibelang-0.0.14-pre.b9285da0f2be.tgz",
       },
     },
     "packages/ui": {
@@ -966,8 +966,8 @@
         "solid-js": "catalog:",
         "tailwindcss": "catalog:",
         "typescript": "catalog:",
-        "vibelang": "file:../../.vibelang-toolchain/vibelang-0.0.13-637d08c93ff1.tgz",
-        "vibelang-vite": "file:../../.vibelang-toolchain/vibelang-vite-0.0.13-4bdf1e25b72f.tgz",
+        "vibelang": "file:../../.vibelang-toolchain/0.0.14-pre.b9285da0f2be/tarballs/vibelang-0.0.14-pre.b9285da0f2be.tgz",
+        "vibelang-vite": "file:../../.vibelang-toolchain/0.0.14-pre.b9285da0f2be/tarballs/vibelang-vite-0.0.14-pre.b9285da0f2be.tgz",
         "vite": "catalog:",
         "vite-plugin-icons-spritesheet": "3.0.1",
         "vite-plugin-solid": "catalog:",
@@ -1003,7 +1003,7 @@
         "npm-package-arg": "13.0.2",
         "open": "11.0.4",
         "pacote": "21.5.1",
-        "vibelang-runtime": "file:../../.vibelang-toolchain/vibelang-runtime-0.0.13-89b143f8885a.tgz",
+        "vibelang-runtime": "file:../../.vibelang-toolchain/0.0.14-pre.b9285da0f2be/tarballs/vibelang-runtime-0.0.14-pre.b9285da0f2be.tgz",
       },
       "devDependencies": {
         "@tsconfig/bun": "catalog:",
@@ -1015,8 +1015,8 @@
         "@types/pacote": "11.1.8",
         "@typescript/native": "catalog:",
         "jsqr": "1.4.0",
-        "vibelang": "file:../../.vibelang-toolchain/vibelang-0.0.13-637d08c93ff1.tgz",
-        "vibelang-vite": "file:../../.vibelang-toolchain/vibelang-vite-0.0.13-4bdf1e25b72f.tgz",
+        "vibelang": "file:../../.vibelang-toolchain/0.0.14-pre.b9285da0f2be/tarballs/vibelang-0.0.14-pre.b9285da0f2be.tgz",
+        "vibelang-vite": "file:../../.vibelang-toolchain/0.0.14-pre.b9285da0f2be/tarballs/vibelang-vite-0.0.14-pre.b9285da0f2be.tgz",
       },
     },
     "packages/web": {
@@ -1130,22 +1130,22 @@
     "@opentui/core": "0.7.0",
     "@opentui/keymap": "0.7.0",
     "@opentui/solid": "0.7.0",
-    "@smthrs/cli-win32-arm64": "file:.vibelang-toolchain/smthrs-cli-win32-arm64-0.0.13-e2cdafda3e79.tgz",
-    "@smthrs/cli-win32-x64": "file:.vibelang-toolchain/smthrs-cli-win32-x64-0.0.13-1ceed479b02b.tgz",
+    "@smthrs/cli-win32-arm64": "file:.vibelang-toolchain/0.0.14-pre.b9285da0f2be/tarballs/smthrs-cli-win32-arm64-0.0.14-pre.b9285da0f2be.tgz",
+    "@smthrs/cli-win32-x64": "file:.vibelang-toolchain/0.0.14-pre.b9285da0f2be/tarballs/smthrs-cli-win32-x64-0.0.14-pre.b9285da0f2be.tgz",
     "@types/bun": "catalog:",
     "@types/node": "catalog:",
     "bun-types": "1.4.4",
     "effect": "catalog:",
     "open": "11.0.4",
     "solid-js": "catalog:",
-    "vibelang": "file:.vibelang-toolchain/vibelang-0.0.13-637d08c93ff1.tgz",
-    "vibelang-darwin-arm64": "file:.vibelang-toolchain/vibelang-darwin-arm64-0.0.13-0ad901221f31.tgz",
-    "vibelang-darwin-x64": "file:.vibelang-toolchain/vibelang-darwin-x64-0.0.13-ada177ce7459.tgz",
-    "vibelang-linux-arm64": "file:.vibelang-toolchain/vibelang-linux-arm64-0.0.13-84c66a112db2.tgz",
-    "vibelang-linux-x64": "file:.vibelang-toolchain/vibelang-linux-x64-0.0.13-e63219c86fd3.tgz",
-    "vibelang-runtime": "file:.vibelang-toolchain/vibelang-runtime-0.0.13-89b143f8885a.tgz",
-    "vibelang-unplugin": "file:.vibelang-toolchain/vibelang-unplugin-0.0.13-23b4ad6a3929.tgz",
-    "vibelang-vite": "file:.vibelang-toolchain/vibelang-vite-0.0.13-4bdf1e25b72f.tgz",
+    "vibelang": "file:.vibelang-toolchain/0.0.14-pre.b9285da0f2be/tarballs/vibelang-0.0.14-pre.b9285da0f2be.tgz",
+    "vibelang-darwin-arm64": "file:.vibelang-toolchain/0.0.14-pre.b9285da0f2be/tarballs/vibelang-darwin-arm64-0.0.14-pre.b9285da0f2be.tgz",
+    "vibelang-darwin-x64": "file:.vibelang-toolchain/0.0.14-pre.b9285da0f2be/tarballs/vibelang-darwin-x64-0.0.14-pre.b9285da0f2be.tgz",
+    "vibelang-linux-arm64": "file:.vibelang-toolchain/0.0.14-pre.b9285da0f2be/tarballs/vibelang-linux-arm64-0.0.14-pre.b9285da0f2be.tgz",
+    "vibelang-linux-x64": "file:.vibelang-toolchain/0.0.14-pre.b9285da0f2be/tarballs/vibelang-linux-x64-0.0.14-pre.b9285da0f2be.tgz",
+    "vibelang-runtime": "file:.vibelang-toolchain/0.0.14-pre.b9285da0f2be/tarballs/vibelang-runtime-0.0.14-pre.b9285da0f2be.tgz",
+    "vibelang-unplugin": "file:.vibelang-toolchain/0.0.14-pre.b9285da0f2be/tarballs/vibelang-unplugin-0.0.14-pre.b9285da0f2be.tgz",
+    "vibelang-vite": "file:.vibelang-toolchain/0.0.14-pre.b9285da0f2be/tarballs/vibelang-vite-0.0.14-pre.b9285da0f2be.tgz",
   },
   "catalog": {
     "@cloudflare/workers-types": "4.20251008.0",
@@ -2578,9 +2578,9 @@
 
     "@smithy/util-utf8": ["@smithy/util-utf8@4.2.2", "", { "dependencies": { "@smithy/util-buffer-from": "^4.2.2", "tslib": "^2.6.2" } }, "sha512-75MeYpjdWRe8M5E3AW0O4Cx3UadweS+cwdXjwYGBW5h/gxxnbeZ877sLPX/ZJA9GVTlL/qG0dXP29JWFCD1Ayw=="],
 
-    "@smthrs/cli-win32-arm64": ["@smthrs/cli-win32-arm64@.vibelang-toolchain/smthrs-cli-win32-arm64-0.0.13-e2cdafda3e79.tgz", {}, "sha512-OZAZuTWuuduGH00TzRtQMYmI4FwXMgn0cIPpmMMx8uHWhC6GCJC0iLsv03iNt/bwyGwrLegjEbyYKftwsQ+HLQ=="],
+    "@smthrs/cli-win32-arm64": ["@smthrs/cli-win32-arm64@.vibelang-toolchain/0.0.14-pre.b9285da0f2be/tarballs/smthrs-cli-win32-arm64-0.0.14-pre.b9285da0f2be.tgz", {}, "sha512-upCsnB7mErAtklIVBNtZa5GSVuAr3GcmbNAr7frjX+F+zfuy/xTZ+nU/h57uRkUCB+5ITRi54zbOB35lj26yXQ=="],
 
-    "@smthrs/cli-win32-x64": ["@smthrs/cli-win32-x64@.vibelang-toolchain/smthrs-cli-win32-x64-0.0.13-1ceed479b02b.tgz", {}, "sha512-skZ4eH0bPMzxMs4/gkAy3V2J9GjZfYdm9rgERYqMeCDjgBVjSCUV+jDRN31CQRgNesbqinzAferU45SYwKKW3g=="],
+    "@smthrs/cli-win32-x64": ["@smthrs/cli-win32-x64@.vibelang-toolchain/0.0.14-pre.b9285da0f2be/tarballs/smthrs-cli-win32-x64-0.0.14-pre.b9285da0f2be.tgz", {}, "sha512-UUhu4uXlt83ZSXHB4938AZu9gmRRI/f7d98T5EVkTvbYBDogAXNQFJ5LCROV30wDW9mM1i8eUOUltSqiktF6Rw=="],
 
     "@socket.io/component-emitter": ["@socket.io/component-emitter@3.1.2", "", {}, "sha512-9BCxFwvbGg/RsZK9tjXd8s4UcwR0MWeFQ1XEKIQVVvAGJyINdrqKMcTRyLoK8Rse1GjzLV9cwjWV1olXRWEXVA=="],
 
@@ -4924,21 +4924,21 @@
 
     "vfile-message": ["vfile-message@4.0.3", "", { "dependencies": { "@types/unist": "^3.0.0", "unist-util-stringify-position": "^4.0.0" } }, "sha512-QTHzsGd1EhbZs4AsQ20JX1rC3cOlt/IWJruk893DfLRr57lcnOeMaWG4K0JrRta4mIJZKth2Au3mM3u03/JWKw=="],
 
-    "vibelang": ["vibelang@.vibelang-toolchain/vibelang-0.0.13-637d08c93ff1.tgz", { "dependencies": { "dprint": "0.64.3" }, "optionalDependencies": { "@smthrs/cli-win32-arm64": "0.0.13", "@smthrs/cli-win32-x64": "0.0.13", "vibelang-darwin-arm64": "0.0.13", "vibelang-darwin-x64": "0.0.13", "vibelang-linux-arm64": "0.0.13", "vibelang-linux-x64": "0.0.13" }, "peerDependencies": { "@babel/core": "^7.29.0", "effect": "4.1.1", "metro": ">=0.87.0" }, "optionalPeers": ["@babel/core", "metro"], "bin": { "vibelang": "bin/vibelang", "vibelang-format": "bin/vibelang-format", "vibelang-ast-grep": "bin/vibelang-ast-grep" } }, "sha512-/RBkWKZ4/ooQhI9h1o1Brqf2zzSx4InRgNefd5zx2vseFyeLd1qMJinbLqguZYKA6CybOe5XB3Ms8XlF5U0pcQ=="],
+    "vibelang": ["vibelang@.vibelang-toolchain/0.0.14-pre.b9285da0f2be/tarballs/vibelang-0.0.14-pre.b9285da0f2be.tgz", { "dependencies": { "dprint": "0.64.3" }, "optionalDependencies": { "@smthrs/cli-win32-arm64": "0.0.14-pre.b9285da0f2be", "@smthrs/cli-win32-x64": "0.0.14-pre.b9285da0f2be", "vibelang-darwin-arm64": "0.0.14-pre.b9285da0f2be", "vibelang-darwin-x64": "0.0.14-pre.b9285da0f2be", "vibelang-linux-arm64": "0.0.14-pre.b9285da0f2be", "vibelang-linux-x64": "0.0.14-pre.b9285da0f2be" }, "peerDependencies": { "@babel/core": "^7.29.0", "effect": "4.1.1", "metro": ">=0.87.0" }, "optionalPeers": ["@babel/core", "metro"], "bin": { "vibelang": "bin/vibelang", "vibelang-format": "bin/vibelang-format", "vibelang-ast-grep": "bin/vibelang-ast-grep" } }, "sha512-4IglMLLKIqnZkTUwMTIkrNhBU1mYgfnC95Htjr7bwj7+Pzn+x3lV3kJIET+y7/OyO8j3xY4XPTU5IsWAE/HR2A=="],
 
-    "vibelang-darwin-arm64": ["vibelang-darwin-arm64@.vibelang-toolchain/vibelang-darwin-arm64-0.0.13-0ad901221f31.tgz", {}, "sha512-anIf74aV2p+IveVvlnJiz8mV2N1FAQQcTLNXPf5AagSSeNyLFK3FhfLhcLLWosD/WRo8Ke7vG2Yd5d0CA5DmXA=="],
+    "vibelang-darwin-arm64": ["vibelang-darwin-arm64@.vibelang-toolchain/0.0.14-pre.b9285da0f2be/tarballs/vibelang-darwin-arm64-0.0.14-pre.b9285da0f2be.tgz", {}, "sha512-y9madx1iSMCP4Rz3mGTUBvkkrG3aM7UqoUR+TrobrBHkMDAHasQZl/xKAk3GDohrCLRumQJgeuPa1lVs9Px6zg=="],
 
-    "vibelang-darwin-x64": ["vibelang-darwin-x64@.vibelang-toolchain/vibelang-darwin-x64-0.0.13-ada177ce7459.tgz", {}, "sha512-1ztnG2sCKCLUcx7AwCLeelQcNIiRElTY8A5ldhqCPH00MJwajuG6pOSlYFyWLO4dJ1jiVpO8N0qza7RRitkvkA=="],
+    "vibelang-darwin-x64": ["vibelang-darwin-x64@.vibelang-toolchain/0.0.14-pre.b9285da0f2be/tarballs/vibelang-darwin-x64-0.0.14-pre.b9285da0f2be.tgz", {}, "sha512-ERZ2QwE7nDAK7NbRhpQHiTSbk3v1rse70f7oubSctkXbLLx+RQ4L+SoqTueZyaB6chbjIAvu7AYi4MyNB63b6g=="],
 
-    "vibelang-linux-arm64": ["vibelang-linux-arm64@.vibelang-toolchain/vibelang-linux-arm64-0.0.13-84c66a112db2.tgz", {}, "sha512-qKwFe5Vmru+Ie2Az990rCdHORfsvzHe85gJbwpfmgXaPwbnijdZ/CIwbhqfTAZi9KLfPd7wH12rHx2ja3Hnbsw=="],
+    "vibelang-linux-arm64": ["vibelang-linux-arm64@.vibelang-toolchain/0.0.14-pre.b9285da0f2be/tarballs/vibelang-linux-arm64-0.0.14-pre.b9285da0f2be.tgz", {}, "sha512-I9KFrTRL8L1vlvT/yB6ibIfbmk+14jHzJX/WY09mpkdErPNl+9u+AJihfHGNrPO8WPwb9eOhQkiLrQKQiGwlUA=="],
 
-    "vibelang-linux-x64": ["vibelang-linux-x64@.vibelang-toolchain/vibelang-linux-x64-0.0.13-e63219c86fd3.tgz", {}, "sha512-d7fQX8JC2NU+zAJzlZmT7GJqkxdC1Q9sExZ2rPzpkcTCOEBhRpSKjM0OfWyn6xMO4zZ8JgNI0KIlxYFH4YypXQ=="],
+    "vibelang-linux-x64": ["vibelang-linux-x64@.vibelang-toolchain/0.0.14-pre.b9285da0f2be/tarballs/vibelang-linux-x64-0.0.14-pre.b9285da0f2be.tgz", {}, "sha512-/KG7bSrix5YANmTKh6t7z4X+ZjlKyvKiCf+ClQWcNzUm/bOTqHVesA9BZrg2tYnoDLSqqCK0x17S2tCMja0vgA=="],
 
-    "vibelang-runtime": ["vibelang-runtime@.vibelang-toolchain/vibelang-runtime-0.0.13-89b143f8885a.tgz", { "peerDependencies": { "@effect/platform-browser": "4.1.1", "@effect/platform-bun": "4.1.1", "@effect/platform-node": "4.1.1", "effect": "4.1.1" }, "optionalPeers": ["@effect/platform-browser", "@effect/platform-bun", "@effect/platform-node"] }, "sha512-9brBIe2dhpIXOfwYDPWU5+Q7ZZkRSiaM1fRCBdayuwmKoyHxj/1jhiGVJmbidU4q/dHr50GWaAp3BP4X9X2O1w=="],
+    "vibelang-runtime": ["vibelang-runtime@.vibelang-toolchain/0.0.14-pre.b9285da0f2be/tarballs/vibelang-runtime-0.0.14-pre.b9285da0f2be.tgz", { "peerDependencies": { "@effect/platform-browser": "4.1.1", "@effect/platform-bun": "4.1.1", "@effect/platform-node": "4.1.1", "effect": "4.1.1" }, "optionalPeers": ["@effect/platform-browser", "@effect/platform-bun", "@effect/platform-node"] }, "sha512-Jtulr5dd5pOkoQpUHDPty7y8+SytfpjArH/QAL6ea/u4hhVhZG397HmORsL77XScsI739IG71enpU/mDQqV6mQ=="],
 
-    "vibelang-unplugin": ["vibelang-unplugin@.vibelang-toolchain/vibelang-unplugin-0.0.13-23b4ad6a3929.tgz", { "dependencies": { "unplugin": "3.4.0" }, "peerDependencies": { "vibelang": "0.0.13" } }, "sha512-HfklAQP9wKxFxv0r80U3CRmGdsME36uqNIRD3STVWc0hC8yx/wbSwRZNOYND2VBT9zNLIyM3fTsPtkcbJQVT0g=="],
+    "vibelang-unplugin": ["vibelang-unplugin@.vibelang-toolchain/0.0.14-pre.b9285da0f2be/tarballs/vibelang-unplugin-0.0.14-pre.b9285da0f2be.tgz", { "dependencies": { "@jridgewell/remapping": "2.3.5", "magic-string": "1.4.3", "unplugin": "3.4.0" }, "peerDependencies": { "vibelang": "0.0.14-pre.b9285da0f2be" } }, "sha512-pSyIX2LlOwlJEdARX+sheLK21tFNXpW2jEnq8wnJg/angMlO0T3ZGK918itWkPHW/zD03dErzO4budzteur6zQ=="],
 
-    "vibelang-vite": ["vibelang-vite@.vibelang-toolchain/vibelang-vite-0.0.13-4bdf1e25b72f.tgz", { "peerDependencies": { "vibelang": "0.0.13", "vite": ">=7 <9" } }, "sha512-a44spkqdNbI6Mu1bruaZjB8k7jT8AqpbNW2dw3J3XRakkmVRUwwhV0SLnFsrixqml2b9qYibFZFS50uthBsk7Q=="],
+    "vibelang-vite": ["vibelang-vite@.vibelang-toolchain/0.0.14-pre.b9285da0f2be/tarballs/vibelang-vite-0.0.14-pre.b9285da0f2be.tgz", { "dependencies": { "@jridgewell/remapping": "2.3.5", "magic-string": "1.4.3" }, "peerDependencies": { "vibelang": "0.0.14-pre.b9285da0f2be", "vite": ">=7 <9" } }, "sha512-2WIo0Rm9WgrvjYN/7LeJJID0ouuSAYbAJf7F9OumPxhCEshxugOvR6AM3mHbbkhI0ro+lH3H4QHHZUrZfscSrQ=="],
 
     "vite": ["vite@8.2.2", "", { "dependencies": { "lightningcss": "^1.33.0", "picomatch": "^4.0.5", "postcss": "^8.5.26", "rolldown": "~1.2.4", "tinyglobby": "^0.2.17" }, "optionalDependencies": { "fsevents": "~2.3.3" }, "peerDependencies": { "@types/node": "^20.19.0 || >=22.12.0", "@vitejs/devtools": "^0.4.0 || ^0.5.0", "esbuild": "^0.27.0 || ^0.28.0", "jiti": ">=1.21.0", "less": "^4.0.0", "sass": "^1.70.0", "sass-embedded": "^1.70.0", "stylus": ">=0.54.8", "sugarss": "^5.0.0", "terser": "^5.16.0", "tsx": "^4.8.1", "yaml": "^2.4.2" }, "optionalPeers": ["@types/node", "@vitejs/devtools", "esbuild", "jiti", "less", "sass", "sass-embedded", "stylus", "sugarss", "terser", "tsx", "yaml"], "bin": { "vite": "bin/vite.js" } }, "sha512-cFKLV/PRgAUlIRm5WjMjJ86jrftzpqcgH+Us+DS8mI3CDNiH30Whrz8uHL3+MOLPAgqbMBAqWdAHAphOAM+z/Q=="],
 
@@ -5628,6 +5628,10 @@
 
     "unzipper/fs-extra": ["fs-extra@11.3.1", "", { "dependencies": { "graceful-fs": "^4.2.0", "jsonfile": "^6.0.1", "universalify": "^2.0.0" } }, "sha512-eXvGGwZ5CL17ZSwHWd3bbgk7UUpF6IFHtP57NYYakPvHOs8GDgDe5KJI36jIJzDkJ6eJjuzRA8eBQb6SkKue0g=="],
 
+    "vibelang-unplugin/magic-string": ["magic-string@1.4.3", "", { "dependencies": { "@jridgewell/sourcemap-codec": "^1.6.0" } }, "sha512-z12OxmaPGE0F4xlpGdjuAUckipLpQlTAuAmyGhNoD7ODpYUzvDfvtxUbjM/jwznyP178oju/KDdyi220wNJ0RQ=="],
+
+    "vibelang-vite/magic-string": ["magic-string@1.4.3", "", { "dependencies": { "@jridgewell/sourcemap-codec": "^1.6.0" } }, "sha512-z12OxmaPGE0F4xlpGdjuAUckipLpQlTAuAmyGhNoD7ODpYUzvDfvtxUbjM/jwznyP178oju/KDdyi220wNJ0RQ=="],
+
     "vite-plugin-icons-spritesheet/chalk": ["chalk@5.6.2", "", {}, "sha512-7NzBL0rN6fMUW+f7A6Io4h40qQlG+xGmtMxfbnH/K7TAtt8JQWVQK+6g0UXKMeVJoyV5EkkNsErQ8pVD3bLHbA=="],
 
     "vite-plugin-icons-spritesheet/glob": ["glob@11.1.0", "", { "dependencies": { "foreground-child": "^3.3.1", "jackspeak": "^4.1.1", "minimatch": "^10.1.1", "minipass": "^7.1.2", "package-json-from-dist": "^1.0.0", "path-scurry": "^2.0.0" }, "bin": { "glob": "dist/esm/bin.mjs" } }, "sha512-vuNwKSaKiqm7g0THUBu2x7ckSs3XJLXE+2ssL7/MfTGPLLcrJQ/4Uq1CjPTtO5cCIiRxqvN6Twy1qOwhL0Xjcw=="],
@@ -6083,6 +6087,10 @@
     "string-width-cjs/strip-ansi/ansi-regex": ["ansi-regex@5.0.1", "", {}, "sha512-quJQXlTSUGL2LH9SUXo8VwsY4soanhgo6LNSm84E1LBcE8s3O0wpdiRzyR9z/ZZJMlMWv37qOOb9pdJlMUEKFQ=="],
 
     "temp/rimraf/glob": ["glob@7.2.3", "", { "dependencies": { "fs.realpath": "^1.0.0", "inflight": "^1.0.4", "inherits": "2", "minimatch": "^3.1.1", "once": "^1.3.0", "path-is-absolute": "^1.0.0" } }, "sha512-nFR0zLpU2YCaRxwoCJvL6UvCH2JFyFVIvwTLsIf21AuHlMskA1hhTdk+LlYJtOlYt9v6dvszD2BGRqBL+iQK9Q=="],
+
+    "vibelang-unplugin/magic-string/@jridgewell/sourcemap-codec": ["@jridgewell/sourcemap-codec@1.6.0", "", {}, "sha512-T7jf+5zgsZHwNJ4lvQ7/aezbyk0nNX+zJVWpmHA7VYsEx7a7qr5Rg5IbtJFqkgze5Y2sruq1RUY8Q837Od7iFw=="],
+
+    "vibelang-vite/magic-string/@jridgewell/sourcemap-codec": ["@jridgewell/sourcemap-codec@1.6.0", "", {}, "sha512-T7jf+5zgsZHwNJ4lvQ7/aezbyk0nNX+zJVWpmHA7VYsEx7a7qr5Rg5IbtJFqkgze5Y2sruq1RUY8Q837Od7iFw=="],
 
     "vscode-languageserver/vscode-languageserver-protocol/vscode-jsonrpc": ["vscode-jsonrpc@8.2.0", "", {}, "sha512-C+r0eKJUIfiDIfwJhria30+TYWPtuHJXHtI7J0YlOmKAo7ogxP20T0zxB7HZQIFhIyvoBPwWskjxrvAtfjyZfA=="],
 

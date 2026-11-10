@@ -233,7 +233,7 @@
   "dependencies": {
     "@opencode/schema": "workspace:*",
     "effect": "catalog:",
-    "vibelang-runtime": "file:../../.vibelang-toolchain/vibelang-runtime-0.0.13-89b143f8885a.tgz"
+    "vibelang-runtime": "file:../../.vibelang-toolchain/0.0.14-pre.b9285da0f2be/tarballs/vibelang-runtime-0.0.14-pre.b9285da0f2be.tgz"
   },
   "devDependencies": {
     "@tsconfig/bun": "catalog:",
@@ -241,7 +241,7 @@
     "@typescript/native": "catalog:",
     "prettier": "3.6.2",
     "typescript": "catalog:",
-    "vibelang": "file:../../.vibelang-toolchain/vibelang-0.0.13-637d08c93ff1.tgz",
+    "vibelang": "file:../../.vibelang-toolchain/0.0.14-pre.b9285da0f2be/tarballs/vibelang-0.0.14-pre.b9285da0f2be.tgz",
     "fast-check": "catalog:"
   }
 }

@@ -27,7 +27,7 @@
     "electron-log": "^5",
     "electron-updater": "6.8.9",
     "lighthouse": "13.4.1",
-    "vibelang-runtime": "file:../../.vibelang-toolchain/vibelang-runtime-0.0.13-89b143f8885a.tgz"
+    "vibelang-runtime": "file:../../.vibelang-toolchain/0.0.14-pre.b9285da0f2be/tarballs/vibelang-runtime-0.0.14-pre.b9285da0f2be.tgz"
   },
   "devDependencies": {
     "@brendonovich/vite-plugin-opencode": "0.1.3",
@@ -57,8 +57,8 @@
     "solid-js": "catalog:",
     "typescript": "catalog:",
     "vite": "8.2.2",
-    "vibelang": "file:../../.vibelang-toolchain/vibelang-0.0.13-637d08c93ff1.tgz",
-    "vibelang-vite": "file:../../.vibelang-toolchain/vibelang-vite-0.0.13-4bdf1e25b72f.tgz"
+    "vibelang": "file:../../.vibelang-toolchain/0.0.14-pre.b9285da0f2be/tarballs/vibelang-0.0.14-pre.b9285da0f2be.tgz",
+    "vibelang-vite": "file:../../.vibelang-toolchain/0.0.14-pre.b9285da0f2be/tarballs/vibelang-vite-0.0.14-pre.b9285da0f2be.tgz"
   },
   "optionalDependencies": {
     "@lydell/node-pty-darwin-arm64": "1.2.0-beta.12",

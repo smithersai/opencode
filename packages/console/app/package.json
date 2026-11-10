@@ -34,8 +34,8 @@
     "@webgpu/types": "0.1.54",
     "typescript": "catalog:",
     "wrangler": "4.50.0",
-    "vibelang": "file:../../../.vibelang-toolchain/vibelang-0.0.13-637d08c93ff1.tgz",
-    "vibelang-vite": "file:../../../.vibelang-toolchain/vibelang-vite-0.0.13-4bdf1e25b72f.tgz"
+    "vibelang": "file:../../../.vibelang-toolchain/0.0.14-pre.b9285da0f2be/tarballs/vibelang-0.0.14-pre.b9285da0f2be.tgz",
+    "vibelang-vite": "file:../../../.vibelang-toolchain/0.0.14-pre.b9285da0f2be/tarballs/vibelang-vite-0.0.14-pre.b9285da0f2be.tgz"
   },
   "engines": {
     "node": ">=22"

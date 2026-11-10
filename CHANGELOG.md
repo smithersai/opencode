@@ -6,6 +6,8 @@ Release notes for OpenCode V2, newest first.
 
 ### Changed
 
+- The session timeline virtualizer, the Extensions plugin list and generated project icons in the app now use VibeLang, with DOM access in a native platform file.
+
 - The composer model in the app now uses VibeLang, with browser access in a platform sibling.
 
 - Extension settings, the error page and the voice composer in the app now use VibeLang, with browser access in platform siblings.

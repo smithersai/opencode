@@ -30,6 +30,19 @@ import { observeElementOffsetReconnectAware } from "./observe-element-offset"
 import { filterVirtualIndexes } from "./virtual-items"
 import { prefersReducedMotion } from "@opencode/ui/motion"
 import { holdLandingWidth } from "@/shell/panel-motion"
+import {
+  addWindowListener,
+  cancelAnimationFrame,
+  createMutationObserver,
+  createResizeObserver,
+  escapeSelector,
+  getComputedStyle,
+  isElement,
+  isTouchEvent,
+  queueMicrotask,
+  removeWindowListener,
+  requestAnimationFrame,
+} from "./virtualizer.platform.js"
 
 const fallbackItemSize = 60
 
@@ -271,13 +284,15 @@ export function createTimelineVirtualizer(input: Input) {
         settleColdBottom()
       }
 
-      return observeElementOffsetReconnectAware(instance, reportOffset, () => {
+      const stop = observeElementOffsetReconnectAware(instance, reportOffset, () => {
         if (!active()) return
         virtualContent?.querySelectorAll<HTMLDivElement>("[data-index]").forEach(virtualizer.measureElement)
 
         if (input.pinned()) virtualizer.scrollToEnd()
         settleColdBottom()
       })
+
+      return () => stop()
     },
     initialOffset: () => (input.pinned() ? Number.MAX_SAFE_INTEGER : 0),
     initialMeasurementsCache: initialMeasurements,
@@ -485,7 +500,7 @@ export function createTimelineVirtualizer(input: Input) {
     const root = listRoot()
 
     if (!anchor || !root) return
-    const element = virtualContent?.querySelector<HTMLElement>(`[data-timeline-part-id="${CSS.escape(anchor.partID)}"]`)
+    const element = virtualContent?.querySelector<HTMLElement>(`[data-timeline-part-id="${escapeSelector(anchor.partID)}"]`)
 
     // Following the end is a different position to hold.
     if (!element || !active() || input.pinned()) return releaseAnchor()
@@ -680,14 +695,14 @@ export function createTimelineVirtualizer(input: Input) {
 
   onMount(() => {
     if (!coldPending || !virtualContent) return
-    contentObserver = new MutationObserver(settleColdBottom)
+    contentObserver = createMutationObserver(settleColdBottom)
     contentObserver.observe(virtualContent, {
       childList: true,
       subtree: true,
       attributes: true,
       attributeFilter: ["data-markdown-ready"],
     })
-    viewportObserver = new ResizeObserver(settleColdBottom)
+    viewportObserver = createResizeObserver(settleColdBottom)
     const root = listRoot()
 
     if (root) viewportObserver.observe(root)
@@ -740,7 +755,7 @@ export function createTimelineVirtualizer(input: Input) {
     touchScrolling = true
     touchStart = event.touches[0]?.clientY
     const root = listRoot()
-    const nested = event.target instanceof Element ? event.target.closest<HTMLElement>("[data-scrollable]") : null
+    const nested = isElement(event.target) ? event.target.closest<HTMLElement>("[data-scrollable]") : null
     touchNested = !!nested && nested !== root && nested.scrollHeight > nested.clientHeight
     // Native touch events keep their original target, even when streaming or
     // virtualization detaches it. Listen there instead of relying on bubbling.
@@ -753,7 +768,7 @@ export function createTimelineVirtualizer(input: Input) {
   }
 
   const handleListTouchMove = (event: Event) => {
-    if (!(event instanceof TouchEvent)) return
+    if (!isTouchEvent(event)) return
     const current = event.touches[0]?.clientY
 
     if (current === undefined || touchStart === undefined) return
@@ -802,12 +817,12 @@ export function createTimelineVirtualizer(input: Input) {
   }
 
   onMount(() => {
-    window.addEventListener("pointerup", releasePointer)
-    window.addEventListener("pointercancel", releasePointer)
+    addWindowListener("pointerup", releasePointer)
+    addWindowListener("pointercancel", releasePointer)
   })
   onCleanup(() => {
-    window.removeEventListener("pointerup", releasePointer)
-    window.removeEventListener("pointercancel", releasePointer)
+    removeWindowListener("pointerup", releasePointer)
+    removeWindowListener("pointercancel", releasePointer)
   })
 
   const handleListKeyDown = (event: KeyboardEvent & { currentTarget: HTMLDivElement }) => {

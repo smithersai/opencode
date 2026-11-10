@@ -125,7 +125,7 @@ async function generatedSql(directory: string) {
 
 export async function typescriptMigrations(directory = tsDir) {
   return (await Array.fromAsync(new Bun.Glob("*.{ts,vibe}").scan({ cwd: directory })))
-    .filter((file) => !/\.(?:d\.vibe|platform)\.ts$/.test(file))
+    .filter((file) => !/\.(?:d|d\.vibe|platform)\.ts$/.test(file))
     .map((file) => file.replace(/\.(?:ts|vibe)$/, ""))
     .sort()
 }

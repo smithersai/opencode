@@ -33,6 +33,7 @@ import { createComposerHistory } from "./history/store"
 import { createComposerSubmit } from "./submit"
 import { useAttachmentDestination } from "./attachments/destination"
 import { parseClientSlashCommand } from "./client-slash-command"
+import { createEvent, createObjectURL, requestFrame, revokeObjectURL } from "./model.platform.ts"
 
 export type ComposerModel = ComposerEditorModel & {
   readonly model: ComposerControls["model"]
@@ -75,7 +76,7 @@ export function createComposerModel(adapter: ComposerAdapter, options?: { queue?
   const pathImageReads = new AbortController()
   onCleanup(() => {
     abort(pathImageReads)
-    pathImages.forEach((url) => void url.then((value) => value && URL.revokeObjectURL(value)))
+    pathImages.forEach((url) => void url.then((value) => value && revokeObjectURL(value)))
   })
 
   const interaction = createComposerEditorState(prompt.mode.current())
@@ -212,9 +213,11 @@ export function createComposerModel(adapter: ComposerAdapter, options?: { queue?
   let sessionSearch: string | undefined
   const [sessionSearched, setSessionSearched] = createSignal<string>()
 
+  const knownSessions = createKnownServerSessions(server.ctx)
+
   const sessions = createServerSessionEntries({
     server: server.key,
-    known: createKnownServerSessions(server.ctx),
+    known: () => knownSessions(),
     projects: server.ctx.projects.list,
     load: async (search, signal) => {
       const page = await serverSDK.api.session.list({ parentID: null, search, archived: false, limit: 50 }, { signal })
@@ -308,7 +311,7 @@ export function createComposerModel(adapter: ComposerAdapter, options?: { queue?
     mode,
     commands: () => data.location.command.list({ directory: sdk().directory }),
     editor: () => editor,
-    queueScroll: () => requestAnimationFrame(() => editor?.scrollIntoView({ block: "nearest" })),
+    queueScroll: () => requestFrame(() => editor?.scrollIntoView({ block: "nearest" })),
     addToHistory: (value, mode) => controller.addHistory(value, mode),
     removeFromHistory: (value, mode, comments) => history.remove(value, mode, mode === "shell" ? [] : comments),
     resetHistory: () => controller.resetHistory(),
@@ -333,13 +336,13 @@ export function createComposerModel(adapter: ComposerAdapter, options?: { queue?
           title: language.t(sendFailedTitle[kind]),
           description:
             kind === "command"
-              ? formatServerError(error, language.t, language.t("common.requestFailed"))
+              ? formatServerError(error, (key, vars) => language.t(key, vars), language.t("common.requestFailed"))
               : composerErrorMessage(language, error),
         }),
     },
     comments: {
       capture: historyComments,
-      clear: comments.clear,
+      clear: () => comments.clear(),
       restore: restoreHistoryComments,
     },
     clientCommand: (text) => {
@@ -353,6 +356,10 @@ export function createComposerModel(adapter: ComposerAdapter, options?: { queue?
       }
     },
   })
+
+  const { openAttachmentPickerDialog, readClipboardImage, getPathForFile, onDragCancel } = platform
+  const putBlob = platform.draftStore?.putBlob
+  const destination = useAttachmentDestination(adapter.controls)
 
   const controller = createComposerEditor({
     store: prompt.store,
@@ -429,7 +436,7 @@ export function createComposerModel(adapter: ComposerAdapter, options?: { queue?
     },
     openAttachment(attachment, origin) {
       void controller.previewAttachment(attachment).then((src) => {
-        if (src) dialog.show(() => createComponent(ImagePreview, { src, alt: attachment.filename, origin }))
+        if (src) dialog.show(() => createComponent((props) => ImagePreview(props), { src, alt: attachment.filename, origin }))
       })
     },
     readImage(path) {
@@ -438,7 +445,7 @@ export function createComposerModel(adapter: ComposerAdapter, options?: { queue?
       if (existing) return existing
 
       const url = readLocalImage(serverSDK.api, sdk().directory, path, pathImageReads.signal)
-        .then((blob) => blob && URL.createObjectURL(blob))
+        .then((blob) => blob && createObjectURL(blob))
         .catch(() => undefined)
 
       pathImages.set(path, url)
@@ -478,9 +485,9 @@ export function createComposerModel(adapter: ComposerAdapter, options?: { queue?
       return () => command.trigger(selected.id, "slash")
     },
     attachments: {
-      picker: platform.openAttachmentPickerDialog,
+      picker: openAttachmentPickerDialog && ((options, onFile) => openAttachmentPickerDialog(options, onFile)),
       directory: () => sdk().directory,
-      destination: useAttachmentDestination(adapter.controls),
+      destination: () => destination(),
       isDialogActive: () => !!dialog.active,
       duplicate: () => showToast({ title: language.t("prompt.toast.attachmentDuplicate.title") }),
       onUploadError: (error) =>
@@ -495,10 +502,10 @@ export function createComposerModel(adapter: ComposerAdapter, options?: { queue?
           title: language.t("common.requestFailed"),
           description: error instanceof Error ? error.message : String(error),
         }),
-      readClipboardImage: platform.readClipboardImage,
-      getPathForFile: platform.getPathForFile,
-      onDragCancel: platform.onDragCancel,
-      store: platform.draftStore?.putBlob,
+      readClipboardImage: readClipboardImage && (() => readClipboardImage()),
+      getPathForFile: getPathForFile && ((file) => getPathForFile(file)),
+      onDragCancel: onDragCancel && ((callback) => onDragCancel(callback)),
+      store: putBlob && ((file) => putBlob(file)),
     },
     view: {
       placeholder,
@@ -552,7 +559,7 @@ export function createComposerModel(adapter: ComposerAdapter, options?: { queue?
             return
           }
 
-          void submission.submit(new Event("submit"), submitOptions)
+          void submission.submit(createEvent("submit"), submitOptions)
         },
         onStop: () => void submission.stop(),
       },
@@ -619,11 +626,11 @@ function openComment(
   comments.setActive(focus)
 
   const queueFocus = (attempts = 6) => {
-    requestAnimationFrame(() => {
+    requestFrame(() => {
       comments.setFocus({ ...focus })
 
       if (attempts <= 0) return
-      requestAnimationFrame(() => {
+      requestFrame(() => {
         const current = comments.focus()
 
         if (current?.file === focus.file && current.id === focus.id) queueFocus(attempts - 1)

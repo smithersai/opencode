@@ -6,6 +6,8 @@ Release notes for OpenCode V2, newest first.
 
 ### Changed
 
+- The composer model in the app now uses VibeLang, with browser access in a platform sibling.
+
 - Extension settings, the error page and the voice composer in the app now use VibeLang, with browser access in platform siblings.
 
 - The session message timeline and the elicitation dock in the app now use VibeLang, with browser access in platform siblings.

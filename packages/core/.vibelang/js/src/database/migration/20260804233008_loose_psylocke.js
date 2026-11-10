@@ -9,15 +9,15 @@ const migration = {
         return Effect_1.gen(function* () {
             // This marker identifies the completed pre-split V2 lineage. Its V2 tables
             // are canonical, so rename them in place instead of replaying the V1 squash.
-            if (yield* tx.get(sql `SELECT id FROM migration WHERE id = ${previousV2Marker}`)) {
-                const v1Only = yield* tx.get(sql `
+            if (yield* tx.get(yield* Effect.orDie(Effect.try({ try: () => sql `SELECT id FROM migration WHERE id = ${previousV2Marker}`, catch: (cause) => cause })))) {
+                const v1Only = yield* tx.get(yield* Effect.orDie(Effect.try({ try: () => sql `
           SELECT 1
           FROM message
           WHERE NOT EXISTS (
             SELECT 1 FROM session_message WHERE session_message.session_id = message.session_id
           )
           LIMIT 1
-        `);
+        `, catch: (cause) => cause })));
                 if (v1Only)
                     return yield* Effect.die(new Error("Previous V2 database contains V1-only session history"));
                 yield* tx.run(`DROP INDEX IF EXISTS \`session_project_idx\`;`);

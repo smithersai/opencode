@@ -59,7 +59,7 @@ export function importLegacyCredentials(tx, filepath) {
                 continue;
             if (value.type === "wellknown")
                 origins.push(integrationID);
-            if (yield* tx.get(sql `SELECT id FROM credential WHERE integration_id = ${integrationID}`))
+            if (yield* tx.get(yield* Effect.orDie(Effect.try({ try: () => sql `SELECT id FROM credential WHERE integration_id = ${integrationID}`, catch: (cause) => cause }))))
                 continue;
             const credential = value.type === "api"
                 ? Credential.Key.make({ type: "key", key: value.key, metadata: value.metadata })
@@ -80,23 +80,23 @@ export function importLegacyCredentials(tx, filepath) {
                     });
             const label = credential.type === "oauth" ? "OAuth" : "API key";
             const now = Date.now();
-            yield* tx.run(sql `
+            yield* tx.run(yield* Effect.orDie(Effect.try({ try: () => sql `
         INSERT INTO credential (id, integration_id, label, value, time_created, time_updated)
         VALUES (${Credential.ID.create()}, ${integrationID}, ${label}, ${JSON.stringify(credential)}, ${now}, ${now})
-      `);
+      `, catch: (cause) => cause })));
         }
         if (!origins.length)
             return;
-        const stored = yield* tx.get(sql `SELECT value FROM kv WHERE key = ${wellKnownSourcesKey}`);
+        const stored = yield* tx.get(yield* Effect.orDie(Effect.try({ try: () => sql `SELECT value FROM kv WHERE key = ${wellKnownSourcesKey}`, catch: (cause) => cause })));
         const decoded = stored ? Option.getOrUndefined(decodeJson(stored.value)) : undefined;
         const current = Array.isArray(decoded) ? decoded.filter((item) => typeof item === "string") : [];
         const value = JSON.stringify(Array.from(new Set([...current, ...origins])));
         const now = Date.now();
-        yield* tx.run(sql `
+        yield* tx.run(yield* Effect.orDie(Effect.try({ try: () => sql `
       INSERT INTO kv (key, value, time_created, time_updated)
       VALUES (${wellKnownSourcesKey}, ${value}, ${now}, ${now})
       ON CONFLICT (key) DO UPDATE SET value = excluded.value, time_updated = excluded.time_updated
-    `);
+    `, catch: (cause) => cause })));
     });
 }
 function methodID(integrationID) {

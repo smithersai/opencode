@@ -24,88 +24,96 @@ export const executeProgram = <R>(
   }
 
   // Allocate execution state inside suspension so reused Effects never share it.
-  return Effect.suspend(() => {
-    const builtins = createBuiltins()
-    const tools = ToolRuntime.make(prepared, limits.maxToolCalls, hooks)
-    const logs: Array<string> = []
-    const logged = () => (logs.length > 0 ? { logs: [...logs] } : {})
-    // Set only after copy-out so timeouts cannot report invalid values as completed.
-    let returned: { value: DataValue; runner: Runner<R> } | undefined
-    let runner: Runner<R> | undefined
+  return Effect.try({ try: () => createBuiltins(), catch: (cause) => cause }).pipe(
+    Effect.orDie,
+    Effect.flatMap((builtins) => {
+      const tools = ToolRuntime.make(prepared, limits.maxToolCalls, hooks)
+      const logs: Array<string> = []
+      const logged = () => (logs.length > 0 ? { logs: [...logs] } : {})
+      // Set only after copy-out so timeouts cannot report invalid values as completed.
+      let returned: { value: DataValue; runner: Runner<R> } | undefined
+      let runner: Runner<R> | undefined
 
-    const base = Effect.gen(function* () {
-      const program = parseProgram(code)
-      const services = yield* Effect.context<R>()
-      const ctx = new Interpreter<R>({ tools, services, builtins, logs, globals })
-      runner = ctx.runner
-      const outcome = yield* runner.run(ctx.main(program))
-      if (!outcome.ok) {
-        return { ok: false, error: normalizeError(outcome.error), ...logged(), toolCalls: tools.calls } satisfies Result
-      }
-      const result = (outcome.value as DataValue | undefined) ?? null
-      returned = { value: result, runner }
-      // Host work the program left running is interrupted, not awaited.
-      yield* runner.interrupt()
-      const warnings = runner.diagnostics()
-      return {
-        ok: true,
-        value: result,
-        ...(warnings.length > 0 ? { warnings } : {}),
-        ...logged(),
-        toolCalls: tools.calls,
-      } satisfies Result
-    }).pipe(Effect.ensuring(Effect.suspend(() => runner?.interrupt() ?? Effect.void)))
-    const timeoutMs = limits.timeoutMs
-    const operation =
-      timeoutMs === undefined
-        ? base
-        : base.pipe(
-            Effect.timeoutOrElse({
-              duration: timeoutMs,
-              orElse: () =>
-                Effect.sync(() => {
-                  if (returned === undefined) {
+      const base = Effect.gen(function* () {
+        const program = parseProgram(code)
+        const services = yield* Effect.context<R>()
+        const ctx = new Interpreter<R>({ tools, services, builtins, logs, globals })
+        runner = ctx.runner
+        const outcome = yield* runner.run(ctx.main(program))
+        if (!outcome.ok) {
+          return { ok: false, error: normalizeError(outcome.error), ...logged(), toolCalls: tools.calls } satisfies Result
+        }
+        const result = (outcome.value as DataValue | undefined) ?? null
+        returned = { value: result, runner }
+        // Host work the program left running is interrupted, not awaited.
+        yield* runner.interrupt()
+        const warnings = runner.diagnostics()
+        return {
+          ok: true,
+          value: result,
+          ...(warnings.length > 0 ? { warnings } : {}),
+          ...logged(),
+          toolCalls: tools.calls,
+        } satisfies Result
+      }).pipe(Effect.ensuring(Effect.suspend(() => runner?.interrupt() ?? Effect.void)))
+      const timeoutMs = limits.timeoutMs
+      const operation =
+        timeoutMs === undefined
+          ? base
+          : base.pipe(
+              Effect.timeoutOrElse({
+                duration: timeoutMs,
+                orElse: () =>
+                  Effect.sync(() => {
+                    if (returned === undefined) {
+                      return {
+                        ok: false,
+                        error: { kind: "TimeoutExceeded", message: `Execution timed out after ${timeoutMs}ms.` },
+                        ...logged(),
+                        toolCalls: tools.calls,
+                      } satisfies Result
+                    }
+                    // Keep the timeout warning first so truncation preserves it.
                     return {
-                      ok: false,
-                      error: { kind: "TimeoutExceeded", message: `Execution timed out after ${timeoutMs}ms.` },
+                      ok: true,
+                      value: returned.value,
+                      warnings: [
+                        {
+                          kind: "TimeoutExceeded",
+                          message: `The program returned, but background work was still running at the ${timeoutMs}ms timeout and was interrupted. Await all started promises.`,
+                        },
+                        ...returned.runner.diagnostics(),
+                      ],
                       ...logged(),
                       toolCalls: tools.calls,
                     } satisfies Result
-                  }
-                  // Keep the timeout warning first so truncation preserves it.
-                  return {
-                    ok: true,
-                    value: returned.value,
-                    warnings: [
-                      {
-                        kind: "TimeoutExceeded",
-                        message: `The program returned, but background work was still running at the ${timeoutMs}ms timeout and was interrupted. Await all started promises.`,
-                      },
-                      ...returned.runner.diagnostics(),
-                    ],
-                    ...logged(),
-                    toolCalls: tools.calls,
-                  } satisfies Result
-                }),
-            }),
-          )
+                  }),
+              }),
+            )
 
-    return operation.pipe(
-      Effect.catchCause((cause) =>
-        Cause.hasInterruptsOnly(cause)
-          ? Effect.interrupt
-          : Effect.succeed({
-              ok: false,
-              error: normalizeError(Cause.squash(cause)),
-              ...logged(),
-              toolCalls: tools.calls,
-            } satisfies Result),
-      ),
-      Effect.map((result) =>
-        limits.maxOutputBytes === undefined ? result : boundOutput(result, limits.maxOutputBytes),
-      ),
-    )
-  })
+      return operation.pipe(
+        Effect.catchCause((cause) =>
+          Cause.hasInterruptsOnly(cause)
+            ? Effect.interrupt
+            : Effect.try({ try: () => normalizeError(Cause.squash(cause)), catch: (defect) => defect }).pipe(
+                Effect.orDie,
+                Effect.map(
+                  (error) =>
+                    ({
+                      ok: false,
+                      error,
+                      ...logged(),
+                      toolCalls: tools.calls,
+                    }) satisfies Result,
+                ),
+              ),
+        ),
+        Effect.map((result) =>
+          limits.maxOutputBytes === undefined ? result : boundOutput(result, limits.maxOutputBytes),
+        ),
+      )
+    }),
+  )
 }
 
 const parseProgram = (code: string): Program => {

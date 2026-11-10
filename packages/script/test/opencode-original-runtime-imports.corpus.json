@@ -2826,5 +2826,635 @@
     "imports": [
       "./rpc.js"
     ]
+  },
+  {
+    "source": "packages/ai/src/image.vibe",
+    "imports": [
+      "./generation.js",
+      "./image-client.js",
+      "./media-model.js",
+      "./route/media.js"
+    ]
+  },
+  {
+    "source": "packages/ai/src/index.vibe",
+    "imports": [
+      "./ai-client.js",
+      "./decision.js",
+      "./generation.js",
+      "./llm.js",
+      "./route/executor.js",
+      "./tool.js"
+    ]
+  },
+  {
+    "source": "packages/ai/src/protocols/anthropic-messages.vibe",
+    "imports": [
+      "../provider-error.js",
+      "../route/auth.js",
+      "../route/framing.js",
+      "../route/protocol.js",
+      "../route/transport/index.js",
+      "./utils/tool-stream.js"
+    ]
+  },
+  {
+    "source": "packages/ai/src/protocols/gemini.vibe",
+    "imports": [
+      "../provider-error.js",
+      "../route/auth.js",
+      "../route/protocol.js",
+      "../route/transport/index.js",
+      "./utils/gemini-generate-content.js"
+    ]
+  },
+  {
+    "source": "packages/ai/src/protocols/google-interactions.vibe",
+    "imports": [
+      "../provider-error.js",
+      "../route/auth.js",
+      "../route/framing.js",
+      "../route/protocol.js",
+      "../utils/json.js",
+      "./utils/gemini-generate-content.js",
+      "./utils/media-input.js",
+      "./utils/tool-stream.js"
+    ]
+  },
+  {
+    "source": "packages/ai/src/protocols/open-responses-channel.vibe",
+    "imports": [
+      "../route/framing.js",
+      "../route/transport/index.js",
+      "./open-responses-continuation.js"
+    ]
+  },
+  {
+    "source": "packages/ai/src/protocols/open-responses.vibe",
+    "imports": [
+      "../provider-error.js",
+      "../route/protocol.js",
+      "../route/transport/index.js",
+      "./utils/open-responses-options.js",
+      "./utils/tool-stream.js"
+    ]
+  },
+  {
+    "source": "packages/ai/src/protocols/openai-chat.vibe",
+    "imports": [
+      "../provider-error.js",
+      "../route/auth.js",
+      "../route/framing.js",
+      "../route/protocol.js",
+      "../route/transport/index.js",
+      "./utils/open-responses-options.js",
+      "./utils/tool-stream.js"
+    ]
+  },
+  {
+    "source": "packages/ai/src/protocols/utils/bedrock-auth.vibe",
+    "imports": [
+      "../../route/auth.js"
+    ]
+  },
+  {
+    "source": "packages/ai/src/speech.vibe",
+    "imports": [
+      "./generation.js",
+      "./media-model.js",
+      "./route/media.js",
+      "./speech-client.js"
+    ]
+  },
+  {
+    "source": "packages/ai/src/transcription.vibe",
+    "imports": [
+      "./generation.js",
+      "./media-model.js",
+      "./route/media.js",
+      "./transcription-client.js"
+    ]
+  },
+  {
+    "source": "packages/ai/src/video.vibe",
+    "imports": [
+      "./generation.js",
+      "./media-model.js",
+      "./route/media.js",
+      "./video-client.js"
+    ]
+  },
+  {
+    "source": "packages/codemode/src/interpreter/execute.vibe",
+    "imports": [
+      "../codemode.js",
+      "../tool-runtime.js"
+    ]
+  },
+  {
+    "source": "packages/core/src/aisdk.vibe",
+    "imports": [
+      "./tool/runtime.js"
+    ]
+  },
+  {
+    "source": "packages/core/src/config.vibe",
+    "imports": [
+      "./config/integration.js"
+    ]
+  },
+  {
+    "source": "packages/core/src/config/plugin/command.vibe",
+    "imports": [
+      "../../agent.js",
+      "../../session/subagent-job.js"
+    ]
+  },
+  {
+    "source": "packages/core/src/environment/local.vibe",
+    "imports": [
+      "./driver.js"
+    ]
+  },
+  {
+    "source": "packages/core/src/environment/memory.vibe",
+    "imports": [
+      "./driver.js"
+    ]
+  },
+  {
+    "source": "packages/core/src/file-access.vibe",
+    "imports": [
+      "./session/error.js",
+      "./tool.js"
+    ]
+  },
+  {
+    "source": "packages/core/src/filesystem/location-watcher.vibe",
+    "imports": [
+      "./location-watcher-policy.js"
+    ]
+  },
+  {
+    "source": "packages/core/src/formatter.vibe",
+    "imports": [
+      "./formatter/builtins.js"
+    ]
+  },
+  {
+    "source": "packages/core/src/instance.vibe",
+    "imports": [
+      "./agent.js",
+      "./command.js",
+      "./file-mutation.js",
+      "./generate.js",
+      "./image.js",
+      "./instance/service.js",
+      "./location-lifecycle.js",
+      "./plugin/hooks.js",
+      "./plugin/instance.js",
+      "./reference/instructions.js",
+      "./session/compaction.js",
+      "./tool.js",
+      "./usage-limits.js",
+      "./voice.js"
+    ]
+  },
+  {
+    "source": "packages/core/src/job.vibe",
+    "imports": [
+      "./kv.js"
+    ]
+  },
+  {
+    "source": "packages/core/src/model.vibe",
+    "imports": [
+      "./aisdk-native.js"
+    ]
+  },
+  {
+    "source": "packages/core/src/models-dev.vibe",
+    "imports": [
+      "./aisdk-native.js",
+      "./app.js",
+      "./kv.js",
+      "./models-dev/v1.js"
+    ]
+  },
+  {
+    "source": "packages/core/src/permission.vibe",
+    "imports": [
+      "./agent.js",
+      "./permission/saved.js",
+      "./plugin/hooks.js",
+      "./session/error.js"
+    ]
+  },
+  {
+    "source": "packages/core/src/plugin.vibe",
+    "imports": [
+      "./kv.js",
+      "./plugin/host.js",
+      "./plugin/service.js"
+    ]
+  },
+  {
+    "source": "packages/core/src/plugin/provider/azure.vibe",
+    "imports": [
+      "../../app.js",
+      "../internal.js",
+      "./configured.js"
+    ]
+  },
+  {
+    "source": "packages/core/src/plugin/provider/chatgpt.vibe",
+    "imports": [
+      "../../app.js",
+      "../internal.js",
+      "./configured.js"
+    ]
+  },
+  {
+    "source": "packages/core/src/plugin/provider/cloudflare-ai-gateway.vibe",
+    "imports": [
+      "./configured.js"
+    ]
+  },
+  {
+    "source": "packages/core/src/plugin/provider/cloudflare-workers-ai.vibe",
+    "imports": [
+      "./configured.js"
+    ]
+  },
+  {
+    "source": "packages/core/src/plugin/provider/digitalocean.vibe",
+    "imports": [
+      "../../app.js",
+      "../internal.js"
+    ]
+  },
+  {
+    "source": "packages/core/src/plugin/provider/github-copilot.vibe",
+    "imports": [
+      "../../agent.js",
+      "../../app.js",
+      "../internal.js"
+    ]
+  },
+  {
+    "source": "packages/core/src/plugin/provider/gitlab.vibe",
+    "imports": [
+      "../../app.js",
+      "../internal.js"
+    ]
+  },
+  {
+    "source": "packages/core/src/plugin/provider/google-vertex.vibe",
+    "imports": [
+      "./configured.js"
+    ]
+  },
+  {
+    "source": "packages/core/src/plugin/provider/modal.vibe",
+    "imports": [
+      "../internal.js"
+    ]
+  },
+  {
+    "source": "packages/core/src/plugin/provider/openai.vibe",
+    "imports": [
+      "../../app.js",
+      "../internal.js",
+      "./configured.js"
+    ]
+  },
+  {
+    "source": "packages/core/src/plugin/provider/opencode.vibe",
+    "imports": [
+      "../../app.js",
+      "../../config/integration.js",
+      "../../config/plugin/provider.js"
+    ]
+  },
+  {
+    "source": "packages/core/src/plugin/provider/sap-ai-core.vibe",
+    "imports": [
+      "./sdk-factory.js"
+    ]
+  },
+  {
+    "source": "packages/core/src/plugin/provider/snowflake-cortex.vibe",
+    "imports": [
+      "../../app.js",
+      "./configured.js"
+    ]
+  },
+  {
+    "source": "packages/core/src/plugin/provider/xai.vibe",
+    "imports": [
+      "../../app.js"
+    ]
+  },
+  {
+    "source": "packages/core/src/plugin/supervisor.vibe",
+    "imports": [
+      "./instance.js",
+      "./internal.js",
+      "./sdk.js",
+      "./update.js"
+    ]
+  },
+  {
+    "source": "packages/core/src/provider.vibe",
+    "imports": [
+      "./aisdk-native.js"
+    ]
+  },
+  {
+    "source": "packages/core/src/repository-cache.vibe",
+    "imports": [
+      "./kv.js"
+    ]
+  },
+  {
+    "source": "packages/core/src/session/blob.vibe",
+    "imports": [
+      "./stored.js"
+    ]
+  },
+  {
+    "source": "packages/core/src/session/context.vibe",
+    "imports": [
+      "../agent.js",
+      "../codemode/instructions.js",
+      "../mcp/instructions.js",
+      "../reference/instructions.js",
+      "../tool.js",
+      "./error.js"
+    ]
+  },
+  {
+    "source": "packages/core/src/session/diff.vibe",
+    "imports": [
+      "./error.js"
+    ]
+  },
+  {
+    "source": "packages/core/src/session/execution.vibe",
+    "imports": [
+      "../instance/service.js",
+      "./run-coordinator.js",
+      "./runner/index.js"
+    ]
+  },
+  {
+    "source": "packages/core/src/session/generate.vibe",
+    "imports": [
+      "../instance/service.js",
+      "../model-retry.js",
+      "../plugin/service.js",
+      "./error.js"
+    ]
+  },
+  {
+    "source": "packages/core/src/session/history.vibe",
+    "imports": [
+      "./error.js",
+      "./stored.js"
+    ]
+  },
+  {
+    "source": "packages/core/src/session/inbox.vibe",
+    "imports": [
+      "./stored.js"
+    ]
+  },
+  {
+    "source": "packages/core/src/session/instructions.vibe",
+    "imports": [
+      "./error.js"
+    ]
+  },
+  {
+    "source": "packages/core/src/session/model-request.vibe",
+    "imports": [
+      "../app.js",
+      "../plugin/hooks.js",
+      "../tool.js",
+      "../tool/plugin/question.js"
+    ]
+  },
+  {
+    "source": "packages/core/src/session/model-transport.vibe",
+    "imports": [
+      "../effect/app-node-platform.js"
+    ]
+  },
+  {
+    "source": "packages/core/src/session/move.vibe",
+    "imports": [
+      "../instance/service.js",
+      "./error.js",
+      "./runner/index.js"
+    ]
+  },
+  {
+    "source": "packages/core/src/session/projector.vibe",
+    "imports": [
+      "./message-updater.js",
+      "./stored.js"
+    ]
+  },
+  {
+    "source": "packages/core/src/session/prompt.vibe",
+    "imports": [
+      "../image.js",
+      "../plugin/hooks.js",
+      "../plugin/service.js",
+      "./error.js",
+      "./stored.js"
+    ]
+  },
+  {
+    "source": "packages/core/src/session/revert.vibe",
+    "imports": [
+      "../instance/service.js",
+      "./error.js"
+    ]
+  },
+  {
+    "source": "packages/core/src/session/runner/llm.vibe",
+    "imports": [
+      "../../effect/app-node-platform.js",
+      "../../location-lifecycle.js",
+      "../compaction.js",
+      "../error.js",
+      "./index.js",
+      "./retry.js"
+    ]
+  },
+  {
+    "source": "packages/core/src/session/runner/model.vibe",
+    "imports": [
+      "../../agent.js"
+    ]
+  },
+  {
+    "source": "packages/core/src/session/runner/publish-llm-event.vibe",
+    "imports": [
+      "../../tool.js",
+      "../../tool/runtime.js"
+    ]
+  },
+  {
+    "source": "packages/core/src/session/runner/step.vibe",
+    "imports": [
+      "../../tool.js",
+      "../../tool/plugin/question.js",
+      "../error.js",
+      "./retry.js"
+    ]
+  },
+  {
+    "source": "packages/core/src/session/session.vibe",
+    "imports": [
+      "../instance/service.js",
+      "./error.js",
+      "./shell.js",
+      "./skill.js"
+    ]
+  },
+  {
+    "source": "packages/core/src/session/sql.vibe",
+    "imports": [
+      "./stored.js"
+    ]
+  },
+  {
+    "source": "packages/core/src/session/store.vibe",
+    "imports": [
+      "./error.js",
+      "./info.js"
+    ]
+  },
+  {
+    "source": "packages/core/src/session/title.vibe",
+    "imports": [
+      "../effect/app-node-platform.js"
+    ]
+  },
+  {
+    "source": "packages/core/src/session/transfer.vibe",
+    "imports": [
+      "../app.js"
+    ]
+  },
+  {
+    "source": "packages/core/src/shell.vibe",
+    "imports": [
+      "./file-retention.js",
+      "./plugin/hooks.js",
+      "./session/environment.js"
+    ]
+  },
+  {
+    "source": "packages/core/src/tool-output.vibe",
+    "imports": [
+      "./file-retention.js",
+      "./tool.js"
+    ]
+  },
+  {
+    "source": "packages/core/src/tool/mcp.vibe",
+    "imports": [
+      "../tool.js"
+    ]
+  },
+  {
+    "source": "packages/core/src/tool/plugin/subagent.vibe",
+    "imports": [
+      "../../agent.js",
+      "../../session/subagent-completion.js",
+      "../../session/subagent-job.js"
+    ]
+  },
+  {
+    "source": "packages/core/src/websearch.vibe",
+    "imports": [
+      "./kv.js"
+    ]
+  },
+  {
+    "source": "packages/core/src/wellknown.vibe",
+    "imports": [
+      "./kv.js"
+    ]
+  },
+  {
+    "source": "packages/core/src/workspace.vibe",
+    "imports": [
+      "./environment/driver.js"
+    ]
+  },
+  {
+    "source": "packages/core/src/workspace/driver.vibe",
+    "imports": [
+      "../environment/driver.js"
+    ]
+  },
+  {
+    "source": "packages/core/src/worktree/git.vibe",
+    "imports": [
+      "./directory.js"
+    ]
+  },
+  {
+    "source": "packages/http-recorder/src/http/recorder.vibe",
+    "imports": [
+      "../cassette/model.js",
+      "../redaction/redactor.js",
+      "./matching.js",
+      "./model.js"
+    ]
+  },
+  {
+    "source": "packages/http-recorder/src/replay/state.vibe",
+    "imports": [
+      "../cassette/model.js"
+    ]
+  },
+  {
+    "source": "packages/plugin-browser/src/connection.vibe",
+    "imports": [
+      "./rpc.js"
+    ]
+  },
+  {
+    "source": "packages/plugin-browser/src/proxy.vibe",
+    "imports": [
+      "./rpc.js"
+    ]
+  },
+  {
+    "source": "packages/plugin-browser/src/tunnel.vibe",
+    "imports": [
+      "./rpc.js"
+    ]
+  },
+  {
+    "source": "packages/plugin/src/gui/builtin.vibe",
+    "imports": [
+      "./host-apis.js",
+      "./main.js"
+    ]
+  },
+  {
+    "source": "packages/plugin/src/promise/adapter.vibe",
+    "imports": [
+      "../effect/plugin.js",
+      "../effect/tool.js",
+      "../permission.js",
+      "./tool.js"
+    ]
   }
 ]

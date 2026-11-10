@@ -2,7 +2,7 @@ import { AwsV4Signer } from "aws4fetch"
 import { environmentValue } from "./bedrock-auth.platform.js"
 import { Effect } from "effect"
 import { Headers } from "effect/http"
-import { Auth, type AuthInput } from "../../route/auth.vibe"
+import { Auth, type AuthInput } from "../../route/auth.js"
 import { AIError, AuthenticationError } from "../../schema/index.js"
 import { ProviderShared } from "../shared.js"
 

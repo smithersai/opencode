@@ -8,7 +8,7 @@ import { FSUtil } from "@opencode/util/fs-util"
 import { Git } from "../git.js"
 import { Location } from "../location.js"
 import { Plugin } from "../plugin.js"
-import { LocationWatcherPolicy } from "./location-watcher-policy.vibe"
+import { LocationWatcherPolicy } from "./location-watcher-policy.js"
 import { Watcher } from "./watcher.js"
 import { join } from "./location-watcher.platform.js"
 

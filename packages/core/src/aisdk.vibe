@@ -47,7 +47,7 @@ import {
 import type { ID, RuntimeInfo } from "./model.js"
 import { Provider } from "./provider.js"
 import { State } from "./state.js"
-import { stringify } from "./tool/runtime.vibe"
+import { stringify } from "./tool/runtime.js"
 
 type SDK = any
 type UserContent = Extract<LanguageModelV3Message, { role: "user" }>["content"]

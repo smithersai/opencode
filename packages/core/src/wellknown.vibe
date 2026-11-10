@@ -6,7 +6,7 @@ import { HttpClient, HttpClientRequest, HttpClientResponse } from "effect/http"
 import { makeGlobalNode } from "@opencode/util/effect/app-node"
 import { httpClient } from "@opencode/util/effect/app-node-platform"
 import { Bus } from "./bus.js"
-import { KV } from "./kv.vibe"
+import { KV } from "./kv.js"
 import { env, isDeepStrictEqual } from "./wellknown.platform.js"
 
 export interface Auth extends Schema.Schema.Type<typeof Auth> {}

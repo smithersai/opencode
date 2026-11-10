@@ -1,7 +1,7 @@
 import type { IntegrationOAuthMethodRegistration } from "@opencode/plugin/effect/integration"
 import { define } from "@opencode/plugin/effect/plugin"
 import { Clock, Effect, Option, Schema } from "effect"
-import { App } from "../../app.vibe"
+import { App } from "../../app.js"
 import { Credential } from "../../credential.js"
 import { Integration } from "../../integration.js"
 import { Provider } from "../../provider.js"

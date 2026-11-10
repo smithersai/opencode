@@ -13,7 +13,7 @@ import {
   toBase64,
   TunnelSocket,
 } from "./proxy.platform.js"
-import { Browser } from "./rpc.vibe"
+import { Browser } from "./rpc.js"
 
 export type Transport = {
   open(target: Browser.TunnelTarget, signal: AbortSignal): Promise<string>

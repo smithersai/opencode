@@ -1,6 +1,6 @@
 import { Effect, Schema, Stream } from "effect"
 import { Headers } from "effect/http"
-import { Framing } from "../route/framing.vibe"
+import { Framing } from "../route/framing.js"
 import type { AIError, HttpContext } from "../schema/index.js"
 import {
   HttpTransport,
@@ -10,10 +10,10 @@ import {
   type Transport,
   type WebSocketChannelDriver,
   type WebSocketChannelExchange,
-} from "../route/transport/index.vibe"
+} from "../route/transport/index.js"
 import * as ProviderShared from "./shared.js"
 import { OpenResponses } from "./open-responses.js"
-import { OpenResponsesContinuation } from "./open-responses-continuation.vibe"
+import { OpenResponsesContinuation } from "./open-responses-continuation.js"
 
 const WebSocketResponseCreate = Schema.StructWithRest(Schema.Struct({ type: Schema.tag("response.create") }), [
   Schema.Record(Schema.String, Schema.Unknown),

@@ -8,7 +8,7 @@ import { Event } from "@opencode/schema/event"
 import { FSUtil } from "@opencode/util/fs-util"
 import { Bus } from "../bus.js"
 import { Database } from "../database/database.js"
-import { Instance } from "../instance/service.vibe"
+import { Instance } from "../instance/service.js"
 import { ShellResult } from "../shell/result.js"
 import type { Skill } from "../skill.js"
 import {
@@ -18,15 +18,15 @@ import {
   NotFoundError,
   PromptConflictError,
   SyntheticConflictError,
-} from "./error.vibe"
+} from "./error.js"
 import { SessionEvent } from "./event.js"
 import { SessionExecution } from "./execution.js"
 import { SessionInbox } from "./inbox.js"
 import { SessionMessage } from "./message.js"
 import { SessionPrompt } from "./prompt.js"
 import { SessionRevert } from "./revert.js"
-import { SessionShell } from "./shell.vibe"
-import { SessionSkill } from "./skill.vibe"
+import { SessionShell } from "./shell.js"
+import { SessionSkill } from "./skill.js"
 import { SessionSchema } from "./schema.js"
 import { SessionStore } from "./store.js"
 

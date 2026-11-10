@@ -17,7 +17,7 @@ import { Headers } from "effect/http"
 import { Socket } from "effect/socket"
 import { makeGlobalNode } from "@opencode/util/effect/app-node"
 import { SessionSchema } from "./schema.js"
-import { webSocketConstructor } from "../effect/app-node-platform.vibe"
+import { webSocketConstructor } from "../effect/app-node-platform.js"
 
 const ROTATE_AFTER_MS = 55 * 60 * 1000
 const CONNECT_TIMEOUT = "15 seconds"

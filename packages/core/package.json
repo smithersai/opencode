@@ -741,6 +741,46 @@
       "vibelang-source": "./src/plugin/verbosity.vibe",
       "default": "./.vibelang/js/src/plugin/verbosity.js"
     },
+    "./formatter": {
+      "types": "./src/formatter.d.vibe.ts",
+      "vibelang-source": "./src/formatter.vibe",
+      "default": "./.vibelang/js/src/formatter.js"
+    },
+    "./tool-output": {
+      "types": "./src/tool-output.d.vibe.ts",
+      "vibelang-source": "./src/tool-output.vibe",
+      "default": "./.vibelang/js/src/tool-output.js"
+    },
+    "./filesystem": {
+      "types": "./src/filesystem.d.vibe.ts",
+      "vibelang-source": "./src/filesystem.vibe",
+      "default": "./.vibelang/js/src/filesystem.js"
+    },
+    "./config": {
+      "types": "./src/config.d.vibe.ts",
+      "vibelang-source": "./src/config.vibe",
+      "default": "./.vibelang/js/src/config.js"
+    },
+    "./wellknown": {
+      "types": "./src/wellknown.d.vibe.ts",
+      "vibelang-source": "./src/wellknown.vibe",
+      "default": "./.vibelang/js/src/wellknown.js"
+    },
+    "./instruction-discovery": {
+      "types": "./src/instruction-discovery.d.vibe.ts",
+      "vibelang-source": "./src/instruction-discovery.vibe",
+      "default": "./.vibelang/js/src/instruction-discovery.js"
+    },
+    "./job": {
+      "types": "./src/job.d.vibe.ts",
+      "vibelang-source": "./src/job.vibe",
+      "default": "./.vibelang/js/src/job.js"
+    },
+    "./websearch": {
+      "types": "./src/websearch.d.vibe.ts",
+      "vibelang-source": "./src/websearch.vibe",
+      "default": "./.vibelang/js/src/websearch.js"
+    },
     "./file-access": {
       "types": "./src/file-access.d.vibe.ts",
       "vibelang-source": "./src/file-access.vibe",
@@ -1170,6 +1210,11 @@
     "./plugin/plan.platform": null,
     "./plugin/skill.platform": null,
     "./pty/ticket.platform": null,
+    "./formatter.platform": null,
+    "./tool-output.platform": null,
+    "./filesystem.platform": null,
+    "./config.platform": null,
+    "./wellknown.platform": null,
     "./persistent-pty/daemon": {
       "types": "./src/persistent-pty/daemon.d.vibe.ts",
       "vibelang-source": "./src/persistent-pty/daemon.vibe",

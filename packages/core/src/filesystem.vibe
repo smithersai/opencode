@@ -1,12 +1,12 @@
 export * as FileSystem from "./filesystem.js"
 
 import { makeLocationNode } from "@opencode/util/effect/app-node"
-import path from "path"
 import { Context, Effect, Layer, type Option, type PlatformError, Schema, type Stream } from "effect"
 import { FSUtil } from "@opencode/util/fs-util"
 import { Location } from "./location.js"
 import { AbsolutePath, PositiveInt, RelativePath } from "./schema.js"
 import { FileSystemSearch } from "./filesystem/search.js"
+import { joinPath, relativePath, resolvePath, sep } from "./filesystem.platform.js"
 import { Entry, FileSystem, FindInput, Write } from "@opencode/schema/filesystem"
 export { Entry, Match, Submatch } from "@opencode/schema/filesystem"
 
@@ -125,14 +125,19 @@ const baseLayer = Layer.effect(
           Effect.catch((cause): Effect.Effect<never, DirectoryNotFoundError | DirectoryAccessDeniedError> => {
             if (cause.reason._tag === "NotFound")
               return Effect.fail(new DirectoryNotFoundError({ directory: location.directory, cause }))
-            if (FSUtil.isAccessDenied(cause))
-              return Effect.fail(new DirectoryAccessDeniedError({ directory: location.directory, cause }))
-            return Effect.die(cause)
+            return Effect.try({ try: () => FSUtil.isAccessDenied(cause), catch: (error) => error }).pipe(
+              Effect.orDie,
+              Effect.flatMap((denied) =>
+                denied
+                  ? Effect.fail(new DirectoryAccessDeniedError({ directory: location.directory, cause }))
+                  : Effect.die(cause),
+              ),
+            )
           }),
         )
     const resolve = Effect.fnUntraced(function* (input: RelativePath) {
       if (input.includes("\u0000")) return yield* Effect.fail(new NotFoundError({ path: input }))
-      const absolute = path.resolve(location.directory, input)
+      const absolute = resolvePath(location.directory, input)
       if (!FSUtil.contains(location.directory, absolute)) return yield* Effect.fail(new NotFoundError({ path: input }))
       const real = yield* fs.realPath(absolute).pipe(
         Effect.catchReason(
@@ -167,7 +172,7 @@ const baseLayer = Layer.effect(
       }),
       list: Effect.fn("FileSystem.list")(function* (input = {}) {
         // Navigation can leave the cwd without activating another Location.
-        const directory = path.resolve(location.directory, input.path ?? ".")
+        const directory = resolvePath(location.directory, input.path ?? ".")
         const missing = new NotFoundError({ path: RelativePath.make(input.path ?? ".") })
         const info = yield* fs.stat(directory).pipe(
           Effect.catchReason(
@@ -184,11 +189,11 @@ const baseLayer = Layer.effect(
             items
               .flatMap((item) => {
                 if (item.type !== "file" && item.type !== "directory") return []
-                const absolute = path.join(directory, item.name)
-                const relative = path.relative(location.directory, absolute) || "."
+                const absolute = joinPath(directory, item.name)
+                const relative = relativePath(location.directory, absolute) || "."
                 return [
                   Entry.make({
-                    path: RelativePath.make(relative + (item.type === "directory" ? path.sep : "")),
+                    path: RelativePath.make(relative + (item.type === "directory" ? sep : "")),
                     type: item.type,
                   }),
                 ]
@@ -200,7 +205,7 @@ const baseLayer = Layer.effect(
       // Unlike read, write reaches outside the location so clients can stage files in the
       // server tmp directory, which the model is already told to prefer and permitted to access.
       write: Effect.fn("FileSystem.write")(function* (input) {
-        const target = path.resolve(location.directory, input.path)
+        const target = resolvePath(location.directory, input.path)
         yield* fs.writeWithDirs(target, input.data).pipe(Effect.orDie)
         return Write.make({ path: AbsolutePath.make(target) })
       }),

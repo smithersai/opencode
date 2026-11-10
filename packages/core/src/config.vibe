@@ -1,8 +1,6 @@
 export * as Config from "./config.js"
 
 import { makeLocationNode } from "@opencode/util/effect/app-node"
-import path from "path"
-import { isDeepStrictEqual } from "node:util"
 import { applyEdits, modify, type ParseError, parse } from "jsonc-parser"
 import { Context, Effect, FiberMap, Layer, Option, PubSub, Ref, Schema, Semaphore, Stream } from "effect"
 import { Directory, Document, Info, type Patch, type Entry, Event } from "@opencode/schema/config"
@@ -21,6 +19,7 @@ import { ConfigIntegration } from "./config/integration.vibe"
 import { WellKnown } from "./wellknown.js"
 import { AppProcess } from "@opencode/util/process"
 import { ChildProcess } from "effect/process"
+import { dirname, isDeepStrictEqual, joinPath } from "./config.platform.js"
 
 export function latest<K extends keyof Info>(entries: readonly Entry[], key: K): Info[K] | undefined {
   return entries.findLast((entry): entry is Document => entry.type === "document" && entry.info[key] !== undefined)
@@ -224,7 +223,7 @@ export const layer = (options?: Options) =>
         const text = yield* ConfigVariable.substitute({
           type: "virtual",
           source: plist,
-          dir: path.dirname(plist),
+          dir: dirname(plist),
           text: ConfigDiscovery.stripPreferenceMetadata(result.value.stdout.toString()),
         })
         const info = yield* parseInfo(text, plist)
@@ -233,7 +232,7 @@ export const layer = (options?: Options) =>
 
       const loadDirectory = Effect.fnUntraced(function* (directory: AbsolutePath) {
         return [
-          ...(yield* Effect.forEach(ConfigDiscovery.names, (file) => loadFile(path.join(directory, file))).pipe(
+          ...(yield* Effect.forEach(ConfigDiscovery.names, (file) => loadFile(joinPath(directory, file))).pipe(
             Effect.map((configs) => configs.filter((config): config is Document => config !== undefined)),
           )),
           new Directory({ type: "directory", path: directory }),
@@ -347,9 +346,8 @@ export const layer = (options?: Options) =>
           const next = yield* load(discovered)
           yield* reconcile(discovered)
           const compatibilityChanged =
-            !isDeepStrictEqual(sources.claude, discovered.claude) ||
-            !isDeepStrictEqual(sources.agents, discovered.agents)
-          if (isDeepStrictEqual(configs, next) && !compatibilityChanged) return
+            !(yield* equal(sources.claude, discovered.claude)) || !(yield* equal(sources.agents, discovered.agents))
+          if ((yield* equal(configs, next)) && !compatibilityChanged) return
           sources = discovered
           configs = next
           yield* bus.publish(Event.Updated, {})
@@ -408,9 +406,9 @@ export const layer = (options?: Options) =>
       const update = Effect.fn("Config.update")(
         function* (patch: Patch) {
           const directory = initial.global ?? AbsolutePath.make(globalService.config)
-          const candidates = ConfigDiscovery.names.map((name) => path.join(directory, name))
+          const candidates = ConfigDiscovery.names.map((name) => joinPath(directory, name))
           const filepath =
-            (yield* Effect.filter(candidates, fs.isFile)).at(-1) ?? path.join(directory, "opencode.jsonc")
+            (yield* Effect.filter(candidates, fs.isFile)).at(-1) ?? joinPath(directory, "opencode.jsonc")
           const text = (yield* fs.readFileStringSafe(filepath)) ?? "{}\n"
           const updated = yield* Effect.try({
             try: () =>
@@ -440,7 +438,7 @@ export const layer = (options?: Options) =>
         changes: () => Stream.fromPubSub(updates),
         update,
         integration: Effect.fn("Config.integration")(function* (integrationID, document) {
-          if (isDeepStrictEqual(integrations.get(integrationID), document)) return
+          if (yield* equal(integrations.get(integrationID), document)) return
           integrations.delete(integrationID)
           if (document) integrations.set(integrationID, document)
           yield* reload().pipe(
@@ -451,6 +449,11 @@ export const layer = (options?: Options) =>
       })
     }),
   )
+
+// isDeepStrictEqual may throw from a getter or proxy; such a throw stays a defect, as it was in the generator.
+function equal(left: unknown, right: unknown) {
+  return Effect.try({ try: () => isDeepStrictEqual(left, right), catch: (cause) => cause }).pipe(Effect.orDie)
+}
 
 export function configured(options?: Options) {
   return makeLocationNode({

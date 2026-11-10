@@ -14,6 +14,16 @@ import { Persist, persisted } from "@/runtime/persistence/storage"
 import { Persistence } from "@/runtime/persistence/schema"
 import en from "@/runtime/i18n/en"
 import { useVoice } from "./context"
+import {
+  addWindowListener,
+  createResizeObserver,
+  isElement,
+  isHTMLElement,
+  releaseChannel,
+  removeWindowListener,
+  windowHeight,
+  windowWidth,
+} from "./composer.platform.ts"
 import "./voice.css"
 
 const toggle = motionTuning.toggle("voice.calls", {
@@ -41,7 +51,7 @@ export function VoiceComposer(props: ParentProps<{ session: SessionInfo | undefi
   onCleanup(motionTuning.subscribe(() => setState("enabled", toggle())))
 
   const enabled = () =>
-    platform.platform === "desktop" && import.meta.env.VITE_OPENCODE_CHANNEL !== "prod" && state.enabled
+    platform.platform === "desktop" && releaseChannel() !== "prod" && state.enabled
 
   createEffect(() => {
     const session = props.session
@@ -98,8 +108,8 @@ function VoicePanel() {
     const rect = panel.getBoundingClientRect()
 
     return {
-      x: [position.x - rect.left, position.x + window.innerWidth - rect.right],
-      y: [position.y - rect.top, position.y + window.innerHeight - rect.bottom],
+      x: [position.x - rect.left, position.x + windowWidth() - rect.right],
+      y: [position.y - rect.top, position.y + windowHeight() - rect.bottom],
     }
   }
 
@@ -119,7 +129,7 @@ function VoicePanel() {
   const grab = (event: PointerEvent) => {
     if (
       event.button !== 0 ||
-      !(event.target instanceof Element) ||
+      !isElement(event.target) ||
       event.target.closest("button") ||
       onScrollbar(event)
     )
@@ -145,12 +155,12 @@ function VoicePanel() {
   }
 
   onMount(() => {
-    const observer = new ResizeObserver(settle)
+    const observer = createResizeObserver(settle)
     observer.observe(panel)
-    window.addEventListener("resize", settle)
+    addWindowListener("resize", settle)
     onCleanup(() => {
       observer.disconnect()
-      window.removeEventListener("resize", settle)
+      removeWindowListener("resize", settle)
     })
   })
 
@@ -243,7 +253,7 @@ function onScrollbar(event: MouseEvent) {
   const target = event.target
 
   return (
-    target instanceof HTMLElement &&
+    isHTMLElement(target) &&
     target.hasAttribute("data-scrollable") &&
     (event.offsetX >= target.clientWidth || event.offsetY >= target.clientHeight)
   )

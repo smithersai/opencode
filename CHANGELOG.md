@@ -6,6 +6,8 @@ Release notes for OpenCode V2, newest first.
 
 ### Changed
 
+- Extension settings, the error page and the voice composer in the app now use VibeLang, with browser access in platform siblings.
+
 - The session message timeline and the elicitation dock in the app now use VibeLang, with browser access in platform siblings.
 
 - The core AI SDK bridge now uses VibeLang while preserving its declarations, with fetch, timers, streams and request context in a native platform file.

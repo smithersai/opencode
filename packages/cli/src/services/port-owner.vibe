@@ -1,14 +1,14 @@
 import { AppProcess } from "@opencode/util/process"
 import { Effect } from "effect"
 import { ChildProcess } from "effect/process"
-import net from "node:net"
+import { net, platform } from "./port-owner.platform"
 
 export * as PortOwner from "./port-owner"
 
 // Best effort: names the process listening on a TCP port so a failed bind can say who holds it.
 // Windows has no cheap equivalent of lsof, so it keeps the generic message.
 export const describe = Effect.fnUntraced(function* (port: number, hostname?: string) {
-  if (process.platform === "win32") return undefined
+  if (platform() === "win32") return undefined
   const appProcess = yield* AppProcess.Service
   const run = (command: string, args: ReadonlyArray<string>) =>
     appProcess

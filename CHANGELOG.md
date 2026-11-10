@@ -6,6 +6,8 @@ Release notes for OpenCode V2, newest first.
 
 ### Changed
 
+- The CLI web UI and app asset services and the port owner lookup now use VibeLang while preserving their behavior and native host access.
+
 - Server auth, pairing, process, location and request handlers now use VibeLang while preserving their declarations and native host access.
 
 - The session timeline virtualizer, the Extensions plugin list and generated project icons in the app now use VibeLang, with DOM access in a native platform file.

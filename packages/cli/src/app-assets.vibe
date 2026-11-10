@@ -1,8 +1,6 @@
 import { Effect, FileSystem, Option } from "effect"
-import { readFileSync } from "node:fs"
-import path from "node:path"
-import { brotliDecompressSync } from "node:zlib"
 import { AppArchive } from "./app-archive"
+import { appDistDirectory, brotliDecompressSync, path, readFileSync, textFrom } from "./app-assets.platform"
 import { OPENCODE_LOCAL } from "./version.ts"
 
 export type AssetMap = Readonly<Record<string, string | Uint8Array>>
@@ -25,7 +23,7 @@ export const load = Effect.fn("cli.app-assets.load")(function* () {
 
 const sourceAssets = Effect.fnUntraced(function* () {
   const fs = yield* FileSystem.FileSystem
-  const root = path.resolve(import.meta.dirname, "../../app/dist")
+  const root = appDistDirectory()
   const files = yield* fs.readDirectory(root, { recursive: true })
   const assets = Object.fromEntries(
     (yield* Effect.forEach(
@@ -49,7 +47,7 @@ function lazy(assets: Readonly<Record<string, unknown>>, load: (key: string) => 
       get: (_, key) => {
         if (typeof key !== "string" || assets[key] === undefined) return
         const body = load(key)
-        return isText(key) ? Buffer.from(body).toString() : body
+        return isText(key) ? textFrom(body) : body
       },
     },
   )

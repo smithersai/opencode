@@ -6,6 +6,8 @@ Release notes for OpenCode V2, newest first.
 
 ### Changed
 
+- Shell command parsing, Copilot and Modal model catalogs, built-in and skill instructions and worktree strategies now use VibeLang while preserving their declarations and native host access.
+
 - File and location watchers now use VibeLang while preserving their declarations and native filesystem access.
 
 - Global paths and OTLP observability setup in the util package now use VibeLang while preserving their declarations and native host access.

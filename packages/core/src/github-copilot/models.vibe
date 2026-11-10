@@ -4,6 +4,7 @@ import { Money } from "@opencode/schema/money"
 import { Option, Schema } from "effect"
 import { Model } from "../model.js"
 import { Provider } from "../provider.js"
+import { request } from "./models.platform.js"
 
 const RemoteModel = Schema.Struct({
   model_picker_enabled: Schema.Boolean,
@@ -79,10 +80,7 @@ export async function get(baseURL: string, headers: RequestInit["headers"], exis
 export type Snapshot = ReadonlyMap<string, UsableModel>
 
 export async function load(baseURL: string, headers: RequestInit["headers"]): Promise<Snapshot> {
-  const response = await fetch(`${baseURL}/models`, {
-    headers,
-    signal: AbortSignal.timeout(5_000),
-  })
+  const response = await request(`${baseURL}/models`, headers, 5_000)
   if (!response.ok) throw new Error(`Failed to fetch Copilot models: ${response.status}`)
 
   return new Map(

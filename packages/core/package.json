@@ -753,6 +753,46 @@
     },
     "./filesystem/location-watcher.platform": null,
     "./filesystem/watcher.platform": null,
+    "./shell/parse": {
+      "types": "./src/shell/parse.d.vibe.ts",
+      "vibelang-source": "./src/shell/parse.vibe",
+      "default": "./.vibelang/js/src/shell/parse.js"
+    },
+    "./instructions/builtins": {
+      "types": "./src/instructions/builtins.d.vibe.ts",
+      "vibelang-source": "./src/instructions/builtins.vibe",
+      "default": "./.vibelang/js/src/instructions/builtins.js"
+    },
+    "./modal/models": {
+      "types": "./src/modal/models.d.vibe.ts",
+      "vibelang-source": "./src/modal/models.vibe",
+      "default": "./.vibelang/js/src/modal/models.js"
+    },
+    "./skill/instructions": {
+      "types": "./src/skill/instructions.d.vibe.ts",
+      "vibelang-source": "./src/skill/instructions.vibe",
+      "default": "./.vibelang/js/src/skill/instructions.js"
+    },
+    "./worktree/git": {
+      "types": "./src/worktree/git.d.vibe.ts",
+      "vibelang-source": "./src/worktree/git.vibe",
+      "default": "./.vibelang/js/src/worktree/git.js"
+    },
+    "./worktree/strategies": {
+      "types": "./src/worktree/strategies.d.vibe.ts",
+      "vibelang-source": "./src/worktree/strategies.vibe",
+      "default": "./.vibelang/js/src/worktree/strategies.js"
+    },
+    "./github-copilot/models": {
+      "types": "./src/github-copilot/models.d.vibe.ts",
+      "vibelang-source": "./src/github-copilot/models.vibe",
+      "default": "./.vibelang/js/src/github-copilot/models.js"
+    },
+    "./github-copilot/models.platform": null,
+    "./instructions/builtins.platform": null,
+    "./modal/models.platform": null,
+    "./shell/parse.platform": null,
+    "./worktree/strategies.platform": null,
     "./plugin/provider/amazon-bedrock": {
       "types": "./src/plugin/provider/amazon-bedrock.d.vibe.ts",
       "vibelang-source": "./src/plugin/provider/amazon-bedrock.vibe",

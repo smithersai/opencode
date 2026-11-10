@@ -4,6 +4,7 @@ import { Money } from "@opencode/schema/money"
 import { Option, Schema } from "effect"
 import { Model } from "../model.js"
 import { Provider } from "../provider.js"
+import { request } from "./models.platform.js"
 
 const providerID = Provider.ID.make("modal")
 
@@ -54,12 +55,13 @@ export async function get(baseURL: string, apiKey: string, existing: readonly Mo
 export type Snapshot = readonly RemoteModel[]
 
 export async function load(baseURL: string, apiKey: string): Promise<Snapshot> {
-  const response = await fetch(`${baseURL.replace(/\/+$/, "")}/models`, {
-    headers: {
+  const response = await request(
+    `${baseURL.replace(/\/+$/, "")}/models`,
+    {
       Authorization: `Bearer ${apiKey}`,
     },
-    signal: AbortSignal.timeout(3_000),
-  })
+    3_000,
+  )
   if (!response.ok) throw new Error(`Failed to fetch Modal models: ${response.status}`)
 
   // Decode each item tolerantly so one malformed entry cannot discard the

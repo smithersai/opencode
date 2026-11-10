@@ -1,14 +1,12 @@
 export * as ShellParse from "./parse.js"
 
 import { Effect } from "effect"
-import { fileURLToPath } from "url"
-import os from "os"
-import path from "path"
 import type { Node } from "web-tree-sitter"
 import { shellParserWasm } from "#shell-parser-wasm"
 import { ShellSelect } from "./select.js"
 import { lazy } from "../util/lazy.js"
 import { Wildcard } from "../util/wildcard.js"
+import { dirname, environment, homedir, isWindows, join, resolve } from "./parse.platform.js"
 
 type Part = { type: string; text: string }
 const CWD = new Set(["cd", "chdir", "popd", "pushd", "push-location", "set-location"])
@@ -173,7 +171,7 @@ export const scan = Effect.fnUntraced(function* (
 })
 
 const scanLegacy = Effect.fnUntraced(function* (command: string, shell: string, cwd: string) {
-  const parsers = yield* Effect.promise(load)
+  const parsers = yield* Effect.tryPromise({ try: () => load(), catch: (cause) => cause }).pipe(Effect.orDie)
   const powershell = ShellSelect.ps(shell)
   const tree = (powershell ? parsers.ps : parsers.bash).parse(command)
   if (!tree) return yield* Effect.fail(new Error("Failed to parse shell command"))
@@ -348,9 +346,9 @@ function directoryArgument(value: string, powershell: boolean, cwd: string, shel
       .replace(/\$env:([A-Za-z_][A-Za-z0-9_]*)/gi, (_, key: string) => environment(key) ?? "")
       .replace(/\$(?:\{(HOME|PWD|PSHOME)\}|(HOME|PWD|PSHOME)(?=$|[\\/]))/gi, (_, braced?: string, bare?: string) => {
         const key = (braced ?? bare ?? "").toUpperCase()
-        if (key === "HOME") return os.homedir()
+        if (key === "HOME") return homedir()
         if (key === "PWD") return cwd
-        return path.dirname(shell)
+        return dirname(shell)
       }),
   )
 }
@@ -359,17 +357,11 @@ function expandKnownDirectory(value: string) {
   // Unknown shell expressions cannot be resolved safely during permission analysis.
   if (value.includes("$") || value.includes("`") || value.startsWith("(")) return
   const resolved = value.replaceAll("\0", "$")
-  if (resolved === "~") return os.homedir()
-  if (resolved.startsWith("~/") || (process.platform === "win32" && resolved.startsWith("~\\"))) {
-    return path.join(os.homedir(), resolved.slice(2))
+  if (resolved === "~") return homedir()
+  if (resolved.startsWith("~/") || (isWindows() && resolved.startsWith("~\\"))) {
+    return join(homedir(), resolved.slice(2))
   }
   return resolved
-}
-
-function environment(key: string) {
-  if (process.platform !== "win32") return process.env[key]
-  const name = Object.keys(process.env).find((item) => item.toLowerCase() === key.toLowerCase())
-  return name ? process.env[name] : undefined
 }
 
 function prefix(tokens: string[]) {
@@ -380,17 +372,12 @@ function prefix(tokens: string[]) {
   return tokens.slice(0, 1)
 }
 
-function resolve(asset: string) {
-  if (asset.startsWith("file://")) return fileURLToPath(asset)
-  if (path.isAbsolute(asset)) return asset
-  return fileURLToPath(new URL(asset, import.meta.url))
-}
-
 const load = lazy(initialize)
 
 async function initialize() {
   const { Parser, Language } = await import("web-tree-sitter")
-  await Parser.init({ locateFile: () => resolve(shellParserWasm.runtime) })
+  const runtime = resolve(shellParserWasm.runtime)
+  await Parser.init({ locateFile: () => runtime })
   const [bashLanguage, psLanguage] = await Promise.all([
     Language.load(resolve(shellParserWasm.bash)),
     Language.load(resolve(shellParserWasm.powershell)),

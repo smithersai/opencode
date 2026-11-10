@@ -6,6 +6,8 @@ Release notes for OpenCode V2, newest first.
 
 ### Changed
 
+- The session tool renderer, session review and basic tool components now use VibeLang while keeping their package entry points and browser frame and selection access.
+
 - Worktree management and session statistics now use VibeLang while preserving their declarations and native path access.
 
 - Lock, npm install and process helpers in the util package now use VibeLang while preserving their declarations.

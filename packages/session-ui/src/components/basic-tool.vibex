@@ -17,6 +17,7 @@ import { createStore } from "solid-js/store"
 import { Collapsible } from "@opencode/ui/collapsible"
 import type { IconProps } from "@opencode/ui/icon"
 import { TextShimmer } from "@opencode/ui/text-shimmer"
+import { cancelAnimationFrame, requestAnimationFrame } from "./basic-tool.platform.js"
 
 export type TriggerTitle = {
   title: string

@@ -66,6 +66,16 @@ import { AssistantReasoningContent, writeClipboard } from "../message/message-co
 import { stripAnsi } from "./ansi"
 import { followShellOutput } from "./shell-output"
 import { LinkedText } from "../components/linked-text"
+import {
+  cancelAnimationFrame,
+  clearInterval,
+  getComputedStyle,
+  getSelection,
+  isHTMLButtonElement,
+  requestAnimationFrame,
+  setInterval,
+  setTimeout,
+} from "./tool-renderer.platform.js"
 
 function ShellSubmessage(props: { text: string; animate?: boolean }) {
   let widthRef: HTMLSpanElement | undefined
@@ -1198,7 +1208,7 @@ function FileAccordionGroup(props: { children: JSX.Element }) {
 
         if (!["ArrowUp", "ArrowDown", "Home", "End"].includes(event.key)) return
 
-        if (!(event.target instanceof HTMLButtonElement) || event.target.dataset.slot !== "accordion-trigger") return
+        if (!isHTMLButtonElement(event.target) || event.target.dataset.slot !== "accordion-trigger") return
 
         if (event.target.closest('[data-component="accordion"]') !== event.currentTarget) return
 
@@ -2131,7 +2141,7 @@ function ExecuteOutputRow(props: { output: string }) {
   const [open, setOpen] = createSignal(false)
 
   const toggle = () => {
-    if (window.getSelection()?.toString()) return
+    if (getSelection()?.toString()) return
     setOpen((value) => !value)
   }
 
@@ -2176,7 +2186,7 @@ function ExecuteCallRow(props: { call?: ExecuteToolCall; error?: string }) {
   const summary = () => (props.call ? args().join(", ") : props.error?.split("\n", 1)[0])
 
   const toggle = () => {
-    if (!expandable() || window.getSelection()?.toString()) return
+    if (!expandable() || getSelection()?.toString()) return
     setOpen((value) => !value)
   }
 

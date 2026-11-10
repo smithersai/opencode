@@ -741,10 +741,35 @@
       "vibelang-source": "./src/plugin/verbosity.vibe",
       "default": "./.vibelang/js/src/plugin/verbosity.js"
     },
+    "./file-access": {
+      "types": "./src/file-access.d.vibe.ts",
+      "vibelang-source": "./src/file-access.vibe",
+      "default": "./.vibelang/js/src/file-access.js"
+    },
+    "./instance": {
+      "types": "./src/instance.d.vibe.ts",
+      "vibelang-source": "./src/instance.vibe",
+      "default": "./.vibelang/js/src/instance.js"
+    },
+    "./permission": {
+      "types": "./src/permission.d.vibe.ts",
+      "vibelang-source": "./src/permission.vibe",
+      "default": "./.vibelang/js/src/permission.js"
+    },
+    "./reference": {
+      "types": "./src/reference.d.vibe.ts",
+      "vibelang-source": "./src/reference.vibe",
+      "default": "./.vibelang/js/src/reference.js"
+    },
     "./repository-cache": {
       "types": "./src/repository-cache.d.vibe.ts",
       "vibelang-source": "./src/repository-cache.vibe",
       "default": "./.vibelang/js/src/repository-cache.js"
+    },
+    "./skill": {
+      "types": "./src/skill.d.vibe.ts",
+      "vibelang-source": "./src/skill.vibe",
+      "default": "./.vibelang/js/src/skill.js"
     },
     "./snapshot": {
       "types": "./src/snapshot.d.vibe.ts",
@@ -756,7 +781,10 @@
       "vibelang-source": "./src/vcs.vibe",
       "default": "./.vibelang/js/src/vcs.js"
     },
+    "./file-access.platform": null,
+    "./instance.platform": null,
     "./repository-cache.platform": null,
+    "./skill.platform": null,
     "./snapshot.platform": null,
     "./vcs.platform": null,
     "./filesystem/watcher": {

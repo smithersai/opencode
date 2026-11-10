@@ -1,4 +1,5 @@
 import { Context, Effect, Layer } from "effect"
+import { now } from "./instance.platform.js"
 import { Agent } from "./agent.vibe"
 import { AISDK } from "./aisdk.js"
 import { Model } from "./model.js"
@@ -148,17 +149,24 @@ const vanillaReplacements: LayerNode.Replacements = [
 
 // One instance is one compiled, fresh copy of the graph standing on a directory.
 export function layer(ref: Location.Ref, options: Options = {}): Layer.Layer<Services, Error> {
-  const startedAt = performance.now()
+  const startedAt = now()
   // Ordered: vanilla defaults, then caller replacements (which win over the
   // defaults), then instance bindings (which win over everything).
-  const replacements: LayerNode.Replacements = [
-    ...(options.discovery === false ? vanillaReplacements : []),
-    ...(options.replacements ?? []),
-    Location.node.replace(Location.boundNode(ref)),
-    InstancePlugins.node.replace(InstancePlugins.bound(options.plugins ?? [])),
-  ]
+  const replacements = Effect.try({
+    try: (): LayerNode.Replacements => [
+      ...(options.discovery === false ? vanillaReplacements : []),
+      ...(options.replacements ?? []),
+      Location.node.replace(Location.boundNode(ref)),
+      InstancePlugins.node.replace(InstancePlugins.bound(options.plugins ?? [])),
+    ],
+    catch: (cause) => cause,
+  }).pipe(Effect.orDie)
 
-  return LayerNode.compile(graph, { replacements, shared: Node.tags.values.global }).pipe(
+  return Layer.unwrap(
+    Effect.map(replacements, (replacements) =>
+      LayerNode.compile(graph, { replacements, shared: Node.tags.values.global }),
+    ),
+  ).pipe(
     // A missing directory is expected; other instance boot failures remain defects.
     Layer.catchCause(
       (cause): Layer.Layer<Services, Error> =>
@@ -176,7 +184,7 @@ export function layer(ref: Location.Ref, options: Options = {}): Layer.Layer<Ser
       Effect.logInfo("location services booted", {
         directory: ref.directory,
         workspaceID: ref.workspaceID,
-        durationMs: Math.round(performance.now() - startedAt),
+        durationMs: Math.round(now() - startedAt),
       }),
     ),
   )

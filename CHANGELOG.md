@@ -6,6 +6,8 @@ Release notes for OpenCode V2, newest first.
 
 ### Changed
 
+- The CLI import boundary tests now bundle with the VibeLang plugin, as the CLI package build does.
+
 - Git, projects, integrations, workspaces, the bus, credentials, forms, the MCP client, OAuth and stdio transport, environment drivers and project icons now use VibeLang while preserving their declarations and native host access.
 
 - The MCP import boundary test now bundles with the VibeLang plugin, as the core package build does.

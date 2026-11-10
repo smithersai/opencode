@@ -79,24 +79,42 @@ describe("CLI frontend import boundaries", () => {
   })
 })
 
+// Bundles the way script/build.ts does: Bun.build with the VibeLang and Solid plugins, so an
+// import of a converted `x.vibe` resolves. The plain `bun build` CLI runs no plugin.
+const bundle = `
+const { default: vibelang } = await import(process.env.VIBELANG_BUN_PLUGIN)
+const { createSolidTransformPlugin } = await import(process.env.SOLID_BUN_PLUGIN)
+const result = await Bun.build({
+  entrypoints: [process.env.BOUNDARY_ENTRY],
+  target: "bun",
+  format: "esm",
+  packages: "bundle",
+  external: ["@opentui/core-*"],
+  metafile: true,
+  outdir: process.env.BOUNDARY_OUTDIR,
+  plugins: [vibelang(), createSolidTransformPlugin()],
+})
+if (!result.success) throw new AggregateError(result.logs, "Failed to bundle " + process.env.BOUNDARY_ENTRY)
+await Bun.write(process.env.BOUNDARY_METAFILE, JSON.stringify(result.metafile))
+`
+
 async function bundleInputs(entrypoint: string) {
   const temporary = await mkdtemp(path.join(import.meta.dir, ".import-boundary-"))
   const metafile = path.join(temporary, "meta.json")
   try {
-    const child = Bun.spawn(
-      [
-        process.execPath,
-        "build",
-        entrypoint,
-        "--target=bun",
-        "--format=esm",
-        "--packages=bundle",
-        "--external=@opentui/core-*",
-        `--metafile=${metafile}`,
-        `--outdir=${path.join(temporary, "out")}`,
-      ],
-      { cwd: root, stdout: "pipe", stderr: "pipe" },
-    )
+    const child = Bun.spawn([process.execPath, "-e", bundle], {
+      cwd: root,
+      env: {
+        ...process.env,
+        VIBELANG_BUN_PLUGIN: import.meta.resolve("vibelang-unplugin/bun"),
+        SOLID_BUN_PLUGIN: import.meta.resolve("@opentui/solid/bun-plugin"),
+        BOUNDARY_ENTRY: entrypoint,
+        BOUNDARY_OUTDIR: path.join(temporary, "out"),
+        BOUNDARY_METAFILE: metafile,
+      },
+      stdout: "pipe",
+      stderr: "pipe",
+    })
     const [exitCode, stdout, stderr] = await Promise.all([
       child.exited,
       new Response(child.stdout).text(),

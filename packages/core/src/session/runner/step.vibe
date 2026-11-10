@@ -127,7 +127,13 @@ export const make = Effect.gen(function* () {
                 Effect.flatMap(toolOutput.truncate),
                 Effect.flatMap((outcome) => publisher.toolExecution(event.id, event.name, outcome)),
                 Effect.catchTag("Tool.Error", (error) =>
-                  publisher.failTool(event.id, toSessionError(error), error.metadata).pipe(Effect.asVoid),
+                  effect {
+                    const sessionError = try Effect.try({
+                      try: () => toSessionError(error),
+                      catch: (cause) => cause,
+                    }).pipe(Effect.orDie)
+                    return try publisher.failTool(event.id, sessionError, error.metadata).pipe(Effect.asVoid)
+                  },
                 ),
               ),
             ).pipe(Effect.forkScoped),

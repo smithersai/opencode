@@ -425,6 +425,66 @@
       "vibelang-source": "./src/session/compaction.vibe",
       "default": "./.vibelang/js/src/session/compaction.js"
     },
+    "./session/runner/publish-llm-event": {
+      "types": "./src/session/runner/publish-llm-event.d.vibe.ts",
+      "vibelang-source": "./src/session/runner/publish-llm-event.vibe",
+      "default": "./.vibelang/js/src/session/runner/publish-llm-event.js"
+    },
+    "./session/model-transport": {
+      "types": "./src/session/model-transport.d.vibe.ts",
+      "vibelang-source": "./src/session/model-transport.vibe",
+      "default": "./.vibelang/js/src/session/model-transport.js"
+    },
+    "./session/runner/llm": {
+      "types": "./src/session/runner/llm.d.vibe.ts",
+      "vibelang-source": "./src/session/runner/llm.vibe",
+      "default": "./.vibelang/js/src/session/runner/llm.js"
+    },
+    "./session/model-request": {
+      "types": "./src/session/model-request.d.vibe.ts",
+      "vibelang-source": "./src/session/model-request.vibe",
+      "default": "./.vibelang/js/src/session/model-request.js"
+    },
+    "./session/runner/step": {
+      "types": "./src/session/runner/step.d.vibe.ts",
+      "vibelang-source": "./src/session/runner/step.vibe",
+      "default": "./.vibelang/js/src/session/runner/step.js"
+    },
+    "./session/runner/to-llm-message": {
+      "types": "./src/session/runner/to-llm-message.d.vibe.ts",
+      "vibelang-source": "./src/session/runner/to-llm-message.vibe",
+      "default": "./.vibelang/js/src/session/runner/to-llm-message.js"
+    },
+    "./session/runner/model": {
+      "types": "./src/session/runner/model.d.vibe.ts",
+      "vibelang-source": "./src/session/runner/model.vibe",
+      "default": "./.vibelang/js/src/session/runner/model.js"
+    },
+    "./session/prompt": {
+      "types": "./src/session/prompt.d.vibe.ts",
+      "vibelang-source": "./src/session/prompt.vibe",
+      "default": "./.vibelang/js/src/session/prompt.js"
+    },
+    "./session/context": {
+      "types": "./src/session/context.d.vibe.ts",
+      "vibelang-source": "./src/session/context.vibe",
+      "default": "./.vibelang/js/src/session/context.js"
+    },
+    "./session/title": {
+      "types": "./src/session/title.d.vibe.ts",
+      "vibelang-source": "./src/session/title.vibe",
+      "default": "./.vibelang/js/src/session/title.js"
+    },
+    "./session/instructions": {
+      "types": "./src/session/instructions.d.vibe.ts",
+      "vibelang-source": "./src/session/instructions.vibe",
+      "default": "./.vibelang/js/src/session/instructions.js"
+    },
+    "./session/generate": {
+      "types": "./src/session/generate.d.vibe.ts",
+      "vibelang-source": "./src/session/generate.vibe",
+      "default": "./.vibelang/js/src/session/generate.js"
+    },
     "./session/projector": {
       "types": "./src/session/projector.d.vibe.ts",
       "vibelang-source": "./src/session/projector.vibe",
@@ -1274,7 +1334,12 @@
     "./session/instruction-state.platform": null,
     "./session/instruction-entry.platform": null,
     "./session/transfer.platform": null,
-    "./session/move.platform": null
+    "./session/move.platform": null,
+    "./session/model-request.platform": null,
+    "./session/runner/to-llm-message.platform": null,
+    "./session/prompt.platform": null,
+    "./session/title.platform": null,
+    "./session/instructions.platform": null
   },
   "imports": {
     "#sqlite": {

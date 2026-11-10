@@ -72,69 +72,73 @@ export class Service extends Context.Service<Service, Interface>()("@opencode/Se
 
 const layer = Layer.effect(
   Service,
-  Effect.gen(function* () {
-    const agents = yield* Agent.Service
-    const builtins = yield* InstructionBuiltIns.Service
-    const model = yield* Model.Service
-    const db = (yield* Database.Service).db
-    const discovery = yield* InstructionDiscovery.Service
-    const entries = yield* InstructionEntry.Service
-    const location = yield* Location.Service
-    const mcpInstructions = yield* McpInstructions.Service
-    const mcpTools = yield* McpTool.Service
-    const models = yield* SessionRunnerModel.Service
-    const request = yield* SessionModelRequest.Service
-    const referenceInstructions = yield* ReferenceInstructions.Service
-    const skillInstructions = yield* SkillInstructions.Service
-    const store = yield* SessionStore.Service
-    const registry = yield* Tool.Service
+  (effect {
+    const agents = try Agent.Service
+    const builtins = try InstructionBuiltIns.Service
+    const model = try Model.Service
+    const db = (try Database.Service).db
+    const discovery = try InstructionDiscovery.Service
+    const entries = try InstructionEntry.Service
+    const location = try Location.Service
+    const mcpInstructions = try McpInstructions.Service
+    const mcpTools = try McpTool.Service
+    const models = try SessionRunnerModel.Service
+    const request = try SessionModelRequest.Service
+    const referenceInstructions = try ReferenceInstructions.Service
+    const skillInstructions = try SkillInstructions.Service
+    const store = try SessionStore.Service
+    const registry = try Tool.Service
 
     const resolveModel = (session: SessionSchema.Info) => models.resolve(session, model.available)
 
-    const selectTitle = Effect.fn("SessionContext.selectTitle")(function* (session: SessionSchema.Info) {
-      const agent = yield* agents.get(Agent.ID.make("title"))
+    const selectTitle = fn("SessionContext.selectTitle")(effect (session: SessionSchema.Info) => {
+      const agent = try agents.get(Agent.ID.make("title"))
       if (!agent) return
-      const primary = yield* resolveModel(session).pipe(Effect.orElseSucceed(() => undefined))
-      const candidate = yield* Effect.gen(function* () {
+      const primary = try resolveModel(session).pipe(orElseSucceed(() => undefined))
+      const candidate = try (effect {
         if (agent.model) {
-          const info = yield* model.get(agent.model.providerID, agent.model.id)
+          const info = try model.get(agent.model.providerID, agent.model.id)
           return info && { info, variant: agent.model.variant ?? minimalVariant(info) }
         }
         if (!primary) return
-        const small = yield* model.small(primary.ref.providerID)
+        const small = try model.small(primary.ref.providerID)
         if (small) return { info: small, variant: minimalVariant(small) }
         // Without a lower variant, the primary model at its selected variant is already the fallback.
-        const info = yield* model.get(primary.ref.providerID, primary.ref.id)
+        const info = try model.get(primary.ref.providerID, primary.ref.id)
         const variant = info && lowerVariant(info, primary.ref.variant)
         return variant && { info, variant }
       })
       const preferred =
         candidate &&
-        (yield* resolveModel({
+        (try resolveModel({
           ...session,
           model: Model.Ref.make({
             providerID: candidate.info.providerID,
             id: candidate.info.id,
             ...(candidate.variant ? { variant: candidate.variant } : {}),
           }),
-        }).pipe(Effect.orElseSucceed(() => undefined)))
+        }).pipe(orElseSucceed(() => undefined)))
       const selected = preferred ?? primary
       if (!selected) return
       return { agent, primary, selected }
     })
 
-    const select = Effect.fn("SessionContext.select")(function* (sessionID: SessionSchema.ID) {
-      const session = yield* store.get(sessionID)
-      if (!session) return yield* Effect.die(new Error(`Session not found: ${sessionID}`))
+    const select = fn("SessionContext.select")(effect (sessionID: SessionSchema.ID) => {
+      const session = try store.get(sessionID)
+      if (!session) return try die(new Error(`Session not found: ${sessionID}`))
       if (session.location.directory !== location.directory || session.location.workspaceID !== location.workspaceID)
-        return yield* Effect.interrupt
+        return try Effect.interrupt
 
-      yield* mcpTools.flush
-      const agent = yield* agents.select(session.agent)
-      if (!agent.info) return yield* new AgentNotFoundError({ sessionID: session.id, agent: session.agent ?? agent.id })
+      try mcpTools.flush
+      const agent = try agents.select(session.agent)
+      const info = agent.info
+      if (!info) throw new AgentNotFoundError({ sessionID: session.id, agent: session.agent ?? agent.id })
       // Session permissions narrow discovery the same way they narrow the tool snapshot.
-      const permissions = Permission.merge(agent.info.permissions, session.permissions ?? [])
-      const loaded = yield* Effect.all(
+      const permissions = try Effect.try({
+        try: () => Permission.merge(info.permissions, session.permissions ?? []),
+        catch: (cause) => cause,
+      }).pipe(orDie)
+      const loaded = try all(
         {
           tools: registry.snapshot(permissions),
           builtins: builtins.load(),
@@ -148,11 +152,12 @@ const layer = Layer.effect(
       )
       return {
         session,
-        agent: { ...agent, info: agent.info },
+        agent: { ...agent, info },
         // Ordered from most to least shared across sessions so the baseline stays a reusable
         // prompt-cache prefix: user-level catalog and guidance, then project instructions, then
         // the date and environment, which vary by day and directory.
-        instructions: Instructions.combine([
+        instructions: try Effect.try({
+          try: () => Instructions.combine([
           CodeModeInstructions.make(loaded.tools.codeModeCatalog),
           loaded.mcp,
           loaded.references,
@@ -160,14 +165,16 @@ const layer = Layer.effect(
           loaded.discovery,
           loaded.builtins,
           loaded.entries,
-        ]),
+          ]),
+          catch: (cause) => cause,
+        }).pipe(orDie),
         tools: loaded.tools,
       }
     })
 
-    const load = Effect.fn("SessionContext.load")(function* (selection: Selection) {
-      const model = yield* resolveModel(selection.session)
-      const history = yield* SessionHistory.entriesForRunner(
+    const load = fn("SessionContext.load")(effect (selection: Selection) => {
+      const model = try resolveModel(selection.session)
+      const history = try SessionHistory.entriesForRunner(
         db,
         selection.session.id,
         selection.instructions,

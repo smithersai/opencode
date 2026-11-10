@@ -32,6 +32,7 @@ import { PluginHooks } from "../plugin/hooks.vibe"
 import { QuestionTool } from "../tool/plugin/question.vibe"
 import { Tool } from "../tool.vibe"
 import { SessionAffinity } from "./affinity.js"
+import { makeResponse } from "./model-request.platform.js"
 import { SessionModelTransport } from "./model-transport.js"
 import { SessionRunnerModel } from "./runner/model.js"
 import { SessionSchema } from "./schema.js"
@@ -242,9 +243,13 @@ export const layer = Layer.effect(
       // Definitions are shared across steps and sessions, and hooks may edit schemas in place,
       // so each hook gets a deep copy.
       const given = new Map(
-        tools.definitions.map(
-          (t) => [{ description: t.description, input: JSON.parse(JSON.stringify(t.inputSchema)) }, t] as const,
-        ),
+        yield* Effect.try({
+          try: () =>
+            tools.definitions.map(
+              (t) => [{ description: t.description, input: JSON.parse(JSON.stringify(t.inputSchema)) }, t] as const,
+            ),
+          catch: (cause) => cause,
+        }).pipe(Effect.orDie),
       )
       // Hooks see the default output limit and may change or remove it. Titles and generate keep the provider default,
       // because their reasoning is hard to budget.
@@ -338,13 +343,14 @@ export const layer = Layer.effect(
                       )
                     : HttpClientRequest.fromWeb(before.request)
               const res = yield* handler(sent)
+              const body = [204, 205, 304].includes(res.status) ? null : yield* Stream.toReadableStreamEffect(res.stream)
               const after = yield* hooks.trigger("session", "http.response", {
                 ...scope,
                 request: before.request,
-                response: new Response(
-                  [204, 205, 304].includes(res.status) ? null : yield* Stream.toReadableStreamEffect(res.stream),
-                  { status: res.status, headers: res.headers },
-                ),
+                response: yield* Effect.try({
+                  try: () => makeResponse(body, { status: res.status, headers: res.headers }),
+                  catch: (cause) => cause,
+                }).pipe(Effect.orDie),
               })
               return HttpClientResponse.fromWeb(sent, after.response)
             })

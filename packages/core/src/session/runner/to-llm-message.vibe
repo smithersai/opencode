@@ -9,7 +9,7 @@ import {
 } from "@opencode/ai/effect"
 import type { Model } from "@opencode/schema/model"
 import { Option, Schema } from "effect"
-import { fileURLToPath } from "url"
+import { base64Text, fileURLToPath } from "./to-llm-message.platform.js"
 import { SessionMessage } from "../message.js"
 import { SessionHistory } from "../history.js"
 import { SessionRecentText } from "../recent-text.js"
@@ -41,7 +41,7 @@ const textAttachment = (file: FileAttachment): ContentPart => ({
     `Attached file: ${file.name ?? (file.source.type === "uri" ? file.source.uri : "inline attachment")}`,
     file.description === undefined ? undefined : `Description: ${file.description}`,
     "",
-    Buffer.from(file.data, "base64").toString("utf8"),
+    base64Text(file.data),
   ]
     .filter((line): line is string => line !== undefined)
     .join("\n")}`,
@@ -60,7 +60,7 @@ const directoryAttachment = (file: FileAttachment): ContentPart => ({
     `Attached directory: ${attachmentLocation(file) ?? file.name ?? (file.source.type === "uri" ? file.source.uri : "directory")}`,
     file.description === undefined ? undefined : `Description: ${file.description}`,
     file.data.length === 0 ? undefined : "",
-    file.data.length === 0 ? undefined : Buffer.from(file.data, "base64").toString("utf8"),
+    file.data.length === 0 ? undefined : base64Text(file.data),
   ]
     .filter((line): line is string => line !== undefined)
     .join("\n")}`,

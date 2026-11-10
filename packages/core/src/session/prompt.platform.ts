@@ -1,0 +1,49 @@
+// The platform code of prompt.vibe: host paths, file URLs and Buffer encoding, which a .vibe file does not use
+// (EK4402).
+
+import nodePath from "path"
+import url from "url"
+
+export const path = {
+  sep: nodePath.sep,
+  /** @throws {never} */
+  basename(target: string): string {
+    return nodePath.basename(target)
+  },
+}
+
+/** @throws {TypeError} when `target` is not an absolute `file:` URL for this platform. */
+export function fileURLToPath(target: URL): string {
+  return url.fileURLToPath(target)
+}
+
+/** @throws {never} */
+export function base64(bytes: Uint8Array): string {
+  return Buffer.from(bytes).toString("base64")
+}
+
+/** @throws {never} */
+export function utf8(bytes: Uint8Array): string {
+  return Buffer.from(bytes).toString("utf8")
+}
+
+/** @throws {never} */
+export function utf8Bytes(text: string): Buffer {
+  return Buffer.from(text)
+}
+
+/**
+ * The bytes of a `data:` URL. Base64 payloads must be canonical.
+ * @throws {Error} when the URL has no comma, its base64 payload is not canonical, or its text is malformed.
+ */
+export function decodeDataURLBytes(uri: string): Buffer {
+  const comma = uri.indexOf(",")
+  if (comma === -1) throw new Error("Invalid data URL")
+  const metadata = uri.slice(5, comma)
+  const payload = uri.slice(comma + 1)
+  if (!metadata.split(";").some((part) => part.toLowerCase() === "base64"))
+    return Buffer.from(decodeURIComponent(payload))
+  const bytes = Buffer.from(payload, "base64")
+  if (bytes.toString("base64") !== payload) throw new Error("Non-canonical base64")
+  return bytes
+}

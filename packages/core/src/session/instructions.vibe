@@ -1,6 +1,6 @@
 export * as SessionInstructions from "./instructions.js"
 
-import { relative } from "path"
+import { relative } from "./instructions.platform.js"
 import { Context, Effect, Layer, Option, Ref, Schema } from "effect"
 import { makeLocationNode } from "@opencode/util/effect/app-node"
 import { Bus } from "../bus.js"

@@ -6,6 +6,8 @@ Release notes for OpenCode V2, newest first.
 
 ### Changed
 
+- TUI Zed editor selection now uses VibeLang while preserving native file, path and process access.
+
 - Code mode program execution now uses VibeLang while preserving its declarations and its defects for failing built-in setup and error normalization.
 
 - The browser plugin proxy, connection and tunnel now use VibeLang while preserving their declarations and native HTTP, socket and crypto access.

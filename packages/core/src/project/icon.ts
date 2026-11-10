@@ -1,5 +1,6 @@
 export * as ProjectIcon from "./icon.js"
 
+import path from "path"
 import { Effect, Option, Schema } from "effect"
 import { eq } from "drizzle-orm"
 import { FSUtil } from "@opencode/util/fs-util"
@@ -7,7 +8,6 @@ import { Hash } from "@opencode/util/hash"
 import type { EffectDrizzleSqlite } from "../database/drizzle.js"
 import { ProjectTable } from "./sql.js"
 import type { ProjectSchema } from "./schema.js"
-import { base64, extname, join, relative, utf8 } from "./icon.platform.js"
 
 const IMAGES = new Set([".svg", ".png", ".ico", ".jpg", ".jpeg", ".webp"])
 const CANDIDATES = [
@@ -72,24 +72,24 @@ export const discover = Effect.fn("ProjectIcon.discover")(function* (fs: FSUtil.
     ...catalogs,
     "resources/windows",
   ]) {
-    const candidate = yield* fs.realPath(join(root, name)).pipe(Effect.orElseSucceed(() => undefined))
+    const candidate = yield* fs.realPath(path.join(root, name)).pipe(Effect.orElseSucceed(() => undefined))
     if (!candidate || candidate === root || !FSUtil.contains(root, candidate)) continue
     if (name.endsWith(".icon")) {
-      const manifest = yield* read(fs, root, join(candidate, "icon.json"), new Set([".json"]))
-      const config = manifest ? Option.getOrUndefined(composer(utf8(manifest.bytes))) : undefined
+      const manifest = yield* read(fs, root, path.join(candidate, "icon.json"), new Set([".json"]))
+      const config = manifest ? Option.getOrUndefined(composer(manifest.bytes.toString("utf8"))) : undefined
       for (const layer of config?.groups.flatMap((group) => group.layers) ?? []) {
         if (!layer["image-name"]) continue
         const image = yield* read(
           fs,
           root,
-          join(candidate, "Assets", layer["image-name"]),
+          path.join(candidate, "Assets", layer["image-name"]),
           new Set([".svg", ".png"]),
         )
         if (!image) continue
         const plain = dataURL(image.file, image.bytes)
         const url = image.file.endsWith(".svg") ? backdrop(plain, config?.fill) : plain
-        if (url.length <= 64 * 1024) return { path: relative(root, image.file), url }
-        if (plain.length <= 64 * 1024) return { path: relative(root, image.file), url: plain }
+        if (url.length <= 64 * 1024) return { path: path.relative(root, image.file), url }
+        if (plain.length <= 64 * 1024) return { path: path.relative(root, image.file), url: plain }
       }
       continue
     }
@@ -103,19 +103,19 @@ export const discover = Effect.fn("ProjectIcon.discover")(function* (fs: FSUtil.
     const files = entries
       ?.flatMap((e) =>
         e.type === "file" &&
-        (windows ? /^icon-\d+\.png$/i.test(e.name) : IMAGES.has(extname(e.name).toLowerCase()))
+        (windows ? /^icon-\d+\.png$/i.test(e.name) : IMAGES.has(path.extname(e.name).toLowerCase()))
           ? [e.name]
           : [],
       )
       .toSorted()
       .sort((a, b) => rank(a) - rank(b))
       .slice(0, 128)
-      .map((file) => join(candidate, file)) ?? [candidate]
+      .map((file) => path.join(candidate, file)) ?? [candidate]
     for (const file of files) {
       const image = yield* read(fs, root, file, IMAGES)
       if (!image) continue
       const url = dataURL(image.file, image.bytes)
-      if (url.length <= 64 * 1024) return { path: relative(root, image.file), url }
+      if (url.length <= 64 * 1024) return { path: path.relative(root, image.file), url }
     }
   }
 })
@@ -123,18 +123,18 @@ export const discover = Effect.fn("ProjectIcon.discover")(function* (fs: FSUtil.
 const read = Effect.fn("ProjectIcon.read")(
   function* (fs: FSUtil.Interface, root: string, name: string, extensions: ReadonlySet<string>) {
     const file = yield* fs.realPath(name)
-    if (file === root || !FSUtil.contains(root, file) || !extensions.has(extname(file).toLowerCase())) return
+    if (file === root || !FSUtil.contains(root, file) || !extensions.has(path.extname(file).toLowerCase())) return
     const info = yield* fs.stat(file)
     if (info.type !== "File" || !Number(info.size) || Number(info.size) > 64 * 1024) return
     const bytes = yield* fs.readFile(file)
-    if (bytes.byteLength && bytes.byteLength <= 64 * 1024) return { file, bytes }
+    if (bytes.byteLength && bytes.byteLength <= 64 * 1024) return { file, bytes: Buffer.from(bytes) }
   },
   Effect.orElseSucceed(() => undefined),
 )
 
-function dataURL(file: string, bytes: Uint8Array | string) {
-  const mime = extname(file).toLowerCase() === ".ico" ? "image/x-icon" : FSUtil.mimeType(file)
-  return `data:${mime};base64,${base64(bytes)}`
+function dataURL(file: string, bytes: Buffer) {
+  const mime = path.extname(file).toLowerCase() === ".ico" ? "image/x-icon" : FSUtil.mimeType(file)
+  return `data:${mime};base64,${bytes.toString("base64")}`
 }
 
 function backdrop(url: string, fill: { solid?: string; "linear-gradient"?: ReadonlyArray<string> } | undefined) {
@@ -158,6 +158,8 @@ function backdrop(url: string, fill: { solid?: string; "linear-gradient"?: Reado
   // Embed the layer as an image, never as SVG markup: its content stays in an inert image document.
   return dataURL(
     "icon.svg",
-    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">${gradient}<rect width="128" height="128" rx="28" fill="${colors.length > 1 ? "url(#bg)" : colors[0]}"/><image width="128" height="128" href="${url}"/></svg>`,
+    Buffer.from(
+      `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">${gradient}<rect width="128" height="128" rx="28" fill="${colors.length > 1 ? "url(#bg)" : colors[0]}"/><image width="128" height="128" href="${url}"/></svg>`,
+    ),
   )
 }

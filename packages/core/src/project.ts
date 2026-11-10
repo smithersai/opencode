@@ -3,7 +3,7 @@ export * as Project from "./project.js"
 import { Cache, Context, Duration, Effect, Layer, Schedule, Schema, Scope } from "effect"
 import { ChildProcess } from "effect/process"
 import { and, asc, desc, eq, gte, isNotNull, isNull, lt, lte, ne, sql } from "drizzle-orm"
-import { path } from "./project.platform.js"
+import path from "path"
 import { AbsolutePath } from "./schema.js"
 import { Bus } from "./bus.js"
 import { Database } from "./database/database.js"
@@ -222,17 +222,12 @@ const layer = Layer.effect(
             },
             {
               commit: () =>
-                Effect.try({
-                  try: () =>
-                    db
-                      .insert(WorktreeTable)
-                      .values({ project_id: item.projectID, directory: item.directory, strategy: item.strategy })
-                      .onConflictDoNothing(),
-                  catch: (cause) => cause,
-                }).pipe(
-                  Effect.orDie,
-                  Effect.flatMap((query) => query.run().pipe(Effect.orDie, Effect.asVoid)),
-                ),
+                db
+                  .insert(WorktreeTable)
+                  .values({ project_id: item.projectID, directory: item.directory, strategy: item.strategy })
+                  .onConflictDoNothing()
+                  .run()
+                  .pipe(Effect.orDie, Effect.asVoid),
             },
           )
         }).pipe(Effect.ensuring(Effect.sync(() => announcing.delete(key))))

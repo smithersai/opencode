@@ -6,12 +6,11 @@ import { eq } from "drizzle-orm"
 import { Clock, Context, Deferred, Duration, Effect, Exit, FiberSet, Layer, Ref, Schedule, Schema, Scope } from "effect"
 import { systemError } from "effect/PlatformError"
 import { make } from "effect/process/ChildProcessSpawner"
-import type { EnvironmentDriver } from "./environment/driver.js"
+import type { EnvironmentDriver } from "./environment/driver.vibe"
 import { execDefaults } from "./environment/exec-defaults.js"
 import { Failed, type Files, type FilesImpl } from "./environment/files.js"
 import { Database } from "./database/database.js"
 import { KeyedMutex } from "./effect/keyed-mutex.js"
-import { withKeyedLock } from "./effect/keyed-mutex.native.js"
 import { WorkspaceDriver } from "./workspace/driver.js"
 import { WorkspaceTable } from "./workspace/sql.js"
 
@@ -94,13 +93,7 @@ const layer = (options: Options) =>
       const idleThreshold = Duration.toMillis(options.idleThreshold ?? Duration.minutes(20))
 
       const find = (workspaceID: ID) =>
-        Effect.try({
-          try: () => db.select().from(WorkspaceTable).where(eq(WorkspaceTable.id, workspaceID)),
-          catch: (cause) => cause,
-        }).pipe(
-          Effect.orDie,
-          Effect.flatMap((query) => query.get().pipe(Effect.orDie)),
-        )
+        db.select().from(WorkspaceTable).where(eq(WorkspaceTable.id, workspaceID)).get().pipe(Effect.orDie)
 
       const load = Effect.fn("Workspace.load")(function* (workspaceID: ID) {
         const row = yield* find(workspaceID)
@@ -109,13 +102,7 @@ const layer = (options: Options) =>
       })
 
       const saveBinding = (workspaceID: ID, binding: WorkspaceDriver.Binding) =>
-        Effect.try({
-          try: () => db.update(WorkspaceTable).set({ binding }).where(eq(WorkspaceTable.id, workspaceID)),
-          catch: (cause) => cause,
-        }).pipe(
-          Effect.orDie,
-          Effect.flatMap((query) => query.run().pipe(Effect.orDie)),
-        )
+        db.update(WorkspaceTable).set({ binding }).where(eq(WorkspaceTable.id, workspaceID)).run().pipe(Effect.orDie)
 
       const info = (row: typeof WorkspaceTable.$inferSelect, binding: WorkspaceDriver.Binding) =>
         new Info({
@@ -134,28 +121,28 @@ const layer = (options: Options) =>
           const attempt = Deferred.makeUnsafe<Info, ReadinessError>()
           attempts.set(workspaceID, attempt)
           fork(
-            withKeyedLock(
-              locks,
-              workspaceID,
-              Effect.gen(function* () {
-                const row = yield* load(workspaceID)
-                if (row.binding) return info(row, row.binding)
-                const driver = yield* registry.get(row.provider)
-                const result = yield* driver.create({ workspaceID })
-                yield* saveBinding(workspaceID, result.binding)
-                return info(row, result.binding)
-              }),
-            ).pipe(
-              Effect.raceFirst(Deferred.await(attempt)),
-              Effect.onExit((exit) =>
-                Effect.sync(() => {
-                  if (attempts.get(workspaceID) === attempt) attempts.delete(workspaceID)
-                  Deferred.doneUnsafe(attempt, exit)
+            locks
+              .withLock(workspaceID)(
+                Effect.gen(function* () {
+                  const row = yield* load(workspaceID)
+                  if (row.binding) return info(row, row.binding)
+                  const driver = yield* registry.get(row.provider)
+                  const result = yield* driver.create({ workspaceID })
+                  yield* saveBinding(workspaceID, result.binding)
+                  return info(row, result.binding)
                 }),
+              )
+              .pipe(
+                Effect.raceFirst(Deferred.await(attempt)),
+                Effect.onExit((exit) =>
+                  Effect.sync(() => {
+                    if (attempts.get(workspaceID) === attempt) attempts.delete(workspaceID)
+                    Deferred.doneUnsafe(attempt, exit)
+                  }),
+                ),
+                Effect.exit,
+                Effect.asVoid,
               ),
-              Effect.exit,
-              Effect.asVoid,
-            ),
           )
           return Deferred.await(attempt)
         }),
@@ -206,9 +193,7 @@ const layer = (options: Options) =>
         yield* Effect.forEach(
           [...connections.entries()],
           ([workspaceID, expected]) =>
-            withKeyedLock(
-              locks,
-              workspaceID,
+            locks.withLock(workspaceID)(
               Effect.gen(function* () {
                 const connection = connections.get(workspaceID)
                 if (connection !== expected || (yield* Ref.get(connection.active)) > 0) return
@@ -278,9 +263,7 @@ const layer = (options: Options) =>
             // A live connection implies the binding is already persisted, so skip the provision hop.
             Effect.suspend(() => (connections.has(workspaceID) ? Effect.void : provision(workspaceID))).pipe(
               Effect.andThen(
-                withKeyedLock(
-                  locks,
-                  workspaceID,
+                locks.withLock(workspaceID)(
                   Effect.gen(function* () {
                     const connection = yield* open(workspaceID)
                     yield* Ref.set(connection.lastActivity, yield* Clock.currentTimeMillis)
@@ -291,9 +274,7 @@ const layer = (options: Options) =>
               ),
             ),
             (connection) =>
-              withKeyedLock(
-                locks,
-                workspaceID,
+              locks.withLock(workspaceID)(
                 Effect.gen(function* () {
                   yield* Ref.update(connection.active, (active) => active - 1)
                   yield* Ref.set(connection.lastActivity, yield* Clock.currentTimeMillis)

@@ -1,5 +1,7 @@
 export * as Git from "./git.js"
 
+import os from "os"
+import path from "path"
 import { Cause, Context, Deferred, Effect, Exit, Layer, Option, Schedule, Schema } from "effect"
 import { ChildProcess } from "effect/process"
 import { AbsolutePath, RelativePath } from "./schema.js"
@@ -8,8 +10,6 @@ import { AppProcess } from "@opencode/util/process"
 import { makeGlobalNode } from "@opencode/util/effect/app-node"
 import { FileDiff } from "@opencode/schema/file-diff"
 import { KeyedMutex } from "./effect/keyed-mutex.js"
-import { withKeyedLock } from "./effect/keyed-mutex.native.js"
-import { byteLength, compareBytes, hex, homedir, hostEnv, isWindows, path, pid } from "./git.platform.js"
 import { VcsPatch } from "./vcs/patch.js"
 import { gitExecutable } from "./util/git-executable.js"
 
@@ -47,7 +47,7 @@ const temporaryIndexPrefix = "index.opencode-"
 // Like `git gc --auto`, pack once loose objects accumulate, and combine packs before lookups slow down.
 // Room for paths on one Git command line after the Git path, repository flags, and quoting. Windows caps a command
 // line at 32,767 characters. macOS caps arguments plus environment at 1 MiB, and Linux caps them at 2 MiB by default.
-const argumentBudget = isWindows() ? 24_000 : 128 * 1024
+const argumentBudget = process.platform === "win32" ? 24_000 : 128 * 1024
 const looseObjectLimit = 2048
 const packCountLimit = 16
 
@@ -209,7 +209,7 @@ const layer = Layer.effect(
     const proc = yield* AppProcess.Service
     const locks = KeyedMutex.makeUnsafe<string>()
     const locked = <A, E, R>(repository: Repository, effect: Effect.Effect<A, E, R>) =>
-      withKeyedLock(locks, repository.gitDirectory, effect)
+      locks.withLock(repository.gitDirectory)(effect)
 
     const discover = Effect.fn("Git.repo.discover")(function* (input: AbsolutePath) {
       const dotgit = yield* fs.up({ targets: [".git"], start: input, mode: "first" }).pipe(
@@ -257,8 +257,8 @@ const layer = Layer.effect(
       if (head === undefined) return undefined
       const ref = head.startsWith("ref:") ? head.slice(4).trim() : undefined
 
-      const home = hostEnv("HOME") || homedir()
-      const nosystem = ["1", "true", "yes", "on"].includes((hostEnv("GIT_CONFIG_NOSYSTEM") ?? "").toLowerCase())
+      const home = process.env.HOME || os.homedir()
+      const nosystem = ["1", "true", "yes", "on"].includes((process.env.GIT_CONFIG_NOSYSTEM ?? "").toLowerCase())
       const files = [
         path.join(gitDir, "HEAD"),
         path.join(commonDir, "config"),
@@ -268,9 +268,9 @@ const layer = Layer.effect(
         path.join(commonDir, "reftable", "tables.list"),
         path.join(commonDir, "opencode"),
         ...(ref ? [path.join(commonDir, ref), path.join(gitDir, ref)] : []),
-        hostEnv("GIT_CONFIG_GLOBAL") || path.join(home, ".gitconfig"),
-        path.join(hostEnv("XDG_CONFIG_HOME") || path.join(home, ".config"), "git", "config"),
-        ...(nosystem ? [] : [hostEnv("GIT_CONFIG_SYSTEM") || "/etc/gitconfig"]),
+        process.env.GIT_CONFIG_GLOBAL || path.join(home, ".gitconfig"),
+        path.join(process.env.XDG_CONFIG_HOME || path.join(home, ".config"), "git", "config"),
+        ...(nosystem ? [] : [process.env.GIT_CONFIG_SYSTEM || "/etc/gitconfig"]),
       ]
       const stamps = yield* Effect.forEach([dotGit, ...files], stamp, { concurrency: "unbounded" })
       return [gitDir, commonDir, head, ...files, ...stamps].join("\0")
@@ -445,7 +445,7 @@ const layer = Layer.effect(
      * exit is retried, never a failure to start Git, and other platforms fail on the first attempt.
      */
     const retryConcurrentObjectWrite = <A, R>(effect: Effect.Effect<A, OperationError, R>) =>
-      isWindows()
+      process.platform === "win32"
         ? effect.pipe(
             Effect.retry({
               times: 2,
@@ -1100,7 +1100,7 @@ const layer = Layer.effect(
             patch: stat?.binary ? "" : (patches.get(entry.file) ?? VcsPatch.emptyPatch(entry.file)),
           } satisfies FileDiff.Info
         }),
-        patchBytes: byteLength(patch.text),
+        patchBytes: Buffer.byteLength(patch.text),
         truncated: patch.truncated,
       }
     })
@@ -1400,7 +1400,7 @@ const layer = Layer.effect(
           Effect.orElseSucceed(() => false),
         )
         if (stale) yield* fs.remove(file, { force: true }).pipe(Effect.ignore)
-        const acquired = yield* fs.writeFileString(file, String(pid()), { flag: "wx" }).pipe(
+        const acquired = yield* fs.writeFileString(file, String(process.pid), { flag: "wx" }).pipe(
           Effect.as(true),
           Effect.orElseSucceed(() => false),
         )
@@ -1512,26 +1512,24 @@ function run(cwd: string, proc: AppProcess.Interface, args: string[]) {
 }
 
 function execute(cwd: string, proc: AppProcess.Interface, args: string[]) {
-  return Effect.try({ try: () => gitExecutable(), catch: (cause) => cause }).pipe(
-    Effect.orDie,
-    Effect.flatMap((executable) =>
-      proc.run(
-        ChildProcess.make(executable, args, {
-          cwd,
-          extendEnv: true,
-          stdin: "ignore",
-        }),
+  return proc
+    .run(
+      ChildProcess.make(gitExecutable(), args, {
+        cwd,
+        extendEnv: true,
+        stdin: "ignore",
+      }),
+    )
+    .pipe(
+      Effect.map(
+        (result) =>
+          ({
+            exitCode: result.exitCode,
+            text: result.stdout.toString("utf8"),
+            stderr: result.stderr.toString("utf8"),
+          }) satisfies Result,
       ),
-    ),
-    Effect.map(
-      (result) =>
-        ({
-          exitCode: result.exitCode,
-          text: result.stdout.toString("utf8"),
-          stderr: result.stderr.toString("utf8"),
-        }) satisfies Result,
-    ),
-  )
+    )
 }
 
 /** Split NUL-terminated git output into its records. */
@@ -1576,7 +1574,7 @@ function packIndexObjectIDs(bytes: Uint8Array) {
   const hash = (bytes.length - 1032 - 8 * count) / (count + 2)
   if (hash !== 20 && hash !== 32) return undefined
   return Array.from({ length: count }, (_, index) =>
-    hex(bytes.subarray(1032 + index * hash, 1032 + (index + 1) * hash)),
+    Buffer.from(bytes.subarray(1032 + index * hash, 1032 + (index + 1) * hash)).toString("hex"),
   )
 }
 
@@ -1587,7 +1585,7 @@ function packIndexObjectIDs(bytes: Uint8Array) {
  */
 function pathGroups(paths: readonly RelativePath[]) {
   return paths
-    .toSorted((left, right) => compareBytes(left, right))
+    .toSorted((left, right) => Buffer.compare(Buffer.from(left), Buffer.from(right)))
     .reduce<{ groups: RelativePath[][]; length: number }>(
       (state, file) => {
         const cost = file.length + 3
@@ -1603,7 +1601,7 @@ function pathGroups(paths: readonly RelativePath[]) {
 }
 
 function uniqueSuffix() {
-  return `${pid()}-${Math.random().toString(36).slice(2)}`
+  return `${process.pid}-${Math.random().toString(36).slice(2)}`
 }
 
 function resolvePath(cwd: string, value: string) {

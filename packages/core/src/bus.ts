@@ -9,7 +9,7 @@ import { EventSequenceTable, EventTable } from "./event/sql.js"
 import type { Location } from "@opencode/schema/location"
 import { KeyedMutex } from "./effect/keyed-mutex.js"
 import { makeGlobalNode } from "@opencode/util/effect/app-node"
-import { isDeepStrictEqual } from "./bus.platform.js"
+import { isDeepStrictEqual } from "node:util"
 import { Durable } from "@opencode/schema/durable-event-manifest"
 import { SessionEvent } from "@opencode/schema/session-event"
 import { SessionLegacy } from "@opencode/schema/session-legacy"
@@ -75,7 +75,7 @@ const envelope = (aggregateID: string, seq: number, version: number) => ({
 const decodeStoredData = (definition: Event.DurableDefinition, data: unknown) =>
   Schema.decodeUnknownSync(definition.data)(SessionLegacy.event(definition.type, data))
 
-const decodeSerializedEvent = effect (event: SerializedEvent): Event.Payload!InvalidDurableEventError => {
+const decodeSerializedEvent = (event: SerializedEvent): Event.Payload => {
   const definition = Durable.get(event.type)
   if (!definition?.durable) {
     throw new InvalidDurableEventError({ type: event.type, message: `Unknown durable event type ${event.type}` })
@@ -348,10 +348,7 @@ export function configured(options?: Options) {
                             stored.type === versionedType(definition.type, durable.version) &&
                             stored.created === (event.created ?? 0) &&
                             // Rows written before a payload rename compare in their upgraded shape.
-                            (yield* Effect.try({
-                              try: () => isDeepStrictEqual(SessionLegacy.event(definition.type, stored.data), encode()),
-                              catch: (error) => error,
-                            }).pipe(Effect.orDie))
+                            isDeepStrictEqual(SessionLegacy.event(definition.type, stored.data), encode())
                           ) {
                             if (input.ownerID && row?.ownerID == null) {
                               yield* db
@@ -721,18 +718,12 @@ export function configured(options?: Options) {
         }
 
         function claim(aggregateID: string, ownerID: string) {
-          return Effect.try({
-            try: () =>
-              db
-                .update(EventSequenceTable)
-                .set({ owner_id: ownerID })
-                .where(eq(EventSequenceTable.aggregate_id, aggregateID)),
-            catch: (error) => error,
-          }).pipe(
-            Effect.orDie,
-            Effect.flatMap((query) => query.run()),
-            Effect.orDie,
-          )
+          return db
+            .update(EventSequenceTable)
+            .set({ owner_id: ownerID })
+            .where(eq(EventSequenceTable.aggregate_id, aggregateID))
+            .run()
+            .pipe(Effect.orDie)
         }
 
         const local = <A extends Event.Payload>(stream: Stream.Stream<A>) =>
@@ -799,56 +790,41 @@ export function configured(options?: Options) {
         ) =>
           (options?.beforeAggregateRead?.(aggregateID) ?? Effect.void).pipe(
             Effect.andThen(
-              Effect.suspend(() =>
-                Effect.try({
-                  try: () => {
-                    const query = db
-                      .select()
-                      .from(EventTable)
-                      .where(
-                        and(
-                          eq(EventTable.aggregate_id, aggregateID),
-                          gt(EventTable.seq, after),
-                          lte(EventTable.seq, input.through),
-                        ),
-                      )
-                      .orderBy(asc(EventTable.seq))
-                    return query.limit(input.limit)
-                  },
-                  catch: (error) => error,
-                }).pipe(
-                  Effect.orDie,
-                  Effect.flatMap((query) => query.all()),
-                ),
-              ),
+              Effect.suspend(() => {
+                const query = db
+                  .select()
+                  .from(EventTable)
+                  .where(
+                    and(
+                      eq(EventTable.aggregate_id, aggregateID),
+                      gt(EventTable.seq, after),
+                      lte(EventTable.seq, input.through),
+                    ),
+                  )
+                  .orderBy(asc(EventTable.seq))
+                return query.limit(input.limit).all()
+              }),
             ),
             Effect.orDie,
             // Skip types missing from the durable manifest instead of failing the
             // read: the aggregate may hold events this process cannot decode. The
             // raw tail seq keeps cursors advancing across the resulting gaps.
-            Effect.flatMap((rows) =>
-              Effect.all(
-                rows.flatMap((event) => {
-                  if (!Durable.get(event.type)?.durable) return []
-                  return [
-                    decodeSerializedEvent({
-                      id: event.id,
-                      created: event.created,
-                      aggregateID: event.aggregate_id,
-                      seq: event.seq,
-                      type: event.type,
-                      data: event.data,
-                    }),
-                  ]
-                }),
-              ).pipe(
-                Effect.orDie,
-                Effect.map((events) => ({
-                  seq: rows.at(-1)?.seq,
-                  events,
-                })),
-              ),
-            ),
+            Effect.map((rows) => ({
+              seq: rows.at(-1)?.seq,
+              events: rows.flatMap((event) => {
+                if (!Durable.get(event.type)?.durable) return []
+                return [
+                  decodeSerializedEvent({
+                    id: event.id,
+                    created: event.created,
+                    aggregateID: event.aggregate_id,
+                    seq: event.seq,
+                    type: event.type,
+                    data: event.data,
+                  }),
+                ]
+              }),
+            })),
           )
 
         const subscribeDurable = (aggregateID: string) =>

@@ -1,8 +1,8 @@
+import path from "node:path"
 import { Effect, PlatformError } from "effect"
 import { make } from "effect/process/ChildProcessSpawner"
-import type { Driver } from "./driver.js"
+import type { Driver } from "./driver.vibe"
 import { Failed, NotFound, WrongKind, type FileInfo, type FilesImpl, type FileType } from "./files.js"
-import { posix } from "./memory.platform.js"
 
 type Node =
   | { readonly type: "file"; readonly bytes: Uint8Array; readonly mtimeMs: number }
@@ -15,7 +15,7 @@ export interface MemoryDriver extends Driver {
 
 export const makeMemoryDriver = (): MemoryDriver => {
   const nodes = new Map<string, Node>([["/", { type: "directory", mtimeMs: Date.now() }]])
-  const key = (value: string) => posix.resolve("/", value)
+  const key = (value: string) => path.posix.resolve("/", value)
   const info = (node: Node): FileInfo => ({
     type: node.type,
     size:
@@ -33,31 +33,30 @@ export const makeMemoryDriver = (): MemoryDriver => {
     const walk = (current: string, index: number): string | undefined => {
       if (index === parts.length) return current
       const part = parts[index]
-      const candidate = posix.join(current, part)
+      const candidate = path.posix.join(current, part)
       const node = nodes.get(candidate)
       if (node?.type !== "symlink" || (!followFinal && index === parts.length - 1)) return walk(candidate, index + 1)
       if (seen.has(candidate)) return undefined
       seen.add(candidate)
-      const target = posix.resolve(posix.dirname(candidate), node.target)
-      return resolveKey(posix.join(target, ...parts.slice(index + 1)), followFinal, seen)
+      const target = path.posix.resolve(path.posix.dirname(candidate), node.target)
+      return resolveKey(path.posix.join(target, ...parts.slice(index + 1)), followFinal, seen)
     }
     return walk(base, 0)
   }
   const lookup = (value: string) => nodes.get(resolveKey(value, false) ?? key(value))
-  // Tree violations fail with an Error that each operation reports as Failed.
-  const requireParent = effect (value: string): void!Error => {
-    const parentPath = posix.dirname(key(value))
+  const requireParent = (value: string) => {
+    const parentPath = path.posix.dirname(key(value))
     const parent = nodes.get(resolveKey(parentPath, true) ?? parentPath)
-    if (!parent) throw new Error(`Parent directory does not exist: ${posix.dirname(value)}`)
-    if (parent.type !== "directory") throw new Error(`Parent is not a directory: ${posix.dirname(value)}`)
+    if (!parent) throw new Error(`Parent directory does not exist: ${path.posix.dirname(value)}`)
+    if (parent.type !== "directory") throw new Error(`Parent is not a directory: ${path.posix.dirname(value)}`)
   }
-  const mkdirAll = effect (value: string): void!Error => {
+  const mkdirSync = (value: string) => {
     const target = resolveKey(value, false) ?? key(value)
     const existing = nodes.get(target)
     if (existing?.type === "directory") return
     if (existing) throw new Error(`Path is not a directory: ${value}`)
-    const parent = posix.dirname(target)
-    if (parent !== target) try mkdirAll(parent)
+    const parent = path.posix.dirname(target)
+    if (parent !== target) mkdirSync(parent)
     nodes.set(target, { type: "directory", mtimeMs: Date.now() })
   }
   const failed = (value: string, cause: unknown) => new Failed({ path: value, cause })
@@ -80,18 +79,18 @@ export const makeMemoryDriver = (): MemoryDriver => {
         return { info: info(node), bytes: bytes.slice() }
       }),
     write: (value, bytes) =>
-      Effect.mapError(
-        effect {
-          try mkdirAll(posix.dirname(key(value)))
+      Effect.try({
+        try: () => {
+          mkdirSync(path.posix.dirname(key(value)))
           const existing = lookup(value)
           if (existing?.type === "directory") throw new Error(`Path is a directory: ${value}`)
           const target = existing?.type === "symlink" ? resolveKey(value, true) : resolveKey(value, false)
           if (!target) throw new Error(`Cannot resolve symlink: ${value}`)
-          try requireParent(target)
+          requireParent(target)
           nodes.set(target, { type: "file", bytes: bytes.slice(), mtimeMs: Date.now() })
         },
-        (cause) => failed(value, cause),
-      ),
+        catch: (cause) => failed(value, cause),
+      }),
     list: (value) =>
       Effect.gen(function* () {
         const target = resolveKey(value, true) ?? key(value)
@@ -99,8 +98,8 @@ export const makeMemoryDriver = (): MemoryDriver => {
         if (!node) return yield* new NotFound({ path: value })
         if (node.type !== "directory") return yield* new WrongKind({ path: value, actual: node.type })
         return [...nodes.entries()]
-          .filter(([entry]) => entry !== target && posix.dirname(entry) === target)
-          .map(([entry, child]) => ({ name: posix.basename(entry), type: child.type satisfies FileType }))
+          .filter(([entry]) => entry !== target && path.posix.dirname(entry) === target)
+          .map(([entry, child]) => ({ name: path.posix.basename(entry), type: child.type satisfies FileType }))
           .sort((a, b) => a.name.localeCompare(b.name))
       }),
     remove: (value) =>
@@ -115,12 +114,12 @@ export const makeMemoryDriver = (): MemoryDriver => {
         const source = resolveKey(from, false) ?? key(from)
         const node = nodes.get(source)
         if (!node) return yield* new NotFound({ path: from })
-        yield* Effect.mapError(
-          effect {
+        yield* Effect.try({
+          try: () => {
             const requested = resolveKey(to, false) ?? key(to)
             const destination =
               nodes.get(requested)?.type === "directory"
-                ? posix.join(requested, posix.basename(source))
+                ? path.posix.join(requested, path.posix.basename(source))
                 : requested
             if (node.type === "directory" && destination.startsWith(`${source}/`)) {
               throw new Error(`Cannot move a directory into itself: ${from}`)
@@ -129,15 +128,15 @@ export const makeMemoryDriver = (): MemoryDriver => {
             if (node.type === "directory" && existing && existing.type !== "directory") {
               throw new Error(`Cannot overwrite a non-directory with a directory: ${to}`)
             }
-            try requireParent(destination)
+            requireParent(destination)
             const moved = [...nodes.entries()].filter(([entry]) => entry === source || entry.startsWith(`${source}/`))
             for (const [entry] of moved) nodes.delete(entry)
             for (const [entry, child] of moved) nodes.set(`${destination}${entry.slice(source.length)}`, child)
           },
-          (cause) => failed(from, cause),
-        )
+          catch: (cause) => failed(from, cause),
+        })
       }),
-    mkdir: (value) => Effect.mapError(mkdirAll(value), (cause) => failed(value, cause)),
+    mkdir: (value) => Effect.try({ try: () => mkdirSync(value), catch: (cause) => failed(value, cause) }),
   }
 
   const spawner = make((command) =>
@@ -159,13 +158,13 @@ export const makeMemoryDriver = (): MemoryDriver => {
     spawner,
     overrides,
     symlink: (target, value) =>
-      Effect.mapError(
-        effect {
-          try requireParent(value)
+      Effect.try({
+        try: () => {
+          requireParent(value)
           nodes.set(resolveKey(value, false) ?? key(value), { type: "symlink", target, mtimeMs: Date.now() })
         },
-        (cause) => failed(value, cause),
-      ),
+        catch: (cause) => failed(value, cause),
+      }),
   }
 }
 

@@ -5,7 +5,6 @@ import { Cause, Duration, Effect, Fiber, Option, Queue, Scope, Stream } from "ef
 import { ChildProcess } from "effect/process"
 import type { ChildProcessHandle } from "effect/process/ChildProcessSpawner"
 import { Environment } from "../environment/index.js"
-import { bufferFrom } from "./stdio.platform.js"
 
 /** Mirrors StdioClientTransport: wait this long for a graceful exit after stdin closes. */
 const CLOSE_GRACE = Duration.seconds(2)
@@ -121,7 +120,7 @@ export const make = Effect.fnUntraced(function* (options: Options) {
         trailingBytes = byte === 10 ? 0 : trailingBytes + 1
         if (trailingBytes > MAX_FRAME_BYTES) return yield* Effect.fail(new Error("MCP stdio frame exceeded 16 MiB"))
       }
-      buffer.append(bufferFrom(chunk))
+      buffer.append(Buffer.from(chunk.buffer, chunk.byteOffset, chunk.byteLength))
       while (true) {
         // `undefined` means the frame failed to parse: the buffer has already advanced past it, so
         // keep draining. `null` means the buffer holds no complete frame yet.

@@ -19,11 +19,11 @@ import { OAuthMetadataSchema, OpenIdProviderDiscoveryMetadataSchema } from "@mod
 import { Cause, Deferred, Effect } from "effect"
 import type { ServerResponse } from "node:http"
 import { ConfigMCP } from "@opencode/schema/config/mcp"
+import { noTimeoutFetch } from "@opencode/util/no-timeout-fetch"
 import { Credential } from "../credential.js"
 import { OauthCallbackPage } from "../oauth/page.js"
 import type { Integration } from "../integration.js"
 import { ErrorSummary } from "../util/error-summary.js"
-import { fetchWithoutTimeout, importHttp, randomBase64Url, randomUUID } from "./oauth.platform.js"
 
 /** Client ID Metadata Document: servers that support CIMD accept this URL as the client_id without registration. */
 export const CLIENT_METADATA_URL = "https://opencode.ai/oauth/opencode/client.json"
@@ -39,7 +39,7 @@ const refreshKey = (url: string | URL, init: RequestInit | undefined) => {
 // Bun's and Node's fetch types both apply here and the SDK's FetchLike wants Bun's Response, so the
 // overload is picked by annotation and clone() is pinned to the type it was called on. A tool call
 // can stay silent for minutes, so Bun's idle deadline is off; the MCP execution timeout still applies.
-const base: FetchLike = fetchWithoutTimeout
+const base: FetchLike = noTimeoutFetch
 const share = (pending: ReturnType<FetchLike>) => pending.then((response) => response.clone() as typeof response)
 
 const send: FetchLike = (url, init) => {
@@ -86,19 +86,14 @@ export const loggedFetch = (fields: { readonly server: string; readonly director
         }).pipe(
           Effect.onError((cause) => {
             if (init?.signal?.aborted) return Effect.logDebug("mcp http request aborted")
-            return Effect.try({ try: () => ErrorSummary.from(Cause.squash(cause)), catch: (error) => error }).pipe(
-              Effect.orDie,
-              Effect.flatMap((errors) =>
-                Effect.logWarning("mcp http request failed", {
-                  errors,
-                  durationMs: Date.now() - started,
-                }),
-              ),
-            )
+            return Effect.logWarning("mcp http request failed", {
+              errors: ErrorSummary.from(Cause.squash(cause)),
+              durationMs: Date.now() - started,
+            })
           }),
           Effect.annotateLogs({
             ...fields,
-            requestID: randomUUID(),
+            requestID: crypto.randomUUID(),
             origin: new URL(url).origin,
             method: init?.method ?? "GET",
             ...(operation ? { operation } : {}),
@@ -203,7 +198,7 @@ export const provider = (options: Options): OAuthClientProvider => {
     saveClientInformation: (info) => options.store.saveClientInformation(info),
     tokens: () => options.store.tokens(),
     saveTokens: (tokens) => options.store.saveTokens(tokens),
-    redirectToAuthorization: async (url) => {
+    redirectToAuthorization: (url) => {
       if (!redirect) throw refuse("user authorization")
       if (url.protocol !== "http:" && url.protocol !== "https:")
         throw new Error(`MCP server "${options.config.url}" returned a ${url.protocol} authorization URL; only http and https are supported`)
@@ -341,7 +336,7 @@ export const authorize = (input: {
   readonly methodID: Integration.MethodID
 }) =>
   Effect.gen(function* () {
-    const fields = { server: input.name, methodID: input.methodID, oauthAttemptID: randomUUID() }
+    const fields = { server: input.name, methodID: input.methodID, oauthAttemptID: crypto.randomUUID() }
     const context = yield* Effect.context()
     const run = Effect.runPromiseWith(context)
     const runFork = Effect.runForkWith(context)
@@ -359,10 +354,10 @@ export const authorize = (input: {
     const code = yield* Deferred.make<{ code: string; iss: string | undefined; response: ServerResponse }, Error>()
     const redirect = oauth?.redirect_uri ? new URL(oauth.redirect_uri) : undefined
     const redirectPath = redirect?.pathname ?? "/callback"
-    const state = randomBase64Url(32)
+    const state = Buffer.from(crypto.getRandomValues(new Uint8Array(32))).toString("base64url")
 
     // Lazy so runtimes without a loopback listener (workerd) never evaluate node:http.
-    const { createServer } = yield* Effect.promise(() => importHttp())
+    const { createServer } = yield* Effect.promise(() => import("node:http"))
     const server = createServer((request, response) => {
       const url = new URL(request.url ?? "/", "http://127.0.0.1")
       if (url.pathname !== redirectPath) {
@@ -523,10 +518,7 @@ export const authorize = (input: {
       Effect.onErrorIf(
         (cause) => !Cause.hasInterruptsOnly(cause),
         (cause) =>
-          Effect.try({ try: () => ErrorSummary.from(Cause.squash(cause)), catch: (error) => error }).pipe(
-            Effect.orDie,
-            Effect.flatMap((errors) => Effect.logWarning("mcp oauth authorization failed", { errors })),
-          ),
+          Effect.logWarning("mcp oauth authorization failed", { errors: ErrorSummary.from(Cause.squash(cause)) }),
       ),
       Effect.annotateLogs(fields),
       Effect.exit,
@@ -542,15 +534,10 @@ export const authorize = (input: {
     }
   }).pipe(
     Effect.onError((cause) =>
-      Effect.try({ try: () => ErrorSummary.from(Cause.squash(cause)), catch: (error) => error }).pipe(
-        Effect.orDie,
-        Effect.flatMap((errors) =>
-          Effect.logWarning("mcp oauth authorization setup failed", {
-            server: input.name,
-            methodID: input.methodID,
-            errors,
-          }),
-        ),
-      ),
+      Effect.logWarning("mcp oauth authorization setup failed", {
+        server: input.name,
+        methodID: input.methodID,
+        errors: ErrorSummary.from(Cause.squash(cause)),
+      }),
     ),
   )

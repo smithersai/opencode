@@ -113,35 +113,21 @@ const layer = Layer.effect(
         ),
       ),
       all: Effect.fn("Credential.all")(() =>
-        Effect.try({
-          try: () =>
-            db
-              .select()
-              .from(CredentialTable)
-              .orderBy(asc(CredentialTable.active), asc(CredentialTable.time_created), asc(CredentialTable.id)),
-          catch: (error) => error,
-        }).pipe(
-          Effect.orDie,
-          Effect.flatMap((query) => query.all()),
-          Effect.orDie,
-          Effect.map(storedRows),
-        ),
+        db
+          .select()
+          .from(CredentialTable)
+          .orderBy(asc(CredentialTable.active), asc(CredentialTable.time_created), asc(CredentialTable.id))
+          .all()
+          .pipe(Effect.orDie, Effect.map(storedRows)),
       ),
       list: Effect.fn("Credential.list")((integrationID) =>
-        Effect.try({
-          try: () =>
-            db
-              .select()
-              .from(CredentialTable)
-              .where(eq(CredentialTable.integration_id, integrationID))
-              .orderBy(asc(CredentialTable.active), asc(CredentialTable.time_created), asc(CredentialTable.id)),
-          catch: (error) => error,
-        }).pipe(
-          Effect.orDie,
-          Effect.flatMap((query) => query.all()),
-          Effect.orDie,
-          Effect.map(storedRows),
-        ),
+        db
+          .select()
+          .from(CredentialTable)
+          .where(eq(CredentialTable.integration_id, integrationID))
+          .orderBy(asc(CredentialTable.active), asc(CredentialTable.time_created), asc(CredentialTable.id))
+          .all()
+          .pipe(Effect.orDie, Effect.map(storedRows)),
       ),
       get: Effect.fn("Credential.get")(function* (id) {
         const row = yield* db.select().from(CredentialTable).where(eq(CredentialTable.id, id)).get().pipe(Effect.orDie)
@@ -188,16 +174,11 @@ const layer = Layer.effect(
           )
           .pipe(
             Effect.onError((cause) =>
-              Effect.try({ try: () => ErrorSummary.from(Cause.squash(cause)), catch: (error) => error }).pipe(
-                Effect.orDie,
-                Effect.flatMap((errors) =>
-                  Effect.logError("credential create failed", {
-                    credentialID: credential.id,
-                    integrationID: credential.integrationID,
-                    errors,
-                  }),
-                ),
-              ),
+              Effect.logError("credential create failed", {
+                credentialID: credential.id,
+                integrationID: credential.integrationID,
+                errors: ErrorSummary.from(Cause.squash(cause)),
+              }),
             ),
             Effect.orDie,
           )
@@ -240,15 +221,10 @@ const layer = Layer.effect(
           )
           .pipe(
             Effect.onError((cause) =>
-              Effect.try({ try: () => ErrorSummary.from(Cause.squash(cause)), catch: (error) => error }).pipe(
-                Effect.orDie,
-                Effect.flatMap((errors) =>
-                  Effect.logError("credential activate failed", {
-                    credentialID: id,
-                    errors,
-                  }),
-                ),
-              ),
+              Effect.logError("credential activate failed", {
+                credentialID: id,
+                errors: ErrorSummary.from(Cause.squash(cause)),
+              }),
             ),
             Effect.orDie,
           )
@@ -266,15 +242,10 @@ const layer = Layer.effect(
           .get()
           .pipe(
             Effect.onError((cause) =>
-              Effect.try({ try: () => ErrorSummary.from(Cause.squash(cause)), catch: (error) => error }).pipe(
-                Effect.orDie,
-                Effect.flatMap((errors) =>
-                  Effect.logError("credential update lookup failed", {
-                    credentialID: id,
-                    errors,
-                  }),
-                ),
-              ),
+              Effect.logError("credential update lookup failed", {
+                credentialID: id,
+                errors: ErrorSummary.from(Cause.squash(cause)),
+              }),
             ),
             Effect.orDie,
           )
@@ -291,16 +262,11 @@ const layer = Layer.effect(
           .get()
           .pipe(
             Effect.onError((cause) =>
-              Effect.try({ try: () => ErrorSummary.from(Cause.squash(cause)), catch: (error) => error }).pipe(
-                Effect.orDie,
-                Effect.flatMap((errors) =>
-                  Effect.logError("credential update failed", {
-                    credentialID: id,
-                    integrationID: credential.integrationID,
-                    errors,
-                  }),
-                ),
-              ),
+              Effect.logError("credential update failed", {
+                credentialID: id,
+                integrationID: credential.integrationID,
+                errors: ErrorSummary.from(Cause.squash(cause)),
+              }),
             ),
             Effect.orDie,
           )
@@ -361,15 +327,10 @@ const layer = Layer.effect(
           )
           .pipe(
             Effect.onError((cause) =>
-              Effect.try({ try: () => ErrorSummary.from(Cause.squash(cause)), catch: (error) => error }).pipe(
-                Effect.orDie,
-                Effect.flatMap((errors) =>
-                  Effect.logError("credential remove failed", {
-                    credentialID: id,
-                    errors,
-                  }),
-                ),
-              ),
+              Effect.logError("credential remove failed", {
+                credentialID: id,
+                errors: ErrorSummary.from(Cause.squash(cause)),
+              }),
             ),
             Effect.orDie,
           )

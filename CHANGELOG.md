@@ -6,6 +6,8 @@ Release notes for OpenCode V2, newest first.
 
 ### Changed
 
+- The client local service lifecycle now uses VibeLang while preserving its declarations, with process signals in a native platform file.
+
 - The AI package entry, its image, speech, transcription, video and testing modules, the Anthropic Messages, OpenAI Chat, Open Responses, Gemini and Google Interactions protocols and Bedrock auth now use VibeLang while preserving their declarations, with file, Buffer, crypto and environment access in native platform files.
 
 - Config variable substitution and the command and plugin source loaders now use VibeLang, with path and URL access in native platform files.

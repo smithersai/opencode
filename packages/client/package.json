@@ -45,8 +45,8 @@
     },
     "./effect/api": "./src/effect/api.ts",
     "./effect/service": {
-      "types": "./src/effect/service.ts",
-      "vibelang-source": "./src/effect/service.ts",
+      "types": "./src/effect/service.d.vibe.ts",
+      "vibelang-source": "./src/effect/service.vibe",
       "default": "./.vibelang/js/src/effect/service.js"
     },
     "./mcp": "./src/mcp.ts"

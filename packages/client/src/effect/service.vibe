@@ -1,4 +1,5 @@
 import { Effect, FileSystem, Option, Schedule, Schema } from "effect"
+import { kill } from "./service.platform.js"
 import type { DiscoverOptions, EnsureOptions, StopOptions } from "../service.js"
 import { contenderPool, spawnServiceContender } from "../service-contender.js"
 import { defaultEnsureTiming, ensureTiming, type EnsureTiming } from "../service-timing.js"
@@ -169,10 +170,10 @@ const poll = (timing: EnsureTiming) =>
   Schedule.max([Schedule.spaced(timing.stopPollInterval), Schedule.recurs(timing.stopPollAttempts)])
 
 const signal = (pid: number, name: NodeJS.Signals) =>
-  Effect.try({ try: () => process.kill(pid, name), catch: (cause) => cause }).pipe(Effect.ignore)
+  Effect.try({ try: () => kill(pid, name), catch: (cause) => cause }).pipe(Effect.ignore)
 
 const stopped = Effect.fnUntraced(function* (pid: number) {
-  const running = yield* Effect.try({ try: () => process.kill(pid, 0), catch: () => false }).pipe(
+  const running = yield* Effect.try({ try: () => kill(pid, 0), catch: () => false }).pipe(
     Effect.orElseSucceed(() => false),
   )
   if (!running) return true

@@ -3,14 +3,14 @@
  "base": "../../../../..",
  "entry": {
   "format": 12,
-  "version": "0.0.13",
+  "version": "0.0.12",
   "project": {
    "relative": "packages/client/tsconfig.json"
   },
   "root": {
    "relative": "packages/client"
   },
-  "compiler": "IRz5b14TUibdYBEvhPUTA6mJv8JSD23XBFJj78CCrZI",
+  "compiler": "8x4fFYTvt9kAFgtq-M8Fi8-i1Gvo2mvmXI8e8XD6LJI",
   "configs": [
    {
     "path": {
@@ -54,7 +54,7 @@
      "relative": "packages/client/src"
     },
     null,
-    "LwZnQEDZa5Uy3Rh4scd01wXYRwhHWHJn77hbeU3mmyM",
+    "VloGER-83l-TTuNotJVgwiWgvgQq3uEEew3KwHtd_wE",
     []
    ],
    [
@@ -62,7 +62,7 @@
      "relative": "packages/client/src/effect"
     },
     null,
-    "_IDPoCp37m37AHC7WEU3FeiJNo5mtvXt9gF8ZgfGWqQ",
+    "qI6pZstzVMSxL_mX54H-QkG8BBYFYunJvUOzQGmJ3GY",
     []
    ],
    [
@@ -229,15 +229,15 @@
     "path": {
      "relative": "node_modules/.bun/vibelang-runtime@.vibelang-toolchain+vibelang-runtime-0.0.13-89b143f8885a.tgz+3183b44d2ba27203/node_modules/vibelang-runtime/package.json"
     },
-    "size": 7285,
-    "hash": "2ezKbbr_73QzO3IiWWq52T567nsHhcY1EzNXyd43DAs"
+    "size": 7565,
+    "hash": "cjCwf6GUH9V3Oz3SwjC6rkJhyDt1UZErLB5DQhfnM_M"
    },
    {
     "path": {
      "relative": "packages/schema/package.json"
     },
-    "size": 19930,
-    "hash": "JjxWDVJ1UheMFLVxbA7aGlWdgTiAhNBlOAFBTc7Ixto"
+    "size": 20082,
+    "hash": "I_VT9Z-JQPuKI3XTXKRVBvp8rpJM6vYTa6AmTSfYdT0"
    },
    {
     "path": {
@@ -257,8 +257,8 @@
     "path": {
      "relative": "packages/client/package.json"
     },
-    "size": 2873,
-    "hash": "B4D41kANNFurJlcY7PxytZoFY8uOc6A5TCBA-Y3wf2o"
+    "size": 2882,
+    "hash": "iuRfM8zTg-HmuQGpMmh8kNMXZDOg4vvrOPsvGwsOWjg"
    },
    {
     "path": {
@@ -1561,8 +1561,8 @@
     "path": {
      "relative": "node_modules/.bun/vibelang-runtime@.vibelang-toolchain+vibelang-runtime-0.0.13-89b143f8885a.tgz+3183b44d2ba27203/node_modules/vibelang-runtime/dist/match.d.ts"
     },
-    "size": 6984,
-    "hash": "2FsfAhYwF1fwC5e0LU4278-JVGYlmyyiLdE2ulgu2A0"
+    "size": 7419,
+    "hash": "drYx84Z5Gv1dNDLR4F4AIT2-O8cOMBw_I81gE8slkjg"
    },
    {
     "path": {
@@ -1582,8 +1582,8 @@
     "path": {
      "relative": "node_modules/.bun/vibelang-runtime@.vibelang-toolchain+vibelang-runtime-0.0.13-89b143f8885a.tgz+3183b44d2ba27203/node_modules/vibelang-runtime/dist/prelude-core.d.ts"
     },
-    "size": 2772,
-    "hash": "-F09SO-52bZw9ht9RpKGlrIWz0y1TQwQS5E6DXxUPQQ"
+    "size": 3205,
+    "hash": "qhCAyL8cDh72O1mKSoPv1Sz5QF8-tKizZQnAR6TeDno"
    },
    {
     "path": {
@@ -1883,8 +1883,8 @@
     "path": {
      "relative": "node_modules/.bun/vibelang-runtime@.vibelang-toolchain+vibelang-runtime-0.0.13-89b143f8885a.tgz+3183b44d2ba27203/node_modules/vibelang-runtime/dist/experimental/Window.d.ts"
     },
-    "size": 2301,
-    "hash": "Jgz07Sov3RhBpS50HAW-g5wQmxTspcjGXzQUavlym-g"
+    "size": 2850,
+    "hash": "O9v2vv8byQ429rLw9IT0CTdN4FDDxC6Jxs0YTGoJVdA"
    },
    {
     "path": {
@@ -2520,36 +2520,36 @@
     "path": {
      "relative": "packages/schema/src/project-id.vibe"
     },
-    "size": 273,
-    "hash": "eevA8suFnrqptCWaraOWHCgUh_H1gHicZWl6GNG1_ic"
+    "size": 271,
+    "hash": "nkQrcGE9aBgpRyiAQwBChRFf91mgpWw73AokcaUxjFw"
    },
    {
     "path": {
      "relative": "packages/schema/src/workspace-id.vibe"
     },
-    "size": 534,
-    "hash": "BhXgyBRHa2PEu7b5u4mZm_sl39yQvrEeu9u1q1dkRH8"
+    "size": 532,
+    "hash": "u05m3DDqiLnSzuaesweQFdSUMx2xUCK7iURh0639j-A"
    },
    {
     "path": {
      "relative": "packages/schema/src/location.vibe"
     },
-    "size": 1184,
-    "hash": "MRfCDQsNMv4hBjSFgyTx4UegIC8-ExEqnNiif8y4wLU"
+    "size": 1176,
+    "hash": "2YqRQ_VRFXNMIJomYxYiHaxdx3n3hOFL1I-zkP5ZCJk"
    },
    {
     "path": {
      "relative": "packages/schema/src/event.vibe"
     },
-    "size": 7108,
-    "hash": "cMn8kDUnXwYbzHvNteEKo4jNCzPlxyVsVgtaB53hX4Y"
+    "size": 7100,
+    "hash": "HeyZmwZQBWMGWD3gtyiiZ9mjdbxQfdxLhjLGTgq7Iw8"
    },
    {
     "path": {
      "relative": "packages/schema/src/skill.vibe"
     },
-    "size": 2448,
-    "hash": "Ix9uq5h8ilObX3IcFePkX5_Ni2V55Gtk8zZxjZ89Ti0"
+    "size": 2440,
+    "hash": "rivJ6sJIJyXeePPrv6f397_Ds65qt8nYs571Tg7m9p4"
    },
    {
     "path": {
@@ -2562,8 +2562,8 @@
     "path": {
      "relative": "packages/protocol/src/middleware/schema-error.vibe"
     },
-    "size": 222,
-    "hash": "RP5YzlYsbrCp-DTI55varXWEzGc--2k4qUP1HUpCtPA"
+    "size": 220,
+    "hash": "nFlUhnxgMeYxRBOYXTjzzdv20b3-1O13OTuLZx-_XoQ"
    },
    {
     "path": {
@@ -2576,22 +2576,22 @@
     "path": {
      "relative": "packages/schema/src/credential.vibe"
     },
-    "size": 2678,
-    "hash": "u0Y7KE4UfKhNq7oWff9ExTTmd3Nh5dE407YioGhngwE"
+    "size": 2668,
+    "hash": "bhZRiVUHY8lS2z8wT-mHr0rexrEmN1tuCZV5z8UwnCw"
    },
    {
     "path": {
      "relative": "packages/schema/src/connection.vibe"
     },
-    "size": 1498,
-    "hash": "GP3TCmqAdFzQF8H5qOTRQuWMwOBk1V3uCbKG6BfZv-g"
+    "size": 1492,
+    "hash": "aJGesZyMujta6CqSWg0btq1iOY-WX34G1zwDRCLrlpU"
    },
    {
     "path": {
      "relative": "packages/schema/src/form.vibe"
     },
-    "size": 7151,
-    "hash": "Pw73Pr_pszr9UV4UO4EnG5U1l9PWyBdbL7SNQf--Nwo"
+    "size": 7145,
+    "hash": "GODqM9O613eE48HrtShAo0eT5hF4f1xoe3Me4U_pYJg"
    },
    {
     "path": {
@@ -2604,8 +2604,8 @@
     "path": {
      "relative": "packages/schema/src/model-compatibility.vibe"
     },
-    "size": 3426,
-    "hash": "faPA6T7TVtdz1_SVaiEozV-EuzHJrgJ6uh3n3MhSX6Q"
+    "size": 3424,
+    "hash": "hKO8qw6EyJ_W3Bu2VoRH2aVj03BVEogXw2qG8yteWyM"
    },
    {
     "path": {
@@ -2618,8 +2618,8 @@
     "path": {
      "relative": "packages/schema/src/money.vibe"
     },
-    "size": 567,
-    "hash": "ORngOp1rwd-y1zfhpzoO63K7_F65kOgehyczTIrwycA"
+    "size": 563,
+    "hash": "hkisDliP5rVYUxK61JtCb1Zk3PByHuQWmFjbBYgq-9o"
    },
    {
     "path": {
@@ -2632,50 +2632,50 @@
     "path": {
      "relative": "packages/schema/src/prompt.vibe"
     },
-    "size": 4283,
-    "hash": "HsDhNpFonFjfuKh9NysqHt6eMyIZoPnOy99r42kmMeM"
+    "size": 4277,
+    "hash": "_A24QQyMhqixA1mzR_bN1jG7U2OoD1_Ww5yYJdrj2_g"
    },
    {
     "path": {
      "relative": "packages/schema/src/generate.vibe"
     },
-    "size": 9205,
-    "hash": "KJKPmtCqYtRhOH1xFx2hqNiDVFMcixnb6kAapopu2rc"
+    "size": 9197,
+    "hash": "bT9a04t7myC-eLFaOJDRoEA2JBusHyoZAz-UME0FuNo"
    },
    {
     "path": {
      "relative": "packages/protocol/src/groups/generate.vibe"
     },
-    "size": 3179,
-    "hash": "4SV-pKNO814IajtNbD834QsWdt2sux-FdWtVCKBrvDk"
+    "size": 3177,
+    "hash": "zZuRKw5VYRP-YHfd-Lvbt7ZCf6HHxdFEoDjZP8lXBo4"
    },
    {
     "path": {
      "relative": "packages/protocol/src/groups/media.vibe"
     },
-    "size": 1106,
-    "hash": "_PulxFmuf6U_JszTlGwilDR2EHA-diy-Ic2Rt1jUC_w"
+    "size": 1104,
+    "hash": "hPc82EgsEoqO7Kmr0LqxDo-q2csEO7Lp00ShTCLE0Ac"
    },
    {
     "path": {
      "relative": "packages/schema/src/pty.vibe"
     },
-    "size": 2077,
-    "hash": "ygQ68VwI10g0M4bk0qkiplH2MzToIRWytgm7f7UOD_M"
+    "size": 2069,
+    "hash": "u74EgYV2LHVnH0BleALyvTVpPDdH2jykAr1UEyADWJM"
    },
    {
     "path": {
      "relative": "packages/schema/src/session-id.vibe"
     },
-    "size": 379,
-    "hash": "mlv86zDYsVo8fSQlwPHttHKigAxjmMABndQdg9kro_s"
+    "size": 377,
+    "hash": "Wu7xo3v41Vw3TGTwQEODHIJDOrJ139NH83aUZZwCuzY"
    },
    {
     "path": {
      "relative": "packages/schema/src/permission.vibe"
     },
-    "size": 2260,
-    "hash": "glvLG0VMQhx7aoz033KxPj-ZFc_stR0NRa_0_shg_1k"
+    "size": 2250,
+    "hash": "DICVdn3uR5Ufpw5LvKP-rl_r20x-uxHGDG87vLhk8P8"
    },
    {
     "path": {
@@ -2688,15 +2688,15 @@
     "path": {
      "relative": "packages/schema/src/project.vibe"
     },
-    "size": 2200,
-    "hash": "9jyoUM4TVcvC_rln6MfQya5PAgZeG_DC94d-B9mGDiY"
+    "size": 2192,
+    "hash": "EgFv6sDzxFYxsHH5fQJS_OLhzHCXsyhmdbVYSZbyaYw"
    },
    {
     "path": {
      "relative": "packages/schema/src/llm.vibe"
     },
-    "size": 138,
-    "hash": "l_yhgL25o9OoWEteddRnSr7EBX_moDTLLuo8v0zjiiE"
+    "size": 136,
+    "hash": "qQkInKcDbZ8pHQi9GQfKRC6l1n3_dKAr_4AMY65m0Uo"
    },
    {
     "path": {
@@ -2877,43 +2877,43 @@
     "path": {
      "relative": "packages/schema/src/shell.vibe"
     },
-    "size": 3122,
-    "hash": "U5rRix0S_E7cB--g9dgMT49P6KaexhCETFC6lKrLN7E"
+    "size": 3114,
+    "hash": "MQmCNU2322aKPfoNm1Qvv5BmiqEJOUN2Acycakz_56Y"
    },
    {
     "path": {
      "relative": "packages/schema/src/session-error.vibe"
     },
-    "size": 637,
-    "hash": "f8uqsLUictLzAVKzgPsKb38ULWHhwq3p_49ht9wG2X0"
+    "size": 633,
+    "hash": "GXV3O-_Xv3l9vLIDF52Cj_gm0vGKFkOZdZ2RuouRzSk"
    },
    {
     "path": {
      "relative": "packages/schema/src/snapshot.vibe"
     },
-    "size": 191,
-    "hash": "fLhn9JE4UcZlSjDZQdT3iqV3JMwgxfAEi_7WK0k_xhk"
+    "size": 189,
+    "hash": "VweJ7mIkukntYbNQAE3XkG11IonYA4q46ZR3C0cY0nY"
    },
    {
     "path": {
      "relative": "packages/schema/src/token-usage.vibe"
     },
-    "size": 496,
-    "hash": "9Ld3UJzE-3TdIf_iDtkJkmGoQOFZFDfZkOQ5cFK2Tyc"
+    "size": 494,
+    "hash": "L6PTDiyBe0Myd_PLnIhsyJ3ESaE3aYmaNBkmN0znDrs"
    },
    {
     "path": {
      "relative": "packages/schema/src/session-message.vibe"
     },
-    "size": 12866,
-    "hash": "s2Ht2Tdd3O8m3S-boobMjuR6cubfkJ_tV5m3y8oSPtM"
+    "size": 12838,
+    "hash": "dhI_N7aQn90YxMIv-YJr61z4r3ErmaAJo4J_jebN2Og"
    },
    {
     "path": {
      "relative": "packages/schema/src/tool.vibe"
     },
-    "size": 2956,
-    "hash": "v6X-rnpN2bOEwBSvKqEr_AiXyDTZRsO-puVQTUJEW1o"
+    "size": 2950,
+    "hash": "ROJPGaoXIWzYSQkOyH1SrLH5ZjXbJEBF_1FOvrODnqA"
    },
    {
     "path": {
@@ -2926,92 +2926,92 @@
     "path": {
      "relative": "packages/schema/src/file-diff.vibe"
     },
-    "size": 1008,
-    "hash": "IuZLK7qsKKYqWxGDf96wV4NcKXzKl3KihWnEyKK2EME"
+    "size": 1004,
+    "hash": "vFbpWgj1PoTqW4p7XoKIGc_TFR8Y5Yshwdq5tQ6zeF8"
    },
    {
     "path": {
      "relative": "packages/schema/src/session-revert.vibe"
     },
-    "size": 2951,
-    "hash": "S26a0wZHT7Wuq6EMrpGLfpAfVaFDREunJkG4gvBl0g4"
+    "size": 2943,
+    "hash": "Z7nr96W-ZcJ-j0Ly2FLRzNrGv81CuSOdtaW3gEW7A-8"
    },
    {
     "path": {
      "relative": "packages/schema/src/instruction.vibe"
     },
-    "size": 748,
-    "hash": "oe8y44yYvWfc5x2sW6ICBLwTgcy8QY_FtGQkH6UiKMI"
+    "size": 746,
+    "hash": "M7qCpJSnMACfP7dV9a9fes__qDpFqd_PfNU-zQfMPOU"
    },
    {
     "path": {
      "relative": "packages/schema/src/instruction-entry.vibe"
     },
-    "size": 1284,
-    "hash": "HhsWGi9FdO5V-ABOKZT8tRfJ6nseGF4JL3WkalLqXCQ"
+    "size": 1282,
+    "hash": "_gsT1uO4wE_ZQJo0i9H4kSmJkWX8F3sfwC5cfhbKsTc"
    },
    {
     "path": {
      "relative": "packages/schema/src/session-inbox.vibe"
     },
-    "size": 4460,
-    "hash": "LwmpURUnrFMayexI5wyyJbqD_hTAUQ-A5hQ7RwQQt0g"
+    "size": 4446,
+    "hash": "nOloSITU1DtvoRDfnHW1d54envPRJdWnG9c4AkXVMoc"
    },
    {
     "path": {
      "relative": "packages/schema/src/session-fork.vibe"
     },
-    "size": 411,
-    "hash": "JM9dh6TrJc_Eodr-2BcrYs1MUn1v6eguylgoTg1qb50"
+    "size": 407,
+    "hash": "wE3CG-Ki7WLc7ITsoNhwuvoNvviursCAYI98qokyKBU"
    },
    {
     "path": {
      "relative": "packages/schema/src/session-event.vibe"
     },
-    "size": 19266,
-    "hash": "6ATytOykOkSv9u4df1d5I2gxAvJDhL_RVz3bIem-0uY"
+    "size": 19220,
+    "hash": "a_jRVYNucVQ8SvZfGUIfG2UG3__idBgjVe8yVWm68E4"
    },
    {
     "path": {
      "relative": "packages/schema/src/session.vibe"
     },
-    "size": 5436,
-    "hash": "5szXIfib8zzNMusuVML3PaTUZbkXjL-PmJyNbHQhBnk"
+    "size": 5412,
+    "hash": "B3pvCKfodVFcrYYu3sSBb7U3YaU4XedZpBfsr_5zNek"
    },
    {
     "path": {
      "relative": "packages/schema/src/persistent-pty.vibe"
     },
-    "size": 2820,
-    "hash": "Bvg0rLkJW6-PUfu1Ve5uInro_Zc8w3BdLX9iKbHW1RY"
+    "size": 2810,
+    "hash": "s0YeS3UqFIhT5-K_X4Ns6UkqSkTkdj6D0youS-Ilb4Y"
    },
    {
     "path": {
      "relative": "packages/schema/src/pty-ticket.vibe"
     },
-    "size": 324,
-    "hash": "qZCF6rxi_XxNqLB6cbKpNXZjPnzkQt1Ryq_Nd0A8iGI"
+    "size": 320,
+    "hash": "Whi9TuqWbVwvOQ8aVBYssyJzFX0IqMVc6sltJFYp4fY"
    },
    {
     "path": {
      "relative": "packages/protocol/src/groups/location.vibe"
     },
-    "size": 2262,
-    "hash": "eHvlPbC-XRAhLqlJEJfbQ0QO-aOhGIskFuGHZtA8CbU"
+    "size": 2260,
+    "hash": "5ZSrrDTH-BIoSp7zHKWu7ZGkwu3ayJLQKJxx1x54XZY"
    },
    {
     "path": {
      "relative": "packages/protocol/src/groups/pty.vibe"
     },
-    "size": 5283,
-    "hash": "sTww7lWeLZ4-NxBsL9MUim1JLO9Rzp6QTqCEhbhdcEY"
+    "size": 5279,
+    "hash": "dJu0nx-NOUJWJ5LOvLBIExR87mEIVeLO7VoWK3J9-Pc"
    },
    {
     "path": {
      "relative": "packages/protocol/src/groups/persistent-pty.vibe"
     },
-    "size": 5421,
-    "hash": "zbmFFhvgWm_ckR7CqL9nQT9XBavECIaRcnNMRQ5jqO8"
+    "size": 5417,
+    "hash": "fe5UsNFPbCWKa6DzftziuoZSXxKy2a4deEyXjGL1qWA"
    },
    {
     "path": {
@@ -3024,43 +3024,43 @@
     "path": {
      "relative": "packages/protocol/src/groups/voice.vibe"
     },
-    "size": 3265,
-    "hash": "olG8y8eaSQhw0wP-fmuWhWxct3TBIDlTAp4K3ci1RLg"
+    "size": 3263,
+    "hash": "nJoODCa9nt0rPiLlaWnyRFH8G75t6mTFtBL-b5Kf-6U"
    },
    {
     "path": {
      "relative": "packages/protocol/src/groups/message.vibe"
     },
-    "size": 4813,
-    "hash": "YnQi-tSyesDfhfFdYYvs_SJkI64Pwa1js4Ui3vF0HZ8"
+    "size": 4811,
+    "hash": "Yx6PVaXktdBcmPDPiWiUGFfxb8TqJMQt_N5tiDRgQpM"
    },
    {
     "path": {
      "relative": "packages/protocol/src/groups/model.vibe"
     },
-    "size": 1774,
-    "hash": "4p1N1pjjY5DHWdQt09KrkdUEuuHQeb7Kocu6TpX-4eo"
+    "size": 1770,
+    "hash": "OmxvX4KjxDfoHF8HXxBr2-tKK2x7EZRJg-9RB37zaSQ"
    },
    {
     "path": {
      "relative": "packages/protocol/src/groups/provider.vibe"
     },
-    "size": 1553,
-    "hash": "jTZYHK0N44rrcjFIrsfo2CVoeaBegOHkID3OoqchW8o"
+    "size": 1549,
+    "hash": "q_dfX7bG3fube79PdC54keWpKaxZXxoX7l3Kq6oOPqQ"
    },
    {
     "path": {
      "relative": "packages/schema/src/prompt-input.vibe"
     },
-    "size": 1120,
-    "hash": "Jxxvxyn8d8sFlHGQEGTWe0KPPvE9g0n69uVRL-QcKMY"
+    "size": 1112,
+    "hash": "5eKYaoX5VN7yXLTL_EeVtNdEVyP3iXCnG0rb1z--aT8"
    },
    {
     "path": {
      "relative": "packages/schema/src/session-stats.vibe"
     },
-    "size": 2180,
-    "hash": "s_eNHluWa8AU2tFp0LWW3zwFIdbif6n0hFtYTawf3mo"
+    "size": 2172,
+    "hash": "7EmuSU3oRZAh5rNm19WGjDQtXhuX3JmkrUSMdDM7IIk"
    },
    {
     "path": {
@@ -3073,50 +3073,50 @@
     "path": {
      "relative": "packages/schema/src/event-log.vibe"
     },
-    "size": 762,
-    "hash": "3i-ycI7zhfZVLP5SKRD6MKJmD4VUf2jbDmtptTP8pB4"
+    "size": 756,
+    "hash": "CX0ZsGsvwaQWEfeno6bUi8B2syI672eXpYezXTeAFRk"
    },
    {
     "path": {
      "relative": "packages/protocol/src/groups/session.vibe"
     },
-    "size": 34723,
-    "hash": "fzP3IwWQKXI5TA5_0MFL7Ffplhzv1P0ibrzgqncwbM0"
+    "size": 34719,
+    "hash": "CIIycizoumn6G6s78QEiCRtH8wPPCZ0JxtfcwloExJo"
    },
    {
     "path": {
      "relative": "packages/schema/src/permission-saved.vibe"
     },
-    "size": 801,
-    "hash": "LJCNg60AfFLJc-mpv7bxO_kZFjIMjSNPjrxONWj5N3w"
+    "size": 795,
+    "hash": "Zd3vKFpx1amRB0hj4jY48JBTxvXvIF7_bdGkd9Fd_q4"
    },
    {
     "path": {
      "relative": "packages/protocol/src/groups/permission.vibe"
     },
-    "size": 6434,
-    "hash": "ete5Ltwj0sMgj0j_oywb-ZCVdhNz0aPe9qjG1wISGuo"
+    "size": 6430,
+    "hash": "DZgGZPUMze1FAS0t3XBt-Jgv_6CI8XHR86tfkJMOzN4"
    },
    {
     "path": {
      "relative": "packages/schema/src/filesystem.vibe"
     },
-    "size": 1580,
-    "hash": "yKVYWU430VOr36sR_FJGeG8TuptkwcWRHaQO2Y7zWs0"
+    "size": 1572,
+    "hash": "hFhBoK1qvDopSR0OAdI5oBIUJr2QgzCWgdEOn--kFKM"
    },
    {
     "path": {
      "relative": "packages/protocol/src/groups/fs.vibe"
     },
-    "size": 5187,
-    "hash": "s8VBGa303wS_3yn5u6hXgRVyQHVWhtNkxmJzF6KKg7o"
+    "size": 5183,
+    "hash": "Tji8vZQhOrzehRT_EqRn0qtoCseBOk4WnqK8-6Nn0g0"
    },
    {
     "path": {
      "relative": "packages/protocol/src/groups/form.vibe"
     },
-    "size": 941,
-    "hash": "AclJKIwrzrePwP_mL9Xl7m0dpNVTmk_yTveOmS8e9oo"
+    "size": 939,
+    "hash": "ZPlTjG4oXg2TKgI03uuCOHc1djglBPeDHLyDLthbbkc"
    },
    {
     "path": {
@@ -3234,92 +3234,92 @@
     "path": {
      "relative": "packages/schema/src/command.vibe"
     },
-    "size": 490,
-    "hash": "85j6rOAtN70Q1A-jAsfMlxrvZrhnXPDFOunxb3Nh7uA"
+    "size": 484,
+    "hash": "_MHe-7Jh1jy-W-9EnKWcJDtDfrwZjfHdKFIz-h8HCaA"
    },
    {
     "path": {
      "relative": "packages/protocol/src/groups/command.vibe"
     },
-    "size": 793,
-    "hash": "J_lMYa6oRIqX3oAAY4mC7LRjoKwu5T8P5iC450hLZig"
+    "size": 791,
+    "hash": "g7NKfqCWs4rS3PrI1EeZQvVIa0KEs_BkOL3JuvjARy4"
    },
    {
     "path": {
      "relative": "packages/protocol/src/groups/skill.vibe"
     },
-    "size": 769,
-    "hash": "-JtkkokShIihvETvKFMTgKriqZZ29B9ysIQpxfCAcro"
+    "size": 767,
+    "hash": "eRc2FPnBNIGK4U6W7MKxOui7f8uw0crti6l0QuEc3W8"
    },
    {
     "path": {
      "relative": "packages/protocol/src/groups/rpc.vibe"
     },
-    "size": 1135,
-    "hash": "DFoBnW7X7-NlrXAYu6EW6IhFjH81JndwHm1Tqj13k-c"
+    "size": 1131,
+    "hash": "gzTEbwAYTTci-kYgSeiPQWdc1vZzoTpnugGrIKjXPCM"
    },
    {
     "path": {
      "relative": "packages/schema/src/config/model.vibe"
     },
-    "size": 1168,
-    "hash": "M166InJgjMgMaqaugROA739G7rpi3MlQ3SLpDvWeEjw"
+    "size": 1164,
+    "hash": "-IOW73AGmMp9RIUZ1S8zX4A3WG_WBGmx54-HDMmkvVc"
    },
    {
     "path": {
      "relative": "packages/schema/src/config/provider.vibe"
     },
-    "size": 4587,
-    "hash": "d0EGcF6bk_8UDI8_mbVoLbfqL1zm2dT03l8jKIwOipg"
+    "size": 4579,
+    "hash": "bH1A27HjSc2YiCt6NhpmxbgtwKt6amO5vZgOdWooKd8"
    },
    {
     "path": {
      "relative": "packages/schema/src/config/agent.vibe"
     },
-    "size": 994,
-    "hash": "BCom5iwciJn2JlARrv2ZLXNWxGBdSUgNfg0VWSkcF5w"
+    "size": 984,
+    "hash": "Nu7sorwcEWD67cqPAXzWsSZtCKs5Pwd66mfiB2OeTYQ"
    },
    {
     "path": {
      "relative": "packages/schema/src/config/media.vibe"
     },
-    "size": 456,
-    "hash": "vjlX_HkvehfnpAdzjZYXR2jlt5CurwH6q0pL4KlosgI"
+    "size": 452,
+    "hash": "ayqc6MwGNeX1z4HciCzjjuQftrs_umtCcZ6PqxEKnRs"
    },
    {
     "path": {
      "relative": "packages/schema/src/config/compaction.vibe"
     },
-    "size": 418,
-    "hash": "M0TmeFrwEEcC2UB9XV5C7QgJgava8Taq96pJrExAS6M"
+    "size": 414,
+    "hash": "kg4SNrSCH_Oqhc-a_OfEBd4TZzpYP_asPIPPVOJkbPA"
    },
    {
     "path": {
      "relative": "packages/schema/src/config/command.vibe"
     },
-    "size": 509,
-    "hash": "Bpb-5V-1vW93foIbAnsuYoSnDQkZhX9xdNpSY3zkYbw"
+    "size": 503,
+    "hash": "WFZ88Jk9Dn-wcMKMpM555FAfPZtQQ1YRgv3XkeroaH4"
    },
    {
     "path": {
      "relative": "packages/schema/src/config/policy.vibe"
     },
-    "size": 232,
-    "hash": "bOKET1tkamumja4RCAhuwRQz9xcn393EMoB23PF5f-E"
+    "size": 230,
+    "hash": "nyvl42aHgIfYJXuOIguMXdWRIIxl_AZxbPVJHQM7tcI"
    },
    {
     "path": {
      "relative": "packages/schema/src/config/experimental.vibe"
     },
-    "size": 1798,
-    "hash": "6haNTtelFhr8I71yGTShManiT3hpS9QX4FQZIUu22PI"
+    "size": 1792,
+    "hash": "dCBw4VbavWnNDvbHxVBXmv9Ivgj7wVJpXJdwdswIvC4"
    },
    {
     "path": {
      "relative": "packages/schema/src/config/formatter.vibe"
     },
-    "size": 497,
-    "hash": "T9RZMmP7vC9-cj5paV98cfsK3XM1Q_Zi6dpZ5zC8aCI"
+    "size": 493,
+    "hash": "gOSlRdElOLamj_FtdKPTJIFCVlvY54gntK2LX3_iauI"
    },
    {
     "path": {
@@ -3332,85 +3332,85 @@
     "path": {
      "relative": "packages/schema/src/mcp.vibe"
     },
-    "size": 6320,
-    "hash": "fmbEUVeXJSEU-fYUf9mX03T5D0hP4YsLIOhSoCyR4wc"
+    "size": 6314,
+    "hash": "hVVM6J5f996D7rR9RYRq3pTlp3YN8ul1QprRzk55EhM"
    },
    {
     "path": {
      "relative": "packages/schema/src/config/mcp.vibe"
     },
-    "size": 701,
-    "hash": "3VJQUJGYMa84VhOnWmO3ubw8XrFR7jAjgF2EwJAjIw0"
+    "size": 695,
+    "hash": "G-0mO62-6b1JYbG3ZuTDHKii-TrlDoNDG01wUaMi8p0"
    },
    {
     "path": {
      "relative": "packages/schema/src/config/plugin.vibe"
     },
-    "size": 355,
-    "hash": "yOF26Ibrht1XDyJnqiSbZzitRq_yaqBbL7j4J8Qvf4c"
+    "size": 351,
+    "hash": "r_IQk7lP8HOza__y1GNnNvm-xA3XvLLQBA8lCb_SvVg"
    },
    {
     "path": {
      "relative": "packages/schema/src/config/reference.vibe"
     },
-    "size": 615,
-    "hash": "598LXXOrl4JHfp3RMRBPu22FkBPq9dyKZdeIAC_wFsI"
+    "size": 611,
+    "hash": "VSFHyCHIaVKfh-kSs5x4zIes8IbJDmJtlk-Vr9cibXc"
    },
    {
     "path": {
      "relative": "packages/schema/src/websearch.vibe"
     },
-    "size": 1447,
-    "hash": "eOGKg2nheh22-DVE05yDXMxg2e0uDx14btZfYeBNy4M"
+    "size": 1441,
+    "hash": "WpDFMuKxUo4i-hfz3_lFChVheJE6hMi3vKRGh3Fdpk8"
    },
    {
     "path": {
      "relative": "packages/schema/src/config/websearch.vibe"
     },
-    "size": 450,
-    "hash": "3t62PByWSESQZxi9sFvbive3qKMzQU5ZN0-gyzR9R3E"
+    "size": 446,
+    "hash": "-AoCJ61bnPURZ2V-MyIwRn25jGS88uBmzkEEz-MaTjE"
    },
    {
     "path": {
      "relative": "packages/schema/src/config/tool-output.vibe"
     },
-    "size": 268,
-    "hash": "THlvy6oeGlEhq-9mFoLF3e-0nK5EgPYyttgi4GPuDnM"
+    "size": 264,
+    "hash": "0EMrmnSmsQcawYyMoyifOTUBqCHXwamxUzz9012dhto"
    },
    {
     "path": {
      "relative": "packages/schema/src/config/watcher.vibe"
     },
-    "size": 217,
-    "hash": "sdt4HKze1-FwJzbA-UrQSB19sPZwxpYLIhwfuBpWjLk"
+    "size": 213,
+    "hash": "A2SURyGMqHOolgjFwHBWwBE-MTlTtPOJYBKfb0M1fpg"
    },
    {
     "path": {
      "relative": "packages/schema/src/config/warming.vibe"
     },
-    "size": 659,
-    "hash": "xezcQ8bjUc22hYrkCLXZoH8CIxIfIlTxhhoyLWhSSSE"
+    "size": 655,
+    "hash": "cAergsvxs7_u0DN8-jb0YiQbJ6u4Ddf6-KVTmtbkjLU"
    },
    {
     "path": {
      "relative": "packages/schema/src/config/worktree.vibe"
     },
-    "size": 398,
-    "hash": "wPHqgfxnh35rDWbksmU7oOkg_1boUKd23NYQnS0eJT4"
+    "size": 396,
+    "hash": "445yLxgrE6TkcVM6cvcNe8NHXEjr_BI7JDsHqh-nLdg"
    },
    {
     "path": {
      "relative": "packages/schema/src/config.vibe"
     },
-    "size": 6040,
-    "hash": "e0NpeLYbsrABB-yZoQCIMhHfBRHfd9EIANeqmZ2pOKo"
+    "size": 5998,
+    "hash": "8ekrpaL5zIGnIlIG6ZXV5Kr1ltCgdvyaw7i3LuANbm4"
    },
    {
     "path": {
      "relative": "packages/schema/src/worktree.vibe"
     },
-    "size": 3889,
-    "hash": "4mIWCOhxFodNyG4GNOP4eaAf3YrwdTa0tP4NwibGWHY"
+    "size": 3881,
+    "hash": "KD00jMo_2MRxOHnN5jHHVewcmsT1dTsU7A_wKG2c6Is"
    },
    {
     "path": {
@@ -3423,8 +3423,8 @@
     "path": {
      "relative": "packages/schema/src/v1/filesystem.vibe"
     },
-    "size": 258,
-    "hash": "uLvnYnqaF1d79BjkZWYvEVEo3NYqmyoTdGXo1_KwEpc"
+    "size": 254,
+    "hash": "AJ-G7dQ3aP_DYgGocDMaKkaTGS6snTTV1NIevPb8-mU"
    },
    {
     "path": {
@@ -3437,29 +3437,29 @@
     "path": {
      "relative": "packages/schema/src/installation-event.vibe"
     },
-    "size": 432,
-    "hash": "Scnj3A0h5ftr-j0m956QiG5CQTl6Z1tnW0pM699GgKE"
+    "size": 428,
+    "hash": "ntGYpZmp2UfuPc-DzQhR7mrD_0hp9SqovcyWUSRgfxE"
    },
    {
     "path": {
      "relative": "packages/schema/src/v1/permission.vibe"
     },
-    "size": 2551,
-    "hash": "FstPmLxmcL3Apjfox4UmECoKZAg2toC7Tw8gyR2YxU4"
+    "size": 2541,
+    "hash": "C9c0zzsrNqLiQn1kVSzy-DBf3RNMo-nDM65rNXbawdE"
    },
    {
     "path": {
      "relative": "packages/schema/src/v1/session.vibe"
     },
-    "size": 19995,
-    "hash": "KnsjpDSR78Ghsh9TFAZFZFR0aH1BthFj4T69-I8YJf8"
+    "size": 19979,
+    "hash": "ZR4syR2S1Dq1ruqmi5FL_4PEyWJ7niASxOZNMCmunP4"
    },
    {
     "path": {
      "relative": "packages/schema/src/v1/legacy-event.vibe"
     },
-    "size": 461,
-    "hash": "8_vzZ-27yfABQeZsFHvyEEKDvmyjnZc0p3sQs155dbc"
+    "size": 453,
+    "hash": "PHEe218ZQZ1faFfrrODvfBAR33rlz-GDGkx_I7qTFiw"
    },
    {
     "path": {
@@ -3486,8 +3486,8 @@
     "path": {
      "relative": "packages/schema/src/mcp-event.vibe"
     },
-    "size": 702,
-    "hash": "cs6hlIK29Gt-e78BMtkdsY1_3Poz501Ka1hyZlgjscA"
+    "size": 698,
+    "hash": "ASsoDE28Xax1-IUABAAj64Eq82X1ikj9WXvcMcroBUA"
    },
    {
     "path": {
@@ -3500,15 +3500,15 @@
     "path": {
      "relative": "packages/schema/src/plugin.vibe"
     },
-    "size": 2421,
-    "hash": "rnOLBuwoMX3VH2AQqxIUNi_IMUcUspWFM2jgTr3qFTs"
+    "size": 2415,
+    "hash": "51VFOZbR98ZCoBXl3UqHWjf1FJKi1fXCunA0iuUy2OQ"
    },
    {
     "path": {
      "relative": "packages/schema/src/reference.vibe"
     },
-    "size": 1477,
-    "hash": "s1lO-AU5b_ZIVDtrUlGtrtlwsVk-SQ-5eTQKG5zVPn8"
+    "size": 1469,
+    "hash": "38KQRzLPtfXJA_IR7SQbyFIzyRQNy2a_w5pNd3wJVuA"
    },
    {
     "path": {
@@ -3521,43 +3521,43 @@
     "path": {
      "relative": "packages/schema/src/session-status-event.vibe"
     },
-    "size": 1308,
-    "hash": "rCMAm9L1-ldPZMDEBT4sIIMDwvCM7GlaejntqTP9gA8"
+    "size": 1298,
+    "hash": "xdyfT7NwHwG0x8_I5tnh8bIVSg0BJrDhGfw8YLf8VkU"
    },
    {
     "path": {
      "relative": "packages/schema/src/tui-event.vibe"
     },
-    "size": 1652,
-    "hash": "TbR1MaXipryUNyd2yQIvZIDeWvyodvgUY-o_rht4s4U"
+    "size": 1642,
+    "hash": "QdvUpLhfudF8UjU1SF62evt34U0QX5yd4FlHKXTWQj8"
    },
    {
     "path": {
      "relative": "packages/schema/src/vcs-event.vibe"
     },
-    "size": 318,
-    "hash": "9-iKESFnF53pHnYiHPHlAFZstpDgBVF8KGBHyZrCGa4"
+    "size": 312,
+    "hash": "BYWBmFfbTGYyyJc1aJobxYX5ZykugbgRplbxv693Cms"
    },
    {
     "path": {
      "relative": "packages/schema/src/workspace-event.vibe"
     },
-    "size": 858,
-    "hash": "rc6JvWLNusq9e7_iBNVEvAes5u6Rj-weAfaT62K14GY"
+    "size": 852,
+    "hash": "kP7mmLDP-VNPVS5ju-33BgVdM3PwM5HuiWMc94ODSio"
    },
    {
     "path": {
      "relative": "packages/schema/src/worktree-event.vibe"
     },
-    "size": 457,
-    "hash": "eyQg3eaZuzgKkX10Yua7A-2S3eN2bl633rX6FNCcCLE"
+    "size": 451,
+    "hash": "IzwqgGsoZWxaN3U7Nl2zr4yURiczFEuf8OY_V9VrpBY"
    },
    {
     "path": {
      "relative": "packages/schema/src/event-manifest.vibe"
     },
-    "size": 3616,
-    "hash": "_wOX0XmdV-nNEukwxYREHxB2SFVBfrLGLYkD_zWZcwg"
+    "size": 3566,
+    "hash": "yZtkfWVa6kYRqMtZ2Tbjk0F4HhSB9ido1SJsj85pgn4"
    },
    {
     "path": {
@@ -3570,120 +3570,120 @@
     "path": {
      "relative": "packages/protocol/src/groups/agent.vibe"
     },
-    "size": 1295,
-    "hash": "3j1K0wqiH--l8DKJ3qnH31Nom3zzEO5VDw_8wNVAplU"
+    "size": 1291,
+    "hash": "O4YjE4q9Kv4tIOKxueoT5ovmlRHspHat5uJm3Fbwp6Y"
    },
    {
     "path": {
      "relative": "packages/protocol/src/groups/plugin.vibe"
     },
-    "size": 2894,
-    "hash": "dVH6uw7C0PTRiL205qjbZpgzGdP6LMjBbN_6Ie7ZpXY"
+    "size": 2890,
+    "hash": "Wjr5iUo7Gmg6Qpj5FEuZbvQBXS0IYLJYlh6KlZ_Jbwk"
    },
    {
     "path": {
      "relative": "packages/protocol/src/groups/server.vibe"
     },
-    "size": 2640,
-    "hash": "HIcNEAVnSG3cxvO6m_KlIZPmzbB0-o094hpn2P1JYtM"
+    "size": 2638,
+    "hash": "2IV8Q-QAlg7oyo5Ywefea9v0S6vrrI6cDnLsdME7NBw"
    },
    {
     "path": {
      "relative": "packages/protocol/src/groups/debug.vibe"
     },
-    "size": 2621,
-    "hash": "XE_jmjWqs14xLxQ-m-VeGcKIrJbFUC1uhaLNF14swq4"
+    "size": 2617,
+    "hash": "K_FIhlu3BIka7n9cgtSxWIJtMQoZ5-dn-HeLOQu2Ges"
    },
    {
     "path": {
      "relative": "packages/protocol/src/groups/shell.vibe"
     },
-    "size": 2959,
-    "hash": "TcoOIxzhngZMp_6uVp0K2KySCgQi0HlVqkZu64-SYsI"
+    "size": 2955,
+    "hash": "GHDOiLGFYUPrzdw7JxLGnx0rCq06f3g09LZLNoP8bRc"
    },
    {
     "path": {
      "relative": "packages/protocol/src/groups/reference.vibe"
     },
-    "size": 1467,
-    "hash": "nf0uO_y5tp4ZAKnBLrV0kqVRV6OO-pOgLhpBiaerUPk"
+    "size": 1465,
+    "hash": "Sik1T_bDaB5fc0F7vLqVecqdtM2azIyR0VwLwZWDk9s"
    },
    {
     "path": {
      "relative": "packages/protocol/src/middleware/authorization.vibe"
     },
-    "size": 200,
-    "hash": "L8U5agyqmPHiFn4DAQIns3S1ZJaBdCNz6DhJvm0m75k"
+    "size": 198,
+    "hash": "_dQ5xuu199-kEUSjeZWKtIwcvmg75KL4QsZNx9l7dpY"
    },
    {
     "path": {
      "relative": "packages/protocol/src/groups/integration.vibe"
     },
-    "size": 8672,
-    "hash": "LWVMIdTbZRZEOhgYETphHDwI96ajTN-T6JCGjO7nGWQ"
+    "size": 8668,
+    "hash": "QnqaNsMy2N5OdeorFG9GDBS2knkpshWzsXXO0pXsBZg"
    },
    {
     "path": {
      "relative": "packages/protocol/src/groups/websearch.vibe"
     },
-    "size": 1589,
-    "hash": "hmmQZgcpZN3A_njJ_h-XNXkshDO99xpNd6pNJhAKA74"
+    "size": 1585,
+    "hash": "Usc9mrpEtK7JlBtxG7VAfq8Po1JZ7z2B7K8BVdoLz7g"
    },
    {
     "path": {
      "relative": "packages/schema/src/usage-limits.vibe"
     },
-    "size": 3377,
-    "hash": "mTT-5xRcBvbbwMko-6pqFmp1lfR696fgWNrwTUZsuQ0"
+    "size": 3371,
+    "hash": "fd2B4d16V2mJZNwcJnNdFK0FmFR57yK-jFkKtB5EGAg"
    },
    {
     "path": {
      "relative": "packages/protocol/src/groups/usage.vibe"
     },
-    "size": 1056,
-    "hash": "DoQ9CC7vxXYNf5JxKtVq0n4ZbazqOHHSTyxTtMCcCYA"
+    "size": 1052,
+    "hash": "sz7ab5V3GbdcZsJzYsz9u9kM6PTwP-OoweUg-tXlGr8"
    },
    {
     "path": {
      "relative": "packages/protocol/src/groups/mcp.vibe"
     },
-    "size": 6216,
-    "hash": "IKiGhE9t1Dmr6_oZ3PnpSf1jLi7Kn2L3Um0Kp8zQx6I"
+    "size": 6210,
+    "hash": "B9gUwIt4f96RlKPXC1iuy1cF3272k111fyq7-yUXSYQ"
    },
    {
     "path": {
      "relative": "packages/protocol/src/groups/credential.vibe"
     },
-    "size": 2506,
-    "hash": "35SQvw4ik6TNLjl8EVD_ioUWIKGCaM0f3qg0ZX075b8"
+    "size": 2504,
+    "hash": "qh34B76BE4V56S2c4llcvMrFrXK8eSd4oV8ZduPEnvI"
    },
    {
     "path": {
      "relative": "packages/protocol/src/groups/project.vibe"
     },
-    "size": 1560,
-    "hash": "JKB7bQywLEE8YdsVZMeiX51Iz4PfYvGifpIB0n_Beyw"
+    "size": 1558,
+    "hash": "twZgqGrJZxDvsu3pSaHB4fa0DIKxA43_3Rrt2ab3nO4"
    },
    {
     "path": {
      "relative": "packages/protocol/src/groups/worktree.vibe"
     },
-    "size": 2639,
-    "hash": "u173ygmhww3YGtHsTD0a7M8a8T-hV9c0PtV1IiHgWi8"
+    "size": 2637,
+    "hash": "aKJKMrPd4uwb8TeJbnV6d4To4eiMAR4c30MgTIeMGPs"
    },
    {
     "path": {
      "relative": "packages/schema/src/vcs.vibe"
     },
-    "size": 1599,
-    "hash": "WJNqDcsoEQuJmxflarwa0nVATX87q1P9zAZ0BhUakwc"
+    "size": 1595,
+    "hash": "ubXkvZtfy9MRaI84-rzJJYqUv-Ej28PapQ9f0A3nwU8"
    },
    {
     "path": {
      "relative": "packages/protocol/src/groups/vcs.vibe"
     },
-    "size": 4804,
-    "hash": "lraeeFyjRc2zeDw4GIpfQ3MqHg1voSg3R2vdMef8rS0"
+    "size": 4800,
+    "hash": "e5R4pulXuSHBy24EQPwVwiVynugLP8jAPW7xWhc8YXE"
    },
    {
     "path": {
@@ -3696,29 +3696,29 @@
     "path": {
      "relative": "packages/schema/src/config/shell.vibe"
     },
-    "size": 278,
-    "hash": "w0nex7EJC6fxNLJGSxIXsjXgG4_Vw6i02wOwLHosVMA"
+    "size": 276,
+    "hash": "MROqPOlTwTn7vQrFxBFDWAqucYqbuvVokIsDLgzwA2A"
    },
    {
     "path": {
      "relative": "packages/protocol/src/groups/config.vibe"
     },
-    "size": 1619,
-    "hash": "B9Aa5u46_ADHInRs-ImW5fK55YNdyu-28LiS4i5_JNg"
+    "size": 1617,
+    "hash": "odo_UGpB_ufZ9_R1fnbyOl0vwe66xPLpv_QDGz66C_M"
    },
    {
     "path": {
      "relative": "packages/protocol/src/api.vibe"
     },
-    "size": 10015,
-    "hash": "Xqo_4fs1BdfYC3YIHvMbbZIm5SIie8m5Nz-KKOre5O4"
+    "size": 9949,
+    "hash": "_jEI06H3w2hGDLedB4-GW3mOeEKcyD885vYkfFeaOSg"
    },
    {
     "path": {
      "relative": "packages/protocol/src/client.vibe"
     },
-    "size": 2770,
-    "hash": "iCyEL7yu4SVr4z8Ua0gHa-wHMILGXyX69vMdr3dXkCU"
+    "size": 2762,
+    "hash": "qTxgSKa5TwCk4VjrfNu5qNENVxkkmbady8-lkUcnlqI"
    },
    {
     "path": {
@@ -3822,8 +3822,8 @@
     "path": {
      "relative": "packages/schema/src/rpc.vibe"
     },
-    "size": 5895,
-    "hash": "zvX9Xz_zaQHrvg8ufRLcAt6Orc2gZunkkC4Z1bcL4T0"
+    "size": 5887,
+    "hash": "q_rjvfIDaO5BxMAGQxtve6kiVHzfzPdYdz4JEXPG_uw"
    },
    {
     "path": {
@@ -3862,10 +3862,10 @@
    },
    {
     "path": {
-     "relative": "packages/client/src/rpc-runtime.vibe"
+     "relative": "packages/client/src/rpc-runtime.ts"
     },
-    "size": 2135,
-    "hash": "HFc21lPceKMgKTc_DHYW1lcHVtrMvizSaAuXdY6ZgnA"
+    "size": 2220,
+    "hash": "Gd4qWPFNzjhiePmy-R92jI8xVTWrNc8Q9GX7HDYKqOw"
    },
    {
     "path": {
@@ -3878,8 +3878,8 @@
     "path": {
      "relative": "packages/schema/src/workspace.vibe"
     },
-    "size": 659,
-    "hash": "Vz-G8GxUzeBepytcuiXGA3EMwvq-S9MpNyzh5c97w64"
+    "size": 653,
+    "hash": "xRVu5FgK8f8SASE-WE-Hn4byZBe6dKf6_8FzUubEG_U"
    },
    {
     "path": {
@@ -3892,8 +3892,8 @@
     "path": {
      "relative": "packages/client/src/effect/rpc.vibe"
     },
-    "size": 4027,
-    "hash": "QYxtHORrgWAc4ffw1-1Iiw8UJQfkwzhh48JwSTBY100"
+    "size": 4023,
+    "hash": "7EvhmAfcpDl2G2TPUjMjszY20JW0S9OgANmTGftP8io"
    },
    {
     "path": {
@@ -3901,13 +3901,6 @@
     },
     "size": 249,
     "hash": "eznF1CmX1fjmAQqLV4BopAB4tu_r3AXMO6WYK8V7bmY"
-   },
-   {
-    "path": {
-     "relative": "packages/client/src/effect/client.platform.ts"
-    },
-    "size": 186,
-    "hash": "r_67yyeBOBQ0FNoNWU7P9VIn5h2bLBCo9-YEpo3Op8g"
    },
    {
     "path": {
@@ -3981,31 +3974,38 @@
    },
    {
     "path": {
-     "relative": "packages/client/src/effect/client.vibe"
+     "relative": "packages/client/src/effect/client.ts"
     },
-    "size": 3047,
-    "hash": "u-Pb2FUzpQjzA-N5xUYXQIt9wbZBtdeoD_HEcchy5mM"
+    "size": 2340,
+    "hash": "9m1TufAjhAtcODNMBOzBBX9g1kLdDjpnr742I_CEc2M"
    },
    {
     "path": {
      "relative": "packages/schema/src/question.vibe"
     },
-    "size": 943,
-    "hash": "IwfmFfzZaTcKO4_osRU_-6-KguN1cB8zJShq7olMlOU"
+    "size": 939,
+    "hash": "fFE8i4E50G_NWTcnWttF9WcOE49ScO-MhhKjc2NrKc0"
    },
    {
     "path": {
      "relative": "packages/client/src/effect/index.vibe"
     },
-    "size": 2281,
-    "hash": "hVgI3fEMQpF2NVx8feOikjfvJpQOvzTfE5gX38oKQLE"
+    "size": 2277,
+    "hash": "C91fQ_Xe4r0fHoPru6J2VnU4rhnQlzEr-4s1lJCxez0"
    },
    {
     "path": {
-     "relative": "packages/client/src/effect/service.ts"
+     "relative": "packages/client/src/effect/service.platform.ts"
     },
-    "size": 9539,
-    "hash": "Dw0kQQLSZxkEjch6DCGfgS3HJhOTT71NrVlm9p5WNUg"
+    "size": 389,
+    "hash": "AzurJQppDm5Y1Ym1O2g8LTPkHftNTW-5SyS_Hn8tW9U"
+   },
+   {
+    "path": {
+     "relative": "packages/client/src/effect/service.vibe"
+    },
+    "size": 9568,
+    "hash": "2pcMQDOJ04MnxB1a28N3rab6DPT5oWlmjNZcbmZyuB4"
    },
    {
     "path": {
@@ -5587,7 +5587,7 @@
     "relative": "packages/client/src/pty-handoff.ts"
    },
    {
-    "relative": "packages/client/src/rpc-runtime.vibe"
+    "relative": "packages/client/src/rpc-runtime.ts"
    },
    {
     "relative": "packages/client/src/service-contender.ts"
@@ -5605,9 +5605,6 @@
     "relative": "packages/client/src/effect/api.ts"
    },
    {
-    "relative": "packages/client/src/effect/client.platform.ts"
-   },
-   {
     "relative": "packages/client/src/effect/generated/client-error.ts"
    },
    {
@@ -5617,7 +5614,7 @@
     "relative": "packages/client/src/effect/generated/index.ts"
    },
    {
-    "relative": "packages/client/src/effect/client.vibe"
+    "relative": "packages/client/src/effect/client.ts"
    },
    {
     "relative": "packages/schema/src/question.vibe"
@@ -5626,7 +5623,10 @@
     "relative": "packages/client/src/effect/index.vibe"
    },
    {
-    "relative": "packages/client/src/effect/service.ts"
+    "relative": "packages/client/src/effect/service.platform.ts"
+   },
+   {
+    "relative": "packages/client/src/effect/service.vibe"
    },
    {
     "relative": "packages/client/src/promise/service.ts"
@@ -5650,28 +5650,29 @@
     "relative": "packages/client/src/solid/index.ts"
    }
   ],
-  "warnings": [],
-  "outputs": [
+  "warnings": [
    {
-    "paths": [
-     {
-      "relative": "packages/client/src/rpc-runtime.vibe"
-     }
-    ],
-    "code": "import * as Effect_1 from \"effect/Effect\";\nexport * as RpcRuntime from \"./rpc-runtime.js\";\nimport { RpcError, RpcInternalError } from \"@opencode/protocol/errors\";\nimport { Effect, Schema } from \"effect\";\nexport function read(schema, value) {\n    // Standard Schema results have already been parsed by the server.\n    return Schema.isSchema(schema) ? Schema.decodeUnknownEffect(schema)(value) : Effect.succeed(value);\n}\nexport function readError(method, error) {\n    if (!(error instanceof RpcError) && !(error instanceof RpcInternalError))\n        return Effect.fail(error);\n    if (!method.errors || !Object.hasOwn(method.errors, error.type)) {\n        return Effect.fail(error.data === undefined\n            ? { type: error.type, message: error.message }\n            : { type: error.type, message: error.message, data: error.data });\n    }\n    return read(method.errors[error.type], error.data).pipe(Effect.orDie, Effect.flatMap((data) => Effect.fail(data === undefined\n        ? { type: error.type, message: error.message }\n        : { type: error.type, message: error.message, data })));\n}\nexport const event = Effect.fn(\"Client.Rpc.event\")(function (definition, name, schema, event) {\n    return Effect_1.gen(function* () {\n        const data = yield* read(schema.schema, event.data);\n        // SAFETY: The event type was selected by the caller and data was decoded with this event's schema.\n        // oxlint-disable-next-line typescript-eslint/no-unsafe-type-assertion\n        return {\n            ...event,\n            type: eventType(definition, name),\n            data,\n        };\n    });\n});\nexport function eventType(definition, name) {\n    return `rpc.${definition.id}.${name}`;\n}\n",
-    "map": {
-     "version": 3,
-     "file": "rpc-runtime.js",
-     "sourceRoot": "",
-     "sources": [
-      {
-       "relative": "packages/client/src/rpc-runtime.vibe"
-      }
-     ],
-     "names": [],
-     "mappings": ";AAAA,OAAO,KAAK,UAAU,MAAM,kBAAkB,CAAA;AAI9C,OAAO,EAAE,QAAQ,EAAE,gBAAgB,EAAE,MAAM,2BAA2B,CAAA;AACtE,OAAO,EAAE,MAAM,EAAE,MAAM,EAAE,MAAM,QAAQ,CAAA;AAIvC,MAAM,UAAU,IAAI,CAAC,MAA4B,EAAE,KAAc;IAC/D,kEAAkE;IAClE,OAAO,MAAM,CAAC,QAAQ,CAAC,MAAM,CAAC,CAAC,CAAC,CAAC,MAAM,CAAC,mBAAmB,CAAC,MAAM,CAAC,CAAC,KAAK,CAAC,CAAC,CAAC,CAAC,MAAM,CAAC,OAAO,CAAC,KAAK,CAAC,CAAA;AACpG,CAAC;AAED,MAAM,UAAU,SAAS,CAAC,MAAkB,EAAE,KAAc;IAC1D,IAAI,CAAC,CAAC,KAAK,YAAY,QAAQ,CAAC,IAAI,CAAC,CAAC,KAAK,YAAY,gBAAgB,CAAC;QAAE,OAAO,MAAM,CAAC,IAAI,CAAC,KAAK,CAAC,CAAA;IACnG,IAAI,CAAC,MAAM,CAAC,MAAM,IAAI,CAAC,MAAM,CAAC,MAAM,CAAC,MAAM,CAAC,MAAM,EAAE,KAAK,CAAC,IAAI,CAAC,EAAE,CAAC;QAChE,OAAO,MAAM,CAAC,IAAI,CAChB,KAAK,CAAC,IAAI,KAAK,SAAS;YACtB,CAAC,CAAC,EAAE,IAAI,EAAE,KAAK,CAAC,IAAI,EAAE,OAAO,EAAE,KAAK,CAAC,OAAO,EAAE;YAC9C,CAAC,CAAC,EAAE,IAAI,EAAE,KAAK,CAAC,IAAI,EAAE,OAAO,EAAE,KAAK,CAAC,OAAO,EAAE,IAAI,EAAE,KAAK,CAAC,IAAI,EAAE,CACnE,CAAA;IACH,CAAC;IACD,OAAO,IAAI,CAAC,MAAM,CAAC,MAAM,CAAC,KAAK,CAAC,IAAI,CAAC,EAAE,KAAK,CAAC,IAAI,CAAC,CAAC,IAAI,CACrD,MAAM,CAAC,KAAK,EACZ,MAAM,CAAC,OAAO,CAAC,CAAC,IAAI,EAAE,EAAE,CACtB,MAAM,CAAC,IAAI,CACT,IAAI,KAAK,SAAS;QAChB,CAAC,CAAC,EAAE,IAAI,EAAE,KAAK,CAAC,IAAI,EAAE,OAAO,EAAE,KAAK,CAAC,OAAO,EAAE;QAC9C,CAAC,CAAC,EAAE,IAAI,EAAE,KAAK,CAAC,IAAI,EAAE,OAAO,EAAE,KAAK,CAAC,OAAO,EAAE,IAAI,EAAE,CACvD,CACF,CACF,CAAA;AACH,CAAC;AAED,MAAM,CAAC,MAAM,KAAK,GAAG,MAAM,CAAC,EAAE,CAAC,kBAAkB,CAAC,CAAC,UAIjD,UAAa,EACb,IAAU,EACV,MAA2B,EAC3B,KAAe;GAAA,C,CAAA,mB,CAAA;QAEf,MAAM,IAAI,UAAO,IAAI,CAAC,MAAM,CAAC,MAAM,EAAE,KAAK,CAAC,IAAI,CAAC,CAAA;QAChD,mGAAmG;QACnG,sEAAsE;QACtE,OAAO;YACL,GAAG,KAAK;YACR,IAAI,EAAE,SAAS,CAAC,UAAU,EAAE,IAAI,CAAC;YACjC,IAAI;SACwB,CAAA;IAChC,CAAC;CAAA,CAAC,CAAA;AAEF,MAAM,UAAU,SAAS,CACvB,UAAa,EACb,IAAU;IAEV,OAAO,OAAO,UAAU,CAAC,EAAE,IAAI,IAAI,EAAE,CAAA;AACvC,CAAC"
-    }
+    "file": {
+     "relative": "packages/client/src/effect/service.vibe"
+    },
+    "line": 69,
+    "column": 14,
+    "category": "warning",
+    "code": "EK4804",
+    "text": "This failure is a global Error, which has no _tag for a catch or a match to tell it apart by.\n  Declare the failure and throw it: error Failed { message: string }, then throw new Failed({ message })."
    },
+   {
+    "file": {
+     "relative": "packages/client/src/effect/service.vibe"
+    },
+    "line": 173,
+    "column": 51,
+    "category": "warning",
+    "code": "EK4806",
+    "text": "This catch maps the failure to unknown, which tells a catch nothing about what failed.\n  Return an error declaration's instance: Effect.try({ try: () => code, catch: (cause) => new Failed({ cause }) })."
+   }
+  ],
+  "outputs": [
    {
     "paths": [
      {
@@ -5689,27 +5690,7 @@
       }
      ],
      "names": [],
-     "mappings": "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"
-    }
-   },
-   {
-    "paths": [
-     {
-      "relative": "packages/client/src/effect/client.vibe"
-     }
-    ],
-    "code": "import * as Effect_1 from \"effect/Effect\";\nexport * as OpenCode from \"./client.js\";\nimport { Cause, Context, Effect, Stream } from \"effect\";\nimport { HttpClient, HttpClientRequest } from \"effect/http\";\nimport { SharedEvents } from \"../shared-events.js\";\nimport { ClientError, OpenCode } from \"./generated/index.js\";\nimport { RpcClientRuntime } from \"./rpc.js\";\nimport { fetchHeaders } from \"./client.platform.js\";\nconst CurrentHeaders = Context.Reference(\"@opencode/client/effect/rpc/headers\", {\n    defaultValue: () => undefined,\n});\nexport const make = Effect.fn(\"OpenCode.make\")(function (options) {\n    return Effect_1.gen(function* () {\n        const httpClient = yield* HttpClient.HttpClient;\n        const raw = yield* OpenCode.make(options).pipe(Effect.provideService(HttpClient.HttpClient, HttpClient.mapRequestEffect(httpClient, (request) => Effect.flatMap(CurrentHeaders, (headers) => headers\n            ? // Invalid headers stay the defect the Fetch constructor raised.\n                Effect.orDie(Effect.try({\n                    try: () => HttpClientRequest.setHeaders(request, fetchHeaders(headers)),\n                    catch: (cause) => cause,\n                }))\n            : Effect.succeed(request)))));\n        const context = yield* Effect.context();\n        const native = raw.event.subscribe();\n        // Async iterators throw a squashed cause; retain the native typed failures and defects intact.\n        class EventFailure {\n            cause;\n            constructor(cause) {\n                this.cause = cause;\n            }\n        }\n        // A throw from the native event hub stays the defect it was before conversion.\n        const shared = yield* Effect.orDie(Effect.try({\n            try: () => SharedEvents.make((signal) => Stream.toAsyncIterableWith(native.pipe(Stream.interruptWhen(RpcClientRuntime.aborted(signal)), Stream.catchCause((cause) => Stream.fail(new EventFailure(cause)))), context)),\n            catch: (cause) => cause,\n        }));\n        const subscribe = (input) => Stream.unwrap(Effect.orDie(Effect.try({ try: () => shared.subscribe({ types: input?.types }), catch: (cause) => cause })).pipe(Effect.map((events) => Stream.fromAsyncIterable(events, (error) => error)))).pipe(Stream.catch((error) => Stream.failCause(error instanceof EventFailure ? error.cause : Cause.fail(new ClientError({ cause: error })))));\n        return {\n            ...raw,\n            event: { ...raw.event, subscribe },\n            rpc: Object.assign(RpcClientRuntime.make((input, options) => raw.rpc.call(input).pipe(Effect.provideService(CurrentHeaders, options?.headers)), subscribe), raw.rpc),\n        };\n    });\n});\n",
-    "map": {
-     "version": 3,
-     "file": "client.js",
-     "sourceRoot": "",
-     "sources": [
-      {
-       "relative": "packages/client/src/effect/client.vibe"
-      }
-     ],
-     "names": [],
-     "mappings": ";AAAA,OAAO,KAAK,QAAQ,MAAM,aAAa,CAAA;AAEvC,OAAO,EAAE,KAAK,EAAE,OAAO,EAAE,MAAM,EAAE,MAAM,EAAE,MAAM,QAAQ,CAAA;AACvD,OAAO,EAAE,UAAU,EAAE,iBAAiB,EAAE,MAAM,aAAa,CAAA;AAC3D,OAAO,EAAE,YAAY,EAAE,MAAM,qBAAqB,CAAA;AAClD,OAAO,EAAE,WAAW,EAAE,QAAQ,EAAE,MAAM,sBAAsB,CAAA;AAE5D,OAAO,EAAE,gBAAgB,EAAE,MAAM,UAAY,CAAA;AAE7C,OAAO,EAAE,YAAY,EAAE,MAAM,sBAAsB,CAAA;AAInD,MAAM,cAAc,GAAG,OAAO,CAAC,SAAS,CAA4B,qCAAqC,EAAE;IACzG,YAAY,EAAE,GAAG,EAAE,CAAC,SAAS;CAC9B,CAAC,CAAA;AAEF,MAAM,CAAC,MAAM,IAAI,GAAG,MAAM,CAAC,EAAE,CAAC,eAAe,CAAC,CAAC,UAAiB,OAA6C;GAAA,C,CAAA,mB,CAAA;QAC3G,MAAM,UAAU,UAAO,UAAU,CAAC,UAAU,CAAA;QAC5C,MAAM,GAAG,UAAO,QAAQ,CAAC,IAAI,CAAC,OAAO,CAAC,CAAC,IAAI,CACzC,MAAM,CAAC,cAAc,CACnB,UAAU,CAAC,UAAU,EACrB,UAAU,CAAC,gBAAgB,CAAC,UAAU,EAAE,CAAC,OAAO,EAAE,EAAE,CAClD,MAAM,CAAC,OAAO,CAAC,cAAc,EAAE,CAAC,OAAO,EAAE,EAAE,CACzC,OAAO;YACL,CAAC,CAAC,gEAAgE;gBAChE,MAAM,CAAC,KAAK,CACV,MAAM,CAAC,GAAG,CAAC;oBACT,GAAG,EAAE,GAAG,EAAE,CAAC,iBAAiB,CAAC,UAAU,CAAC,OAAO,EAAE,YAAY,CAAC,OAAO,CAAC,CAAC;oBACvE,KAAK,EAAE,CAAC,KAAK,EAAE,EAAE,CAAC,KAAK;iBACxB,CAAC,CACH;YACH,CAAC,CAAC,MAAM,CAAC,OAAO,CAAC,OAAO,CAAC,CAC5B,CACF,CACF,CACF,CAAA;QACD,MAAM,OAAO,UAAO,MAAM,CAAC,OAAO,EAAE,CAAA;QACpC,MAAM,MAAM,GAAG,GAAG,CAAC,KAAK,CAAC,SAAS,EAAE,CAAA;QACpC,+FAA+F;QAC/F,MAAM,YAAY;YACK,KAAK;YAA1B,YAAqB,KAA+C;6BAA/C,KAAK;YAA6C,CAAC;SACzE;QACD,+EAA+E;QAC/E,MAAM,MAAM,UAAO,MAAM,CAAC,KAAK,CAC7B,MAAM,CAAC,GAAG,CAAC;YACT,GAAG,EAAE,GAAG,EAAE,CACR,YAAY,CAAC,IAAI,CAAC,CAAC,MAAM,EAAE,EAAE,CAC3B,MAAM,CAAC,mBAAmB,CACxB,MAAM,CAAC,IAAI,CACT,MAAM,CAAC,aAAa,CAAC,gBAAgB,CAAC,OAAO,CAAC,MAAM,CAAC,CAAC,EACtD,MAAM,CAAC,UAAU,CAAC,CAAC,KAAK,EAAE,EAAE,CAAC,MAAM,CAAC,IAAI,CAAC,IAAI,YAAY,CAAC,KAAK,CAAC,CAAC,CAAC,CACnE,EACD,OAAO,CACR,CACF;YACH,KAAK,EAAE,CAAC,KAAK,EAAE,EAAE,CAAC,KAAK;SACxB,CAAC,CACH,CAAA;QACD,MAAM,SAAS,GAAG,CAAqC,KAAgD,EAAE,EAAE,CACzG,MAAM,CAAC,MAAM,CACX,MAAM,CAAC,KAAK,CAAC,MAAM,CAAC,GAAG,CAAC,EAAE,GAAG,EAAE,GAAG,EAAE,CAAC,MAAM,CAAC,SAAS,CAAC,EAAE,KAAK,EAAE,KAAK,EAAE,KAAK,EAAE,CAAC,EAAE,KAAK,EAAE,CAAC,KAAK,EAAE,EAAE,CAAC,KAAK,EAAE,CAAC,CAAC,CAAC,IAAI,CAC9G,MAAM,CAAC,GAAG,CAAC,CAAC,MAAM,EAAE,EAAE,CAAC,MAAM,CAAC,iBAAiB,CAAC,MAAM,EAAE,CAAC,KAAK,EAAE,EAAE,CAAC,KAAK,CAAC,CAAC,CAC3E,CACF,CAAC,IAAI,CACJ,MAAM,CAAC,KAAK,CAAC,CAAC,KAAK,EAAE,EAAE,CACrB,MAAM,CAAC,SAAS,CAAC,KAAK,YAAY,YAAY,CAAC,CAAC,CAAC,KAAK,CAAC,KAAK,CAAC,CAAC,CAAC,KAAK,CAAC,IAAI,CAAC,IAAI,WAAW,CAAC,EAAE,KAAK,EAAE,KAAK,EAAE,CAAC,CAAC,CAAC,CAC9G,CACF,CAAA;QACH,OAAO;YACL,GAAG,GAAG;YACN,KAAK,EAAE,EAAE,GAAG,GAAG,CAAC,KAAK,EAAE,SAAS,EAAE;YAClC,GAAG,EAAE,MAAM,CAAC,MAAM,CAChB,gBAAgB,CAAC,IAAI,CACnB,CAAC,KAAK,EAAE,OAAO,EAAE,EAAE,CAAC,GAAG,CAAC,GAAG,CAAC,IAAI,CAAC,KAAK,CAAC,CAAC,IAAI,CAAC,MAAM,CAAC,cAAc,CAAC,cAAc,EAAE,OAAO,EAAE,OAAO,CAAC,CAAC,EACrG,SAAS,CACV,EACD,GAAG,CAAC,GAAG,CACR;SACF,CAAA;IACH,CAAC;CAAA,CAAC,CAAA"
+     "mappings": "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"
     }
    },
    {
@@ -5729,7 +5710,27 @@
       }
      ],
      "names": [],
-     "mappings": "AAKA,cAAc,sBAAsB,CAAA;AACpC,OAAO,EAAE,QAAQ,EAAE,MAAM,aAAe,CAAA;AAkBxC,OAAO,EAAE,KAAK,EAAE,MAAM,wBAAwB,CAAA;AAC9C,OAAO,EAAE,OAAO,EAAE,MAAM,0BAA0B,CAAA;AAClD,OAAO,EAAE,MAAM,EAAE,MAAM,yBAAyB,CAAA;AAChD,OAAO,EAAE,UAAU,EAAE,MAAM,6BAA6B,CAAA;AACxD,OAAO,EAAE,KAAK,EAAE,MAAM,wBAAwB,CAAA;AAC9C,OAAO,EAAE,QAAQ,EAAE,MAAM,4BAA4B,CAAA;AACrD,OAAO,EAAE,UAAU,EAAE,MAAM,6BAA6B,CAAA;AACxD,OAAO,EAAE,IAAI,EAAE,MAAM,uBAAuB,CAAA;AAC5C,OAAO,EAAE,WAAW,EAAE,MAAM,8BAA8B,CAAA;AAC1D,OAAO,EAAE,QAAQ,EAAE,MAAM,2BAA2B,CAAA;AACpD,OAAO,EAAE,KAAK,EAAE,MAAM,wBAAwB,CAAA;AAC9C,OAAO,EAAE,UAAU,EAAE,MAAM,6BAA6B,CAAA;AACxD,OAAO,EAAE,eAAe,EAAE,MAAM,mCAAmC,CAAA;AACnE,OAAO,EAAE,OAAO,EAAE,MAAM,0BAA0B,CAAA;AAClD,OAAO,EAAE,QAAQ,EAAE,MAAM,2BAA2B,CAAA;AACpD,OAAO,EAAE,GAAG,EAAE,MAAM,sBAAsB,CAAA;AAC1C,OAAO,EAAE,QAAQ,EAAE,MAAM,2BAA2B,CAAA;AACpD,OAAO,EAAE,GAAG,EAAE,MAAM,sBAAsB,CAAA;AAC1C,OAAO,EAAE,QAAQ,EAAE,MAAM,2BAA2B,CAAA;AACpD,OAAO,EAAE,SAAS,EAAE,MAAM,4BAA4B,CAAA;AACtD,OAAO,EAAE,SAAS,EAAE,MAAM,4BAA4B,CAAA;AACtD,OAAO,EAAE,YAAY,EAAE,YAAY,EAAE,MAAM,yBAAyB,CAAA;AACpE,OAAO,EAAE,OAAO,EAAE,MAAM,0BAA0B,CAAA;AAClD,OAAO,EAAE,YAAY,EAAE,MAAM,gCAAgC,CAAA;AAC7D,OAAO,EAAE,cAAc,EAAE,MAAM,kCAAkC,CAAA;AACjE,OAAO,EAAE,KAAK,EAAE,MAAM,wBAAwB,CAAA;AAC9C,OAAO,EAAE,MAAM,EAAE,MAAM,yBAAyB,CAAA;AAChD,OAAO,EAAE,WAAW,EAAE,MAAM,+BAA+B,CAAA"
+     "mappings": "AAKA,cAAc,sBAAsB,CAAA;AACpC,OAAO,EAAE,QAAQ,EAAE,MAAM,aAAa,CAAA;AAkBtC,OAAO,EAAE,KAAK,EAAE,MAAM,wBAAwB,CAAA;AAC9C,OAAO,EAAE,OAAO,EAAE,MAAM,0BAA0B,CAAA;AAClD,OAAO,EAAE,MAAM,EAAE,MAAM,yBAAyB,CAAA;AAChD,OAAO,EAAE,UAAU,EAAE,MAAM,6BAA6B,CAAA;AACxD,OAAO,EAAE,KAAK,EAAE,MAAM,wBAAwB,CAAA;AAC9C,OAAO,EAAE,QAAQ,EAAE,MAAM,4BAA4B,CAAA;AACrD,OAAO,EAAE,UAAU,EAAE,MAAM,6BAA6B,CAAA;AACxD,OAAO,EAAE,IAAI,EAAE,MAAM,uBAAuB,CAAA;AAC5C,OAAO,EAAE,WAAW,EAAE,MAAM,8BAA8B,CAAA;AAC1D,OAAO,EAAE,QAAQ,EAAE,MAAM,2BAA2B,CAAA;AACpD,OAAO,EAAE,KAAK,EAAE,MAAM,wBAAwB,CAAA;AAC9C,OAAO,EAAE,UAAU,EAAE,MAAM,6BAA6B,CAAA;AACxD,OAAO,EAAE,eAAe,EAAE,MAAM,mCAAmC,CAAA;AACnE,OAAO,EAAE,OAAO,EAAE,MAAM,0BAA0B,CAAA;AAClD,OAAO,EAAE,QAAQ,EAAE,MAAM,2BAA2B,CAAA;AACpD,OAAO,EAAE,GAAG,EAAE,MAAM,sBAAsB,CAAA;AAC1C,OAAO,EAAE,QAAQ,EAAE,MAAM,2BAA2B,CAAA;AACpD,OAAO,EAAE,GAAG,EAAE,MAAM,sBAAsB,CAAA;AAC1C,OAAO,EAAE,QAAQ,EAAE,MAAM,2BAA2B,CAAA;AACpD,OAAO,EAAE,SAAS,EAAE,MAAM,4BAA4B,CAAA;AACtD,OAAO,EAAE,SAAS,EAAE,MAAM,4BAA4B,CAAA;AACtD,OAAO,EAAE,YAAY,EAAE,YAAY,EAAE,MAAM,yBAAyB,CAAA;AACpE,OAAO,EAAE,OAAO,EAAE,MAAM,0BAA0B,CAAA;AAClD,OAAO,EAAE,YAAY,EAAE,MAAM,gCAAgC,CAAA;AAC7D,OAAO,EAAE,cAAc,EAAE,MAAM,kCAAkC,CAAA;AACjE,OAAO,EAAE,KAAK,EAAE,MAAM,wBAAwB,CAAA;AAC9C,OAAO,EAAE,MAAM,EAAE,MAAM,yBAAyB,CAAA;AAChD,OAAO,EAAE,WAAW,EAAE,MAAM,+BAA+B,CAAA"
+    }
+   },
+   {
+    "paths": [
+     {
+      "relative": "packages/client/src/effect/service.vibe"
+     }
+    ],
+    "code": "import { Effect, FileSystem, Option, Schedule, Schema } from \"effect\";\nimport { kill } from \"./service.platform.js\";\nimport { contenderPool, spawnServiceContender } from \"../service-contender.js\";\nimport { defaultEnsureTiming, ensureTiming } from \"../service-timing.js\";\nimport { matchesVersion } from \"../service-version.js\";\nimport { PtyHandoff } from \"../pty-handoff.js\";\nimport { decide, fallback, headers, probeResult, same } from \"../service-probe.js\";\nexport * from \"../service.js\";\nexport { headers };\n// Find, start, and stop the local opencode background service.\n//\n// The service daemon advertises itself through a registration file in the\n// user's state directory: url, pid, version, and the private password, with\n// 0600 permissions. That file is the complete discovery contract — reading it\n// is all a client needs to connect. The daemon's own configuration (port,\n// persisted password) is CLI-owned and never read here.\n// Read-only lookup: registration file plus health check and version gate.\n// Never spawns; escalation to ensure() is the caller's policy.\n/** Discover a healthy, compatible local service without starting one. */\nexport const discover = Effect.fn(\"service.discover\")(function* (options = {}) {\n    const found = (yield* registered(options.file)).service;\n    if (found?.state !== \"ready\")\n        return undefined;\n    if (!found.compatible)\n        return undefined;\n    if (!matchesVersion(found.version, options))\n        return undefined;\n    return found.endpoint;\n});\n/** Recognize an authenticated compatible service bound to an expected URL, including while it starts or fails. */\nexport const incumbent = Effect.fn(\"service.incumbent\")(function* (options) {\n    const info = yield* read(options.file);\n    if (info === undefined)\n        return undefined;\n    const found = (yield* Effect.promise(() => probeResult({ ...info, url: options.url }))).service;\n    if (!found?.compatible)\n        return undefined;\n    if (!matchesVersion(found.version, options))\n        return undefined;\n    return { endpoint: found.endpoint, state: found.state };\n});\n// Idempotent ensure-running: reuses a healthy compatible server, replaces a\n// version-mismatched one, and otherwise spawns small contenders until a server\n// becomes discoverable. A contender is never killed merely for slow startup.\n/** Ensure a healthy, compatible local service is running. */\nexport const ensure = Effect.fn(\"service.ensure\")(function* (options = {}) {\n    const timing = ensureTiming(options);\n    const pool = contenderPool(timing);\n    let timeouts;\n    let announced = false;\n    const announce = (reason, previousVersion) => Effect.sync(() => {\n        if (announced)\n            return;\n        announced = true;\n        options.onStart?.(reason, previousVersion);\n    });\n    const spawnContender = Effect.gen(function* () {\n        const [command, ...args] = options.command ?? [\"opencode\", \"serve\", \"--service\"];\n        if (command === undefined)\n            return yield* Effect.fail(new Error(\"Missing service command\"));\n        const env = yield* Effect.tryPromise(() => PtyHandoff.environment(options.file ?? fallback(), options.env));\n        return yield* Effect.try({\n            try: () => {\n                return spawnServiceContender(command, args, env);\n            },\n            catch: (cause) => new Error(\"Failed to start server\", { cause }),\n        });\n    });\n    const found = yield* Effect.gen(function* () {\n        const registration = yield* registered(options.file, timing.requestTimeout);\n        const info = registration.info;\n        const service = registration.service;\n        if (registration.timedOut && info !== undefined) {\n            timeouts = {\n                info,\n                count: timeouts !== undefined && same(timeouts.info, info) ? timeouts.count + 1 : 1,\n            };\n            if (timeouts.count >= 3) {\n                yield* announce(\"missing\");\n                yield* Effect.logWarning(\"Background service is unresponsive; recovery cannot preserve persistent terminals\");\n                yield* Effect.tryPromise(() => PtyHandoff.clear(options.file ?? fallback()));\n                yield* terminate(info, options, timing);\n                pool.evict(info.pid);\n                pool.recruitNow();\n                timeouts = undefined;\n            }\n        }\n        else\n            timeouts = undefined;\n        if (service !== undefined) {\n            pool.serviceAnswered();\n            const decision = decide(service, options);\n            if (decision._tag === \"fail\")\n                return yield* Effect.fail(decision.error);\n            if (decision._tag === \"reuse\") {\n                yield* Effect.tryPromise(() => PtyHandoff.complete(options.file ?? fallback(), service.info));\n                return Option.some(service);\n            }\n            if (decision._tag === \"replace\") {\n                yield* announce(\"version-mismatch\", service.version);\n                if (service.state !== \"ready\")\n                    yield* Effect.logWarning(\"Background service is not ready; replacement cannot preserve persistent terminals\");\n                yield* stop({ file: options.file, pty: decision.pty }).pipe(Effect.ignore);\n                pool.evict(service.info.pid);\n            }\n            return Option.none();\n        }\n        const failed = pool.reap();\n        if (failed !== undefined)\n            return yield* Effect.fail(failed);\n        if (pool.shouldRecruit(info !== undefined)) {\n            yield* announce(\"missing\");\n            pool.add(yield* spawnContender);\n        }\n        return Option.none();\n    }).pipe(Effect.repeat({\n        until: Option.isSome,\n        // Probes run sequentially, so a slow probe stretches each iteration; bound the loop by wall clock\n        // like the Promise variant rather than by attempt count.\n        schedule: Schedule.spaced(timing.pollInterval).pipe(Schedule.upTo({ duration: timing.promiseTimeout })),\n    }), Effect.ensuring(Effect.sync(() => pool.releaseAll())));\n    if (Option.isNone(found))\n        return yield* Effect.fail(pool.failure() ?? new Error(\"Timed out waiting for the background service to start\"));\n    return found.value.endpoint;\n});\n/** Stop the registered local service. */\nexport const stop = Effect.fn(\"service.stop\")(function* (options = {}) {\n    const info = yield* read(options.file);\n    // Terminal handoff is best-effort; it must never keep the old service running.\n    yield* Effect.tryPromise(() => options.pty === \"handoff\" && info !== undefined\n        ? PtyHandoff.prepare(options.file ?? fallback(), info, defaultEnsureTiming.requestTimeout)\n        : PtyHandoff.clear(options.file ?? fallback())).pipe(Effect.catch((cause) => Effect.logWarning(\"Failed to prepare persistent terminals for replacement\", cause)));\n    if (info !== undefined)\n        yield* terminate(info, options, ensureTiming(options));\n});\n/** Schema for the local service registration file. */\nexport const Info = Schema.Struct({\n    id: Schema.optional(Schema.String),\n    version: Schema.optional(Schema.String),\n    url: Schema.String,\n    pid: Schema.Int.check(Schema.isGreaterThan(0)),\n    password: Schema.optional(Schema.String),\n});\nconst decode = Schema.decodeUnknownEffect(Schema.fromJsonString(Info));\n// A missing or corrupt file means no valid info; callers treat both\n// the same (the registering server self-evicts, clients rediscover).\nconst read = Effect.fnUntraced(function* (file) {\n    const fs = yield* FileSystem.FileSystem;\n    const text = yield* fs.readFileString(file ?? fallback()).pipe(Effect.option);\n    if (Option.isNone(text))\n        return undefined;\n    return yield* decode(text.value).pipe(Effect.option, Effect.map(Option.getOrUndefined));\n});\nconst registered = Effect.fnUntraced(function* (file, timeout) {\n    const info = yield* read(file);\n    if (info === undefined)\n        return { info: undefined, service: undefined, timedOut: false };\n    return { info, ...(yield* Effect.promise(() => probeResult(info, timeout))) };\n});\n// 50ms cadence bounded at ~5s, shared by stop escalation and each ensure\n// discovery window.\nconst poll = (timing) => Schedule.max([Schedule.spaced(timing.stopPollInterval), Schedule.recurs(timing.stopPollAttempts)]);\nconst signal = (pid, name) => Effect.try({ try: () => kill(pid, name), catch: (cause) => cause }).pipe(Effect.ignore);\nconst stopped = Effect.fnUntraced(function* (pid) {\n    const running = yield* Effect.try({ try: () => kill(pid, 0), catch: () => false }).pipe(Effect.orElseSucceed(() => false));\n    if (!running)\n        return true;\n    return yield* Effect.fail(new Error(`Server process ${pid} is still running`));\n});\nconst terminate = Effect.fnUntraced(function* (info, options, timing) {\n    const current = yield* read(options.file);\n    if (current === undefined || !same(current, info))\n        return;\n    yield* signal(info.pid, \"SIGTERM\");\n    const done = yield* stopped(info.pid).pipe(Effect.retry(poll(timing)), Effect.option);\n    // The registration can disappear or change hands before this process exits. Only the PID we\n    // signalled can tell us whether it has stopped, so escalate based on that process.\n    if (Option.isNone(done)) {\n        yield* signal(info.pid, \"SIGKILL\");\n        yield* stopped(info.pid).pipe(Effect.retry(poll(timing)));\n    }\n    const latest = yield* read(options.file);\n    if (latest === undefined || !same(latest, info))\n        return;\n    const fs = yield* FileSystem.FileSystem;\n    yield* fs.remove(options.file ?? fallback()).pipe(Effect.ignore);\n});\n/** Effect-based local service lifecycle operations. */\nexport const Service = { discover, incumbent, ensure, stop, headers, Info };\n",
+    "map": {
+     "version": 3,
+     "file": "service.js",
+     "sourceRoot": "",
+     "sources": [
+      {
+       "relative": "packages/client/src/effect/service.vibe"
+      }
+     ],
+     "names": [],
+     "mappings": "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"
     }
    }
   ]

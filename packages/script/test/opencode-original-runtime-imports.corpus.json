@@ -3325,12 +3325,6 @@
     ]
   },
   {
-    "source": "packages/core/src/session/sql.vibe",
-    "imports": [
-      "./stored.js"
-    ]
-  },
-  {
     "source": "packages/core/src/session/store.vibe",
     "imports": [
       "./error.js",

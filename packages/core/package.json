@@ -1672,11 +1672,6 @@
       "vibelang-source": "./src/workspace/driver.vibe",
       "default": "./.vibelang/js/src/workspace/driver.js"
     },
-    "./session/sql": {
-      "types": "./src/session/sql.d.vibe.ts",
-      "vibelang-source": "./src/session/sql.vibe",
-      "default": "./.vibelang/js/src/session/sql.js"
-    },
     "./git.platform": null,
     "./integration.platform": null,
     "./project.platform": null,

@@ -1,7 +1,10 @@
 import { Database } from "#zed-sqlite"
+import { statSync } from "node:fs"
+import { readFile as readFileAsync } from "node:fs/promises"
+import os from "node:os"
+import path from "node:path"
 import { Option, Schema } from "effect"
 import type { EditorSelection } from "./context/editor"
-import { cwd as processCwd, os, path, readFileAsync, statSync, zedDbEnv } from "./editor-zed.platform.js"
 
 const ZedEditorRowSchema = Schema.Struct({
   item_kind: Schema.String,
@@ -35,7 +38,7 @@ export type ZedSelectionResult =
   | { type: "empty" }
   | { type: "unavailable" }
 
-export async function resolveZedSelection(dbPath: string, cwd = processCwd()): Promise<ZedSelectionResult> {
+export async function resolveZedSelection(dbPath: string, cwd = process.cwd()): Promise<ZedSelectionResult> {
   const active = queryZedActiveEditor(dbPath, cwd)
   if (active.type !== "row") return active
 
@@ -183,7 +186,7 @@ function isZedActiveEditorRow(row: ZedEditorRow): row is ZedActiveEditorRow {
 
 export function resolveZedDbPath() {
   const candidates = [
-    zedDbEnv(),
+    process.env.OPENCODE_ZED_DB,
     path.join(os.homedir(), "Library", "Application Support", "Zed", "db", "0-stable", "db.sqlite"),
     path.join(os.homedir(), ".local", "share", "zed", "db", "0-stable", "db.sqlite"),
   ].filter((item): item is string => Boolean(item))

@@ -1,6 +1,7 @@
 import { Effect, Layer, Scope } from "effect"
 import { OtlpLogger } from "effect/observability"
 import { runID } from "./shared.js"
+import { environment } from "./otlp.platform.js"
 
 export interface Options {
   readonly endpoint?: string
@@ -26,20 +27,21 @@ function parseHeaders(value?: string) {
     : undefined
 }
 
+// An invalid OTEL_RESOURCE_ATTRIBUTES entry or encoding discards every attribute.
 function resourceAttributes() {
-  const value = process.env.OTEL_RESOURCE_ATTRIBUTES
+  const value = environment("OTEL_RESOURCE_ATTRIBUTES")
   if (!value) return {}
+  const attributes: [string, string][] = []
   try {
-    return Object.fromEntries(
-      value.split(",").map((entry) => {
-        const index = entry.indexOf("=")
-        if (index < 1) throw new Error("Invalid OTEL_RESOURCE_ATTRIBUTES entry")
-        return [decodeURIComponent(entry.slice(0, index)), decodeURIComponent(entry.slice(index + 1))]
-      }),
-    )
+    for (const entry of value.split(",")) {
+      const index = entry.indexOf("=")
+      if (index < 1) return {}
+      attributes.push([decodeURIComponent(entry.slice(0, index)), decodeURIComponent(entry.slice(index + 1))])
+    }
   } catch {
     return {}
   }
+  return Object.fromEntries(attributes)
 }
 
 export function resource(app: App = { client: "opencode", version: "unknown", channel: "local" }): {

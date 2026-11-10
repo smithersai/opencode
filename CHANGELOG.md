@@ -6,6 +6,8 @@ Release notes for OpenCode V2, newest first.
 
 ### Changed
 
+- Global paths and OTLP observability setup in the util package now use VibeLang while preserving their declarations and native host access.
+
 - The SDK embedded host now uses VibeLang while preserving its declarations.
 
 - The client local service lifecycle now uses VibeLang while preserving its declarations, with process signals in a native platform file.

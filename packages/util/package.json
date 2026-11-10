@@ -62,6 +62,18 @@
       "vibelang-source": "./src/process.vibe",
       "default": "./.vibelang/js/src/process.js"
     },
+    "./global": {
+      "types": "./src/global.d.vibe.ts",
+      "vibelang-source": "./src/global.vibe",
+      "default": "./.vibelang/js/src/global.js"
+    },
+    "./observability/otlp": {
+      "types": "./src/observability/otlp.d.vibe.ts",
+      "vibelang-source": "./src/observability/otlp.vibe",
+      "default": "./.vibelang/js/src/observability/otlp.js"
+    },
+    "./global.platform": null,
+    "./observability/otlp.platform": null,
     "./*": {
       "types": "./src/*.ts",
       "vibelang-source": "./src/*.ts",

@@ -1,7 +1,7 @@
 export * as ServerAuth from "./auth"
 
 import { Context, Layer, Option, Redacted } from "effect"
-import { createHmac, timingSafeEqual } from "node:crypto"
+import { bufferFrom, createHmac, timingSafeEqual } from "./auth.platform"
 
 export type DecodedCredentials = {
   readonly username: string
@@ -49,8 +49,8 @@ export function verifySession(token: string, config: Info, now = Date.now()) {
   if (parts.length !== 2) return false
   const expires = Number(parts[0])
   if (!Number.isSafeInteger(expires) || expires * 1000 <= now) return false
-  const expected = Buffer.from(sign(config.password.value, parts[0]))
-  const actual = Buffer.from(parts[1])
+  const expected = bufferFrom(sign(config.password.value, parts[0]))
+  const actual = bufferFrom(parts[1])
   return actual.length === expected.length && timingSafeEqual(actual, expected)
 }
 

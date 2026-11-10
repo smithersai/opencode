@@ -12,7 +12,7 @@ import { Global } from "@opencode/util/global"
 import { Cause, Context, Effect, Exit, Latch, Layer, Option, Ref, Scope } from "effect"
 import { HttpMiddleware, HttpRouter, HttpServerRequest, HttpServerResponse } from "effect/http"
 import { NetAddress } from "effect/net"
-import { createServer } from "node:http"
+import { createServer, pid } from "./process.platform"
 import { ServerAuth } from "./auth"
 import { isAllowedCorsOrigin } from "./cors.vibe"
 import { authorizedRequest, unauthorizedResponse } from "./middleware/authorization"
@@ -153,7 +153,7 @@ function bind(hostname: string, port: number) {
   return Effect.gen(function* () {
     const parentScope = yield* Scope.Scope
     const serverScope = yield* Scope.fork(parentScope)
-    const server = createServer()
+    const server = yield* Effect.try({ try: () => createServer(), catch: (cause) => cause }).pipe(Effect.orDie)
     return yield* Effect.gen(function* () {
       const http = yield* NodeHttpServer.make(() => server, { port, host: hostname })
       yield* Effect.addFinalizer(() => Effect.sync(() => server.closeAllConnections()))
@@ -210,7 +210,7 @@ const infoResponse = Effect.fnUntraced(function* (
 ) {
   const state = yield* status.current
   return HttpServerResponse.jsonUnsafe(
-    { version, pid: process.pid, urls: urls(), paths: { tmp } },
+    { version, pid: pid(), urls: urls(), paths: { tmp } },
     {
       status: state.type === "ready" ? 200 : state.type === "failed" ? 500 : 503,
       headers: state.type === "starting" || state.type === "stopping" ? { "retry-after": "1" } : undefined,

@@ -9,6 +9,7 @@ import { Effect, Layer, Schema } from "effect"
 import { HttpServerRequest } from "effect/http"
 import { HttpApiMiddleware } from "effect/http-api"
 import { missingSession } from "./handlers/session-error"
+import { currentDirectory } from "./location.platform"
 
 export type LocationServices = Layer.Success<ReturnType<(typeof LocationServiceMap.Service)["get"]>>
 
@@ -72,7 +73,7 @@ export function requestRef(request: HttpServerRequest.HttpServerRequest): Locati
   const query = new URL(request.url, "http://localhost").searchParams
   const directory =
     query.get("location[directory]") ||
-    (request.headers["x-opencode-directory"] ? decode(request.headers["x-opencode-directory"]) : process.cwd())
+    (request.headers["x-opencode-directory"] ? decode(request.headers["x-opencode-directory"]) : currentDirectory())
   return Location.Ref.make({
     directory: AbsolutePath.make(directory),
   })

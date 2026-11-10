@@ -14,6 +14,7 @@ import { Api } from "../api"
 import { CorsConfig, isAllowedRequestOrigin } from "../cors.vibe"
 import { makeMediaGet } from "./media.vibe"
 import { type Outbound, runPtySocket } from "./pty-socket.vibe"
+import { bytesFrom, randomUUID, textBytes } from "./persistent-pty.platform"
 
 export const PersistentPtyHandler = HttpApiBuilder.group(Api, "server.experimental", (handlers) =>
   Effect.gen(function* () {
@@ -122,7 +123,7 @@ export const PersistentPtyHandler = HttpApiBuilder.group(Api, "server.experiment
           const cursor = Number(url.searchParams.get("cursor") ?? "0")
           const role = url.searchParams.get("role") === "observer" ? "observer" : "controller"
           const framedInput = url.searchParams.get("input_protocol") === "1"
-          const attachmentID = url.searchParams.get("attachment_id") ?? crypto.randomUUID()
+          const attachmentID = url.searchParams.get("attachment_id") ?? randomUUID()
           if (!Number.isSafeInteger(cursor) || cursor < 0) return HttpServerResponse.empty({ status: 400 })
 
           const socket = yield* Effect.orDie(ctx.request.upgrade)
@@ -141,7 +142,7 @@ export const PersistentPtyHandler = HttpApiBuilder.group(Api, "server.experiment
                   if (event.type === "resized")
                     Queue.offerUnsafe(
                       outbox,
-                      JSON.stringify({ ...event, checkpoint: Buffer.from(event.checkpoint).toString("base64") }),
+                      JSON.stringify({ ...event, checkpoint: bytesFrom(event.checkpoint).toString("base64") }),
                     )
                   if (event.type !== "output" && event.type !== "resized")
                     Queue.offerUnsafe(outbox, JSON.stringify(event))
@@ -190,7 +191,7 @@ export const PersistentPtyHandler = HttpApiBuilder.group(Api, "server.experiment
             onOpen,
             onMessage: (message) => {
               if (!attachment) return Effect.void
-              const data = typeof message === "string" ? Buffer.from(message) : message
+              const data = typeof message === "string" ? textBytes(message) : message
               if (!framedInput)
                 return pty
                   .input(ctx.params.ptyID, attachmentID, attachment.info.size.cols, attachment.info.size.rows, data)

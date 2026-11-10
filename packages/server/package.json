@@ -40,16 +40,16 @@
     "./*": "./src/*.ts",
     "./handlers/session-error": {
       "types": {
-        "default": "./src/handlers/session-error.ts"
+        "default": "./src/handlers/session-error.d.vibe.ts"
       },
-      "vibelang-source": "./src/handlers/session-error.ts",
+      "vibelang-source": "./src/handlers/session-error.vibe",
       "default": "./.vibelang/js/src/handlers/session-error.js"
     },
     "./location": {
       "types": {
-        "default": "./src/location.ts"
+        "default": "./src/location.d.vibe.ts"
       },
-      "vibelang-source": "./src/location.ts",
+      "vibelang-source": "./src/location.vibe",
       "default": "./.vibelang/js/src/location.js"
     },
     "./middleware/form-location": {
@@ -75,9 +75,9 @@
     },
     "./auth": {
       "types": {
-        "default": "./src/auth.ts"
+        "default": "./src/auth.d.vibe.ts"
       },
-      "vibelang-source": "./src/auth.ts",
+      "vibelang-source": "./src/auth.vibe",
       "default": "./.vibelang/js/src/auth.js"
     },
     "./event-feed": {
@@ -249,16 +249,16 @@
     },
     "./server-info": {
       "types": {
-        "default": "./src/server-info.ts"
+        "default": "./src/server-info.d.vibe.ts"
       },
-      "vibelang-source": "./src/server-info.ts",
+      "vibelang-source": "./src/server-info.vibe",
       "default": "./.vibelang/js/src/server-info.js"
     },
     "./pairing": {
       "types": {
-        "default": "./src/pairing.ts"
+        "default": "./src/pairing.d.vibe.ts"
       },
-      "vibelang-source": "./src/pairing.ts",
+      "vibelang-source": "./src/pairing.vibe",
       "default": "./.vibelang/js/src/pairing.js"
     },
     "./handlers/server": {
@@ -274,9 +274,9 @@
     },
     "./handlers/debug": {
       "types": {
-        "default": "./src/handlers/debug.ts"
+        "default": "./src/handlers/debug.d.vibe.ts"
       },
-      "vibelang-source": "./src/handlers/debug.ts",
+      "vibelang-source": "./src/handlers/debug.vibe",
       "default": "./.vibelang/js/src/handlers/debug.js"
     },
     "./handlers/pty": {
@@ -299,9 +299,9 @@
     },
     "./handlers/persistent-pty": {
       "types": {
-        "default": "./src/handlers/persistent-pty.ts"
+        "default": "./src/handlers/persistent-pty.d.vibe.ts"
       },
-      "vibelang-source": "./src/handlers/persistent-pty.ts",
+      "vibelang-source": "./src/handlers/persistent-pty.vibe",
       "default": "./.vibelang/js/src/handlers/persistent-pty.js"
     },
     "./handlers/shell": {
@@ -364,9 +364,9 @@
     },
     "./handlers/mcp": {
       "types": {
-        "default": "./src/handlers/mcp.ts"
+        "default": "./src/handlers/mcp.d.vibe.ts"
       },
-      "vibelang-source": "./src/handlers/mcp.ts",
+      "vibelang-source": "./src/handlers/mcp.vibe",
       "default": "./.vibelang/js/src/handlers/mcp.js"
     },
     "./handlers/credential": {
@@ -432,9 +432,9 @@
     },
     "./middleware/authorization": {
       "types": {
-        "default": "./src/middleware/authorization.ts"
+        "default": "./src/middleware/authorization.d.vibe.ts"
       },
-      "vibelang-source": "./src/middleware/authorization.ts",
+      "vibelang-source": "./src/middleware/authorization.vibe",
       "default": "./.vibelang/js/src/middleware/authorization.js"
     },
     "./middleware/schema-error": {
@@ -457,9 +457,9 @@
     },
     "./fetch": {
       "types": {
-        "default": "./src/fetch.ts"
+        "default": "./src/fetch.d.vibe.ts"
       },
-      "vibelang-source": "./src/fetch.ts",
+      "vibelang-source": "./src/fetch.vibe",
       "default": "./.vibelang/js/src/fetch.js"
     },
     "./service-status": {
@@ -471,9 +471,9 @@
     },
     "./process": {
       "types": {
-        "default": "./src/process.ts"
+        "default": "./src/process.d.vibe.ts"
       },
-      "vibelang-source": "./src/process.ts",
+      "vibelang-source": "./src/process.vibe",
       "default": "./.vibelang/js/src/process.js"
     },
     "./workerd": {
@@ -487,7 +487,15 @@
     "./handlers/session.platform": null,
     "./handlers/fs.platform": null,
     "./handlers/server.platform": null,
-    "./middleware/schema-error.platform": null
+    "./middleware/schema-error.platform": null,
+    "./auth.platform": null,
+    "./pairing.platform": null,
+    "./server-info.platform": null,
+    "./location.platform": null,
+    "./handlers/session-error.platform": null,
+    "./handlers/debug.platform": null,
+    "./handlers/persistent-pty.platform": null,
+    "./process.platform": null
   },
   "scripts": {
     "build": "bun run script/build.ts",

@@ -2,7 +2,7 @@ export * as ServerPairing from "./pairing"
 
 import { Cache, Context, Duration, Effect, Layer } from "effect"
 import { makeGlobalNode } from "@opencode/util/effect/app-node"
-import { randomBytes } from "node:crypto"
+import { randomBytes } from "./pairing.platform"
 
 const TTL = Duration.minutes(5)
 
@@ -22,7 +22,10 @@ const layer = Layer.effect(
     const cache = yield* Cache.make<string, true>({ capacity: 1_000, lookup: noLookup, timeToLive: TTL })
     return Service.of({
       issue: Effect.fn("ServerPairing.issue")(function* () {
-        const code = randomBytes(16).toString("base64url")
+        const code = yield* Effect.try({
+          try: () => randomBytes(16).toString("base64url"),
+          catch: (cause) => cause,
+        }).pipe(Effect.orDie)
         yield* Cache.set(cache, code, true)
         return { code, expires_in: Duration.toSeconds(TTL) }
       }),

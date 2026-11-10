@@ -25,7 +25,6 @@ import { cloneSelectedLineRange, previewSelectedLines } from "../pierre/selectio
 import { createLineCommentController } from "./line-comment-annotations"
 import type { LineCommentEditorProps } from "./line-comment"
 import { normalize, text, type ViewDiff } from "./session-diff"
-import { cancelAnimationFrame, isHTMLElement, requestAnimationFrame } from "./session-review.platform.js"
 
 const MAX_DIFF_CHANGED_LINES = 500
 
@@ -324,7 +323,7 @@ export const SessionReview = (props: SessionReviewProps) => {
         const anchor = wrapper?.querySelector(`[data-comment-id="${focus.id}"]`)
 
         const ready =
-          isHTMLElement(anchor) && anchor.style.pointerEvents !== "none" && anchor.style.opacity !== "0"
+          anchor instanceof HTMLElement && anchor.style.pointerEvents !== "none" && anchor.style.opacity !== "0"
 
         const target = ready ? anchor : wrapper
 

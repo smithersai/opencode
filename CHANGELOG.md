@@ -74,7 +74,7 @@ Release notes for OpenCode V2, newest first.
 
 - The terminal view, updater dialogs, update state machine and log context, and SSH connection state in the GUI plugins now use VibeLang while keeping browser timers, observers and build-time release notes in native siblings.
 
-- The session review and basic tool components now use VibeLang while keeping their package entry points and browser frame and selection access.
+- The basic tool component now uses VibeLang while keeping its package entry point and browser frame and selection access.
 
 - Worktree management and session statistics now use VibeLang while preserving their declarations and native path access.
 

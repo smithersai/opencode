@@ -26,11 +26,7 @@
     "./markdown": "./src/components/markdown.tsx",
     "./message-part": "./src/components/message-part.tsx",
     "./message-nav": "./src/components/message-nav.tsx",
-    "./session-review": {
-      "types": "./src/components/session-review.d.vibex.ts",
-      "vibelang-source": "./src/components/session-review.vibex",
-      "default": "./.vibelang/js/src/components/session-review.jsx"
-    },
+    "./session-review": "./src/components/session-review.tsx",
     "./session-retry": "./src/components/session-retry.tsx",
     "./tool-count-label": "./src/components/tool-count-label.tsx",
     "./tool-count-summary": "./src/components/tool-count-summary.tsx",

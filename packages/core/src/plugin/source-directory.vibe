@@ -2,7 +2,7 @@ export * as PluginSourceDirectory from "./source-directory.js"
 
 import { FSUtil } from "@opencode/util/fs-util"
 import { Effect, Option } from "effect"
-import path from "path"
+import { joinPath } from "./source-directory.platform.js"
 
 export const names = ["plugin", "plugins"] as const
 
@@ -11,9 +11,9 @@ export const discover = Effect.fn("PluginSourceDirectory.discover")(function* (
   directory: string,
 ) {
   const children = (yield* Effect.forEach(names, (source) =>
-    fs.readDirectoryEntries(path.join(directory, source)).pipe(
+    fs.readDirectoryEntries(joinPath(directory, source)).pipe(
       Effect.orElseSucceed(() => []),
-      Effect.map((entries) => entries.map((entry) => ({ ...entry, target: path.join(directory, source, entry.name) }))),
+      Effect.map((entries) => entries.map((entry) => ({ ...entry, target: joinPath(directory, source, entry.name) }))),
     ),
   ))
     .flat()

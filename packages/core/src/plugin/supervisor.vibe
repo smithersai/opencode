@@ -2,7 +2,6 @@ export * as PluginSupervisor from "./supervisor.js"
 
 import { Event } from "@opencode/schema/config"
 import { Cause, Effect, Layer, Queue, Stream } from "effect"
-import path from "path"
 import { ConfigPluginSource } from "../config/plugin/source.js"
 import { makeLocationNode } from "@opencode/util/effect/app-node"
 import { Bus } from "../bus.js"
@@ -14,6 +13,7 @@ import { PluginModule } from "./module.js"
 import { SdkPlugins } from "./sdk.vibe"
 import { PluginUpdate } from "./update.vibe"
 import { Watcher } from "../filesystem/watcher.js"
+import { isAbsolute, randomUUID } from "./supervisor.platform.js"
 
 const resolve = Effect.fn("PluginSupervisor.resolve")(function* (
   modules: Effect.Success<ReturnType<typeof PluginModule.make>>,
@@ -57,7 +57,7 @@ const resolve = Effect.fn("PluginSupervisor.resolve")(function* (
 
     const plugin = yield* modules.load(operation, { install }).pipe(
       Effect.catchCause((cause) => {
-        const ref = `err_${crypto.randomUUID().slice(0, 8)}`
+        const ref = `err_${randomUUID().slice(0, 8)}`
         const error = Cause.squash(cause)
         return Effect.logWarning("failed to load plugin", { target: operation.target, ref, cause }).pipe(
           Effect.as({ error: error instanceof PluginModule.LoadError ? error.message : "Plugin failed to load", ref }),
@@ -258,7 +258,7 @@ const nodeDeps = [
 ] as const
 
 function pluginSource(target: string): Plugin.Source {
-  if (path.isAbsolute(target)) return { type: "local", path: target }
+  if (isAbsolute(target)) return { type: "local", path: target }
   return { type: "package", target }
 }
 

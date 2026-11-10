@@ -701,6 +701,21 @@
       "vibelang-source": "./src/plugin/provider/xai.vibe",
       "default": "./.vibelang/js/src/plugin/provider/xai.js"
     },
+    "./plugin/module": {
+      "types": "./src/plugin/module.d.vibe.ts",
+      "vibelang-source": "./src/plugin/module.vibe",
+      "default": "./.vibelang/js/src/plugin/module.js"
+    },
+    "./plugin/source-directory": {
+      "types": "./src/plugin/source-directory.d.vibe.ts",
+      "vibelang-source": "./src/plugin/source-directory.vibe",
+      "default": "./.vibelang/js/src/plugin/source-directory.js"
+    },
+    "./plugin/supervisor": {
+      "types": "./src/plugin/supervisor.d.vibe.ts",
+      "vibelang-source": "./src/plugin/supervisor.vibe",
+      "default": "./.vibelang/js/src/plugin/supervisor.js"
+    },
     "./*": {
       "types": "./src/*.ts",
       "vibelang-source": "./src/*.ts",
@@ -883,6 +898,9 @@
     "./plugin/provider/sap-ai-core.platform": null,
     "./plugin/provider/snowflake-cortex.platform": null,
     "./plugin/provider/xai.platform": null,
+    "./plugin/module.platform": null,
+    "./plugin/source-directory.platform": null,
+    "./plugin/supervisor.platform": null,
     "./database/migration/20260127222353_familiar_lady_ursula": {
       "types": "./src/database/migration/20260127222353_familiar_lady_ursula.d.vibe.ts",
       "vibelang-source": "./src/database/migration/20260127222353_familiar_lady_ursula.vibe",

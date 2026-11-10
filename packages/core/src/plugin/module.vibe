@@ -7,15 +7,13 @@ import { createPluginSources } from "@opencode/plugin/source"
 import { Hash } from "@opencode/util/hash"
 import { Npm } from "@opencode/util/npm"
 import { Deferred, Effect, FiberSet, PubSub, Schema, Stream } from "effect"
-import path from "path"
-import { readFile, stat } from "node:fs/promises"
-import { fileURLToPath, pathToFileURL } from "url"
 import type { ConfigPluginSource } from "../config/plugin/source.js"
 import type { Generation } from "../plugin.js"
 import { PluginPromise } from "./promise.js"
 import { Config } from "../config.js"
 import { ManagedPolicy } from "../managed-policy.js"
 import { Watcher } from "../filesystem/watcher.js"
+import { fileURLToPath, isAbsolute, pathToFileURL, readFile, stat, watchTarget } from "./module.platform.js"
 
 export const make = Effect.fn("PluginModule.make")(function* () {
   const config = yield* Config.Service
@@ -49,7 +47,7 @@ export const make = Effect.fn("PluginModule.make")(function* () {
       Effect.gen(function* () {
         const version = operation.target.lastIndexOf("@")
         const target =
-          path.isAbsolute(operation.target) || version <= 0 ? operation.target : operation.target.slice(0, version)
+          isAbsolute(operation.target) || version <= 0 ? operation.target : operation.target.slice(0, version)
         if (
           ManagedPolicy.decision(
             ManagedPolicy.statements(yield* config.entries()),
@@ -63,18 +61,6 @@ export const make = Effect.fn("PluginModule.make")(function* () {
     changes: () => Stream.fromPubSub(changes),
   }
 })
-
-// A missing dependency may have missing parents too. Watch the nearest existing
-// ancestor recursively so creating the rest of the path can trigger recovery.
-function watchTarget(file: string): Promise<Watcher.WatchInput> {
-  return stat(file).then(
-    (info) => ({ path: file, type: info.isDirectory() ? "directory" : "file" }),
-    (cause) => {
-      if (path.dirname(file) === file) throw cause
-      return watchTarget(path.dirname(file))
-    },
-  )
-}
 
 const GuiOptions = GuiBundle.fields.options
 
@@ -104,7 +90,7 @@ const load = Effect.fn("PluginModule.load")(function* (
   watch: (file: string) => Effect.Effect<void>,
   options?: { readonly install?: boolean },
 ) {
-  const local = path.isAbsolute(operation.target)
+  const local = isAbsolute(operation.target)
   const npm = yield* Npm.Service
   const installed = local
     ? undefined
@@ -115,7 +101,7 @@ const load = Effect.fn("PluginModule.load")(function* (
   // local plugins always arrive here as directories.
   const entrypoints: Host.Entrypoints =
     local && (yield* Effect.promise(() => stat(operation.target))).isFile()
-      ? { server: pathToFileURL(operation.target).href }
+      ? { server: pathToFileURL(operation.target) }
       : yield* Effect.sync(() => Host.resolve(installed ?? { directory: operation.target }))
   const entrypoint = entrypoints.server
   // A TUI-only package is not the server's to list; the TUI loads it from its own config.
@@ -137,7 +123,10 @@ const load = Effect.fn("PluginModule.load")(function* (
   // content change the GUI's revision, so an edit reloads the GUI like a server or TUI edit reloads theirs. A package's
   // bundle changes only with its installed version. The GUI's revision is a hash: windows receive it, and the operation
   // holds the options.
-  const gui = local && entrypoints.gui ? fileURLToPath(entrypoints.gui) : undefined
+  const guiURL = local ? entrypoints.gui : undefined
+  const gui = guiURL
+    ? yield* Effect.try({ try: () => fileURLToPath(guiURL), catch: (cause) => cause }).pipe(Effect.orDie)
+    : undefined
   if (gui) yield* watch(gui)
   const bundle = gui ? Hash.sha256(yield* Effect.promise(() => readFile(gui))) : undefined
   // The GUI receives the same options as the server entry; they cross to the app, so they must be JSON.

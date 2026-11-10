@@ -6,6 +6,8 @@ Release notes for OpenCode V2, newest first.
 
 ### Changed
 
+- Plugin module loading, the plugin supervisor and plugin source directory discovery now use VibeLang, with path and file system access in native platform files.
+
 - The Amazon Bedrock, Azure, ChatGPT, Cloudflare, Databricks, DigitalOcean, GitHub Copilot, GitLab, Google Vertex, Modal, OpenAI, OpenCode Console, Poe, SAP AI Core, Snowflake Cortex and xAI provider plugins now use VibeLang, with environment, crypto, Buffer and node:http access in native platform files.
 
 - The terminal view, updater dialogs, update state machine and log context, and SSH connection state in the GUI plugins now use VibeLang while keeping browser timers, observers and build-time release notes in native siblings.

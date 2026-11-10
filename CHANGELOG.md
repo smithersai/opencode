@@ -6,6 +6,8 @@ Release notes for OpenCode V2, newest first.
 
 ### Changed
 
+- The session message timeline and the elicitation dock in the app now use VibeLang, with browser access in platform siblings.
+
 - The core AI SDK bridge now uses VibeLang while preserving its declarations, with fetch, timers, streams and request context in a native platform file.
 
 - Core model, model resolver, provider, PTY and ripgrep services now use VibeLang while preserving their declarations, with environment, platform, module resolution and buffer access in native platform files.

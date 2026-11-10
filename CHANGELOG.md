@@ -6,6 +6,8 @@ Release notes for OpenCode V2, newest first.
 
 ### Changed
 
+- The CLI updater and retained image service and the TUI Zed editor selection now use VibeLang while preserving native process, file and environment access.
+
 - The CLI import boundary tests now bundle with the VibeLang plugin, as the CLI package build does.
 
 - Git, projects, integrations, workspaces, the bus, credentials, forms, the MCP client, OAuth and stdio transport, environment drivers and project icons now use VibeLang while preserving their declarations and native host access.

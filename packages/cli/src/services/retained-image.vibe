@@ -1,8 +1,7 @@
 export * as RetainedImage from "./retained-image"
 
 import { Effect, FileSystem } from "effect"
-import { randomBytes } from "node:crypto"
-import path from "node:path"
+import { executablePath, kill, path, processID, randomBytes } from "./retained-image.platform"
 
 // Windows refuses to delete the last hard link of a running executable, and bun 1.4 spins
 // forever when its package replacement meets one. Any other link to the image can be removed,
@@ -25,8 +24,11 @@ export const retain = Effect.fnUntraced(function* (directory: string, role: "ser
           yield* fs.remove(path.join(directory, name)).pipe(Effect.ignore)
         }),
       )
-      const target = path.join(directory, `opencode-${role}-${process.pid}-${randomBytes(4).toString("hex")}.exe`)
-      const executable = yield* fs.realPath(process.execPath).pipe(Effect.orElseSucceed(() => process.execPath))
+      const suffix = yield* Effect.try({ try: () => randomBytes(4).toString("hex"), catch: (cause) => cause }).pipe(
+        Effect.orDie,
+      )
+      const target = path.join(directory, `opencode-${role}-${processID()}-${suffix}.exe`)
+      const executable = yield* fs.realPath(executablePath()).pipe(Effect.orElseSucceed(() => executablePath()))
       return yield* fs.link(executable, target).pipe(
         Effect.as(target),
         Effect.tapError((cause) => Effect.logWarning("could not link the running binary", { cause })),
@@ -55,9 +57,9 @@ export const relocate = Effect.fnUntraced(function* (directory: string, destinat
  * whose upgrades replace it in place. The updater decides the same question from the install location.
  */
 export function installed(home: string) {
-  const runtime = path.basename(process.execPath, path.extname(process.execPath)).toLowerCase()
+  const runtime = path.basename(executablePath(), path.extname(executablePath())).toLowerCase()
   if (runtime === "bun" || runtime === "node" || runtime === "nodejs") return false
-  const executable = path.resolve(process.execPath)
+  const executable = path.resolve(executablePath())
   return (
     executable.split(path.sep).includes("node_modules") ||
     /[\\/]winget[\\/]packages[\\/]/i.test(executable) ||
@@ -67,7 +69,7 @@ export function installed(home: string) {
 
 // Only ESRCH means the process is gone; EPERM is a live process this user cannot open.
 const alive = (pid: number) =>
-  Effect.try({ try: () => process.kill(pid, 0), catch: (cause) => cause }).pipe(
+  Effect.try({ try: () => kill(pid, 0), catch: (cause) => cause }).pipe(
     Effect.as(true),
     Effect.catch((cause) => Effect.succeed(!(cause instanceof Error && "code" in cause && cause.code === "ESRCH"))),
   )

@@ -7,5 +7,6 @@ await pack(path.resolve(import.meta.dir, ".."), {
     "./backend/openai.platform",
     "./backend/simulated-provider.platform",
     "./frontend/renderer.platform",
+    "./manifest.platform",
   ],
 })

@@ -4,6 +4,7 @@ import { HttpClientError, TransportError } from "effect/http/HttpClientError"
 import { OpenAIChatEvent, DEFAULT_BASE_URL, PATH } from "@opencode/ai/protocols/openai-chat"
 import { SimulationNetwork } from "./network"
 import { SimulatedProvider } from "./simulated-provider"
+import { makeResponse } from "./openai.platform"
 
 /**
  * Driver-answered OpenAI endpoint for the simulated network.
@@ -121,7 +122,7 @@ export const route = (provider: SimulatedProvider.Interface): SimulationNetwork.
           : {}
       return HttpClientResponse.fromWeb(
         request,
-        new Response(Stream.toReadableStream(sseBody(provider.stream({ url: url.toString(), body }))), {
+        makeResponse(Stream.toReadableStream(sseBody(provider.stream({ url: url.toString(), body }))), {
           status: 200,
           headers: { "content-type": "text/event-stream" },
         }),

@@ -1,7 +1,6 @@
 import { SdkPlugins } from "@opencode/core/plugin/sdk"
 import { Tool } from "@opencode/core/tool"
 import { Plugin } from "@opencode/plugin/effect"
-import { createHash } from "node:crypto"
 import {
   Cause,
   Context,
@@ -21,6 +20,7 @@ import {
 } from "effect"
 import { SimulationControlServer } from "../control-server"
 import { SimulationProtocol } from "../protocol"
+import { sha256Base64Url, writeError } from "./simulated-provider.platform"
 
 export interface ProviderRequest {
   readonly url: string
@@ -282,7 +282,7 @@ export const layerDrive = (options: { readonly endpoint: string; readonly versio
             discard: true,
           }),
       })
-      yield* Effect.sync(() => process.stderr.write(`opencode drive backend websocket: ${options.endpoint}\n`))
+      yield* Effect.sync(() => writeError(`opencode drive backend websocket: ${options.endpoint}\n`))
 
       return Service.of({
         stream: (request) =>
@@ -897,7 +897,7 @@ function canonicalJson(value: unknown): string {
 }
 
 function fingerprintJson(value: unknown) {
-  return createHash("sha256").update(canonicalJson(value)).digest("base64url")
+  return sha256Base64Url(canonicalJson(value))
 }
 
 function releaseController(

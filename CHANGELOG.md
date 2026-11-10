@@ -6,6 +6,8 @@ Release notes for OpenCode V2, newest first.
 
 ### Changed
 
+- The simulation backend, Drive manifest and headless renderer now use VibeLang while preserving their declarations.
+
 - The CLI web UI and app asset services and the port owner lookup now use VibeLang while preserving their behavior and native host access.
 
 - Server auth, pairing, process, location and request handlers now use VibeLang while preserving their declarations and native host access.

@@ -16,12 +16,34 @@
     "dist"
   ],
   "exports": {
-    "./backend": "./src/backend/index.ts",
+    "./backend": {
+      "types": "./src/backend/index.d.vibe.ts",
+      "vibelang-source": "./src/backend/index.vibe",
+      "default": "./.vibelang/js/src/backend/index.js"
+    },
     "./backend/*": "./src/backend/*.ts",
     "./frontend": "./src/frontend/simulation.ts",
     "./frontend/*": "./src/frontend/*.ts",
     "./protocol": "./src/protocol/index.ts",
-    "./recording": "./src/recording.ts"
+    "./recording": "./src/recording.ts",
+    "./backend/openai": {
+      "types": "./src/backend/openai.d.vibe.ts",
+      "vibelang-source": "./src/backend/openai.vibe",
+      "default": "./.vibelang/js/src/backend/openai.js"
+    },
+    "./backend/simulated-provider": {
+      "types": "./src/backend/simulated-provider.d.vibe.ts",
+      "vibelang-source": "./src/backend/simulated-provider.vibe",
+      "default": "./.vibelang/js/src/backend/simulated-provider.js"
+    },
+    "./frontend/renderer": {
+      "types": "./src/frontend/renderer.d.vibe.ts",
+      "vibelang-source": "./src/frontend/renderer.vibe",
+      "default": "./.vibelang/js/src/frontend/renderer.js"
+    },
+    "./backend/openai.platform": null,
+    "./backend/simulated-provider.platform": null,
+    "./frontend/renderer.platform": null
   },
   "scripts": {
     "build": "bun run script/build.ts",

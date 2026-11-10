@@ -3,6 +3,7 @@ import type { RpcMessage } from "effect/rpc"
 import type { DesktopRpcClient } from "../shared/ipc-rpc.vibe"
 import type { DesktopEvent } from "../shared/ipc-rpc/events.vibe"
 import { IpcTransportPort, omitUndefined } from "../shared/ipc-transport"
+import { addMessageListener, isWindow, logError, onPageHide, removeMessageListener } from "./ipc-client.platform.js"
 
 // The main process serves Effect's RpcServer over a MessagePort; this side speaks its wire format
 // directly. Messages cross by structured clone (no serialization layer, binary stays binary), every
@@ -41,25 +42,23 @@ let nextId = 0
 
 const port = new Promise<MessagePort>((resolve) => {
   const onMessage = (event: MessageEvent) => {
-    if (event.source !== window || event.data !== IpcTransportPort) return
+    if (!isWindow(event.source) || event.data !== IpcTransportPort) return
     const value = event.ports[0]
 
     if (!value) return
-    window.removeEventListener("message", onMessage)
+    removeMessageListener(onMessage)
     // SAFETY: the port comes from the trusted main process, whose RPC server posts only its own messages.
     value.addEventListener("message", (message) => receive(value, message.data as RpcMessage.FromServerEncoded))
     value.start()
     resolve(value)
   }
 
-  window.addEventListener("message", onMessage)
+  addMessageListener(onMessage)
 })
 
 // Let queued work (storage flushes) hand its messages to the port before it closes.
-window.addEventListener(
-  "pagehide",
+onPageHide(
   () => void Promise.allSettled([...beforeDispose].map((callback) => callback())).then(() => port.then((p) => p.close())),
-  { once: true },
 )
 
 void request("DesktopEvents", null, (values) => {
@@ -181,7 +180,7 @@ function receive(p: MessagePort, message: RpcMessage.FromServerEncoded) {
     }
 
     case "ClientProtocolError": {
-      console.error("[desktop-ipc] protocol error", message.error)
+      logError("[desktop-ipc] protocol error", message.error)
 
       return
     }

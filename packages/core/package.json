@@ -1031,6 +1031,18 @@
     "./plugin/plan.platform": null,
     "./plugin/skill.platform": null,
     "./pty/ticket.platform": null,
+    "./persistent-pty/daemon": {
+      "types": "./src/persistent-pty/daemon.d.vibe.ts",
+      "vibelang-source": "./src/persistent-pty/daemon.vibe",
+      "default": "./.vibelang/js/src/persistent-pty/daemon.js"
+    },
+    "./persistent-pty/daemon.platform": null,
+    "./persistent-pty/index": {
+      "types": "./src/persistent-pty/index.d.vibe.ts",
+      "vibelang-source": "./src/persistent-pty/index.vibe",
+      "default": "./.vibelang/js/src/persistent-pty/index.js"
+    },
+    "./persistent-pty/index.platform": null,
     "./plugin/provider/amazon-bedrock.platform": null,
     "./plugin/provider/azure.platform": null,
     "./plugin/provider/chatgpt.platform": null,

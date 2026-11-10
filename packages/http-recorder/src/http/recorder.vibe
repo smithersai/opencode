@@ -8,6 +8,7 @@ import { makeReplayPoolState, resolveAutoMode } from "../replay/state.js"
 import { httpInteractions, type CassetteMetadata } from "../cassette/model.vibe"
 import { defaultMatcher, selectFirstMatching, type RequestMatcher } from "./matching.vibe"
 import type { HttpInteraction, ResponseSnapshot } from "./model.vibe"
+import { base64FromBytes, bytesFromBase64, makeResponse } from "./recorder.platform.js"
 
 export { defaultMatcher }
 export type RecordReplayMode = "auto" | "record" | "replay" | "passthrough"
@@ -44,15 +45,15 @@ const captureResponseBody = (response: HttpClientResponse.HttpClientResponse, co
     Effect.map((bytes) =>
       isTextContentType(contentType)
         ? { body: new TextDecoder().decode(bytes) }
-        : { body: Buffer.from(bytes).toString("base64"), bodyEncoding: "base64" as const },
+        : { body: base64FromBytes(bytes), bodyEncoding: "base64" as const },
     ),
   )
 const decodeResponseBody = (snapshot: ResponseSnapshot) =>
-  snapshot.bodyEncoding === "base64" ? Buffer.from(snapshot.body, "base64") : snapshot.body
+  snapshot.bodyEncoding === "base64" ? bytesFromBase64(snapshot.body) : snapshot.body
 const responseFromSnapshot = (request: HttpClientRequest.HttpClientRequest, snapshot: ResponseSnapshot) =>
   HttpClientResponse.fromWeb(
     request,
-    new Response(
+    makeResponse(
       request.method === "HEAD" || snapshot.status === 204 || snapshot.status === 205 || snapshot.status === 304
         ? null
         : decodeResponseBody(snapshot),

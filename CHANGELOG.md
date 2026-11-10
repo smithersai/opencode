@@ -6,6 +6,8 @@ Release notes for OpenCode V2, newest first.
 
 ### Changed
 
+- Core models.dev, plugin, RPC and shell services now use VibeLang while preserving their declarations, with command line, file and buffer access in native platform files.
+
 - Core instance, file access, permission, skill and reference services now use VibeLang while preserving their declarations and native path access.
 
 - Core VCS, snapshot and repository cache services now use VibeLang while preserving their declarations, with path and byte access in native platform files.

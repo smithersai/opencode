@@ -1,6 +1,5 @@
 export * as Shell from "./shell.js"
 
-import path from "path"
 import { Context, Deferred, Duration, Effect, Fiber, Latch, Layer, Schema, Schedule, Stream } from "effect"
 import { ChildProcess } from "effect/process"
 import { produce } from "immer"
@@ -22,6 +21,7 @@ import { SessionSchema } from "./session/schema.js"
 import { Config } from "./config.js"
 import { ToolOutput } from "./tool-output.js"
 import { ShellResult } from "./shell/result.js"
+import { allocBuffer, bufferFrom, fs, fsPromises, hostEnv, isWindows, path } from "./shell.platform.js"
 
 export class NotFoundError extends Schema.TaggedError<NotFoundError>()("Shell.NotFoundError", {
   id: Shell.ID,
@@ -142,8 +142,8 @@ const layer = () =>
       const exitOrder: Shell.ID[] = []
 
       const outputDir = path.join(global.data, DIRECTORY, location.project.id)
-      const { mkdir, unlink } = yield* Effect.promise(() => import("fs/promises"))
-      const { createWriteStream, createReadStream } = yield* Effect.promise(() => import("fs"))
+      const { mkdir, unlink } = yield* Effect.promise(() => fsPromises())
+      const { createWriteStream, createReadStream } = yield* Effect.promise(() => fs())
       yield* Effect.promise(() => mkdir(outputDir, { recursive: true }))
 
       yield* Effect.addFinalizer(() =>
@@ -212,14 +212,14 @@ const layer = () =>
         if (cursor >= command.size) return { output: "", cursor: command.size, size: command.size, truncated: false }
         const start = Math.max(0, cursor)
         const length = Math.min(limit, command.size - start)
-        const buffer = Buffer.alloc(length)
+        const buffer = allocBuffer(length)
         const bytesRead = yield* Effect.promise(
           () =>
             new Promise<number>((resolve) => {
               const stream = createReadStream(command.file, { start, end: start + length - 1 })
               let offset = 0
               stream.on("data", (chunk: string | Buffer) => {
-                const bytes = Buffer.from(chunk)
+                const bytes = bufferFrom(chunk)
                 bytes.copy(buffer, offset)
                 offset += bytes.length
               })
@@ -269,7 +269,7 @@ const layer = () =>
         const baseEnv =
           location.workspaceID !== undefined
             ? undefined
-            : ((Schema.is(SessionSchema.ID)(sessionID) ? yield* environments.get(sessionID) : undefined) ?? process.env)
+            : ((Schema.is(SessionSchema.ID)(sessionID) ? yield* environments.get(sessionID) : undefined) ?? hostEnv())
         const invocation: ShellCreateBefore = {
           command: input.command,
           cwd: input.cwd ?? location.directory,
@@ -312,7 +312,7 @@ const layer = () =>
                     cwd: invocation.cwd,
                     env: invocation.env,
                     stdin: "ignore",
-                    detached: process.platform !== "win32",
+                    detached: !isWindows(),
                     forceKillAfter: Duration.seconds(3),
                   }),
                 )

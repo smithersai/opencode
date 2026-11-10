@@ -751,10 +751,20 @@
       "vibelang-source": "./src/instance.vibe",
       "default": "./.vibelang/js/src/instance.js"
     },
+    "./models-dev": {
+      "types": "./src/models-dev.d.vibe.ts",
+      "vibelang-source": "./src/models-dev.vibe",
+      "default": "./.vibelang/js/src/models-dev.js"
+    },
     "./permission": {
       "types": "./src/permission.d.vibe.ts",
       "vibelang-source": "./src/permission.vibe",
       "default": "./.vibelang/js/src/permission.js"
+    },
+    "./plugin": {
+      "types": "./src/plugin.d.vibe.ts",
+      "vibelang-source": "./src/plugin.vibe",
+      "default": "./.vibelang/js/src/plugin.js"
     },
     "./reference": {
       "types": "./src/reference.d.vibe.ts",
@@ -765,6 +775,16 @@
       "types": "./src/repository-cache.d.vibe.ts",
       "vibelang-source": "./src/repository-cache.vibe",
       "default": "./.vibelang/js/src/repository-cache.js"
+    },
+    "./rpc": {
+      "types": "./src/rpc.d.vibe.ts",
+      "vibelang-source": "./src/rpc.vibe",
+      "default": "./.vibelang/js/src/rpc.js"
+    },
+    "./shell": {
+      "types": "./src/shell.d.vibe.ts",
+      "vibelang-source": "./src/shell.vibe",
+      "default": "./.vibelang/js/src/shell.js"
     },
     "./skill": {
       "types": "./src/skill.d.vibe.ts",
@@ -783,7 +803,10 @@
     },
     "./file-access.platform": null,
     "./instance.platform": null,
+    "./models-dev.platform": null,
+    "./plugin.platform": null,
     "./repository-cache.platform": null,
+    "./shell.platform": null,
     "./skill.platform": null,
     "./snapshot.platform": null,
     "./vcs.platform": null,

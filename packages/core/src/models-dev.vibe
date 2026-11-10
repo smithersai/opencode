@@ -15,6 +15,7 @@ import { AISDKNative } from "./aisdk-native.vibe"
 import { Provider } from "./provider.js"
 import { Variant } from "./variant.js"
 import { KV } from "./kv.vibe"
+import { argv } from "./models-dev.platform.js"
 import snapshotText from "./models-dev/snapshot.txt" with { type: "text" }
 import { isV1, toV2 } from "./models-dev/v1.vibe"
 
@@ -687,7 +688,7 @@ export const layer = (options?: Options) =>
           )
       })
 
-      if (fetch && !process.argv.includes("--get-yargs-completions")) {
+      if (fetch && !argv().includes("--get-yargs-completions")) {
         // Schedule.spaced runs the effect once, then waits between completions.
         yield* Effect.forkScoped(refresh().pipe(Effect.repeat(Schedule.spaced(ttl)), Effect.ignore))
       }

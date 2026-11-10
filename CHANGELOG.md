@@ -6,6 +6,8 @@ Release notes for OpenCode V2, newest first.
 
 ### Changed
 
+- Git, projects, integrations, workspaces, the bus, credentials, forms, the MCP client, OAuth and stdio transport, environment drivers and project icons now use VibeLang while preserving their declarations and native host access.
+
 - The MCP import boundary test now bundles with the VibeLang plugin, as the core package build does.
 
 - The desktop renderer IPC client now uses VibeLang while preserving its declarations and native window access, and still loads without the Effect runtime.

@@ -1,0 +1,63 @@
+// The platform code of local.vibe: the raw node:fs calls of the host filesystem binding, which a .vibe file does not
+// make (EK4402). Every function is async, so a failure rejects its Promise rather than throwing.
+
+import fs from "node:fs/promises"
+import path from "node:path"
+
+/** @throws {never} */
+export async function readFile(value: string): Promise<Uint8Array> {
+  return fs.readFile(value)
+}
+
+/** Reads up to `length` bytes from `offset`. @throws {never} */
+export async function readRange(value: string, offset: number, length: number): Promise<Uint8Array> {
+  const handle = await fs.open(value, "r")
+  try {
+    const buffer = new Uint8Array(length)
+    const result = await handle.read(buffer, 0, length, offset)
+    return buffer.subarray(0, result.bytesRead)
+  } finally {
+    await handle.close()
+  }
+}
+
+/** @throws {never} */
+export async function readdir(value: string) {
+  return fs.readdir(value, { withFileTypes: true })
+}
+
+/** Writes a file, creating its parent directories. @throws {never} */
+export async function writeFile(value: string, bytes: Uint8Array): Promise<void> {
+  await fs.mkdir(path.dirname(value), { recursive: true })
+  await fs.writeFile(value, bytes)
+}
+
+/** @throws {never} */
+export async function rm(value: string): Promise<void> {
+  return fs.rm(value, { recursive: true, force: true })
+}
+
+/** @throws {never} */
+export async function rename(from: string, to: string): Promise<void> {
+  return fs.rename(from, to)
+}
+
+/** @throws {never} */
+export async function mkdir(value: string): Promise<undefined> {
+  return fs.mkdir(value, { recursive: true }).then(() => undefined)
+}
+
+/** stat when `follow` is set, lstat otherwise. @throws {never} */
+export async function statEntry(value: string, follow: boolean) {
+  return follow ? fs.stat(value) : fs.lstat(value)
+}
+
+/** @throws {never} */
+export function join(...parts: string[]): string {
+  return path.join(...parts)
+}
+
+/** @throws {never} */
+export function basename(value: string): string {
+  return path.basename(value)
+}

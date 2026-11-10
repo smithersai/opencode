@@ -1571,7 +1571,122 @@
     "./session/runner/to-llm-message.platform": null,
     "./session/prompt.platform": null,
     "./session/title.platform": null,
-    "./session/instructions.platform": null
+    "./session/instructions.platform": null,
+    "./git": {
+      "types": "./src/git.d.vibe.ts",
+      "vibelang-source": "./src/git.vibe",
+      "default": "./.vibelang/js/src/git.js"
+    },
+    "./integration": {
+      "types": "./src/integration.d.vibe.ts",
+      "vibelang-source": "./src/integration.vibe",
+      "default": "./.vibelang/js/src/integration.js"
+    },
+    "./project": {
+      "types": "./src/project.d.vibe.ts",
+      "vibelang-source": "./src/project.vibe",
+      "default": "./.vibelang/js/src/project.js"
+    },
+    "./workspace": {
+      "types": "./src/workspace.d.vibe.ts",
+      "vibelang-source": "./src/workspace.vibe",
+      "default": "./.vibelang/js/src/workspace.js"
+    },
+    "./location": {
+      "types": "./src/location.d.vibe.ts",
+      "vibelang-source": "./src/location.vibe",
+      "default": "./.vibelang/js/src/location.js"
+    },
+    "./bus": {
+      "types": "./src/bus.d.vibe.ts",
+      "vibelang-source": "./src/bus.vibe",
+      "default": "./.vibelang/js/src/bus.js"
+    },
+    "./credential": {
+      "types": "./src/credential.d.vibe.ts",
+      "vibelang-source": "./src/credential.vibe",
+      "default": "./.vibelang/js/src/credential.js"
+    },
+    "./form": {
+      "types": "./src/form.d.vibe.ts",
+      "vibelang-source": "./src/form.vibe",
+      "default": "./.vibelang/js/src/form.js"
+    },
+    "./mcp/oauth": {
+      "types": "./src/mcp/oauth.d.vibe.ts",
+      "vibelang-source": "./src/mcp/oauth.vibe",
+      "default": "./.vibelang/js/src/mcp/oauth.js"
+    },
+    "./mcp/client": {
+      "types": "./src/mcp/client.d.vibe.ts",
+      "vibelang-source": "./src/mcp/client.vibe",
+      "default": "./.vibelang/js/src/mcp/client.js"
+    },
+    "./mcp/stdio": {
+      "types": "./src/mcp/stdio.d.vibe.ts",
+      "vibelang-source": "./src/mcp/stdio.vibe",
+      "default": "./.vibelang/js/src/mcp/stdio.js"
+    },
+    "./environment/memory": {
+      "types": "./src/environment/memory.d.vibe.ts",
+      "vibelang-source": "./src/environment/memory.vibe",
+      "default": "./.vibelang/js/src/environment/memory.js"
+    },
+    "./environment/local": {
+      "types": "./src/environment/local.d.vibe.ts",
+      "vibelang-source": "./src/environment/local.vibe",
+      "default": "./.vibelang/js/src/environment/local.js"
+    },
+    "./environment/environment": {
+      "types": "./src/environment/environment.d.vibe.ts",
+      "vibelang-source": "./src/environment/environment.vibe",
+      "default": "./.vibelang/js/src/environment/environment.js"
+    },
+    "./environment/exec-defaults": {
+      "types": "./src/environment/exec-defaults.d.vibe.ts",
+      "vibelang-source": "./src/environment/exec-defaults.vibe",
+      "default": "./.vibelang/js/src/environment/exec-defaults.js"
+    },
+    "./environment/files": {
+      "types": "./src/environment/files.d.vibe.ts",
+      "vibelang-source": "./src/environment/files.vibe",
+      "default": "./.vibelang/js/src/environment/files.js"
+    },
+    "./project/icon": {
+      "types": "./src/project/icon.d.vibe.ts",
+      "vibelang-source": "./src/project/icon.vibe",
+      "default": "./.vibelang/js/src/project/icon.js"
+    },
+    "./project/schema": {
+      "types": "./src/project/schema.d.vibe.ts",
+      "vibelang-source": "./src/project/schema.vibe",
+      "default": "./.vibelang/js/src/project/schema.js"
+    },
+    "./util/error-summary": {
+      "types": "./src/util/error-summary.d.vibe.ts",
+      "vibelang-source": "./src/util/error-summary.vibe",
+      "default": "./.vibelang/js/src/util/error-summary.js"
+    },
+    "./workspace/driver": {
+      "types": "./src/workspace/driver.d.vibe.ts",
+      "vibelang-source": "./src/workspace/driver.vibe",
+      "default": "./.vibelang/js/src/workspace/driver.js"
+    },
+    "./session/sql": {
+      "types": "./src/session/sql.d.vibe.ts",
+      "vibelang-source": "./src/session/sql.vibe",
+      "default": "./.vibelang/js/src/session/sql.js"
+    },
+    "./git.platform": null,
+    "./integration.platform": null,
+    "./project.platform": null,
+    "./bus.platform": null,
+    "./mcp/oauth.platform": null,
+    "./mcp/client.platform": null,
+    "./mcp/stdio.platform": null,
+    "./environment/memory.platform": null,
+    "./environment/local.platform": null,
+    "./project/icon.platform": null
   },
   "imports": {
     "#sqlite": {

@@ -425,6 +425,71 @@
       "vibelang-source": "./src/session/compaction.vibe",
       "default": "./.vibelang/js/src/session/compaction.js"
     },
+    "./session/projector": {
+      "types": "./src/session/projector.d.vibe.ts",
+      "vibelang-source": "./src/session/projector.vibe",
+      "default": "./.vibelang/js/src/session/projector.js"
+    },
+    "./session/inbox": {
+      "types": "./src/session/inbox.d.vibe.ts",
+      "vibelang-source": "./src/session/inbox.vibe",
+      "default": "./.vibelang/js/src/session/inbox.js"
+    },
+    "./session/store": {
+      "types": "./src/session/store.d.vibe.ts",
+      "vibelang-source": "./src/session/store.vibe",
+      "default": "./.vibelang/js/src/session/store.js"
+    },
+    "./session/blob": {
+      "types": "./src/session/blob.d.vibe.ts",
+      "vibelang-source": "./src/session/blob.vibe",
+      "default": "./.vibelang/js/src/session/blob.js"
+    },
+    "./session/history": {
+      "types": "./src/session/history.d.vibe.ts",
+      "vibelang-source": "./src/session/history.vibe",
+      "default": "./.vibelang/js/src/session/history.js"
+    },
+    "./session/instruction-state": {
+      "types": "./src/session/instruction-state.d.vibe.ts",
+      "vibelang-source": "./src/session/instruction-state.vibe",
+      "default": "./.vibelang/js/src/session/instruction-state.js"
+    },
+    "./session/instruction-entry": {
+      "types": "./src/session/instruction-entry.d.vibe.ts",
+      "vibelang-source": "./src/session/instruction-entry.vibe",
+      "default": "./.vibelang/js/src/session/instruction-entry.js"
+    },
+    "./session/transfer": {
+      "types": "./src/session/transfer.d.vibe.ts",
+      "vibelang-source": "./src/session/transfer.vibe",
+      "default": "./.vibelang/js/src/session/transfer.js"
+    },
+    "./session/move": {
+      "types": "./src/session/move.d.vibe.ts",
+      "vibelang-source": "./src/session/move.vibe",
+      "default": "./.vibelang/js/src/session/move.js"
+    },
+    "./session/revert": {
+      "types": "./src/session/revert.d.vibe.ts",
+      "vibelang-source": "./src/session/revert.vibe",
+      "default": "./.vibelang/js/src/session/revert.js"
+    },
+    "./session/diff": {
+      "types": "./src/session/diff.d.vibe.ts",
+      "vibelang-source": "./src/session/diff.vibe",
+      "default": "./.vibelang/js/src/session/diff.js"
+    },
+    "./session/session": {
+      "types": "./src/session/session.d.vibe.ts",
+      "vibelang-source": "./src/session/session.vibe",
+      "default": "./.vibelang/js/src/session/session.js"
+    },
+    "./session/execution": {
+      "types": "./src/session/execution.d.vibe.ts",
+      "vibelang-source": "./src/session/execution.vibe",
+      "default": "./.vibelang/js/src/session/execution.js"
+    },
     "./generate": {
       "types": "./src/generate.d.vibe.ts",
       "vibelang-source": "./src/generate.vibe",
@@ -1203,7 +1268,13 @@
     "./effect/keyed-mutex.native": null,
     "./generate.native": null,
     "./tool/runtime.vibe.-24-throw-24-ts": null,
-    "./tool/runtime.vibe.$throw$ts": null
+    "./tool/runtime.vibe.$throw$ts": null,
+    "./session/projector.platform": null,
+    "./session/blob.platform": null,
+    "./session/instruction-state.platform": null,
+    "./session/instruction-entry.platform": null,
+    "./session/transfer.platform": null,
+    "./session/move.platform": null
   },
   "imports": {
     "#sqlite": {

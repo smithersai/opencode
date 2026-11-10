@@ -6,6 +6,7 @@ import { InstructionEntry } from "@opencode/schema/instruction-entry"
 import { Database } from "../database/database.js"
 import { makeGlobalNode } from "@opencode/util/effect/app-node"
 import { Instructions } from "../instructions/index.js"
+import { utf8ByteLength } from "./instruction-entry.platform.js"
 import { SessionSchema } from "./schema.js"
 import { InstructionEntryTable } from "./sql.js"
 
@@ -50,18 +51,21 @@ export const initialize = Effect.fn("InstructionEntry.initialize")(function* (
   yield* Effect.forEach(
     batches,
     (batch) =>
-      db
-        .insert(InstructionEntryTable)
-        .values(
-          batch.map((entry) => ({
-            ...entry,
-            session_id: sessionID,
-            time_created: created,
-            time_updated: created,
-          })),
-        )
-        .run()
-        .pipe(Effect.orDie),
+      effect {
+        const query = try Effect.try({
+          try: () =>
+            db.insert(InstructionEntryTable).values(
+              batch.map((entry) => ({
+                ...entry,
+                session_id: sessionID,
+                time_created: created,
+                time_updated: created,
+              })),
+            ),
+          catch: (cause) => cause,
+        }).pipe(Effect.orDie)
+        return try query.run().pipe(Effect.orDie)
+      },
     { discard: true },
   )
 })
@@ -132,7 +136,7 @@ const layer = Layer.effect(
     })
 
     const put = Effect.fn("InstructionEntry.put")(function* (input: Parameters<Interface["put"]>[0]) {
-      const actualBytes = Buffer.byteLength(JSON.stringify(input.value), "utf8")
+      const actualBytes = utf8ByteLength(JSON.stringify(input.value))
       if (actualBytes > MaxValueBytes)
         yield* new ValueTooLargeError({
           actualBytes,

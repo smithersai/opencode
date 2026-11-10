@@ -2,7 +2,7 @@ export * as SessionProjector from "./projector.js"
 
 import { and, asc, desc, eq, gt, gte, inArray, isNull, lt, lte, or, sql } from "drizzle-orm"
 import { DateTime, Effect, Layer, Schema, Stream } from "effect"
-import path from "path"
+import { path } from "./projector.platform.js"
 import { Database } from "../database/database.js"
 import { Bus } from "../bus.js"
 import { makeGlobalNode } from "@opencode/util/effect/app-node"
@@ -53,29 +53,35 @@ const forkTitle = (value?: string) => {
 }
 
 function applyUsage(db: DatabaseService, sessionID: SessionSchema.ID, value: Usage, timeUpdated?: number) {
-  return db
-    .update(SessionTable)
-    .set({
-      cost: sql`${SessionTable.cost} + ${value.cost}`,
-      tokens_input: sql`${SessionTable.tokens_input} + ${value.tokens.input}`,
-      tokens_output: sql`${SessionTable.tokens_output} + ${value.tokens.output}`,
-      tokens_reasoning: sql`${SessionTable.tokens_reasoning} + ${value.tokens.reasoning}`,
-      tokens_cache_read: sql`${SessionTable.tokens_cache_read} + ${value.tokens.cache.read}`,
-      tokens_cache_write: sql`${SessionTable.tokens_cache_write} + ${value.tokens.cache.write}`,
-      time_updated: timeUpdated ?? sql`${SessionTable.time_updated}`,
-    })
-    .where(eq(SessionTable.id, sessionID))
-    .run()
-    .pipe(Effect.orDie)
+  return effect {
+    const query = try Effect.try({
+      try: () =>
+        db
+          .update(SessionTable)
+          .set({
+            cost: sql`${SessionTable.cost} + ${value.cost}`,
+            tokens_input: sql`${SessionTable.tokens_input} + ${value.tokens.input}`,
+            tokens_output: sql`${SessionTable.tokens_output} + ${value.tokens.output}`,
+            tokens_reasoning: sql`${SessionTable.tokens_reasoning} + ${value.tokens.reasoning}`,
+            tokens_cache_read: sql`${SessionTable.tokens_cache_read} + ${value.tokens.cache.read}`,
+            tokens_cache_write: sql`${SessionTable.tokens_cache_write} + ${value.tokens.cache.write}`,
+            time_updated: timeUpdated ?? sql`${SessionTable.time_updated}`,
+          })
+          .where(eq(SessionTable.id, sessionID)),
+      catch: (cause) => cause,
+    }).pipe(Effect.orDie)
+    return try query.run().pipe(Effect.orDie)
+  }
 }
 
 function touch(db: DatabaseService, event: MessageEvent) {
-  return db
-    .update(SessionTable)
-    .set({ time_updated: event.created })
-    .where(eq(SessionTable.id, event.data.sessionID))
-    .run()
-    .pipe(Effect.orDie)
+  return effect {
+    const query = try Effect.try({
+      try: () => db.update(SessionTable).set({ time_updated: event.created }).where(eq(SessionTable.id, event.data.sessionID)),
+      catch: (cause) => cause,
+    }).pipe(Effect.orDie)
+    return try query.run().pipe(Effect.orDie)
+  }
 }
 
 const publishSessionUsage = Effect.fn("SessionProjector.publishUsage")(function* (
@@ -277,39 +283,47 @@ function run(db: DatabaseService, event: MessageEvent) {
     const appendMessage = (message: SessionMessage.Info) => insertMessage(db, event, message)
     const adapter: SessionMessageUpdater.Adapter = {
       getAgent() {
-        return db
-          .select({ agent: SessionTable.agent })
-          .from(SessionTable)
-          .where(eq(SessionTable.id, event.data.sessionID))
-          .get()
-          .pipe(
+        return effect {
+          const query = try Effect.try({
+            try: () =>
+              db.select({ agent: SessionTable.agent }).from(SessionTable).where(eq(SessionTable.id, event.data.sessionID)),
+            catch: (cause) => cause,
+          }).pipe(Effect.orDie)
+          return try query.get().pipe(
             Effect.orDie,
             Effect.map((row) => row?.agent ?? undefined),
           )
+        }
       },
       getModel() {
-        return db
-          .select({ model: SessionTable.model })
-          .from(SessionTable)
-          .where(eq(SessionTable.id, event.data.sessionID))
-          .get()
-          .pipe(
+        return effect {
+          const query = try Effect.try({
+            try: () =>
+              db.select({ model: SessionTable.model }).from(SessionTable).where(eq(SessionTable.id, event.data.sessionID)),
+            catch: (cause) => cause,
+          }).pipe(Effect.orDie)
+          return try query.get().pipe(
             Effect.orDie,
             Effect.map((row) => (row?.model ? Schema.decodeUnknownSync(Model.Ref)(row.model) : undefined)),
           )
+        }
       },
       getLocation() {
-        return db
-          .select({
-            directory: SessionTable.directory,
-            workspaceID: SessionTable.workspace_id,
-            projectID: SessionTable.project_id,
-            subpath: SessionTable.path,
-          })
-          .from(SessionTable)
-          .where(eq(SessionTable.id, event.data.sessionID))
-          .get()
-          .pipe(
+        return effect {
+          const query = try Effect.try({
+            try: () =>
+              db
+                .select({
+                  directory: SessionTable.directory,
+                  workspaceID: SessionTable.workspace_id,
+                  projectID: SessionTable.project_id,
+                  subpath: SessionTable.path,
+                })
+                .from(SessionTable)
+                .where(eq(SessionTable.id, event.data.sessionID)),
+            catch: (cause) => cause,
+          }).pipe(Effect.orDie)
+          return try query.get().pipe(
             Effect.orDie,
             Effect.map((row) =>
               row
@@ -324,6 +338,7 @@ function run(db: DatabaseService, event: MessageEvent) {
                 : undefined,
             ),
           )
+        }
       },
       getCurrentAssistant() {
         return Effect.gen(function* () {
@@ -560,23 +575,31 @@ const layer = Layer.effectDiscard(
           .pipe(Effect.orDie)
         yield* Effect.forEach(
           rows,
-          (row) => {
-            const directory = event.data.adopted?.includes(row.projectID)
-              ? row.canonical
-              : AbsolutePath.make(path.resolve(row.directory))
-            if (!FSUtil.contains(event.data.directory, directory)) return Effect.void
-            return db
-              .update(SessionTable)
-              .set({
-                project_id: event.data.projectID,
-                path: RelativePath.make(path.relative(event.data.directory, directory).replaceAll("\\", "/")),
-                // Self-assignment suppresses the column's $onUpdate: adoption is not activity.
-                time_updated: sql`${SessionTable.time_updated}`,
-              })
-              .where(eq(SessionTable.id, row.id))
-              .run()
-              .pipe(Effect.orDie)
-          },
+          (row) =>
+            effect {
+              const directory = event.data.adopted?.includes(row.projectID)
+                ? row.canonical
+                : AbsolutePath.make(path.resolve(row.directory))
+              const contained = try Effect.try({
+                try: () => FSUtil.contains(event.data.directory, directory),
+                catch: (cause) => cause,
+              }).pipe(Effect.orDie)
+              if (!contained) return
+              const query = try Effect.try({
+                try: () =>
+                  db
+                    .update(SessionTable)
+                    .set({
+                      project_id: event.data.projectID,
+                      path: RelativePath.make(path.relative(event.data.directory, directory).replaceAll("\\", "/")),
+                      // Self-assignment suppresses the column's $onUpdate: adoption is not activity.
+                      time_updated: sql`${SessionTable.time_updated}`,
+                    })
+                    .where(eq(SessionTable.id, row.id)),
+                catch: (cause) => cause,
+              }).pipe(Effect.orDie)
+              try query.run().pipe(Effect.orDie)
+            },
           { discard: true },
         )
       }),
@@ -610,58 +633,88 @@ const layer = Layer.effectDiscard(
       }),
     )
     yield* bus.project(SessionEvent.Renamed, (event) =>
-      db
-        .update(SessionTable)
-        .set({ title: event.data.title, time_updated: event.created })
-        .where(eq(SessionTable.id, event.data.sessionID))
-        .run()
-        .pipe(Effect.orDie),
+      effect {
+        const query = try Effect.try({
+          try: () =>
+            db
+              .update(SessionTable)
+              .set({ title: event.data.title, time_updated: event.created })
+              .where(eq(SessionTable.id, event.data.sessionID)),
+          catch: (cause) => cause,
+        }).pipe(Effect.orDie)
+        return try query.run().pipe(Effect.orDie)
+      },
     )
     yield* bus.project(SessionEvent.MetadataUpdated, (event) =>
-      db
-        .update(SessionTable)
-        .set({ metadata: event.data.metadata, time_updated: event.created })
-        .where(eq(SessionTable.id, event.data.sessionID))
-        .run()
-        .pipe(Effect.orDie),
+      effect {
+        const query = try Effect.try({
+          try: () =>
+            db
+              .update(SessionTable)
+              .set({ metadata: event.data.metadata, time_updated: event.created })
+              .where(eq(SessionTable.id, event.data.sessionID)),
+          catch: (cause) => cause,
+        }).pipe(Effect.orDie)
+        return try query.run().pipe(Effect.orDie)
+      },
     )
     yield* bus.project(SessionEvent.Permissions, (event) =>
-      db
-        .update(SessionTable)
-        .set({ permission: event.data.permissions, time_updated: event.created })
-        .where(eq(SessionTable.id, event.data.sessionID))
-        .run()
-        .pipe(Effect.orDie),
+      effect {
+        const query = try Effect.try({
+          try: () =>
+            db
+              .update(SessionTable)
+              .set({ permission: event.data.permissions, time_updated: event.created })
+              .where(eq(SessionTable.id, event.data.sessionID)),
+          catch: (cause) => cause,
+        }).pipe(Effect.orDie)
+        return try query.run().pipe(Effect.orDie)
+      },
     )
     yield* bus.project(SessionEvent.Viewed, (event) => {
       const idle = event.data.idle
-      return db
-        .update(SessionTable)
-        .set({
-          // Monotone watermark: a duplicate or stale view never regresses, and a terminal event
-          // committing after the viewer's observation keeps the newer idle transition unread.
-          time_viewed: sql`max(${idle}, coalesce(${SessionTable.time_viewed}, ${idle}))`,
-          time_updated: sql`${SessionTable.time_updated}`,
-        })
-        .where(eq(SessionTable.id, event.data.sessionID))
-        .run()
-        .pipe(Effect.orDie)
+      return effect {
+        const query = try Effect.try({
+          try: () =>
+            db
+              .update(SessionTable)
+              .set({
+                // Monotone watermark: a duplicate or stale view never regresses, and a terminal event
+                // committing after the viewer's observation keeps the newer idle transition unread.
+                time_viewed: sql`max(${idle}, coalesce(${SessionTable.time_viewed}, ${idle}))`,
+                time_updated: sql`${SessionTable.time_updated}`,
+              })
+              .where(eq(SessionTable.id, event.data.sessionID)),
+          catch: (cause) => cause,
+        }).pipe(Effect.orDie)
+        return try query.run().pipe(Effect.orDie)
+      }
     })
     yield* bus.project(SessionEvent.Archived, (event) =>
-      db
-        .update(SessionTable)
-        .set({ time_archived: event.created, time_updated: event.created })
-        .where(eq(SessionTable.id, event.data.sessionID))
-        .run()
-        .pipe(Effect.orDie),
+      effect {
+        const query = try Effect.try({
+          try: () =>
+            db
+              .update(SessionTable)
+              .set({ time_archived: event.created, time_updated: event.created })
+              .where(eq(SessionTable.id, event.data.sessionID)),
+          catch: (cause) => cause,
+        }).pipe(Effect.orDie)
+        return try query.run().pipe(Effect.orDie)
+      },
     )
     yield* bus.project(SessionEvent.Unarchived, (event) =>
-      db
-        .update(SessionTable)
-        .set({ time_archived: null, time_updated: event.created })
-        .where(eq(SessionTable.id, event.data.sessionID))
-        .run()
-        .pipe(Effect.orDie),
+      effect {
+        const query = try Effect.try({
+          try: () =>
+            db
+              .update(SessionTable)
+              .set({ time_archived: null, time_updated: event.created })
+              .where(eq(SessionTable.id, event.data.sessionID)),
+          catch: (cause) => cause,
+        }).pipe(Effect.orDie)
+        return try query.run().pipe(Effect.orDie)
+      },
     )
     yield* bus.project(SessionEvent.MessageContentUpdated, (event) => run(db, event))
     yield* bus.project(SessionEvent.UsageRecorded, (event) => applyUsage(db, event.data.sessionID, event.data))
@@ -797,12 +850,17 @@ const layer = Layer.effectDiscard(
       }),
     )
     yield* bus.project(SessionEvent.RevertEvent.Cleared, (event) =>
-      db
-        .update(SessionTable)
-        .set({ revert: null, time_updated: event.created })
-        .where(eq(SessionTable.id, event.data.sessionID))
-        .run()
-        .pipe(Effect.orDie, Effect.asVoid),
+      effect {
+        const query = try Effect.try({
+          try: () =>
+            db
+              .update(SessionTable)
+              .set({ revert: null, time_updated: event.created })
+              .where(eq(SessionTable.id, event.data.sessionID)),
+          catch: (cause) => cause,
+        }).pipe(Effect.orDie)
+        return try query.run().pipe(Effect.orDie, Effect.asVoid)
+      },
     )
     yield* bus.project(SessionEvent.RevertEvent.Committed, (event) =>
       Effect.gen(function* () {

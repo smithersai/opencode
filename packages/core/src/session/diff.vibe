@@ -51,16 +51,21 @@ export const turn = Effect.fn("SessionDiff.turn")(function* (
   // Selecting only seq lets the (session_id, type, seq) index answer these without reading message rows,
   // which can be megabytes each. Matching the requested IDs here with OR would scan the whole Session.
   const boundaries = (type: "user" | "idle") =>
-    db
-      .select({ seq: SessionMessageTable.seq })
-      .from(SessionMessageTable)
-      .where(and(eq(SessionMessageTable.session_id, sessionID), eq(SessionMessageTable.type, type)))
-      .orderBy(asc(SessionMessageTable.seq))
-      .all()
-      .pipe(
+    effect {
+      const query = try Effect.try({
+        try: () =>
+          db
+            .select({ seq: SessionMessageTable.seq })
+            .from(SessionMessageTable)
+            .where(and(eq(SessionMessageTable.session_id, sessionID), eq(SessionMessageTable.type, type)))
+            .orderBy(asc(SessionMessageTable.seq)),
+        catch: (cause) => cause,
+      }).pipe(Effect.orDie)
+      return try query.all().pipe(
         Effect.map((rows) => rows.map((row) => row.seq)),
         Effect.orDie,
       )
+    }
   const users = yield* boundaries("user")
   const markers = yield* boundaries("idle")
   const resolve = Effect.fn(function* (field: "from" | "to", id: SessionMessage.ID) {

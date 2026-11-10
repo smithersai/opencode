@@ -1,6 +1,6 @@
 export * as SessionBlob from "./blob.js"
 
-import { createHash } from "node:crypto"
+import { base64Bytes, sha256Hex, textBase64, view } from "./blob.platform.js"
 import { and, eq, exists, gte, inArray, notExists, notInArray, type SQL, sql } from "drizzle-orm"
 import { Effect, Option, Schema } from "effect"
 import { map } from "effect/Array"
@@ -42,7 +42,7 @@ const unavailable = (mime: string, name?: string) =>
 
 function unavailableFile(file: SessionStored.FileRef): FileAttachment {
   const { uri: _, ...rest } = file
-  return { ...rest, data: Buffer.from(unavailable(file.mime, file.name)).toString("base64"), mime: "text/plain" }
+  return { ...rest, data: textBase64(unavailable(file.mime, file.name)), mime: "text/plain" }
 }
 
 const unavailableToolItem = (item: Tool.Content & { readonly type: "file" }): Tool.Content => ({
@@ -109,9 +109,6 @@ const load = Effect.fnUntraced(function* (db: DatabaseService, hashes: ReadonlyS
   }
   return blobs
 })
-
-const view = (data: Uint8Array) =>
-  Buffer.isBuffer(data) ? data : Buffer.from(data.buffer, data.byteOffset, data.byteLength)
 
 /** Restores inline media for the refs in `session_message` rows. Rows without refs are returned untouched. */
 export const hydrate = Effect.fnUntraced(function* (db: DatabaseService, rows: ReadonlyArray<MessageRow>) {
@@ -238,7 +235,7 @@ export const read = Effect.fnUntraced(function* (db: DatabaseService, hash: stri
 })
 
 /** A blob's hash is the lowercase hex SHA-256 of its raw bytes. */
-export const hashBytes = (raw: Uint8Array) => createHash("sha256").update(raw).digest("hex")
+export const hashBytes = (raw: Uint8Array) => sha256Hex(raw)
 
 /** The row a ref keeps its blob alive for: a message at its `seq`, or a pending inbox row at its `enqueued_seq`. */
 export interface Owner {
@@ -269,13 +266,13 @@ function take(pending: Pending, raw: Buffer, mime: string) {
 function fileRef(pending: Pending, file: SessionStored.File): SessionStored.File {
   if (isFileRef(file)) return file
   const { data, ...rest } = file
-  return { ...rest, uri: take(pending, Buffer.from(data, "base64"), file.mime) }
+  return { ...rest, uri: take(pending, base64Bytes(data), file.mime) }
 }
 
 function toolRef(pending: Pending, item: Tool.Content): Tool.Content {
   if (item.type !== "file") return item
   const data = DATA_URI.exec(item.uri)?.[1]
-  return data === undefined ? item : { ...item, uri: take(pending, Buffer.from(data, "base64"), item.mime) }
+  return data === undefined ? item : { ...item, uri: take(pending, base64Bytes(data), item.mime) }
 }
 
 function toolPartRefs(pending: Pending, part: AssistantPart): AssistantPart {
@@ -419,12 +416,29 @@ const release = Effect.fnUntraced(function* (db: DatabaseService, ...where: read
 
 /** Releases the blobs a removed message or cancelled inbox row referenced. */
 export const releaseMessage = (db: DatabaseService, sessionID: SessionSchema.ID, messageID: SessionMessage.ID) =>
-  release(db, eq(BlobRefTable.session_id, sessionID), eq(BlobRefTable.message_id, messageID))
+  effect {
+    const where = try Effect.try({
+      try: () => [eq(BlobRefTable.session_id, sessionID), eq(BlobRefTable.message_id, messageID)] as const,
+      catch: (cause) => cause,
+    }).pipe(Effect.orDie)
+    return try release(db, ...where)
+  }
 
 /** Releases the blobs referenced at or after `seq`, for a revert. */
 export const releaseFrom = (db: DatabaseService, sessionID: SessionSchema.ID, seq: number) =>
-  release(db, eq(BlobRefTable.session_id, sessionID), gte(BlobRefTable.seq, seq))
+  effect {
+    const where = try Effect.try({
+      try: () => [eq(BlobRefTable.session_id, sessionID), gte(BlobRefTable.seq, seq)] as const,
+      catch: (cause) => cause,
+    }).pipe(Effect.orDie)
+    return try release(db, ...where)
+  }
 
 /** Releases every blob a deleted session referenced. */
 export const releaseSession = (db: DatabaseService, sessionID: SessionSchema.ID) =>
-  release(db, eq(BlobRefTable.session_id, sessionID))
+  effect {
+    const where = try Effect.try({ try: () => eq(BlobRefTable.session_id, sessionID), catch: (cause) => cause }).pipe(
+      Effect.orDie,
+    )
+    return try release(db, where)
+  }

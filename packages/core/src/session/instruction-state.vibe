@@ -1,13 +1,14 @@
 export * as InstructionState from "./instruction-state.js"
 
 import { and, eq, gte, inArray, sql } from "drizzle-orm"
-import { Effect, Option, Schema } from "effect"
+import { Effect, Schema } from "effect"
 import type { Database } from "../database/database.js"
 import type { Bus } from "../bus.js"
 import { Instructions } from "../instructions/index.js"
 import { SessionEvent } from "./event.js"
 import { SessionSchema } from "./schema.js"
 import { InstructionBlobTable, InstructionStateTable } from "./sql.js"
+import { dereference, dereferenceDelta, requireBlob } from "./instruction-state.platform.js"
 
 type DatabaseService = Database.Interface["db"]
 
@@ -70,11 +71,17 @@ const renderUpdateText = Effect.fnUntraced(function* (
     db,
     replaced.map(([, hash]) => hash),
   )
-  const previous = Object.fromEntries(replaced.map(([key, hash]) => [key, requireBlob(blobs, hash)]))
+  const previous = yield* Effect.try({
+    try: () => Object.fromEntries(replaced.map(([key, hash]) => [key, requireBlob(blobs, hash)])),
+    catch: (cause) => cause,
+  }).pipe(Effect.orDie)
   const admitted = new Map(
     Object.entries(observation.blobs).map(([hash, value]) => [Instructions.Hash.make(hash), value]),
   )
-  return Instructions.renderUpdate(instructions, previous, dereferenceDelta(observation.delta, admitted))
+  return yield* Effect.try({
+    try: () => Instructions.renderUpdate(instructions, previous, dereferenceDelta(observation.delta, admitted)),
+    catch: (cause) => cause,
+  }).pipe(Effect.orDie)
 })
 
 export const prepare = Effect.fn("InstructionState.prepare")(function* (
@@ -178,7 +185,10 @@ export const initial = Effect.fn("InstructionState.initial")(function* (
   const state = yield* find(db, sessionID)
   if (!state) return yield* Effect.die(new Error(`Instruction state not found during assembly: ${sessionID}`))
   const blobs = yield* loadBlobs(db, Object.values(state.initial_values))
-  return Instructions.renderInitial(instructions, dereference(state.initial_values, blobs))
+  return yield* Effect.try({
+    try: () => Instructions.renderInitial(instructions, dereference(state.initial_values, blobs)),
+    catch: (cause) => cause,
+  }).pipe(Effect.orDie)
 })
 
 /** The current instruction values, used to seed a fork's baseline. */
@@ -201,18 +211,24 @@ export const preview = Effect.fn("InstructionState.preview")(function* (
     Object.entries(result.blobs).map(([hash, value]) => [Instructions.Hash.make(hash), value]),
   )
   if (!state) {
-    const values = dereference(result.current, observedBlobs)
+    const values = yield* Effect.try({
+      try: () => dereference(result.current, observedBlobs),
+      catch: (cause) => cause,
+    }).pipe(Effect.orDie)
     return { initial: Instructions.renderInitial(instructions, values), update: "" }
   }
   const stored = yield* loadBlobs(db, [...Object.values(state.initial_values), ...Object.values(state.current_values)])
-  return {
-    initial: Instructions.renderInitial(instructions, dereference(state.initial_values, stored)),
-    update: Instructions.renderUpdate(
-      instructions,
-      dereference(state.current_values, stored),
-      dereferenceDelta(result.delta, observedBlobs),
-    ),
-  }
+  return yield* Effect.try({
+    try: () => ({
+      initial: Instructions.renderInitial(instructions, dereference(state.initial_values, stored)),
+      update: Instructions.renderUpdate(
+        instructions,
+        dereference(state.current_values, stored),
+        dereferenceDelta(result.delta, observedBlobs),
+      ),
+    }),
+    catch: (cause) => cause,
+  }).pipe(Effect.orDie)
 })
 
 const observeAgainst = Effect.fnUntraced(function* (observed: Instructions.ReadResult, previous?: Instructions.Values) {
@@ -246,7 +262,13 @@ const loadBlobs = Effect.fnUntraced(function* (db: DatabaseService, values: Read
   const rows = (yield* Effect.forEach(
     batches,
     (batch) =>
-      db.select().from(InstructionBlobTable).where(inArray(InstructionBlobTable.hash, batch)).all().pipe(Effect.orDie),
+      effect {
+        const query = try Effect.try({
+          try: () => db.select().from(InstructionBlobTable).where(inArray(InstructionBlobTable.hash, batch)),
+          catch: (cause) => cause,
+        }).pipe(Effect.orDie)
+        return try query.all().pipe(Effect.orDie)
+      },
     { concurrency: 4 },
   )).flat()
   const blobs = new Map(rows.map((row) => [row.hash, row.value]))
@@ -255,28 +277,3 @@ const loadBlobs = Effect.fnUntraced(function* (db: DatabaseService, values: Read
   }
   return blobs
 })
-
-function dereference(
-  values: Instructions.Values,
-  blobs: ReadonlyMap<Instructions.Hash, Schema.Json>,
-): Readonly<Record<string, Schema.Json>> {
-  return Object.fromEntries(Object.entries(values).map(([key, hash]) => [key, requireBlob(blobs, hash)]))
-}
-
-function dereferenceDelta(
-  delta: Instructions.Delta,
-  blobs: ReadonlyMap<Instructions.Hash, Schema.Json>,
-): Readonly<Record<string, Option.Option<Schema.Json>>> {
-  return Object.fromEntries(
-    Object.entries(delta).map(([key, hash]) => [
-      key,
-      hash === "removed" ? Option.none() : Option.some(requireBlob(blobs, hash)),
-    ]),
-  )
-}
-
-function requireBlob(blobs: ReadonlyMap<Instructions.Hash, Schema.Json>, hash: Instructions.Hash) {
-  const value = blobs.get(hash)
-  if (value === undefined) throw new Error(`Instruction blob not found: ${hash}`)
-  return value
-}

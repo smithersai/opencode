@@ -6,6 +6,8 @@ Release notes for OpenCode V2, newest first.
 
 ### Changed
 
+- Session storage, projection, inbox, blobs, history, instruction state, moves, transfers, reverts and diffs now use VibeLang while preserving their declarations, with path, hashing and buffer access in native platform files.
+
 - The webfetch, subagent and MCP tools, file reading and bounded HTTP body collection now use VibeLang, with Buffer and path access in native platform files and text decoding run inside Effect.
 
 - Plugin module loading, the plugin supervisor and plugin source directory discovery now use VibeLang, with path and file system access in native platform files.

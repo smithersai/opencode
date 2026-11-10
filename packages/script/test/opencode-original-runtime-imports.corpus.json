@@ -2814,5 +2814,17 @@
     "imports": [
       "./npm-config.js"
     ]
+  },
+  {
+    "source": "packages/ai/src/protocols/bedrock-event-stream.vibe",
+    "imports": [
+      "../route/framing.js"
+    ]
+  },
+  {
+    "source": "packages/client/src/effect/client.vibe",
+    "imports": [
+      "./rpc.js"
+    ]
   }
 ]

@@ -6,8 +6,6 @@ Release notes for OpenCode V2, newest first.
 
 ### Changed
 
-- The MCP import boundary test now bundles with the VibeLang plugin, as the core package build does.
-
 - The desktop renderer IPC client now uses VibeLang while preserving its declarations and native window access, and still loads without the Effect runtime.
 
 - Code mode program execution now uses VibeLang while preserving its declarations and its defects for failing built-in setup and error normalization.

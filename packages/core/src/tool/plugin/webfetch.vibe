@@ -68,9 +68,7 @@ const isCloudflareChallenge = (error: unknown) => {
 const request = (url: string, format: Format, userAgent = openCodeUserAgent) =>
   HttpClientRequest.get(url).pipe(HttpClientRequest.setHeaders(headers(format, userAgent)))
 
-const assertHttpUrl = (url: URL) => {
-  if (url.protocol !== "http:" && url.protocol !== "https:") throw new Error("URL must use http:// or https://")
-}
+const isHttpUrl = (url: URL) => url.protocol === "http:" || url.protocol === "https:"
 
 export const MAX_REDIRECTS = 10
 const redirectStatuses = new Set([301, 302, 303, 307, 308])
@@ -91,14 +89,12 @@ const execute = (
       if (!redirectStatuses.has(response.status) || !location) return HttpClientResponse.filterStatusOk(response)
       if (redirects >= MAX_REDIRECTS) return Effect.fail(new Error(`Too many redirects (more than ${MAX_REDIRECTS})`))
       return Effect.gen(function* () {
-        const next = yield* Effect.try({
-          try: () => {
-            const target = new URL(location, url)
-            assertHttpUrl(target)
-            return target.href
-          },
+        const target = yield* Effect.try({
+          try: () => new URL(location, url),
           catch: (error) => (error instanceof Error ? error : new Error(String(error))),
         })
+        if (!isHttpUrl(target)) return yield* Effect.fail(new Error("URL must use http:// or https://"))
+        const next = target.href
         yield* check(next)
         return yield* execute(http, check, next, format, userAgent, redirects + 1)
       })
@@ -138,10 +134,11 @@ export const Plugin = {
           output: Output,
           execute: (input, context) =>
             Effect.gen(function* () {
-              yield* Effect.try({
-                try: () => assertHttpUrl(new URL(input.url)),
+              const url = yield* Effect.try({
+                try: () => new URL(input.url),
                 catch: (error) => error,
               })
+              if (!isHttpUrl(url)) return yield* Effect.fail(new Error("URL must use http:// or https://"))
 
               yield* permission.assert({
                 action: name,
@@ -181,7 +178,10 @@ export const Plugin = {
                   orElse: () => Effect.fail(new Error("Request timed out")),
                 }),
               )
-              const content = new TextDecoder().decode(body)
+              const content = yield* Effect.try({
+                try: () => new TextDecoder().decode(body),
+                catch: (cause) => cause,
+              }).pipe(Effect.orDie)
               const output = yield* Effect.try({
                 try: () => convert(content, contentType, input.format),
                 catch: (error) => error,

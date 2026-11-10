@@ -716,6 +716,31 @@
       "vibelang-source": "./src/plugin/supervisor.vibe",
       "default": "./.vibelang/js/src/plugin/supervisor.js"
     },
+    "./tool/http-body": {
+      "types": "./src/tool/http-body.d.vibe.ts",
+      "vibelang-source": "./src/tool/http-body.vibe",
+      "default": "./.vibelang/js/src/tool/http-body.js"
+    },
+    "./tool/mcp": {
+      "types": "./src/tool/mcp.d.vibe.ts",
+      "vibelang-source": "./src/tool/mcp.vibe",
+      "default": "./.vibelang/js/src/tool/mcp.js"
+    },
+    "./tool/plugin/subagent": {
+      "types": "./src/tool/plugin/subagent.d.vibe.ts",
+      "vibelang-source": "./src/tool/plugin/subagent.vibe",
+      "default": "./.vibelang/js/src/tool/plugin/subagent.js"
+    },
+    "./tool/plugin/webfetch": {
+      "types": "./src/tool/plugin/webfetch.d.vibe.ts",
+      "vibelang-source": "./src/tool/plugin/webfetch.vibe",
+      "default": "./.vibelang/js/src/tool/plugin/webfetch.js"
+    },
+    "./tool/read-filesystem": {
+      "types": "./src/tool/read-filesystem.d.vibe.ts",
+      "vibelang-source": "./src/tool/read-filesystem.vibe",
+      "default": "./.vibelang/js/src/tool/read-filesystem.js"
+    },
     "./*": {
       "types": "./src/*.ts",
       "vibelang-source": "./src/*.ts",
@@ -901,6 +926,9 @@
     "./plugin/module.platform": null,
     "./plugin/source-directory.platform": null,
     "./plugin/supervisor.platform": null,
+    "./tool/http-body.platform": null,
+    "./tool/mcp.platform": null,
+    "./tool/read-filesystem.platform": null,
     "./database/migration/20260127222353_familiar_lady_ursula": {
       "types": "./src/database/migration/20260127222353_familiar_lady_ursula.d.vibe.ts",
       "vibelang-source": "./src/database/migration/20260127222353_familiar_lady_ursula.vibe",

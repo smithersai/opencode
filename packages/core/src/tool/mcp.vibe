@@ -13,6 +13,7 @@ import { Permission } from "../permission.js"
 import { Tool } from "../tool.vibe"
 import { ToolOutput } from "../tool-output.js"
 import { ReadToolFileSystem } from "./read-filesystem.js"
+import { decodeBase64 } from "./mcp.platform.js"
 
 const decodeJson = Schema.decodeUnknownOption(Schema.fromJsonString(Schema.Unknown))
 
@@ -147,7 +148,7 @@ const toContent = Effect.fnUntraced(function* (part: Mcp.ToolResultContent, tool
   const mime = part.mimeType.split(";", 1)[0].trim().toLowerCase()
   if (ReadToolFileSystem.MEDIA_MIMES.has(mime))
     return { type: "file" as const, uri: `data:${part.mimeType};base64,${part.data}`, mime: part.mimeType }
-  const bytes = Buffer.from(part.data, "base64")
+  const bytes = decodeBase64(part.data)
   const label = part.uri ?? "content"
   if (Mime.isTextual(mime))
     return { type: "text" as const, text: `[Resource ${label} (${part.mimeType})]\n${bytes.toString("utf8")}` }

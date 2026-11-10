@@ -806,6 +806,11 @@
       "vibelang-source": "./src/ripgrep.vibe",
       "default": "./.vibelang/js/src/ripgrep.js"
     },
+    "./aisdk": {
+      "types": "./src/aisdk.d.vibe.ts",
+      "vibelang-source": "./src/aisdk.vibe",
+      "default": "./.vibelang/js/src/aisdk.js"
+    },
     "./file-access": {
       "types": "./src/file-access.d.vibe.ts",
       "vibelang-source": "./src/file-access.vibe",
@@ -1235,6 +1240,7 @@
     "./plugin/plan.platform": null,
     "./plugin/skill.platform": null,
     "./pty/ticket.platform": null,
+    "./aisdk.platform": null,
     "./model.platform": null,
     "./model-resolver.platform": null,
     "./provider.platform": null,

@@ -33,9 +33,17 @@ import {
 import { Auth, Endpoint, ProviderShared, RequestExecutor, type AnyRoute, type HttpMiddleware } from "@opencode/ai/route"
 import { isRecord } from "@opencode/util/record"
 import { Cause, Context, Effect, Layer, Option, Schema, Scope, Stream, Struct } from "effect"
-import { makeParser } from "effect/encoding/Sse"
 import { HttpClientRequest, HttpClientResponse } from "effect/http"
-import { AsyncLocalStorage } from "node:async_hooks"
+import {
+  cancelTimeout,
+  fetch,
+  httpMiddleware,
+  scheduleTimeout,
+  timeoutSignal,
+  toRequest,
+  toResponse,
+  wrapSSE,
+} from "./aisdk.platform.js"
 import type { ID, RuntimeInfo } from "./model.js"
 import { Provider } from "./provider.js"
 import { State } from "./state.js"
@@ -62,63 +70,6 @@ export interface LanguageEvent {
   language?: LanguageModelV3
 }
 
-function wrapSSE(res: Response, ms: number, ctl: AbortController) {
-  if (typeof ms !== "number" || ms <= 0) return res
-  if (!res.body) return res
-  if (!res.headers.get("content-type")?.includes("text/event-stream")) return res
-
-  const reader = res.body.getReader()
-  const decoder = new TextDecoder()
-  let deadline: number | undefined
-  const parser = makeParser((event) => {
-    if (event._tag === "Event") deadline = Date.now() + ms
-  })
-  const body = new ReadableStream<Uint8Array>({
-    async pull(ctrl) {
-      const expires = deadline ?? Date.now() + ms
-      deadline = expires
-      const part = await new Promise<Awaited<ReturnType<typeof reader.read>>>((resolve, reject) => {
-        const remaining = Math.max(0, expires - Date.now())
-        const id = setTimeout(() => {
-          const err = new Error("SSE read timed out")
-          ctl.abort(err)
-          void reader.cancel(err)
-          reject(err)
-        }, remaining)
-
-        reader.read().then(
-          (part) => {
-            clearTimeout(id)
-            resolve(part)
-          },
-          (err) => {
-            clearTimeout(id)
-            reject(err)
-          },
-        )
-      })
-
-      if (part.done) {
-        ctrl.close()
-        return
-      }
-
-      parser.feed(decoder.decode(part.value, { stream: true }))
-      ctrl.enqueue(part.value)
-    },
-    async cancel(reason) {
-      ctl.abort(reason)
-      await reader.cancel(reason)
-    },
-  })
-
-  return new Response(body, {
-    headers: new Headers(res.headers),
-    status: res.status,
-    statusText: res.statusText,
-  })
-}
-
 function prepareOptions(model: RuntimeInfo, pkg: string) {
   const projected = mapBodyToProviderOptions(model, pkg)
   const settings = model.settings ?? {}
@@ -139,14 +90,14 @@ function prepareOptions(model: RuntimeInfo, pkg: string) {
     const headerTimer =
       timeouts.headerTimeout === false
         ? undefined
-        : setTimeout(() => headers.abort(new Error(HEADER_TIMEOUT_MESSAGE)), timeouts.headerTimeout)
+        : scheduleTimeout(() => headers.abort(new Error(HEADER_TIMEOUT_MESSAGE)), timeouts.headerTimeout)
     const chunks = new AbortController()
     opts.signal = AbortSignal.any(
       [
         opts.signal,
         headers.signal,
         chunks.signal,
-        timeouts.timeout ? AbortSignal.timeout(timeouts.timeout) : undefined,
+        timeouts.timeout ? timeoutSignal(timeouts.timeout) : undefined,
       ].filter((item): item is AbortSignal => item !== undefined && item !== null),
     )
 
@@ -163,7 +114,7 @@ function prepareOptions(model: RuntimeInfo, pkg: string) {
       middleware
         ? throughMiddleware(middleware, send, input, { ...opts, timeout: false })
         : send(input, { ...opts, timeout: false })
-    ).finally(() => clearTimeout(headerTimer))
+    ).finally(() => cancelTimeout(headerTimer))
     if (timeouts.chunkTimeout === false) return res
     return wrapSSE(res, timeouts.chunkTimeout, chunks)
   }
@@ -175,10 +126,6 @@ type Fetch = (input: Parameters<typeof fetch>[0], init?: BunFetchRequestInit) =>
 
 const isFetch = (value: unknown): value is Fetch => typeof value === "function"
 
-// HTTP hook middleware is scoped to one model request, but the SDK's fetch is baked into the
-// cached language model, so the active middleware rides along in async context instead.
-const httpMiddleware = new AsyncLocalStorage<{ http: HttpMiddleware; context: Context.Context<never> }>()
-
 function throughMiddleware(
   store: { http: HttpMiddleware; context: Context.Context<never> },
   send: Fetch,
@@ -186,7 +133,7 @@ function throughMiddleware(
   init: BunFetchRequestInit,
 ) {
   const toError = (cause: unknown) => (cause instanceof Error ? cause : new Error(String(cause)))
-  const request = input instanceof Request ? new Request(input, init) : new Request(String(input), init)
+  const request = toRequest(input, init)
   return Effect.runPromiseWith(store.context)(
     Effect.gen(function* () {
       // Hooks see a byte body like on the native route, so they may convert it to a web Request
@@ -217,7 +164,10 @@ function throughMiddleware(
       const stream = [204, 205, 304].includes(response.status)
         ? null
         : yield* Stream.toReadableStreamEffect(response.stream)
-      return new Response(stream, { status: response.status, headers: response.headers })
+      return yield* Effect.try({
+        try: () => toResponse(stream, { status: response.status, headers: response.headers }),
+        catch: (cause) => cause,
+      }).pipe(Effect.orDie)
     }),
     { signal: init.signal ?? undefined },
   )
@@ -399,11 +349,13 @@ function modelFromLanguage(info: RuntimeInfo, language: LanguageModelV3) {
     body: {
       schema: Schema.Unknown,
       from: (request) =>
-        Effect.try({
-          try: () => callOptions(request, packageName, info.modelID ?? info.id, optionKey),
-          catch: (cause) =>
-            cause instanceof AIError ? cause : ProviderShared.invalidRequest("Invalid AI SDK request", cause),
-        }),
+        callOptions(request, packageName, info.modelID ?? info.id, optionKey).pipe(
+          Effect.catchDefect((cause) =>
+            Effect.fail(
+              cause instanceof AIError ? cause : ProviderShared.invalidRequest("Invalid AI SDK request", cause),
+            ),
+          ),
+        ),
     },
     with: () => route,
     model: (input) =>
@@ -478,15 +430,18 @@ function mapBodyToProviderOptions(model: RuntimeInfo, packageName: string) {
   }
 }
 
-function callOptions(
+effect function callOptions(
   request: LLMRequest,
   packageName: string | undefined,
   modelID: ID,
   optionKey: string,
-): LanguageModelV3CallOptions {
-  const flattened = ProviderShared.flattenToolRequest(request)
+): LanguageModelV3CallOptions!AIError {
+  const flattened = try Effect.try({
+    try: () => ProviderShared.flattenToolRequest(request),
+    catch: (cause) => cause,
+  }).pipe(Effect.orDie)
   return {
-    prompt: prompt(flattened.request),
+    prompt: try prompt(flattened.request),
     maxOutputTokens: request.generation?.maxTokens,
     temperature: request.generation?.temperature,
     stopSequences: request.generation?.stop === undefined ? undefined : [...request.generation.stop],
@@ -502,15 +457,15 @@ function callOptions(
   }
 }
 
-function prompt(request: LLMRequest): LanguageModelV3Prompt {
+effect function prompt(request: LLMRequest): LanguageModelV3Prompt!AIError {
   const system = request.system
     .map((part) => part.text)
     .filter(Boolean)
     .join("\n\n")
   const pending: UserContent = []
-  const messages = request.messages.flatMap((input, index) => {
-    if (input.role !== "tool") return message(input)
-    const lowered = toolMessage(input)
+  const messages = (try Effect.forEach(request.messages, effect (input, index) => {
+    if (input.role !== "tool") return try message(input)
+    const lowered = try toolMessage(input)
     pending.push(...lowered.media)
     if (request.messages[index + 1]?.role === "tool" || pending.length === 0) return lowered.messages
     const media = [...pending]
@@ -522,12 +477,12 @@ function prompt(request: LLMRequest): LanguageModelV3Prompt {
         content: [{ type: "text" as const, text: "Attached media from tool result:" }, ...media],
       },
     ]
-  })
+  })).flat()
   if (!system.length) return messages
   return [{ role: "system", content: system }, ...messages]
 }
 
-function message(input: LLMRequest["messages"][number]): LanguageModelV3Message[] {
+effect function message(input: LLMRequest["messages"][number]): LanguageModelV3Message[]!AIError {
   switch (input.role) {
     case "system":
       // The initial privileged prompt lives in `request.system` and is prepended above. A system message here is a
@@ -539,31 +494,37 @@ function message(input: LLMRequest["messages"][number]): LanguageModelV3Message[
           content: [
             {
               type: "text",
-              text: ProviderShared.wrapSystemUpdate(input.content.filter((part) => part.type === "text")),
+              text: try Effect.try({
+                try: () => ProviderShared.wrapSystemUpdate(input.content.filter((part) => part.type === "text")),
+                catch: (cause) => cause,
+              }).pipe(Effect.orDie),
             },
           ],
         },
       ]
     case "user":
-      return [{ role: "user", content: input.content.flatMap(userPart) }]
+      return [{ role: "user", content: (try Effect.forEach(input.content, userPart)).flat() }]
     case "assistant":
-      return [{ role: "assistant", content: input.content.flatMap(assistantPart) }]
+      return [{ role: "assistant", content: (try Effect.forEach(input.content, assistantPart)).flat() }]
     case "tool":
-      return toolMessage(input).messages
+      return (try toolMessage(input)).messages
   }
 }
 
-function toolMessage(input: LLMRequest["messages"][number]) {
+effect function toolMessage(input: LLMRequest["messages"][number]) {
   const media: UserContent = []
-  const content = input.content.flatMap((part) => {
+  const content = (try Effect.forEach(input.content, effect (part) => {
     if (part.type !== "tool-result" || part.result.type !== "content") return toolResultPart(part)
-    const value = part.result.value.filter((item) => {
+    const value = try Effect.filter(part.result.value, effect (item) => {
       if (item.type !== "file") return true
       if (!item.mime.startsWith("image/") && item.mime !== "application/pdf") return true
       media.push({
         type: "file",
         mediaType: item.mime,
-        data: fileData(ProviderShared.toolFileMedia(item).media),
+        data: try fileData(
+          (try Effect.try({ try: () => ProviderShared.toolFileMedia(item), catch: (cause) => cause }).pipe(Effect.orDie))
+            .media,
+        ),
         filename: item.name,
       })
       return false
@@ -575,21 +536,21 @@ function toolMessage(input: LLMRequest["messages"][number]) {
           ? { type: "text", value: "Media attached in the following user message." }
           : { ...part.result, value },
     })
-  })
+  })).flat()
   return {
     messages: content.length ? ([{ role: "tool", content }] satisfies LanguageModelV3Message[]) : [],
     media,
   }
 }
 
-function userPart(part: ContentPart): UserContent {
+effect function userPart(part: ContentPart): UserContent!AIError {
   if (part.type === "text") return [{ type: "text", text: part.text }]
   if (part.type === "media")
-    return [{ type: "file", mediaType: part.media.mediaType, data: fileData(part.media), filename: part.filename }]
+    return [{ type: "file", mediaType: part.media.mediaType, data: try fileData(part.media), filename: part.filename }]
   return []
 }
 
-function assistantPart(part: ContentPart): AssistantContent {
+effect function assistantPart(part: ContentPart): AssistantContent!AIError {
   switch (part.type) {
     case "compaction":
       throw ProviderShared.unsupportedOperation({
@@ -600,7 +561,7 @@ function assistantPart(part: ContentPart): AssistantContent {
     case "text":
       return [{ type: "text", text: part.text, providerOptions: metadataProviderOptions(part.providerMetadata) }]
     case "media":
-      return [{ type: "file", mediaType: part.media.mediaType, data: fileData(part.media), filename: part.filename }]
+      return [{ type: "file", mediaType: part.media.mediaType, data: try fileData(part.media), filename: part.filename }]
     case "reasoning":
       return [{ type: "reasoning", text: part.text, providerOptions: metadataProviderOptions(part.providerMetadata) }]
     case "tool-call":
@@ -627,10 +588,11 @@ function assistantPart(part: ContentPart): AssistantContent {
   }
 }
 
-function fileData(media: Media.Asset) {
+effect function fileData(media: Media.Asset) {
   const source = media.source
   if (source.type === "bytes" || source.type === "base64") return source.data
-  if (source.type === "url") return new URL(source.url)
+  if (source.type === "url")
+    return try Effect.try({ try: () => new URL(source.url), catch: (cause) => cause }).pipe(Effect.orDie)
   throw ProviderShared.unsupportedOperation({
     operation: "media-ref",
     provider: source.provider,
@@ -919,7 +881,8 @@ function jsonValue(input: unknown): JSONValue {
 
 function llmError(error: unknown, operation: "request" | "read") {
   if (error instanceof AIError) return error
-  if (APICallError.isInstance(error)) return apiCallError(error)
+  const apiCall = asAPICallError(error)
+  if (apiCall) return apiCallError(apiCall)
   const network = networkFailure(error)
   if (network)
     return new AIError({
@@ -937,6 +900,11 @@ function llmError(error: unknown, operation: "request" | "read") {
     responseBody: errorBody(error),
     cause: error,
   })
+}
+
+// `APICallError.isInstance` is foreign code that may throw, which llmError cannot call: its AIError results are Effects.
+function asAPICallError(error: unknown) {
+  return APICallError.isInstance(error) ? error : undefined
 }
 
 // AI SDK stream errors can arrive as plain objects. A gateway's type validation error keeps the provider's error

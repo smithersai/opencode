@@ -14,6 +14,7 @@ import {
   type BetaNotes,
 } from "./beta-notes.vibe"
 import type definition from "./index.vibe"
+import { createMutationObserver, documentElement, embeddedBetaNotes, getComputedStyle } from "./beta-dialog.platform.js"
 
 /**
  * Shows the features and fixes this beta build carries since the commit of the build the user saw last, and remembers
@@ -23,7 +24,7 @@ export function showBetaNotes(
   ctx: SetupContext<typeof definition>,
   input: { readonly previous: string; readonly previousCommit: string | undefined; readonly markSeen: () => void },
 ) {
-  const notes = Option.flatMap(decodeEmbeddedNotes(import.meta.env.OPENCODE_BETA_NOTES), (embedded) =>
+  const notes = Option.flatMap(decodeEmbeddedNotes(embeddedBetaNotes()), (embedded) =>
     sliceBetaNotes(embedded, input.previousCommit),
   )
 
@@ -148,10 +149,10 @@ export function Visual(props: { visual: NonNullable<BetaNote["visual"]>; label?:
   // The theme lives on the root element's attributes; read the colour again when they change.
   onMount(() => {
     const read = () => setColor(getComputedStyle(frame).color)
-    const observer = new MutationObserver(read)
+    const observer = createMutationObserver(read)
 
     read()
-    observer.observe(document.documentElement, { attributes: true })
+    observer.observe(documentElement(), { attributes: true })
     onCleanup(() => observer.disconnect())
   })
 

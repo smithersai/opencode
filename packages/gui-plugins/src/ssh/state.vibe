@@ -4,6 +4,7 @@ import { createStore } from "solid-js/store"
 import { createKeyed, type IpcClient } from "@opencode/plugin/gui"
 import type { Ssh, SshConfig, SshItem } from "./contract.vibe"
 import { isSshConnecting } from "./name"
+import { queueMicrotask } from "./state.platform.js"
 
 export type SshController = ReturnType<typeof createSshController>
 
@@ -44,7 +45,7 @@ export function createSshController(input: {
     if (onConnected) queueMicrotask(() => onConnected(ready))
   }
 
-  const run = (id: string, effect: Effect.Effect<unknown, unknown>) => {
+  const run = (id: string, effect: unknown!unknown) => {
     setAttempts(id, { submitting: true, error: false })
     tasks.set(
       id,

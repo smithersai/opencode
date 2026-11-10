@@ -4,6 +4,7 @@ import { Button } from "@opencode/ui/button"
 import { Dialog } from "@opencode/ui/dialog"
 import { usePlugin, type DialogHandle, type SetupContext } from "@opencode/plugin/gui"
 import type definition from "./index.vibe"
+import { clearTimeout, fetch, setTimeout } from "./whats-new.platform.js"
 
 const CHANGELOG_URL = "https://opencode.ai/changelog.json"
 

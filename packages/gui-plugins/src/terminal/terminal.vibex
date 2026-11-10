@@ -16,6 +16,21 @@ import { disposeIfDisposable, getHoveredLinkText, setOptionIfSupported } from ".
 import { consumeTerminalMetaKey, terminalKeyInput } from "./terminal-key-event"
 import { terminalWriter } from "./writer"
 import { TerminalQuote, type TerminalQuoteTarget } from "./quote"
+import {
+  addWindowEventListener,
+  cancelAnimationFrame,
+  clearTimeout,
+  debugTerminal,
+  documentFonts,
+  execCommand,
+  getActiveElement,
+  isHTMLElement,
+  isSocketClosed,
+  isSocketOpen,
+  removeWindowEventListener,
+  requestAnimationFrame,
+  setTimeout,
+} from "./terminal.platform.js"
 
 // Serialization on unmount is a synchronous O(rows x cols) walk on the main thread and the
 // result is written to localStorage or desktop state for every terminal in the workspace.
@@ -67,11 +82,6 @@ const ControlFrame = Schema.fromJsonString(Schema.Struct({ cursor: Schema.option
 const decodeControlFrame = Schema.decodeUnknownOption(ControlFrame)
 
 const isHexColor = (value: string): value is HexColor => value.startsWith("#")
-
-const debugTerminal = (...values: unknown[]) => {
-  if (!import.meta.env.DEV) return
-  console.debug("[terminal]", ...values)
-}
 
 const resolveV2Token = (tokens: ResolvedV2Theme, key: string) => {
   let current = tokens[key]
@@ -401,9 +411,9 @@ export const Terminal = (props: TerminalProps) => {
   }
 
   const handlePointerDown = () => {
-    const activeElement = document.activeElement
+    const activeElement = getActiveElement()
 
-    if (activeElement instanceof HTMLElement && activeElement !== container && !container.contains(activeElement)) {
+    if (isHTMLElement(activeElement) && activeElement !== container && !container.contains(activeElement)) {
       activeElement.blur()
     }
 
@@ -481,7 +491,7 @@ export const Terminal = (props: TerminalProps) => {
         }
 
         if (event.ctrlKey && event.shiftKey && !event.metaKey && key === "c") {
-          document.execCommand("copy")
+          execCommand("copy")
 
           return true
         }
@@ -490,8 +500,8 @@ export const Terminal = (props: TerminalProps) => {
         if (keybinds.matches("terminal.toggle", event)) return true
 
         return consumeTerminalMetaKey(event, {
-          paste: () => void document.execCommand("paste"),
-          copy: () => t.hasSelection() && (document.execCommand("copy") || t.copySelection()),
+          paste: () => void execCommand("paste"),
+          copy: () => t.hasSelection() && (execCommand("copy") || t.copySelection()),
         })
       })
 
@@ -503,7 +513,7 @@ export const Terminal = (props: TerminalProps) => {
       fitAddon = fit
       serializeAddon = serializer
 
-      const active = document.activeElement
+      const active = getActiveElement()
       t.open(container)
       useTerminalUiBindings({
         container,
@@ -524,13 +534,13 @@ export const Terminal = (props: TerminalProps) => {
 
       if (!autoFocus) {
         const restoreFocus = () => {
-          const current = document.activeElement
+          const current = getActiveElement()
 
           if (current !== container && !container.contains(current)) return
           t.blur()
           t.textarea?.blur()
 
-          if (active instanceof HTMLElement && active.isConnected) active.focus()
+          if (isHTMLElement(active) && active.isConnected) active.focus()
         }
 
         restoreFocus()
@@ -538,8 +548,10 @@ export const Terminal = (props: TerminalProps) => {
         cleanups.push(() => clearTimeout(timer))
       }
 
-      if (typeof document !== "undefined" && document.fonts) {
-        void document.fonts.ready.then(scheduleFit)
+      const fonts = documentFonts()
+
+      if (fonts) {
+        void fonts.ready.then(scheduleFit)
       }
 
       const onResize = t.onResize((size) => {
@@ -549,7 +561,7 @@ export const Terminal = (props: TerminalProps) => {
       cleanups.push(() => disposeIfDisposable(onResize))
 
       const onData = t.onData((data) => {
-        if (ws?.readyState === WebSocket.OPEN) ws.send(data)
+        if (ws && isSocketOpen(ws)) ws.send(data)
       })
 
       cleanups.push(() => disposeIfDisposable(onData))
@@ -565,8 +577,8 @@ export const Terminal = (props: TerminalProps) => {
       const startResize = () => {
         fit.observeResize()
         handleResize = scheduleFit
-        window.addEventListener("resize", handleResize)
-        cleanups.push(() => window.removeEventListener("resize", handleResize))
+        addWindowEventListener("resize", handleResize)
+        cleanups.push(() => removeWindowEventListener("resize", handleResize))
       }
 
       const write = (data: string) =>
@@ -739,7 +751,7 @@ export const Terminal = (props: TerminalProps) => {
 
           if (drop === stop) drop = undefined
 
-          if (socket.readyState !== WebSocket.CLOSED && socket.readyState !== WebSocket.CLOSING) socket.close(1000)
+          if (!isSocketClosed(socket)) socket.close(1000)
         }
 
         const handleClose = (event: CloseEvent) => {
@@ -788,7 +800,7 @@ export const Terminal = (props: TerminalProps) => {
     if (reconn !== undefined) clearTimeout(reconn)
     drop?.()
 
-    if (ws && ws.readyState !== WebSocket.CLOSED && ws.readyState !== WebSocket.CLOSING) ws.close(1000)
+    if (ws && !isSocketClosed(ws)) ws.close(1000)
 
     const finalize = () => {
       persistTerminal({ term, addon: serializeAddon, cursor, id, onCleanup: props.onCleanup })

@@ -6,6 +6,7 @@ import { usePlugin } from "@opencode/plugin/gui"
 import { Meta, Visual } from "./beta-dialog"
 import { allBetaNotes, betaHistory, decodeEmbeddedNotes, type BetaNote, type EmbeddedNotes } from "./beta-notes.vibe"
 import type definition from "./index.vibe"
+import { createIntersectionObserver, embeddedBetaNotes } from "./beta-page.platform.js"
 
 /** Settings > What's new in beta: every change this build carries, in the host's settings list markup. */
 export default function BetaNotesPage() {
@@ -13,7 +14,7 @@ export default function BetaNotesPage() {
 
   return (
     <BetaNotesView
-      embedded={Option.getOrUndefined(decodeEmbeddedNotes(import.meta.env.OPENCODE_BETA_NOTES))}
+      embedded={Option.getOrUndefined(decodeEmbeddedNotes(embeddedBetaNotes()))}
       open={(href) => ctx.system.openExternal(href)}
     />
   )
@@ -121,7 +122,7 @@ function RowVisual(props: { visual: NonNullable<BetaNote["visual"]>; label?: str
 function createWatch(): Watch {
   const rows = new Map<Element, (value: boolean) => void>()
 
-  const observer = new IntersectionObserver(
+  const observer = createIntersectionObserver(
     (entries) => entries.forEach((entry) => rows.get(entry.target)?.(entry.isIntersecting)),
     { rootMargin: "200px 0px" },
   )

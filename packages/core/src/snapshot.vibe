@@ -1,7 +1,7 @@
 export * as Snapshot from "./snapshot.js"
 
 import { makeLocationNode } from "@opencode/util/effect/app-node"
-import path from "path"
+import { path } from "./snapshot.platform.js"
 import { Clock, Context, Effect, Fiber, Layer, Schema, Scope } from "effect"
 import { FileDiff } from "@opencode/schema/file-diff"
 import { FSUtil } from "@opencode/util/fs-util"

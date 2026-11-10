@@ -1,6 +1,6 @@
 export * as Vcs from "./vcs.js"
 
-import path from "path"
+import { byteLength, path } from "./vcs.platform.js"
 import { Cause, Context, Effect, FiberSet, Layer, Schema, Semaphore, Stream } from "effect"
 import type { VcsDefinition, VcsEditor } from "@opencode/plugin/effect/vcs"
 import { FileDiff } from "@opencode/schema/file-diff"
@@ -245,7 +245,7 @@ const layer = Layer.effect(
         )
         let total = 0
         return rows.map((row) => {
-          const bytes = Buffer.byteLength(row.patch)
+          const bytes = byteLength(row.patch)
           if (total + bytes > MAX_TOTAL_PATCH_BYTES) return { ...row, patch: emptyPatch(row.file) }
           total += bytes
           return row

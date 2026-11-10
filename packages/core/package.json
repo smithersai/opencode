@@ -741,6 +741,24 @@
       "vibelang-source": "./src/plugin/verbosity.vibe",
       "default": "./.vibelang/js/src/plugin/verbosity.js"
     },
+    "./repository-cache": {
+      "types": "./src/repository-cache.d.vibe.ts",
+      "vibelang-source": "./src/repository-cache.vibe",
+      "default": "./.vibelang/js/src/repository-cache.js"
+    },
+    "./snapshot": {
+      "types": "./src/snapshot.d.vibe.ts",
+      "vibelang-source": "./src/snapshot.vibe",
+      "default": "./.vibelang/js/src/snapshot.js"
+    },
+    "./vcs": {
+      "types": "./src/vcs.d.vibe.ts",
+      "vibelang-source": "./src/vcs.vibe",
+      "default": "./.vibelang/js/src/vcs.js"
+    },
+    "./repository-cache.platform": null,
+    "./snapshot.platform": null,
+    "./vcs.platform": null,
     "./filesystem/watcher": {
       "types": "./src/filesystem/watcher.d.vibe.ts",
       "vibelang-source": "./src/filesystem/watcher.vibe",

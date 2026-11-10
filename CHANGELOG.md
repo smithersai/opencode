@@ -6,6 +6,8 @@ Release notes for OpenCode V2, newest first.
 
 ### Changed
 
+- Core VCS, snapshot and repository cache services now use VibeLang while preserving their declarations, with path and byte access in native platform files.
+
 - Shell command parsing, Copilot and Modal model catalogs, built-in and skill instructions and worktree strategies now use VibeLang while preserving their declarations and native host access.
 
 - File and location watchers now use VibeLang while preserving their declarations and native filesystem access.

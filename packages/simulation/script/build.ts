@@ -29,3 +29,6 @@ await Promise.all(
     return Bun.write(`dist/${output}`, Bun.file(`.vibelang/js/src/${output}`))
   }),
 )
+// A module body (`module platform { }`) runs from its own file beside the module that imports it.
+const bodies = await Array.fromAsync(new Bun.Glob("**/*.vibe.*.js").scan({ cwd: ".vibelang/js/src" }))
+await Promise.all(bodies.map((body) => Bun.write(`dist/${body}`, Bun.file(`.vibelang/js/src/${body}`))))

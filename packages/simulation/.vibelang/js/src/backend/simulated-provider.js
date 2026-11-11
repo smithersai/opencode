@@ -6,7 +6,7 @@ import { Plugin } from "@opencode/plugin/effect";
 import { Cause, Context, Deferred, Effect, Exit, Fiber, FiberSet, Layer, PubSub, Queue, Ref, Schema, Scope, Semaphore, Stream, } from "effect";
 import { SimulationControlServer } from "../control-server.js";
 import { SimulationProtocol } from "../protocol/index.js";
-import { sha256Base64Url, writeError } from "./simulated-provider.platform.js";
+import { sha256Base64Url, writeError } from "./simulated-provider.vibe.platform.js";
 export class ProviderDisconnectedError extends Schema.TaggedError()("SimulatedProvider.ProviderDisconnectedError", { message: Schema.String }) {
 }
 export class Service extends Context.Service()("@opencode/simulation/SimulatedProvider") {

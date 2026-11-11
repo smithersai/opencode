@@ -2,7 +2,7 @@ import type { CliRenderer, CliRendererConfig } from "@opentui/core"
 import { createTestRenderer, type TestRendererSetup } from "@opentui/core/testing"
 import { Effect } from "effect"
 import { Timeline, type Pointer } from "../recording"
-import { recordingOutput, writeError } from "./renderer.platform"
+import { recordingOutput, writeError } from platform
 
 const setups = new WeakMap<CliRenderer, TestRendererSetup>()
 const recordings = new WeakMap<CliRenderer, Timeline>()
@@ -86,3 +86,21 @@ export function finish(renderer: CliRenderer) {
 }
 
 export * as SimulationRenderer from "./renderer"
+
+module platform {
+  // The platform code of renderer.vibe: the recording output stream and standard error (EK4402).
+  import { Writable } from "node:stream"
+
+  /** A live renderer sink that forwards to the recording, so finishing the recording leaves the sink open. */
+  export function recordingOutput(recording: Writable) {
+    return new Writable({
+      write(chunk, encoding, callback) {
+        recording.write(chunk, encoding, callback)
+      },
+    }) as unknown as NodeJS.WriteStream
+  }
+
+  export function writeError(text: string) {
+    return process.stderr.write(text)
+  }
+}

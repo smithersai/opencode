@@ -1,6 +1,6 @@
 import { Config, Effect, FileSystem, Schema } from "effect"
 import { PositiveInt } from "@opencode/core/schema"
-import { homedir, isAbsolute, join } from "./manifest.platform"
+import { homedir, isAbsolute, join } from platform
 
 const InstanceName = Schema.String.check(
   Schema.makeFilter((value) =>
@@ -108,3 +108,20 @@ export const resolve = Effect.fn("DriveManifest.resolve")(function* () {
 })
 
 export * as DriveManifest from "./manifest"
+
+module platform {
+  // The platform code of manifest.vibe: the home directory and paths (EK4402).
+  import hostPath from "node:path"
+
+  export { homedir } from "node:os"
+
+  /** @throws {never} */
+  export function isAbsolute(value: string) {
+    return hostPath.isAbsolute(value)
+  }
+
+  /** @throws {never} */
+  export function join(...paths: string[]) {
+    return hostPath.join(...paths)
+  }
+}

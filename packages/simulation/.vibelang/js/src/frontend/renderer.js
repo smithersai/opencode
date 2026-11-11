@@ -3,7 +3,7 @@ import * as runtime from "vibelang-runtime/internal";
 import { createTestRenderer } from "@opentui/core/testing";
 import { Effect } from "effect";
 import { Timeline } from "../recording.js";
-import { recordingOutput, writeError } from "./renderer.platform.js";
+import { recordingOutput, writeError } from "./renderer.vibe.platform.js";
 const setups = new WeakMap();
 const recordings = new WeakMap();
 export const create = Effect.fn("SimulationRenderer.create")(function* (options, path, viewport) {

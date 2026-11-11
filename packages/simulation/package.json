@@ -40,10 +40,7 @@
       "types": "./src/frontend/renderer.d.vibe.ts",
       "vibelang-source": "./src/frontend/renderer.vibe",
       "default": "./.vibelang/js/src/frontend/renderer.js"
-    },
-    "./backend/openai.platform": null,
-    "./backend/simulated-provider.platform": null,
-    "./frontend/renderer.platform": null
+    }
   },
   "scripts": {
     "build": "bun run script/build.ts",

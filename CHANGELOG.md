@@ -6,6 +6,8 @@ Release notes for OpenCode V2, newest first.
 
 ### Changed
 
+- The code mode job runner now uses VibeLang while preserving its declarations, with the throwing runner class in a TypeScript module body.
+
 - The layer graph builder now uses VibeLang while preserving its declarations, with its synchronous wiring checks in a TypeScript module body.
 
 - The AI provider protocol helpers and the Google Vertex credential helpers now use VibeLang while preserving their declarations, their native `.ts` paths and their native process and compression access.

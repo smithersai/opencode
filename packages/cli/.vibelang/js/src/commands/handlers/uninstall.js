@@ -10,7 +10,7 @@ import { RetainedImage } from "../../services/retained-image.js";
 import { Updater } from "../../services/updater.js";
 import { handlePromptErrors, prompt, requireInteractive } from "../../ui/prompt.js";
 import { errorMessage } from "../../util/error.js";
-import { environmentValue, executablePath, path, platform } from "./uninstall.platform.js";
+import { environmentValue, executablePath, path, platform } from "./uninstall.vibe.host.js";
 export default Runtime.handler(Commands.commands.uninstall, Effect.fn("cli.uninstall")(function* (input) {
     intro("Uninstall OpenCode");
     const fs = yield* FileSystem.FileSystem;

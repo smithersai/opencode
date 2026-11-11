@@ -6,6 +6,8 @@ Release notes for OpenCode V2, newest first.
 
 ### Changed
 
+- The CLI session list and uninstall handlers, the CPU and heap profiles and the port owner lookup now keep their native host access in module bodies of their VibeLang files instead of platform siblings.
+
 - The CLI ACP permissions and sessions, server process, shutdown deadline, SSH askpass and web UI service now keep their native host access in module bodies of their VibeLang files instead of platform siblings.
 
 - The CLI MCP, plugin, service and session command handlers now keep their native process and stream access in module bodies of their VibeLang files instead of platform siblings.

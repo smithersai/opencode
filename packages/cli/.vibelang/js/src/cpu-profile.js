@@ -3,7 +3,7 @@ import * as runtime from "vibelang-runtime/internal";
 export * as CpuProfile from "./cpu-profile.js";
 import { Global } from "@opencode/util/global";
 import { Effect, FileSystem, Queue } from "effect";
-import { addSignalListener, path, pid, platform, removeSignalListener, Session, writeProfile } from "./cpu-profile.platform.js";
+import { addSignalListener, path, pid, platform, removeSignalListener, Session, writeProfile } from "./cpu-profile.vibe.host.js";
 export const listen = Effect.gen(function* () {
     const global = yield* Global.Service;
     if (platform() === "win32")

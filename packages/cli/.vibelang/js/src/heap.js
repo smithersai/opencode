@@ -3,7 +3,7 @@ import * as runtime from "vibelang-runtime/internal";
 import { Global } from "@opencode/util/global";
 import { HeapSnapshot } from "@opencode/util/heap-snapshot";
 import { Effect, Queue } from "effect";
-import { addSignalListener, platform, removeSignalListener } from "./heap.platform.js";
+import { addSignalListener, platform, removeSignalListener } from "./heap.vibe.host.js";
 export const listen = Effect.gen(function* () {
     const global = yield* Global.Service;
     if (platform() === "win32")

@@ -5,11 +5,9 @@
  */
 
 import type { PluginInfo } from "@opencode/client/promise"
-import { Cause, Exit, Predicate, Schema } from "effect"
 import type { BuiltinStoreDeclaration } from "./builtin.js"
 import type { Cleanup, OS, PluginOptions } from "./core.js"
 import type { Declarations } from "./declarations.js"
-import type { MainSetup } from "./plugin.js"
 
 export { Scope } from "./scope.js"
 
@@ -211,99 +209,108 @@ export function inertModule(name: string): InertModule {
 /** A placeholder `inertModule` returns: it answers every property read, call and construction with itself. */
 export type InertModule = () => void
 
-/** A plugin's `./gui-experimental` bundle as `evaluatePluginBundle` read it. */
-export interface PluginBundle {
-  /** The declarations of its `Plugin.define`, checked. The host adds the server plugin's id. */
-  readonly definition: Declarations
-  /** Its window `setup`; undefined in a plugin for main only. */
-  readonly setup?: (ctx: never) => Cleanup | void
-  /** Its `main` setup; undefined in a plugin for windows only. */
-  readonly main?: MainSetup
-}
+module bundle {
+  import { Cause, Exit, Predicate, Schema } from "effect"
+  import type { Cleanup } from "./core.js"
+  import type { Declarations } from "./declarations.js"
+  import type { MainSetup } from "./plugin.js"
 
-/** The process that evaluates a plugin's `./gui-experimental` bundle with `evaluatePluginBundle`. */
-export interface PluginBundleHost {
-  /** Which process evaluates the bundle: `window` or `main`. */
-  readonly process: "window" | "main"
+  /** A plugin's `./gui-experimental` bundle as `evaluatePluginBundle` read it. */
+  export interface PluginBundle {
+    /** The declarations of its `Plugin.define`, checked. The host adds the server plugin's id. */
+    readonly definition: Declarations
+    /** Its window `setup`; undefined in a plugin for main only. */
+    readonly setup?: (ctx: never) => Cleanup | void
+    /** Its `main` setup; undefined in a plugin for windows only. */
+    readonly main?: MainSetup
+  }
+
+  /** The process that evaluates a plugin's `./gui-experimental` bundle with `evaluatePluginBundle`. */
+  export interface PluginBundleHost {
+    /** Which process evaluates the bundle: `window` or `main`. */
+    readonly process: "window" | "main"
+    /**
+     * Returns the module the bundle requires.
+     *
+     * @param name - The module name the bundle passes to `require`.
+     * @returns The module this process provides.
+     * @throws For a module this process does not provide.
+     */
+    require(name: string): object
+  }
+
   /**
-   * Returns the module the bundle requires.
+   * Evaluates a plugin's `./gui-experimental` bundle, a CommonJS module whose default export is its `Plugin.define`, and
+   * checks it: the declarations the host reads and at least one setup. Both hosts call it, each with its own `require`.
+   * The bundle's code is trusted as much as the server that runs the app, which already loads the plugin.
    *
-   * @param name - The module name the bundle passes to `require`.
-   * @returns The module this process provides.
-   * @throws For a module this process does not provide.
+   * @param code - The bundle's CommonJS code.
+   * @param host - The process evaluating it.
+   * @returns The checked plugin.
+   * @throws When evaluation throws, the default export is not a `Plugin.define` this app supports, or it has no setup.
    */
-  require(name: string): object
-}
+  export function evaluatePluginBundle(code: string, host: PluginBundleHost): PluginBundle {
+    const module: BundleModule = { exports: {} }
 
-/**
- * Evaluates a plugin's `./gui-experimental` bundle, a CommonJS module whose default export is its `Plugin.define`, and
- * checks it: the declarations the host reads and at least one setup. Both hosts call it, each with its own `require`.
- * The bundle's code is trusted as much as the server that runs the app, which already loads the plugin.
- *
- * @param code - The bundle's CommonJS code.
- * @param host - The process evaluating it.
- * @returns The checked plugin.
- * @throws When evaluation throws, the default export is not a `Plugin.define` this app supports, or it has no setup.
- */
-export function evaluatePluginBundle(code: string, host: PluginBundleHost): PluginBundle {
-  const module: BundleModule = { exports: {} }
+    new Function("require", "module", "exports", code)(host.require, module, module.exports)
+    // `export default` compiles to `exports.default`, or to `module.exports` itself in a bundler's default mode.
+    const plugin = Predicate.hasProperty(module.exports, "default") ? module.exports.default : module.exports
 
-  new Function("require", "module", "exports", code)(host.require, module, module.exports)
-  // `export default` compiles to `exports.default`, or to `module.exports` itself in a bundler's default mode.
-  const plugin = Predicate.hasProperty(module.exports, "default") ? module.exports.default : module.exports
+    if (!matchesPlugin(plugin)) {
+      // The decode names the field that does not match, such as a lazily loaded locale or an unknown OS.
+      const decoded = Schema.decodeUnknownExit(BundleDefinition)(plugin)
+      const problem = Exit.isFailure(decoded) ? Cause.pretty(decoded.cause) : "it does not match"
 
-  if (!matchesPlugin(plugin)) {
-    // The decode names the field that does not match, such as a lazily loaded locale or an unknown OS.
-    const decoded = Schema.decodeUnknownExit(BundleDefinition)(plugin)
-    const problem = Exit.isFailure(decoded) ? Cause.pretty(decoded.cause) : "it does not match"
+      throw new Error(
+        `A plugin's ./gui-experimental bundle must default-export a \`Plugin.define\` from \`@opencode/plugin/gui\`: ${problem}`,
+      )
+    }
 
-    throw new Error(
-      `A plugin's ./gui-experimental bundle must default-export a \`Plugin.define\` from \`@opencode/plugin/gui\`: ${problem}`,
-    )
+    if (!plugin.setup && !plugin.main)
+      throw new Error("A plugin's GUI must have a window `setup`, a `main` setup, or both")
+
+    return {
+      definition: {
+        os: plugin.os,
+        // SAFETY: `matchesPlugin` checked each store's scope and schema; `is` keeps the declaration whole.
+        stores: plugin.stores as Declarations["stores"],
+        i18n: plugin.i18n && { ...plugin.i18n, en: plugin.i18n.en ?? {} },
+      },
+      // SAFETY: a bundle is plain JavaScript; a function is all the host can check of a setup.
+      setup: plugin.setup as PluginBundle["setup"],
+      // SAFETY: as above, for the main setup.
+      main: plugin.main as PluginBundle["main"],
+    }
   }
 
-  if (!plugin.setup && !plugin.main)
-    throw new Error("A plugin's GUI must have a window `setup`, a `main` setup, or both")
+  /** The CommonJS module a bundle fills. */
+  type BundleModule = { exports: object }
 
-  return {
-    definition: {
-      os: plugin.os,
-      // SAFETY: `matchesPlugin` checked each store's scope and schema; `is` keeps the declaration whole.
-      stores: plugin.stores as Declarations["stores"],
-      i18n: plugin.i18n && { ...plugin.i18n, en: plugin.i18n.en ?? {} },
-    },
-    // SAFETY: a bundle is plain JavaScript; a function is all the host can check of a setup.
-    setup: plugin.setup as PluginBundle["setup"],
-    // SAFETY: as above, for the main setup.
-    main: plugin.main as PluginBundle["main"],
-  }
-}
+  // What the host reads of a plugin's GUI, checked once here: a malformed store would otherwise throw inside the host's
+  // shared memos and take every plugin down. `is` checks without copying.
+  const Setup = Schema.declare(Predicate.isFunction)
 
-/** The CommonJS module a bundle fills. */
-type BundleModule = { exports: object }
-
-// What the host reads of a plugin's GUI, checked once here: a malformed store would otherwise throw inside the host's
-// shared memos and take every plugin down. `is` checks without copying.
-const Setup = Schema.declare(Predicate.isFunction)
-
-const BundleDefinition = Schema.Struct({
-  os: Schema.optional(Schema.Array(Schema.Literals(["macos", "windows", "linux"]))),
-  stores: Schema.optional(
-    Schema.Record(
-      Schema.String,
-      Schema.Struct({
-        scope: Schema.Literals(["global", "session"]),
-        schema: Schema.declare(Schema.isSchema),
-      }),
+  const BundleDefinition = Schema.Struct({
+    os: Schema.optional(Schema.Array(Schema.Literals(["macos", "windows", "linux"]))),
+    stores: Schema.optional(
+      Schema.Record(
+        Schema.String,
+        Schema.Struct({
+          scope: Schema.Literals(["global", "session"]),
+          schema: Schema.declare(Schema.isSchema),
+        }),
+      ),
     ),
-  ),
-  // A plugin's catalog ships every locale inline; only built-ins load locales lazily.
-  i18n: Schema.optional(Schema.Record(Schema.String, Schema.Record(Schema.String, Schema.String))),
-  setup: Schema.optional(Setup),
-  main: Schema.optional(Setup),
-})
+    // A plugin's catalog ships every locale inline; only built-ins load locales lazily.
+    i18n: Schema.optional(Schema.Record(Schema.String, Schema.Record(Schema.String, Schema.String))),
+    setup: Schema.optional(Setup),
+    main: Schema.optional(Setup),
+  })
 
-const matchesPlugin = Schema.is(BundleDefinition)
+  const matchesPlugin = Schema.is(BundleDefinition)
+}
+
+export { type PluginBundle, type PluginBundleHost, evaluatePluginBundle } from bundle
 
 /**
  * Whether a plugin's GUI may take an id. Built-ins win: a plugin cannot take a built-in's id, an id that nests under

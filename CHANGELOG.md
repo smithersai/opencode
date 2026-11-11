@@ -6,6 +6,8 @@ Release notes for OpenCode V2, newest first.
 
 ### Changed
 
+- The CLI app archive, ACP connection and prompt content, prompts and service registration now use VibeLang while keeping the module names their importers read and preserving native stream, buffer and process access.
+
 - The CLI api, MCP add, plugin add and remove, and session import handlers now use VibeLang while preserving native process, file and network access.
 
 - The core file watcher, built-in instructions and Google Vertex provider keep their path, environment and platform access in module bodies of their VibeLang files instead of separate platform files.

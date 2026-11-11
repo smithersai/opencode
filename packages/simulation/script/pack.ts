@@ -8,5 +8,6 @@ await pack(path.resolve(import.meta.dir, ".."), {
     "./backend/simulated-provider.vibe.platform",
     "./frontend/renderer.vibe.platform",
     "./manifest.vibe.platform",
+    "./frontend/simulation.impl.vibe.platform",
   ],
 })

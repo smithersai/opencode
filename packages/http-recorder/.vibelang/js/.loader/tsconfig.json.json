@@ -33,7 +33,7 @@
      "relative": "packages/http-recorder/src"
     },
     null,
-    "QfrbTadSTHfwq2NxQcRMmaBE2S5f_FE0EUvaOqLkq9Q",
+    "UlpOdeoDDo3S1LyO44fEmHMO3lIUa7KBXSqFaOMadQQ",
     []
    ],
    [
@@ -1716,6 +1716,27 @@
     },
     "size": 372,
     "hash": "Q5s_5Ig-MYz5ircVgWXJaSE5c1pvBz94pwds1JCn268"
+   },
+   {
+    "path": {
+     "relative": "packages/http-recorder/src/index.impl.vibe.recorder.d.ts"
+    },
+    "size": 1840,
+    "hash": "gQpnEJ1WVUoUc1naZnJyxsUZKHxR5RaqOUE43zhB2TY"
+   },
+   {
+    "path": {
+     "relative": "packages/http-recorder/src/index.impl.d.vibe.ts"
+    },
+    "size": 62,
+    "hash": "gjs9cjJQggVyIREISDgjDRHGtDhojmowF7inIwxkdc4"
+   },
+   {
+    "path": {
+     "relative": "packages/http-recorder/src/index.impl.d.ts"
+    },
+    "size": 35,
+    "hash": "55gN3IIoorgR61hYi3vG89vpGxE2Q15Z-iXFoTqPmLo"
    },
    {
     "path": {
@@ -3756,22 +3777,24 @@
    },
    {
     "path": {
-     "relative": "packages/http-recorder/src/index.impl.vibe"
-    },
-    "size": 2282,
-    "hash": "XFEN8qw8bbvTSQmw1SwbTLkWx_VPUnyKsG9h6iVUsuM"
-   },
-   {
-    "path": {
      "relative": "packages/http-recorder/src/index.ts"
     },
-    "size": 32,
-    "hash": "DJSXd2xpOZxmtv53N1PALwvycFdQoyLLXADEnIN7wMQ"
+    "size": 2141,
+    "hash": "_TFvM-one4RuROBDxgY0yLDE9vvTZkvRkv3uOxzi1tw"
    }
   ],
   "inputs": [
    {
     "relative": "packages/http-recorder/src/api.ts"
+   },
+   {
+    "relative": "packages/http-recorder/src/index.impl.vibe.recorder.d.ts"
+   },
+   {
+    "relative": "packages/http-recorder/src/index.impl.d.vibe.ts"
+   },
+   {
+    "relative": "packages/http-recorder/src/index.impl.d.ts"
    },
    {
     "relative": "packages/http-recorder/src/redaction/secrets.vibe"
@@ -3808,9 +3831,6 @@
    },
    {
     "relative": "packages/http-recorder/src/websocket/recorder.ts"
-   },
-   {
-    "relative": "packages/http-recorder/src/index.impl.vibe"
    },
    {
     "relative": "packages/http-recorder/src/index.ts"
@@ -4179,76 +4199,6 @@
    },
    {
     "file": {
-     "relative": "packages/http-recorder/src/index.impl.vibe"
-    },
-    "line": 15,
-    "column": 33,
-    "category": "warning",
-    "code": "EK38130",
-    "text": "unstableApiUsage: `effect/http/HttpClient#HttpClient` is an unstable API. Breaking changes may happen between versions. effect(unstableApiUsage)"
-   },
-   {
-    "file": {
-     "relative": "packages/http-recorder/src/index.impl.vibe"
-    },
-    "line": 15,
-    "column": 63,
-    "category": "warning",
-    "code": "EK38130",
-    "text": "unstableApiUsage: `effect/http/HttpClient#HttpClient` is an unstable API. Breaking changes may happen between versions. effect(unstableApiUsage)"
-   },
-   {
-    "file": {
-     "relative": "packages/http-recorder/src/index.impl.vibe"
-    },
-    "line": 16,
-    "column": 98,
-    "category": "warning",
-    "code": "EK38130",
-    "text": "unstableApiUsage: `effect/http/HttpClient#HttpClient` is an unstable API. Breaking changes may happen between versions. effect(unstableApiUsage)"
-   },
-   {
-    "file": {
-     "relative": "packages/http-recorder/src/index.impl.vibe"
-    },
-    "line": 20,
-    "column": 29,
-    "category": "warning",
-    "code": "EK38130",
-    "text": "unstableApiUsage: `effect/socket/Socket#Socket` is an unstable API. Breaking changes may happen between versions. effect(unstableApiUsage)"
-   },
-   {
-    "file": {
-     "relative": "packages/http-recorder/src/index.impl.vibe"
-    },
-    "line": 20,
-    "column": 51,
-    "category": "warning",
-    "code": "EK38130",
-    "text": "unstableApiUsage: `effect/socket/Socket#Socket` is an unstable API. Breaking changes may happen between versions. effect(unstableApiUsage)"
-   },
-   {
-    "file": {
-     "relative": "packages/http-recorder/src/index.impl.vibe"
-    },
-    "line": 24,
-    "column": 29,
-    "category": "warning",
-    "code": "EK38130",
-    "text": "unstableApiUsage: `effect/socket/Socket#WebSocketConstructor` is an unstable API. Breaking changes may happen between versions. effect(unstableApiUsage)"
-   },
-   {
-    "file": {
-     "relative": "packages/http-recorder/src/index.impl.vibe"
-    },
-    "line": 24,
-    "column": 65,
-    "category": "warning",
-    "code": "EK38130",
-    "text": "unstableApiUsage: `effect/socket/Socket#WebSocketConstructor` is an unstable API. Breaking changes may happen between versions. effect(unstableApiUsage)"
-   },
-   {
-    "file": {
      "relative": "packages/http-recorder/src/replay/state.vibe"
     },
     "line": 14,
@@ -4597,46 +4547,6 @@
      ],
      "names": [],
      "mappings": "AAiLE,mGAAmG;AAEnG,sBAAsB;AACtB,MAAM,UAAU,eAAe,CAAC,KAAkB;IAChD,OAAO,MAAM,CAAC,IAAI,CAAC,KAAK,CAAC,CAAC,QAAQ,CAAC,QAAQ,CAAC,CAAA;AAC9C,CAAC;AAED,sBAAsB;AACtB,MAAM,UAAU,eAAe,CAAC,IAAY;IAC1C,OAAO,MAAM,CAAC,IAAI,CAAC,IAAI,EAAE,QAAQ,CAAC,CAAA;AACpC,CAAC;AAED,MAAM,UAAU,YAAY,CAAC,GAAG,IAA4C;IAC1E,OAAO,IAAI,QAAQ,CAAC,GAAG,IAAI,CAAC,CAAA;AAC9B,CAAC"
-    }
-   },
-   {
-    "paths": [
-     {
-      "relative": "packages/http-recorder/src/index.impl.vibe"
-     }
-    ],
-    "code": "export { HttpRecorder } from \"./index.impl.vibe.recorder.js\";\n",
-    "map": {
-     "version": 3,
-     "file": "index.impl.js",
-     "sourceRoot": "",
-     "sources": [
-      {
-       "relative": "packages/http-recorder/src/index.impl.vibe"
-      }
-     ],
-     "names": [],
-     "mappings": "AA8CA,OAAO,EAAE,YAAY,EAAE,MAAM,+BAAQ,CAAA"
-    }
-   },
-   {
-    "paths": [
-     {
-      "relative": "packages/http-recorder/src/index.impl.vibe.recorder.js"
-     }
-    ],
-    "code": "import { hasCassetteSync, removeCassetteSync } from \"./cassette/store.js\";\nimport { layer, layerFetch } from \"./http/recorder.js\";\nimport { layerSocket, layerWebSocketConstructor } from \"./websocket/recorder.js\";\n/** HTTP and WebSocket cassette recording. */\nexport const HttpRecorder = { hasCassetteSync, layer, layerFetch, layerSocket, layerWebSocketConstructor, removeCassetteSync };\n",
-    "map": {
-     "version": 3,
-     "file": "index.impl.vibe.recorder.js",
-     "sourceRoot": "",
-     "sources": [
-      {
-       "relative": "packages/http-recorder/src/index.impl.vibe"
-      }
-     ],
-     "names": [],
-     "mappings": "AAKE,OAAO,EAAE,eAAe,EAAE,kBAAkB,EAAE,MAAM,qBAAqB,CAAA;AACzE,OAAO,EAAE,KAAK,EAAE,UAAU,EAAE,MAAM,oBAAoB,CAAA;AACtD,OAAO,EAAE,WAAW,EAAE,yBAAyB,EAAE,MAAM,yBAAyB,CAAA;AAEhF,6CAA6C;AAC7C,MAAM,CAAC,MAAM,YAAY,GAgBrB,EAAE,eAAe,EAAE,KAAK,EAAE,UAAU,EAAE,WAAW,EAAE,yBAAyB,EAAE,kBAAkB,EAAE,CAAA"
     }
    }
   ]

@@ -22,15 +22,9 @@ Release notes for OpenCode V2, newest first.
 
 - The HttpApi client generator now uses VibeLang while preserving its declarations and its synchronous generation errors.
 
-- The browser plugin tools now use VibeLang while preserving their declarations and the synchronous browser URL check.
-
 - Plugin entrypoint resolution and the plugin GUI host contract now use VibeLang while preserving their declarations, native file access and the synchronous plugin bundle checks.
 
 - The HTTP recorder cassette store now uses VibeLang while preserving its declarations, native file access and the synchronous cassette name checks; an invalid name passed to the file cassette service still dies with the same error.
-
-- The simulation terminal recording, control server and Drive frontend now use VibeLang while preserving their declarations, the `.ts` build inputs the CLI build checks, and native stream, socket and process access.
-
-- The server route handler set and the workerd runtime profile now use VibeLang while preserving their declarations and the `.ts` entry files that the route tests and the workerd bundle probe read.
 
 - The app composer editor and model, plugin IPC and stores, server pairing, prompt queue, message timeline, timeline virtualizer and error page modules keep their DOM, timer, console, fetch and location access in module bodies of their VibeLang files instead of separate platform files.
 
@@ -40,21 +34,9 @@ Release notes for OpenCode V2, newest first.
 
 - The server authentication, pairing, process, location and server information modules and the debug, persistent terminal and session error handlers keep their crypto, Buffer, HTTP server, network interface, path and working directory access in module bodies of their VibeLang files instead of separate platform files.
 
-- The code mode job runner now uses VibeLang while preserving its declarations, with the throwing runner class in a TypeScript module body.
-
-- The layer graph builder now uses VibeLang while preserving its declarations, with its synchronous wiring checks in a TypeScript module body.
-
-- The AI provider protocol helpers and the Google Vertex credential helpers now use VibeLang while preserving their declarations, their native `.ts` paths and their native process and compression access.
-
 - The code mode interpreter and its JSON value conversions now use VibeLang while preserving their declarations, with the throwing evaluator and value walk in TypeScript module bodies.
 
-- The AI WebSocket transport now uses VibeLang while preserving its declarations and its native WebSocket and text decoding access.
-
 - The stats home data queries now use VibeLang while preserving their declarations, with the PlanetScale query cache and database URL lookup in a native platform module.
-
-- The file system utilities, the cross-spawn child process spawner and the logging and observability layers now use VibeLang while preserving their declarations and native file system, process and environment access.
-
-- The SDK Promise and Effect entry points and the workerd Effect profile now use VibeLang while preserving their declarations, their native `.ts` entry paths and the host transport they wrap.
 
 - The CLI entry and the V1 run bridge now use VibeLang: src/index.ts stays the entry and only loads src/index.main.vibe, and native process access is preserved.
 
@@ -104,19 +86,13 @@ Release notes for OpenCode V2, newest first.
 
 - The core benchmark, migration and models snapshot scripts now use VibeLang behind their existing .ts entry points, with host access in platform modules.
 
-- Instruction sources, repository references, the ripgrep installer, shell selection, file search and the WebSocket constructor now use VibeLang while preserving their declarations, native host access and their synchronous throws.
-
 - The Session service and the app node builder now use VibeLang while preserving their declarations, native path access and the TypeScript path that tests and benchmark scripts import.
-
-- Config discovery and config normalization now use VibeLang while preserving their declarations, native host access and the normalizer's failure on a value that does not round-trip.
 
 - The session timeline row renderer now uses VibeLang while preserving its declarations and its row checks.
 
 - The SSH command and bootstrap helpers and the desktop updater platform now use VibeLang while preserving their declarations, their thrown input and version errors, and native process and Electron access.
 
 - The desktop browser page and pane now use VibeLang while preserving their declarations and native Electron, process and crypto access.
-
-- The V1 session migration now uses VibeLang while preserving its declarations, its native SQLite, file and path access, and its defects for malformed attachments and incompatible databases.
 
 - The CLI updater and retained image service and the TUI Zed editor selection now use VibeLang while preserving native process, file and environment access.
 

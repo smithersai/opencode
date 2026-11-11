@@ -1057,50 +1057,10 @@
       "vibelang-source": "./src/tool/read-filesystem.vibe",
       "default": "./.vibelang/js/src/tool/read-filesystem.js"
     },
-    "./config/discovery": {
-      "types": "./src/config/discovery.d.vibe.ts",
-      "vibelang-source": "./src/config/discovery.vibe",
-      "default": "./.vibelang/js/src/config/discovery.js"
-    },
-    "./config/normalize": {
-      "types": "./src/config/normalize.d.vibe.ts",
-      "vibelang-source": "./src/config/normalize.vibe",
-      "default": "./.vibelang/js/src/config/normalize.js"
-    },
     "./session": {
       "types": "./src/session.d.vibe.ts",
       "vibelang-source": "./src/session.vibe",
       "default": "./.vibelang/js/src/session.js"
-    },
-    "./effect/websocket-constructor": {
-      "types": "./src/effect/websocket-constructor.d.vibe.ts",
-      "vibelang-source": "./src/effect/websocket-constructor.vibe",
-      "default": "./.vibelang/js/src/effect/websocket-constructor.js"
-    },
-    "./filesystem/search": {
-      "types": "./src/filesystem/search.d.vibe.ts",
-      "vibelang-source": "./src/filesystem/search.vibe",
-      "default": "./.vibelang/js/src/filesystem/search.js"
-    },
-    "./instructions/index": {
-      "types": "./src/instructions/index.d.vibe.ts",
-      "vibelang-source": "./src/instructions/index.vibe",
-      "default": "./.vibelang/js/src/instructions/index.js"
-    },
-    "./repository": {
-      "types": "./src/repository.d.vibe.ts",
-      "vibelang-source": "./src/repository.vibe",
-      "default": "./.vibelang/js/src/repository.js"
-    },
-    "./ripgrep/binary": {
-      "types": "./src/ripgrep/binary.d.vibe.ts",
-      "vibelang-source": "./src/ripgrep/binary.vibe",
-      "default": "./.vibelang/js/src/ripgrep/binary.js"
-    },
-    "./shell/select": {
-      "types": "./src/shell/select.d.vibe.ts",
-      "vibelang-source": "./src/shell/select.vibe",
-      "default": "./.vibelang/js/src/shell/select.js"
     },
     "./*": {
       "types": "./src/*.ts",
@@ -1131,11 +1091,6 @@
       "types": "./src/database/v1-migration.noop.d.vibe.ts",
       "vibelang-source": "./src/database/v1-migration.noop.vibe",
       "default": "./.vibelang/js/src/database/v1-migration.noop.js"
-    },
-    "./database/v1-migration.bun": {
-      "types": "./src/database/v1-migration.bun.d.vibe.ts",
-      "vibelang-source": "./src/database/v1-migration.bun.vibe",
-      "default": "./.vibelang/js/src/database/v1-migration.bun.js"
     },
     "./effect/app-node-builder": {
       "types": "./src/effect/app-node-builder.ts",
@@ -1622,7 +1577,6 @@
     "./session/prompt.vibe.platform": null,
     "./session/title.vibe.platform": null,
     "./session/instructions.vibe.platform": null,
-    "./database/v1-migration.bun.vibe.platform": null,
     "./git": {
       "types": "./src/git.d.vibe.ts",
       "vibelang-source": "./src/git.vibe",
@@ -1733,16 +1687,7 @@
     "./environment/memory.platform": null,
     "./environment/local.platform": null,
     "./project/icon.platform": null,
-    "./config/discovery.vibe.platform": null,
-    "./config/normalize.vibe.normalizer": null,
-    "./effect/app-node-builder.impl.vibe.builder": null,
-    "./session.vibe.platform": null,
-    "./effect/websocket-constructor.vibe.platform": null,
-    "./filesystem/search.vibe.platform": null,
-    "./instructions/index.vibe.instructions": null,
-    "./repository.vibe.reference": null,
-    "./ripgrep/binary.vibe.platform": null,
-    "./shell/select.vibe.platform": null
+    "./session.vibe.platform": null
   },
   "imports": {
     "#sqlite": {
@@ -1878,10 +1823,10 @@
       }
     },
     "#v1-migration": {
-      "types": "./src/database/v1-migration.bun.d.vibe.ts",
+      "types": "./src/database/v1-migration.bun.ts",
       "bun": {
-        "types": "./src/database/v1-migration.bun.d.vibe.ts",
-        "vibelang-source": "./src/database/v1-migration.bun.vibe",
+        "types": "./src/database/v1-migration.bun.ts",
+        "vibelang-source": "./src/database/v1-migration.bun.ts",
         "default": "./.vibelang/js/src/database/v1-migration.bun.js"
       },
       "node": {
@@ -1911,8 +1856,8 @@
       "default": "./.vibelang/js/src/config/plugin/mcp.js"
     },
     "#vibelang/emitted/src/shell/select": {
-      "types": "./src/shell/select.d.vibe.ts",
-      "vibelang-source": "./src/shell/select.vibe",
+      "types": "./src/shell/select.ts",
+      "vibelang-source": "./src/shell/select.ts",
       "default": "./.vibelang/js/src/shell/select.js"
     }
   },

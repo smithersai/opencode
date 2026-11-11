@@ -3,7 +3,7 @@ import { ensuring, fn, withSpan } from "effect/Effect";
 import * as Effect_1 from "effect/Effect";
 import * as runtime from "vibelang-runtime/internal";
 import { Context, Effect, Function, Layer, Option, Schedule, Schema } from "effect";
-import { Host } from "./effect-flock.vibe.platform.js";
+import { Host } from "./effect-flock.platform.js";
 import { FSUtil } from "./fs-util.js";
 import { Global } from "./global.js";
 import { makeGlobalNode } from "./effect/app-node.js";

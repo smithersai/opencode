@@ -25,11 +25,7 @@
     "./frontend": "./src/frontend/simulation.ts",
     "./frontend/*": "./src/frontend/*.ts",
     "./protocol": "./src/protocol/index.ts",
-    "./recording": {
-      "types": "./src/recording.d.vibe.ts",
-      "vibelang-source": "./src/recording.vibe",
-      "default": "./.vibelang/js/src/recording.js"
-    },
+    "./recording": "./src/recording.ts",
     "./backend/openai": {
       "types": "./src/backend/openai.d.vibe.ts",
       "vibelang-source": "./src/backend/openai.vibe",
@@ -44,8 +40,7 @@
       "types": "./src/frontend/renderer.d.vibe.ts",
       "vibelang-source": "./src/frontend/renderer.vibe",
       "default": "./.vibelang/js/src/frontend/renderer.js"
-    },
-    "./frontend/simulation.impl.vibe.platform": null
+    }
   },
   "scripts": {
     "build": "bun run script/build.ts",

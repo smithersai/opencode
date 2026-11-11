@@ -3,7 +3,7 @@ import { fn, onError, promise, scoped, withSpan } from "effect/Effect";
 import * as Effect_1 from "effect/Effect";
 export * as Npm from "./npm.js";
 import { Clock, Effect, Schema, Context, Layer, Option, FileSystem } from "effect";
-import { Host } from "./npm.vibe.platform.js";
+import { Host } from "./npm.platform.js";
 import { FSUtil } from "./fs-util.js";
 import { Global } from "./global.js";
 import { EffectFlock } from "./effect-flock.js";

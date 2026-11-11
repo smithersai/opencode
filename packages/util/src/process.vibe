@@ -3,7 +3,7 @@ import type { PlatformError } from "effect/PlatformError"
 import { ChildProcess } from "effect/process"
 import { ChildProcessSpawner } from "effect/process/ChildProcessSpawner"
 import { CrossSpawnSpawner } from "./cross-spawn-spawner.js"
-import { Host } from platform
+import { Host } from "./process.platform.js"
 import { makeGlobalNode } from "./effect/app-node.js"
 
 export class AppProcessError extends Schema.TaggedError<AppProcessError>()("AppProcessError", {
@@ -281,27 +281,3 @@ const layer = Layer.effect(
 export const node = makeGlobalNode({ service: Service, layer: layer, deps: [CrossSpawnSpawner.node] })
 
 export * as AppProcess from "./process.js"
-
-module platform {
-  import type { Effect } from "effect"
-
-  /** @throws {never} */
-  export function emptyBuffer() {
-    return Buffer.alloc(0)
-  }
-
-  export function concat(chunks: Uint8Array[]) {
-    return Buffer.concat(chunks)
-  }
-
-  export function utf8(buffer: Buffer) {
-    return buffer.toString("utf8")
-  }
-
-  /** Decodes `buffer` as UTF-8 now, then builds the Effect from the text; a decoding failure throws here. */
-  export function withUtf8<A, E>(buffer: Buffer, f: (text: string) => Effect.Effect<A, E>): Effect.Effect<A, E> {
-    return f(buffer.toString("utf8"))
-  }
-
-  export const Host = { emptyBuffer, concat, utf8, withUtf8 }
-}

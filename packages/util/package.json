@@ -18,8 +18,8 @@
   ],
   "exports": {
     "./effect/layer-node": {
-      "types": "./src/effect/layer-node.d.vibe.ts",
-      "vibelang-source": "./src/effect/layer-node.vibe",
+      "types": "./src/effect/layer-node.ts",
+      "vibelang-source": "./src/effect/layer-node.ts",
       "default": "./.vibelang/js/src/effect/layer-node.js"
     },
     "./bom": {
@@ -72,27 +72,7 @@
       "vibelang-source": "./src/observability/otlp.vibe",
       "default": "./.vibelang/js/src/observability/otlp.js"
     },
-    "./fs-util": {
-      "types": "./src/fs-util.d.vibe.ts",
-      "vibelang-source": "./src/fs-util.vibe",
-      "default": "./.vibelang/js/src/fs-util.js"
-    },
-    "./cross-spawn-spawner": {
-      "types": "./src/cross-spawn-spawner.d.vibe.ts",
-      "vibelang-source": "./src/cross-spawn-spawner.vibe",
-      "default": "./.vibelang/js/src/cross-spawn-spawner.js"
-    },
-    "./observability": {
-      "types": "./src/observability.d.vibe.ts",
-      "vibelang-source": "./src/observability.vibe",
-      "default": "./.vibelang/js/src/observability.js"
-    },
-    "./observability/logging": {
-      "types": "./src/observability/logging.d.vibe.ts",
-      "vibelang-source": "./src/observability/logging.vibe",
-      "default": "./.vibelang/js/src/observability/logging.js"
-    },
-    "./global.vibe.platform": null,
+    "./global.platform": null,
     "./observability/otlp.vibe.platform": null,
     "./*": {
       "types": "./src/*.ts",
@@ -107,14 +87,9 @@
     "./npm-config.vibe.platform": null,
     "./bom.vibe.-24-call-24-ts": null,
     "./patch.vibe.-24-throw-24-ts": null,
-    "./effect/layer-node.vibe.graph": null,
-    "./cross-spawn-spawner.vibe.platform": null,
-    "./fs-util.vibe.platform": null,
-    "./observability.vibe.platform": null,
-    "./observability/logging.vibe.platform": null,
-    "./effect-flock.vibe.platform": null,
-    "./npm.vibe.platform": null,
-    "./process.vibe.platform": null
+    "./effect-flock.platform": null,
+    "./npm.platform": null,
+    "./process.platform": null
   },
   "imports": {
     "#global-roots": {

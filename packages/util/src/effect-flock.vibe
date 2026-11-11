@@ -1,7 +1,7 @@
 import { Context, Effect, Function, Layer, Option, Schedule, Schema } from "effect"
 import type { FileSystem, Scope } from "effect"
 import type { PlatformError } from "effect/PlatformError"
-import { Host } from platform
+import { Host } from "./effect-flock.platform.js"
 import { FSUtil } from "./fs-util.js"
 import { Global } from "./global.js"
 import { makeGlobalNode } from "./effect/app-node.js"
@@ -308,35 +308,4 @@ export namespace EffectFlock {
   )
 
   export const node = makeGlobalNode({ service: Service, layer: layer, deps: [Global.node, FSUtil.node] })
-}
-
-module platform {
-  import path from "path"
-  import os from "os"
-  import crypto from "crypto"
-
-  /** Joins path segments; string segments never throw. @throws {never} */
-  export function join(...segments: string[]) {
-    return path.join(...segments)
-  }
-
-  export function hostname() {
-    return os.hostname()
-  }
-
-  export function randomUUID() {
-    return crypto.randomUUID()
-  }
-
-  /** @throws {never} */
-  export function pid() {
-    return process.pid
-  }
-
-  /** Wall-clock milliseconds from the high-resolution timer. @throws {never} */
-  export function wall() {
-    return performance.timeOrigin + performance.now()
-  }
-
-  export const Host = { join, hostname, randomUUID, pid, wall }
 }

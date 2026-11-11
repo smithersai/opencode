@@ -891,7 +891,7 @@
       "default": "./.vibelang/js/src/filesystem/location-watcher.js"
     },
     "./filesystem/location-watcher.vibe.platform": null,
-    "./filesystem/watcher.platform": null,
+    "./filesystem/watcher.vibe.host": null,
     "./shell/parse": {
       "types": "./src/shell/parse.d.vibe.ts",
       "vibelang-source": "./src/shell/parse.vibe",
@@ -928,7 +928,7 @@
       "default": "./.vibelang/js/src/github-copilot/models.js"
     },
     "./github-copilot/models.vibe.platform": null,
-    "./instructions/builtins.platform": null,
+    "./instructions/builtins.vibe.host": null,
     "./modal/models.vibe.platform": null,
     "./shell/parse.platform": null,
     "./worktree/strategies.vibe.platform": null,
@@ -1322,7 +1322,7 @@
     "./plugin/provider/digitalocean.vibe.platform": null,
     "./plugin/provider/github-copilot.vibe.platform": null,
     "./plugin/provider/gitlab.vibe.platform": null,
-    "./plugin/provider/google-vertex.platform": null,
+    "./plugin/provider/google-vertex.vibe.host": null,
     "./plugin/provider/modal.vibe.platform": null,
     "./plugin/provider/openai.vibe.platform": null,
     "./plugin/provider/opencode.vibe.platform": null,

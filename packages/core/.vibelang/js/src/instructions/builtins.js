@@ -5,7 +5,7 @@ import { Context, DateTime, Effect, Layer, Schema } from "effect";
 import { Global } from "@opencode/util/global";
 import { Location } from "../location.js";
 import { Instructions } from "./index.js";
-import { platform } from "./builtins.platform.js";
+import { platform } from "./builtins.vibe.host.js";
 export class Service extends Context.Service()("@opencode/InstructionBuiltIns") {
 }
 const layer = Layer.effect(Service, Effect.gen(function* () {

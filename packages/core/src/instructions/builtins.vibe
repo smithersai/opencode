@@ -5,7 +5,7 @@ import { Context, DateTime, Effect, Layer, Schema } from "effect"
 import { Global } from "@opencode/util/global"
 import { Location } from "../location.js"
 import { Instructions } from "./index.js"
-import { platform } from "./builtins.platform.js"
+import { platform } from host
 
 export interface Interface {
   readonly load: () => Effect.Effect<Instructions.List>
@@ -62,3 +62,12 @@ const layer = Layer.effect(
 )
 
 export const node = makeLocationNode({ service: Service, layer, deps: [Global.node, Location.node] })
+
+module host {
+// The platform code of builtins.vibe: the host platform name, which a .vibe file does not read (EK4402).
+
+/** @throws {never} */
+export function platform(): NodeJS.Platform {
+  return process.platform
+}
+}

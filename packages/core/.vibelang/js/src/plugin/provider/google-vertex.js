@@ -7,7 +7,7 @@ import { Bus } from "../../bus.js";
 import { Credential } from "../../credential.js";
 import { Provider } from "../../provider.js";
 import { configuredSettings } from "./configured.js";
-import { environmentValue, joinPath, platform } from "./google-vertex.platform.js";
+import { environmentValue, joinPath, platform } from "./google-vertex.vibe.host.js";
 const ADC_METHOD = "google-adc";
 const decodeADCFile = Schema.decodeUnknownOption(Schema.fromJsonString(Schema.Struct({ quota_project_id: Schema.optional(Schema.String) })));
 function resolveProject(options) {

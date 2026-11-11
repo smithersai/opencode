@@ -8,7 +8,7 @@ import { FSUtil } from "@opencode/util/fs-util";
 import { Cause, Context, Effect, Layer, PubSub, RcMap, Stream } from "effect";
 import { lazy } from "../util/lazy.js";
 import loadBinding from "./watcher-binding.js";
-import { basename, dirname, getBackend, join, platform, resolve, watch } from "./watcher.platform.js";
+import { basename, dirname, getBackend, join, platform, resolve, watch } from "./watcher.vibe.host.js";
 const SUBSCRIBE_TIMEOUT_MS = 10_000;
 const watcher = lazy(() => {
     try {

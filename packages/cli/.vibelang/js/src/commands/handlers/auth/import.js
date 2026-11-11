@@ -7,7 +7,7 @@ import { Runtime } from "../../../framework/runtime.js";
 import { createClient, request } from "./shared.js";
 import { errorMessage } from "../../../util/error.js";
 import { readStdin } from "../../../util/io.js";
-import { EOL, setExitCode, stdinIsTTY, writeError } from "./import.platform.js";
+import { EOL, setExitCode, stdinIsTTY, writeError } from "./import.vibe.platform.js";
 export default Runtime.handler(Commands.commands.auth.commands.import, Effect.fn("cli.auth.import")(function* (input) {
     const file = Option.getOrUndefined(input.file);
     if (!file && stdinIsTTY())

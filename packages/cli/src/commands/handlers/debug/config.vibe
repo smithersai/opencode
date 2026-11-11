@@ -1,4 +1,15 @@
-import { EOL, directory, write } from "./config.platform"
+module platform {
+  import { Effect } from "effect"
+  export { EOL } from "node:os"
+
+  export const directory = Effect.sync(() => process.cwd())
+  export const write = (value: string) =>
+    Effect.sync(() => {
+      process.stdout.write(value)
+    })
+}
+
+import { EOL, directory, write } from platform
 import { Effect } from "effect"
 import { OpenCode } from "@opencode/client"
 import { Service } from "@opencode/client/effect/service"

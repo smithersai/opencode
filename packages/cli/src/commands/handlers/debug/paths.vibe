@@ -1,4 +1,14 @@
-import { EOL, write } from "./paths.platform"
+module platform {
+  import { Effect } from "effect"
+  export { EOL } from "node:os"
+
+  export const write = (value: string) =>
+    Effect.sync(() => {
+      process.stdout.write(value)
+    })
+}
+
+import { EOL, write } from platform
 import { Effect, Option } from "effect"
 import { Global } from "@opencode/util/global"
 import { Commands } from "../../commands.ts"

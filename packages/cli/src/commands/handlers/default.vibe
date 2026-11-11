@@ -1,4 +1,12 @@
-import { changeDirectory, environmentValue, writeError } from "./default.platform"
+module platform {
+  export const changeDirectory = (directory: string) => process.chdir(directory)
+
+  export const writeError = (...args: Parameters<typeof process.stderr.write>) => process.stderr.write(...args)
+
+  export const environmentValue = (key: string) => process.env[key]
+}
+
+import { changeDirectory, environmentValue, writeError } from platform
 import { LayerNode } from "@opencode/util/effect/layer-node"
 import { Global } from "@opencode/util/global"
 import { run } from "@opencode/tui"

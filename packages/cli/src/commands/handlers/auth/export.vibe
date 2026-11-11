@@ -1,5 +1,17 @@
-import { outputIsTTY, setExitCode, writeError, writeOutput } from "./export.platform"
-import { EOL } from "./export.platform"
+module platform {
+  export { EOL } from "node:os"
+
+  export const outputIsTTY = () => process.stdout.isTTY
+
+  export const writeError = (...args: Parameters<typeof process.stderr.write>) => process.stderr.write(...args)
+
+  export const writeOutput = (...args: Parameters<typeof process.stdout.write>) => process.stdout.write(...args)
+
+  export const setExitCode = (code: typeof process.exitCode) => (process.exitCode = code)
+}
+
+import { outputIsTTY, setExitCode, writeError, writeOutput } from platform
+import { EOL } from platform
 import { Effect, Option } from "effect"
 import { Commands } from "../../commands.ts"
 import { Runtime } from "../../../framework/runtime"

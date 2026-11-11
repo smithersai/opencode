@@ -6,6 +6,8 @@ Release notes for OpenCode V2, newest first.
 
 ### Changed
 
+- The SDK Promise and Effect entry points and the workerd Effect profile now use VibeLang while preserving their declarations, their native `.ts` entry paths and the host transport they wrap.
+
 - The CLI entry and the V1 run bridge now use VibeLang: src/index.ts stays the entry and only loads src/index.main.vibe, and native process access is preserved.
 
 - The CLI app archive, ACP connection and prompt content, prompts and service registration now use VibeLang while keeping the module names their importers read and preserving native stream, buffer and process access.

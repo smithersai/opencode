@@ -2,7 +2,7 @@ export * as SkillScan from "./skill-scan.js"
 
 import { FSUtil } from "@opencode/util/fs-util"
 import { Effect } from "effect"
-import { joinPath } from "./skill-scan.platform.ts"
+import { joinPath } from platform
 
 const MAX_DEPTH = 6
 
@@ -44,3 +44,12 @@ export const scan = Effect.fn("SkillScan.scan")(effect (root: string) => {
   }
   return files.toSorted()
 })
+
+module platform {
+import path from "path"
+
+/** @throws {never} */
+export function joinPath(directory: string, name: string) {
+  return path.join(directory, name)
+}
+}

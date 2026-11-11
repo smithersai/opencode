@@ -19,7 +19,7 @@ import { ConfigIntegration } from "./config/integration.js";
 import { WellKnown } from "./wellknown.js";
 import { AppProcess } from "@opencode/util/process";
 import { ChildProcess } from "effect/process";
-import { dirname, isDeepStrictEqual, joinPath } from "./config.platform.js";
+import { dirname, isDeepStrictEqual, joinPath } from "./config.vibe.platform.js";
 export function latest(entries, key) {
     return entries.findLast((entry) => entry.type === "document" && entry.info[key] !== undefined)
         ?.info[key];

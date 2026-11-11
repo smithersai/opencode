@@ -9,7 +9,7 @@ import { Watcher } from "../../filesystem/watcher.js";
 import { Skill } from "../../skill.js";
 import { SkillFile } from "./skill-file.js";
 import { SkillScan } from "./skill-scan.js";
-import { basename, joinPath } from "./compatibility.platform.js";
+import { basename, joinPath } from "./compatibility.vibe.platform.js";
 export const Plugin = define({
     id: "opencode.config.compatibility",
     effect: Effect.fn((ctx) => {

@@ -3,7 +3,7 @@ import * as Effect_1 from "effect/Effect";
 export * as SkillScan from "./skill-scan.js";
 import { FSUtil } from "@opencode/util/fs-util";
 import { Effect } from "effect";
-import { joinPath } from "./skill-scan.platform.js";
+import { joinPath } from "./skill-scan.vibe.platform.js";
 const MAX_DEPTH = 6;
 export const ignore = [...FSUtil.ignoreGlobs, "**/.*", "**/.*/**"];
 export const scan = Effect.fn("SkillScan.scan")((root) => {

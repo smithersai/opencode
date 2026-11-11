@@ -9,7 +9,7 @@ import { Location } from "../../location.js";
 import { AbsolutePath } from "../../schema.js";
 import { WorktreeStrategies } from "../../worktree/strategies.js";
 import { ConfigEntryObserver } from "./entry-observer.js";
-import { worktreeDirectory } from "./worktree.platform.js";
+import { worktreeDirectory } from "./worktree.vibe.platform.js";
 export const Plugin = define({
     id: "opencode.config.worktree",
     effect: Effect.fn((ctx) => {

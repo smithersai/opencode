@@ -11,7 +11,7 @@ import { Config } from "../../config.js";
 import { Watcher } from "../../filesystem/watcher.js";
 import { Location } from "../../location.js";
 import { PluginSourceDirectory } from "../../plugin/source-directory.js";
-import { dirname, fileURL, isAbsolute, joinPath, localPath, resolve } from "./source.platform.js";
+import { dirname, fileURL, isAbsolute, joinPath, localPath, resolve } from "./source.vibe.platform.js";
 export class Service extends Context.Service()("@opencode/ConfigPluginSource") {
 }
 export const layer = Layer.effect(Service, Effect.gen(function* () {

@@ -14,7 +14,7 @@ import { SubagentJob } from "../../session/subagent-job.js";
 import { ShellSelect } from "../../shell/select.js";
 import { FSUtil } from "@opencode/util/fs-util";
 import { ConfigMarkdown } from "../markdown.js";
-import { joinPath, outputText, relative } from "./command.platform.js";
+import { joinPath, outputText, relative } from "./command.vibe.platform.js";
 const decodeCommand = Schema.decodeUnknownOption(ConfigCommand.Info);
 export const Plugin = define({
     id: "opencode.config.command",

@@ -5,7 +5,7 @@ import { Result, Schema, SchemaParser } from "effect";
 import { ConfigMarkdown } from "../markdown.js";
 import { AbsolutePath } from "../../schema.js";
 import { Skill } from "../../skill.js";
-import { skillId } from "./skill-file.platform.js";
+import { skillId } from "./skill-file.vibe.platform.js";
 const Frontmatter = Schema.Struct({
     name: Schema.String.pipe(Schema.optional),
     description: Schema.String.pipe(Schema.optional),

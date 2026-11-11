@@ -16,7 +16,7 @@ import type { FileAccess } from "../../file-access.js"
 import type { ReadTool } from "../../tool/plugin/read.js"
 import type { EditTool } from "../../tool/plugin/edit.js"
 import { AbsolutePath } from "../../schema.js"
-import { joinPath, joinHome, relative } from "./agent.platform.ts"
+import { joinPath, joinHome, relative } from platform
 
 const legacySources = [
   { pattern: "{agent,agents}/**/*.md", primary: false },
@@ -216,3 +216,22 @@ const decode = Effect.fnUntraced(function* (
   })
   return new Document({ type: "document", path: AbsolutePath.make(file.filepath), info })
 })
+
+module platform {
+import path from "path"
+
+/** @throws {never} */
+export function joinPath(directory: string, name: string) {
+  return path.join(directory, name)
+}
+
+/** Joins a home-relative path with the separator style of `home`. @throws {never} */
+export function joinHome(home: string, relative: string) {
+  return (path.posix.isAbsolute(home) ? path.posix : path.win32).join(home, relative)
+}
+
+/** Relative path between two files; resolving a relative input reads the process working directory. */
+export function relative(from: string, to: string) {
+  return path.relative(from, to)
+}
+}

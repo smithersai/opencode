@@ -8,7 +8,7 @@ import { Watcher } from "../../filesystem/watcher.js"
 import { Skill } from "../../skill.js"
 import { SkillFile } from "./skill-file.js"
 import { SkillScan } from "./skill-scan.js"
-import { basename, joinPath } from "./compatibility.platform.ts"
+import { basename, joinPath } from platform
 
 export const Plugin = define({
   id: "opencode.config.compatibility",
@@ -91,4 +91,18 @@ function isCompatibilitySource(
     sourceDirectories.some((name) => basename(file) === name) ||
     [...roots.claude, ...roots.agents].some((root) => FSUtil.contains(root, file))
   )
+}
+
+module platform {
+import path from "path"
+
+/** @throws {never} */
+export function joinPath(directory: string, name: string) {
+  return path.join(directory, name)
+}
+
+/** @throws {never} */
+export function basename(file: string) {
+  return path.basename(file)
+}
 }

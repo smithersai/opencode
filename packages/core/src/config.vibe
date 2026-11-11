@@ -19,7 +19,7 @@ import { ConfigIntegration } from "./config/integration.js"
 import { WellKnown } from "./wellknown.js"
 import { AppProcess } from "@opencode/util/process"
 import { ChildProcess } from "effect/process"
-import { dirname, isDeepStrictEqual, joinPath } from "./config.platform.js"
+import { dirname, isDeepStrictEqual, joinPath } from platform
 
 export function latest<K extends keyof Info>(entries: readonly Entry[], key: K): Info[K] | undefined {
   return entries.findLast((entry): entry is Document => entry.type === "document" && entry.info[key] !== undefined)
@@ -473,3 +473,25 @@ export function configured(options?: Options) {
 }
 
 export const node = configured()
+
+module platform {
+// The platform code of config.vibe: host path rules and deep equality, which a .vibe file does not use (EK4402).
+
+import path from "path"
+import { isDeepStrictEqual } from "node:util"
+
+/** The directory of a path. @throws {never} */
+export function dirname(target: string) {
+  return path.dirname(target)
+}
+
+/** Joins path segments with the host path rules. @throws {never} */
+export function joinPath(...segments: string[]) {
+  return path.join(...segments)
+}
+
+// A getter or proxy inside a compared value may throw; callers keep such a throw a defect.
+const platformIsDeepStrictEqual = (left: unknown, right: unknown) => isDeepStrictEqual(left, right)
+
+export { platformIsDeepStrictEqual as isDeepStrictEqual }
+}

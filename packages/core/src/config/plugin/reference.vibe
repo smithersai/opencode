@@ -10,7 +10,7 @@ import { AbsolutePath } from "../../schema.js"
 import { Global } from "@opencode/util/global"
 import { Location } from "../../location.js"
 import { ConfigEntryObserver } from "#vibelang/emitted/src/config/plugin/entry-observer"
-import { dirname, localPath } from "./reference.platform.ts"
+import { dirname, localPath } from platform
 
 export const Plugin = define({
   id: "opencode.config.reference",
@@ -59,4 +59,18 @@ function local(entry: ConfigReference.Entry): entry is string | ConfigReference.
   return typeof entry === "string"
     ? entry.startsWith(".") || entry.startsWith("/") || entry.startsWith("~")
     : "path" in entry
+}
+
+module platform {
+import path from "path"
+
+/** @throws {never} */
+export function dirname(filepath: string) {
+  return path.dirname(filepath)
+}
+
+export function localPath(directory: string, home: string, value: string) {
+  if (value.startsWith("~/")) return path.join(home, value.slice(2))
+  return path.isAbsolute(value) ? value : path.resolve(directory, value)
+}
 }

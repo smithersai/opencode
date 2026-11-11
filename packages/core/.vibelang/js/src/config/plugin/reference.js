@@ -11,7 +11,7 @@ import { AbsolutePath } from "../../schema.js";
 import { Global } from "@opencode/util/global";
 import { Location } from "../../location.js";
 import { ConfigEntryObserver } from "./entry-observer.js";
-import { dirname, localPath } from "./reference.platform.js";
+import { dirname, localPath } from "./reference.vibe.platform.js";
 export const Plugin = define({
     id: "opencode.config.reference",
     effect: Effect.fn((ctx) => {

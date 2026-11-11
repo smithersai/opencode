@@ -8,7 +8,7 @@ import { Location } from "../../location.js"
 import { AbsolutePath } from "../../schema.js"
 import { WorktreeStrategies } from "../../worktree/strategies.js"
 import { ConfigEntryObserver } from "#vibelang/emitted/src/config/plugin/entry-observer"
-import { worktreeDirectory } from "./worktree.platform.ts"
+import { worktreeDirectory } from platform
 
 export const Plugin = define({
   id: "opencode.config.worktree",
@@ -29,3 +29,12 @@ export const Plugin = define({
     })
   }),
 })
+
+module platform {
+import path from "path"
+
+/** Expands a configured worktree directory against the home and project directories. */
+export function worktreeDirectory(home: string, project: string, directory: string) {
+  return directory.startsWith("~/") ? path.join(home, directory.slice(2)) : path.resolve(project, directory)
+}
+}

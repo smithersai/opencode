@@ -6,6 +6,8 @@ Release notes for OpenCode V2, newest first.
 
 ### Changed
 
+- The core configuration loader, configuration variables and config plugin sources keep their path, URL and environment access in module bodies of their VibeLang files instead of separate platform files.
+
 - The TUI attention alerts and the stats R2 SQL client now keep their host access inside their VibeLang files instead of separate platform files.
 
 - The HTTP recorder, the client RPC transport and service helpers, and the code mode extension bridge and OpenAPI runtime now keep their host access inside their VibeLang files instead of separate platform files.

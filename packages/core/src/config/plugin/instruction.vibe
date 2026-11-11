@@ -11,7 +11,7 @@ import { Watcher } from "../../filesystem/watcher.js"
 import { InstructionDiscovery } from "../../instruction-discovery.js"
 import { Instructions } from "../../instructions/index.js"
 import { Location } from "../../location.js"
-import { basename, dirname, isAbsolute, joinPath, toGlobSeparators } from "./instruction.platform.ts"
+import { basename, dirname, isAbsolute, joinPath, toGlobSeparators } from platform
 
 type Loaded =
   | { readonly type: "available"; readonly files: InstructionDiscovery.File[] }
@@ -257,4 +257,33 @@ function ancestorDirectories(start: string, stop: string): string[] {
 
 function isUrl(source: string) {
   return URL.canParse(source) && /^https?:$/.test(new URL(source).protocol)
+}
+
+module platform {
+import path from "path"
+
+/** @throws {never} */
+export function joinPath(directory: string, name: string) {
+  return path.join(directory, name)
+}
+
+/** @throws {never} */
+export function dirname(target: string) {
+  return path.dirname(target)
+}
+
+/** @throws {never} */
+export function basename(target: string) {
+  return path.basename(target)
+}
+
+/** @throws {never} */
+export function isAbsolute(target: string) {
+  return path.isAbsolute(target)
+}
+
+/** Rewrites platform separators as `/` for glob patterns. @throws {never} */
+export function toGlobSeparators(target: string) {
+  return target.replaceAll(path.sep, "/")
+}
 }

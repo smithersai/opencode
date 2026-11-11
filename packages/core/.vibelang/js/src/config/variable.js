@@ -3,7 +3,7 @@ export * as ConfigVariable from "./variable.js";
 import { Effect } from "effect";
 import { parse } from "jsonc-parser";
 import { FSUtil } from "@opencode/util/fs-util";
-import { dirname, environmentVariable, homedir, isAbsolute, joinPath, resolve } from "./variable.platform.js";
+import { dirname, environmentVariable, homedir, isAbsolute, joinPath, resolve } from "./variable.vibe.platform.js";
 /** Apply {env:VAR} and {file:path} substitutions to config text. */
 export const substitute = Effect.fn("ConfigVariable.substitute")(function* (input) {
     const env = (escape) => input.text.replace(/\{env:([^}]+)\}/g, (_, name) => {

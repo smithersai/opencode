@@ -3,7 +3,7 @@ export * as ConfigVariable from "./variable.js"
 import { Effect } from "effect"
 import { type ParseError, parse } from "jsonc-parser"
 import { FSUtil } from "@opencode/util/fs-util"
-import { dirname, environmentVariable, homedir, isAbsolute, joinPath, resolve } from "./variable.platform.js"
+import { dirname, environmentVariable, homedir, isAbsolute, joinPath, resolve } from platform
 
 type ParseSource =
   | {
@@ -78,3 +78,38 @@ const substituteFiles = Effect.fnUntraced(function* (input: SubstituteInput, tex
 
   return out + text.slice(cursor)
 })
+
+module platform {
+import os from "os"
+import path from "path"
+
+/** @throws {never} */
+export function environmentVariable(name: string) {
+  return process.env[name]
+}
+
+/** The current user's home directory, which may be unavailable. */
+export function homedir() {
+  return os.homedir()
+}
+
+/** @throws {never} */
+export function dirname(target: string) {
+  return path.dirname(target)
+}
+
+/** @throws {never} */
+export function joinPath(directory: string, name: string) {
+  return path.join(directory, name)
+}
+
+/** @throws {never} */
+export function isAbsolute(target: string) {
+  return path.isAbsolute(target)
+}
+
+/** Resolves against the process working directory, which may be unavailable. */
+export function resolve(directory: string, target: string) {
+  return path.resolve(directory, target)
+}
+}

@@ -13,7 +13,7 @@ import { Skill } from "../../skill.js"
 import { SkillDiscovery } from "../../skill/discovery.js"
 import { SkillFile } from "./skill-file.js"
 import { SkillScan } from "./skill-scan.js"
-import { dirname, isAbsolute, joinPath, resolve } from "./skill.platform.ts"
+import { dirname, isAbsolute, joinPath, resolve } from platform
 
 type Source = Skill.DirectorySource | Skill.UrlSource
 
@@ -193,3 +193,27 @@ export const Plugin = define({
     )
   }),
 })
+
+module platform {
+import path from "path"
+
+/** Resolves a directory against the process working directory, which may be unavailable. */
+export function resolve(directory: string) {
+  return path.resolve(directory)
+}
+
+/** @throws {never} */
+export function dirname(target: string) {
+  return path.dirname(target)
+}
+
+/** @throws {never} */
+export function joinPath(directory: string, name: string) {
+  return path.join(directory, name)
+}
+
+/** @throws {never} */
+export function isAbsolute(target: string) {
+  return path.isAbsolute(target)
+}
+}

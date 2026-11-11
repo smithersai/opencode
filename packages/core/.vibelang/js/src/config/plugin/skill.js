@@ -13,7 +13,7 @@ import { Skill } from "../../skill.js";
 import { SkillDiscovery } from "../../skill/discovery.js";
 import { SkillFile } from "./skill-file.js";
 import { SkillScan } from "./skill-scan.js";
-import { dirname, isAbsolute, joinPath, resolve } from "./skill.platform.js";
+import { dirname, isAbsolute, joinPath, resolve } from "./skill.vibe.platform.js";
 export const Plugin = define({
     id: "opencode.config.skill",
     effect: Effect.fn((ctx) => {

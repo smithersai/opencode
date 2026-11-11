@@ -1,5 +1,5 @@
 import { Effect, Option, Schema, Stream } from "effect"
-import { randomUUID } from "./gemini.platform.js"
+import { randomUUID } from platform
 import { Tool } from "@opencode/schema/tool"
 import { Route } from "../route/client.js"
 import { Auth } from "../route/auth.js"
@@ -988,3 +988,12 @@ export const route = Route.make({
 })
 
 export * as Gemini from "./gemini.js"
+
+module platform {
+  // The platform code of gemini.vibe: random identifiers from the host crypto global a .vibe file does not use (EK4402).
+
+  /** @throws {never} */
+  export function randomUUID() {
+    return crypto.randomUUID()
+  }
+}

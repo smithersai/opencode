@@ -1,5 +1,5 @@
 import { AwsV4Signer } from "aws4fetch"
-import { environmentValue } from "./bedrock-auth.platform.js"
+import { environmentValue } from platform
 import { Effect } from "effect"
 import { Headers } from "effect/http"
 import { Auth, type AuthInput } from "../../route/auth.js"
@@ -146,3 +146,12 @@ export const resolveAuth = (input: ResolveAuthInput, region: string, options: Re
 }
 
 export * as BedrockAuth from "./bedrock-auth.js"
+
+module platform {
+  // The platform code of bedrock-auth.vibe: ambient AWS environment variables a .vibe file does not read (EK4402).
+
+  /** @throws {never} */
+  export function environmentValue(name: string) {
+    return process.env[name]
+  }
+}

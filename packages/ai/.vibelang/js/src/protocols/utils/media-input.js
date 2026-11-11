@@ -2,7 +2,7 @@
 import * as Base64 from "effect/encoding/Base64";
 import * as Effect from "effect/Effect";
 import * as Effect_1 from "effect/Effect";
-import * as $platform from "./media-input.platform.js";
+import * as $platform from "./media-input.vibe.platform.js";
 import { Media } from "../../media.js";
 import { mergeJsonRecords } from "../../schema/index.js";
 import { encodeJson } from "../../utils/json.js";

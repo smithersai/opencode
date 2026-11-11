@@ -7,8 +7,7 @@
     "rootDir": "."
   },
   "include": [
-    "script/setup-recording-env.vibe",
-    "script/setup-recording-env.platform.ts"
+    "script/setup-recording-env.vibe"
   ],
   "exclude": []
 }

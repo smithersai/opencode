@@ -6,6 +6,8 @@ Release notes for OpenCode V2, newest first.
 
 ### Changed
 
+- The AI package entry, the Anthropic, Gemini and OpenResponses protocols, Bedrock authentication, media input and the recording setup script now keep their host access inside their VibeLang files instead of separate platform files.
+
 - The util global paths, process output, npm install and config, file lock, heap snapshot and OTLP helpers now keep their host access inside their VibeLang files instead of separate platform files.
 
 - The app provider connection dialog now uses VibeLang, with clipboard, form, selector escaping and timer access in a native module body.

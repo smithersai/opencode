@@ -1,5 +1,5 @@
 import { Effect, Option, Schema } from "effect"
-import { randomUUID } from "./open-responses.platform.js"
+import { randomUUID } from platform
 import type { Content } from "@opencode/schema/tool"
 import { HttpTransport } from "../route/transport/index.js"
 import { Protocol } from "../route/protocol.js"
@@ -1480,3 +1480,12 @@ export const protocol = Protocol.make({
 export const httpTransport = HttpTransport.sseJson.with<OpenResponsesBody>()
 
 export * as OpenResponses from "./open-responses.js"
+
+module platform {
+  // The platform code of open-responses.vibe: random identifiers from the host crypto global a .vibe file does not use (EK4402).
+
+  /** @throws {never} */
+  export function randomUUID() {
+    return crypto.randomUUID()
+  }
+}

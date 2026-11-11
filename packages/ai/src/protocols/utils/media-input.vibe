@@ -1,4 +1,4 @@
-import * as $platform from "./media-input.platform.ts"
+import * as $platform from platform
 import { Media } from "../../media.js"
 import type { MediaProtocol } from "../../route/media-protocol.js"
 import { mergeJsonRecords, type AIError, type ProviderID } from "../../schema/index.js"
@@ -105,3 +105,22 @@ export const appendFields = (
 }
 
 export * as MediaInput from "./media-input.js"
+
+module platform {
+  // The platform code of media-input.vibe: multipart bodies and blobs, host globals a .vibe file does not read (EK4402).
+
+  /** @throws {never} */
+  export function formData(): FormData {
+    return new FormData()
+  }
+
+  /** @throws {never} */
+  export function isFormData(value: unknown): value is FormData {
+    return value instanceof FormData
+  }
+
+  /** @throws {never} */
+  export function blob(parts: ReadonlyArray<ArrayBuffer>, mediaType: string): Blob {
+    return new Blob([...parts], { type: mediaType })
+  }
+}

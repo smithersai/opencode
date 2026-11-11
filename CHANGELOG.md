@@ -6,6 +6,8 @@ Release notes for OpenCode V2, newest first.
 
 ### Changed
 
+- The session timeline row renderer now uses VibeLang while preserving its declarations and its row checks.
+
 - The SSH command and bootstrap helpers and the desktop updater platform now use VibeLang while preserving their declarations, their thrown input and version errors, and native process and Electron access.
 
 - The desktop browser page and pane now use VibeLang while preserving their declarations and native Electron, process and crypto access.

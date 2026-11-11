@@ -10,7 +10,11 @@
     "./message": "./src/message/current-message.tsx",
     "./timeline/projection": "./src/timeline/projection.ts",
     "./timeline/detail": "./src/timeline/detail.ts",
-    "./timeline/row": "./src/timeline/session-timeline-row.tsx",
+    "./timeline/row": {
+      "types": "./src/timeline/session-timeline-row.d.vibex.ts",
+      "vibelang-source": "./src/timeline/session-timeline-row.vibex",
+      "default": "./.vibelang/js/src/timeline/session-timeline-row.jsx"
+    },
     "./timeline": "./src/timeline/session-timeline.tsx",
     "./basic-tool": {
       "types": "./src/components/basic-tool.d.vibex.ts",

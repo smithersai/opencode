@@ -6,6 +6,8 @@ Release notes for OpenCode V2, newest first.
 
 ### Changed
 
+- The MCP import boundary test now bundles with the VibeLang plugin, as the core package build does.
+
 - The CLI heap and CPU profiles, shutdown deadline, and the uninstall, ACP, auth import, plugin list and session list and export handlers now use VibeLang while preserving native process, file and environment access.
 
 - The plugin GUI core contract now uses VibeLang while preserving its declarations.

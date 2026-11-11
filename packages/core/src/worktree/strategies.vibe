@@ -10,7 +10,7 @@ import { Location } from "../location.js"
 import { State } from "../state.js"
 import { WorktreeGit } from "./git.js"
 import { FSUtil } from "@opencode/util/fs-util"
-import { join } from "./strategies.platform.js"
+import { join } from platform
 
 export interface Strategy {
   readonly id: Worktree.StrategyID
@@ -72,3 +72,14 @@ export const node = makeLocationNode({
   layer,
   deps: [Location.node, Global.node, Git.node, FSUtil.node],
 })
+
+module platform {
+// The platform code of strategies.vibe: host path joining, which a .vibe file does not read (EK4402).
+
+import path from "path"
+
+/** @throws {never} */
+export function join(...parts: string[]): string {
+  return path.join(...parts)
+}
+}

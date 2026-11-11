@@ -11,7 +11,7 @@ import { Global } from "@opencode/util/global";
 import { ShellSelect } from "../shell/select.js";
 import { makeDaemonTransport, } from "./daemon.js";
 import { resolveBinary } from "#persistent-pty-binary";
-import { decodeBase64, encodeBase64, filesystemRoot, joinPath, randomUUID } from "./index.platform.js";
+import { decodeBase64, encodeBase64, filesystemRoot, joinPath, randomUUID } from "./index.vibe.platform.js";
 export { Handoff } from "@opencode/schema/persistent-pty";
 export { available } from "#persistent-pty-binary";
 export const Options = Schema.Struct({

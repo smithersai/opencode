@@ -6,6 +6,8 @@ Release notes for OpenCode V2, newest first.
 
 ### Changed
 
+- The core persistent terminal daemon, terminal, shell, skill, snapshot, version control and worktree modules keep their process, socket, file, path and environment access in module bodies of their VibeLang files instead of separate platform files.
+
 - The core AI SDK adapter, model catalogs, model resolution, file access, filesystem, formatter, instance, ripgrep and well-known config modules keep their fetch, timer, environment, path and Buffer access in module bodies of their VibeLang files instead of separate platform files.
 
 - The core session modules keep their path, file URL, Buffer, hashing, Response and blob lookup code in module bodies of their VibeLang files instead of separate platform files.

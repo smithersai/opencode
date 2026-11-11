@@ -5,7 +5,7 @@ export * as PtyTicket from "./ticket.js";
 import { PtyTicket } from "@opencode/schema/pty-ticket";
 import { Cache, Duration, Effect, Layer } from "effect";
 import { makeGlobalNode } from "@opencode/util/effect/app-node";
-import { randomTicket } from "./ticket.platform.js";
+import { randomTicket } from "./ticket.vibe.platform.js";
 const DEFAULT_TTL = Duration.seconds(60);
 const CAPACITY = 10_000;
 export const ConnectToken = PtyTicket.ConnectToken;

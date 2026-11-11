@@ -3,7 +3,7 @@ import * as Effect_1 from "effect/Effect";
 export * as Worktree from "./worktree.js";
 import { Context, Effect, Layer, Schema } from "effect";
 import { and, asc, desc, eq, isNull, sql } from "drizzle-orm";
-import { isWindows, joinPath } from "./worktree.platform.js";
+import { isWindows, joinPath } from "./worktree.vibe.platform.js";
 import { AbsolutePath } from "./schema.js";
 import { FSUtil } from "@opencode/util/fs-util";
 import { Git } from "./git.js";

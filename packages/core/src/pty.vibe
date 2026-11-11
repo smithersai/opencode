@@ -8,7 +8,7 @@ import { Bus } from "./bus.js"
 import { Location } from "./location.js"
 import { ShellSelect } from "./shell/select.js"
 import { lazy } from "./util/lazy.js"
-import { isWindows, processEnv } from "./pty.platform.js"
+import { isWindows, processEnv } from platform
 
 const BUFFER_LIMIT = 1024 * 1024 * 2
 // Exited sessions stay observable (status, exit code, retained output) until removed explicitly.
@@ -320,3 +320,17 @@ export const node = makeLocationNode({
   layer,
   deps: [Bus.node, Location.node, ShellSelect.node],
 })
+
+module platform {
+// The platform code of pty.vibe: the process environment and platform, which a .vibe file does not read (EK4402).
+
+/** The process environment variables. @throws {never} */
+export function processEnv(): Record<string, string | undefined> {
+  return process.env
+}
+
+/** Reports whether the host is Windows. @throws {never} */
+export function isWindows() {
+  return process.platform === "win32"
+}
+}

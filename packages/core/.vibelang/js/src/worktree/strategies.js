@@ -10,7 +10,7 @@ import { Location } from "../location.js";
 import { State } from "../state.js";
 import { WorktreeGit } from "./git.js";
 import { FSUtil } from "@opencode/util/fs-util";
-import { join } from "./strategies.platform.js";
+import { join } from "./strategies.vibe.platform.js";
 export class Service extends Context.Service()("@opencode/WorktreeStrategies") {
 }
 const layer = Layer.effect(Service, Effect.gen(function* () {

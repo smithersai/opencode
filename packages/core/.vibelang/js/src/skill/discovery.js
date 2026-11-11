@@ -10,7 +10,7 @@ import { makeGlobalNode } from "@opencode/util/effect/app-node";
 import { httpClient } from "@opencode/util/effect/app-node-platform";
 import { AbsolutePath } from "../schema.js";
 import { Hash } from "@opencode/util/hash";
-import { isAbsoluteOnAnyPlatform, joinPath, randomToken, resolvePath } from "./discovery.platform.js";
+import { isAbsoluteOnAnyPlatform, joinPath, randomToken, resolvePath } from "./discovery.vibe.platform.js";
 const skillConcurrency = 4;
 const fileConcurrency = 8;
 function isSafeSegment(value) {

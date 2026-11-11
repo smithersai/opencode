@@ -6,7 +6,7 @@
  * follows "newest wins": refresh fetches and hard-resets, so readers may
  * observe the checkout move underneath them.
  */
-import { path } from "./repository-cache.platform.js";
+import { path } from "./repository-cache.vibe.platform.js";
 import { Clock, Context, Duration, Effect, Layer, Option, Schema } from "effect";
 import { FSUtil } from "@opencode/util/fs-util";
 import { Git } from "./git.js";

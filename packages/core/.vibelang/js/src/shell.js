@@ -20,7 +20,7 @@ import { SessionSchema } from "./session/schema.js";
 import { Config } from "./config.js";
 import { ToolOutput } from "./tool-output.js";
 import { ShellResult } from "./shell/result.js";
-import { allocBuffer, bufferFrom, fs, fsPromises, hostEnv, isWindows, path } from "./shell.platform.js";
+import { allocBuffer, bufferFrom, fs, fsPromises, hostEnv, isWindows, path } from "./shell.vibe.platform.js";
 export class NotFoundError extends Schema.TaggedError()("Shell.NotFoundError", {
     id: Shell.ID,
 }) {

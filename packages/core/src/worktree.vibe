@@ -2,7 +2,7 @@ export * as Worktree from "./worktree.js"
 
 import { Context, Effect, Layer, Schema } from "effect"
 import { and, asc, desc, eq, isNull, sql } from "drizzle-orm"
-import { isWindows, joinPath } from "./worktree.platform.js"
+import { isWindows, joinPath } from platform
 import { AbsolutePath } from "./schema.js"
 import { FSUtil } from "@opencode/util/fs-util"
 import { Git } from "./git.js"
@@ -376,4 +376,18 @@ function operationError(strategy: StrategyID, operation: string, error: unknown)
   return new Worktree.OperationError({
     message: `Worktree strategy ${strategy} failed to ${operation}: ${error instanceof globalThis.Error ? error.message : String(error)}`,
   })
+}
+
+module platform {
+import path from "path"
+
+/** Joins worktree path segments with the host path rules. @throws {never} */
+export function joinPath(...segments: string[]) {
+  return path.join(...segments)
+}
+
+/** Reports whether start commands run through the Windows shell. @throws {never} */
+export function isWindows() {
+  return process.platform === "win32"
+}
 }

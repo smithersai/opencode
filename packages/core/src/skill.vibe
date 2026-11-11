@@ -2,7 +2,7 @@ export * as Skill from "./skill.js"
 
 import { makeLocationNode } from "@opencode/util/effect/app-node"
 import { FSUtil } from "@opencode/util/fs-util"
-import { path } from "./skill.platform.js"
+import { path } from platform
 import { Context, Effect, Layer, Types } from "effect"
 import { Skill } from "@opencode/schema/skill"
 import { Bus } from "./bus.js"
@@ -141,3 +141,17 @@ export const node = makeLocationNode({
   layer,
   deps: [Bus.node],
 })
+
+module platform {
+// The platform code of skill.vibe: host path rules, which a .vibe file does not read (EK4402).
+
+import nodePath from "path"
+
+/** Host path functions with Node's `path` names. */
+export const path = {
+  /** @throws {never} */
+  dirname: (target: string) => nodePath.dirname(target),
+  /** @throws {never} */
+  basename: (target: string) => nodePath.basename(target),
+}
+}

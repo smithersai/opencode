@@ -7,7 +7,7 @@ import { Bus } from "./bus.js";
 import { Location } from "./location.js";
 import { ShellSelect } from "./shell/select.js";
 import { lazy } from "./util/lazy.js";
-import { isWindows, processEnv } from "./pty.platform.js";
+import { isWindows, processEnv } from "./pty.vibe.platform.js";
 const BUFFER_LIMIT = 1024 * 1024 * 2;
 // Exited sessions stay observable (status, exit code, retained output) until removed explicitly.
 // Cap retention so abandoned terminals do not accumulate unbounded buffers.

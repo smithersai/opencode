@@ -5,7 +5,7 @@ import { PtyTicket } from "@opencode/schema/pty-ticket"
 import type { Pty } from "@opencode/schema/pty"
 import { Cache, Duration, Effect, Layer } from "effect"
 import { makeGlobalNode } from "@opencode/util/effect/app-node"
-import { randomTicket } from "./ticket.platform.ts"
+import { randomTicket } from platform
 
 const DEFAULT_TTL = Duration.seconds(60)
 const CAPACITY = 10_000
@@ -76,3 +76,12 @@ export const make = (ttl: Duration.Input = DEFAULT_TTL) =>
 const layer = Layer.effect(Service, make())
 
 export const node = makeGlobalNode({ service: Service, layer: layer, deps: [] })
+
+module platform {
+// The platform code of ticket.vibe: host globals a .vibe file does not read (EK4402).
+
+/** A fresh random ticket id. @throws {never} */
+export function randomTicket(): string {
+  return crypto.randomUUID()
+}
+}

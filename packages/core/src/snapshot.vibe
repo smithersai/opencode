@@ -1,7 +1,7 @@
 export * as Snapshot from "./snapshot.js"
 
 import { makeLocationNode } from "@opencode/util/effect/app-node"
-import { path } from "./snapshot.platform.js"
+import { path } from platform
 import { Clock, Context, Effect, Fiber, Layer, Schema, Scope } from "effect"
 import { FileDiff } from "@opencode/schema/file-diff"
 import { FSUtil } from "@opencode/util/fs-util"
@@ -240,4 +240,20 @@ function failure(operation: Error["operation"], cause: unknown) {
     message: cause instanceof globalThis.Error ? cause.message : String(cause),
     cause,
   })
+}
+
+module platform {
+// The platform code of snapshot.vibe: host path rules, which a .vibe file does not read (EK4402).
+
+import nodePath from "path"
+
+/** Host path functions with Node's `path` names. */
+export const path = {
+  /** @throws {never} */
+  join: (...segments: string[]) => nodePath.join(...segments),
+  /** @throws {never} */
+  relative: (from: string, to: string) => nodePath.relative(from, to),
+  /** Resolves segments against the process working directory, which may be unavailable. */
+  resolve: (...segments: string[]) => nodePath.resolve(...segments),
+}
 }

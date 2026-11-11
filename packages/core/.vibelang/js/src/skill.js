@@ -2,7 +2,7 @@
 export * as Skill from "./skill.js";
 import { makeLocationNode } from "@opencode/util/effect/app-node";
 import { FSUtil } from "@opencode/util/fs-util";
-import { path } from "./skill.platform.js";
+import { path } from "./skill.vibe.platform.js";
 import { Context, Effect, Layer, Types } from "effect";
 import { Skill } from "@opencode/schema/skill";
 import { Bus } from "./bus.js";

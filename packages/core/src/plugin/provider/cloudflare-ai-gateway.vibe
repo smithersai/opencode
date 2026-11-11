@@ -4,7 +4,7 @@ import { define } from "@opencode/plugin/effect/plugin"
 import { Form } from "@opencode/schema/form"
 import { Provider } from "../../provider.js"
 import { configuredSettings } from "./configured.js"
-import { environmentValue } from "./cloudflare-ai-gateway.platform.js"
+import { environmentValue } from platform
 
 const providerID = Provider.ID.make("cloudflare-ai-gateway")
 
@@ -61,3 +61,12 @@ export const CloudflareAIGatewayPlugin = define({
     })
   }),
 })
+
+module platform {
+// The platform code of cloudflare-ai-gateway.vibe: environment variable reads, which a .vibe file does not do (EK4402).
+
+/** @throws {never} */
+export function environmentValue(key: string): string | undefined {
+  return process.env[key]
+}
+}

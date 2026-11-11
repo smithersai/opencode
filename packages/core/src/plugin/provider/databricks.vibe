@@ -1,6 +1,6 @@
 import { Effect } from "effect"
 import { define } from "@opencode/plugin/effect/plugin"
-import { environmentValue } from "./databricks.platform.js"
+import { environmentValue } from platform
 
 export const DatabricksPlugin = define({
   id: "opencode.provider.databricks",
@@ -32,3 +32,12 @@ export const DatabricksPlugin = define({
     })
   }),
 })
+
+module platform {
+// The platform code of databricks.vibe: environment variable reads, which a .vibe file does not do (EK4402).
+
+/** @throws {never} */
+export function environmentValue(key: string): string | undefined {
+  return process.env[key]
+}
+}

@@ -14,7 +14,7 @@ import { Provider } from "../../provider.js"
 import { which } from "../../util/which.js"
 import type { PluginInternal } from "../internal.js"
 import { configuredSettings } from "./configured.js"
-import { environmentValue } from "./azure.platform.js"
+import { environmentValue } from platform
 
 const cognitiveScope = "https://cognitiveservices.azure.com/.default"
 const foundryScope = "https://ai.azure.com/.default"
@@ -553,4 +553,13 @@ function responsesWebSocketCapable(provider: Provider.Info) {
   if (settings?.apiVersion !== undefined && settings.apiVersion !== "v1") return false
   if (typeof settings?.baseURL !== "string") return true
   return /^https:\/\/[^/]+\.openai\.azure\.com(?:\/|$)/i.test(settings.baseURL)
+}
+
+module platform {
+// The platform code of azure.vibe: environment variable reads, which a .vibe file does not do (EK4402).
+
+/** @throws {never} */
+export function environmentValue(key: string): string | undefined {
+  return process.env[key]
+}
 }

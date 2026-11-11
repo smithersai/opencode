@@ -9,7 +9,7 @@ import { OauthCallbackPage } from "../../oauth/page.js";
 import { Provider } from "../../provider.js";
 import { SessionAffinity } from "../../session/affinity.js";
 import { configuredSettings } from "./configured.js";
-import { base64UrlEncode, decodeBase64Url, importHttp, randomBytes, sha256, timeoutSignal } from "./openai.platform.js";
+import { base64UrlEncode, decodeBase64Url, importHttp, randomBytes, sha256, timeoutSignal } from "./openai.vibe.platform.js";
 const clientID = "app_EMoamEEZ73f0CkXaXp7hrann";
 const issuer = "https://auth.openai.com";
 const callbackPort = 1455;

@@ -5,7 +5,7 @@ import { App } from "../../app.js"
 import { Credential } from "../../credential.js"
 import { Integration } from "../../integration.js"
 import { Provider } from "../../provider.js"
-import { decodeBase64Url } from "./xai.platform.js"
+import { decodeBase64Url } from platform
 
 const clientID = "b1a00492-073a-47ea-816f-4c329264a828"
 const issuer = "https://auth.x.ai/oauth2"
@@ -234,4 +234,13 @@ function headers(app: App.Info) {
 function positiveSeconds(value: unknown, fallback: number) {
   const seconds = Number(value)
   return Number.isFinite(seconds) && seconds > 0 ? seconds : fallback
+}
+
+module platform {
+// The platform code of xai.vibe: host Buffer decoding, which a .vibe file does not use directly (EK4402).
+
+/** @throws {never} */
+export function decodeBase64Url(payload: string): string {
+  return Buffer.from(payload, "base64url").toString()
+}
 }

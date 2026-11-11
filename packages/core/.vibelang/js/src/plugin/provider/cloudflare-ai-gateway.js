@@ -5,7 +5,7 @@ import { define } from "@opencode/plugin/effect/plugin";
 import { Form } from "@opencode/schema/form";
 import { Provider } from "../../provider.js";
 import { configuredSettings } from "./configured.js";
-import { environmentValue } from "./cloudflare-ai-gateway.platform.js";
+import { environmentValue } from "./cloudflare-ai-gateway.vibe.platform.js";
 const providerID = Provider.ID.make("cloudflare-ai-gateway");
 const accountIdField = Form.StringField.make({
     type: "string",

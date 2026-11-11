@@ -10,7 +10,7 @@ import { Integration } from "../../integration.js";
 import { OauthCallbackPage } from "../../oauth/page.js";
 import { Provider } from "../../provider.js";
 import { configuredSettings } from "./configured.js";
-import { createResponse, encodeBase64, environmentValue, importEvents, importHttp, randomBase64Url, sha256Base64Url, } from "./snowflake-cortex.platform.js";
+import { createResponse, encodeBase64, environmentValue, importEvents, importHttp, randomBase64Url, sha256Base64Url, } from "./snowflake-cortex.vibe.platform.js";
 const providerID = Provider.ID.make("snowflake-cortex");
 const integrationID = Integration.ID.make(providerID);
 const methodID = Integration.MethodID.make("browser");

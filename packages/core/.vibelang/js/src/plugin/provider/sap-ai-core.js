@@ -4,7 +4,7 @@ import { define } from "@opencode/plugin/effect/plugin";
 import { Npm } from "@opencode/util/npm";
 import { Provider } from "../../provider.js";
 import { loadSDKFactory } from "./sdk-factory.js";
-import { environmentValue, setEnvironmentValue } from "./sap-ai-core.platform.js";
+import { environmentValue, setEnvironmentValue } from "./sap-ai-core.vibe.platform.js";
 export const SapAICorePlugin = define({
     id: "opencode.provider.sap.ai.core",
     effect: Effect.fn(function* (ctx) {

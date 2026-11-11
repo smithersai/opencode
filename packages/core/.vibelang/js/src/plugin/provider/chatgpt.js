@@ -13,7 +13,7 @@ import { OauthCallbackPage } from "../../oauth/page.js";
 import { Provider } from "../../provider.js";
 import { SessionAffinity } from "../../session/affinity.js";
 import { configuredSettings } from "./configured.js";
-import { base64UrlEncode, importHttp, randomBytes, randomUUID, sha256 } from "./chatgpt.platform.js";
+import { base64UrlEncode, importHttp, randomBytes, randomUUID, sha256 } from "./chatgpt.vibe.platform.js";
 // First-time sign-in registers a user-owned client; OpenAI returns its issued client ID on the callback.
 const registrationClientID = "dynamic_agent_client";
 const agentName = "OpenCode";

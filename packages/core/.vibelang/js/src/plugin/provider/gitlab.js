@@ -11,7 +11,7 @@ import { IntegrationConnection } from "../../integration/connection.js";
 import { Model } from "../../model.js";
 import { OauthCallbackPage } from "../../oauth/page.js";
 import { Provider } from "../../provider.js";
-import { environmentValue, importHttp, randomBase64Url, sha256Base64Url, systemDescription } from "./gitlab.platform.js";
+import { environmentValue, importHttp, randomBase64Url, sha256Base64Url, systemDescription } from "./gitlab.vibe.platform.js";
 const providerID = Provider.ID.gitlab;
 const integrationID = Integration.ID.make("gitlab");
 const methodID = Integration.MethodID.make("pkce");

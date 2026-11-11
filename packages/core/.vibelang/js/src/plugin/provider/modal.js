@@ -7,7 +7,7 @@ import { Credential } from "../../credential.js";
 import { Integration } from "../../integration.js";
 import { ModalModels } from "../../modal/models.js";
 import { Provider } from "../../provider.js";
-import { environmentValue } from "./modal.platform.js";
+import { environmentValue } from "./modal.vibe.platform.js";
 const providerID = Provider.ID.make("modal");
 export const ModalPlugin = define({
     id: "opencode.provider.modal",

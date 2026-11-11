@@ -5,7 +5,7 @@ import { HttpClient, HttpClientRequest, HttpClientResponse } from "effect/http";
 import { Credential } from "../../credential.js";
 import { Integration } from "../../integration.js";
 import { OauthCallbackPage } from "../../oauth/page.js";
-import { importEvents, importHttp, randomBase64Url, sha256Base64Url } from "./poe.platform.js";
+import { importEvents, importHttp, randomBase64Url, sha256Base64Url } from "./poe.vibe.platform.js";
 const integrationID = Integration.ID.make("poe");
 const methodID = Integration.MethodID.make("browser");
 const clientID = "client_728290227fc048cc9262091a1ea197ea";

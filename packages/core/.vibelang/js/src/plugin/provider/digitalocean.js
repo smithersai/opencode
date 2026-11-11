@@ -9,7 +9,7 @@ import { Integration } from "../../integration.js";
 import { Model } from "../../model.js";
 import { OauthCallbackPage } from "../../oauth/page.js";
 import { Provider } from "../../provider.js";
-import { concatText, importHttp, randomBase64Url } from "./digitalocean.platform.js";
+import { concatText, importHttp, randomBase64Url } from "./digitalocean.vibe.platform.js";
 const providerID = Provider.ID.make("digitalocean");
 const integrationID = Integration.ID.make("digitalocean");
 const methodID = Integration.MethodID.make("browser");

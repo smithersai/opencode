@@ -3,7 +3,7 @@ import { define } from "@opencode/plugin/effect/plugin"
 import { Form } from "@opencode/schema/form"
 import { Provider } from "../../provider.js"
 import { configuredSettings } from "./configured.js"
-import { environmentValue } from "./cloudflare-workers-ai.platform.js"
+import { environmentValue } from platform
 
 const providerID = Provider.ID.make("cloudflare-workers-ai")
 
@@ -63,4 +63,13 @@ function workersEndpoint(accountId: string) {
 
 function stringOption(options: Record<string, unknown>, key: string) {
   return typeof options[key] === "string" ? options[key] : undefined
+}
+
+module platform {
+// The platform code of cloudflare-workers-ai.vibe: environment variable reads, which a .vibe file does not do (EK4402).
+
+/** @throws {never} */
+export function environmentValue(key: string): string | undefined {
+  return process.env[key]
+}
 }

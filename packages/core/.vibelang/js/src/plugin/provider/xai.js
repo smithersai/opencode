@@ -5,7 +5,7 @@ import { App } from "../../app.js";
 import { Credential } from "../../credential.js";
 import { Integration } from "../../integration.js";
 import { Provider } from "../../provider.js";
-import { decodeBase64Url } from "./xai.platform.js";
+import { decodeBase64Url } from "./xai.vibe.platform.js";
 const clientID = "b1a00492-073a-47ea-816f-4c329264a828";
 const issuer = "https://auth.x.ai/oauth2";
 const deviceGrant = "urn:ietf:params:oauth:grant-type:device_code";

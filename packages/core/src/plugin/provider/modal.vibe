@@ -7,7 +7,7 @@ import { Integration } from "../../integration.js"
 import { ModalModels } from "../../modal/models.js"
 import { Provider } from "../../provider.js"
 import type { PluginInternal } from "../internal.js"
-import { environmentValue } from "./modal.platform.js"
+import { environmentValue } from platform
 
 const providerID = Provider.ID.make("modal")
 
@@ -74,3 +74,12 @@ export const ModalPlugin = define({
     yield* refresh().pipe(Effect.forkScoped)
   }),
 } satisfies PluginInternal.InternalPlugin)
+
+module platform {
+// The platform code of modal.vibe: environment variable reads, which a .vibe file does not do (EK4402).
+
+/** @throws {never} */
+export function environmentValue(key: string): string | undefined {
+  return process.env[key]
+}
+}

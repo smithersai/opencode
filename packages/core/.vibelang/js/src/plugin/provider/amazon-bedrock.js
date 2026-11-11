@@ -4,7 +4,7 @@ import { define } from "@opencode/plugin/effect/plugin";
 import { FSUtil } from "@opencode/util/fs-util";
 import { Global } from "@opencode/util/global";
 import { Provider } from "../../provider.js";
-import { environmentValue, joinPath } from "./amazon-bedrock.platform.js";
+import { environmentValue, joinPath } from "./amazon-bedrock.vibe.platform.js";
 // Ambient inputs the AWS default credential chain can turn into credentials
 // without any key stored in opencode. Mirrors the presence checks the AWS CLI
 // and SDK use before consulting shared config.

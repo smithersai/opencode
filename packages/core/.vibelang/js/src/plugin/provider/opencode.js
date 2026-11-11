@@ -13,7 +13,7 @@ import { Integration } from "../../integration.js";
 import { IntegrationConnection } from "../../integration/connection.js";
 import { Provider } from "../../provider.js";
 import { WebSearch } from "../../websearch.js";
-import { environmentValue, jsonResponse } from "./opencode.platform.js";
+import { environmentValue, jsonResponse } from "./opencode.vibe.platform.js";
 const clientID = "opencode-cli";
 const methodID = Integration.MethodID.make("device");
 const Device = Schema.Struct({

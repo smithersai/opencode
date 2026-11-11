@@ -12,7 +12,7 @@ import { Agent } from "../../agent.js";
 import { define } from "@opencode/plugin/effect/plugin";
 import { Provider } from "../../provider.js";
 import { SessionAffinity } from "../../session/affinity.js";
-import { createHeaders, hostFetch } from "./github-copilot.platform.js";
+import { createHeaders, hostFetch } from "./github-copilot.vibe.platform.js";
 const clientID = "Ov23li8tweQw6odWQebz";
 const apiVersion = "2026-08-01";
 const userApiVersion = "2025-04-01";

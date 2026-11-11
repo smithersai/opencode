@@ -14,7 +14,7 @@ import { Model } from "../../model.js";
 import { Provider } from "../../provider.js";
 import { which } from "../../util/which.js";
 import { configuredSettings } from "./configured.js";
-import { environmentValue } from "./azure.platform.js";
+import { environmentValue } from "./azure.vibe.platform.js";
 const cognitiveScope = "https://cognitiveservices.azure.com/.default";
 const foundryScope = "https://ai.azure.com/.default";
 const managementScope = "https://management.azure.com/.default";

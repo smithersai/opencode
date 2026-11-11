@@ -6,6 +6,8 @@ Release notes for OpenCode V2, newest first.
 
 ### Changed
 
+- Config discovery and config normalization now use VibeLang while preserving their declarations, native host access and the normalizer's failure on a value that does not round-trip.
+
 - The session timeline row renderer now uses VibeLang while preserving its declarations and its row checks.
 
 - The SSH command and bootstrap helpers and the desktop updater platform now use VibeLang while preserving their declarations, their thrown input and version errors, and native process and Electron access.

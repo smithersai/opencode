@@ -1057,6 +1057,16 @@
       "vibelang-source": "./src/tool/read-filesystem.vibe",
       "default": "./.vibelang/js/src/tool/read-filesystem.js"
     },
+    "./config/discovery": {
+      "types": "./src/config/discovery.d.vibe.ts",
+      "vibelang-source": "./src/config/discovery.vibe",
+      "default": "./.vibelang/js/src/config/discovery.js"
+    },
+    "./config/normalize": {
+      "types": "./src/config/normalize.d.vibe.ts",
+      "vibelang-source": "./src/config/normalize.vibe",
+      "default": "./.vibelang/js/src/config/normalize.js"
+    },
     "./*": {
       "types": "./src/*.ts",
       "vibelang-source": "./src/*.ts",
@@ -1687,7 +1697,9 @@
     "./mcp/stdio.platform": null,
     "./environment/memory.platform": null,
     "./environment/local.platform": null,
-    "./project/icon.platform": null
+    "./project/icon.platform": null,
+    "./config/discovery.vibe.platform": null,
+    "./config/normalize.vibe.normalizer": null
   },
   "imports": {
     "#sqlite": {

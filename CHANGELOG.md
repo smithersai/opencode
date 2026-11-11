@@ -6,6 +6,8 @@ Release notes for OpenCode V2, newest first.
 
 ### Changed
 
+- The Session service, the location service map and the app node builder now use VibeLang while preserving their declarations, native path access and the TypeScript paths that tests and benchmark scripts import.
+
 - Config discovery and config normalization now use VibeLang while preserving their declarations, native host access and the normalizer's failure on a value that does not round-trip.
 
 - The session timeline row renderer now uses VibeLang while preserving its declarations and its row checks.

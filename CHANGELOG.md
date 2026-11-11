@@ -6,6 +6,8 @@ Release notes for OpenCode V2, newest first.
 
 ### Changed
 
+- The plugin host component test fixture now uses VibeLang, with DOM and frame timing access and its throwing fake storage in native module bodies.
+
 - The app command registry, settings model, plugin side panels and session timeline controller now use VibeLang, with DOM and navigator access in native module bodies and the development build flag in a native file.
 
 - The app draft store, provider catalog and new session composer adapter now use VibeLang, with the draft store browser storage, blob, timer and fetch access in a native module body.

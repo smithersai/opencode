@@ -3,9 +3,13 @@ import { HttpClient } from "effect/http"
 import { parseTarget, quote, runSsh, sshArgs, SshFailure } from "./command"
 import { RemoteCli } from "./remote-cli.vibe"
 
-// Use commands supported by released V2 CLIs. The registration is the service's
-// complete private discovery contract; no remote Python/Node runtime is needed.
-const registrationScript = `status=$("$cli" service status) || exit 0
+module remote {
+  import { SshFailure } from "./command"
+  import { RemoteCli } from "./remote-cli.vibe"
+
+  // Use commands supported by released V2 CLIs. The registration is the service's
+  // complete private discovery contract; no remote Python/Node runtime is needed.
+  export const registrationScript = `status=$("$cli" service status) || exit 0
 if [ "$status" = stopped ]; then exit 0; fi
 printf 'OPENCODE_SSH_STATUS=%s\\n' "$status"
 for file in "\${XDG_STATE_HOME:-$HOME/.local/state}"/opencode/service*.json; do
@@ -16,17 +20,43 @@ for file in "\${XDG_STATE_HOME:-$HOME/.local/state}"/opencode/service*.json; do
 done
 `
 
+  export function startScript(version: string, replace = false) {
+    return `set -eu
+cli="${binaryPath(version)}"
+"$cli" service ${replace ? "restart" : "start"}
+${registrationScript}`
+  }
+
+  export function binaryPath(version: string) {
+    return `$HOME/.opencode/desktop-ssh/${RemoteCli.requireVersion(version)}/opencode`
+  }
+
+  /**
+   * @throws {SshFailure}
+   * @throws {TypeError}
+   */
+  export function connectionAddress(address: string, password: string) {
+    const url = new URL(address)
+
+    if (url.protocol !== "http:" || !["127.0.0.1", "localhost", "0.0.0.0", "[::]", "[::1]"].includes(url.hostname))
+      throw new SshFailure("service")
+
+    return {
+      host: url.hostname === "[::1]" ? "[::1]" : "127.0.0.1",
+      port: Number(url.port || 80),
+      password,
+    }
+  }
+}
+
+import { binaryPath, connectionAddress, registrationScript, startScript } from remote
+
+export { binaryPath, startScript } from remote
+
 export const discoverScript = `set -eu
 ${RemoteCli.discoverScript({ fromPath: true, cache: { directory: ".opencode/desktop-ssh", prefix: "0.0.0-beta-" } })}
 if [ -z "$cli" ]; then exit 0; fi
 ${registrationScript}`
-
-export function startScript(version: string, replace = false) {
-  return `set -eu
-cli="${binaryPath(version)}"
-"$cli" service ${replace ? "restart" : "start"}
-${registrationScript}`
-}
 
 const Registration = Schema.fromJsonString(
   Schema.Struct({
@@ -54,23 +84,6 @@ export function parseRegistration(output: string) {
   }
 
   return undefined
-}
-
-export function binaryPath(version: string) {
-  return `$HOME/.opencode/desktop-ssh/${RemoteCli.requireVersion(version)}/opencode`
-}
-
-function connectionAddress(address: string, password: string) {
-  const url = new URL(address)
-
-  if (url.protocol !== "http:" || !["127.0.0.1", "localhost", "0.0.0.0", "[::]", "[::1]"].includes(url.hostname))
-    throw new SshFailure("service")
-
-  return {
-    host: url.hostname === "[::1]" ? "[::1]" : "127.0.0.1",
-    port: Number(url.port || 80),
-    password,
-  }
 }
 
 export const bootstrap = Effect.fn("Ssh.bootstrap")(function* (input: {

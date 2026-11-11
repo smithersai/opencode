@@ -33,7 +33,7 @@
      "relative": "packages/http-recorder/src"
     },
     null,
-    "egjZ7lZrXUxUtl_qPncVZ3vGe-SmOzxcmgsJ_tNvcf4",
+    "QfrbTadSTHfwq2NxQcRMmaBE2S5f_FE0EUvaOqLkq9Q",
     []
    ],
    [
@@ -41,7 +41,7 @@
      "relative": "packages/http-recorder/src/cassette"
     },
     null,
-    "fNbX76Me5BxJtQC_aCYY0Vch07TyoTPy8McwmR122qQ",
+    "75qwyZM_VJ6DlOp6Xe7zq_4oKYJECt1DqronkInX4_E",
     []
    ],
    [
@@ -49,7 +49,7 @@
      "relative": "packages/http-recorder/src/http"
     },
     null,
-    "le4gjCPO9wAGOGY2TmJ_9jk11b7lqDmtj_5ujR_hIYU",
+    "QtDimIyxeBDNUD0dbZ-0jTt2ZwtzTDKpFR28h9m7Mho",
     []
    ],
    [
@@ -57,7 +57,7 @@
      "relative": "packages/http-recorder/src/redaction"
     },
     null,
-    "gjS-ASw5EPxFOJ82XzW4TWunZVWqMqaSC1LOzVZcjCE",
+    "9UL00LbKG90X1Hc2Z7uPGzG7YTFtSUVsi5sC5OAEar8",
     []
    ],
    [
@@ -65,7 +65,7 @@
      "relative": "packages/http-recorder/src/replay"
     },
     null,
-    "ehyeM6mxR9Motw7HI2dDz1NZZQ3klTO0SWQk3ubi1bs",
+    "ScjGXciehzXib-89n44rpZZCBDp_GT5iWXjqk1JNtHA",
     []
    ],
    [
@@ -2685,17 +2685,10 @@
    },
    {
     "path": {
-     "relative": "packages/http-recorder/src/redaction/secrets.platform.ts"
-    },
-    "size": 174,
-    "hash": "TXqMD0LWTo3l5GWNXuKdCdzF7eM2SO2KP0GByCVmmdI"
-   },
-   {
-    "path": {
      "relative": "packages/http-recorder/src/redaction/secrets.vibe"
     },
-    "size": 2294,
-    "hash": "VS5SGLukBOjBUNXZF0IWIeofL0HTfK2dm3ZCoBdRTng"
+    "size": 2484,
+    "hash": "5xbUFWf_Fz5jxLY4pgggLBwevU_c71yxipKn5rGFMNo"
    },
    {
     "path": {
@@ -2720,10 +2713,10 @@
    },
    {
     "path": {
-     "relative": "packages/http-recorder/src/cassette/store.ts"
+     "relative": "packages/http-recorder/src/cassette/store.vibe"
     },
-    "size": 8587,
-    "hash": "aMvWONsUYzJcw4q0dQiSgjoDlsHw5ArSTXkmnpbxl58"
+    "size": 9450,
+    "hash": "swyryoSJTF47fVgg9UIB0CjEEwMN7qMKXXpVTi2KIj8"
    },
    {
     "path": {
@@ -3728,17 +3721,10 @@
    },
    {
     "path": {
-     "relative": "packages/http-recorder/src/replay/state.platform.ts"
-    },
-    "size": 170,
-    "hash": "4kifPneMZV7GtNcxg1OKcme3FqMk4fe8vPdeWPP2VCU"
-   },
-   {
-    "path": {
      "relative": "packages/http-recorder/src/replay/state.vibe"
     },
-    "size": 3771,
-    "hash": "HXwmZRrPk9993lsg5wlHvrhKQ8__tftGWSQVNlcb4NE"
+    "size": 3959,
+    "hash": "Ai20UuWpcFGra6Nf1TZ3optaILXyq1wjCFfFojJ0ItI"
    },
    {
     "path": {
@@ -3756,17 +3742,10 @@
    },
    {
     "path": {
-     "relative": "packages/http-recorder/src/http/recorder.platform.ts"
-    },
-    "size": 452,
-    "hash": "JM0SYT2qTcPk0iEgy0kkT7XLqcqzS9RkvYaBqeFVLhM"
-   },
-   {
-    "path": {
      "relative": "packages/http-recorder/src/http/recorder.vibe"
     },
-    "size": 7988,
-    "hash": "XWyOvyBcTtWnAPFa01ZDMuedJjBjb4M3WomK8S7R1L0"
+    "size": 8469,
+    "hash": "iDfjvWPVrOg6kvsU7bRH2VYB5oH-h--xdIqKzGd2TOU"
    },
    {
     "path": {
@@ -3777,18 +3756,22 @@
    },
    {
     "path": {
+     "relative": "packages/http-recorder/src/index.impl.vibe"
+    },
+    "size": 2282,
+    "hash": "XFEN8qw8bbvTSQmw1SwbTLkWx_VPUnyKsG9h6iVUsuM"
+   },
+   {
+    "path": {
      "relative": "packages/http-recorder/src/index.ts"
     },
-    "size": 2141,
-    "hash": "_TFvM-one4RuROBDxgY0yLDE9vvTZkvRkv3uOxzi1tw"
+    "size": 32,
+    "hash": "DJSXd2xpOZxmtv53N1PALwvycFdQoyLLXADEnIN7wMQ"
    }
   ],
   "inputs": [
    {
     "relative": "packages/http-recorder/src/api.ts"
-   },
-   {
-    "relative": "packages/http-recorder/src/redaction/secrets.platform.ts"
    },
    {
     "relative": "packages/http-recorder/src/redaction/secrets.vibe"
@@ -3803,16 +3786,13 @@
     "relative": "packages/http-recorder/src/cassette/model.vibe"
    },
    {
-    "relative": "packages/http-recorder/src/cassette/store.ts"
+    "relative": "packages/http-recorder/src/cassette/store.vibe"
    },
    {
     "relative": "packages/http-recorder/src/options.ts"
    },
    {
     "relative": "packages/http-recorder/src/redaction/redactor.vibe"
-   },
-   {
-    "relative": "packages/http-recorder/src/replay/state.platform.ts"
    },
    {
     "relative": "packages/http-recorder/src/replay/state.vibe"
@@ -3824,19 +3804,129 @@
     "relative": "packages/http-recorder/src/http/matching.vibe"
    },
    {
-    "relative": "packages/http-recorder/src/http/recorder.platform.ts"
-   },
-   {
     "relative": "packages/http-recorder/src/http/recorder.vibe"
    },
    {
     "relative": "packages/http-recorder/src/websocket/recorder.ts"
    },
    {
+    "relative": "packages/http-recorder/src/index.impl.vibe"
+   },
+   {
     "relative": "packages/http-recorder/src/index.ts"
    }
   ],
   "warnings": [
+   {
+    "file": {
+     "relative": "packages/http-recorder/src/cassette/store.vibe"
+    },
+    "line": 46,
+    "column": 14,
+    "category": "warning",
+    "code": "EK4837",
+    "text": "CassetteNotFoundError extends Schema.TaggedError; a schema error declaration, schema error CassetteNotFoundError { … }, writes the same failure with its Schema.\nsrc/cassette/store.vibe(46,63): suggestion EK38106: schemaClassMissingBrand: Add `{ readonly brand: unique symbol }` as the second type argument. Without a brand, TypeScript may accept structurally compatible values where this class instance type is expected. effect(schemaClassMissingBrand)"
+   },
+   {
+    "file": {
+     "relative": "packages/http-recorder/src/cassette/store.vibe"
+    },
+    "line": 54,
+    "column": 14,
+    "category": "warning",
+    "code": "EK4837",
+    "text": "InvalidCassetteError extends Schema.TaggedError; a schema error declaration, schema error InvalidCassetteError { … }, writes the same failure with its Schema.\nsrc/cassette/store.vibe(54,62): suggestion EK38106: schemaClassMissingBrand: Add `{ readonly brand: unique symbol }` as the second type argument. Without a brand, TypeScript may accept structurally compatible values where this class instance type is expected. effect(schemaClassMissingBrand)"
+   },
+   {
+    "file": {
+     "relative": "packages/http-recorder/src/cassette/store.vibe"
+    },
+    "line": 63,
+    "column": 14,
+    "category": "warning",
+    "code": "EK4837",
+    "text": "UnsafeCassetteError extends Schema.TaggedError; a schema error declaration, schema error UnsafeCassetteError { … }, writes the same failure with its Schema.\nsrc/cassette/store.vibe(63,61): suggestion EK38106: schemaClassMissingBrand: Add `{ readonly brand: unique symbol }` as the second type argument. Without a brand, TypeScript may accept structurally compatible values where this class instance type is expected. effect(schemaClassMissingBrand)"
+   },
+   {
+    "file": {
+     "relative": "packages/http-recorder/src/cassette/store.vibe"
+    },
+    "line": 77,
+    "column": 8,
+    "category": "warning",
+    "code": "EK4833",
+    "text": "This Effect type is TypeScript's spelling of an Effect type; write ReadonlyArray<Interaction>!(CassetteNotFoundError | InvalidCassetteError)."
+   },
+   {
+    "file": {
+     "relative": "packages/http-recorder/src/cassette/store.vibe"
+    },
+    "line": 82,
+    "column": 8,
+    "category": "warning",
+    "code": "EK4833",
+    "text": "Effect.Effect<void, UnsafeCassetteError> is TypeScript's spelling of an Effect type; write void!UnsafeCassetteError."
+   },
+   {
+    "file": {
+     "relative": "packages/http-recorder/src/cassette/store.vibe"
+    },
+    "line": 83,
+    "column": 38,
+    "category": "warning",
+    "code": "EK4833",
+    "text": "Effect.Effect<boolean> is TypeScript's spelling of an Effect type; write boolean!!.\nsrc/cassette/store.vibe(84,12): suggestion EK3858: lazyEffect: Interface 'Interface' member 'list' returns a lazy Effect. Effect is already lazy, so wrapping it in a zero-argument function adds unnecessary indirection. effect(lazyEffect)"
+   },
+   {
+    "file": {
+     "relative": "packages/http-recorder/src/cassette/store.vibe"
+    },
+    "line": 84,
+    "column": 24,
+    "category": "warning",
+    "code": "EK4833",
+    "text": "Effect.Effect<ReadonlyArray<string>> is TypeScript's spelling of an Effect type; write ReadonlyArray<string>!!.\nsrc/cassette/store.vibe(87,14): suggestion EK3858: lazyEffect: Service 'Service' member 'list' returns a lazy Effect. Effect is already lazy, so wrapping it in a zero-argument function adds unnecessary indirection. effect(lazyEffect)"
+   },
+   {
+    "file": {
+     "relative": "packages/http-recorder/src/cassette/store.vibe"
+    },
+    "line": 87,
+    "column": 14,
+    "category": "warning",
+    "code": "EK4831",
+    "text": "Service extends Context.Service; in VibeLang a service is a service declaration: service Service { … }."
+   },
+   {
+    "file": {
+     "relative": "packages/http-recorder/src/cassette/store.vibe"
+    },
+    "line": 110,
+    "column": 43,
+    "category": "warning",
+    "code": "EK38130",
+    "text": "unstableApiUsage: `effect/FileSystem#FileSystem` is an unstable API. Breaking changes may happen between versions. effect(unstableApiUsage)"
+   },
+   {
+    "file": {
+     "relative": "packages/http-recorder/src/cassette/store.vibe"
+    },
+    "line": 114,
+    "column": 36,
+    "category": "warning",
+    "code": "EK38130",
+    "text": "unstableApiUsage: `effect/FileSystem#FileSystem` is an unstable API. Breaking changes may happen between versions. effect(unstableApiUsage)"
+   },
+   {
+    "file": {
+     "relative": "packages/http-recorder/src/cassette/store.vibe"
+    },
+    "line": 119,
+    "column": 39,
+    "category": "warning",
+    "code": "EK4833",
+    "text": "Effect.Effect<ReadonlyArray<string>> is TypeScript's spelling of an Effect type; write ReadonlyArray<string>!!.\nsrc/cassette/store.vibe(162,76): suggestion EK3816: catchToIgnore: `Effect.ignore` expresses ignored failure more directly than `Effect.catch` returning `Effect.void`. effect(catchToIgnore)\nsrc/http/model.vibe(11,18): suggestion EK38109: schemaNumber: This Schema number API accepts `NaN`, `Infinity`, and `-Infinity`. Use `Schema.Finite` for finite domain numbers. If non-finite values are intentional, disable this diagnostic for that line. effect(schemaNumber)"
+   },
    {
     "file": {
      "relative": "packages/http-recorder/src/http/recorder.vibe"
@@ -4089,6 +4179,76 @@
    },
    {
     "file": {
+     "relative": "packages/http-recorder/src/index.impl.vibe"
+    },
+    "line": 15,
+    "column": 33,
+    "category": "warning",
+    "code": "EK38130",
+    "text": "unstableApiUsage: `effect/http/HttpClient#HttpClient` is an unstable API. Breaking changes may happen between versions. effect(unstableApiUsage)"
+   },
+   {
+    "file": {
+     "relative": "packages/http-recorder/src/index.impl.vibe"
+    },
+    "line": 15,
+    "column": 63,
+    "category": "warning",
+    "code": "EK38130",
+    "text": "unstableApiUsage: `effect/http/HttpClient#HttpClient` is an unstable API. Breaking changes may happen between versions. effect(unstableApiUsage)"
+   },
+   {
+    "file": {
+     "relative": "packages/http-recorder/src/index.impl.vibe"
+    },
+    "line": 16,
+    "column": 98,
+    "category": "warning",
+    "code": "EK38130",
+    "text": "unstableApiUsage: `effect/http/HttpClient#HttpClient` is an unstable API. Breaking changes may happen between versions. effect(unstableApiUsage)"
+   },
+   {
+    "file": {
+     "relative": "packages/http-recorder/src/index.impl.vibe"
+    },
+    "line": 20,
+    "column": 29,
+    "category": "warning",
+    "code": "EK38130",
+    "text": "unstableApiUsage: `effect/socket/Socket#Socket` is an unstable API. Breaking changes may happen between versions. effect(unstableApiUsage)"
+   },
+   {
+    "file": {
+     "relative": "packages/http-recorder/src/index.impl.vibe"
+    },
+    "line": 20,
+    "column": 51,
+    "category": "warning",
+    "code": "EK38130",
+    "text": "unstableApiUsage: `effect/socket/Socket#Socket` is an unstable API. Breaking changes may happen between versions. effect(unstableApiUsage)"
+   },
+   {
+    "file": {
+     "relative": "packages/http-recorder/src/index.impl.vibe"
+    },
+    "line": 24,
+    "column": 29,
+    "category": "warning",
+    "code": "EK38130",
+    "text": "unstableApiUsage: `effect/socket/Socket#WebSocketConstructor` is an unstable API. Breaking changes may happen between versions. effect(unstableApiUsage)"
+   },
+   {
+    "file": {
+     "relative": "packages/http-recorder/src/index.impl.vibe"
+    },
+    "line": 24,
+    "column": 65,
+    "category": "warning",
+    "code": "EK38130",
+    "text": "unstableApiUsage: `effect/socket/Socket#WebSocketConstructor` is an unstable API. Breaking changes may happen between versions. effect(unstableApiUsage)"
+   },
+   {
+    "file": {
      "relative": "packages/http-recorder/src/replay/state.vibe"
     },
     "line": 14,
@@ -4165,7 +4325,7 @@
       "relative": "packages/http-recorder/src/redaction/secrets.vibe"
      }
     ],
-    "code": "import { Schema } from \"effect\";\nimport { environmentEntries } from \"./secrets.platform.js\";\nconst SECRET_PATTERNS = [\n    { label: \"bearer token\", pattern: /\\bBearer\\s+[A-Za-z0-9._~+/=-]{16,}\\b/i },\n    { label: \"API key\", pattern: /\\bsk-[A-Za-z0-9][A-Za-z0-9_-]{20,}\\b/ },\n    { label: \"Anthropic API key\", pattern: /\\bsk-ant-[A-Za-z0-9_-]{20,}\\b/ },\n    { label: \"Google API key\", pattern: /\\bAIza[0-9A-Za-z_-]{20,}\\b/ },\n    { label: \"AWS access key\", pattern: /\\b(?:AKIA|ASIA)[0-9A-Z]{16}\\b/ },\n    { label: \"GitHub token\", pattern: /\\bgh[pousr]_[A-Za-z0-9_]{20,}\\b/ },\n    { label: \"private key\", pattern: /-----BEGIN [A-Z ]*PRIVATE KEY-----/ },\n];\nconst ENV_SECRET_NAMES = /(?:API|AUTH|BEARER|CREDENTIAL|KEY|PASSWORD|SECRET|TOKEN)/i;\nconst SAFE_ENV_VALUES = new Set([\"fixture\", \"test\", \"test-key\"]);\nconst envSecrets = () => environmentEntries().flatMap(([name, value]) => {\n    if (!value || !ENV_SECRET_NAMES.test(name) || value.length < 12 || SAFE_ENV_VALUES.has(value.toLowerCase()))\n        return [];\n    return [{ name, value }];\n});\nconst pathFor = (base, key) => (base ? `${base}.${key}` : key);\nconst stringEntries = (value, base = \"\") => {\n    if (typeof value === \"string\")\n        return [{ path: base, value }];\n    if (Array.isArray(value))\n        return value.flatMap((item, index) => stringEntries(item, `${base}[${index}]`));\n    if (value && typeof value === \"object\")\n        return Object.entries(value).flatMap(([key, child]) => stringEntries(child, pathFor(base, key)));\n    return [];\n};\nexport const SecretFindingSchema = Schema.Struct({ path: Schema.String, reason: Schema.String });\nexport const secretFindings = (value) => {\n    const environment = envSecrets();\n    return stringEntries(value).flatMap((entry) => [\n        ...SECRET_PATTERNS.filter((item) => item.pattern.test(entry.value)).map((item) => ({\n            path: entry.path,\n            reason: item.label,\n        })),\n        ...environment\n            .filter((item) => entry.value.includes(item.value))\n            .map((item) => ({ path: entry.path, reason: `environment secret ${item.name}` })),\n    ]);\n};\n",
+    "code": "import { Schema } from \"effect\";\nimport { environmentEntries } from \"./secrets.vibe.platform.js\";\nconst SECRET_PATTERNS = [\n    { label: \"bearer token\", pattern: /\\bBearer\\s+[A-Za-z0-9._~+/=-]{16,}\\b/i },\n    { label: \"API key\", pattern: /\\bsk-[A-Za-z0-9][A-Za-z0-9_-]{20,}\\b/ },\n    { label: \"Anthropic API key\", pattern: /\\bsk-ant-[A-Za-z0-9_-]{20,}\\b/ },\n    { label: \"Google API key\", pattern: /\\bAIza[0-9A-Za-z_-]{20,}\\b/ },\n    { label: \"AWS access key\", pattern: /\\b(?:AKIA|ASIA)[0-9A-Z]{16}\\b/ },\n    { label: \"GitHub token\", pattern: /\\bgh[pousr]_[A-Za-z0-9_]{20,}\\b/ },\n    { label: \"private key\", pattern: /-----BEGIN [A-Z ]*PRIVATE KEY-----/ },\n];\nconst ENV_SECRET_NAMES = /(?:API|AUTH|BEARER|CREDENTIAL|KEY|PASSWORD|SECRET|TOKEN)/i;\nconst SAFE_ENV_VALUES = new Set([\"fixture\", \"test\", \"test-key\"]);\nconst envSecrets = () => environmentEntries().flatMap(([name, value]) => {\n    if (!value || !ENV_SECRET_NAMES.test(name) || value.length < 12 || SAFE_ENV_VALUES.has(value.toLowerCase()))\n        return [];\n    return [{ name, value }];\n});\nconst pathFor = (base, key) => (base ? `${base}.${key}` : key);\nconst stringEntries = (value, base = \"\") => {\n    if (typeof value === \"string\")\n        return [{ path: base, value }];\n    if (Array.isArray(value))\n        return value.flatMap((item, index) => stringEntries(item, `${base}[${index}]`));\n    if (value && typeof value === \"object\")\n        return Object.entries(value).flatMap(([key, child]) => stringEntries(child, pathFor(base, key)));\n    return [];\n};\nexport const SecretFindingSchema = Schema.Struct({ path: Schema.String, reason: Schema.String });\nexport const secretFindings = (value) => {\n    const environment = envSecrets();\n    return stringEntries(value).flatMap((entry) => [\n        ...SECRET_PATTERNS.filter((item) => item.pattern.test(entry.value)).map((item) => ({\n            path: entry.path,\n            reason: item.label,\n        })),\n        ...environment\n            .filter((item) => entry.value.includes(item.value))\n            .map((item) => ({ path: entry.path, reason: `environment secret ${item.name}` })),\n    ]);\n};\n",
     "map": {
      "version": 3,
      "file": "secrets.js",
@@ -4176,7 +4336,27 @@
       }
      ],
      "names": [],
-     "mappings": "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"
+     "mappings": "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"
+    }
+   },
+   {
+    "paths": [
+     {
+      "relative": "packages/http-recorder/src/redaction/secrets.vibe.platform.js"
+     }
+    ],
+    "code": "// The platform code of secrets.vibe: the process environment (EK4402).\n/** @throws {never} */\nexport function environmentEntries() {\n    return Object.entries(process.env);\n}\n",
+    "map": {
+     "version": 3,
+     "file": "secrets.vibe.platform.js",
+     "sourceRoot": "",
+     "sources": [
+      {
+       "relative": "packages/http-recorder/src/redaction/secrets.vibe"
+      }
+     ],
+     "names": [],
+     "mappings": "AAkDE,uEAAuE;AAEvE,sBAAsB;AACtB,MAAM,UAAU,kBAAkB;IAChC,OAAO,MAAM,CAAC,OAAO,CAAC,OAAO,CAAC,GAAG,CAAC,CAAA;AACpC,CAAC"
     }
    },
    {
@@ -4242,6 +4422,46 @@
    {
     "paths": [
      {
+      "relative": "packages/http-recorder/src/cassette/store.vibe"
+     }
+    ],
+    "code": "import { Context, Effect, FileSystem, Layer, Schema, Semaphore } from \"effect\";\nimport { secretFindings, SecretFindingSchema } from \"../redaction/secrets.js\";\nimport { CassetteSchema, encodeCassette } from \"./model.js\";\nimport { DEFAULT_RECORDINGS_DIR, cassettePath, joinPath, parentDirectory, relativePath, temporarySuffix } from \"./store.vibe.platform.js\";\nexport { hasCassetteSync, removeCassetteSync } from \"./store.vibe.platform.js\";\nexport class CassetteNotFoundError extends Schema.TaggedError()(\"CassetteNotFoundError\", {\n    cassetteName: Schema.String,\n}) {\n    get message() {\n        return `Cassette \"${this.cassetteName}\" not found`;\n    }\n}\nexport class InvalidCassetteError extends Schema.TaggedError()(\"InvalidCassetteError\", {\n    cassetteName: Schema.String,\n    description: Schema.String,\n}) {\n    get message() {\n        return `Cassette \"${this.cassetteName}\" is invalid: ${this.description}`;\n    }\n}\nexport class UnsafeCassetteError extends Schema.TaggedError()(\"UnsafeCassetteError\", {\n    cassetteName: Schema.String,\n    findings: Schema.Array(SecretFindingSchema),\n}) {\n    get message() {\n        return `Refusing to write cassette \"${this.cassetteName}\" because it contains possible secrets: ${this.findings\n            .map((finding) => `${finding.path} (${finding.reason})`)\n            .join(\", \")}`;\n    }\n}\nexport class Service extends Context.Service()(\"@opencode/http-recorder/Cassette\") {\n}\nconst buildCassette = (name, interactions, metadata) => ({\n    version: 1,\n    metadata: { ...metadata, name, recordedAt: new Date().toISOString() },\n    interactions,\n});\nconst formatCassette = (cassette) => `${JSON.stringify(encodeCassette(cassette), null, 2)}\\n`;\nconst parseCassette = Schema.decodeUnknownSync(Schema.fromJsonString(CassetteSchema));\nconst invalidCassette = (name, error) => new InvalidCassetteError({\n    cassetteName: name,\n    description: error instanceof Error ? error.message : String(error),\n});\nconst failIfUnsafe = (name, findings) => findings.length === 0 ? Effect.void : Effect.fail(new UnsafeCassetteError({ cassetteName: name, findings }));\nexport const fileSystem = (options = {}) => Layer.effect(Service, Effect.gen(function* () {\n    const fs = yield* FileSystem.FileSystem;\n    const directory = options.directory ?? DEFAULT_RECORDINGS_DIR;\n    const recorded = new Map();\n    const appendLock = yield* Semaphore.make(1);\n    const pathFor = (name) => Effect.orDie(Effect.try({ try: () => cassettePath(directory, name), catch: (error) => error }));\n    const walk = (current) => Effect.gen(function* () {\n        const entries = yield* fs.readDirectory(current).pipe(Effect.orElseSucceed(() => []));\n        const nested = yield* Effect.forEach(entries, (entry) => {\n            const full = joinPath(current, entry);\n            return fs.stat(full).pipe(Effect.flatMap((stat) => (stat.type === \"Directory\" ? walk(full) : Effect.succeed([full]))), Effect.orElseSucceed(() => []));\n        });\n        return nested.flat();\n    });\n    return Service.of({\n        read: (name) => pathFor(name).pipe(Effect.flatMap((target) => fs.readFileString(target)), Effect.mapError((error) => error.reason._tag === \"NotFound\"\n            ? new CassetteNotFoundError({ cassetteName: name })\n            : invalidCassette(name, error)), Effect.flatMap((raw) => Effect.try({\n            try: () => parseCassette(raw).interactions,\n            catch: (error) => invalidCassette(name, error),\n        }))),\n        append: (name, interaction, metadata) => appendLock.withPermit(Effect.gen(function* () {\n            const entry = recorded.get(name) ?? { interactions: [], findings: [] };\n            const interactions = [...entry.interactions, interaction];\n            const interactionFindings = [...entry.findings, ...secretFindings(interaction)];\n            const cassette = buildCassette(name, interactions, metadata);\n            const findings = [...interactionFindings, ...secretFindings(cassette.metadata ?? {})];\n            yield* failIfUnsafe(name, findings);\n            const target = yield* pathFor(name);\n            yield* fs.makeDirectory(parentDirectory(target), { recursive: true }).pipe(Effect.orDie);\n            const temporary = `${target}.${temporarySuffix()}.tmp`;\n            yield* fs.writeFileString(temporary, formatCassette(cassette)).pipe(Effect.flatMap(() => fs.rename(temporary, target)), Effect.ensuring(fs.remove(temporary, { force: true }).pipe(Effect.catch(() => Effect.void))), Effect.orDie);\n            recorded.set(name, { interactions, findings: interactionFindings });\n        })),\n        exists: (name) => pathFor(name).pipe(Effect.flatMap((target) => fs.exists(target)), Effect.orElseSucceed(() => false)),\n        list: () => walk(directory).pipe(Effect.map((files) => files\n            .filter((file) => file.endsWith(\".json\"))\n            .map((file) => relativePath(directory, file)\n            .replace(/\\\\/g, \"/\")\n            .replace(/\\.json$/, \"\"))\n            .toSorted((a, b) => a.localeCompare(b)))),\n    });\n}));\nexport const memory = (initial = {}) => Layer.sync(Service, () => {\n    const stored = new Map(Object.entries(initial).map(([name, interactions]) => [name, [...interactions]]));\n    const accumulatedFindings = new Map();\n    const appendLock = Semaphore.makeUnsafe(1);\n    return Service.of({\n        read: (name) => stored.has(name)\n            ? Effect.succeed(stored.get(name) ?? [])\n            : Effect.fail(new CassetteNotFoundError({ cassetteName: name })),\n        append: (name, interaction, metadata) => appendLock.withPermit(Effect.suspend(() => {\n            const interactions = [...(stored.get(name) ?? []), interaction];\n            const findings = [...(accumulatedFindings.get(name) ?? []), ...secretFindings(interaction)];\n            const allFindings = metadata ? [...findings, ...secretFindings({ ...metadata, name })] : findings;\n            return failIfUnsafe(name, allFindings).pipe(Effect.tap(() => Effect.sync(() => {\n                stored.set(name, interactions);\n                accumulatedFindings.set(name, findings);\n            })));\n        })),\n        exists: (name) => Effect.sync(() => stored.has(name)),\n        list: () => Effect.sync(() => Array.from(stored.keys()).toSorted()),\n    });\n});\n",
+    "map": {
+     "version": 3,
+     "file": "store.js",
+     "sourceRoot": "",
+     "sources": [
+      {
+       "relative": "packages/http-recorder/src/cassette/store.vibe"
+      }
+     ],
+     "names": [],
+     "mappings": "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"
+    }
+   },
+   {
+    "paths": [
+     {
+      "relative": "packages/http-recorder/src/cassette/store.vibe.platform.js"
+     }
+    ],
+    "code": "import { existsSync, rmSync } from \"node:fs\";\nimport path from \"node:path\";\nexport const DEFAULT_RECORDINGS_DIR = path.resolve(process.cwd(), \"test\", \"fixtures\", \"recordings\");\n/** @throws {Error} */\nexport const cassettePath = (directory, name) => {\n    if (!name || path.isAbsolute(name) || path.win32.isAbsolute(name) || name.split(/[\\\\/]/).includes(\"..\"))\n        throw new Error(`Invalid cassette name \"${name}\"`);\n    const root = path.resolve(directory);\n    const target = path.resolve(root, `${name}.json`);\n    const relative = path.relative(root, target);\n    if (!relative || relative.startsWith(\"..\") || path.isAbsolute(relative))\n        throw new Error(`Invalid cassette name \"${name}\"`);\n    return target;\n};\nexport const hasCassetteSync = (name, options = {}) => existsSync(cassettePath(options.directory ?? DEFAULT_RECORDINGS_DIR, name));\nexport const removeCassetteSync = (name, options = {}) => rmSync(cassettePath(options.directory ?? DEFAULT_RECORDINGS_DIR, name), { force: true });\n/** @throws {never} */\nexport const joinPath = (...paths) => path.join(...paths);\n/** @throws {never} */\nexport const parentDirectory = (target) => path.dirname(target);\n/** @throws {never} */\nexport const relativePath = (from, to) => path.relative(from, to);\n/** @throws {never} */\nexport const temporarySuffix = () => crypto.randomUUID();\n",
+    "map": {
+     "version": 3,
+     "file": "store.vibe.platform.js",
+     "sourceRoot": "",
+     "sources": [
+      {
+       "relative": "packages/http-recorder/src/cassette/store.vibe"
+      }
+     ],
+     "names": [],
+     "mappings": "AAKE,OAAO,EAAE,UAAU,EAAE,MAAM,EAAE,MAAM,SAAS,CAAA;AAC5C,OAAO,IAAI,MAAM,WAAW,CAAA;AAE5B,MAAM,CAAC,MAAM,sBAAsB,GAAG,IAAI,CAAC,OAAO,CAAC,OAAO,CAAC,GAAG,EAAE,EAAE,MAAM,EAAE,UAAU,EAAE,YAAY,CAAC,CAAA;AAEnG,sBAAsB;AACtB,MAAM,CAAC,MAAM,YAAY,GAAG,CAAC,SAAiB,EAAE,IAAY,EAAE,EAAE;IAC9D,IAAI,CAAC,IAAI,IAAI,IAAI,CAAC,UAAU,CAAC,IAAI,CAAC,IAAI,IAAI,CAAC,KAAK,CAAC,UAAU,CAAC,IAAI,CAAC,IAAI,IAAI,CAAC,KAAK,CAAC,OAAO,CAAC,CAAC,QAAQ,CAAC,IAAI,CAAC;QACrG,MAAM,IAAI,KAAK,CAAC,0BAA0B,IAAI,GAAG,CAAC,CAAA;IACpD,MAAM,IAAI,GAAG,IAAI,CAAC,OAAO,CAAC,SAAS,CAAC,CAAA;IACpC,MAAM,MAAM,GAAG,IAAI,CAAC,OAAO,CAAC,IAAI,EAAE,GAAG,IAAI,OAAO,CAAC,CAAA;IACjD,MAAM,QAAQ,GAAG,IAAI,CAAC,QAAQ,CAAC,IAAI,EAAE,MAAM,CAAC,CAAA;IAC5C,IAAI,CAAC,QAAQ,IAAI,QAAQ,CAAC,UAAU,CAAC,IAAI,CAAC,IAAI,IAAI,CAAC,UAAU,CAAC,QAAQ,CAAC;QACrE,MAAM,IAAI,KAAK,CAAC,0BAA0B,IAAI,GAAG,CAAC,CAAA;IACpD,OAAO,MAAM,CAAA;AACf,CAAC,CAAA;AAED,MAAM,CAAC,MAAM,eAAe,GAAG,CAAC,IAAY,EAAE,OAAO,GAAoC,EAAE,EAAE,EAAE,CAC7F,UAAU,CAAC,YAAY,CAAC,OAAO,CAAC,SAAS,IAAI,sBAAsB,EAAE,IAAI,CAAC,CAAC,CAAA;AAE7E,MAAM,CAAC,MAAM,kBAAkB,GAAG,CAAC,IAAY,EAAE,OAAO,GAAoC,EAAE,EAAE,EAAE,CAChG,MAAM,CAAC,YAAY,CAAC,OAAO,CAAC,SAAS,IAAI,sBAAsB,EAAE,IAAI,CAAC,EAAE,EAAE,KAAK,EAAE,IAAI,EAAE,CAAC,CAAA;AAE1F,sBAAsB;AACtB,MAAM,CAAC,MAAM,QAAQ,GAAG,CAAC,GAAG,KAA4B,EAAE,EAAE,CAAC,IAAI,CAAC,IAAI,CAAC,GAAG,KAAK,CAAC,CAAA;AAEhF,sBAAsB;AACtB,MAAM,CAAC,MAAM,eAAe,GAAG,CAAC,MAAc,EAAE,EAAE,CAAC,IAAI,CAAC,OAAO,CAAC,MAAM,CAAC,CAAA;AAEvE,sBAAsB;AACtB,MAAM,CAAC,MAAM,YAAY,GAAG,CAAC,IAAY,EAAE,EAAU,EAAE,EAAE,CAAC,IAAI,CAAC,QAAQ,CAAC,IAAI,EAAE,EAAE,CAAC,CAAA;AAEjF,sBAAsB;AACtB,MAAM,CAAC,MAAM,eAAe,GAAG,GAAG,EAAE,CAAC,MAAM,CAAC,UAAU,EAAE,CAAA"
+    }
+   },
+   {
+    "paths": [
+     {
       "relative": "packages/http-recorder/src/redaction/redactor.vibe"
      }
     ],
@@ -4265,7 +4485,7 @@
       "relative": "packages/http-recorder/src/replay/state.vibe"
      }
     ],
-    "code": "import { Effect, Exit, HashSet, Ref, SynchronizedRef } from \"effect\";\nimport { environmentValue } from \"./state.platform.js\";\nconst isCI = () => {\n    const value = environmentValue(\"CI\");\n    return value !== undefined && value !== \"\" && value !== \"false\" && value !== \"0\";\n};\nexport const resolveAutoMode = (cassette, name) => Effect.gen(function* () {\n    if (isCI())\n        return \"replay\";\n    return (yield* cassette.exists(name)) ? \"replay\" : \"record\";\n});\nexport const makeReplayPoolState = (cassette, name, project) => Effect.gen(function* () {\n    const load = yield* Effect.cached(cassette.read(name).pipe(Effect.map(project)));\n    const claimed = yield* SynchronizedRef.make(HashSet.empty());\n    const attempted = yield* Ref.make(false);\n    yield* Effect.addFinalizer((exit) => Exit.isFailure(exit)\n        ? Effect.void\n        : Effect.gen(function* () {\n            const used = yield* SynchronizedRef.get(claimed);\n            if (HashSet.isEmpty(used) && (yield* Ref.get(attempted)))\n                return yield* Effect.void;\n            const interactions = yield* load.pipe(Effect.catchTag(\"CassetteNotFoundError\", () => Effect.succeed([])), Effect.orDie);\n            if (HashSet.size(used) < interactions.length)\n                return yield* Effect.die(new Error(`Unused recorded interactions in ${name}: used ${HashSet.size(used)} of ${interactions.length}`));\n            return yield* Effect.void;\n        }));\n    return {\n        claim: (select) => Ref.set(attempted, true).pipe(Effect.andThen(load), Effect.flatMap((interactions) => SynchronizedRef.modifyEffect(claimed, (used) => Effect.gen(function* () {\n            const index = yield* select(interactions, used);\n            const interaction = interactions[index];\n            if (interaction === undefined || HashSet.has(used, index))\n                return yield* Effect.die(\"Replay selected an unavailable interaction\");\n            return [{ interaction, index }, HashSet.add(used, index)];\n        })))),\n    };\n});\nexport const makeReplayState = (cassette, name, project) => makeReplayPoolState(cassette, name, project).pipe(Effect.map((pool) => ({\n    claim: (validate) => pool.claim((interactions, used) => {\n        const index = HashSet.size(used);\n        return validate(interactions[index], index, interactions).pipe(Effect.as(index));\n    }),\n})));\n",
+    "code": "import { Effect, Exit, HashSet, Ref, SynchronizedRef } from \"effect\";\nimport { environmentValue } from \"./state.vibe.platform.js\";\nconst isCI = () => {\n    const value = environmentValue(\"CI\");\n    return value !== undefined && value !== \"\" && value !== \"false\" && value !== \"0\";\n};\nexport const resolveAutoMode = (cassette, name) => Effect.gen(function* () {\n    if (isCI())\n        return \"replay\";\n    return (yield* cassette.exists(name)) ? \"replay\" : \"record\";\n});\nexport const makeReplayPoolState = (cassette, name, project) => Effect.gen(function* () {\n    const load = yield* Effect.cached(cassette.read(name).pipe(Effect.map(project)));\n    const claimed = yield* SynchronizedRef.make(HashSet.empty());\n    const attempted = yield* Ref.make(false);\n    yield* Effect.addFinalizer((exit) => Exit.isFailure(exit)\n        ? Effect.void\n        : Effect.gen(function* () {\n            const used = yield* SynchronizedRef.get(claimed);\n            if (HashSet.isEmpty(used) && (yield* Ref.get(attempted)))\n                return yield* Effect.void;\n            const interactions = yield* load.pipe(Effect.catchTag(\"CassetteNotFoundError\", () => Effect.succeed([])), Effect.orDie);\n            if (HashSet.size(used) < interactions.length)\n                return yield* Effect.die(new Error(`Unused recorded interactions in ${name}: used ${HashSet.size(used)} of ${interactions.length}`));\n            return yield* Effect.void;\n        }));\n    return {\n        claim: (select) => Ref.set(attempted, true).pipe(Effect.andThen(load), Effect.flatMap((interactions) => SynchronizedRef.modifyEffect(claimed, (used) => Effect.gen(function* () {\n            const index = yield* select(interactions, used);\n            const interaction = interactions[index];\n            if (interaction === undefined || HashSet.has(used, index))\n                return yield* Effect.die(\"Replay selected an unavailable interaction\");\n            return [{ interaction, index }, HashSet.add(used, index)];\n        })))),\n    };\n});\nexport const makeReplayState = (cassette, name, project) => makeReplayPoolState(cassette, name, project).pipe(Effect.map((pool) => ({\n    claim: (validate) => pool.claim((interactions, used) => {\n        const index = HashSet.size(used);\n        return validate(interactions[index], index, interactions).pipe(Effect.as(index));\n    }),\n})));\n",
     "map": {
      "version": 3,
      "file": "state.js",
@@ -4276,7 +4496,27 @@
       }
      ],
      "names": [],
-     "mappings": "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"
+     "mappings": "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"
+    }
+   },
+   {
+    "paths": [
+     {
+      "relative": "packages/http-recorder/src/replay/state.vibe.platform.js"
+     }
+    ],
+    "code": "// The platform code of state.vibe: the process environment (EK4402).\n/** @throws {never} */\nexport function environmentValue(key) {\n    return process.env[key];\n}\n",
+    "map": {
+     "version": 3,
+     "file": "state.vibe.platform.js",
+     "sourceRoot": "",
+     "sources": [
+      {
+       "relative": "packages/http-recorder/src/replay/state.vibe"
+      }
+     ],
+     "names": [],
+     "mappings": "AAmGE,qEAAqE;AAErE,sBAAsB;AACtB,MAAM,UAAU,gBAAgB,CAAC,GAAW;IAC1C,OAAO,OAAO,CAAC,GAAG,CAAC,GAAG,CAAC,CAAA;AACzB,CAAC"
     }
    },
    {
@@ -4325,7 +4565,7 @@
       "relative": "packages/http-recorder/src/http/recorder.vibe"
      }
     ],
-    "code": "import { NodeFileSystem } from \"@effect/platform-node-shared\";\nimport { Deferred, Effect, Layer, Ref } from \"effect\";\nimport { FetchHttpClient, HttpClient, HttpClientError, HttpClientRequest, HttpClientResponse } from \"effect/http\";\nimport { fileSystem, Service } from \"../cassette/store.js\";\nimport { make, redactUrl } from \"../redaction/redactor.js\";\nimport { makeReplayPoolState, resolveAutoMode } from \"../replay/state.js\";\nimport { httpInteractions } from \"../cassette/model.js\";\nimport { defaultMatcher, selectFirstMatching } from \"./matching.js\";\nimport { base64FromBytes, bytesFromBase64, makeResponse } from \"./recorder.platform.js\";\nexport { defaultMatcher };\nconst TEXT_CONTENT_TYPES = new Set([\n    \"application/graphql\",\n    \"application/javascript\",\n    \"application/json\",\n    \"application/sql\",\n    \"application/x-www-form-urlencoded\",\n    \"application/xml\",\n    \"application/yaml\",\n    \"image/svg+xml\",\n]);\nconst isTextContentType = (contentType) => {\n    const mediaType = contentType?.split(\";\", 1)[0]?.trim().toLowerCase();\n    if (!mediaType)\n        return false;\n    return (mediaType.startsWith(\"text/\") ||\n        mediaType.endsWith(\"+json\") ||\n        mediaType.endsWith(\"+xml\") ||\n        TEXT_CONTENT_TYPES.has(mediaType));\n};\nconst captureResponseBody = (response, contentType) => response.arrayBuffer.pipe(Effect.map((bytes) => isTextContentType(contentType)\n    ? { body: new TextDecoder().decode(bytes) }\n    : { body: base64FromBytes(bytes), bodyEncoding: \"base64\" }));\nconst decodeResponseBody = (snapshot) => snapshot.bodyEncoding === \"base64\" ? bytesFromBase64(snapshot.body) : snapshot.body;\nconst responseFromSnapshot = (request, snapshot) => HttpClientResponse.fromWeb(request, makeResponse(request.method === \"HEAD\" || snapshot.status === 204 || snapshot.status === 205 || snapshot.status === 304\n    ? null\n    : decodeResponseBody(snapshot), snapshot));\nexport const redactedErrorRequest = (request, redactedUrl = redactUrl(request.url)) => {\n    // A request's method is any string since Effect 4.1, so rebuild the bare request around it rather than narrow it.\n    const bare = HttpClientRequest.get(redactedUrl);\n    return HttpClientRequest.makeWith(request.method, bare.url, bare.urlParams, bare.hash, bare.headers, bare.body);\n};\nconst transportError = (request, description, redactedUrl) => new HttpClientError.HttpClientError({\n    reason: new HttpClientError.TransportError({ request: redactedErrorRequest(request, redactedUrl), description }),\n});\nexport const recordingLayer = (name, options = {}) => Layer.effect(HttpClient.HttpClient, Effect.gen(function* () {\n    const upstream = yield* HttpClient.HttpClient;\n    const cassette = yield* Service;\n    const redactor = options.redactor ?? make();\n    const match = options.match ?? defaultMatcher;\n    const requested = options.mode ?? \"auto\";\n    const mode = requested === \"auto\" ? yield* resolveAutoMode(cassette, name) : requested;\n    const snapshotRequest = (request) => Effect.gen(function* () {\n        const web = yield* HttpClientRequest.toWeb(request).pipe(Effect.orDie);\n        return redactor.request({\n            method: web.method,\n            url: web.url,\n            headers: Object.fromEntries(web.headers.entries()),\n            body: yield* Effect.promise(() => web.text()),\n        });\n    });\n    if (mode === \"passthrough\")\n        return upstream;\n    if (mode === \"record\") {\n        const initial = yield* Deferred.make();\n        yield* Deferred.succeed(initial, undefined);\n        const tail = yield* Ref.make(initial);\n        return HttpClient.make((request) => Effect.gen(function* () {\n            const completed = yield* Deferred.make();\n            const previous = yield* Ref.modify(tail, (current) => [current, completed]);\n            return yield* Effect.gen(function* () {\n                const incoming = yield* snapshotRequest(request);\n                const requestError = (description) => transportError(request, description, incoming.url);\n                const response = yield* upstream.execute(request);\n                const captured = yield* captureResponseBody(response, response.headers[\"content-type\"]);\n                const responseSnapshot = {\n                    status: response.status,\n                    headers: response.headers,\n                    ...captured,\n                };\n                const interaction = {\n                    transport: \"http\",\n                    request: incoming,\n                    response: redactor.response(responseSnapshot),\n                };\n                yield* Deferred.await(previous);\n                yield* cassette\n                    .append(name, interaction, options.metadata)\n                    .pipe(Effect.catchTag(\"UnsafeCassetteError\", (error) => Effect.fail(requestError(error.message))));\n                return responseFromSnapshot(request, responseSnapshot);\n            }).pipe(Effect.ensuring(Deferred.succeed(completed, undefined)));\n        }));\n    }\n    const replay = yield* makeReplayPoolState(cassette, name, httpInteractions);\n    return HttpClient.make((request) => Effect.gen(function* () {\n        const incoming = yield* snapshotRequest(request);\n        const requestError = (description) => transportError(request, description, incoming.url);\n        const claimed = yield* replay\n            .claim((interactions, used) => {\n            const result = selectFirstMatching(interactions, incoming, match, used);\n            if (result._tag === \"Matched\")\n                return Effect.succeed(result.index);\n            return Effect.fail(requestError(`Fixture \"${name}\" does not match the current request: ${result.detail}.`));\n        })\n            .pipe(Effect.mapError((error) => error._tag === \"CassetteNotFoundError\"\n            ? requestError(`Fixture \"${name}\" not found. Run locally to record it (CI=true forces replay).`)\n            : requestError(error.message)));\n        return responseFromSnapshot(request, claimed.interaction.response);\n    }));\n}));\nexport const cassetteLayer = (name, options = {}) => recordingLayer(name, options).pipe(Layer.provide(fileSystem({ directory: options.directory })), Layer.provide(FetchHttpClient.layer), Layer.provide(NodeFileSystem.layer));\nexport const layer = (name, options = {}) => recordingLayer(name, { metadata: options.metadata, redactor: make(options.redact), match: options.match }).pipe(Layer.provide(fileSystem({ directory: options.directory })), Layer.provide(NodeFileSystem.layer));\nexport const layerFetch = (name, options = {}) => layer(name, options).pipe(Layer.provide(FetchHttpClient.layer));\n",
+    "code": "import { NodeFileSystem } from \"@effect/platform-node-shared\";\nimport { Deferred, Effect, Layer, Ref } from \"effect\";\nimport { FetchHttpClient, HttpClient, HttpClientError, HttpClientRequest, HttpClientResponse } from \"effect/http\";\nimport { fileSystem, Service } from \"../cassette/store.js\";\nimport { make, redactUrl } from \"../redaction/redactor.js\";\nimport { makeReplayPoolState, resolveAutoMode } from \"../replay/state.js\";\nimport { httpInteractions } from \"../cassette/model.js\";\nimport { defaultMatcher, selectFirstMatching } from \"./matching.js\";\nimport { base64FromBytes, bytesFromBase64, makeResponse } from \"./recorder.vibe.platform.js\";\nexport { defaultMatcher };\nconst TEXT_CONTENT_TYPES = new Set([\n    \"application/graphql\",\n    \"application/javascript\",\n    \"application/json\",\n    \"application/sql\",\n    \"application/x-www-form-urlencoded\",\n    \"application/xml\",\n    \"application/yaml\",\n    \"image/svg+xml\",\n]);\nconst isTextContentType = (contentType) => {\n    const mediaType = contentType?.split(\";\", 1)[0]?.trim().toLowerCase();\n    if (!mediaType)\n        return false;\n    return (mediaType.startsWith(\"text/\") ||\n        mediaType.endsWith(\"+json\") ||\n        mediaType.endsWith(\"+xml\") ||\n        TEXT_CONTENT_TYPES.has(mediaType));\n};\nconst captureResponseBody = (response, contentType) => response.arrayBuffer.pipe(Effect.map((bytes) => isTextContentType(contentType)\n    ? { body: new TextDecoder().decode(bytes) }\n    : { body: base64FromBytes(bytes), bodyEncoding: \"base64\" }));\nconst decodeResponseBody = (snapshot) => snapshot.bodyEncoding === \"base64\" ? bytesFromBase64(snapshot.body) : snapshot.body;\nconst responseFromSnapshot = (request, snapshot) => HttpClientResponse.fromWeb(request, makeResponse(request.method === \"HEAD\" || snapshot.status === 204 || snapshot.status === 205 || snapshot.status === 304\n    ? null\n    : decodeResponseBody(snapshot), snapshot));\nexport const redactedErrorRequest = (request, redactedUrl = redactUrl(request.url)) => {\n    // A request's method is any string since Effect 4.1, so rebuild the bare request around it rather than narrow it.\n    const bare = HttpClientRequest.get(redactedUrl);\n    return HttpClientRequest.makeWith(request.method, bare.url, bare.urlParams, bare.hash, bare.headers, bare.body);\n};\nconst transportError = (request, description, redactedUrl) => new HttpClientError.HttpClientError({\n    reason: new HttpClientError.TransportError({ request: redactedErrorRequest(request, redactedUrl), description }),\n});\nexport const recordingLayer = (name, options = {}) => Layer.effect(HttpClient.HttpClient, Effect.gen(function* () {\n    const upstream = yield* HttpClient.HttpClient;\n    const cassette = yield* Service;\n    const redactor = options.redactor ?? make();\n    const match = options.match ?? defaultMatcher;\n    const requested = options.mode ?? \"auto\";\n    const mode = requested === \"auto\" ? yield* resolveAutoMode(cassette, name) : requested;\n    const snapshotRequest = (request) => Effect.gen(function* () {\n        const web = yield* HttpClientRequest.toWeb(request).pipe(Effect.orDie);\n        return redactor.request({\n            method: web.method,\n            url: web.url,\n            headers: Object.fromEntries(web.headers.entries()),\n            body: yield* Effect.promise(() => web.text()),\n        });\n    });\n    if (mode === \"passthrough\")\n        return upstream;\n    if (mode === \"record\") {\n        const initial = yield* Deferred.make();\n        yield* Deferred.succeed(initial, undefined);\n        const tail = yield* Ref.make(initial);\n        return HttpClient.make((request) => Effect.gen(function* () {\n            const completed = yield* Deferred.make();\n            const previous = yield* Ref.modify(tail, (current) => [current, completed]);\n            return yield* Effect.gen(function* () {\n                const incoming = yield* snapshotRequest(request);\n                const requestError = (description) => transportError(request, description, incoming.url);\n                const response = yield* upstream.execute(request);\n                const captured = yield* captureResponseBody(response, response.headers[\"content-type\"]);\n                const responseSnapshot = {\n                    status: response.status,\n                    headers: response.headers,\n                    ...captured,\n                };\n                const interaction = {\n                    transport: \"http\",\n                    request: incoming,\n                    response: redactor.response(responseSnapshot),\n                };\n                yield* Deferred.await(previous);\n                yield* cassette\n                    .append(name, interaction, options.metadata)\n                    .pipe(Effect.catchTag(\"UnsafeCassetteError\", (error) => Effect.fail(requestError(error.message))));\n                return responseFromSnapshot(request, responseSnapshot);\n            }).pipe(Effect.ensuring(Deferred.succeed(completed, undefined)));\n        }));\n    }\n    const replay = yield* makeReplayPoolState(cassette, name, httpInteractions);\n    return HttpClient.make((request) => Effect.gen(function* () {\n        const incoming = yield* snapshotRequest(request);\n        const requestError = (description) => transportError(request, description, incoming.url);\n        const claimed = yield* replay\n            .claim((interactions, used) => {\n            const result = selectFirstMatching(interactions, incoming, match, used);\n            if (result._tag === \"Matched\")\n                return Effect.succeed(result.index);\n            return Effect.fail(requestError(`Fixture \"${name}\" does not match the current request: ${result.detail}.`));\n        })\n            .pipe(Effect.mapError((error) => error._tag === \"CassetteNotFoundError\"\n            ? requestError(`Fixture \"${name}\" not found. Run locally to record it (CI=true forces replay).`)\n            : requestError(error.message)));\n        return responseFromSnapshot(request, claimed.interaction.response);\n    }));\n}));\nexport const cassetteLayer = (name, options = {}) => recordingLayer(name, options).pipe(Layer.provide(fileSystem({ directory: options.directory })), Layer.provide(FetchHttpClient.layer), Layer.provide(NodeFileSystem.layer));\nexport const layer = (name, options = {}) => recordingLayer(name, { metadata: options.metadata, redactor: make(options.redact), match: options.match }).pipe(Layer.provide(fileSystem({ directory: options.directory })), Layer.provide(NodeFileSystem.layer));\nexport const layerFetch = (name, options = {}) => layer(name, options).pipe(Layer.provide(FetchHttpClient.layer));\n",
     "map": {
      "version": 3,
      "file": "recorder.js",
@@ -4336,7 +4576,67 @@
       }
      ],
      "names": [],
-     "mappings": "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"
+     "mappings": "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"
+    }
+   },
+   {
+    "paths": [
+     {
+      "relative": "packages/http-recorder/src/http/recorder.vibe.platform.js"
+     }
+    ],
+    "code": "// The platform code of recorder.vibe: base64 byte encoding and web Response construction (EK4402).\n/** @throws {never} */\nexport function base64FromBytes(bytes) {\n    return Buffer.from(bytes).toString(\"base64\");\n}\n/** @throws {never} */\nexport function bytesFromBase64(text) {\n    return Buffer.from(text, \"base64\");\n}\nexport function makeResponse(...args) {\n    return new Response(...args);\n}\n",
+    "map": {
+     "version": 3,
+     "file": "recorder.vibe.platform.js",
+     "sourceRoot": "",
+     "sources": [
+      {
+       "relative": "packages/http-recorder/src/http/recorder.vibe"
+      }
+     ],
+     "names": [],
+     "mappings": "AAiLE,mGAAmG;AAEnG,sBAAsB;AACtB,MAAM,UAAU,eAAe,CAAC,KAAkB;IAChD,OAAO,MAAM,CAAC,IAAI,CAAC,KAAK,CAAC,CAAC,QAAQ,CAAC,QAAQ,CAAC,CAAA;AAC9C,CAAC;AAED,sBAAsB;AACtB,MAAM,UAAU,eAAe,CAAC,IAAY;IAC1C,OAAO,MAAM,CAAC,IAAI,CAAC,IAAI,EAAE,QAAQ,CAAC,CAAA;AACpC,CAAC;AAED,MAAM,UAAU,YAAY,CAAC,GAAG,IAA4C;IAC1E,OAAO,IAAI,QAAQ,CAAC,GAAG,IAAI,CAAC,CAAA;AAC9B,CAAC"
+    }
+   },
+   {
+    "paths": [
+     {
+      "relative": "packages/http-recorder/src/index.impl.vibe"
+     }
+    ],
+    "code": "export { HttpRecorder } from \"./index.impl.vibe.recorder.js\";\n",
+    "map": {
+     "version": 3,
+     "file": "index.impl.js",
+     "sourceRoot": "",
+     "sources": [
+      {
+       "relative": "packages/http-recorder/src/index.impl.vibe"
+      }
+     ],
+     "names": [],
+     "mappings": "AA8CA,OAAO,EAAE,YAAY,EAAE,MAAM,+BAAQ,CAAA"
+    }
+   },
+   {
+    "paths": [
+     {
+      "relative": "packages/http-recorder/src/index.impl.vibe.recorder.js"
+     }
+    ],
+    "code": "import { hasCassetteSync, removeCassetteSync } from \"./cassette/store.js\";\nimport { layer, layerFetch } from \"./http/recorder.js\";\nimport { layerSocket, layerWebSocketConstructor } from \"./websocket/recorder.js\";\n/** HTTP and WebSocket cassette recording. */\nexport const HttpRecorder = { hasCassetteSync, layer, layerFetch, layerSocket, layerWebSocketConstructor, removeCassetteSync };\n",
+    "map": {
+     "version": 3,
+     "file": "index.impl.vibe.recorder.js",
+     "sourceRoot": "",
+     "sources": [
+      {
+       "relative": "packages/http-recorder/src/index.impl.vibe"
+      }
+     ],
+     "names": [],
+     "mappings": "AAKE,OAAO,EAAE,eAAe,EAAE,kBAAkB,EAAE,MAAM,qBAAqB,CAAA;AACzE,OAAO,EAAE,KAAK,EAAE,UAAU,EAAE,MAAM,oBAAoB,CAAA;AACtD,OAAO,EAAE,WAAW,EAAE,yBAAyB,EAAE,MAAM,yBAAyB,CAAA;AAEhF,6CAA6C;AAC7C,MAAM,CAAC,MAAM,YAAY,GAgBrB,EAAE,eAAe,EAAE,KAAK,EAAE,UAAU,EAAE,WAAW,EAAE,yBAAyB,EAAE,kBAAkB,EAAE,CAAA"
     }
    }
   ]

@@ -6,6 +6,8 @@ Release notes for OpenCode V2, newest first.
 
 ### Changed
 
+- The HTTP recorder package entry now uses VibeLang while preserving its declarations, the `src/index.ts` entry that tests and the bundle build read, and the published root declarations.
+
 - The desktop attachment picker, app and window IPC handlers, native logging, background service, main plugin host, plugin loader and plugin service, and the renderer plugin bridge now use VibeLang while preserving their declarations and native Electron, file and process access.
 
 - The HttpApi client generator now uses VibeLang while preserving its declarations and its synchronous generation errors.

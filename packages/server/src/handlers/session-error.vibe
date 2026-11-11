@@ -2,7 +2,7 @@ import { Session } from "@opencode/core/session"
 import type { Snapshot } from "@opencode/core/snapshot"
 import { MessageNotFoundError, SessionNotFoundError, UnknownError } from "@opencode/protocol/errors"
 import { Effect } from "effect"
-import { randomUUID } from "./session-error.platform"
+import { randomUUID } from platform
 
 export function missingSession(error: Session.NotFoundError) {
   return new SessionNotFoundError({
@@ -39,5 +39,13 @@ export function failedSnapshot(operation: string, sessionID: Session.ID) {
         Effect.fail(new UnknownError({ message: "Unexpected server error. Check server logs for details.", ref })),
       ),
     )
+  }
+}
+
+module platform {
+  // The platform code of session-error.vibe: random log references (EK4402).
+  /** @throws {never} */
+  export function randomUUID() {
+    return crypto.randomUUID()
   }
 }

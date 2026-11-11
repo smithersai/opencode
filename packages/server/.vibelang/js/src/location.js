@@ -10,7 +10,7 @@ import { Effect, Layer, Schema } from "effect";
 import { HttpServerRequest } from "effect/http";
 import { HttpApiMiddleware } from "effect/http-api";
 import { missingSession } from "./handlers/session-error.js";
-import { currentDirectory } from "./location.platform.js";
+import { currentDirectory } from "./location.vibe.platform.js";
 export class LocationMiddleware extends HttpApiMiddleware.Service()("@opencode/HttpApiLocation", { error: [LocationNotFoundError] }) {
 }
 export function locationErrors(effect) {

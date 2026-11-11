@@ -487,15 +487,7 @@
     "./handlers/session.platform": null,
     "./handlers/fs.platform": null,
     "./handlers/server.platform": null,
-    "./middleware/schema-error.platform": null,
-    "./auth.platform": null,
-    "./pairing.platform": null,
-    "./server-info.platform": null,
-    "./location.platform": null,
-    "./handlers/session-error.platform": null,
-    "./handlers/debug.platform": null,
-    "./handlers/persistent-pty.platform": null,
-    "./process.platform": null
+    "./middleware/schema-error.platform": null
   },
   "scripts": {
     "build": "bun run script/build.ts",

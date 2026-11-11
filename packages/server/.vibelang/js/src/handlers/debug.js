@@ -7,7 +7,7 @@ import { Effect, Option, RcMap } from "effect";
 import { HttpApiBuilder } from "effect/http-api";
 import { Api } from "../api.js";
 import { requestRef } from "../location.js";
-import { isAbsolute, randomUUID } from "./debug.platform.js";
+import { isAbsolute, randomUUID } from "./debug.vibe.platform.js";
 export const DebugHandler = HttpApiBuilder.group(Api, "server.debug", (handlers) => Effect.gen(function* () {
     const global = yield* Global.Service;
     return handlers

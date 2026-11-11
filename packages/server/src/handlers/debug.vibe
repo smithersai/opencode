@@ -6,7 +6,7 @@ import { Effect, Option, RcMap } from "effect"
 import { HttpApiBuilder } from "effect/http-api"
 import { Api } from "../api"
 import { requestRef } from "../location"
-import { isAbsolute, randomUUID } from "./debug.platform"
+import { isAbsolute, randomUUID } from platform
 
 export const DebugHandler = HttpApiBuilder.group(Api, "server.debug", (handlers) =>
   Effect.gen(function* () {
@@ -55,3 +55,18 @@ export const DebugHandler = HttpApiBuilder.group(Api, "server.debug", (handlers)
       )
   }),
 )
+
+module platform {
+  // The platform code of debug.vibe: path checks and random log references (EK4402).
+  import path from "node:path"
+
+  /** @throws {never} */
+  export function isAbsolute(value: string) {
+    return path.isAbsolute(value)
+  }
+
+  /** @throws {never} */
+  export function randomUUID() {
+    return crypto.randomUUID()
+  }
+}

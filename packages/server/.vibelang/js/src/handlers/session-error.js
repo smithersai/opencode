@@ -2,7 +2,7 @@
 import { Session } from "@opencode/core/session";
 import { MessageNotFoundError, SessionNotFoundError, UnknownError } from "@opencode/protocol/errors";
 import { Effect } from "effect";
-import { randomUUID } from "./session-error.platform.js";
+import { randomUUID } from "./session-error.vibe.platform.js";
 export function missingSession(error) {
     return new SessionNotFoundError({
         sessionID: error.sessionID,

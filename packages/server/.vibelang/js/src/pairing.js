@@ -2,7 +2,7 @@
 export * as ServerPairing from "./pairing.js";
 import { Cache, Context, Duration, Effect, Layer } from "effect";
 import { makeGlobalNode } from "@opencode/util/effect/app-node";
-import { randomBytes } from "./pairing.platform.js";
+import { randomBytes } from "./pairing.vibe.platform.js";
 const TTL = Duration.minutes(5);
 export class Service extends Context.Service()("@opencode/ServerPairing") {
 }

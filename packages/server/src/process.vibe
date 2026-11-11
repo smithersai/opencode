@@ -12,7 +12,7 @@ import { Global } from "@opencode/util/global"
 import { Cause, Context, Effect, Exit, Latch, Layer, Option, Ref, Scope } from "effect"
 import { HttpMiddleware, HttpRouter, HttpServerRequest, HttpServerResponse } from "effect/http"
 import { NetAddress } from "effect/net"
-import { createServer, pid } from "./process.platform"
+import { createServer, pid } from platform
 import { ServerAuth } from "./auth"
 import { isAllowedCorsOrigin } from "./cors.vibe"
 import { authorizedRequest, unauthorizedResponse } from "./middleware/authorization"
@@ -242,3 +242,13 @@ function unavailable(status: Status.State) {
 const installRestartContinuity = Effect.fnUntraced(function* (restart: SessionRestart.Interface) {
   yield* Effect.forkScoped(restart.resumeSuspendedSessions)
 })
+
+module platform {
+  // The platform code of process.vibe: the Node HTTP server and the process ID (EK4402).
+  export { createServer } from "node:http"
+
+  /** @throws {never} */
+  export function pid() {
+    return process.pid
+  }
+}

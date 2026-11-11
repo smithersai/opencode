@@ -2,7 +2,7 @@ export * as ServerPairing from "./pairing"
 
 import { Cache, Context, Duration, Effect, Layer } from "effect"
 import { makeGlobalNode } from "@opencode/util/effect/app-node"
-import { randomBytes } from "./pairing.platform"
+import { randomBytes } from platform
 
 const TTL = Duration.minutes(5)
 
@@ -37,3 +37,8 @@ const layer = Layer.effect(
 )
 
 export const node = makeGlobalNode({ service: Service, layer, deps: [] })
+
+module platform {
+  // The platform code of pairing.vibe: random pairing codes from node:crypto (EK4402).
+  export { randomBytes } from "node:crypto"
+}

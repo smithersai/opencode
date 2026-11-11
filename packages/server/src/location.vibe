@@ -9,7 +9,7 @@ import { Effect, Layer, Schema } from "effect"
 import { HttpServerRequest } from "effect/http"
 import { HttpApiMiddleware } from "effect/http-api"
 import { missingSession } from "./handlers/session-error"
-import { currentDirectory } from "./location.platform"
+import { currentDirectory } from platform
 
 export type LocationServices = Layer.Success<ReturnType<(typeof LocationServiceMap.Service)["get"]>>
 
@@ -99,3 +99,10 @@ export const layer = Layer.effect(
     )
   }),
 )
+
+module platform {
+  // The platform code of location.vibe: the process working directory (EK4402).
+  export function currentDirectory() {
+    return process.cwd()
+  }
+}

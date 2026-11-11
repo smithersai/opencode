@@ -11,7 +11,7 @@ import { Api } from "../api.js";
 import { CorsConfig, isAllowedRequestOrigin } from "../cors.js";
 import { makeMediaGet } from "./media.js";
 import { runPtySocket } from "./pty-socket.js";
-import { bytesFrom, randomUUID, textBytes } from "./persistent-pty.platform.js";
+import { bytesFrom, randomUUID, textBytes } from "./persistent-pty.vibe.platform.js";
 export const PersistentPtyHandler = HttpApiBuilder.group(Api, "server.experimental", (handlers) => Effect.gen(function* () {
     const tickets = yield* PtyTicket.Service;
     const cors = yield* CorsConfig;

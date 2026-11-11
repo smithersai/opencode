@@ -1,7 +1,7 @@
 export * as ServerAuth from "./auth"
 
 import { Context, Layer, Option, Redacted } from "effect"
-import { bufferFrom, createHmac, timingSafeEqual } from "./auth.platform"
+import { bufferFrom, createHmac, timingSafeEqual } from platform
 
 export type DecodedCredentials = {
   readonly username: string
@@ -63,4 +63,14 @@ export function sessionCookieName(host: string | undefined) {
 function sign(password: string, payload: string) {
   const key = createHmac("sha256", password).update("opencode-session-v1").digest()
   return createHmac("sha256", key).update(payload).digest("base64url")
+}
+
+module platform {
+  // The platform code of auth.vibe: HMAC signing and constant-time comparison from node:crypto (EK4402).
+  export { createHmac, timingSafeEqual } from "node:crypto"
+
+  /** @throws {never} */
+  export function bufferFrom(value: string) {
+    return Buffer.from(value)
+  }
 }

@@ -12,7 +12,7 @@ import { Global } from "@opencode/util/global";
 import { Cause, Context, Effect, Exit, Latch, Layer, Option, Ref, Scope } from "effect";
 import { HttpMiddleware, HttpRouter, HttpServerRequest, HttpServerResponse } from "effect/http";
 import { NetAddress } from "effect/net";
-import { createServer, pid } from "./process.platform.js";
+import { createServer, pid } from "./process.vibe.platform.js";
 import { ServerAuth } from "./auth.js";
 import { isAllowedCorsOrigin } from "./cors.js";
 import { authorizedRequest, unauthorizedResponse } from "./middleware/authorization.js";

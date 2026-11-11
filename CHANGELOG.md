@@ -8,6 +8,8 @@ Release notes for OpenCode V2, newest first.
 
 - Database path columns now use VibeLang, and migration commands run Drizzle under Bun so the package loader can load their schema dependencies.
 
+- The CLI environment, version, service configuration, server connection, remote tunnel and standalone server modules now use VibeLang with their host access in module bodies; their `.ts` files re-export the VibeLang modules for the importers that name them.
+
 - The CLI configuration, its schema and its migration from the earlier TUI configuration now use VibeLang; `config.ts` and `schema.ts` re-export the VibeLang modules for the importers and the schema script that name them.
 
 - The CLI command definitions, command runtime and spec, and the run and Mini command handlers now use VibeLang; their `.ts` files re-export the VibeLang modules for the importers and the import boundary test that name them.

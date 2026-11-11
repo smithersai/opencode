@@ -10,7 +10,7 @@ import { Location } from "../location.js";
 import { Plugin } from "../plugin.js";
 import { LocationWatcherPolicy } from "./location-watcher-policy.js";
 import { Watcher } from "./watcher.js";
-import { join } from "./location-watcher.platform.js";
+import { join } from "./location-watcher.vibe.platform.js";
 export class Service extends Context.Service()("@opencode/LocationWatcher") {
 }
 const layer = Layer.effect(Service, Effect.gen(function* () {

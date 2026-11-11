@@ -8,7 +8,7 @@ import { State } from "./state.js";
 import { Location } from "./location.js";
 import { freeze } from "immer";
 import { AISDKNative } from "./aisdk-native.js";
-import { env } from "./model.platform.js";
+import { env } from "./model.vibe.platform.js";
 export const ID = Model.ID;
 export const VariantID = Model.VariantID;
 // Grouping of models, eg claude opus, claude sonnet

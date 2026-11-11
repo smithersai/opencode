@@ -8,7 +8,7 @@ import { collectStream, waitForAbort } from "@opencode/util/process";
 import { Environment } from "./environment/index.js";
 import { NonNegativeInt, PositiveInt, RelativePath } from "./schema.js";
 import { RipgrepBinary } from "./ripgrep/binary.js";
-import { utf8 } from "./ripgrep.platform.js";
+import { utf8 } from "./ripgrep.vibe.platform.js";
 /**
  * Small core-owned ripgrep execution adapter. It deliberately exposes raw
  * process-oriented rows, not model text or permission behavior. Search maps

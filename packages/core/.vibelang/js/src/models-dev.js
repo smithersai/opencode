@@ -16,7 +16,7 @@ import { AISDKNative } from "./aisdk-native.js";
 import { Provider } from "./provider.js";
 import { Variant } from "./variant.js";
 import { KV } from "./kv.js";
-import { argv } from "./models-dev.platform.js";
+import { argv } from "./models-dev.vibe.platform.js";
 import snapshotText from "../../../src/models-dev/snapshot.txt" with { type: "text" };
 import { isV1, toV2 } from "./models-dev/v1.js";
 // Only the fields opencode reads are decoded. Unknown keys are ignored, and a model that

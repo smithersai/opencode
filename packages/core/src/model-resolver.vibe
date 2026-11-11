@@ -20,7 +20,7 @@ import { Capabilities, ID, Info, Model, Ref, VariantID } from "./model.js"
 import type { RuntimeInfo } from "./model.js"
 import { Npm } from "@opencode/util/npm"
 import { Provider } from "./provider.js"
-import { env } from "./model-resolver.platform.js"
+import { env } from platform
 
 export class VariantUnavailableError extends Schema.TaggedError<VariantUnavailableError>()(
   "SessionRunnerModel.VariantUnavailableError",
@@ -582,3 +582,12 @@ export const node = makeLocationNode({
   layer,
   deps: [Provider.node, Model.node, Integration.node, Npm.node, AISDK.node],
 })
+
+module platform {
+// The platform code of model-resolver.vibe: the process environment, which a .vibe file does not read (EK4402).
+
+/** The value of a process environment variable. @throws {never} */
+export function env(name: string): string | undefined {
+  return process.env[name]
+}
+}

@@ -15,7 +15,7 @@ import { AISDKNative } from "./aisdk-native.js"
 import { Provider } from "./provider.js"
 import { Variant } from "./variant.js"
 import { KV } from "./kv.js"
-import { argv } from "./models-dev.platform.js"
+import { argv } from platform
 import snapshotText from "./models-dev/snapshot.txt" with { type: "text" }
 import { isV1, toV2 } from "./models-dev/v1.js"
 
@@ -708,3 +708,12 @@ export function configured(options?: Options) {
 export const node = configured()
 
 export * as ModelsDev from "./models-dev.js"
+
+module platform {
+// The platform code of models-dev.vibe: the host command line, which a .vibe file does not read (EK4402).
+
+/** The command-line arguments of the host process. @throws {never} */
+export function argv(): readonly string[] {
+  return process.argv
+}
+}

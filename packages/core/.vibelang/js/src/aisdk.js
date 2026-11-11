@@ -8,7 +8,7 @@ import { Auth, Endpoint, ProviderShared, RequestExecutor } from "@opencode/ai/ro
 import { isRecord } from "@opencode/util/record";
 import { Cause, Context, Effect, Layer, Option, Schema, Scope, Stream, Struct } from "effect";
 import { HttpClientRequest, HttpClientResponse } from "effect/http";
-import { cancelTimeout, fetch, httpMiddleware, scheduleTimeout, timeoutSignal, toRequest, toResponse, wrapSSE, } from "./aisdk.platform.js";
+import { cancelTimeout, fetch, httpMiddleware, scheduleTimeout, timeoutSignal, toRequest, toResponse, wrapSSE, } from "./aisdk.vibe.platform.js";
 import { Provider } from "./provider.js";
 import { State } from "./state.js";
 import { stringify } from "./tool/runtime.js";

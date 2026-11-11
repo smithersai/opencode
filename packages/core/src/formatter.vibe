@@ -7,7 +7,7 @@ import { AppProcess } from "@opencode/util/process"
 import { Location } from "./location.js"
 import type { Info } from "./formatter/builtins.js"
 import { State } from "./state.js"
-import { extname } from "./formatter.platform.js"
+import { extname } from platform
 
 type Data = {
   formatters: Info[]
@@ -102,3 +102,14 @@ export const node = makeLocationNode({
   layer,
   deps: [Location.node, AppProcess.node],
 })
+
+module platform {
+// The platform code of formatter.vibe: host path rules, which a .vibe file does not use (EK4402).
+
+import path from "path"
+
+/** The extension of a file path, with its leading dot. @throws {never} */
+export function extname(filepath: string) {
+  return path.extname(filepath)
+}
+}

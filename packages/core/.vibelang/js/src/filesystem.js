@@ -6,7 +6,7 @@ import { FSUtil } from "@opencode/util/fs-util";
 import { Location } from "./location.js";
 import { AbsolutePath, PositiveInt, RelativePath } from "./schema.js";
 import { FileSystemSearch } from "./filesystem/search.js";
-import { joinPath, relativePath, resolvePath, sep } from "./filesystem.platform.js";
+import { joinPath, relativePath, resolvePath, sep } from "./filesystem.vibe.platform.js";
 import { Entry, FileSystem, FindInput, Write } from "@opencode/schema/filesystem";
 export { Entry, Match, Submatch } from "@opencode/schema/filesystem";
 export class NotFoundError extends Schema.TaggedError()("FileSystem.NotFoundError", {

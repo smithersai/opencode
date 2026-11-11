@@ -4,7 +4,7 @@ import { Money } from "@opencode/schema/money";
 import { Option, Schema } from "effect";
 import { Model } from "../model.js";
 import { Provider } from "../provider.js";
-import { request } from "./models.platform.js";
+import { request } from "./models.vibe.platform.js";
 const RemoteModel = Schema.Struct({
     model_picker_enabled: Schema.Boolean,
     id: Schema.String,

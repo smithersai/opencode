@@ -8,7 +8,7 @@ import { State } from "./state.js"
 import { Location } from "./location.js"
 import { freeze } from "immer"
 import { AISDKNative } from "./aisdk-native.js"
-import { env } from "./model.platform.js"
+import { env } from platform
 
 export const ID = Model.ID
 export type ID = typeof ID.Type
@@ -363,3 +363,12 @@ export function parse(input: string): { providerID: Provider.ID; modelID: ID } {
 }
 
 export * as Model from "./model.js"
+
+module platform {
+// The platform code of model.vibe: the process environment, which a .vibe file does not read (EK4402).
+
+/** The value of a process environment variable. @throws {never} */
+export function env(name: string): string | undefined {
+  return process.env[name]
+}
+}

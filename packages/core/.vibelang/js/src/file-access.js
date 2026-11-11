@@ -9,7 +9,7 @@ import { Location } from "./location.js";
 import { Permission } from "./permission.js";
 import { Project } from "./project.js";
 import { AbsolutePath } from "./schema.js";
-import { isWindows, path } from "./file-access.platform.js";
+import { isWindows, path } from "./file-access.vibe.platform.js";
 export const Kind = Schema.Literals(["file", "directory"]);
 export const ResolveInput = Schema.Struct({
     path: Schema.String,

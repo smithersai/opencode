@@ -10,7 +10,7 @@ import { Integration } from "./integration.js";
 import { Capabilities, ID, Info, Model, Ref, VariantID } from "./model.js";
 import { Npm } from "@opencode/util/npm";
 import { Provider } from "./provider.js";
-import { env } from "./model-resolver.platform.js";
+import { env } from "./model-resolver.vibe.platform.js";
 export class VariantUnavailableError extends Schema.TaggedError()("SessionRunnerModel.VariantUnavailableError", {
     providerID: Provider.ID,
     modelID: ID,

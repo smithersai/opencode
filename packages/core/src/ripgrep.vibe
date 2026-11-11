@@ -8,7 +8,7 @@ import { collectStream, waitForAbort } from "@opencode/util/process"
 import { Environment } from "./environment/index.js"
 import { NonNegativeInt, PositiveInt, RelativePath } from "./schema.js"
 import { RipgrepBinary } from "./ripgrep/binary.js"
-import { utf8 } from "./ripgrep.platform.js"
+import { utf8 } from platform
 
 /**
  * Small core-owned ripgrep execution adapter. It deliberately exposes raw
@@ -281,3 +281,12 @@ const layer = Layer.effect(
 )
 
 export const node = makeLocationNode({ service: Service, layer, deps: [Environment.node, RipgrepBinary.node] })
+
+module platform {
+// The platform code of ripgrep.vibe: UTF-8 buffers, which a .vibe file does not use (EK4402).
+
+/** Round-trips text through UTF-8 bytes, so a cut surrogate pair becomes a replacement character. @throws {never} */
+export function utf8(text: string) {
+  return Buffer.from(text, "utf8").toString()
+}
+}

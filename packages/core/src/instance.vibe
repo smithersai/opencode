@@ -1,5 +1,5 @@
 import { Context, Effect, Layer } from "effect"
-import { now } from "./instance.platform.js"
+import { now } from platform
 import { Agent } from "./agent.js"
 import { AISDK } from "./aisdk.js"
 import { Model } from "./model.js"
@@ -188,4 +188,13 @@ export function layer(ref: Location.Ref, options: Options = {}): Layer.Layer<Ser
       }),
     ),
   )
+}
+
+module platform {
+// The platform code of instance.vibe: the host high-resolution clock, which a .vibe file does not read (EK4402).
+
+/** Milliseconds on the host high-resolution clock. @throws {never} */
+export function now() {
+  return performance.now()
+}
 }

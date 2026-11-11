@@ -7,7 +7,7 @@ import { makeGlobalNode } from "@opencode/util/effect/app-node";
 import { httpClient } from "@opencode/util/effect/app-node-platform";
 import { Bus } from "./bus.js";
 import { KV } from "./kv.js";
-import { env, isDeepStrictEqual } from "./wellknown.platform.js";
+import { env, isDeepStrictEqual } from "./wellknown.vibe.platform.js";
 export const Auth = Schema.Struct({
     command: Schema.Array(Schema.String),
     env: Schema.String,

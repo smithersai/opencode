@@ -6,7 +6,7 @@ import { makeLocationNode } from "@opencode/util/effect/app-node";
 import { AppProcess } from "@opencode/util/process";
 import { Location } from "./location.js";
 import { State } from "./state.js";
-import { extname } from "./formatter.platform.js";
+import { extname } from "./formatter.vibe.platform.js";
 export class Service extends Context.Service()("@opencode/v2/Formatter") {
 }
 const layer = Layer.effect(Service, Effect.gen(function* () {

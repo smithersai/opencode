@@ -8,7 +8,7 @@ import { entityKind } from "drizzle-orm/entity"
 import type { TypedQueryBuilder } from "drizzle-orm/query-builders/query-builder"
 import type { AnyRelations, EmptyRelations } from "drizzle-orm/relations"
 import { SelectionProxyHandler } from "drizzle-orm/selection-proxy"
-import { type ColumnsSelection, type SQL, sql, type SQLWrapper } from "drizzle-orm/sql/sql"
+import { type ColumnsSelection, type SQL, type SQLWrapper } from "drizzle-orm/sql/sql"
 import type { SQLiteDialect } from "drizzle-orm/sqlite-core/dialect"
 import { QueryBuilder } from "drizzle-orm/sqlite-core/query-builders/query-builder"
 import type { SelectedFields } from "drizzle-orm/sqlite-core/query-builders/select.types"
@@ -26,6 +26,7 @@ import { SQLiteEffectSelectBuilder } from "./select.js"
 import type { SQLiteEffectSelectBase } from "./select.js"
 import type { SQLiteEffectSession, SQLiteEffectTransaction } from "./session.js"
 import { SQLiteEffectUpdateBuilder } from "./update.js"
+import { makeRaw } from rawquery
 
 export class SQLiteEffectDatabase<
   TEffectHKT extends QueryEffectHKTBase,
@@ -207,14 +208,7 @@ export class SQLiteEffectDatabase<
     action: "all" | "get" | "run" | "values",
     execute: (query: SQL) => Effect.Effect<TResult, TEffectHKT["error"], TEffectHKT["context"]>,
   ): SQLiteEffectRaw<TResult, TEffectHKT> {
-    const sequel = typeof query === "string" ? sql.raw(query) : query.getSQL()
-    return new SQLiteEffectRaw(
-      () => execute(sequel),
-      () => sequel,
-      action,
-      this.dialect,
-      (result) => result,
-    )
+    return makeRaw(query, action, execute, this.dialect)
   }
 
   run(query: SQLWrapper | string): SQLiteEffectRaw<TRunResult, TEffectHKT> {
@@ -241,3 +235,31 @@ export class SQLiteEffectDatabase<
 
 export type AnySQLiteEffectDatabase = SQLiteEffectDatabase<any, any, any>
 export type AnySQLiteEffectSelectBase = SQLiteEffectSelectBase<any, any, any, any, any, any, any, any, any, any>
+
+module rawquery {
+// The throwing code of db.vibe: a raw query builds its SQL eagerly, and drizzle may throw while building it,
+// but a VibeLang function that returns an Effect never throws (EK0401).
+
+import type { Effect } from "effect"
+import type { QueryEffectHKTBase } from "drizzle-orm/effect-core/query-effect"
+import { type SQL, sql, type SQLWrapper } from "drizzle-orm/sql/sql"
+import type { SQLiteDialect } from "drizzle-orm/sqlite-core/dialect"
+import { SQLiteEffectRaw } from "./raw.js"
+
+/** @throws {unknown} */
+export function makeRaw<TResult, TEffectHKT extends QueryEffectHKTBase>(
+  query: SQLWrapper | string,
+  action: "all" | "get" | "run" | "values",
+  execute: (query: SQL) => Effect.Effect<TResult, TEffectHKT["error"], TEffectHKT["context"]>,
+  dialect: SQLiteDialect,
+): SQLiteEffectRaw<TResult, TEffectHKT> {
+  const sequel = typeof query === "string" ? sql.raw(query) : query.getSQL()
+  return new SQLiteEffectRaw(
+    () => execute(sequel),
+    () => sequel,
+    action,
+    dialect,
+    (result) => result,
+  )
+}
+}

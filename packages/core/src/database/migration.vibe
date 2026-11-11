@@ -37,10 +37,18 @@ export function apply(db: Database) {
         yield* tx.run(
           sql`CREATE TABLE ${sql.identifier("migration")} (id TEXT PRIMARY KEY, time_completed INTEGER NOT NULL)`,
         )
-        yield* Effect.forEach(migrations, (migration) =>
-          tx.run(
-            sql`INSERT INTO ${sql.identifier("migration")} (id, time_completed) VALUES (${migration.id}, ${Date.now()})`,
-          ),
+        yield* Effect.forEach(
+          migrations,
+          effect (migration) => {
+            const statement = try Effect.orDie(
+              Effect.try({
+                try: () =>
+                  sql`INSERT INTO ${sql.identifier("migration")} (id, time_completed) VALUES (${migration.id}, ${Date.now()})`,
+                catch: (e) => e,
+              }),
+            )
+            return try tx.run(statement)
+          },
         )
       }),
     )

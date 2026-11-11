@@ -4,7 +4,7 @@ import { onCleanup } from "solid-js";
 import { createStore } from "solid-js/store";
 import { createKeyed } from "@opencode/plugin/gui";
 import { isSshConnecting } from "./name.js";
-import { queueMicrotask } from "./state.platform.js";
+import { queueMicrotask } from "./state.vibe.platform.js";
 export function createSshController(input) {
     const [attempts, setAttempts] = createStore({});
     const tasks = new Map();

@@ -4,7 +4,7 @@ import { Effect, Option, Predicate, Schema } from "effect";
 import { Button } from "@opencode/ui/button";
 import { Dialog } from "@opencode/ui/dialog";
 import { usePlugin } from "@opencode/plugin/gui";
-import { clearTimeout, fetch, setTimeout } from "./whats-new.platform.js";
+import { clearTimeout, fetch, setTimeout } from "./whats-new.vibex.platform.jsx";
 const CHANGELOG_URL = "https://opencode.ai/changelog.json";
 /** An optional field that reads as absent when it holds anything else, as the changelog is read leniently. */
 function lenient(schema) {

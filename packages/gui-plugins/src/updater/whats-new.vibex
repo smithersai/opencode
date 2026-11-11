@@ -4,7 +4,7 @@ import { Button } from "@opencode/ui/button"
 import { Dialog } from "@opencode/ui/dialog"
 import { usePlugin, type DialogHandle, type SetupContext } from "@opencode/plugin/gui"
 import type definition from "./index.vibe"
-import { clearTimeout, fetch, setTimeout } from "./whats-new.platform.js"
+import { clearTimeout, fetch, setTimeout } from platform
 
 const CHANGELOG_URL = "https://opencode.ai/changelog.json"
 
@@ -323,4 +323,23 @@ function DialogReleaseNotes(props: { highlights: Highlight[]; dialog: DialogHand
       </div>
     </Dialog>
   )
+}
+
+module platform {
+  // Browser host access for whats-new.vibex.
+
+  /** @throws {never} */
+  export function fetch(input: string, init?: RequestInit) {
+    return globalThis.fetch(input, init)
+  }
+
+  /** @throws {never} */
+  export function setTimeout(callback: () => void, delay: number) {
+    return globalThis.setTimeout(callback, delay)
+  }
+
+  /** @throws {never} */
+  export function clearTimeout(timer: ReturnType<typeof globalThis.setTimeout>) {
+    globalThis.clearTimeout(timer)
+  }
 }

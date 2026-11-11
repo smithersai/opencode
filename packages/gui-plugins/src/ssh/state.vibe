@@ -4,7 +4,7 @@ import { createStore } from "solid-js/store"
 import { createKeyed, type IpcClient } from "@opencode/plugin/gui"
 import type { Ssh, SshConfig, SshItem } from "./contract.vibe"
 import { isSshConnecting } from "./name"
-import { queueMicrotask } from "./state.platform.js"
+import { queueMicrotask } from platform
 
 export type SshController = ReturnType<typeof createSshController>
 
@@ -206,5 +206,14 @@ export function createSshController(input: {
         ),
         { signal },
       ),
+  }
+}
+
+module platform {
+  // Host access for state.vibe.
+
+  /** @throws {never} */
+  export function queueMicrotask(callback: () => void) {
+    globalThis.queueMicrotask(callback)
   }
 }

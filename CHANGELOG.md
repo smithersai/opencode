@@ -6,6 +6,8 @@ Release notes for OpenCode V2, newest first.
 
 ### Changed
 
+- The AI provider protocol helpers and the Google Vertex credential helpers now use VibeLang while preserving their declarations, their native `.ts` paths and their native process and compression access.
+
 - The code mode interpreter and its JSON value conversions now use VibeLang while preserving their declarations, with the throwing evaluator and value walk in TypeScript module bodies.
 
 - The AI WebSocket transport now uses VibeLang while preserving its declarations and its native WebSocket and text decoding access.

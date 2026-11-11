@@ -13,7 +13,7 @@ import { PluginModule } from "./module.js";
 import { SdkPlugins } from "./sdk.js";
 import { PluginUpdate } from "./update.js";
 import { Watcher } from "../filesystem/watcher.js";
-import { isAbsolute, randomUUID } from "./supervisor.platform.js";
+import { isAbsolute, randomUUID } from "./supervisor.vibe.platform.js";
 const resolve = Effect.fn("PluginSupervisor.resolve")(function* (modules, pre, post, operations, install, running) {
     const matches = (selector, target) => selector === "*" || (selector.endsWith(".*") ? target.startsWith(selector.slice(0, -1)) : selector === target);
     const definitions = [...pre, ...post];

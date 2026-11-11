@@ -10,7 +10,7 @@ import { SessionInstructions } from "../../session/instructions.js"
 import { AbsolutePath } from "../../schema.js"
 import { ReadToolFileSystem } from "../read-filesystem.js"
 import { Environment } from "../../environment/index.js"
-import { basename, dirname, joinPath } from "./read.platform.ts"
+import { basename, dirname, joinPath } from platform
 
 export const name = "read"
 const FILENAME = "AGENTS.md"
@@ -202,4 +202,23 @@ export const toModelContent = (path: string, offset: number | undefined, output:
   if (output.type === "text-page" && output.truncated && output.next !== undefined)
     content.push(`[Output truncated. Continue reading with offset: ${output.next}]`)
   return content.join("\n")
+}
+
+module platform {
+import path from "path"
+
+/** @throws {never} */
+export function basename(target: string) {
+  return path.basename(target)
+}
+
+/** @throws {never} */
+export function dirname(target: string) {
+  return path.dirname(target)
+}
+
+/** @throws {never} */
+export function joinPath(directory: string, name: string) {
+  return path.join(directory, name)
+}
 }

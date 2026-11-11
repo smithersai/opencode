@@ -11,7 +11,7 @@ import { AppProcess } from "@opencode/util/process";
 import { Location } from "../../location.js";
 import { DiffError } from "../../vcs.js";
 import { addPatch, chunksByFile, countPatch, deletePatch, emptyPatch, MAX_PATCH_BYTES, MAX_TOTAL_PATCH_BYTES, PATCH_CONTEXT_LINES, } from "../../vcs/patch.js";
-import { byteLength, joinPath, relativePath } from "./hg.platform.js";
+import { byteLength, joinPath, relativePath } from "./hg.vibe.platform.js";
 export const Plugin = define({
     id: "opencode.vcs.hg",
     effect: Effect.fn("VcsHgPlugin")((ctx) => {

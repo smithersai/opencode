@@ -7,7 +7,7 @@ import { LayerNode } from "@opencode/util/effect/layer-node";
 import { Cause, Context, Effect, Exit, Latch, Layer, Logger, Queue, References, Scope, Semaphore } from "effect";
 import { Bus } from "./bus.js";
 import { KV } from "./kv.js";
-import { randomUUID, readFileURL } from "./plugin.platform.js";
+import { randomUUID, readFileURL } from "./plugin.vibe.platform.js";
 import { PluginHost } from "./plugin/host.js";
 import { Service } from "./plugin/service.js";
 import { State } from "./state.js";

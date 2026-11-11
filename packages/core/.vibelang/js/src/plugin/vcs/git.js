@@ -12,7 +12,7 @@ import { Location } from "../../location.js";
 import { DiffError } from "../../vcs.js";
 import { gitExecutable } from "../../util/git-executable.js";
 import { chunksByFile, emptyPatch, MAX_PATCH_BYTES, MAX_TOTAL_PATCH_BYTES, PATCH_CONTEXT_LINES, splitGitPatch, } from "../../vcs/patch.js";
-import { batchableFiles, byteLength, relativePosixPath, removeBatchFiles, sortedEntries, writeBatchList, } from "./git.platform.js";
+import { batchableFiles, byteLength, relativePosixPath, removeBatchFiles, sortedEntries, writeBatchList, } from "./git.vibe.platform.js";
 export const Plugin = define({
     id: "opencode.vcs.git",
     effect: Effect.fn("VcsGitPlugin")((ctx) => {

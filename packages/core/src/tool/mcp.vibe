@@ -13,7 +13,7 @@ import { Permission } from "../permission.js"
 import { Tool } from "../tool.js"
 import { ToolOutput } from "../tool-output.js"
 import { ReadToolFileSystem } from "./read-filesystem.js"
-import { decodeBase64 } from "./mcp.platform.js"
+import { decodeBase64 } from platform
 
 const decodeJson = Schema.decodeUnknownOption(Schema.fromJsonString(Schema.Unknown))
 
@@ -165,3 +165,12 @@ export const node = makeLocationNode({
   layer,
   deps: [Tool.node, Mcp.node, Bus.node, Permission.node, ToolOutput.node],
 })
+
+module platform {
+// The platform code of mcp.vibe: host Buffer decoding, which a .vibe file does not use directly (EK4402).
+
+/** @throws {never} */
+export function decodeBase64(data: string): Buffer {
+  return Buffer.from(data, "base64")
+}
+}

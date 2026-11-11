@@ -11,7 +11,7 @@ import { PluginPromise } from "./promise.js";
 import { Config } from "../config.js";
 import { ManagedPolicy } from "../managed-policy.js";
 import { Watcher } from "../filesystem/watcher.js";
-import { fileURLToPath, isAbsolute, pathToFileURL, readFile, stat, watchTarget } from "./module.platform.js";
+import { fileURLToPath, isAbsolute, pathToFileURL, readFile, stat, watchTarget } from "./module.vibe.platform.js";
 export const make = Effect.fn("PluginModule.make")(function* () {
     const config = yield* Config.Service;
     const watcher = yield* Watcher.Service;

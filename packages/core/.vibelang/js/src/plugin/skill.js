@@ -8,7 +8,7 @@ import { Effect } from "effect";
 import { AbsolutePath } from "../schema.js";
 import { Skill } from "../skill.js";
 import { Config } from "../config.js";
-import { operatingSystem, shell, terminal } from "./skill.platform.js";
+import { operatingSystem, shell, terminal } from "./skill.vibe.platform.js";
 import opencodeContent from "../../../../src/plugin/skill/opencode.md" with { type: "text" };
 import reportContent from "../../../../src/plugin/skill/report.md" with { type: "text" };
 export const OpencodeContent = opencodeContent;

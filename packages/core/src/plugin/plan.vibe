@@ -7,7 +7,7 @@ import type { SessionEvent } from "@opencode/schema/session-event"
 import { Global } from "@opencode/util/global"
 import { Effect, Stream } from "effect"
 import { Permission } from "../permission.js"
-import { joinPath } from "./plan.platform.ts"
+import { joinPath } from platform
 
 const plan = Agent.ID.make("plan")
 
@@ -113,4 +113,15 @@ function lastReminder(messages: ReadonlyArray<Message>, enterReminder: string) {
     if (part?.type !== "text") return found
     return part.text === enterReminder || part.text === leave ? part.text : found
   }, undefined)
+}
+
+module platform {
+// The platform code of plan.vibe: host path joining, which a .vibe file does not import (EK4402).
+
+import path from "path"
+
+/** @throws {never} */
+export function joinPath(...parts: string[]): string {
+  return path.join(...parts)
+}
 }

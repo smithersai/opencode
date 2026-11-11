@@ -2,7 +2,7 @@
 import * as Effect_1 from "effect/Effect";
 import { Effect, Stream } from "effect";
 import { HttpClientResponse } from "effect/http";
-import { allocateBody } from "./http-body.platform.js";
+import { allocateBody } from "./http-body.vibe.platform.js";
 export const collectBoundedResponseBody = (response, maximumBytes, tooLarge) => Effect_1.gen(function* () {
     const contentLength = response.headers["content-length"];
     const parsedSize = contentLength ? Number.parseInt(contentLength, 10) : undefined;

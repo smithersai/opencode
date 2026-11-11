@@ -13,7 +13,7 @@ import { PluginModule } from "./module.js"
 import { SdkPlugins } from "./sdk.js"
 import { PluginUpdate } from "./update.js"
 import { Watcher } from "../filesystem/watcher.js"
-import { isAbsolute, randomUUID } from "./supervisor.platform.js"
+import { isAbsolute, randomUUID } from platform
 
 const resolve = Effect.fn("PluginSupervisor.resolve")(function* (
   modules: Effect.Success<ReturnType<typeof PluginModule.make>>,
@@ -263,3 +263,20 @@ function pluginSource(target: string): Plugin.Source {
 }
 
 export const node = makeLocationNode({ name: "plugin-supervisor", layer, deps: nodeDeps })
+
+module platform {
+// The platform code of supervisor.vibe: host path checks and random identifiers, which a .vibe file does not use
+// directly (EK4402).
+
+import path from "path"
+
+/** @throws {never} */
+export function isAbsolute(target: string): boolean {
+  return path.isAbsolute(target)
+}
+
+/** @throws {never} */
+export function randomUUID(): string {
+  return crypto.randomUUID()
+}
+}

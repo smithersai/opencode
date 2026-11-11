@@ -7,7 +7,7 @@ import { Agent } from "@opencode/schema/agent";
 import { Global } from "@opencode/util/global";
 import { Effect, Stream } from "effect";
 import { Permission } from "../permission.js";
-import { joinPath } from "./plan.platform.js";
+import { joinPath } from "./plan.vibe.platform.js";
 const plan = Agent.ID.make("plan");
 const enter = (directory) => `<system-reminder>
 You are in Plan mode. Discuss the plan with the user directly in the conversation. Do not create or update plan files unless the user explicitly asks you to; when they do, write them only in:

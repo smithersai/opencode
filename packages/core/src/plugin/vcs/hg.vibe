@@ -20,7 +20,7 @@ import {
   MAX_TOTAL_PATCH_BYTES,
   PATCH_CONTEXT_LINES,
 } from "../../vcs/patch.js"
-import { byteLength, joinPath, relativePath } from "./hg.platform.ts"
+import { byteLength, joinPath, relativePath } from platform
 
 export const Plugin = define({
   id: "opencode.vcs.hg",
@@ -229,4 +229,25 @@ function makeHg(proc: AppProcess.Interface, worktree: string) {
   })
 
   return { status, diff, branch, ancestor, cat }
+}
+
+module platform {
+// The platform code of hg.vibe: host paths and byte lengths, which a .vibe file does not read (EK4402).
+
+import path from "path"
+
+/** @throws {never} */
+export function relativePath(from: string, to: string): string {
+  return path.relative(from, to)
+}
+
+/** @throws {never} */
+export function joinPath(...parts: string[]): string {
+  return path.join(...parts)
+}
+
+/** UTF-8 byte length of a string. @throws {never} */
+export function byteLength(text: string): number {
+  return Buffer.byteLength(text)
+}
 }

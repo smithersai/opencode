@@ -2,7 +2,7 @@ export * as PluginSourceDirectory from "./source-directory.js"
 
 import { FSUtil } from "@opencode/util/fs-util"
 import { Effect, Option } from "effect"
-import { joinPath } from "./source-directory.platform.js"
+import { joinPath } from platform
 
 export const names = ["plugin", "plugins"] as const
 
@@ -31,3 +31,14 @@ export const discover = Effect.fn("PluginSourceDirectory.discover")(function* (
   )
   return targets.flatMap(Option.toArray)
 })
+
+module platform {
+// The platform code of source-directory.vibe: host path joining, which a .vibe file does not import (EK4402).
+
+import path from "path"
+
+/** @throws {never} */
+export function joinPath(...parts: string[]): string {
+  return path.join(...parts)
+}
+}

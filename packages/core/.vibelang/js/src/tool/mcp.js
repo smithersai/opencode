@@ -12,7 +12,7 @@ import { Permission } from "../permission.js";
 import { Tool } from "../tool.js";
 import { ToolOutput } from "../tool-output.js";
 import { ReadToolFileSystem } from "./read-filesystem.js";
-import { decodeBase64 } from "./mcp.platform.js";
+import { decodeBase64 } from "./mcp.vibe.platform.js";
 const decodeJson = Schema.decodeUnknownOption(Schema.fromJsonString(Schema.Unknown));
 /**
  * Registry namespace and permission action names for MCP tools.

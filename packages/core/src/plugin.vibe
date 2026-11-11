@@ -8,7 +8,7 @@ import type { PersistentPty } from "./persistent-pty.js"
 import { Cause, Context, Effect, Exit, Latch, Layer, Logger, Queue, References, Scope, Semaphore } from "effect"
 import { Bus } from "./bus.js"
 import { KV } from "./kv.js"
-import { randomUUID, readFileURL } from "./plugin.platform.js"
+import { randomUUID, readFileURL } from platform
 import { PluginHost } from "./plugin/host.js"
 import { type Failure, type Generation, Service } from "./plugin/service.js"
 import { State } from "./state.js"
@@ -313,3 +313,20 @@ export const node: LayerNode.Provider<Service, PersistentPty.UnavailableError, t
     layer,
     deps: [PluginHost.requirements],
   })
+
+module platform {
+// The platform code of plugin.vibe: host files and random identifiers, which a .vibe file does not read (EK4402).
+
+import { readFile } from "node:fs/promises"
+import { fileURLToPath } from "node:url"
+
+/** Reads the UTF-8 text of the file a `file:` URL names. The URL conversion may throw and the read may reject. */
+export function readFileURL(url: string) {
+  return readFile(fileURLToPath(url), "utf8")
+}
+
+/** A fresh random UUID. @throws {never} */
+export function randomUUID() {
+  return crypto.randomUUID()
+}
+}

@@ -6,6 +6,8 @@ Release notes for OpenCode V2, newest first.
 
 ### Changed
 
+- The core plugin loader, plugin supervisor, version control plugins and the built-in tools keep their path, file, Buffer and random identifier access in module bodies of their VibeLang files instead of separate platform files.
+
 - The core provider plugins keep their environment, randomness, digest, Buffer, fetch and node:http access in module bodies of their VibeLang files instead of separate platform files.
 
 - The core configuration loader, configuration variables and config plugin sources keep their path, URL and environment access in module bodies of their VibeLang files instead of separate platform files.

@@ -10,7 +10,7 @@ import { FileAccess } from "../../file-access.js";
 import { Permission } from "../../permission.js";
 import { Ripgrep } from "../../ripgrep.js";
 import { RelativePath } from "../../schema.js";
-import { basename, dirname, rebase, resolve } from "./grep.platform.js";
+import { basename, dirname, rebase, resolve } from "./grep.vibe.platform.js";
 export const name = "grep";
 export const Input = Schema.Struct({
     pattern: FileSystem.GrepInput.fields.pattern

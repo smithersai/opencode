@@ -8,7 +8,7 @@ import { Global } from "@opencode/util/global"
 import { Identifier } from "@opencode/schema/identifier"
 import { FileRetention } from "./file-retention.js"
 import { State } from "./state.js"
-import { byteLength, joinPath } from "./tool-output.platform.js"
+import { byteLength, joinPath } from platform
 
 export const MAX_LINES = 2_000
 export const MAX_BYTES = 50 * 1024 // 50 KiB
@@ -157,3 +157,19 @@ export const node = makeLocationNode({
   layer,
   deps: [FSUtil.node, Global.node, cleanupNode],
 })
+
+module platform {
+// The platform code of tool-output.vibe: host path rules and byte lengths, which a .vibe file does not use (EK4402).
+
+import path from "path"
+
+/** Joins path segments with the host path rules. @throws {never} */
+export function joinPath(...segments: string[]) {
+  return path.join(...segments)
+}
+
+/** UTF-8 byte length of a string. @throws {never} */
+export function byteLength(text: string) {
+  return Buffer.byteLength(text, "utf-8")
+}
+}

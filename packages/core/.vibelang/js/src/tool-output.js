@@ -7,7 +7,7 @@ import { Global } from "@opencode/util/global";
 import { Identifier } from "@opencode/schema/identifier";
 import { FileRetention } from "./file-retention.js";
 import { State } from "./state.js";
-import { byteLength, joinPath } from "./tool-output.platform.js";
+import { byteLength, joinPath } from "./tool-output.vibe.platform.js";
 export const MAX_LINES = 2_000;
 export const MAX_BYTES = 50 * 1024; // 50 KiB
 export const RETENTION = Duration.days(7);

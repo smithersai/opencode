@@ -7,7 +7,7 @@ import { Environment } from "../environment/index.js";
 import { FileSystem } from "../filesystem.js";
 import { Mime } from "../mime.js";
 import { AbsolutePath, NonNegativeInt, PositiveInt, RelativePath } from "../schema.js";
-import { basename, byteLength, concatBytes, encodeBase64, fileURL, sep } from "./read-filesystem.platform.js";
+import { basename, byteLength, concatBytes, encodeBase64, fileURL, sep } from "./read-filesystem.vibe.platform.js";
 export const MAX_READ_LINES = 2_000;
 export const MAX_READ_BYTES = 50 * 1024;
 export const MAX_MEDIA_INGEST_BYTES = 20 * 1024 * 1024;

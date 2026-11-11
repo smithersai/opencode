@@ -10,7 +10,7 @@ import { FileAccess } from "../../file-access.js";
 import { Ripgrep } from "../../ripgrep.js";
 import { RelativePath } from "../../schema.js";
 import { Permission } from "../../permission.js";
-import { rebase, resolve } from "./glob.platform.js";
+import { rebase, resolve } from "./glob.vibe.platform.js";
 export const name = "glob";
 export const Input = Schema.Struct({
     pattern: FileSystem.GlobInput.fields.pattern.annotate({ description: "Glob pattern to match files against" }),

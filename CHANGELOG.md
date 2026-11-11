@@ -6,6 +6,8 @@ Release notes for OpenCode V2, newest first.
 
 ### Changed
 
+- The code mode interpreter and its JSON value conversions now use VibeLang while preserving their declarations, with the throwing evaluator and value walk in TypeScript module bodies.
+
 - The AI WebSocket transport now uses VibeLang while preserving its declarations and its native WebSocket and text decoding access.
 
 - The stats home data queries now use VibeLang while preserving their declarations, with the PlanetScale query cache and database URL lookup in a native platform module.

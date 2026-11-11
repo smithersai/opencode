@@ -12,7 +12,7 @@
   "exclude": [
     "src/**/*.typecheck.ts",
     "src/**/*.typecheck.vibe",
-    "src/gui/host.ts",
+    "src/gui/host.vibe",
     "src/gui/builtin.vibe",
     "src/gui/updater.ts"
   ]

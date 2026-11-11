@@ -5,7 +5,7 @@ import { Tool } from "@opencode/schema/tool";
 import { Deferred, Effect, Schema, Stream } from "effect";
 import { Browser } from "./rpc.js";
 import { BrowserSkill } from "./skill.js";
-import { randomUUID } from "./connection.platform.js";
+import { randomUUID } from "./connection.vibe.platform.js";
 import { BrowserTunnel } from "./tunnel.js";
 export const make = Effect.fn("BrowserConnection.make")(function* (ctx) {
     const browsers = new Map();

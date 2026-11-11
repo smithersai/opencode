@@ -8,7 +8,7 @@ import type { Desktop, Layout, Locale, StorageScope, StoreOptions } from "./host
 import type { MainContext } from "./main.js"
 import type { Command, IconName, Panel, PanelTab, SlotMap } from "./registries.js"
 import { type JSX } from "solid-js"
-import { cancelIdleCallback, clearTimeout, hasIdleCallback, requestIdleCallback, setTimeout } from "./builtin.platform.js"
+import { cancelIdleCallback, clearTimeout, hasIdleCallback, requestIdleCallback, setTimeout } from platform
 
 /**
  * Runs fn when the main thread is idle (a short timeout where requestIdleCallback is missing, e.g. Safari). Load lazy
@@ -458,4 +458,26 @@ export type BuiltinCatalog = {
 export function builtinCatalog(catalog: BuiltinCatalog): Catalog {
   // SAFETY: both hosts read a catalog as `BuiltinCatalog` and call a locale's loader; only built-ins pass one.
   return catalog as Catalog
+}
+
+module platform {
+  // The platform code of builtin.vibe, which VibeLang code does not use directly (EK4402).
+
+  const platformHasIdleCallback = () => typeof requestIdleCallback !== "undefined"
+
+  const platformRequestIdleCallback = (fn: () => void) => requestIdleCallback(fn)
+
+  const platformCancelIdleCallback = (id: number) => cancelIdleCallback(id)
+
+  const platformSetTimeout = (fn: () => void, ms: number) => setTimeout(fn, ms)
+
+  const platformClearTimeout = (id: ReturnType<typeof setTimeout>) => clearTimeout(id)
+
+  export {
+    platformHasIdleCallback as hasIdleCallback,
+    platformRequestIdleCallback as requestIdleCallback,
+    platformCancelIdleCallback as cancelIdleCallback,
+    platformSetTimeout as setTimeout,
+    platformClearTimeout as clearTimeout,
+  }
 }

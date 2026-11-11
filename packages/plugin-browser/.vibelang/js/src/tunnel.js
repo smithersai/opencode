@@ -2,7 +2,7 @@
 export * as BrowserTunnel from "./tunnel.js";
 import { Effect } from "effect";
 import { Browser } from "./rpc.js";
-import { net, randomUUID } from "./tunnel.platform.js";
+import { net, randomUUID } from "./tunnel.vibe.platform.js";
 // One instance belongs to one desktop attachment. Socket buffers provide
 // backpressure; reads never collect an unbounded stream in application memory.
 export function make() {

@@ -6,6 +6,8 @@ Release notes for OpenCode V2, newest first.
 
 ### Changed
 
+- The browser plugin connection, files, proxy and tunnel, and the plugin SDK built-in idle-callback helpers now keep their host access inside their VibeLang files instead of separate platform files.
+
 - The simulation OpenAI backend, simulated provider, renderer and manifest now keep their host access inside their VibeLang files instead of separate platform files.
 
 - The AI package entry, the Anthropic, Gemini and OpenResponses protocols, Bedrock authentication, media input and the recording setup script now keep their host access inside their VibeLang files instead of separate platform files.

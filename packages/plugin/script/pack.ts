@@ -6,5 +6,5 @@ import { pack } from "@opencode/script/pack"
 // stay in the workspace.
 await pack(path.resolve(import.meta.dir, ".."), {
   workspaceOnly: ["./gui/host", "./gui/builtin", "./gui/updater"],
-  privateModules: ["./gui/builtin.platform"],
+  privateModules: ["./gui/builtin.vibe.platform"],
 })

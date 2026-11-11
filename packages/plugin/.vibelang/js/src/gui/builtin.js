@@ -3,7 +3,7 @@
 // out of `dist`, and `script/pack.ts` exports it as `null`. Public SDK modules never import it.
 import { Registry } from "./core.js";
 import {} from "solid-js";
-import { cancelIdleCallback, clearTimeout, hasIdleCallback, requestIdleCallback, setTimeout } from "./builtin.platform.js";
+import { cancelIdleCallback, clearTimeout, hasIdleCallback, requestIdleCallback, setTimeout } from "./builtin.vibe.platform.js";
 /**
  * Runs fn when the main thread is idle (a short timeout where requestIdleCallback is missing, e.g. Safari). Load lazy
  * chunks this way from setup, so they are compiled before a session first opens.

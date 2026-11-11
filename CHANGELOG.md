@@ -6,6 +6,8 @@ Release notes for OpenCode V2, newest first.
 
 ### Changed
 
+- The server route handler set and the workerd runtime profile now use VibeLang while preserving their declarations and the `.ts` entry files that the route tests and the workerd bundle probe read.
+
 - The app composer editor and model, plugin IPC and stores, server pairing, prompt queue, message timeline, timeline virtualizer and error page modules keep their DOM, timer, console, fetch and location access in module bodies of their VibeLang files instead of separate platform files.
 
 - The plugin GUI memory log, memory record, server heap snapshot, SSH state, updater news and WSL sidecar modules keep their Electron, file, path, process, fetch and timer access in module bodies of their VibeLang files instead of separate platform files.

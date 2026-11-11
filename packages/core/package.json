@@ -1087,6 +1087,11 @@
       "vibelang-source": "./src/database/v1-migration.noop.vibe",
       "default": "./.vibelang/js/src/database/v1-migration.noop.js"
     },
+    "./database/v1-migration.bun": {
+      "types": "./src/database/v1-migration.bun.d.vibe.ts",
+      "vibelang-source": "./src/database/v1-migration.bun.vibe",
+      "default": "./.vibelang/js/src/database/v1-migration.bun.js"
+    },
     "./effect/app-node-builder": {
       "types": "./src/effect/app-node-builder.ts",
       "vibelang-source": "./src/effect/app-node-builder.ts",
@@ -1561,6 +1566,7 @@
     "./generate.native": null,
     "./tool/runtime.vibe.-24-throw-24-ts": null,
     "./tool/runtime.vibe.$throw$ts": null,
+    "./database/v1-migration.bun.vibe.platform": null,
     "./session/projector.platform": null,
     "./session/blob.platform": null,
     "./session/instruction-state.platform": null,
@@ -1817,10 +1823,10 @@
       }
     },
     "#v1-migration": {
-      "types": "./src/database/v1-migration.bun.ts",
+      "types": "./src/database/v1-migration.bun.d.vibe.ts",
       "bun": {
-        "types": "./src/database/v1-migration.bun.ts",
-        "vibelang-source": "./src/database/v1-migration.bun.ts",
+        "types": "./src/database/v1-migration.bun.d.vibe.ts",
+        "vibelang-source": "./src/database/v1-migration.bun.vibe",
         "default": "./.vibelang/js/src/database/v1-migration.bun.js"
       },
       "node": {

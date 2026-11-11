@@ -1,5 +1,5 @@
-import { execFilePromise } from "./apps.platform.ts"
-import { currentPlatform,environmentValue } from "./apps.platform.ts"
+import { execFilePromise } from platform
+import { currentPlatform,environmentValue } from platform
 
 
 export const checkAppExists = effect (appName: string) => try withSpan(effect {
@@ -147,4 +147,18 @@ const resolveWindowsAppPath = effect (appName: string) => try withSpan(effect {
 
 function exists(fs: FileSystem.FileSystem, path: string) {
   return fs.exists(path) |> Effect.orElseSucceed(%, () => false)
+}
+
+module platform {
+  import { execFile } from "node:child_process"
+  import { promisify } from "node:util"
+
+  export function currentPlatform() {
+    return process.platform
+  }
+  export function environmentValue(name: string) {
+    return process.env[name]
+  }
+
+  export const execFilePromise = promisify(execFile)
 }

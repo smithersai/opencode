@@ -1,8 +1,8 @@
-import { listenForSignal } from "./index.platform.ts"
-import { currentPlatform } from "./index.platform.ts"
-import { $platform$2 } from "./index.platform.js";
-import { $platform$1 } from "./index.platform.js";
-import { $platform } from "./index.platform.js";
+import { listenForSignal } from host
+import { currentPlatform } from host
+import { $platform$2 } from host;
+import { $platform$1 } from host;
+import { $platform } from host;
 export * as ApplicationLifecycle from "./index.vibe"
 
 import { app, BrowserWindow } from "electron"
@@ -215,3 +215,24 @@ export const layer = Layer.unwrap(
     return runtime.pipe(Layer.provideMerge(platform))
   },
 )
+
+module host {
+  // Generated platform helpers for this VibeLang module.
+  export function $platform(arg0: () => void) {
+    return setImmediate(arg0)
+  }
+  export function $platform$1(arg0: "SIGINT", arg1: () => void) {
+    return process.off(arg0, arg1)
+  }
+  export function $platform$2(arg0: "SIGTERM", arg1: () => void) {
+    return process.off(arg0, arg1)
+  }
+
+  export function currentPlatform() {
+    return process.platform
+  }
+
+  export function listenForSignal(signal: "SIGINT" | "SIGTERM", callback: () => void) {
+    process.on(signal, callback)
+  }
+}

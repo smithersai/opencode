@@ -3,8 +3,8 @@ import * as Effect from "effect/Effect";
 import * as Path from "effect/Path";
 import { withSpan } from "effect/Effect";
 import * as Effect_1 from "effect/Effect";
-import { loginShell, spawnShell } from "./shell-env.platform.js";
-import { environmentValue } from "./shell-env.platform.js";
+import { loginShell, spawnShell } from "./shell-env.vibe.platform.js";
+import { environmentValue } from "./shell-env.vibe.platform.js";
 export function resolveUserShell(envShell, loginShell) {
     const resolvedLoginShell = loginShell && loginShell !== "unknown" ? loginShell : undefined;
     return envShell || resolvedLoginShell || "/bin/sh";

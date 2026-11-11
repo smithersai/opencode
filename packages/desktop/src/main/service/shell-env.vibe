@@ -1,6 +1,6 @@
 import type { Buffer } from "node:buffer"
-import { loginShell, spawnShell } from "./shell-env.platform.ts"
-import { environmentValue } from "./shell-env.platform.ts"
+import { loginShell, spawnShell } from platform
+import { environmentValue } from platform
 
 
 type Probe = { type: "Loaded"; value: Record<string, string> } | { type: "Timeout" } | { type: "Unavailable" }
@@ -103,3 +103,23 @@ export const loadShellEnv = effect (shell: string) => try withSpan(effect {
 
   return null
 }, "ShellEnv.load")
+
+module platform {
+  import { spawnSync } from "node:child_process"
+  import { userInfo } from "node:os"
+
+  export function environmentValue(name: string) {
+    return process.env[name]
+  }
+
+  export function loginShell() {
+    return userInfo().shell
+  }
+  export function spawnShell(shell: string, mode: "-il" | "-l") {
+    return spawnSync(shell, [mode, "-c", "env -0"], {
+      stdio: ["ignore", "pipe", "ignore"],
+      timeout: 5_000,
+      windowsHide: true,
+    })
+  }
+}

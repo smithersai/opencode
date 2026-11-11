@@ -1,4 +1,4 @@
-import { currentPlatform } from "./defaults.platform.ts"
+import { currentPlatform } from platform
 import { resolveThemeVariant } from "@opencode/ui/theme/resolve"
 import type { DesktopTheme } from "@opencode/ui/theme/types"
 import { desktopZoomLevels } from "@opencode/app/desktop-menu"
@@ -70,4 +70,10 @@ export function platformFrame(mode: "light" | "dark", zoom: number) {
   }
 
   return frame
+}
+
+module platform {
+  export function currentPlatform() {
+    return process.platform
+  }
 }

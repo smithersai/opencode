@@ -1,4 +1,4 @@
-import { systemPlatform, resourcePath } from "./appearance.platform.ts"
+import { systemPlatform, resourcePath } from platform
 import { app, BrowserWindow, nativeImage, nativeTheme } from "electron"
 import type { DesktopZoomLevel } from "@opencode/app/desktop-menu"
 import type { Path } from "effect"
@@ -170,4 +170,14 @@ function updateZoom(win: BrowserWindow) {
     win.webContents,
     new WindowZoomChanged({ factor: win.webContents.getZoomFactor(), level: storedZoomLevel() }),
   )
+}
+
+module platform {
+  export function systemPlatform() {
+    return process.platform
+  }
+
+  export function resourcePath() {
+    return process.resourcesPath
+  }
 }

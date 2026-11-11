@@ -6,8 +6,8 @@ import { withSpan } from "effect/Effect";
 import { $catchExpression } from "vibelang-runtime/internal";
 import * as Effect_1 from "effect/Effect";
 import * as runtime from "vibelang-runtime/internal";
-import { execFilePromise } from "./apps.platform.js";
-import { currentPlatform, environmentValue } from "./apps.platform.js";
+import { execFilePromise } from "./apps.vibe.platform.js";
+import { currentPlatform, environmentValue } from "./apps.vibe.platform.js";
 export const checkAppExists = (appName) => {
     return Effect_1.gen(function* checkAppExists() { return yield* withSpan(Effect_1.gen(function* () {
         if ((yield* Effect.orDie(Effect.try({ try: () => currentPlatform(), catch: (e) => e }))) === "win32")

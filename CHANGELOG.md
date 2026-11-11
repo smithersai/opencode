@@ -6,6 +6,8 @@ Release notes for OpenCode V2, newest first.
 
 ### Changed
 
+- The desktop file opener, application lifecycle and environment, CLI installer, shell environment, window and renderer IPC client modules keep their process, child process, environment, path, timer and window access in module bodies of their VibeLang files instead of separate platform files.
+
 - The server authentication, pairing, process, location and server information modules and the debug, persistent terminal and session error handlers keep their crypto, Buffer, HTTP server, network interface, path and working directory access in module bodies of their VibeLang files instead of separate platform files.
 
 - The code mode job runner now uses VibeLang while preserving its declarations, with the throwing runner class in a TypeScript module body.

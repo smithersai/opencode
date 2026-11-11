@@ -1,5 +1,5 @@
-import { createWindowID } from "./index.platform.ts"
-import { currentPlatform,environmentValue } from "./index.platform.ts"
+import { createWindowID } from platform
+import { currentPlatform,environmentValue } from platform
 import { app, BrowserWindow, screen } from "electron"
 import { Effect, FileSystem, Path } from "effect"
 import { openExternalURL } from "../files/index.vibe"
@@ -240,3 +240,18 @@ export const mainWindows = effect () => try withSpan(effect {
 }, "Window.make")
 
 
+
+module platform {
+  import { randomUUID } from "node:crypto"
+
+  export function currentPlatform() {
+    return process.platform
+  }
+  export function environmentValue(name: string) {
+    return process.env[name]
+  }
+
+  export function createWindowID() {
+    return randomUUID()
+  }
+}

@@ -1,4 +1,4 @@
-import { scheduleTimeout,cancelTimeout } from "./unresponsive.platform.ts"
+import { scheduleTimeout,cancelTimeout } from platform
 import type { BrowserWindow } from "electron"
 import { Effect } from "effect"
 import { scoped } from "../native/logging"
@@ -86,4 +86,13 @@ export const unresponsiveSampler = effect {
   }
 
   return createUnresponsiveSampler
+}
+
+module platform {
+  export function scheduleTimeout(callback: () => void, delay?: number) {
+    return setTimeout(callback, delay)
+  }
+  export function cancelTimeout(timer: ReturnType<typeof setTimeout> | undefined) {
+    clearTimeout(timer)
+  }
 }

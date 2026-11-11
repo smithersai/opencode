@@ -18,8 +18,8 @@
   ],
   "exports": {
     "./effect/layer-node": {
-      "types": "./src/effect/layer-node.ts",
-      "vibelang-source": "./src/effect/layer-node.ts",
+      "types": "./src/effect/layer-node.d.vibe.ts",
+      "vibelang-source": "./src/effect/layer-node.vibe",
       "default": "./.vibelang/js/src/effect/layer-node.js"
     },
     "./bom": {
@@ -107,6 +107,7 @@
     "./npm-config.vibe.platform": null,
     "./bom.vibe.-24-call-24-ts": null,
     "./patch.vibe.-24-throw-24-ts": null,
+    "./effect/layer-node.vibe.graph": null,
     "./cross-spawn-spawner.vibe.platform": null,
     "./fs-util.vibe.platform": null,
     "./observability.vibe.platform": null,

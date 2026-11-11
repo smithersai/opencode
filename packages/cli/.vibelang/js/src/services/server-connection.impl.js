@@ -4,14 +4,14 @@ import { Service } from "@opencode/client/effect/service";
 import { ClientError, isUnauthorizedError, OpenCode } from "@opencode/client/promise";
 import { OPENCODE_VERSION } from "../version.js";
 import { Effect, Option, Redacted } from "effect";
-import { Server as ServerFlag, Standalone as StandaloneFlag } from "../commands/commands.js";
+import { Server, Standalone } from "../commands/commands.js";
 import { Env } from "../env.js";
 import { ServiceConfig } from "./service-config.js";
-import { Standalone } from "./standalone.js";
+import { start } from "./standalone.js";
 import { errorMessage } from "../util/error.js";
 export const resolve = Effect.fn("cli.server-connection.resolve")(function* (args = {}) {
-    const serverFlag = yield* Effect.serviceOption(ServerFlag).pipe(Effect.map(Option.flatten));
-    const standaloneFlag = yield* Effect.serviceOption(StandaloneFlag);
+    const serverFlag = yield* Effect.serviceOption(Server).pipe(Effect.map(Option.flatten));
+    const standaloneFlag = yield* Effect.serviceOption(Standalone);
     const server = args.server ?? Option.getOrUndefined(serverFlag);
     const standalone = args.standalone ?? Option.getOrElse(standaloneFlag, () => false);
     if (server !== undefined && standalone)
@@ -32,7 +32,7 @@ export const resolve = Effect.fn("cli.server-connection.resolve")(function* (arg
         return { endpoint };
     }
     if (standalone || (yield* ServiceConfig.read()).disabled === true) {
-        return { endpoint: yield* Standalone.start() };
+        return { endpoint: yield* start() };
     }
     const mismatch = args.mismatch ?? "ignore";
     const options = yield* ServiceConfig.options({ checkVersion: mismatch !== "ignore" });

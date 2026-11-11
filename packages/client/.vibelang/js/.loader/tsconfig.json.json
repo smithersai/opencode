@@ -2,15 +2,15 @@
  "format": 2,
  "base": "../../../../..",
  "entry": {
-  "format": 12,
-  "version": "0.0.12",
+  "format": 13,
+  "version": "0.0.14-pre.d955d06c6696",
   "project": {
    "relative": "packages/client/tsconfig.json"
   },
   "root": {
    "relative": "packages/client"
   },
-  "compiler": "8x4fFYTvt9kAFgtq-M8Fi8-i1Gvo2mvmXI8e8XD6LJI",
+  "compiler": "ybjZ7xpfhG7y8lEmhicun5T9Iy36S_8hdbr6mgPF5w4",
   "configs": [
    {
     "path": {
@@ -54,7 +54,7 @@
      "relative": "packages/client/src"
     },
     null,
-    "VloGER-83l-TTuNotJVgwiWgvgQq3uEEew3KwHtd_wE",
+    "LwZnQEDZa5Uy3Rh4scd01wXYRwhHWHJn77hbeU3mmyM",
     []
    ],
    [
@@ -62,7 +62,7 @@
      "relative": "packages/client/src/effect"
     },
     null,
-    "qI6pZstzVMSxL_mX54H-QkG8BBYFYunJvUOzQGmJ3GY",
+    "J4Ctw1JDTJyPHYmrwZUKE17h2BEbqxbinrl82fj8VNY",
     []
    ],
    [
@@ -207,8 +207,8 @@
     "path": {
      "relative": "bun.lock"
     },
-    "size": 739662,
-    "hash": "kkobRm2xcvSFmj8PSS9FGVn2Rv5_V-8Qp4UBaBR7M3A"
+    "size": 744331,
+    "hash": "S332aDlN4XukOurLTpJSnFEfzNaSzQWB9I12pR41Uyg"
    },
    {
     "path": {
@@ -227,24 +227,24 @@
    },
    {
     "path": {
-     "relative": "node_modules/.bun/vibelang-runtime@.vibelang-toolchain+vibelang-runtime-0.0.13-89b143f8885a.tgz+3183b44d2ba27203/node_modules/vibelang-runtime/package.json"
+     "relative": "node_modules/.bun/vibelang-runtime@.vibelang-toolchain+0.0.14-pre.d955d06c6696+tarballs+vibelang-r+b6ca872fe8e64127+126f14e3210774e8/node_modules/vibelang-runtime/package.json"
     },
-    "size": 7565,
-    "hash": "cjCwf6GUH9V3Oz3SwjC6rkJhyDt1UZErLB5DQhfnM_M"
+    "size": 7950,
+    "hash": "gNRlW8x_igG1HHWpbI3KLf7cNUhik6SdznXeF35UpPw"
    },
    {
     "path": {
      "relative": "packages/schema/package.json"
     },
-    "size": 20082,
-    "hash": "I_VT9Z-JQPuKI3XTXKRVBvp8rpJM6vYTa6AmTSfYdT0"
+    "size": 20156,
+    "hash": "nomBirdlbpBpqDK0Z0UoHnEZwpadAsYk7ZyMqHDu0z0"
    },
    {
     "path": {
      "relative": "packages/protocol/package.json"
     },
-    "size": 8868,
-    "hash": "PWXKZhszdbvVN0SouZSQfycHbDVv4cIQwGfrzL0V830"
+    "size": 8942,
+    "hash": "n3TbJZWNJ50LRTr7iZCMJO36ji8p0Xe2ilfmP_NQ7fs"
    },
    {
     "path": {
@@ -257,8 +257,8 @@
     "path": {
      "relative": "packages/client/package.json"
     },
-    "size": 2882,
-    "hash": "iuRfM8zTg-HmuQGpMmh8kNMXZDOg4vvrOPsvGwsOWjg"
+    "size": 2993,
+    "hash": "rCvdHFoP0fxnMli1Gy60e2Ao7o_aGi-3Bu1_DnQostQ"
    },
    {
     "path": {
@@ -1440,126 +1440,210 @@
    },
    {
     "path": {
-     "relative": "node_modules/.bun/vibelang-runtime@.vibelang-toolchain+vibelang-runtime-0.0.13-89b143f8885a.tgz+3183b44d2ba27203/node_modules/vibelang-runtime/dist/version.d.ts"
+     "relative": "node_modules/.bun/vibelang-runtime@.vibelang-toolchain+0.0.14-pre.d955d06c6696+tarballs+vibelang-r+b6ca872fe8e64127+126f14e3210774e8/node_modules/vibelang-runtime/dist/version.d.ts"
     },
     "size": 91,
     "hash": "OLhx74xVvRMxcl4krcVslmdZGXNsTNFw1VSQRYH3mpc"
    },
    {
     "path": {
-     "relative": "node_modules/.bun/vibelang-runtime@.vibelang-toolchain+vibelang-runtime-0.0.13-89b143f8885a.tgz+3183b44d2ba27203/node_modules/vibelang-runtime/dist/calls.d.ts"
+     "relative": "node_modules/.bun/vibelang-runtime@.vibelang-toolchain+0.0.14-pre.d955d06c6696+tarballs+vibelang-r+b6ca872fe8e64127+126f14e3210774e8/node_modules/vibelang-runtime/dist/calls.d.ts"
     },
     "size": 1383,
     "hash": "uAwhDPR2CFdUic_UDD997dkpJaNZ3R1T_jqRSG4Cclo"
    },
    {
     "path": {
-     "relative": "node_modules/.bun/vibelang-runtime@.vibelang-toolchain+vibelang-runtime-0.0.13-89b143f8885a.tgz+3183b44d2ba27203/node_modules/vibelang-runtime/dist/fastcalls.d.ts"
+     "relative": "node_modules/.bun/vibelang-runtime@.vibelang-toolchain+0.0.14-pre.d955d06c6696+tarballs+vibelang-r+b6ca872fe8e64127+126f14e3210774e8/node_modules/vibelang-runtime/dist/fastcalls.d.ts"
     },
     "size": 4751,
     "hash": "9wxoIynrlvPe4VAUQN_yG-rNp1lwbKvt-AZOat2MRdY"
    },
    {
     "path": {
-     "relative": "node_modules/.bun/vibelang-runtime@.vibelang-toolchain+vibelang-runtime-0.0.13-89b143f8885a.tgz+3183b44d2ba27203/node_modules/vibelang-runtime/dist/regions.d.ts"
+     "relative": "node_modules/.bun/vibelang-runtime@.vibelang-toolchain+0.0.14-pre.d955d06c6696+tarballs+vibelang-r+b6ca872fe8e64127+126f14e3210774e8/node_modules/vibelang-runtime/dist/regions.d.ts"
     },
     "size": 6387,
     "hash": "wHQs6G-mP3lEKiqUEa8esaj1EIdtBxzBWiKUXvaoBbY"
    },
    {
     "path": {
-     "relative": "node_modules/.bun/vibelang-runtime@.vibelang-toolchain+vibelang-runtime-0.0.13-89b143f8885a.tgz+3183b44d2ba27203/node_modules/vibelang-runtime/dist/fork.d.ts"
+     "relative": "node_modules/.bun/vibelang-runtime@.vibelang-toolchain+0.0.14-pre.d955d06c6696+tarballs+vibelang-r+b6ca872fe8e64127+126f14e3210774e8/node_modules/vibelang-runtime/dist/fork.d.ts"
     },
     "size": 1522,
     "hash": "ckaaRg51IcfZbr740uLdup3qFuKS3TxgVYGSFOW2Q54"
    },
    {
     "path": {
-     "relative": "node_modules/.bun/vibelang-runtime@.vibelang-toolchain+vibelang-runtime-0.0.13-89b143f8885a.tgz+3183b44d2ba27203/node_modules/vibelang-runtime/dist/kernel/internals.d.ts"
+     "relative": "node_modules/.bun/vibelang-runtime@.vibelang-toolchain+0.0.14-pre.d955d06c6696+tarballs+vibelang-r+b6ca872fe8e64127+126f14e3210774e8/node_modules/vibelang-runtime/dist/kernel/internals.d.ts"
     },
     "size": 1238,
     "hash": "IMzEvVGIaf37peHrkUH2HsmoOemwj7YAPgBI1bNG6tk"
    },
    {
     "path": {
-     "relative": "node_modules/.bun/vibelang-runtime@.vibelang-toolchain+vibelang-runtime-0.0.13-89b143f8885a.tgz+3183b44d2ba27203/node_modules/vibelang-runtime/dist/kernel/kernel.d.ts"
+     "relative": "node_modules/.bun/vibelang-runtime@.vibelang-toolchain+0.0.14-pre.d955d06c6696+tarballs+vibelang-r+b6ca872fe8e64127+126f14e3210774e8/node_modules/vibelang-runtime/dist/kernel/kernel.d.ts"
     },
     "size": 6338,
     "hash": "XGJbPTQadKfJQPfra4kFdQXvD8XgBQQ6eH-by456KBs"
    },
    {
     "path": {
-     "relative": "node_modules/.bun/vibelang-runtime@.vibelang-toolchain+vibelang-runtime-0.0.13-89b143f8885a.tgz+3183b44d2ba27203/node_modules/vibelang-runtime/dist/services.d.ts"
+     "relative": "node_modules/.bun/vibelang-runtime@.vibelang-toolchain+0.0.14-pre.d955d06c6696+tarballs+vibelang-r+b6ca872fe8e64127+126f14e3210774e8/node_modules/vibelang-runtime/dist/services.d.ts"
     },
     "size": 3346,
     "hash": "JxhNAxkLVY33Lxqyh_Vd-mqQSE8dmceO3rEnpBJTbEY"
    },
    {
     "path": {
-     "relative": "node_modules/.bun/vibelang-runtime@.vibelang-toolchain+vibelang-runtime-0.0.13-89b143f8885a.tgz+3183b44d2ba27203/node_modules/vibelang-runtime/dist/handlers.d.ts"
+     "relative": "node_modules/.bun/vibelang-runtime@.vibelang-toolchain+0.0.14-pre.d955d06c6696+tarballs+vibelang-r+b6ca872fe8e64127+126f14e3210774e8/node_modules/vibelang-runtime/dist/handlers.d.ts"
     },
     "size": 4479,
     "hash": "ZzQU78bLBWIppynLZgOBgDkcijiAJJq_TQpkNW-JrCY"
    },
    {
     "path": {
-     "relative": "node_modules/.bun/vibelang-runtime@.vibelang-toolchain+vibelang-runtime-0.0.13-89b143f8885a.tgz+3183b44d2ba27203/node_modules/vibelang-runtime/dist/producers.d.ts"
+     "relative": "node_modules/.bun/vibelang-runtime@.vibelang-toolchain+0.0.14-pre.d955d06c6696+tarballs+vibelang-r+b6ca872fe8e64127+126f14e3210774e8/node_modules/vibelang-runtime/dist/producers.d.ts"
     },
     "size": 2721,
     "hash": "ndVPafzb3N5wWv25-4h-4Omv5tqD3POjx2v8_p9Erko"
    },
    {
     "path": {
-     "relative": "node_modules/.bun/vibelang-runtime@.vibelang-toolchain+vibelang-runtime-0.0.13-89b143f8885a.tgz+3183b44d2ba27203/node_modules/vibelang-runtime/dist/iterators.d.ts"
+     "relative": "node_modules/.bun/vibelang-runtime@.vibelang-toolchain+0.0.14-pre.d955d06c6696+tarballs+vibelang-r+b6ca872fe8e64127+126f14e3210774e8/node_modules/vibelang-runtime/dist/iterators.d.ts"
     },
     "size": 307,
     "hash": "R_32U0PMqjIgXtbB6rzs2OaY3x5NurDOaidBkv7uhfE"
    },
    {
     "path": {
-     "relative": "node_modules/.bun/vibelang-runtime@.vibelang-toolchain+vibelang-runtime-0.0.13-89b143f8885a.tgz+3183b44d2ba27203/node_modules/vibelang-runtime/dist/binding-iterator.d.ts"
+     "relative": "node_modules/.bun/vibelang-runtime@.vibelang-toolchain+0.0.14-pre.d955d06c6696+tarballs+vibelang-r+b6ca872fe8e64127+126f14e3210774e8/node_modules/vibelang-runtime/dist/binding-iterator.d.ts"
     },
     "size": 521,
     "hash": "a5GFo1F3YhIqtKzebc3H9jA8z8NZhbnUT6KJQHrwj5Q"
    },
    {
     "path": {
-     "relative": "node_modules/.bun/vibelang-runtime@.vibelang-toolchain+vibelang-runtime-0.0.13-89b143f8885a.tgz+3183b44d2ba27203/node_modules/vibelang-runtime/dist/boundaries.d.ts"
+     "relative": "node_modules/.bun/vibelang-runtime@.vibelang-toolchain+0.0.14-pre.d955d06c6696+tarballs+vibelang-r+b6ca872fe8e64127+126f14e3210774e8/node_modules/vibelang-runtime/dist/boundaries.d.ts"
     },
     "size": 2237,
     "hash": "BZIaO-QAJ9Z6Fu4irKqOzSRsUYSLuUQiW1zKjGvuXfI"
    },
    {
     "path": {
-     "relative": "node_modules/.bun/vibelang-runtime@.vibelang-toolchain+vibelang-runtime-0.0.13-89b143f8885a.tgz+3183b44d2ba27203/node_modules/vibelang-runtime/dist/hatches.d.ts"
+     "relative": "node_modules/.bun/vibelang-runtime@.vibelang-toolchain+0.0.14-pre.d955d06c6696+tarballs+vibelang-r+b6ca872fe8e64127+126f14e3210774e8/node_modules/vibelang-runtime/dist/hatches.d.ts"
     },
     "size": 4288,
     "hash": "SHvw3j3NmkBQey39qbFcwin5cLqgq9PF9msgmFzaYKE"
    },
    {
     "path": {
-     "relative": "node_modules/.bun/vibelang-runtime@.vibelang-toolchain+vibelang-runtime-0.0.13-89b143f8885a.tgz+3183b44d2ba27203/node_modules/vibelang-runtime/dist/fibers.d.ts"
+     "relative": "node_modules/.bun/vibelang-runtime@.vibelang-toolchain+0.0.14-pre.d955d06c6696+tarballs+vibelang-r+b6ca872fe8e64127+126f14e3210774e8/node_modules/vibelang-runtime/dist/fibers.d.ts"
     },
     "size": 7629,
     "hash": "EiZ7kFH915KwfM4-KJZsdiawtJ_7Ty4raruq4BAIkGU"
    },
    {
     "path": {
-     "relative": "node_modules/.bun/vibelang-runtime@.vibelang-toolchain+vibelang-runtime-0.0.13-89b143f8885a.tgz+3183b44d2ba27203/node_modules/vibelang-runtime/dist/provide.d.ts"
+     "relative": "node_modules/.bun/vibelang-runtime@.vibelang-toolchain+0.0.14-pre.d955d06c6696+tarballs+vibelang-r+b6ca872fe8e64127+126f14e3210774e8/node_modules/vibelang-runtime/dist/provide.d.ts"
     },
     "size": 2355,
     "hash": "DTx-GtW-_UHyzfF40aMg8o-NybtpBLPa3q1ln3Jpa5s"
    },
    {
     "path": {
-     "relative": "node_modules/.bun/vibelang-runtime@.vibelang-toolchain+vibelang-runtime-0.0.13-89b143f8885a.tgz+3183b44d2ba27203/node_modules/vibelang-runtime/dist/primitives.d.ts"
+     "relative": "node_modules/.bun/effect@4.1.1/node_modules/effect/dist/workflow/Activity.d.ts"
+    },
+    "size": 6644,
+    "hash": "O94vksRKgyrgx3OpMnXkXv-ze3pAieV5454TvoG64YA"
+   },
+   {
+    "path": {
+     "relative": "node_modules/.bun/effect@4.1.1/node_modules/effect/dist/rpc/RpcMiddleware.d.ts"
+    },
+    "size": 8929,
+    "hash": "ey_i0y8B4ddzcBcy-VQhuN8ZUv_qrSBgcdILMMLjr48"
+   },
+   {
+    "path": {
+     "relative": "node_modules/.bun/effect@4.1.1/node_modules/effect/dist/rpc/RpcSchema.d.ts"
+    },
+    "size": 2676,
+    "hash": "uC56XX_ID3exTunjCH-K4OrsSPHw-Eiy-arYgTD45JE"
+   },
+   {
+    "path": {
+     "relative": "node_modules/.bun/effect@4.1.1/node_modules/effect/dist/rpc/Rpc.d.ts"
+    },
+    "size": 27625,
+    "hash": "VrScNI_WJ0XrrLvB8p4-vOGYyQnQxgbQTQ6DR25z_nc"
+   },
+   {
+    "path": {
+     "relative": "node_modules/.bun/effect@4.1.1/node_modules/effect/dist/workers/WorkerError.d.ts"
+    },
+    "size": 3857,
+    "hash": "V6v-kxDbBtEBa2oY4BrOfp-Ukm6W0Tf8hH1so8-_lFc"
+   },
+   {
+    "path": {
+     "relative": "node_modules/.bun/effect@4.1.1/node_modules/effect/dist/rpc/RpcClientError.d.ts"
+    },
+    "size": 2470,
+    "hash": "0r0FSPq8410Wr3CBuO-H-CeFELWlymVDYmkQXmZPE_4"
+   },
+   {
+    "path": {
+     "relative": "node_modules/.bun/effect@4.1.1/node_modules/effect/dist/rpc/RpcMessage.d.ts"
+    },
+    "size": 13180,
+    "hash": "kMnxm88YojMllZsyeWSzeamoJM8uqmt401RIWysH9m0"
+   },
+   {
+    "path": {
+     "relative": "node_modules/.bun/effect@4.1.1/node_modules/effect/dist/workflow/Workflow.d.ts"
+    },
+    "size": 18929,
+    "hash": "T9ym1nDkGu9D_4BX1TVD2t4tpo9nrcTDwbE4dOaXBTg"
+   },
+   {
+    "path": {
+     "relative": "node_modules/.bun/effect@4.1.1/node_modules/effect/dist/workflow/DurableDeferred.d.ts"
+    },
+    "size": 17080,
+    "hash": "0HYeLXjSxTYk2VxmgCR8lsaA7Bq82UNrkpMNKZc0kXg"
+   },
+   {
+    "path": {
+     "relative": "node_modules/.bun/effect@4.1.1/node_modules/effect/dist/workflow/DurableClock.d.ts"
+    },
+    "size": 1683,
+    "hash": "acpDCCT8b7Nx7nC7nWDNGg6pktVOgOR57nNFEur5P64"
+   },
+   {
+    "path": {
+     "relative": "node_modules/.bun/effect@4.1.1/node_modules/effect/dist/workflow/WorkflowEngine.d.ts"
+    },
+    "size": 12971,
+    "hash": "4iB3RMXpMelb_0M-FV7m_hX1LXYhTrUzjNOWE7ejhu0"
+   },
+   {
+    "path": {
+     "relative": "node_modules/.bun/vibelang-runtime@.vibelang-toolchain+0.0.14-pre.d955d06c6696+tarballs+vibelang-r+b6ca872fe8e64127+126f14e3210774e8/node_modules/vibelang-runtime/dist/durable.d.ts"
+    },
+    "size": 6072,
+    "hash": "fD9ctjmrxYVYxBxxAGOMk8569GX3z7LD7EQ-S4X7eEM"
+   },
+   {
+    "path": {
+     "relative": "node_modules/.bun/vibelang-runtime@.vibelang-toolchain+0.0.14-pre.d955d06c6696+tarballs+vibelang-r+b6ca872fe8e64127+126f14e3210774e8/node_modules/vibelang-runtime/dist/primitives.d.ts"
     },
     "size": 2785,
     "hash": "IWg8HZdD_h5bezhO5VO0Oat3-GL3h98xoW06v-EAWOs"
    },
    {
     "path": {
-     "relative": "node_modules/.bun/vibelang-runtime@.vibelang-toolchain+vibelang-runtime-0.0.13-89b143f8885a.tgz+3183b44d2ba27203/node_modules/vibelang-runtime/dist/match.d.ts"
+     "relative": "node_modules/.bun/vibelang-runtime@.vibelang-toolchain+0.0.14-pre.d955d06c6696+tarballs+vibelang-r+b6ca872fe8e64127+126f14e3210774e8/node_modules/vibelang-runtime/dist/match.d.ts"
     },
     "size": 7419,
     "hash": "drYx84Z5Gv1dNDLR4F4AIT2-O8cOMBw_I81gE8slkjg"
@@ -1573,70 +1657,70 @@
    },
    {
     "path": {
-     "relative": "node_modules/.bun/vibelang-runtime@.vibelang-toolchain+vibelang-runtime-0.0.13-89b143f8885a.tgz+3183b44d2ba27203/node_modules/vibelang-runtime/dist/main.d.ts"
+     "relative": "node_modules/.bun/vibelang-runtime@.vibelang-toolchain+0.0.14-pre.d955d06c6696+tarballs+vibelang-r+b6ca872fe8e64127+126f14e3210774e8/node_modules/vibelang-runtime/dist/main.d.ts"
     },
     "size": 1370,
     "hash": "S2GqpFmzvnikrJrgw5lzEqtFJy_7i20jzGlMr4mt88Y"
    },
    {
     "path": {
-     "relative": "node_modules/.bun/vibelang-runtime@.vibelang-toolchain+vibelang-runtime-0.0.13-89b143f8885a.tgz+3183b44d2ba27203/node_modules/vibelang-runtime/dist/prelude-core.d.ts"
+     "relative": "node_modules/.bun/vibelang-runtime@.vibelang-toolchain+0.0.14-pre.d955d06c6696+tarballs+vibelang-r+b6ca872fe8e64127+126f14e3210774e8/node_modules/vibelang-runtime/dist/prelude-core.d.ts"
     },
     "size": 3205,
     "hash": "qhCAyL8cDh72O1mKSoPv1Sz5QF8-tKizZQnAR6TeDno"
    },
    {
     "path": {
-     "relative": "node_modules/.bun/vibelang-runtime@.vibelang-toolchain+vibelang-runtime-0.0.13-89b143f8885a.tgz+3183b44d2ba27203/node_modules/vibelang-runtime/dist/resources.d.ts"
+     "relative": "node_modules/.bun/vibelang-runtime@.vibelang-toolchain+0.0.14-pre.d955d06c6696+tarballs+vibelang-r+b6ca872fe8e64127+126f14e3210774e8/node_modules/vibelang-runtime/dist/resources.d.ts"
     },
     "size": 1670,
     "hash": "jWScKmw8idFbB3itet51UYKNCRN74Mmu_uzZqy3V28w"
    },
    {
     "path": {
-     "relative": "node_modules/.bun/vibelang-runtime@.vibelang-toolchain+vibelang-runtime-0.0.13-89b143f8885a.tgz+3183b44d2ba27203/node_modules/vibelang-runtime/dist/legacy-await-types.d.ts"
+     "relative": "node_modules/.bun/vibelang-runtime@.vibelang-toolchain+0.0.14-pre.d955d06c6696+tarballs+vibelang-r+b6ca872fe8e64127+126f14e3210774e8/node_modules/vibelang-runtime/dist/legacy-await-types.d.ts"
     },
     "size": 2033,
     "hash": "-FCwl_PxDin1gwAopKVXXRBoJCDUdKxfzIl4qN9DSoc"
    },
    {
     "path": {
-     "relative": "node_modules/.bun/vibelang-runtime@.vibelang-toolchain+vibelang-runtime-0.0.13-89b143f8885a.tgz+3183b44d2ba27203/node_modules/vibelang-runtime/dist/match-cache.d.ts"
+     "relative": "node_modules/.bun/vibelang-runtime@.vibelang-toolchain+0.0.14-pre.d955d06c6696+tarballs+vibelang-r+b6ca872fe8e64127+126f14e3210774e8/node_modules/vibelang-runtime/dist/match-cache.d.ts"
     },
     "size": 1848,
     "hash": "--YGTy05Qg7JNLPVUPyXp00E4F2Em5j1uTY_Bfe8lIQ"
    },
    {
     "path": {
-     "relative": "node_modules/.bun/vibelang-runtime@.vibelang-toolchain+vibelang-runtime-0.0.13-89b143f8885a.tgz+3183b44d2ba27203/node_modules/vibelang-runtime/dist/core.d.ts"
+     "relative": "node_modules/.bun/vibelang-runtime@.vibelang-toolchain+0.0.14-pre.d955d06c6696+tarballs+vibelang-r+b6ca872fe8e64127+126f14e3210774e8/node_modules/vibelang-runtime/dist/core.d.ts"
     },
-    "size": 1612,
-    "hash": "7teQjEXxfbpg3ExxV-mnuvIVLHwt2HKWK5u_wNRmvi0"
+    "size": 1774,
+    "hash": "IKorW_9HzAmXEqEIowj-NMVBO-I22sWsaD2kXcJ_zRA"
    },
    {
     "path": {
-     "relative": "node_modules/.bun/vibelang-runtime@.vibelang-toolchain+vibelang-runtime-0.0.13-89b143f8885a.tgz+3183b44d2ba27203/node_modules/vibelang-runtime/dist/experimental/Animations.d.ts"
+     "relative": "node_modules/.bun/vibelang-runtime@.vibelang-toolchain+0.0.14-pre.d955d06c6696+tarballs+vibelang-r+b6ca872fe8e64127+126f14e3210774e8/node_modules/vibelang-runtime/dist/experimental/Animations.d.ts"
     },
     "size": 4126,
     "hash": "LIh_ITVpztxGdctQldXDsjoilz47SeJfVYCfdklEYtE"
    },
    {
     "path": {
-     "relative": "node_modules/.bun/vibelang-runtime@.vibelang-toolchain+vibelang-runtime-0.0.13-89b143f8885a.tgz+3183b44d2ba27203/node_modules/vibelang-runtime/dist/experimental/BrowserInfo.d.ts"
+     "relative": "node_modules/.bun/vibelang-runtime@.vibelang-toolchain+0.0.14-pre.d955d06c6696+tarballs+vibelang-r+b6ca872fe8e64127+126f14e3210774e8/node_modules/vibelang-runtime/dist/experimental/BrowserInfo.d.ts"
     },
     "size": 1989,
     "hash": "mO2jTu2b39Dco34MEBt0o6UTMBWA4gEIAtZHi1IW46I"
    },
    {
     "path": {
-     "relative": "node_modules/.bun/vibelang-runtime@.vibelang-toolchain+vibelang-runtime-0.0.13-89b143f8885a.tgz+3183b44d2ba27203/node_modules/vibelang-runtime/dist/experimental/ChildProcess.d.ts"
+     "relative": "node_modules/.bun/vibelang-runtime@.vibelang-toolchain+0.0.14-pre.d955d06c6696+tarballs+vibelang-r+b6ca872fe8e64127+126f14e3210774e8/node_modules/vibelang-runtime/dist/experimental/ChildProcess.d.ts"
     },
     "size": 3133,
     "hash": "vtz-lrM1qVNbYlFgzi89KmoPI076rUvhtNoYs2UqjCE"
    },
    {
     "path": {
-     "relative": "node_modules/.bun/vibelang-runtime@.vibelang-toolchain+vibelang-runtime-0.0.13-89b143f8885a.tgz+3183b44d2ba27203/node_modules/vibelang-runtime/dist/experimental/Crypto.d.ts"
+     "relative": "node_modules/.bun/vibelang-runtime@.vibelang-toolchain+0.0.14-pre.d955d06c6696+tarballs+vibelang-r+b6ca872fe8e64127+126f14e3210774e8/node_modules/vibelang-runtime/dist/experimental/Crypto.d.ts"
     },
     "size": 6627,
     "hash": "XwHusiTQVjE4hwkTA3zAFGJPZll6iaWLc-hZp7hAFPk"
@@ -1657,14 +1741,133 @@
    },
    {
     "path": {
-     "relative": "node_modules/.bun/vibelang-runtime@.vibelang-toolchain+vibelang-runtime-0.0.13-89b143f8885a.tgz+3183b44d2ba27203/node_modules/vibelang-runtime/dist/experimental/Dns.d.ts"
+     "relative": "node_modules/.bun/vibelang-runtime@.vibelang-toolchain+0.0.14-pre.d955d06c6696+tarballs+vibelang-r+b6ca872fe8e64127+126f14e3210774e8/node_modules/vibelang-runtime/dist/experimental/Dns.d.ts"
     },
     "size": 2094,
     "hash": "a8V4vRrBPQWD6J1ZDSVUngqy4VPQYhwXW_4wp7dZbDw"
    },
    {
     "path": {
-     "relative": "node_modules/.bun/vibelang-runtime@.vibelang-toolchain+vibelang-runtime-0.0.13-89b143f8885a.tgz+3183b44d2ba27203/node_modules/vibelang-runtime/dist/experimental/Document.d.ts"
+     "relative": "node_modules/.bun/effect@4.1.1/node_modules/effect/dist/sql/Migrator.d.ts"
+    },
+    "size": 4293,
+    "hash": "U-MK1zwSqANvTD08iperVLajOJ6q8N3nxU7pxs9nghI"
+   },
+   {
+    "path": {
+     "relative": "node_modules/.bun/effect@4.1.1/node_modules/effect/dist/schema/VariantSchema.d.ts"
+    },
+    "size": 14359,
+    "hash": "Ka3HqCp9B7s-KAs0MLZFN2IDmQ-q4yf9VqQf9lPrO2Q"
+   },
+   {
+    "path": {
+     "relative": "node_modules/.bun/effect@4.1.1/node_modules/effect/dist/schema/Model.d.ts"
+    },
+    "size": 28748,
+    "hash": "VzOj3-TgV9taDQivRB-xJmw_Fs6nJCl1M83RLdaTXRE"
+   },
+   {
+    "path": {
+     "relative": "node_modules/.bun/effect@4.1.1/node_modules/effect/dist/sql/SqlResolver.d.ts"
+    },
+    "size": 6541,
+    "hash": "DDGIMgsBC4XTMIDYVOAN40Dv5lqMWPu-duEmnyDZFDc"
+   },
+   {
+    "path": {
+     "relative": "node_modules/.bun/effect@4.1.1/node_modules/effect/dist/sql/SqlModel.d.ts"
+    },
+    "size": 4127,
+    "hash": "cNvBFWILlpPFzpvVqSwQlyeQsoI9z9qy1pvA-ABBgbE"
+   },
+   {
+    "path": {
+     "relative": "node_modules/.bun/effect@4.1.1/node_modules/effect/dist/sql/SqlSchema.d.ts"
+    },
+    "size": 4311,
+    "hash": "7-cefBJuTjyga7_MLxSETGBWpV0SHQy0MSJHU3yTzc0"
+   },
+   {
+    "path": {
+     "relative": "node_modules/.bun/effect@4.1.1/node_modules/effect/dist/sql/SqlStream.d.ts"
+    },
+    "size": 772,
+    "hash": "QkZPicTQZIqkJxntPoojzNl5Bu3zjUy1Hj4buFtMpYc"
+   },
+   {
+    "path": {
+     "relative": "node_modules/.bun/effect@4.1.1/node_modules/effect/dist/sql/index.d.ts"
+    },
+    "size": 916,
+    "hash": "QN3P1ss1nFP1deREonsDmDXEiXvHiR7OlbuSmD6xaDU"
+   },
+   {
+    "path": {
+     "relative": "node_modules/.bun/effect@4.1.1/node_modules/effect/dist/persistence/PersistedQueue.d.ts"
+    },
+    "size": 16728,
+    "hash": "u06RCaSYMkes2RIMKhuJPgsTDuE-SwrY6HhPaFYgGTU"
+   },
+   {
+    "path": {
+     "relative": "node_modules/.bun/effect@4.1.1/node_modules/effect/dist/workflow/DurableQueue.d.ts"
+    },
+    "size": 6804,
+    "hash": "jaazpMdU3vtjYRkR7ayubV73qZjNl1td7brwzWiRG34"
+   },
+   {
+    "path": {
+     "relative": "node_modules/.bun/effect@4.1.1/node_modules/effect/dist/rpc/RpcGroup.d.ts"
+    },
+    "size": 7176,
+    "hash": "5jQTytNuEo9vIbVif5NN6INed4m9RSztxolusGwKZYs"
+   },
+   {
+    "path": {
+     "relative": "node_modules/.bun/effect@4.1.1/node_modules/effect/dist/workflow/WorkflowProxy.d.ts"
+    },
+    "size": 5103,
+    "hash": "QtojTpsBOqs7Mfa_hl2AMLM_648EO57FeATfe3vCJ10"
+   },
+   {
+    "path": {
+     "relative": "node_modules/.bun/effect@4.1.1/node_modules/effect/dist/workflow/WorkflowProxyServer.d.ts"
+    },
+    "size": 2500,
+    "hash": "UCDiHF9R7MvpH66mrfSGpYESvrbwTMSXgn7gagRAmkg"
+   },
+   {
+    "path": {
+     "relative": "node_modules/.bun/effect@4.1.1/node_modules/effect/dist/workflow/index.d.ts"
+    },
+    "size": 876,
+    "hash": "s0EAG7HWVYlJyBHQKTzGsHe5UDFFUz6nBChT9OdEO3g"
+   },
+   {
+    "path": {
+     "relative": "node_modules/.bun/vibelang-runtime@.vibelang-toolchain+0.0.14-pre.d955d06c6696+tarballs+vibelang-r+b6ca872fe8e64127+126f14e3210774e8/node_modules/vibelang-runtime/dist/experimental/internal/durableStore.d.ts"
+    },
+    "size": 5096,
+    "hash": "c1X5F-RLVpiQaII-Z0TOlJ1MzZPdPFiYJmcO9OlCLoA"
+   },
+   {
+    "path": {
+     "relative": "node_modules/.bun/vibelang-runtime@.vibelang-toolchain+0.0.14-pre.d955d06c6696+tarballs+vibelang-r+b6ca872fe8e64127+126f14e3210774e8/node_modules/vibelang-runtime/dist/experimental/internal/durableEngine.d.ts"
+    },
+    "size": 6663,
+    "hash": "wIz-L4bjbHPD6uyoAW6ikJseKQss7qhwnwwqIFGxaCM"
+   },
+   {
+    "path": {
+     "relative": "node_modules/.bun/vibelang-runtime@.vibelang-toolchain+0.0.14-pre.d955d06c6696+tarballs+vibelang-r+b6ca872fe8e64127+126f14e3210774e8/node_modules/vibelang-runtime/dist/experimental/Durable.d.ts"
+    },
+    "size": 18582,
+    "hash": "3XTRC_AiUoa_04dlFHv7CImwGMo4LxmhWo5vjO1fsXA"
+   },
+   {
+    "path": {
+     "relative": "node_modules/.bun/vibelang-runtime@.vibelang-toolchain+0.0.14-pre.d955d06c6696+tarballs+vibelang-r+b6ca872fe8e64127+126f14e3210774e8/node_modules/vibelang-runtime/dist/experimental/Document.d.ts"
     },
     "size": 2970,
     "hash": "wgJNU0rjtPZ9wCQ1vOFM17UzIMNuxXkAnRL6Y6k91UM"
@@ -1776,56 +1979,56 @@
    },
    {
     "path": {
-     "relative": "node_modules/.bun/vibelang-runtime@.vibelang-toolchain+vibelang-runtime-0.0.13-89b143f8885a.tgz+3183b44d2ba27203/node_modules/vibelang-runtime/dist/experimental/Encoding.d.ts"
+     "relative": "node_modules/.bun/vibelang-runtime@.vibelang-toolchain+0.0.14-pre.d955d06c6696+tarballs+vibelang-r+b6ca872fe8e64127+126f14e3210774e8/node_modules/vibelang-runtime/dist/experimental/Encoding.d.ts"
     },
     "size": 852,
     "hash": "6JHF6GIvlFYBICb2qrmb-bGQDaH1t16tgPW4ET7lViM"
    },
    {
     "path": {
-     "relative": "node_modules/.bun/vibelang-runtime@.vibelang-toolchain+vibelang-runtime-0.0.13-89b143f8885a.tgz+3183b44d2ba27203/node_modules/vibelang-runtime/dist/experimental/FileReader.d.ts"
+     "relative": "node_modules/.bun/vibelang-runtime@.vibelang-toolchain+0.0.14-pre.d955d06c6696+tarballs+vibelang-r+b6ca872fe8e64127+126f14e3210774e8/node_modules/vibelang-runtime/dist/experimental/FileReader.d.ts"
     },
     "size": 3271,
     "hash": "Izc4Lg3SrR_vTOYfWz0LwZeU40DjL8144EqjrGxp8AU"
    },
    {
     "path": {
-     "relative": "node_modules/.bun/vibelang-runtime@.vibelang-toolchain+vibelang-runtime-0.0.13-89b143f8885a.tgz+3183b44d2ba27203/node_modules/vibelang-runtime/dist/experimental/Headers.d.ts"
+     "relative": "node_modules/.bun/vibelang-runtime@.vibelang-toolchain+0.0.14-pre.d955d06c6696+tarballs+vibelang-r+b6ca872fe8e64127+126f14e3210774e8/node_modules/vibelang-runtime/dist/experimental/Headers.d.ts"
     },
     "size": 1481,
     "hash": "y3AcQqeGN8mxkJ58iTbWOmyXNdK5dRRTEUogxbFXy0s"
    },
    {
     "path": {
-     "relative": "node_modules/.bun/vibelang-runtime@.vibelang-toolchain+vibelang-runtime-0.0.13-89b143f8885a.tgz+3183b44d2ba27203/node_modules/vibelang-runtime/dist/experimental/FileSystem.d.ts"
+     "relative": "node_modules/.bun/vibelang-runtime@.vibelang-toolchain+0.0.14-pre.d955d06c6696+tarballs+vibelang-r+b6ca872fe8e64127+126f14e3210774e8/node_modules/vibelang-runtime/dist/experimental/FileSystem.d.ts"
     },
     "size": 4237,
     "hash": "GscyJs1q8_cVZgxDm-u1CJwscBRKw-f5XSRJdUxCAP8"
    },
    {
     "path": {
-     "relative": "node_modules/.bun/vibelang-runtime@.vibelang-toolchain+vibelang-runtime-0.0.13-89b143f8885a.tgz+3183b44d2ba27203/node_modules/vibelang-runtime/dist/experimental/Locks.d.ts"
+     "relative": "node_modules/.bun/vibelang-runtime@.vibelang-toolchain+0.0.14-pre.d955d06c6696+tarballs+vibelang-r+b6ca872fe8e64127+126f14e3210774e8/node_modules/vibelang-runtime/dist/experimental/Locks.d.ts"
     },
     "size": 5678,
     "hash": "vA5GYo8h7qcs5a-fuxQPj_Xrbx1iP5fNyo4v0SJHAKk"
    },
    {
     "path": {
-     "relative": "node_modules/.bun/vibelang-runtime@.vibelang-toolchain+vibelang-runtime-0.0.13-89b143f8885a.tgz+3183b44d2ba27203/node_modules/vibelang-runtime/dist/experimental/MediaQuery.d.ts"
+     "relative": "node_modules/.bun/vibelang-runtime@.vibelang-toolchain+0.0.14-pre.d955d06c6696+tarballs+vibelang-r+b6ca872fe8e64127+126f14e3210774e8/node_modules/vibelang-runtime/dist/experimental/MediaQuery.d.ts"
     },
     "size": 2800,
     "hash": "H2TsmsCxrAVQFpn2-nEjFgeAxGOVseTq6FcGaP1wfeE"
    },
    {
     "path": {
-     "relative": "node_modules/.bun/vibelang-runtime@.vibelang-toolchain+vibelang-runtime-0.0.13-89b143f8885a.tgz+3183b44d2ba27203/node_modules/vibelang-runtime/dist/experimental/NetAddress.d.ts"
+     "relative": "node_modules/.bun/vibelang-runtime@.vibelang-toolchain+0.0.14-pre.d955d06c6696+tarballs+vibelang-r+b6ca872fe8e64127+126f14e3210774e8/node_modules/vibelang-runtime/dist/experimental/NetAddress.d.ts"
     },
     "size": 444,
     "hash": "SgsPPjdFtiCOl0YW0Hfd-hH9BkaSftHcBv_ygK67A4U"
    },
    {
     "path": {
-     "relative": "node_modules/.bun/vibelang-runtime@.vibelang-toolchain+vibelang-runtime-0.0.13-89b143f8885a.tgz+3183b44d2ba27203/node_modules/vibelang-runtime/dist/experimental/NodeStream.d.ts"
+     "relative": "node_modules/.bun/vibelang-runtime@.vibelang-toolchain+0.0.14-pre.d955d06c6696+tarballs+vibelang-r+b6ca872fe8e64127+126f14e3210774e8/node_modules/vibelang-runtime/dist/experimental/NodeStream.d.ts"
     },
     "size": 3224,
     "hash": "-Om0tHTgAHL2dgmRlVlG--oBT8d5mftOLPyo-yrHdSk"
@@ -1853,14 +2056,14 @@
    },
    {
     "path": {
-     "relative": "node_modules/.bun/vibelang-runtime@.vibelang-toolchain+vibelang-runtime-0.0.13-89b143f8885a.tgz+3183b44d2ba27203/node_modules/vibelang-runtime/dist/experimental/Process.d.ts"
+     "relative": "node_modules/.bun/vibelang-runtime@.vibelang-toolchain+0.0.14-pre.d955d06c6696+tarballs+vibelang-r+b6ca872fe8e64127+126f14e3210774e8/node_modules/vibelang-runtime/dist/experimental/Process.d.ts"
     },
     "size": 8241,
     "hash": "oiIVYvpaIUKJOP6geMxc4B8Dl0_JFBNWkR9ZIAKCyHs"
    },
    {
     "path": {
-     "relative": "node_modules/.bun/vibelang-runtime@.vibelang-toolchain+vibelang-runtime-0.0.13-89b143f8885a.tgz+3183b44d2ba27203/node_modules/vibelang-runtime/dist/experimental/ResizeObserver.d.ts"
+     "relative": "node_modules/.bun/vibelang-runtime@.vibelang-toolchain+0.0.14-pre.d955d06c6696+tarballs+vibelang-r+b6ca872fe8e64127+126f14e3210774e8/node_modules/vibelang-runtime/dist/experimental/ResizeObserver.d.ts"
     },
     "size": 2495,
     "hash": "uUMxJ3p5sbc-qhqfyWNUwnitOJtINeXL_9M1xJLWz30"
@@ -1874,49 +2077,343 @@
    },
    {
     "path": {
-     "relative": "node_modules/.bun/vibelang-runtime@.vibelang-toolchain+vibelang-runtime-0.0.13-89b143f8885a.tgz+3183b44d2ba27203/node_modules/vibelang-runtime/dist/experimental/Stdio.d.ts"
+     "relative": "node_modules/.bun/vibelang-runtime@.vibelang-toolchain+0.0.14-pre.d955d06c6696+tarballs+vibelang-r+b6ca872fe8e64127+126f14e3210774e8/node_modules/vibelang-runtime/dist/experimental/Stdio.d.ts"
     },
     "size": 1504,
     "hash": "6TcF16KKXbLqEGWumgFgvLQ7WkOiGr_cWBw27JoJX6Q"
    },
    {
     "path": {
-     "relative": "node_modules/.bun/vibelang-runtime@.vibelang-toolchain+vibelang-runtime-0.0.13-89b143f8885a.tgz+3183b44d2ba27203/node_modules/vibelang-runtime/dist/experimental/Window.d.ts"
+     "relative": "node_modules/.bun/effect@4.1.1/node_modules/effect/dist/ai/AiError.d.ts"
+    },
+    "size": 51756,
+    "hash": "gTZpKquk-Am0DJIBFDSj3he5JjKVmGvGDWTKPqbb7vg"
+   },
+   {
+    "path": {
+     "relative": "node_modules/.bun/effect@4.1.1/node_modules/effect/dist/ai/AnthropicStructuredOutput.d.ts"
+    },
+    "size": 2247,
+    "hash": "CDbsqLOaFi-Ryw2lqROoZIESfmwQIIPokMhrqaoGs-A"
+   },
+   {
+    "path": {
+     "relative": "node_modules/.bun/effect@4.1.1/node_modules/effect/dist/ai/IdGenerator.d.ts"
+    },
+    "size": 7521,
+    "hash": "gHI2Pr5H8PtAlYlxlapIQtjuzx-UGgW74GikyIryL04"
+   },
+   {
+    "path": {
+     "relative": "node_modules/.bun/effect@4.1.1/node_modules/effect/dist/ai/Tool.d.ts"
+    },
+    "size": 52388,
+    "hash": "qsxxDprxs87Vt_mz6foQqL1klsK5nMcANV5FMo0gbtw"
+   },
+   {
+    "path": {
+     "relative": "node_modules/.bun/effect@4.1.1/node_modules/effect/dist/ai/Toolkit.d.ts"
+    },
+    "size": 13588,
+    "hash": "SGCRtMfv8QsyjtNMX1LMFSLzcvHUwKX4NvQUKeZzMPI"
+   },
+   {
+    "path": {
+     "relative": "node_modules/.bun/effect@4.1.1/node_modules/effect/dist/ai/Response.d.ts"
+    },
+    "size": 65567,
+    "hash": "OFAhhRpjZhhz_EToYX42HkwvSMJbTZ1J4ch54fNx6Ac"
+   },
+   {
+    "path": {
+     "relative": "node_modules/.bun/effect@4.1.1/node_modules/effect/dist/ai/Prompt.d.ts"
+    },
+    "size": 60087,
+    "hash": "9TJw58CaXN2y1wmIdav7S05l0KAnduISyrDhvuSQynA"
+   },
+   {
+    "path": {
+     "relative": "node_modules/.bun/effect@4.1.1/node_modules/effect/dist/ai/LanguageModel.d.ts"
+    },
+    "size": 31991,
+    "hash": "oISeQJ0wIRgH4P2voMLLD3rNW_dFcLGlVYHjzoRIIbQ"
+   },
+   {
+    "path": {
+     "relative": "node_modules/.bun/effect@4.1.1/node_modules/effect/dist/ai/Chat.d.ts"
+    },
+    "size": 22761,
+    "hash": "SB89AR8C1re66_D0MRd0djUi2aD7Rb3PO2xSUfD21rA"
+   },
+   {
+    "path": {
+     "relative": "node_modules/.bun/effect@4.1.1/node_modules/effect/dist/ai/DecisionModel.d.ts"
+    },
+    "size": 14438,
+    "hash": "8UNCe77m3SBhZBKUpOIzNege42y3IsyHnR6qaxYCdBA"
+   },
+   {
+    "path": {
+     "relative": "node_modules/.bun/effect@4.1.1/node_modules/effect/dist/ai/Decision.d.ts"
+    },
+    "size": 17549,
+    "hash": "S0iZAUU6pNfHNocveKkkWMB1u5YeU24Elxlkz4EO4yc"
+   },
+   {
+    "path": {
+     "relative": "node_modules/.bun/effect@4.1.1/node_modules/effect/dist/ai/EmbeddingModel.d.ts"
+    },
+    "size": 7579,
+    "hash": "m05jOKqFOR0lwEQsqyNUKBzTPJvPy1XNk1OOiutICQE"
+   },
+   {
+    "path": {
+     "relative": "node_modules/.bun/effect@4.1.1/node_modules/effect/dist/workers/Worker.d.ts"
+    },
+    "size": 4507,
+    "hash": "udCtK1jcKQg7UN5IUYnqHUdyRVOuaqT6lb_7LjngNYM"
+   },
+   {
+    "path": {
+     "relative": "node_modules/.bun/effect@4.1.1/node_modules/effect/dist/rpc/RpcSerialization.d.ts"
+    },
+    "size": 8120,
+    "hash": "ljDibX2ilce9qwNCwJk__lwCeIa7ZXbdBPzqNPjyFEM"
+   },
+   {
+    "path": {
+     "relative": "node_modules/.bun/effect@4.1.1/node_modules/effect/dist/rpc/Utils.d.ts"
+    },
+    "size": 1163,
+    "hash": "pPgDmwekbYwVy8juL_LacRERQsKq_oVuEOBxPDHCHOE"
+   },
+   {
+    "path": {
+     "relative": "node_modules/.bun/effect@4.1.1/node_modules/effect/dist/rpc/RpcClient.d.ts"
+    },
+    "size": 19359,
+    "hash": "L5VPLDeP1_tp1KeqlI4SvqRRzs46gzJuaeE9rWEtTcE"
+   },
+   {
+    "path": {
+     "relative": "node_modules/.bun/effect@4.1.1/node_modules/effect/dist/ai/McpProtocol.d.ts"
+    },
+    "size": 6775,
+    "hash": "SnrcU0JP6bqV_yOVPPfRXp1UWaczreLbWf7IxHdl99g"
+   },
+   {
+    "path": {
+     "relative": "node_modules/.bun/effect@4.1.1/node_modules/effect/dist/ai/McpSchema.d.ts"
+    },
+    "size": 220938,
+    "hash": "PeqpOThuLQCxY-MpXdssGuqdKY-0ws7QjXIlwDOdO4U"
+   },
+   {
+    "path": {
+     "relative": "node_modules/.bun/effect@4.1.1/node_modules/effect/dist/ai/McpClientError.d.ts"
+    },
+    "size": 9142,
+    "hash": "BknnupZpGnQBMcOy-1BZFCPyKU1ymp-AxZazIpsHl-Q"
+   },
+   {
+    "path": {
+     "relative": "node_modules/.bun/effect@4.1.1/node_modules/effect/dist/ai/McpClient.d.ts"
+    },
+    "size": 18691,
+    "hash": "MWtowmpSJJArDakrTYTtZuQSLeULd1zFMubkDxhrIg0"
+   },
+   {
+    "path": {
+     "relative": "node_modules/.bun/effect@4.1.1/node_modules/effect/dist/socket/SocketServer.d.ts"
+    },
+    "size": 4068,
+    "hash": "9iPFiG2Y8CfYqbEsesbm0DXSVUTUDFCR4hvO33yZ6wU"
+   },
+   {
+    "path": {
+     "relative": "node_modules/.bun/effect@4.1.1/node_modules/effect/dist/workers/WorkerRunner.d.ts"
+    },
+    "size": 2044,
+    "hash": "dl1B5AbgAlD0W0SwH4LlrHS2ZJNdzIk6vzhXNTZxa9Q"
+   },
+   {
+    "path": {
+     "relative": "node_modules/.bun/effect@4.1.1/node_modules/effect/dist/rpc/RpcServer.d.ts"
+    },
+    "size": 18536,
+    "hash": "SLvivVFrpm6fGl1TpikzHlXm6nGwlZ2I5BkAZhi0yWs"
+   },
+   {
+    "path": {
+     "relative": "node_modules/.bun/effect@4.1.1/node_modules/effect/dist/ai/McpServer.d.ts"
+    },
+    "size": 57690,
+    "hash": "liyjudluzu8yfoBT9wp69kV3wYnzlfQuDgiIdrPu4oc"
+   },
+   {
+    "path": {
+     "relative": "node_modules/.bun/effect@4.1.1/node_modules/effect/dist/ai/McpTest.d.ts"
+    },
+    "size": 6761,
+    "hash": "JF8pbrW3G72CEGzr60XzVoB1K3YcWGnb2CgfOpE5cdY"
+   },
+   {
+    "path": {
+     "relative": "node_modules/.bun/effect@4.1.1/node_modules/effect/dist/ai/Model.d.ts"
+    },
+    "size": 3866,
+    "hash": "zGKoyQ1a-nikL-zBef3DjXLGPbOIPbMHYY1hJHTDtJo"
+   },
+   {
+    "path": {
+     "relative": "node_modules/.bun/effect@4.1.1/node_modules/effect/dist/ai/OpenAiStructuredOutput.d.ts"
+    },
+    "size": 2645,
+    "hash": "DPRQadjzkHvcnU2YdKOWR308aieyJeeakZdJAOBcQ6k"
+   },
+   {
+    "path": {
+     "relative": "node_modules/.bun/effect@4.1.1/node_modules/effect/dist/ai/ResponseIdTracker.d.ts"
+    },
+    "size": 2828,
+    "hash": "rkbCOslxz9-uThLydHGiYzzyfBHpoDrMg5NggrpC58U"
+   },
+   {
+    "path": {
+     "relative": "node_modules/.bun/effect@4.1.1/node_modules/effect/dist/ai/Telemetry.d.ts"
+    },
+    "size": 17468,
+    "hash": "hndBQTvMEgN9zfUD9M5MUbzQVNlnUMuJz8yoeiouAy4"
+   },
+   {
+    "path": {
+     "relative": "node_modules/.bun/effect@4.1.1/node_modules/effect/dist/ai/Tokenizer.d.ts"
+    },
+    "size": 4843,
+    "hash": "lIbpe6PPuFbsV9hTa36eSnoxh0kAEHWar3s-fTouh_M"
+   },
+   {
+    "path": {
+     "relative": "node_modules/.bun/effect@4.1.1/node_modules/effect/dist/ai/index.d.ts"
+    },
+    "size": 2274,
+    "hash": "vAAGj0q3HIy6ESKqXu6LpdFTmlRjBZcUNqv0YZQdE7w"
+   },
+   {
+    "path": {
+     "relative": "node_modules/.bun/effect@4.1.1/node_modules/effect/dist/http/FetchHttpClient.d.ts"
+    },
+    "size": 4524,
+    "hash": "Ff1pvEgbHCmcfW2hOA4eeQiO-1bByT22FdR-DUXTJ5o"
+   },
+   {
+    "path": {
+     "relative": "node_modules/.bun/effect@4.1.1/node_modules/effect/dist/http/HttpEffect.d.ts"
+    },
+    "size": 7732,
+    "hash": "kOyqZqwX3Fbd-iROXgoNCUDjHor27B1K4zWRAliVcEg"
+   },
+   {
+    "path": {
+     "relative": "node_modules/.bun/effect@4.1.1/node_modules/effect/dist/http/HttpStaticServer.d.ts"
+    },
+    "size": 3531,
+    "hash": "FqWhp40GL-Nid--8HsGhRiDv7lP5CmD6JXu65-k2o34"
+   },
+   {
+    "path": {
+     "relative": "node_modules/.bun/effect@4.1.1/node_modules/effect/dist/http/HttpTraceContext.d.ts"
+    },
+    "size": 2599,
+    "hash": "7mo6_-CfYhYj6Yp9EXf56nxYXMi1fRHOb4W0zdGA_8k"
+   },
+   {
+    "path": {
+     "relative": "node_modules/.bun/effect@4.1.1/node_modules/effect/dist/http/Mime.d.ts"
+    },
+    "size": 835,
+    "hash": "p6d2Snrgf-B_lsoY6y8mvieRRd722cQKxy7JCuR0bME"
+   },
+   {
+    "path": {
+     "relative": "node_modules/.bun/effect@4.1.1/node_modules/effect/dist/http/ProblemDetails.d.ts"
+    },
+    "size": 2653,
+    "hash": "g8hvLzVYQM7j-rf1lkfXUyGslbWt7Xyi5kZeaccNyr0"
+   },
+   {
+    "path": {
+     "relative": "node_modules/.bun/effect@4.1.1/node_modules/effect/dist/http/index.d.ts"
+    },
+    "size": 3116,
+    "hash": "gngeJitvbemM55UcUbeJWEdSQPCmSsBVKJBWk_HHUWM"
+   },
+   {
+    "path": {
+     "relative": "node_modules/.bun/effect@4.1.1/node_modules/effect/dist/process/index.d.ts"
+    },
+    "size": 388,
+    "hash": "aZwVtgnZI41FKBhynqDscJq6k8LE2tlaSqwCfA-N0JM"
+   },
+   {
+    "path": {
+     "relative": "node_modules/.bun/vibelang-runtime@.vibelang-toolchain+0.0.14-pre.d955d06c6696+tarballs+vibelang-r+b6ca872fe8e64127+126f14e3210774e8/node_modules/vibelang-runtime/dist/experimental/internal/engineConformance.d.ts"
+    },
+    "size": 1687,
+    "hash": "LYVyqJKn-xs-MZUSAxQ8A3YJZt3aB42yIvILepNs51U"
+   },
+   {
+    "path": {
+     "relative": "node_modules/.bun/vibelang-runtime@.vibelang-toolchain+0.0.14-pre.d955d06c6696+tarballs+vibelang-r+b6ca872fe8e64127+126f14e3210774e8/node_modules/vibelang-runtime/dist/experimental/internal/testHost.d.ts"
+    },
+    "size": 1490,
+    "hash": "K_aCEsP-kfdtxOgezGRySIY74rhViwW-OqBmdVRz4Ew"
+   },
+   {
+    "path": {
+     "relative": "node_modules/.bun/vibelang-runtime@.vibelang-toolchain+0.0.14-pre.d955d06c6696+tarballs+vibelang-r+b6ca872fe8e64127+126f14e3210774e8/node_modules/vibelang-runtime/dist/experimental/Test.d.ts"
+    },
+    "size": 22319,
+    "hash": "bxEZWdf0juLC75Erv9xXfHF02zpk3tPLnhKo4EsqCas"
+   },
+   {
+    "path": {
+     "relative": "node_modules/.bun/vibelang-runtime@.vibelang-toolchain+0.0.14-pre.d955d06c6696+tarballs+vibelang-r+b6ca872fe8e64127+126f14e3210774e8/node_modules/vibelang-runtime/dist/experimental/Window.d.ts"
     },
     "size": 2850,
     "hash": "O9v2vv8byQ429rLw9IT0CTdN4FDDxC6Jxs0YTGoJVdA"
    },
    {
     "path": {
-     "relative": "node_modules/.bun/vibelang-runtime@.vibelang-toolchain+vibelang-runtime-0.0.13-89b143f8885a.tgz+3183b44d2ba27203/node_modules/vibelang-runtime/dist/experimental/AudioContext.d.ts"
+     "relative": "node_modules/.bun/vibelang-runtime@.vibelang-toolchain+0.0.14-pre.d955d06c6696+tarballs+vibelang-r+b6ca872fe8e64127+126f14e3210774e8/node_modules/vibelang-runtime/dist/experimental/AudioContext.d.ts"
     },
     "size": 2205,
     "hash": "z0dedL-zpn1GrXaOgFyOHm7DMb1z3zCMaIMqGqR6tUk"
    },
    {
     "path": {
-     "relative": "node_modules/.bun/vibelang-runtime@.vibelang-toolchain+vibelang-runtime-0.0.13-89b143f8885a.tgz+3183b44d2ba27203/node_modules/vibelang-runtime/dist/experimental/Request.d.ts"
+     "relative": "node_modules/.bun/vibelang-runtime@.vibelang-toolchain+0.0.14-pre.d955d06c6696+tarballs+vibelang-r+b6ca872fe8e64127+126f14e3210774e8/node_modules/vibelang-runtime/dist/experimental/Request.d.ts"
     },
     "size": 1649,
     "hash": "KRg2WDevqFgPetJq4CxDHh8edm0srjqhWRN7lTSenyY"
    },
    {
     "path": {
-     "relative": "node_modules/.bun/vibelang-runtime@.vibelang-toolchain+vibelang-runtime-0.0.13-89b143f8885a.tgz+3183b44d2ba27203/node_modules/vibelang-runtime/dist/experimental/index.d.ts"
+     "relative": "node_modules/.bun/vibelang-runtime@.vibelang-toolchain+0.0.14-pre.d955d06c6696+tarballs+vibelang-r+b6ca872fe8e64127+126f14e3210774e8/node_modules/vibelang-runtime/dist/experimental/index.d.ts"
     },
-    "size": 1574,
-    "hash": "hcZRaVCidu8HYX0HvnTobrHo2cQDv4U1txmpSQ0GSa0"
+    "size": 1650,
+    "hash": "rWXyio0nkGTYv8RL1Jr-0WyrLY3Dy_aWDaMdU5g4ztI"
    },
    {
     "path": {
-     "relative": "node_modules/.bun/vibelang-runtime@.vibelang-toolchain+vibelang-runtime-0.0.13-89b143f8885a.tgz+3183b44d2ba27203/node_modules/vibelang-runtime/dist/prelude.d.ts"
+     "relative": "node_modules/.bun/vibelang-runtime@.vibelang-toolchain+0.0.14-pre.d955d06c6696+tarballs+vibelang-r+b6ca872fe8e64127+126f14e3210774e8/node_modules/vibelang-runtime/dist/prelude.d.ts"
     },
     "size": 129,
     "hash": "Tqy755Tt4ZuJDGVpmxUCXsPlRUgHYXa4ktmztNdW1DY"
    },
    {
     "path": {
-     "relative": "node_modules/.bun/vibelang-runtime@.vibelang-toolchain+vibelang-runtime-0.0.13-89b143f8885a.tgz+3183b44d2ba27203/node_modules/vibelang-runtime/dist/index.d.ts"
+     "relative": "node_modules/.bun/vibelang-runtime@.vibelang-toolchain+0.0.14-pre.d955d06c6696+tarballs+vibelang-r+b6ca872fe8e64127+126f14e3210774e8/node_modules/vibelang-runtime/dist/index.d.ts"
     },
     "size": 107,
     "hash": "kHyPbTEwJDNbyrr9EJDBtS42mtLKhF1zop-5XYfg38g"
@@ -2308,55 +2805,6 @@
    },
    {
     "path": {
-     "relative": "node_modules/.bun/effect@4.1.1/node_modules/effect/dist/workers/WorkerError.d.ts"
-    },
-    "size": 3857,
-    "hash": "V6v-kxDbBtEBa2oY4BrOfp-Ukm6W0Tf8hH1so8-_lFc"
-   },
-   {
-    "path": {
-     "relative": "node_modules/.bun/effect@4.1.1/node_modules/effect/dist/rpc/RpcClientError.d.ts"
-    },
-    "size": 2470,
-    "hash": "0r0FSPq8410Wr3CBuO-H-CeFELWlymVDYmkQXmZPE_4"
-   },
-   {
-    "path": {
-     "relative": "node_modules/.bun/effect@4.1.1/node_modules/effect/dist/rpc/RpcMessage.d.ts"
-    },
-    "size": 13180,
-    "hash": "kMnxm88YojMllZsyeWSzeamoJM8uqmt401RIWysH9m0"
-   },
-   {
-    "path": {
-     "relative": "node_modules/.bun/effect@4.1.1/node_modules/effect/dist/rpc/RpcMiddleware.d.ts"
-    },
-    "size": 8929,
-    "hash": "ey_i0y8B4ddzcBcy-VQhuN8ZUv_qrSBgcdILMMLjr48"
-   },
-   {
-    "path": {
-     "relative": "node_modules/.bun/effect@4.1.1/node_modules/effect/dist/rpc/RpcSchema.d.ts"
-    },
-    "size": 2676,
-    "hash": "uC56XX_ID3exTunjCH-K4OrsSPHw-Eiy-arYgTD45JE"
-   },
-   {
-    "path": {
-     "relative": "node_modules/.bun/effect@4.1.1/node_modules/effect/dist/rpc/Rpc.d.ts"
-    },
-    "size": 27625,
-    "hash": "VrScNI_WJ0XrrLvB8p4-vOGYyQnQxgbQTQ6DR25z_nc"
-   },
-   {
-    "path": {
-     "relative": "node_modules/.bun/effect@4.1.1/node_modules/effect/dist/rpc/RpcGroup.d.ts"
-    },
-    "size": 7176,
-    "hash": "5jQTytNuEo9vIbVif5NN6INed4m9RSztxolusGwKZYs"
-   },
-   {
-    "path": {
      "relative": "node_modules/.bun/effect@4.1.1/node_modules/effect/dist/workers/Transferable.d.ts"
     },
     "size": 4754,
@@ -2368,34 +2816,6 @@
     },
     "size": 5317,
     "hash": "ig6K0vcQ9vjpAmzbXnXlnE-VZhZLiuAbyybBNJtvtis"
-   },
-   {
-    "path": {
-     "relative": "node_modules/.bun/effect@4.1.1/node_modules/effect/dist/workers/Worker.d.ts"
-    },
-    "size": 4507,
-    "hash": "udCtK1jcKQg7UN5IUYnqHUdyRVOuaqT6lb_7LjngNYM"
-   },
-   {
-    "path": {
-     "relative": "node_modules/.bun/effect@4.1.1/node_modules/effect/dist/rpc/RpcSerialization.d.ts"
-    },
-    "size": 8120,
-    "hash": "ljDibX2ilce9qwNCwJk__lwCeIa7ZXbdBPzqNPjyFEM"
-   },
-   {
-    "path": {
-     "relative": "node_modules/.bun/effect@4.1.1/node_modules/effect/dist/rpc/Utils.d.ts"
-    },
-    "size": 1163,
-    "hash": "pPgDmwekbYwVy8juL_LacRERQsKq_oVuEOBxPDHCHOE"
-   },
-   {
-    "path": {
-     "relative": "node_modules/.bun/effect@4.1.1/node_modules/effect/dist/rpc/RpcClient.d.ts"
-    },
-    "size": 19359,
-    "hash": "L5VPLDeP1_tp1KeqlI4SvqRRzs46gzJuaeE9rWEtTcE"
    },
    {
     "path": {
@@ -2431,27 +2851,6 @@
     },
     "size": 4969,
     "hash": "RSeUcsNA9VNHtfgqXc_eSrAm9-dQbWD2Xioep7fEqzg"
-   },
-   {
-    "path": {
-     "relative": "node_modules/.bun/effect@4.1.1/node_modules/effect/dist/socket/SocketServer.d.ts"
-    },
-    "size": 4068,
-    "hash": "9iPFiG2Y8CfYqbEsesbm0DXSVUTUDFCR4hvO33yZ6wU"
-   },
-   {
-    "path": {
-     "relative": "node_modules/.bun/effect@4.1.1/node_modules/effect/dist/workers/WorkerRunner.d.ts"
-    },
-    "size": 2044,
-    "hash": "dl1B5AbgAlD0W0SwH4LlrHS2ZJNdzIk6vzhXNTZxa9Q"
-   },
-   {
-    "path": {
-     "relative": "node_modules/.bun/effect@4.1.1/node_modules/effect/dist/rpc/RpcServer.d.ts"
-    },
-    "size": 18536,
-    "hash": "SLvivVFrpm6fGl1TpikzHlXm6nGwlZ2I5BkAZhi0yWs"
    },
    {
     "path": {
@@ -2697,174 +3096,6 @@
     },
     "size": 136,
     "hash": "qQkInKcDbZ8pHQi9GQfKRC6l1n3_dKAr_4AMY65m0Uo"
-   },
-   {
-    "path": {
-     "relative": "node_modules/.bun/effect@4.1.1/node_modules/effect/dist/ai/AiError.d.ts"
-    },
-    "size": 51756,
-    "hash": "gTZpKquk-Am0DJIBFDSj3he5JjKVmGvGDWTKPqbb7vg"
-   },
-   {
-    "path": {
-     "relative": "node_modules/.bun/effect@4.1.1/node_modules/effect/dist/ai/AnthropicStructuredOutput.d.ts"
-    },
-    "size": 2247,
-    "hash": "CDbsqLOaFi-Ryw2lqROoZIESfmwQIIPokMhrqaoGs-A"
-   },
-   {
-    "path": {
-     "relative": "node_modules/.bun/effect@4.1.1/node_modules/effect/dist/ai/IdGenerator.d.ts"
-    },
-    "size": 7521,
-    "hash": "gHI2Pr5H8PtAlYlxlapIQtjuzx-UGgW74GikyIryL04"
-   },
-   {
-    "path": {
-     "relative": "node_modules/.bun/effect@4.1.1/node_modules/effect/dist/ai/Tool.d.ts"
-    },
-    "size": 52388,
-    "hash": "qsxxDprxs87Vt_mz6foQqL1klsK5nMcANV5FMo0gbtw"
-   },
-   {
-    "path": {
-     "relative": "node_modules/.bun/effect@4.1.1/node_modules/effect/dist/ai/Toolkit.d.ts"
-    },
-    "size": 13588,
-    "hash": "SGCRtMfv8QsyjtNMX1LMFSLzcvHUwKX4NvQUKeZzMPI"
-   },
-   {
-    "path": {
-     "relative": "node_modules/.bun/effect@4.1.1/node_modules/effect/dist/ai/Response.d.ts"
-    },
-    "size": 65567,
-    "hash": "OFAhhRpjZhhz_EToYX42HkwvSMJbTZ1J4ch54fNx6Ac"
-   },
-   {
-    "path": {
-     "relative": "node_modules/.bun/effect@4.1.1/node_modules/effect/dist/ai/Prompt.d.ts"
-    },
-    "size": 60087,
-    "hash": "9TJw58CaXN2y1wmIdav7S05l0KAnduISyrDhvuSQynA"
-   },
-   {
-    "path": {
-     "relative": "node_modules/.bun/effect@4.1.1/node_modules/effect/dist/ai/LanguageModel.d.ts"
-    },
-    "size": 31991,
-    "hash": "oISeQJ0wIRgH4P2voMLLD3rNW_dFcLGlVYHjzoRIIbQ"
-   },
-   {
-    "path": {
-     "relative": "node_modules/.bun/effect@4.1.1/node_modules/effect/dist/ai/Chat.d.ts"
-    },
-    "size": 22761,
-    "hash": "SB89AR8C1re66_D0MRd0djUi2aD7Rb3PO2xSUfD21rA"
-   },
-   {
-    "path": {
-     "relative": "node_modules/.bun/effect@4.1.1/node_modules/effect/dist/ai/DecisionModel.d.ts"
-    },
-    "size": 14438,
-    "hash": "8UNCe77m3SBhZBKUpOIzNege42y3IsyHnR6qaxYCdBA"
-   },
-   {
-    "path": {
-     "relative": "node_modules/.bun/effect@4.1.1/node_modules/effect/dist/ai/Decision.d.ts"
-    },
-    "size": 17549,
-    "hash": "S0iZAUU6pNfHNocveKkkWMB1u5YeU24Elxlkz4EO4yc"
-   },
-   {
-    "path": {
-     "relative": "node_modules/.bun/effect@4.1.1/node_modules/effect/dist/ai/EmbeddingModel.d.ts"
-    },
-    "size": 7579,
-    "hash": "m05jOKqFOR0lwEQsqyNUKBzTPJvPy1XNk1OOiutICQE"
-   },
-   {
-    "path": {
-     "relative": "node_modules/.bun/effect@4.1.1/node_modules/effect/dist/ai/McpProtocol.d.ts"
-    },
-    "size": 6775,
-    "hash": "SnrcU0JP6bqV_yOVPPfRXp1UWaczreLbWf7IxHdl99g"
-   },
-   {
-    "path": {
-     "relative": "node_modules/.bun/effect@4.1.1/node_modules/effect/dist/ai/McpSchema.d.ts"
-    },
-    "size": 220938,
-    "hash": "PeqpOThuLQCxY-MpXdssGuqdKY-0ws7QjXIlwDOdO4U"
-   },
-   {
-    "path": {
-     "relative": "node_modules/.bun/effect@4.1.1/node_modules/effect/dist/ai/McpClientError.d.ts"
-    },
-    "size": 9142,
-    "hash": "BknnupZpGnQBMcOy-1BZFCPyKU1ymp-AxZazIpsHl-Q"
-   },
-   {
-    "path": {
-     "relative": "node_modules/.bun/effect@4.1.1/node_modules/effect/dist/ai/McpClient.d.ts"
-    },
-    "size": 18691,
-    "hash": "MWtowmpSJJArDakrTYTtZuQSLeULd1zFMubkDxhrIg0"
-   },
-   {
-    "path": {
-     "relative": "node_modules/.bun/effect@4.1.1/node_modules/effect/dist/ai/McpServer.d.ts"
-    },
-    "size": 57690,
-    "hash": "liyjudluzu8yfoBT9wp69kV3wYnzlfQuDgiIdrPu4oc"
-   },
-   {
-    "path": {
-     "relative": "node_modules/.bun/effect@4.1.1/node_modules/effect/dist/ai/McpTest.d.ts"
-    },
-    "size": 6761,
-    "hash": "JF8pbrW3G72CEGzr60XzVoB1K3YcWGnb2CgfOpE5cdY"
-   },
-   {
-    "path": {
-     "relative": "node_modules/.bun/effect@4.1.1/node_modules/effect/dist/ai/Model.d.ts"
-    },
-    "size": 3866,
-    "hash": "zGKoyQ1a-nikL-zBef3DjXLGPbOIPbMHYY1hJHTDtJo"
-   },
-   {
-    "path": {
-     "relative": "node_modules/.bun/effect@4.1.1/node_modules/effect/dist/ai/OpenAiStructuredOutput.d.ts"
-    },
-    "size": 2645,
-    "hash": "DPRQadjzkHvcnU2YdKOWR308aieyJeeakZdJAOBcQ6k"
-   },
-   {
-    "path": {
-     "relative": "node_modules/.bun/effect@4.1.1/node_modules/effect/dist/ai/ResponseIdTracker.d.ts"
-    },
-    "size": 2828,
-    "hash": "rkbCOslxz9-uThLydHGiYzzyfBHpoDrMg5NggrpC58U"
-   },
-   {
-    "path": {
-     "relative": "node_modules/.bun/effect@4.1.1/node_modules/effect/dist/ai/Telemetry.d.ts"
-    },
-    "size": 17468,
-    "hash": "hndBQTvMEgN9zfUD9M5MUbzQVNlnUMuJz8yoeiouAy4"
-   },
-   {
-    "path": {
-     "relative": "node_modules/.bun/effect@4.1.1/node_modules/effect/dist/ai/Tokenizer.d.ts"
-    },
-    "size": 4843,
-    "hash": "lIbpe6PPuFbsV9hTa36eSnoxh0kAEHWar3s-fTouh_M"
-   },
-   {
-    "path": {
-     "relative": "node_modules/.bun/effect@4.1.1/node_modules/effect/dist/ai/index.d.ts"
-    },
-    "size": 2274,
-    "hash": "vAAGj0q3HIy6ESKqXu6LpdFTmlRjBZcUNqv0YZQdE7w"
    },
    {
     "path": {
@@ -3862,10 +4093,10 @@
    },
    {
     "path": {
-     "relative": "packages/client/src/rpc-runtime.ts"
+     "relative": "packages/client/src/rpc-runtime.vibe"
     },
-    "size": 2220,
-    "hash": "Gd4qWPFNzjhiePmy-R92jI8xVTWrNc8Q9GX7HDYKqOw"
+    "size": 2135,
+    "hash": "HFc21lPceKMgKTc_DHYW1lcHVtrMvizSaAuXdY6ZgnA"
    },
    {
     "path": {
@@ -3904,52 +4135,10 @@
    },
    {
     "path": {
-     "relative": "node_modules/.bun/effect@4.1.1/node_modules/effect/dist/http/FetchHttpClient.d.ts"
+     "relative": "packages/client/src/effect/client.platform.ts"
     },
-    "size": 4524,
-    "hash": "Ff1pvEgbHCmcfW2hOA4eeQiO-1bByT22FdR-DUXTJ5o"
-   },
-   {
-    "path": {
-     "relative": "node_modules/.bun/effect@4.1.1/node_modules/effect/dist/http/HttpEffect.d.ts"
-    },
-    "size": 7732,
-    "hash": "kOyqZqwX3Fbd-iROXgoNCUDjHor27B1K4zWRAliVcEg"
-   },
-   {
-    "path": {
-     "relative": "node_modules/.bun/effect@4.1.1/node_modules/effect/dist/http/HttpStaticServer.d.ts"
-    },
-    "size": 3531,
-    "hash": "FqWhp40GL-Nid--8HsGhRiDv7lP5CmD6JXu65-k2o34"
-   },
-   {
-    "path": {
-     "relative": "node_modules/.bun/effect@4.1.1/node_modules/effect/dist/http/HttpTraceContext.d.ts"
-    },
-    "size": 2599,
-    "hash": "7mo6_-CfYhYj6Yp9EXf56nxYXMi1fRHOb4W0zdGA_8k"
-   },
-   {
-    "path": {
-     "relative": "node_modules/.bun/effect@4.1.1/node_modules/effect/dist/http/Mime.d.ts"
-    },
-    "size": 835,
-    "hash": "p6d2Snrgf-B_lsoY6y8mvieRRd722cQKxy7JCuR0bME"
-   },
-   {
-    "path": {
-     "relative": "node_modules/.bun/effect@4.1.1/node_modules/effect/dist/http/ProblemDetails.d.ts"
-    },
-    "size": 2653,
-    "hash": "g8hvLzVYQM7j-rf1lkfXUyGslbWt7Xyi5kZeaccNyr0"
-   },
-   {
-    "path": {
-     "relative": "node_modules/.bun/effect@4.1.1/node_modules/effect/dist/http/index.d.ts"
-    },
-    "size": 3116,
-    "hash": "gngeJitvbemM55UcUbeJWEdSQPCmSsBVKJBWk_HHUWM"
+    "size": 186,
+    "hash": "r_67yyeBOBQ0FNoNWU7P9VIn5h2bLBCo9-YEpo3Op8g"
    },
    {
     "path": {
@@ -3974,10 +4163,10 @@
    },
    {
     "path": {
-     "relative": "packages/client/src/effect/client.ts"
+     "relative": "packages/client/src/effect/client.vibe"
     },
-    "size": 2340,
-    "hash": "9m1TufAjhAtcODNMBOzBBX9g1kLdDjpnr742I_CEc2M"
+    "size": 3045,
+    "hash": "NsZom0fsbWBVIvBJfXGGm9uvFMOcQ3_eQR8WI6i2LrY"
    },
    {
     "path": {
@@ -5587,7 +5776,7 @@
     "relative": "packages/client/src/pty-handoff.ts"
    },
    {
-    "relative": "packages/client/src/rpc-runtime.ts"
+    "relative": "packages/client/src/rpc-runtime.vibe"
    },
    {
     "relative": "packages/client/src/service-contender.ts"
@@ -5605,6 +5794,9 @@
     "relative": "packages/client/src/effect/api.ts"
    },
    {
+    "relative": "packages/client/src/effect/client.platform.ts"
+   },
+   {
     "relative": "packages/client/src/effect/generated/client-error.ts"
    },
    {
@@ -5614,7 +5806,7 @@
     "relative": "packages/client/src/effect/generated/index.ts"
    },
    {
-    "relative": "packages/client/src/effect/client.ts"
+    "relative": "packages/client/src/effect/client.vibe"
    },
    {
     "relative": "packages/schema/src/question.vibe"
@@ -5676,6 +5868,26 @@
    {
     "paths": [
      {
+      "relative": "packages/client/src/rpc-runtime.vibe"
+     }
+    ],
+    "code": "import * as Effect_1 from \"effect/Effect\";\nexport * as RpcRuntime from \"./rpc-runtime.js\";\nimport { RpcError, RpcInternalError } from \"@opencode/protocol/errors\";\nimport { Effect, Schema } from \"effect\";\nexport function read(schema, value) {\n    // Standard Schema results have already been parsed by the server.\n    return Schema.isSchema(schema) ? Schema.decodeUnknownEffect(schema)(value) : Effect.succeed(value);\n}\nexport function readError(method, error) {\n    if (!(error instanceof RpcError) && !(error instanceof RpcInternalError))\n        return Effect.fail(error);\n    if (!method.errors || !Object.hasOwn(method.errors, error.type)) {\n        return Effect.fail(error.data === undefined\n            ? { type: error.type, message: error.message }\n            : { type: error.type, message: error.message, data: error.data });\n    }\n    return read(method.errors[error.type], error.data).pipe(Effect.orDie, Effect.flatMap((data) => Effect.fail(data === undefined\n        ? { type: error.type, message: error.message }\n        : { type: error.type, message: error.message, data })));\n}\nexport const event = Effect.fn(\"Client.Rpc.event\")(function (definition, name, schema, event) {\n    return Effect_1.gen(function* () {\n        const data = yield* read(schema.schema, event.data);\n        // SAFETY: The event type was selected by the caller and data was decoded with this event's schema.\n        // oxlint-disable-next-line typescript-eslint/no-unsafe-type-assertion\n        return {\n            ...event,\n            type: eventType(definition, name),\n            data,\n        };\n    });\n});\nexport function eventType(definition, name) {\n    return `rpc.${definition.id}.${name}`;\n}\n",
+    "map": {
+     "version": 3,
+     "file": "rpc-runtime.js",
+     "sourceRoot": "",
+     "sources": [
+      {
+       "relative": "packages/client/src/rpc-runtime.vibe"
+      }
+     ],
+     "names": [],
+     "mappings": ";AAAA,OAAO,KAAK,UAAU,MAAM,kBAAkB,CAAA;AAI9C,OAAO,EAAE,QAAQ,EAAE,gBAAgB,EAAE,MAAM,2BAA2B,CAAA;AACtE,OAAO,EAAE,MAAM,EAAE,MAAM,EAAE,MAAM,QAAQ,CAAA;AAIvC,MAAM,UAAU,IAAI,CAAC,MAA4B,EAAE,KAAc;IAC/D,kEAAkE;IAClE,OAAO,MAAM,CAAC,QAAQ,CAAC,MAAM,CAAC,CAAC,CAAC,CAAC,MAAM,CAAC,mBAAmB,CAAC,MAAM,CAAC,CAAC,KAAK,CAAC,CAAC,CAAC,CAAC,MAAM,CAAC,OAAO,CAAC,KAAK,CAAC,CAAA;AACpG,CAAC;AAED,MAAM,UAAU,SAAS,CAAC,MAAkB,EAAE,KAAc;IAC1D,IAAI,CAAC,CAAC,KAAK,YAAY,QAAQ,CAAC,IAAI,CAAC,CAAC,KAAK,YAAY,gBAAgB,CAAC;QAAE,OAAO,MAAM,CAAC,IAAI,CAAC,KAAK,CAAC,CAAA;IACnG,IAAI,CAAC,MAAM,CAAC,MAAM,IAAI,CAAC,MAAM,CAAC,MAAM,CAAC,MAAM,CAAC,MAAM,EAAE,KAAK,CAAC,IAAI,CAAC,EAAE,CAAC;QAChE,OAAO,MAAM,CAAC,IAAI,CAChB,KAAK,CAAC,IAAI,KAAK,SAAS;YACtB,CAAC,CAAC,EAAE,IAAI,EAAE,KAAK,CAAC,IAAI,EAAE,OAAO,EAAE,KAAK,CAAC,OAAO,EAAE;YAC9C,CAAC,CAAC,EAAE,IAAI,EAAE,KAAK,CAAC,IAAI,EAAE,OAAO,EAAE,KAAK,CAAC,OAAO,EAAE,IAAI,EAAE,KAAK,CAAC,IAAI,EAAE,CACnE,CAAA;IACH,CAAC;IACD,OAAO,IAAI,CAAC,MAAM,CAAC,MAAM,CAAC,KAAK,CAAC,IAAI,CAAC,EAAE,KAAK,CAAC,IAAI,CAAC,CAAC,IAAI,CACrD,MAAM,CAAC,KAAK,EACZ,MAAM,CAAC,OAAO,CAAC,CAAC,IAAI,EAAE,EAAE,CACtB,MAAM,CAAC,IAAI,CACT,IAAI,KAAK,SAAS;QAChB,CAAC,CAAC,EAAE,IAAI,EAAE,KAAK,CAAC,IAAI,EAAE,OAAO,EAAE,KAAK,CAAC,OAAO,EAAE;QAC9C,CAAC,CAAC,EAAE,IAAI,EAAE,KAAK,CAAC,IAAI,EAAE,OAAO,EAAE,KAAK,CAAC,OAAO,EAAE,IAAI,EAAE,CACvD,CACF,CACF,CAAA;AACH,CAAC;AAED,MAAM,CAAC,MAAM,KAAK,GAAG,MAAM,CAAC,EAAE,CAAC,kBAAkB,CAAC,CAAC,UAIjD,UAAa,EACb,IAAU,EACV,MAA2B,EAC3B,KAAe;GAAA,C,CAAA,mB,CAAA;QAEf,MAAM,IAAI,UAAO,IAAI,CAAC,MAAM,CAAC,MAAM,EAAE,KAAK,CAAC,IAAI,CAAC,CAAA;QAChD,mGAAmG;QACnG,sEAAsE;QACtE,OAAO;YACL,GAAG,KAAK;YACR,IAAI,EAAE,SAAS,CAAC,UAAU,EAAE,IAAI,CAAC;YACjC,IAAI;SACwB,CAAA;IAChC,CAAC;CAAA,CAAC,CAAA;AAEF,MAAM,UAAU,SAAS,CACvB,UAAa,EACb,IAAU;IAEV,OAAO,OAAO,UAAU,CAAC,EAAE,IAAI,IAAI,EAAE,CAAA;AACvC,CAAC"
+    }
+   },
+   {
+    "paths": [
+     {
       "relative": "packages/client/src/effect/rpc.vibe"
      }
     ],
@@ -5691,6 +5903,26 @@
      ],
      "names": [],
      "mappings": "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"
+    }
+   },
+   {
+    "paths": [
+     {
+      "relative": "packages/client/src/effect/client.vibe"
+     }
+    ],
+    "code": "import * as Effect_1 from \"effect/Effect\";\nexport * as OpenCode from \"./client.js\";\nimport { Cause, Context, Effect, Stream } from \"effect\";\nimport { HttpClient, HttpClientRequest } from \"effect/http\";\nimport { SharedEvents } from \"../shared-events.js\";\nimport { ClientError, OpenCode } from \"./generated/index.js\";\nimport { RpcClientRuntime } from \"./rpc.js\";\nimport { fetchHeaders } from \"./client.platform.js\";\nconst CurrentHeaders = Context.Reference(\"@opencode/client/effect/rpc/headers\", {\n    defaultValue: () => undefined,\n});\nexport const make = Effect.fn(\"OpenCode.make\")(function (options) {\n    return Effect_1.gen(function* () {\n        const httpClient = yield* HttpClient.HttpClient;\n        const raw = yield* OpenCode.make(options).pipe(Effect.provideService(HttpClient.HttpClient, HttpClient.mapRequestEffect(httpClient, (request) => Effect.flatMap(CurrentHeaders, (headers) => headers\n            ? // Invalid headers stay the defect the Fetch constructor raised.\n                Effect.orDie(Effect.try({\n                    try: () => HttpClientRequest.setHeaders(request, fetchHeaders(headers)),\n                    catch: (cause) => cause,\n                }))\n            : Effect.succeed(request)))));\n        const context = yield* Effect.context();\n        const native = raw.event.subscribe();\n        // Async iterators throw a squashed cause; retain the native typed failures and defects intact.\n        class EventFailure {\n            cause;\n            constructor(cause) {\n                this.cause = cause;\n            }\n        }\n        // A throw from the native event hub stays the defect it was before conversion.\n        const shared = yield* Effect.orDie(Effect.try({\n            try: () => SharedEvents.make((signal) => Stream.toAsyncIterableWith(native.pipe(Stream.interruptWhen(RpcClientRuntime.aborted(signal)), Stream.catchCause((cause) => Stream.fail(new EventFailure(cause)))), context)),\n            catch: (cause) => cause,\n        }));\n        const subscribe = (input) => Stream.unwrap(Effect.orDie(Effect.try({ try: () => shared.subscribe({ types: input?.types }), catch: (cause) => cause })).pipe(Effect.map((events) => Stream.fromAsyncIterable(events, (error) => error)))).pipe(Stream.catch((error) => Stream.failCause(error instanceof EventFailure ? error.cause : Cause.fail(new ClientError({ cause: error })))));\n        return {\n            ...raw,\n            event: { ...raw.event, subscribe },\n            rpc: Object.assign(RpcClientRuntime.make((input, options) => raw.rpc.call(input).pipe(Effect.provideService(CurrentHeaders, options?.headers)), subscribe), raw.rpc),\n        };\n    });\n});\n",
+    "map": {
+     "version": 3,
+     "file": "client.js",
+     "sourceRoot": "",
+     "sources": [
+      {
+       "relative": "packages/client/src/effect/client.vibe"
+      }
+     ],
+     "names": [],
+     "mappings": ";AAAA,OAAO,KAAK,QAAQ,MAAM,aAAa,CAAA;AAEvC,OAAO,EAAE,KAAK,EAAE,OAAO,EAAE,MAAM,EAAE,MAAM,EAAE,MAAM,QAAQ,CAAA;AACvD,OAAO,EAAE,UAAU,EAAE,iBAAiB,EAAE,MAAM,aAAa,CAAA;AAC3D,OAAO,EAAE,YAAY,EAAE,MAAM,qBAAqB,CAAA;AAClD,OAAO,EAAE,WAAW,EAAE,QAAQ,EAAE,MAAM,sBAAsB,CAAA;AAE5D,OAAO,EAAE,gBAAgB,EAAE,MAAM,UAAU,CAAA;AAE3C,OAAO,EAAE,YAAY,EAAE,MAAM,sBAAsB,CAAA;AAInD,MAAM,cAAc,GAAG,OAAO,CAAC,SAAS,CAA4B,qCAAqC,EAAE;IACzG,YAAY,EAAE,GAAG,EAAE,CAAC,SAAS;CAC9B,CAAC,CAAA;AAEF,MAAM,CAAC,MAAM,IAAI,GAAG,MAAM,CAAC,EAAE,CAAC,eAAe,CAAC,CAAC,UAAiB,OAA6C;GAAA,C,CAAA,mB,CAAA;QAC3G,MAAM,UAAU,UAAO,UAAU,CAAC,UAAU,CAAA;QAC5C,MAAM,GAAG,UAAO,QAAQ,CAAC,IAAI,CAAC,OAAO,CAAC,CAAC,IAAI,CACzC,MAAM,CAAC,cAAc,CACnB,UAAU,CAAC,UAAU,EACrB,UAAU,CAAC,gBAAgB,CAAC,UAAU,EAAE,CAAC,OAAO,EAAE,EAAE,CAClD,MAAM,CAAC,OAAO,CAAC,cAAc,EAAE,CAAC,OAAO,EAAE,EAAE,CACzC,OAAO;YACL,CAAC,CAAC,gEAAgE;gBAChE,MAAM,CAAC,KAAK,CACV,MAAM,CAAC,GAAG,CAAC;oBACT,GAAG,EAAE,GAAG,EAAE,CAAC,iBAAiB,CAAC,UAAU,CAAC,OAAO,EAAE,YAAY,CAAC,OAAO,CAAC,CAAC;oBACvE,KAAK,EAAE,CAAC,KAAK,EAAE,EAAE,CAAC,KAAK;iBACxB,CAAC,CACH;YACH,CAAC,CAAC,MAAM,CAAC,OAAO,CAAC,OAAO,CAAC,CAC5B,CACF,CACF,CACF,CAAA;QACD,MAAM,OAAO,UAAO,MAAM,CAAC,OAAO,EAAE,CAAA;QACpC,MAAM,MAAM,GAAG,GAAG,CAAC,KAAK,CAAC,SAAS,EAAE,CAAA;QACpC,+FAA+F;QAC/F,MAAM,YAAY;YACK,KAAK;YAA1B,YAAqB,KAA+C;6BAA/C,KAAK;YAA6C,CAAC;SACzE;QACD,+EAA+E;QAC/E,MAAM,MAAM,UAAO,MAAM,CAAC,KAAK,CAC7B,MAAM,CAAC,GAAG,CAAC;YACT,GAAG,EAAE,GAAG,EAAE,CACR,YAAY,CAAC,IAAI,CAAC,CAAC,MAAM,EAAE,EAAE,CAC3B,MAAM,CAAC,mBAAmB,CACxB,MAAM,CAAC,IAAI,CACT,MAAM,CAAC,aAAa,CAAC,gBAAgB,CAAC,OAAO,CAAC,MAAM,CAAC,CAAC,EACtD,MAAM,CAAC,UAAU,CAAC,CAAC,KAAK,EAAE,EAAE,CAAC,MAAM,CAAC,IAAI,CAAC,IAAI,YAAY,CAAC,KAAK,CAAC,CAAC,CAAC,CACnE,EACD,OAAO,CACR,CACF;YACH,KAAK,EAAE,CAAC,KAAK,EAAE,EAAE,CAAC,KAAK;SACxB,CAAC,CACH,CAAA;QACD,MAAM,SAAS,GAAG,CAAqC,KAAgD,EAAE,EAAE,CACzG,MAAM,CAAC,MAAM,CACX,MAAM,CAAC,KAAK,CAAC,MAAM,CAAC,GAAG,CAAC,EAAE,GAAG,EAAE,GAAG,EAAE,CAAC,MAAM,CAAC,SAAS,CAAC,EAAE,KAAK,EAAE,KAAK,EAAE,KAAK,EAAE,CAAC,EAAE,KAAK,EAAE,CAAC,KAAK,EAAE,EAAE,CAAC,KAAK,EAAE,CAAC,CAAC,CAAC,IAAI,CAC9G,MAAM,CAAC,GAAG,CAAC,CAAC,MAAM,EAAE,EAAE,CAAC,MAAM,CAAC,iBAAiB,CAAC,MAAM,EAAE,CAAC,KAAK,EAAE,EAAE,CAAC,KAAK,CAAC,CAAC,CAC3E,CACF,CAAC,IAAI,CACJ,MAAM,CAAC,KAAK,CAAC,CAAC,KAAK,EAAE,EAAE,CACrB,MAAM,CAAC,SAAS,CAAC,KAAK,YAAY,YAAY,CAAC,CAAC,CAAC,KAAK,CAAC,KAAK,CAAC,CAAC,CAAC,KAAK,CAAC,IAAI,CAAC,IAAI,WAAW,CAAC,EAAE,KAAK,EAAE,KAAK,EAAE,CAAC,CAAC,CAAC,CAC9G,CACF,CAAA;QACH,OAAO;YACL,GAAG,GAAG;YACN,KAAK,EAAE,EAAE,GAAG,GAAG,CAAC,KAAK,EAAE,SAAS,EAAE;YAClC,GAAG,EAAE,MAAM,CAAC,MAAM,CAChB,gBAAgB,CAAC,IAAI,CACnB,CAAC,KAAK,EAAE,OAAO,EAAE,EAAE,CAAC,GAAG,CAAC,GAAG,CAAC,IAAI,CAAC,KAAK,CAAC,CAAC,IAAI,CAAC,MAAM,CAAC,cAAc,CAAC,cAAc,EAAE,OAAO,EAAE,OAAO,CAAC,CAAC,EACrG,SAAS,CACV,EACD,GAAG,CAAC,GAAG,CACR;SACF,CAAA;IACH,CAAC;CAAA,CAAC,CAAA"
     }
    },
    {

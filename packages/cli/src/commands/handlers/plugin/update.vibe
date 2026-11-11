@@ -1,5 +1,15 @@
-import { setExitCode, writeError, writeOutput } from "./update.platform"
-import { EOL } from "./update.platform"
+module platform {
+  export { EOL } from "node:os"
+
+  export const writeError = (...args: Parameters<typeof process.stderr.write>) => process.stderr.write(...args)
+
+  export const writeOutput = (...args: Parameters<typeof process.stdout.write>) => process.stdout.write(...args)
+
+  export const setExitCode = (code: typeof process.exitCode) => (process.exitCode = code)
+}
+
+import { setExitCode, writeError, writeOutput } from platform
+import { EOL } from platform
 import { Cause, Effect, Exit, Option } from "effect"
 import { Npm } from "@opencode/util/npm"
 import { Commands } from "../../commands.ts"

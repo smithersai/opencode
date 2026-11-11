@@ -1,3 +1,35 @@
+module platform {
+  // The platform code of export.vibe: the working directory, standard streams, the line ending and the exit code (EK4402).
+  export { EOL } from "node:os"
+
+  export function currentDirectory() {
+    return process.cwd()
+  }
+
+  /** @throws {never} */
+  export function stdinIsTTY() {
+    return process.stdin.isTTY
+  }
+
+  /** @throws {never} */
+  export function standardError() {
+    return process.stderr
+  }
+
+  export function writeOutput(text: string) {
+    return process.stdout.write(text)
+  }
+
+  export function writeError(text: string) {
+    return process.stderr.write(text)
+  }
+
+  /** @throws {never} */
+  export function setExitCode(code: number) {
+    process.exitCode = code
+  }
+}
+
 import { autocomplete, cancel, intro, isCancel, log, outro } from "@clack/prompts"
 import { OpenCode } from "@opencode/client"
 import { Service } from "@opencode/client/effect/service"
@@ -6,7 +38,7 @@ import { Commands } from "../../commands.ts"
 import { Runtime } from "../../../framework/runtime.ts"
 import { ServerConnection } from "../../../services/server-connection.ts"
 import { errorMessage } from "../../../util/error"
-import { currentDirectory, EOL, setExitCode, standardError, stdinIsTTY, writeError, writeOutput } from "./export.platform"
+import { currentDirectory, EOL, setExitCode, standardError, stdinIsTTY, writeError, writeOutput } from platform
 
 export default Runtime.handler(
   Commands.commands.session.commands.export,

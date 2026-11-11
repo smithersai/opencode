@@ -1,5 +1,11 @@
-import { writeOutput } from "./status.platform"
-import { EOL } from "./status.platform"
+module platform {
+  export { EOL } from "node:os"
+
+  export const writeOutput = (...args: Parameters<typeof process.stdout.write>) => process.stdout.write(...args)
+}
+
+import { writeOutput } from platform
+import { EOL } from platform
 import { Effect } from "effect"
 import { Service } from "@opencode/client/effect/service"
 import { Commands } from "../../commands.ts"

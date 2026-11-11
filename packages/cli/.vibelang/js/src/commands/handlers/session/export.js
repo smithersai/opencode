@@ -7,7 +7,7 @@ import { Commands } from "../../commands.js";
 import { Runtime } from "../../../framework/runtime.js";
 import { ServerConnection } from "../../../services/server-connection.js";
 import { errorMessage } from "../../../util/error.js";
-import { currentDirectory, EOL, setExitCode, standardError, stdinIsTTY, writeError, writeOutput } from "./export.platform.js";
+import { currentDirectory, EOL, setExitCode, standardError, stdinIsTTY, writeError, writeOutput } from "./export.vibe.platform.js";
 export default Runtime.handler(Commands.commands.session.commands.export, Effect.fn("cli.session.export")((input) => Effect.gen(function* () {
     const requested = Option.getOrUndefined(input.session);
     if (!requested && !stdinIsTTY()) {

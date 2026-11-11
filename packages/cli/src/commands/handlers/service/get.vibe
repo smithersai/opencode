@@ -1,4 +1,14 @@
-import { EOL, write } from "./get.platform"
+module platform {
+  import { Effect } from "effect"
+  export { EOL } from "node:os"
+
+  export const write = (value: string) =>
+    Effect.sync(() => {
+      process.stdout.write(value)
+    })
+}
+
+import { EOL, write } from platform
 import { Effect, Option } from "effect"
 import { Commands } from "../../commands.ts"
 import { Runtime } from "../../../framework/runtime"

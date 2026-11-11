@@ -1,5 +1,11 @@
-import { currentDirectory } from "./inventory.platform"
-import { EOL } from "./inventory.platform"
+module platform {
+  export { EOL } from "node:os"
+
+  export const currentDirectory = () => process.cwd()
+}
+
+import { currentDirectory } from platform
+import { EOL } from platform
 import { Cause, Effect, Exit } from "effect"
 import { OpenCode } from "@opencode/client"
 import { Service } from "@opencode/client/effect/service"

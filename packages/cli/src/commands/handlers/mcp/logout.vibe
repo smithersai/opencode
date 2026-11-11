@@ -1,5 +1,13 @@
-import { currentDirectory, writeOutput } from "./logout.platform"
-import { EOL } from "./logout.platform"
+module platform {
+  export { EOL } from "node:os"
+
+  export const currentDirectory = () => process.cwd()
+
+  export const writeOutput = (...args: Parameters<typeof process.stdout.write>) => process.stdout.write(...args)
+}
+
+import { currentDirectory, writeOutput } from platform
+import { EOL } from platform
 import { Effect } from "effect"
 import { OpenCode } from "@opencode/client"
 import { Commands } from "../../commands.ts"

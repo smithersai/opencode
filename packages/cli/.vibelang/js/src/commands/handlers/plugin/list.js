@@ -10,7 +10,7 @@ import { Global } from "@opencode/util/global";
 import { Npm } from "@opencode/util/npm";
 import { Host } from "@opencode/plugin/host";
 import { discoverPluginTargets, localPluginDirectories, localSource } from "@opencode/tui/plugin/discovery";
-import { currentDirectory, EOL, fileURLToPath, path, writeOutput } from "./list.platform.js";
+import { currentDirectory, EOL, fileURLToPath, path, writeOutput } from "./list.vibe.platform.js";
 export default Runtime.handler(Commands.commands.plugin.commands.list, Effect.fn("cli.plugin.list")(function* (input) {
     const { endpoint } = yield* ServerConnection.resolve();
     const client = OpenCode.make({ baseUrl: endpoint.url, headers: Service.headers(endpoint) });

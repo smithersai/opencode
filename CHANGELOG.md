@@ -6,6 +6,8 @@ Release notes for OpenCode V2, newest first.
 
 ### Changed
 
+- The CLI MCP, plugin, service and session command handlers now keep their native process and stream access in module bodies of their VibeLang files instead of platform siblings.
+
 - The CLI ACP, default, models, reload and stats handlers and the auth and debug commands now keep their native process and stream access in module bodies of their VibeLang files instead of platform siblings.
 
 - The desktop main process settings store now uses VibeLang while preserving its declarations, its `store.ts` import path and native file and Electron access.

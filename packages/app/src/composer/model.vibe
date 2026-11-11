@@ -33,7 +33,7 @@ import { createComposerHistory } from "./history/store"
 import { createComposerSubmit } from "./submit"
 import { useAttachmentDestination } from "./attachments/destination"
 import { parseClientSlashCommand } from "./client-slash-command"
-import { createEvent, createObjectURL, requestFrame, revokeObjectURL } from "./model.platform.ts"
+import { createEvent, createObjectURL, requestFrame, revokeObjectURL } from platform
 
 export type ComposerModel = ComposerEditorModel & {
   readonly model: ComposerControls["model"]
@@ -647,4 +647,22 @@ function openComment(
 
 function firstWord(query: string) {
   return query.toLowerCase().split(" ")[0] ?? ""
+}
+
+module platform {
+  export function requestFrame(callback: FrameRequestCallback) {
+    return requestAnimationFrame(callback)
+  }
+
+  export function createObjectURL(blob: Blob) {
+    return URL.createObjectURL(blob)
+  }
+
+  export function revokeObjectURL(url: string) {
+    URL.revokeObjectURL(url)
+  }
+
+  export function createEvent(type: string) {
+    return new Event(type)
+  }
 }

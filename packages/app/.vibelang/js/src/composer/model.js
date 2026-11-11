@@ -29,7 +29,7 @@ import { createComposerHistory } from "./history/store.js";
 import { createComposerSubmit } from "./submit.js";
 import { useAttachmentDestination } from "./attachments/destination.js";
 import { parseClientSlashCommand } from "./client-slash-command.js";
-import { createEvent, createObjectURL, requestFrame, revokeObjectURL } from "./model.platform.js";
+import { createEvent, createObjectURL, requestFrame, revokeObjectURL } from "./model.vibe.platform.js";
 const sendFailedTitle = {
     shell: "prompt.toast.shellSendFailed.title",
     command: "prompt.toast.commandSendFailed.title",

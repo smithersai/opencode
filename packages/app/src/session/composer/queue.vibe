@@ -1,5 +1,5 @@
-import { cancelTimeout } from "./queue.platform.ts"
-import { scheduleTimeout } from "./queue.platform.ts"
+import { cancelTimeout } from platform
+import { scheduleTimeout } from platform
 import { createEffect, createMemo, onCleanup, type Accessor } from "solid-js"
 import { createStore } from "solid-js/store"
 import { useMutation } from "@tanstack/solid-query"
@@ -679,5 +679,15 @@ async function editedPromptInput(
       displayText: request.displayText,
       attachments: request.attachments,
     },
+  }
+}
+
+module platform {
+  export function scheduleTimeout(callback: () => void, delay?: number) {
+    return setTimeout(callback, delay)
+  }
+
+  export function cancelTimeout(timer: ReturnType<typeof setTimeout>) {
+    clearTimeout(timer)
   }
 }

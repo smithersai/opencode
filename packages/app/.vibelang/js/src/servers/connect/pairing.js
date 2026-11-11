@@ -2,7 +2,7 @@
 import * as Option from "effect/Option";
 import * as Schema from "effect/Schema";
 import { normalizeServerUrl } from "@/runtime/server/registry";
-import * as $platform from "./pairing.platform.js";
+import * as $platform from "./pairing.vibe.platform.js";
 export function serverAddress(value) {
     if (value.includes("://") && !/^https?:\/\//.test(value.trim()))
         return;

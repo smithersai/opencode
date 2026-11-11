@@ -36,7 +36,7 @@ import {
 import { SessionHeaderSpacer } from "@/session/header/session-header"
 import { SessionHeaderGap } from "@/session/header/drag-area"
 import { SessionWorkingIndicator } from "@/session/header/session-working-indicator"
-import { requestFrame } from "./message-timeline.platform.ts"
+import { requestFrame } from platform
 
 type BlockingTask = { type: "shell" | "subagent"; partID: string; id?: string; label?: string }
 
@@ -685,4 +685,10 @@ function MessageTimelineView(
       }
     />
   )
+}
+
+module platform {
+  export function requestFrame(callback: FrameRequestCallback) {
+    return requestAnimationFrame(callback)
+  }
 }

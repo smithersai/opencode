@@ -11,7 +11,7 @@ import { observeElementOffsetReconnectAware } from "./observe-element-offset.js"
 import { filterVirtualIndexes } from "./virtual-items.js";
 import { prefersReducedMotion } from "@opencode/ui/motion";
 import { holdLandingWidth } from "@/shell/panel-motion";
-import { addWindowListener, cancelAnimationFrame, createMutationObserver, createResizeObserver, escapeSelector, getComputedStyle, isElement, isTouchEvent, queueMicrotask, removeWindowListener, requestAnimationFrame, } from "./virtualizer.platform.js";
+import { addWindowListener, cancelAnimationFrame, createMutationObserver, createResizeObserver, escapeSelector, getComputedStyle, isElement, isTouchEvent, queueMicrotask, removeWindowListener, requestAnimationFrame, } from "./virtualizer.vibex.platform.jsx";
 const fallbackItemSize = 60;
 // Reserved below the last row: a 36px lane for the live status row and its background hint, an 8px gap, then a 28px
 // activity pill and its 10px composer gap. Both come and go inside it, so neither moves the rows above.

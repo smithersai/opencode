@@ -30,7 +30,7 @@ import { SessionAncestorTrail, SessionHeaderLayout, SessionLocation, SessionTitl
 import { SessionHeaderSpacer } from "@/session/header/session-header";
 import { SessionHeaderGap } from "@/session/header/drag-area";
 import { SessionWorkingIndicator } from "@/session/header/session-working-indicator";
-import { requestFrame } from "./message-timeline.platform.js";
+import { requestFrame } from "./message-timeline.vibex.platform.jsx";
 export function BackgroundMoveHint(props) {
     const language = useLanguage();
     const command = useCommand();

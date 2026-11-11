@@ -6,6 +6,8 @@ Release notes for OpenCode V2, newest first.
 
 ### Changed
 
+- The SQLite condition test now bundles with the VibeLang plugin, as the core package build does.
+
 - The plugin host contract and browser tool helpers now use VibeLang module bodies with equivalent public declarations.
 
 - The HTTP Recorder package consumer check installs the supported Effect version instead of an obsolete prerelease.

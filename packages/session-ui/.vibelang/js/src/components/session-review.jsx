@@ -21,7 +21,7 @@ import { mediaKindFromPath } from "../pierre/media.js";
 import { cloneSelectedLineRange, previewSelectedLines } from "../pierre/selection-bridge.js";
 import { createLineCommentController } from "./line-comment-annotations";
 import { normalize, text } from "./session-diff.js";
-import { cancelAnimationFrame, isHTMLElement, requestAnimationFrame } from "./session-review.platform.js";
+import { cancelAnimationFrame, isHTMLElement, requestAnimationFrame } from "./session-review.vibex.platform.jsx";
 const MAX_DIFF_CHANGED_LINES = 500;
 const REVIEW_MOUNT_MARGIN = 300;
 function ReviewCommentMenu(props) {

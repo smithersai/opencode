@@ -17,7 +17,7 @@ import { createStore } from "solid-js/store"
 import { Collapsible } from "@opencode/ui/collapsible"
 import type { IconProps } from "@opencode/ui/icon"
 import { TextShimmer } from "@opencode/ui/text-shimmer"
-import { cancelAnimationFrame, requestAnimationFrame } from "./basic-tool.platform.js"
+import { cancelAnimationFrame, requestAnimationFrame } from platform
 
 export type TriggerTitle = {
   title: string
@@ -366,4 +366,18 @@ export function GenericTool(props: { tool: string; status?: string; hideDetails?
       hideDetails={props.hideDetails}
     />
   )
+}
+
+module platform {
+  // Browser host access for basic-tool.vibex.
+
+  /** @throws {never} */
+  export function requestAnimationFrame(callback: FrameRequestCallback) {
+    return globalThis.requestAnimationFrame(callback)
+  }
+
+  /** @throws {never} */
+  export function cancelAnimationFrame(handle: number) {
+    globalThis.cancelAnimationFrame(handle)
+  }
 }

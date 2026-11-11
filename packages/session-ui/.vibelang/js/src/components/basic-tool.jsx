@@ -5,7 +5,7 @@ import { useI18n } from "@opencode/ui/context/i18n";
 import { createStore } from "solid-js/store";
 import { Collapsible } from "@opencode/ui/collapsible";
 import { TextShimmer } from "@opencode/ui/text-shimmer";
-import { cancelAnimationFrame, requestAnimationFrame } from "./basic-tool.platform.js";
+import { cancelAnimationFrame, requestAnimationFrame } from "./basic-tool.vibex.platform.jsx";
 const isTriggerTitle = (value) => value instanceof Object && !("nodeType" in value) && "title" in value;
 const deferredMounts = [];
 let deferredFrame;

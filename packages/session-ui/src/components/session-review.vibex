@@ -25,7 +25,7 @@ import { cloneSelectedLineRange, previewSelectedLines } from "../pierre/selectio
 import { createLineCommentController } from "./line-comment-annotations"
 import type { LineCommentEditorProps } from "./line-comment"
 import { normalize, text, type ViewDiff } from "./session-diff"
-import { cancelAnimationFrame, isHTMLElement, requestAnimationFrame } from "./session-review.platform.js"
+import { cancelAnimationFrame, isHTMLElement, requestAnimationFrame } from platform
 
 const MAX_DIFF_CHANGED_LINES = 500
 
@@ -719,4 +719,23 @@ export const SessionReview = (props: SessionReviewProps) => {
       </div>
     </div>
   )
+}
+
+module platform {
+  // Browser host access for session-review.vibex.
+
+  /** @throws {never} */
+  export function requestAnimationFrame(callback: FrameRequestCallback) {
+    return globalThis.requestAnimationFrame(callback)
+  }
+
+  /** @throws {never} */
+  export function cancelAnimationFrame(handle: number) {
+    globalThis.cancelAnimationFrame(handle)
+  }
+
+  /** @throws {never} */
+  export function isHTMLElement(value: Element | null | undefined): value is HTMLElement {
+    return value instanceof HTMLElement
+  }
 }

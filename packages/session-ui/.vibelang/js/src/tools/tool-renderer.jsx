@@ -34,7 +34,7 @@ import { AssistantReasoningContent, writeClipboard } from "../message/message-co
 import { stripAnsi } from "./ansi.js";
 import { followShellOutput } from "./shell-output.js";
 import { LinkedText } from "../components/linked-text";
-import { cancelAnimationFrame, clearInterval, getComputedStyle, getSelection, isHTMLButtonElement, requestAnimationFrame, setInterval, setTimeout, } from "./tool-renderer.platform.js";
+import { cancelAnimationFrame, clearInterval, getComputedStyle, getSelection, isHTMLButtonElement, requestAnimationFrame, setInterval, setTimeout, } from "./tool-renderer.vibex.platform.jsx";
 function ShellSubmessage(props) {
     let widthRef;
     let valueRef;

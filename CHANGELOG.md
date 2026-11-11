@@ -6,6 +6,8 @@ Release notes for OpenCode V2, newest first.
 
 ### Changed
 
+- The session UI basic tool, session review and tool renderer now keep their browser access inside their VibeLang files instead of separate platform files.
+
 - The browser plugin connection, files, proxy and tunnel, and the plugin SDK built-in idle-callback helpers now keep their host access inside their VibeLang files instead of separate platform files.
 
 - The simulation OpenAI backend, simulated provider, renderer and manifest now keep their host access inside their VibeLang files instead of separate platform files.

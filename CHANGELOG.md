@@ -6,6 +6,8 @@ Release notes for OpenCode V2, newest first.
 
 ### Changed
 
+- The desktop browser page and pane now use VibeLang while preserving their declarations and native Electron, process and crypto access.
+
 - The V1 session migration now uses VibeLang while preserving its declarations, its native SQLite, file and path access, and its defects for malformed attachments and incompatible databases.
 
 - The CLI updater and retained image service and the TUI Zed editor selection now use VibeLang while preserving native process, file and environment access.

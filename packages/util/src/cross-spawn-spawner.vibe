@@ -30,7 +30,7 @@ module platform {
     ProcessId,
     type ChildProcessHandle,
   } from "effect/process/ChildProcessSpawner"
-  // ast-grep-ignore: no-star-import
+  // ast-grep-ignore: no-star-import-vibelang
   import * as NodeChildProcess from "node:child_process"
   import { PassThrough } from "node:stream"
   import launch from "cross-spawn"

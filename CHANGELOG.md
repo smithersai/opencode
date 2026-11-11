@@ -6,6 +6,8 @@ Release notes for OpenCode V2, newest first.
 
 ### Changed
 
+- HTTP Recorder's published declarations retain their original import spellings.
+
 - The CLI session list and uninstall handlers, the CPU and heap profiles and the port owner lookup now keep their native host access in module bodies of their VibeLang files instead of platform siblings.
 
 - The CLI ACP permissions and sessions, server process, shutdown deadline, SSH askpass and web UI service now keep their native host access in module bodies of their VibeLang files instead of platform siblings.
@@ -15,8 +17,6 @@ Release notes for OpenCode V2, newest first.
 - The CLI ACP, default, models, reload and stats handlers and the auth and debug commands now keep their native process and stream access in module bodies of their VibeLang files instead of platform siblings.
 
 - The desktop main process settings store now uses VibeLang while preserving its declarations, its `store.ts` import path and native file and Electron access.
-
-- The HTTP recorder package entry now uses VibeLang while preserving its declarations, the `src/index.ts` entry that tests and the bundle build read, and the published root declarations.
 
 - The desktop attachment picker, app and window IPC handlers, native logging, background service, main plugin host, plugin loader and plugin service, and the renderer plugin bridge now use VibeLang while preserving their declarations and native Electron, file and process access.
 

@@ -10,7 +10,7 @@ import type {
 import { Config } from "./config/index.tsx"
 import stripAnsi from "strip-ansi"
 import * as TuiAudio from "./audio.ts"
-import * as $platform from "./attention.platform.ts"
+import * as $platform from platform
 import {
   defaultSoundPath,
   questionSoundPath,
@@ -184,5 +184,14 @@ export function createTuiAttention(input: {
       input.renderer.off("focus", onFocus)
       input.renderer.off("blur", onBlur)
     },
+  }
+}
+
+module platform {
+  // The platform code of attention.vibe: console logging, which a .vibe file does not call directly (EK4402).
+
+  /** @throws {never} */
+  export function debug(message: string, detail: Record<string, unknown>): void {
+    console.debug(message, detail)
   }
 }

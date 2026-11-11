@@ -6,6 +6,8 @@ Release notes for OpenCode V2, newest first.
 
 ### Changed
 
+- The TUI attention alerts and the stats R2 SQL client now keep their host access inside their VibeLang files instead of separate platform files.
+
 - The HTTP recorder, the client RPC transport and service helpers, and the code mode extension bridge and OpenAPI runtime now keep their host access inside their VibeLang files instead of separate platform files.
 
 - The session UI basic tool, session review and tool renderer now keep their browser access inside their VibeLang files instead of separate platform files.

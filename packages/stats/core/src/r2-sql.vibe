@@ -1,4 +1,4 @@
-import * as $platform from "./r2-sql.platform.ts"
+import * as $platform from platform
 import { Resource } from "sst/resource"
 
 const R2_SQL_MAX_ROWS = 10_000
@@ -166,3 +166,12 @@ const fetchRows = effect (query: string) =>
     },
     "R2Sql.fetchRows",
   )
+
+module platform {
+  // The platform code of r2-sql.vibe: request cancellation signals, which reach the host (EK4402).
+
+  /** A signal that aborts with `signal` or after `ms` milliseconds, whichever comes first. @throws {never} */
+  export function boundedSignal(signal: AbortSignal, ms: number): AbortSignal {
+    return AbortSignal.any([signal, AbortSignal.timeout(ms)])
+  }
+}

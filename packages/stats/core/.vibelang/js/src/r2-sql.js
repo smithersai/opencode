@@ -8,7 +8,7 @@ import { withSpan } from "effect/Effect";
 import { $catchExpression } from "vibelang-runtime/internal";
 import * as Effect_1 from "effect/Effect";
 import * as runtime from "vibelang-runtime/internal";
-import * as $platform from "./r2-sql.platform.js";
+import * as $platform from "./r2-sql.vibe.platform.js";
 import { Resource } from "sst/resource";
 const R2_SQL_MAX_ROWS = 10_000;
 const R2_SQL_TIMEOUT_MS = 15 * 60_000;

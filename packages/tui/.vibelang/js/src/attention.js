@@ -3,7 +3,7 @@ import * as Schema from "effect/Schema";
 import { Config } from "./config/index.jsx";
 import stripAnsi from "strip-ansi";
 import * as TuiAudio from "./audio.js";
-import * as $platform from "./attention.platform.js";
+import * as $platform from "./attention.vibe.platform.js";
 import { defaultSoundPath, questionSoundPath, permissionSoundPath, errorSoundPath, subagentDoneSoundPath, } from "#attention-sounds";
 const DEFAULT_TITLE = "OpenCode";
 const TITLE_LIMIT = 80;

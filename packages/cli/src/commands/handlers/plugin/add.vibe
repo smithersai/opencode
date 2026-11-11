@@ -1,8 +1,46 @@
-import { EOL } from "node:os"
-import path from "node:path"
-import { mkdir, readFile, rename, writeFile } from "node:fs/promises"
+module platform {
+  import path from "node:path"
+  import { mkdir, readFile, rename, writeFile } from "node:fs/promises"
+  import { applyEdits, modify, parse, type ParseError } from "jsonc-parser"
+
+  export { EOL } from "node:os"
+
+  export const writeOutput = (text: string) => process.stdout.write(text)
+
+  export async function writePluginConfig(configPath: string, spec: string) {
+    const text = await readFile(configPath, "utf8").catch((error) => {
+      if (typeof error === "object" && error !== null && "code" in error && error.code === "ENOENT") return "{}"
+      throw error
+    })
+    const errors: ParseError[] = []
+    const config: unknown = parse(text, errors, { allowTrailingComma: true })
+    if (errors.length || typeof config !== "object" || config === null || Array.isArray(config))
+      throw new Error(`Invalid global configuration: ${configPath}`)
+    const plugins = "plugins" in config ? config.plugins : undefined
+    if (plugins !== undefined && !Array.isArray(plugins)) throw new Error(`Invalid plugins configuration: ${configPath}`)
+    if (configured(plugins, spec)) return false
+
+    const updated = applyEdits(
+      text,
+      modify(text, ["plugins"], [...(plugins ?? []), spec], { formattingOptions: { tabSize: 2, insertSpaces: true } }),
+    )
+    await mkdir(path.dirname(configPath), { recursive: true })
+    const temporary = configPath + ".tmp"
+    await writeFile(temporary, updated.endsWith("\n") ? updated : updated + "\n", { mode: 0o600 })
+    await rename(temporary, configPath)
+    return true
+  }
+
+  export function configured(plugins: readonly unknown[] | undefined, spec: string) {
+    return plugins?.some(
+      (entry) =>
+        entry === spec || (typeof entry === "object" && entry !== null && "package" in entry && entry.package === spec),
+    )
+  }
+}
+
+import { EOL, configured, writeOutput, writePluginConfig } from platform
 import { Effect } from "effect"
-import { applyEdits, modify, parse, type ParseError } from "jsonc-parser"
 import { Global } from "@opencode/util/global"
 import { Npm } from "@opencode/util/npm"
 import { Host } from "@opencode/plugin/host"
@@ -26,7 +64,7 @@ export default Runtime.handler(
       const global = yield* Global.Service
       const configPath = yield* Effect.promise(() => resolveConfigPath(global.config))
       const changed = yield* Effect.promise(() => writePluginConfig(configPath, input.package))
-      process.stdout.write(
+      writeOutput(
         changed
           ? `Plugin "${input.package}" installed and added to ${configPath}${EOL}`
           : `Plugin "${input.package}" is already configured in ${configPath}${EOL}`,
@@ -39,7 +77,7 @@ export default Runtime.handler(
       if (configured(draft.plugins, input.package)) return
       draft.plugins = [...(draft.plugins ?? []), input.package]
     })
-    process.stdout.write(`TUI plugin "${input.package}" installed and added to ${config.path}${EOL}`)
+    writeOutput(`TUI plugin "${input.package}" installed and added to ${config.path}${EOL}`)
   }),
 )
 
@@ -50,33 +88,4 @@ export function configurationTarget(entrypoints: Host.Entrypoints) {
   if (entrypoints.tui) return "tui" as const
 }
 
-export async function writePluginConfig(configPath: string, spec: string) {
-  const text = await readFile(configPath, "utf8").catch((error) => {
-    if (typeof error === "object" && error !== null && "code" in error && error.code === "ENOENT") return "{}"
-    throw error
-  })
-  const errors: ParseError[] = []
-  const config: unknown = parse(text, errors, { allowTrailingComma: true })
-  if (errors.length || typeof config !== "object" || config === null || Array.isArray(config))
-    throw new Error(`Invalid global configuration: ${configPath}`)
-  const plugins = "plugins" in config ? config.plugins : undefined
-  if (plugins !== undefined && !Array.isArray(plugins)) throw new Error(`Invalid plugins configuration: ${configPath}`)
-  if (configured(plugins, spec)) return false
-
-  const updated = applyEdits(
-    text,
-    modify(text, ["plugins"], [...(plugins ?? []), spec], { formattingOptions: { tabSize: 2, insertSpaces: true } }),
-  )
-  await mkdir(path.dirname(configPath), { recursive: true })
-  const temporary = configPath + ".tmp"
-  await writeFile(temporary, updated.endsWith("\n") ? updated : updated + "\n", { mode: 0o600 })
-  await rename(temporary, configPath)
-  return true
-}
-
-function configured(plugins: readonly unknown[] | undefined, spec: string) {
-  return plugins?.some(
-    (entry) =>
-      entry === spec || (typeof entry === "object" && entry !== null && "package" in entry && entry.package === spec),
-  )
-}
+export { writePluginConfig } from platform

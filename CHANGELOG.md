@@ -6,6 +6,8 @@ Release notes for OpenCode V2, newest first.
 
 ### Changed
 
+- The CLI api, MCP add, plugin add and remove, and session import handlers now use VibeLang while preserving native process, file and network access.
+
 - The core file watcher, built-in instructions and Google Vertex provider keep their path, environment and platform access in module bodies of their VibeLang files instead of separate platform files.
 
 - The core persistent terminal daemon, terminal, shell, skill, snapshot, version control and worktree modules keep their process, socket, file, path and environment access in module bodies of their VibeLang files instead of separate platform files.

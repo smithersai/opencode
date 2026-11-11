@@ -1736,7 +1736,6 @@
     "./config/discovery.vibe.platform": null,
     "./config/normalize.vibe.normalizer": null,
     "./effect/app-node-builder.impl.vibe.builder": null,
-    "./location-service-map.impl.vibe.platform": null,
     "./session.vibe.platform": null,
     "./effect/websocket-constructor.vibe.platform": null,
     "./filesystem/search.vibe.platform": null,

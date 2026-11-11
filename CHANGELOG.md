@@ -98,7 +98,7 @@ Release notes for OpenCode V2, newest first.
 
 - Instruction sources, repository references, the ripgrep installer, shell selection, file search and the WebSocket constructor now use VibeLang while preserving their declarations, native host access and their synchronous throws.
 
-- The Session service, the location service map and the app node builder now use VibeLang while preserving their declarations, native path access and the TypeScript paths that tests and benchmark scripts import.
+- The Session service and the app node builder now use VibeLang while preserving their declarations, native path access and the TypeScript path that tests and benchmark scripts import.
 
 - Config discovery and config normalization now use VibeLang while preserving their declarations, native host access and the normalizer's failure on a value that does not round-trip.
 

@@ -3,7 +3,7 @@ import { FSUtil } from "@opencode/util/fs-util";
 import { Effect, FileSystem } from "effect";
 import { HttpServerError, HttpServerRequest, HttpServerResponse } from "effect/http";
 import { load } from "../app-assets.js";
-import { sha256Base64, textFrom } from "./web-ui.platform.js";
+import { sha256Base64, textFrom } from "./web-ui.vibe.platform.js";
 export const handler = Effect.fn("cli.web-ui.handler")(function* (options) {
     const fileSystem = yield* FileSystem.FileSystem;
     const assets = options?.assets

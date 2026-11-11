@@ -1,5 +1,15 @@
-import { argumentVector, environmentValue } from "./ssh-askpass.platform"
-import { makeTextDecoder, decodeText } from "./ssh-askpass.platform"
+module platform {
+  export const environmentValue = (key: string) => process.env[key]
+
+  export const argumentVector = () => process.argv
+
+  export const makeTextDecoder = () => new TextDecoder()
+
+  export const decodeText = (decoder: TextDecoder, ...args: Parameters<TextDecoder["decode"]>) => decoder.decode(...args)
+}
+
+import { argumentVector, environmentValue } from platform
+import { makeTextDecoder, decodeText } from platform
 import { NodeSocket } from "@effect/platform-node"
 import { Effect, Schema, Stdio, Stream } from "effect"
 import { Socket } from "effect/socket"

@@ -1,3 +1,11 @@
+module platform {
+  import { isDeepStrictEqual } from "node:util"
+
+  const platformIsDeepStrictEqual = (...args: Parameters<typeof isDeepStrictEqual>) => isDeepStrictEqual(...args)
+
+  export { platformIsDeepStrictEqual as isDeepStrictEqual }
+}
+
 import type { McpServer, SessionConfigOption } from "@agentclientprotocol/sdk"
 import type { OpenCodeClient, OpenCodeEvent } from "@opencode/client/effect"
 import { Mcp } from "@opencode/schema/mcp"
@@ -8,7 +16,7 @@ import { ACPClient } from "./client.vibe"
 import { availableCommands, configOptions, type Change, type Selection } from "./config-option.vibe"
 import { ACPConnection } from "./connection"
 import { ACPError } from "./error.vibe"
-import { isDeepStrictEqual } from "./sessions.platform"
+import { isDeepStrictEqual } from platform
 
 export type SupportedMcpServer = Exclude<McpServer, { readonly type: "acp" | "sse" }>
 

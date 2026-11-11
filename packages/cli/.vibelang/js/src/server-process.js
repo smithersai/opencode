@@ -20,7 +20,7 @@ import { ServiceRegistration } from "./services/service-registration.js";
 import { RemoteTunnel } from "./services/remote-tunnel.js";
 import { WebUi } from "./services/web-ui.js";
 import { databasePath } from "./database-path.js";
-import { assignEnvironment, changeDirectory, currentPlatform, deleteEnvironment, environmentValue, randomID, randomPassword, waitForStdinClose, } from "./server-process.platform.js";
+import { assignEnvironment, changeDirectory, currentPlatform, deleteEnvironment, environmentValue, randomID, randomPassword, waitForStdinClose, } from "./server-process.vibe.platform.js";
 // The process effect lives until server shutdown; tracing it would parent every request to one process-lifetime trace.
 export const run = function (options) {
     return Effect_1.gen(function* run() {

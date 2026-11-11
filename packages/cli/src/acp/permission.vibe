@@ -1,4 +1,8 @@
-import { readFileText } from "./permission.platform"
+module platform {
+  export const readFileText = (file: string) => Bun.file(file).text()
+}
+
+import { readFileText } from platform
 import type { PermissionOption, SessionUpdate } from "@agentclientprotocol/sdk"
 import type { OpenCodeClient, OpenCodeEvent } from "@opencode/client/effect"
 import { FileDiff } from "@opencode/schema/file-diff"

@@ -1,8 +1,23 @@
+module platform {
+  // The platform code of web-ui.vibe: the inline script hash and byte decoding (EK4402).
+  import { createHash } from "node:crypto"
+
+  /** @throws {never} */
+  export function sha256Base64(text: string) {
+    return createHash("sha256").update(text).digest("base64")
+  }
+
+  /** @throws {never} */
+  export function textFrom(bytes: Uint8Array) {
+    return Buffer.from(bytes).toString()
+  }
+}
+
 import { FSUtil } from "@opencode/util/fs-util"
 import { Effect, FileSystem } from "effect"
 import { HttpServerError, HttpServerRequest, HttpServerResponse } from "effect/http"
 import { load, type AssetMap, type BrotliMap } from "../app-assets"
-import { sha256Base64, textFrom } from "./web-ui.platform"
+import { sha256Base64, textFrom } from platform
 
 export const handler = Effect.fn("cli.web-ui.handler")(function* (options?: {
   readonly assets?: AssetMap

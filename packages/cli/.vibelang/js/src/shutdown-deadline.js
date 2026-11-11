@@ -2,7 +2,7 @@
 import * as runtime from "vibelang-runtime/internal";
 import { Teardown } from "@opencode/util/teardown";
 import { Duration, Effect } from "effect";
-import { addSignalListener, exit, hasTerminal, removeSignalListener, terminate, writeError } from "./shutdown-deadline.platform.js";
+import { addSignalListener, exit, hasTerminal, removeSignalListener, terminate, writeError } from "./shutdown-deadline.vibe.platform.js";
 /** After SIGTERM or SIGINT, teardown gets this long before the process reports what it is stuck on and exits. */
 export const DEADLINE = Duration.seconds(10);
 // The file logger batches writes for up to a second.

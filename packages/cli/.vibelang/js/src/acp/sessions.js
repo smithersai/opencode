@@ -6,7 +6,7 @@ import { ACPClient } from "./client.js";
 import { availableCommands, configOptions } from "./config-option.js";
 import { ACPConnection } from "./connection.js";
 import { ACPError } from "./error.js";
-import { isDeepStrictEqual } from "./sessions.platform.js";
+import { isDeepStrictEqual } from "./sessions.vibe.platform.js";
 export const make = function (input) {
     return Effect_1.gen(function* make() {
         const scope = yield* Effect.scope;

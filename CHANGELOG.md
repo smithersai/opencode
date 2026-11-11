@@ -6,6 +6,8 @@ Release notes for OpenCode V2, newest first.
 
 ### Changed
 
+- The HttpApi client generator now uses VibeLang while preserving its declarations and its synchronous generation errors.
+
 - The browser plugin tools now use VibeLang while preserving their declarations and the synchronous browser URL check.
 
 - Plugin entrypoint resolution and the plugin GUI host contract now use VibeLang while preserving their declarations, native file access and the synchronous plugin bundle checks.

@@ -5,7 +5,11 @@
   "private": true,
   "type": "module",
   "exports": {
-    ".": "./src/index.ts"
+    ".": {
+      "types": "./src/index.d.vibe.ts",
+      "vibelang-source": "./src/index.vibe",
+      "default": "./.vibelang/js/src/index.js"
+    }
   },
   "scripts": {
     "test": "bun test --timeout 5000 --only-failures",

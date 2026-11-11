@@ -9,7 +9,7 @@ import * as Effect_1 from "effect/Effect";
 import * as runtime from "vibelang-runtime/internal";
 import { ToolError, toolError } from "../tool-error.js";
 import { isRecord, own } from "./spec.js";
-import { applyCredentials, readResponseBody } from "./runtime.platform.js";
+import { applyCredentials, readResponseBody } from "./runtime.vibe.platform.js";
 const decodeJson = Schema.decodeUnknownOption(Schema.fromJsonString(Schema.Unknown));
 const maxErrorBodyChars = 1_024;
 export const invoke = (plan, input) => {

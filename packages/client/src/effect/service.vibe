@@ -1,5 +1,5 @@
 import { Effect, FileSystem, Option, Schedule, Schema } from "effect"
-import { kill } from "./service.platform.js"
+import { kill } from platform
 import type { DiscoverOptions, EnsureOptions, StopOptions } from "../service.js"
 import { contenderPool, spawnServiceContender } from "../service-contender.js"
 import { defaultEnsureTiming, ensureTiming, type EnsureTiming } from "../service-timing.js"
@@ -199,3 +199,15 @@ const terminate = Effect.fnUntraced(function* (info: Info, options: { readonly f
 
 /** Effect-based local service lifecycle operations. */
 export const Service = { discover, incumbent, ensure, stop, headers, Info }
+
+module platform {
+  // The platform code of service.vibe: process signals, host access a .vibe file does not use (EK4402).
+
+  /**
+   * Sends a signal to a process, as `process.kill` does; signal 0 only tests that the process exists.
+   * @throws {Error} When the process does not exist or cannot be signalled.
+   */
+  export function kill(pid: number, signal: NodeJS.Signals | 0) {
+    return process.kill(pid, signal)
+  }
+}

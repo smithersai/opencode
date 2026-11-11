@@ -7,7 +7,7 @@ import { ClientError, OpenCode } from "./generated/index.js"
 import type { EventSubscribeInput } from "./api.js"
 import { RpcClientRuntime } from "./rpc.js"
 import type { RpcCallOptions } from "../promise/rpc.js"
-import { fetchHeaders } from "./client.platform.js"
+import { fetchHeaders } from platform
 
 type EventType = NonNullable<EventSubscribeInput["types"]>[number]
 
@@ -79,3 +79,8 @@ export const make = Effect.fn("OpenCode.make")(effect function (options?: { read
     ),
   }
 })
+
+module platform {
+  /** Copies RPC call headers into Fetch headers. @throws {TypeError} when a header name or value is invalid. */
+  export const fetchHeaders = (headers: HeadersInit) => new Headers(headers)
+}

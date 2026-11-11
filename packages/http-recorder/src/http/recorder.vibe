@@ -8,7 +8,7 @@ import { makeReplayPoolState, resolveAutoMode } from "../replay/state.js"
 import { httpInteractions, type CassetteMetadata } from "../cassette/model.js"
 import { defaultMatcher, selectFirstMatching, type RequestMatcher } from "./matching.js"
 import type { HttpInteraction, ResponseSnapshot } from "./model.js"
-import { base64FromBytes, bytesFromBase64, makeResponse } from "./recorder.platform.js"
+import { base64FromBytes, bytesFromBase64, makeResponse } from platform
 
 export { defaultMatcher }
 export type RecordReplayMode = "auto" | "record" | "replay" | "passthrough"
@@ -173,3 +173,21 @@ export const layer = (
   )
 export const layerFetch = (name: string, options: RecorderOptions = {}): Layer.Layer<HttpClient.HttpClient> =>
   layer(name, options).pipe(Layer.provide(FetchHttpClient.layer))
+
+module platform {
+  // The platform code of recorder.vibe: base64 byte encoding and web Response construction (EK4402).
+
+  /** @throws {never} */
+  export function base64FromBytes(bytes: ArrayBuffer) {
+    return Buffer.from(bytes).toString("base64")
+  }
+
+  /** @throws {never} */
+  export function bytesFromBase64(text: string) {
+    return Buffer.from(text, "base64")
+  }
+
+  export function makeResponse(...args: ConstructorParameters<typeof Response>) {
+    return new Response(...args)
+  }
+}

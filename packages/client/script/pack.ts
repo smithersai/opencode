@@ -2,4 +2,4 @@
 import path from "node:path"
 import { pack } from "@opencode/script/pack"
 
-await pack(path.resolve(import.meta.dir, ".."), { privateModules: ["./effect/client.platform", "./effect/service.platform"] })
+await pack(path.resolve(import.meta.dir, ".."), { privateModules: ["./effect/client.vibe.platform", "./effect/service.vibe.platform"] })

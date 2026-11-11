@@ -7,7 +7,7 @@ import { make, redactUrl } from "../redaction/redactor.js";
 import { makeReplayPoolState, resolveAutoMode } from "../replay/state.js";
 import { httpInteractions } from "../cassette/model.js";
 import { defaultMatcher, selectFirstMatching } from "./matching.js";
-import { base64FromBytes, bytesFromBase64, makeResponse } from "./recorder.platform.js";
+import { base64FromBytes, bytesFromBase64, makeResponse } from "./recorder.vibe.platform.js";
 export { defaultMatcher };
 const TEXT_CONTENT_TYPES = new Set([
     "application/graphql",

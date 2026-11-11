@@ -6,7 +6,7 @@ import { HttpClient, HttpClientRequest } from "effect/http";
 import { SharedEvents } from "../shared-events.js";
 import { ClientError, OpenCode } from "./generated/index.js";
 import { RpcClientRuntime } from "./rpc.js";
-import { fetchHeaders } from "./client.platform.js";
+import { fetchHeaders } from "./client.vibe.platform.js";
 const CurrentHeaders = Context.Reference("@opencode/client/effect/rpc/headers", {
     defaultValue: () => undefined,
 });

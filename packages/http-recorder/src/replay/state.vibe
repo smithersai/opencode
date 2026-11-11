@@ -1,7 +1,7 @@
 import { Effect, Exit, HashSet, Ref, Scope, SynchronizedRef } from "effect"
 import type { Interaction } from "../cassette/model.js"
 import type { CassetteNotFoundError, Interface, InvalidCassetteError } from "../cassette/store.js"
-import { environmentValue } from "./state.platform.js"
+import { environmentValue } from platform
 
 const isCI = () => {
   const value = environmentValue("CI")
@@ -95,3 +95,12 @@ export const makeReplayState = <T>(
         }),
     })),
   )
+
+module platform {
+  // The platform code of state.vibe: the process environment (EK4402).
+
+  /** @throws {never} */
+  export function environmentValue(key: string) {
+    return process.env[key]
+  }
+}

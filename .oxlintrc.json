@@ -167,8 +167,7 @@
       "files": [
         "packages/codemode/src/interpreter/runner.ts",
         "packages/codemode/src/interpreter/execute.ts",
-        "packages/codemode/src/interpreter/extensions.vibe",
-        "packages/codemode/src/interpreter/extensions.platform.ts"
+        "packages/codemode/src/interpreter/extensions.vibe"
       ],
       "rules": {
         "no-restricted-imports": "off"

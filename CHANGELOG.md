@@ -8,6 +8,8 @@ Release notes for OpenCode V2, newest first.
 
 - Database path columns now use VibeLang, and migration commands run Drizzle under Bun so the package loader can load their schema dependencies.
 
+- The dev TUI runner is now a plain VibeLang module that the dev launcher imports directly, without a .ts re-export.
+
 - The database migration runner and the drizzle database query builder now use VibeLang while preserving their declarations.
 
 - The SQLite condition test now bundles with the VibeLang plugin, as the core package build does.

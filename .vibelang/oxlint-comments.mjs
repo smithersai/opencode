@@ -56,6 +56,20 @@ export function withOxlintComments(parser, aliases, blanketReasons = false) {
     parseForESLint(...args) {
       const result =
         typeof parser.parseForESLint === "function" ? parser.parseForESLint(...args) : { ast: parser.parse(...args) }
+      // Oxlint plugins read start/end on nodes, tokens and comments. ESLint's
+      // parsers supply range instead; preserve each source object and expose
+      // the same UTF-16 offsets before any plugin visits the tree.
+      const seen = new WeakSet()
+      const offsets = (value) => {
+        if (!value || typeof value !== "object" || seen.has(value)) return
+        seen.add(value)
+        if (typeof value.type === "string" && Array.isArray(value.range)) {
+          value.start = value.range[0]
+          value.end = value.range[1]
+        }
+        for (const [key, child] of Object.entries(value)) if (key !== "parent") offsets(child)
+      }
+      offsets(result.ast)
       const reverse = new Map([...aliases].map(([actual, native]) => [native, actual]))
       const rule = (name) =>
         reverse.get(name) ??

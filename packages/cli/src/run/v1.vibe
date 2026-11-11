@@ -1,6 +1,33 @@
+module platform {
+  import type { Endpoint } from "@opencode/client/effect/service"
+  import path from "node:path"
+
+  export const workingDirectory = () => process.env.PWD ?? process.cwd()
+
+  export const resolvePath = (root: string, directory: string) => path.resolve(root, directory)
+
+  export const changeDirectory = (directory: string) => process.chdir(directory)
+
+  /** @throws {Error} */
+  export function explicitEndpoint(input: {
+    readonly server?: string
+    readonly password?: string
+    readonly username?: string
+  }): Endpoint {
+    const url = input.server
+    if (!url) throw new Error("Missing V1 server URL")
+    return {
+      url,
+      auth: input.password
+        ? { type: "basic", username: input.username ?? "opencode", password: input.password }
+        : undefined,
+    }
+  }
+}
+
+import { changeDirectory, explicitEndpoint, resolvePath, workingDirectory } from platform
 import type { Endpoint } from "@opencode/client/effect/service"
 import { Effect } from "effect"
-import path from "node:path"
 import { Standalone } from "../services/standalone"
 import { errorMessage } from "../util/error"
 import { reportRunError, runNonInteractiveWithOptions, type RunCommandInput } from "./run"
@@ -26,11 +53,11 @@ export type V1RunCommandInput = {
 }
 
 export function runV1Bridge(input: V1RunCommandInput) {
-  const root = process.env.PWD ?? process.cwd()
+  const root = workingDirectory()
   const attached = input.server !== undefined
-  const local = !attached && input.directory ? path.resolve(root, input.directory) : root
+  const local = !attached && input.directory ? resolvePath(root, input.directory) : root
   try {
-    process.chdir(local)
+    changeDirectory(local)
   } catch {
     reportRunError(input, `Failed to change directory to ${local}`)
     return Promise.resolve()
@@ -40,7 +67,7 @@ export function runV1Bridge(input: V1RunCommandInput) {
     Effect.scoped(
       Effect.gen(function* () {
         const endpoint = attached
-          ? explicitEndpoint(input)
+          ? yield* Effect.orDie(Effect.try({ try: () => explicitEndpoint(input), catch: (e) => e }))
           : yield* Standalone.start({ command: input.standaloneCommand })
         yield* Effect.promise(() =>
           runNonInteractiveWithOptions(nativeInput(input, endpoint), {
@@ -71,16 +98,5 @@ function nativeInput(input: V1RunCommandInput, endpoint: Endpoint): RunCommandIn
     title: input.title,
     thinking: input.thinking,
     auto: input.dangerouslySkipPermissions,
-  }
-}
-
-function explicitEndpoint(input: V1RunCommandInput): Endpoint {
-  const url = input.server
-  if (!url) throw new Error("Missing V1 server URL")
-  return {
-    url,
-    auth: input.password
-      ? { type: "basic", username: input.username ?? "opencode", password: input.password }
-      : undefined,
   }
 }

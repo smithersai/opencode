@@ -1,0 +1,180 @@
+module platform {
+  export const env = (name: string) => process.env[name]
+
+  /** @throws {never} */
+  export const args = () => process.argv.slice(2)
+
+  export const exit = (code?: number | string | null) => process.exit(code)
+
+  export const exitCode = () => process.exitCode
+
+  export const writeError = (text: string) => process.stderr.write(text)
+
+  export function listen(
+    uncaughtException: NodeJS.UncaughtExceptionListener,
+    unhandledRejection: NodeJS.UnhandledRejectionListener,
+  ) {
+    process.on("uncaughtException", uncaughtException)
+    process.on("unhandledRejection", unhandledRejection)
+  }
+
+  export function unlisten(
+    uncaughtException: NodeJS.UncaughtExceptionListener,
+    unhandledRejection: NodeJS.UnhandledRejectionListener,
+  ) {
+    process.off("uncaughtException", uncaughtException)
+    process.off("unhandledRejection", unhandledRejection)
+  }
+}
+
+import { args, env, exit, exitCode, listen, unlisten, writeError } from platform
+import { ensurePluginRuntime } from "@opencode/plugin/runtime"
+import { NodeRuntime, NodeServices } from "@effect/platform-node"
+import { Cause, Effect } from "effect"
+import { getErrorReported } from "effect/Runtime"
+import { Commands } from "./commands/commands.ts"
+import { Runtime } from "./framework/runtime.ts"
+import { Observability } from "@opencode/util/observability"
+import { Updater } from "./services/updater"
+import { OPENCODE_ARTIFACT, OPENCODE_CHANNEL, OPENCODE_LOCAL, OPENCODE_VERSION } from "./version.ts"
+import { LayerNode } from "@opencode/util/effect/layer-node"
+import { Global } from "@opencode/util/global"
+import { AppProcess } from "@opencode/util/process"
+import { Config } from "./config"
+import { Npm } from "@opencode/util/npm"
+import { EffectFlock } from "@opencode/util/effect-flock"
+import { Heap } from "./heap"
+import { CpuProfile } from "./cpu-profile"
+import { ShutdownDeadline } from "./shutdown-deadline"
+
+ensurePluginRuntime()
+
+if (env("OPENCODE_SSH_ASKPASS_PORT")) {
+  const { askpass } = await import("./ssh-askpass.vibe")
+  exit(await Effect.runPromise(askpass.pipe(Effect.provide(NodeServices.layer))))
+}
+
+const Handlers = Runtime.handlers(Commands, {
+  $: () => import("./commands/handlers/default.vibe"),
+  upgrade: () => import("./commands/handlers/upgrade.vibe"),
+  uninstall: () => import("./commands/handlers/uninstall"),
+  acp: () => import("./commands/handlers/acp"),
+  api: () => import("./commands/handlers/api"),
+  auth: {
+    list: () => import("./commands/handlers/auth/list.vibe"),
+    login: () => import("./commands/handlers/auth/login.vibe"),
+    logout: () => import("./commands/handlers/auth/logout.vibe"),
+    export: () => import("./commands/handlers/auth/export.vibe"),
+    import: () => import("./commands/handlers/auth/import"),
+    switch: () => import("./commands/handlers/auth/switch.vibe"),
+  },
+  debug: {
+    agents: () => import("./commands/handlers/debug/agents.vibe"),
+    config: () => import("./commands/handlers/debug/config.vibe"),
+    "heap-dump": () => import("./commands/handlers/debug/heap-dump.vibe"),
+    paths: () => import("./commands/handlers/debug/paths.vibe"),
+  },
+  mcp: {
+    list: () => import("./commands/handlers/mcp/list.vibe"),
+    add: () => import("./commands/handlers/mcp/add"),
+    auth: () => import("./commands/handlers/mcp/auth.vibe"),
+    logout: () => import("./commands/handlers/mcp/logout.vibe"),
+  },
+  plugin: {
+    list: () => import("./commands/handlers/plugin/list"),
+    add: () => import("./commands/handlers/plugin/add"),
+    check: () => import("./commands/handlers/plugin/check.vibe"),
+    update: () => import("./commands/handlers/plugin/update.vibe"),
+    remove: () => import("./commands/handlers/plugin/remove"),
+  },
+  models: () => import("./commands/handlers/models.vibe"),
+  stats: () => import("./commands/handlers/stats.vibe"),
+  mini: () => import("./commands/handlers/mini.ts"),
+  run: () => import("./commands/handlers/run.ts"),
+  pair: () => import("./commands/handlers/pair.vibe"),
+  reload: () => import("./commands/handlers/reload.vibe"),
+  session: {
+    list: () => import("./commands/handlers/session/list"),
+    delete: () => import("./commands/handlers/session/delete.vibe"),
+    export: () => import("./commands/handlers/session/export"),
+    import: () => import("./commands/handlers/session/import"),
+  },
+  service: {
+    start: () => import("./commands/handlers/service/start.vibe"),
+    restart: () => import("./commands/handlers/service/restart.vibe"),
+    status: () => import("./commands/handlers/service/status.vibe"),
+    stop: () => import("./commands/handlers/service/stop.vibe"),
+    get: () => import("./commands/handlers/service/get.vibe"),
+    set: () => import("./commands/handlers/service/set.vibe"),
+    unset: () => import("./commands/handlers/service/unset.vibe"),
+  },
+  serve: () => import("./commands/handlers/serve.vibe"),
+})
+
+Effect.gen(function* () {
+  yield* Heap.listen
+  yield* CpuProfile.listen
+  yield* ShutdownDeadline.install()
+  const runFork = Effect.runForkWith(yield* Effect.context<never>())
+  const uncaughtException = (cause: Error, origin: "uncaughtException" | "unhandledRejection") => {
+    runFork(Effect.logError("uncaught exception", { cause, origin }))
+  }
+  const unhandledRejection = (cause: unknown) => {
+    runFork(Effect.logError("unhandled rejection", { cause }))
+  }
+  listen(uncaughtException, unhandledRejection)
+  yield* Effect.addFinalizer(() =>
+    Effect.sync(() => {
+      unlisten(uncaughtException, unhandledRejection)
+    }),
+  )
+  yield* Effect.logInfo("cli starting", {
+    version: OPENCODE_VERSION,
+    channel: OPENCODE_CHANNEL,
+    local: OPENCODE_LOCAL,
+    args: args(),
+  })
+  return yield* Runtime.run(Commands, Handlers, { version: OPENCODE_VERSION })
+}).pipe(
+  Effect.catchCause((cause) =>
+    Effect.logError("cli process failed", {
+      cause,
+      args: args(),
+    }).pipe(Effect.andThen(Effect.failCause(cause))),
+  ),
+  Effect.annotateLogs({ role: "cli" }),
+  Effect.provide(Config.layer),
+  Effect.provide(Updater.layer),
+  Effect.provide(
+    LayerNode.compile(LayerNode.group([Global.node, AppProcess.node, Npm.node, EffectFlock.node]), {
+      replacements: [
+        Global.node.replace(
+          Global.layerWith(env("OPENCODE_CONFIG_DIR") ? { config: env("OPENCODE_CONFIG_DIR") } : {}),
+        ),
+      ],
+    }),
+  ),
+  Effect.provide(
+    Observability.layer({
+      endpoint: env("OTEL_EXPORTER_OTLP_ENDPOINT"),
+      headers: env("OTEL_EXPORTER_OTLP_HEADERS"),
+      client: env("OPENCODE_CLIENT") ?? OPENCODE_ARTIFACT,
+      version: OPENCODE_VERSION,
+      channel: OPENCODE_CHANNEL,
+    }),
+  ),
+  Effect.provide(NodeServices.layer),
+  Effect.scoped,
+  Effect.tap(() => Effect.sync(() => exit(exitCode() ?? 0))),
+  // runMain's default reporter logs the fatal cause to stdout. Write it to stderr instead: the
+  // desktop and `Service.ensure` only capture stderr from `serve --service`, so this is the only
+  // channel through which a startup failure's reason reaches the user.
+  Effect.tapCause((cause) =>
+    Effect.sync(() => {
+      if (Cause.hasInterruptsOnly(cause)) return
+      if (!getErrorReported(Cause.squash(cause))) return
+      writeError(Cause.pretty(cause) + "\n")
+    }),
+  ),
+  NodeRuntime.runMain({ disableErrorReporting: true }),
+)

@@ -1,6 +1,5 @@
 export * as Plugins from "./index"
 
-import { app } from "electron"
 import { Context, Effect, Layer } from "effect"
 import type { PluginEndpoint } from "../../shared/ipc-rpc/plugins.vibe"
 import { ApplicationLifecycle } from "../lifecycle/index.vibe"
@@ -12,6 +11,34 @@ import { DesktopCli } from "../service/desktop-cli.vibe"
 import { DesktopStorage } from "../storage/index.vibe"
 import { setAppQuitting } from "../windows/index.vibe"
 import type { PluginHost } from "./host"
+
+module platform {
+  import { app } from "electron"
+  import { setAppQuitting } from "../windows/index.vibe"
+
+  /** Whether this is a packaged build. */
+  export function isPackaged() {
+    return app.isPackaged
+  }
+
+  /** Relaunches the app and quits this instance. */
+  export function relaunch() {
+    app.relaunch()
+    app.quit()
+  }
+
+  /** Runs a restart handoff; a failed one leaves the app running and rejects with its cause. */
+  export async function handOff(handoff: () => void | Promise<void>) {
+    await Promise.resolve()
+      .then(handoff)
+      .catch((cause: unknown) => {
+        setAppQuitting(false)
+        throw cause
+      })
+  }
+}
+
+import { handOff, isPackaged, relaunch } from platform
 
 /** The host once it loaded, and its load while one is in flight. */
 type LoadedHost = { host?: PluginHost; loading?: Promise<PluginHost> }
@@ -51,18 +78,12 @@ export const layer = Layer.effect(
       await runPromise(lifecycle.prepareToRestart)
 
       if (!handoff) {
-        app.relaunch()
-        app.quit()
+        relaunch()
 
         return
       }
 
-      await Promise.resolve()
-        .then(handoff)
-        .catch((cause: unknown) => {
-          setAppQuitting(false)
-          throw cause
-        })
+      await handOff(handoff)
     }
 
     const host = () => {
@@ -74,7 +95,7 @@ export const layer = Layer.effect(
             version: cli.version,
             command: cli.command,
             binary: cli.binary,
-            development: !app.isPackaged && !cli.binary,
+            development: !isPackaged() && !cli.binary,
           },
           subscriptions,
           servers,

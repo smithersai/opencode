@@ -4,7 +4,7 @@ import { Workspace } from "@opencode/schema/workspace"
 import { makeGlobalNode } from "@opencode/util/effect/app-node"
 import { Context, Effect, Layer, Schema } from "effect"
 import type { Scope } from "effect"
-import type { EnvironmentDriver } from "../environment/driver.vibe"
+import type { EnvironmentDriver } from "../environment/driver.js"
 
 /**
  * Smallest provider-owned JSON value required to reconnect to the same

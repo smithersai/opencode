@@ -103,9 +103,9 @@ export const execDefaults = (spawner: ChildProcessSpawner["Service"]): FilesImpl
   const classify = <A>(
     path: string,
     result: Result,
-    success: (stdout: Uint8Array) => A,
+    success: (stdout: Uint8Array) => Effect.Effect<A>,
   ): Effect.Effect<A, NotFound | WrongKind | Failed> => {
-    if (result.exitCode === 0) return Effect.sync(() => success(result.stdout))
+    if (result.exitCode === 0) return Effect.suspend(() => success(result.stdout))
     if (result.exitCode === NOT_FOUND) return Effect.fail(new NotFound({ path }))
     if (result.exitCode === WRONG_KIND) {
       return Effect.fail(new WrongKind({ path, actual: parseType(new TextDecoder().decode(result.stderr)) }))
@@ -127,11 +127,13 @@ export const execDefaults = (spawner: ChildProcessSpawner["Service"]): FilesImpl
         Effect.flatMap((result) =>
           classify(path, result, (stdout) => {
             const newline = stdout.indexOf(10)
-            if (newline < 0) throw new Error("Missing read metadata header")
-            return {
-              info: parseInfo(stdout.slice(0, newline)),
-              bytes: stdout.slice(newline + 1),
-            }
+            if (newline < 0) return Effect.die(new Error("Missing read metadata header"))
+            return parseInfo(stdout.slice(0, newline)).pipe(
+              Effect.map((info) => ({
+                info,
+                bytes: stdout.slice(newline + 1),
+              })),
+            )
           }),
         ),
       ),
@@ -142,7 +144,7 @@ export const execDefaults = (spawner: ChildProcessSpawner["Service"]): FilesImpl
     list: (path) => run(path, listScript).pipe(Effect.flatMap((result) => classify(path, result, parseList))),
     remove: (path) => run(path, `rm -rf -- "$1"`).pipe(Effect.flatMap((result) => complete(path, result))),
     move: (from, to) =>
-      run(from, moveScript, [to]).pipe(Effect.flatMap((result) => classifyPlain(from, result, () => undefined))),
+      run(from, moveScript, [to]).pipe(Effect.flatMap((result) => classifyPlain(from, result, () => Effect.void))),
     mkdir: (path) => run(path, `mkdir -p -- "$1"`).pipe(Effect.flatMap((result) => complete(path, result))),
   }
 }
@@ -151,9 +153,9 @@ export const execDefaults = (spawner: ChildProcessSpawner["Service"]): FilesImpl
 const classifyPlain = <A>(
   path: string,
   result: Result,
-  success: (stdout: Uint8Array) => A,
+  success: (stdout: Uint8Array) => Effect.Effect<A>,
 ): Effect.Effect<A, NotFound | Failed> => {
-  if (result.exitCode === 0) return Effect.sync(() => success(result.stdout))
+  if (result.exitCode === 0) return Effect.suspend(() => success(result.stdout))
   if (result.exitCode === NOT_FOUND) return Effect.fail(new NotFound({ path }))
   return Effect.fail(processFailure(path, result))
 }
@@ -164,12 +166,13 @@ const processFailure = (path: string, result: Result) =>
     cause: new Error(new TextDecoder().decode(result.stderr).trim() || `Process exited with code ${result.exitCode}`),
   })
 
-const parseInfo = (bytes: Uint8Array): FileInfo => {
+// Malformed script output dies as a defect.
+const parseInfo = (bytes: Uint8Array): Effect.Effect<FileInfo> => {
   const [rawType, rawSize, rawMtime] = new TextDecoder().decode(bytes).trim().split(TAB)
   const size = Number(rawSize)
   const mtimeMs = Number(rawMtime) * 1_000
-  if (!rawType || !Number.isFinite(size) || !Number.isFinite(mtimeMs)) throw new Error("Invalid stat output")
-  return { type: parseType(rawType), size, mtimeMs }
+  if (!rawType || !Number.isFinite(size) || !Number.isFinite(mtimeMs)) return Effect.die(new Error("Invalid stat output"))
+  return Effect.succeed({ type: parseType(rawType), size, mtimeMs })
 }
 
 const parseType = (value: string): FileType => {
@@ -182,11 +185,13 @@ const parseType = (value: string): FileType => {
 const parseList = (bytes: Uint8Array) => {
   const fields = new TextDecoder().decode(bytes).split("\0")
   fields.pop()
-  if (fields.length % 2 !== 0) throw new Error("Invalid find output")
-  return Array.from({ length: fields.length / 2 }, (_, index) => ({
-    name: fields[index * 2 + 1],
-    type: parseType(fields[index * 2]),
-  }))
+  if (fields.length % 2 !== 0) return Effect.die(new Error("Invalid find output"))
+  return Effect.succeed(
+    Array.from({ length: fields.length / 2 }, (_, index) => ({
+      name: fields[index * 2 + 1],
+      type: parseType(fields[index * 2]),
+    })),
+  )
 }
 
 export * as EnvironmentExecDefaults from "./exec-defaults.js"

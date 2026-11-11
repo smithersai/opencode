@@ -2971,6 +2971,18 @@
     ]
   },
   {
+    "source": "packages/core/src/environment/local.vibe",
+    "imports": [
+      "./driver.js"
+    ]
+  },
+  {
+    "source": "packages/core/src/environment/memory.vibe",
+    "imports": [
+      "./driver.js"
+    ]
+  },
+  {
     "source": "packages/core/src/file-access.vibe",
     "imports": [
       "./session/error.js",
@@ -3370,6 +3382,18 @@
     "source": "packages/core/src/wellknown.vibe",
     "imports": [
       "./kv.js"
+    ]
+  },
+  {
+    "source": "packages/core/src/workspace.vibe",
+    "imports": [
+      "./environment/driver.js"
+    ]
+  },
+  {
+    "source": "packages/core/src/workspace/driver.vibe",
+    "imports": [
+      "../environment/driver.js"
     ]
   },
   {

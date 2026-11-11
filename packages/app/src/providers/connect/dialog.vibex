@@ -58,6 +58,24 @@ import { IconButton } from "@opencode/ui/icon-button"
 import { Menu } from "@opencode/ui/menu"
 import "./models.css"
 
+module platform {
+  export const escapeSelector = (value: string) => CSS.escape(value)
+
+  export const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
+
+  export const writeClipboard = (text: string) => navigator.clipboard.writeText(text)
+
+  export const afterMicrotask = (run: () => void) => queueMicrotask(run)
+
+  export const isFormElement = (value: unknown): value is HTMLFormElement => value instanceof HTMLFormElement
+
+  export const formValue = (form: HTMLFormElement, name: string) => new FormData(form).get(name)
+
+  export const isFile = (value: unknown): value is File => value instanceof File
+}
+
+import { afterMicrotask, escapeSelector, formValue, isFile, isFormElement, wait, writeClipboard } from platform
+
 export function useProviderConnectController() {
   const [store, setStore] = createStore<{ selected?: string }>({})
   const reset = () => setStore("selected", undefined)
@@ -297,7 +315,7 @@ function ProviderPicker(props: { directory?: string; onSelect: (provider: string
     const next = index < 0 ? (direction > 0 ? 0 : items.length - 1) : (index + direction + items.length) % items.length
     setStore("active", items[next].id)
     picker
-      ?.querySelector<HTMLElement>(`[data-provider-id="${CSS.escape(items[next].id)}"]`)
+      ?.querySelector<HTMLElement>(`[data-provider-id="${escapeSelector(items[next].id)}"]`)
       ?.focus({ preventScroll: true })
     event.preventDefault()
   }
@@ -587,7 +605,7 @@ function ProviderConnection(props: {
     const deadline = Date.now() + 10_000
 
     while (!loaded() && active() && Date.now() < deadline) {
-      await new Promise((resolve) => setTimeout(resolve, 250))
+      await wait(250)
 
       if (!active()) return false
       data.location.provider.invalidate(location())
@@ -617,7 +635,7 @@ function ProviderConnection(props: {
     if (!url) return
 
     const copied = await Promise.resolve()
-      .then(() => (platform.writeClipboardText ? platform.writeClipboardText(url) : navigator.clipboard.writeText(url)))
+      .then(() => (platform.writeClipboardText ? platform.writeClipboardText(url) : writeClipboard(url)))
       .then(() => true)
       .catch(() => false)
 
@@ -1015,7 +1033,7 @@ function ProviderConnection(props: {
                       <Show when={formStore.customOn}>
                         <div class="pl-6">
                           <TextField
-                            ref={(input: HTMLInputElement) => queueMicrotask(() => input.focus())}
+                            ref={(input: HTMLInputElement) => afterMicrotask(() => input.focus())}
                             type="text"
                             label={language.t("ui.messagePart.option.typeOwnAnswer")}
                             hideLabel
@@ -1047,7 +1065,7 @@ function ProviderConnection(props: {
               <Match when={true}>
                 <form onSubmit={submitText} class="flex w-full flex-col items-start gap-4">
                   <TextInput
-                    ref={(input: HTMLInputElement) => queueMicrotask(() => input.focus({ preventScroll: true }))}
+                    ref={(input: HTMLInputElement) => afterMicrotask(() => input.focus({ preventScroll: true }))}
                     class="!w-full"
                     type="text"
                     inputMode={current().type === "string" ? undefined : "decimal"}
@@ -1189,9 +1207,9 @@ function ProviderConnection(props: {
     async function handleSubmit(e: SubmitEvent) {
       e.preventDefault()
 
-      if (!(e.currentTarget instanceof HTMLFormElement)) return
-      const value = new FormData(e.currentTarget).get("apiKey")
-      const key = value instanceof File || value === null ? "" : value
+      if (!isFormElement(e.currentTarget)) return
+      const value = formValue(e.currentTarget, "apiKey")
+      const key = isFile(value) || value === null ? "" : value
 
       if (!key.trim()) {
         setFormStore("error", language.t("provider.connect.apiKey.required"))
@@ -1268,9 +1286,9 @@ function ProviderConnection(props: {
     async function handleSubmit(e: SubmitEvent) {
       e.preventDefault()
 
-      if (!(e.currentTarget instanceof HTMLFormElement)) return
-      const value = new FormData(e.currentTarget).get("code")
-      const code = value instanceof File || value === null ? "" : value
+      if (!isFormElement(e.currentTarget)) return
+      const value = formValue(e.currentTarget, "code")
+      const code = isFile(value) || value === null ? "" : value
 
       if (!code.trim()) {
         setFormStore("error", language.t("provider.connect.oauth.code.required"))

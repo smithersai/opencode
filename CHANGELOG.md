@@ -6,6 +6,8 @@ Release notes for OpenCode V2, newest first.
 
 ### Changed
 
+- The HTTP recorder cassette store now uses VibeLang while preserving its declarations, native file access and the synchronous cassette name checks; an invalid name passed to the file cassette service still dies with the same error.
+
 - The simulation terminal recording, control server and Drive frontend now use VibeLang while preserving their declarations, the `.ts` build inputs the CLI build checks, and native stream, socket and process access.
 
 - The server route handler set and the workerd runtime profile now use VibeLang while preserving their declarations and the `.ts` entry files that the route tests and the workerd bundle probe read.

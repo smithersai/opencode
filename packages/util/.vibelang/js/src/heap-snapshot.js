@@ -5,8 +5,8 @@ import * as Semaphore from "effect/Semaphore";
 import { withSpan } from "effect/Effect";
 import * as Effect_1 from "effect/Effect";
 import * as Host from "./heap-snapshot.host.platform.js";
-import { $platform$1 } from "./heap-snapshot.platform.js";
-import { $platform } from "./heap-snapshot.platform.js";
+import { $platform$1 } from "./heap-snapshot.vibe.platform.js";
+import { $platform } from "./heap-snapshot.vibe.platform.js";
 // One process-wide permit: the signal listener and the HTTP endpoint share it, so concurrent
 // requests queue instead of serializing two heaps at once.
 const lock = Semaphore.makeUnsafe(1);

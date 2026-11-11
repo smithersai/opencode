@@ -1,6 +1,6 @@
 import * as Host from "./heap-snapshot.host.platform.ts"
-import { $platform$1 } from "./heap-snapshot.platform.js";
-import { $platform } from "./heap-snapshot.platform.js";
+import { $platform$1 } from platform;
+import { $platform } from platform;
 
 // One process-wide permit: the signal listener and the HTTP endpoint share it, so concurrent
 // requests queue instead of serializing two heaps at once.
@@ -37,3 +37,12 @@ export const write = effect (directory: string) => try withSpan(effect {
 } |> ((effect) => lock.withPermit(effect))(%), "HeapSnapshot.write")
 
 export * as HeapSnapshot from "./heap-snapshot.js"
+
+module platform {
+  // Generated platform helpers for this VibeLang module.
+  import { Effect } from "effect";
+  /** @throws {never} */
+  export function $platform() { return Effect.tryPromise(() => import("node:v8")); }
+  /** @throws {never} */
+  export function $platform$1() { return Effect.sync(() => process.memoryUsage()); }
+}

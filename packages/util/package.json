@@ -72,8 +72,8 @@
       "vibelang-source": "./src/observability/otlp.vibe",
       "default": "./.vibelang/js/src/observability/otlp.js"
     },
-    "./global.platform": null,
-    "./observability/otlp.platform": null,
+    "./global.vibe.platform": null,
+    "./observability/otlp.vibe.platform": null,
     "./*": {
       "types": "./src/*.ts",
       "vibelang-source": "./src/*.ts",
@@ -83,13 +83,13 @@
     "./patch.vibe.$throw$ts": null,
     "./npm-config.host.platform": null,
     "./heap-snapshot.host.platform": null,
-    "./heap-snapshot.platform": null,
-    "./npm-config.platform": null,
+    "./heap-snapshot.vibe.platform": null,
+    "./npm-config.vibe.platform": null,
     "./bom.vibe.-24-call-24-ts": null,
     "./patch.vibe.-24-throw-24-ts": null,
-    "./effect-flock.platform": null,
-    "./npm.platform": null,
-    "./process.platform": null
+    "./effect-flock.vibe.platform": null,
+    "./npm.vibe.platform": null,
+    "./process.vibe.platform": null
   },
   "imports": {
     "#global-roots": {

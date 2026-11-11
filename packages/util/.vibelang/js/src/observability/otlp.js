@@ -3,7 +3,7 @@ import * as runtime from "vibelang-runtime/internal";
 import { Effect, Layer, Scope } from "effect";
 import { OtlpLogger } from "effect/observability";
 import { runID } from "./shared.js";
-import { environment } from "./otlp.platform.js";
+import { environment } from "./otlp.vibe.platform.js";
 function parseHeaders(value) {
     return value
         ? value.split(",").reduce((acc, entry) => {

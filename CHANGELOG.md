@@ -6,6 +6,8 @@ Release notes for OpenCode V2, newest first.
 
 ### Changed
 
+- The util global paths, process output, npm install and config, file lock, heap snapshot and OTLP helpers now keep their host access inside their VibeLang files instead of separate platform files.
+
 - The app provider connection dialog now uses VibeLang, with clipboard, form, selector escaping and timer access in a native module body.
 
 - The plugin host component test fixture now uses VibeLang, with DOM and frame timing access and its throwing fake storage in native module bodies.

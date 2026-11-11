@@ -6,6 +6,8 @@ Release notes for OpenCode V2, newest first.
 
 ### Changed
 
+- The HTTP Recorder package consumer check installs the supported Effect version instead of an obsolete prerelease.
+
 - HTTP Recorder's published declarations retain their original import spellings.
 
 - The CLI session list and uninstall handlers, the CPU and heap profiles and the port owner lookup now keep their native host access in module bodies of their VibeLang files instead of platform siblings.

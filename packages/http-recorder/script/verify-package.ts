@@ -93,8 +93,8 @@ if (JSON.stringify(namespace) !== JSON.stringify(["hasCassetteSync", "layer", "l
         "--package-lock=false",
         archive,
         "typescript@5.8.2",
-        "effect@4.0.0-beta.83",
-        "@effect/platform-node@4.0.0-beta.83",
+        "effect@4.1.1",
+        "@effect/platform-node@4.1.1",
       ],
       directory,
     )

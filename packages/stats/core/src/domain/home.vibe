@@ -1,10 +1,9 @@
-import { Client } from "@planetscale/database"
 import { Effect } from "effect"
-import { Resource } from "sst/resource"
 import type { ModelStatMetric } from "./model.vibe"
 import { RETIRED_STAT_PROVIDERS, statProvider } from "./model-normalization"
 import { isMissingRetentionTable } from "./retention.vibe"
 import { DATA_SITE_TIERS, normalizeTier } from "./stat"
+import { queryRows } from platform
 
 export type UsageProduct = "All Users" | "Zen" | "Go" | "Enterprise"
 export type TokenProduct = "Zen" | "Go" | "Enterprise"
@@ -144,8 +143,6 @@ const RETENTION_MODEL_LIMIT = 15
 const RETENTION_MIN_ELIGIBLE_USER_WEEKS = 100
 const RETENTION_COHORT_WEEKS = 7
 const TOP_MODEL_SEGMENT_LIMIT = 9
-const QUERY_CACHE_TTL_MS = 5 * 60 * 1000
-const QUERY_CACHE_MAX_ENTRIES = 256
 // Preserve the response shape while the public site presents Go and Free as one cohort.
 const SITE_PRODUCT = "Go"
 const SITE_TIER_PLACEHOLDERS = DATA_SITE_TIERS.map(() => "?").join(", ")
@@ -188,10 +185,6 @@ type ModelAggregate = {
   totalCostMicrocents: number
 }
 
-type RawRow = Record<string, unknown>
-type CachedQuery = { expiresAt: number; value: Promise<RawRow[]> }
-
-const queryCache = new Map<string, CachedQuery>()
 
 export function getStatsHomeData(): Effect.Effect<StatsHomeData, StatsDataError> {
   return Effect.tryPromise({
@@ -316,27 +309,6 @@ async function listRetentionWeekly(): Promise<RetentionMetricRow[]> {
   }
 }
 
-async function queryRows(query: string, params: string[] = []) {
-  const key = JSON.stringify([query, params])
-  const now = Date.now()
-  const cached = queryCache.get(key)
-  if (cached && cached.expiresAt > now) return cached.value
-  if (cached) queryCache.delete(key)
-
-  const value = new Client({ url: databaseUrl() }).execute(query, params).then((result) => result.rows as RawRow[])
-  const entry = { expiresAt: now + QUERY_CACHE_TTL_MS, value }
-  queryCache.set(key, entry)
-  if (queryCache.size > QUERY_CACHE_MAX_ENTRIES) queryCache.delete(queryCache.keys().next().value!)
-
-  return value.catch((cause) => {
-    if (queryCache.get(key) === entry) queryCache.delete(key)
-    throw cause
-  })
-}
-
-function databaseUrl() {
-  return process.env.DATABASE_URL ?? Resource.StatsDatabase.url
-}
 
 function stringValue(value: unknown) {
   return value == null ? "" : String(value)
@@ -1164,4 +1136,41 @@ function leaderboardChange(current: number, previous: number) {
 
 function round(value: number, digits: number) {
   return Number(value.toFixed(digits))
+}
+
+// Queries reach PlanetScale with the URL from the process environment or the SST resource, and a failed
+// query is rethrown to every caller that shares its cache entry.
+module platform {
+  import { Client } from "@planetscale/database"
+  import { Resource } from "sst/resource"
+
+  const QUERY_CACHE_TTL_MS = 5 * 60 * 1000
+  const QUERY_CACHE_MAX_ENTRIES = 256
+
+  type RawRow = Record<string, unknown>
+  type CachedQuery = { expiresAt: number; value: Promise<RawRow[]> }
+
+  const queryCache = new Map<string, CachedQuery>()
+
+  export async function queryRows(query: string, params: string[] = []) {
+    const key = JSON.stringify([query, params])
+    const now = Date.now()
+    const cached = queryCache.get(key)
+    if (cached && cached.expiresAt > now) return cached.value
+    if (cached) queryCache.delete(key)
+
+    const value = new Client({ url: databaseUrl() }).execute(query, params).then((result) => result.rows as RawRow[])
+    const entry = { expiresAt: now + QUERY_CACHE_TTL_MS, value }
+    queryCache.set(key, entry)
+    if (queryCache.size > QUERY_CACHE_MAX_ENTRIES) queryCache.delete(queryCache.keys().next().value!)
+
+    return value.catch((cause) => {
+      if (queryCache.get(key) === entry) queryCache.delete(key)
+      throw cause
+    })
+  }
+
+  function databaseUrl() {
+    return process.env.DATABASE_URL ?? Resource.StatsDatabase.url
+  }
 }

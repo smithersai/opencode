@@ -6,6 +6,8 @@ Release notes for OpenCode V2, newest first.
 
 ### Changed
 
+- The stats home data queries now use VibeLang while preserving their declarations, with the PlanetScale query cache and database URL lookup in a native platform module.
+
 - The file system utilities, the cross-spawn child process spawner and the logging and observability layers now use VibeLang while preserving their declarations and native file system, process and environment access.
 
 - The SDK Promise and Effect entry points and the workerd Effect profile now use VibeLang while preserving their declarations, their native `.ts` entry paths and the host transport they wrap.

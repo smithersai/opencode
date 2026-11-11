@@ -50,9 +50,9 @@
     },
     "./domain/home": {
       "types": {
-        "default": "./src/domain/home.ts"
+        "default": "./src/domain/home.d.vibe.ts"
       },
-      "vibelang-source": "./src/domain/home.ts",
+      "vibelang-source": "./src/domain/home.vibe",
       "default": "./.vibelang/js/src/domain/home.js"
     },
     "./domain/catalog-identity": {

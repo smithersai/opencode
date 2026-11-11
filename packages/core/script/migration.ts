@@ -100,7 +100,9 @@ async function drizzle(temporary: string, output: string, name?: string) {
 export default { ...config, out: ${JSON.stringify(output)} }
 `,
   )
-  const child = Bun.spawn(["bun", "drizzle-kit", "generate", "--config", config, ...(name ? ["--name", name] : [])], {
+  // Under Bun, drizzle-kit loads the schema files with import(), which the package preload (vibelang/bun) serves; under
+  // Node, its bin default, jiti loads them and cannot load a VibeLang module they import.
+  const child = Bun.spawn(["bun", "--bun", "drizzle-kit", "generate", "--config", config, ...(name ? ["--name", name] : [])], {
     cwd: path.join(root, "packages/core"),
     stdin: "inherit",
     stdout: "inherit",

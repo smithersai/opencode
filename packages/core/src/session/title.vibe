@@ -1,6 +1,6 @@
 export * as SessionTitle from "./title.js"
 
-import { isDeepStrictEqual } from "./title.platform.js"
+import { isDeepStrictEqual } from platform
 import { LLMClient, LLMEvent, Message, SystemPart } from "@opencode/ai/effect"
 import type { Agent } from "@opencode/schema/agent"
 import { Context, DateTime, Effect, Layer, Stream } from "effect"
@@ -168,3 +168,14 @@ export const node = makeLocationNode({
   layer,
   deps: [Bus.node, llmClient, SessionContext.node, SessionStore.node, Database.node],
 })
+
+module platform {
+// The platform code of title.vibe: Node's structural equality, which a .vibe file does not import (EK4402).
+
+import util from "node:util"
+
+/** @throws {never} */
+export function isDeepStrictEqual(left: unknown, right: unknown): boolean {
+  return util.isDeepStrictEqual(left, right)
+}
+}

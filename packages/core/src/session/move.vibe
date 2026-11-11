@@ -5,7 +5,7 @@ import { makeGlobalNode } from "@opencode/util/effect/app-node"
 import { FSUtil } from "@opencode/util/fs-util"
 import { Global } from "@opencode/util/global"
 import { Cause, Context, Effect, Layer, Schema } from "effect"
-import { path } from "./move.platform.js"
+import { path } from platform
 import { Bus } from "../bus.js"
 import { Database } from "../database/database.js"
 import { Instance } from "../instance/service.js"
@@ -177,3 +177,26 @@ export const node = makeGlobalNode({
     SessionProjector.node,
   ],
 })
+
+module platform {
+// The platform code of move.vibe: host path arithmetic, which a .vibe file does not import (EK4402).
+
+import nodePath from "path"
+
+/** @throws {never} */
+function join(...paths: string[]): string {
+  return nodePath.join(...paths)
+}
+
+/** @throws {never} */
+function resolve(...paths: string[]): string {
+  return nodePath.resolve(...paths)
+}
+
+/** @throws {never} */
+function relative(from: string, to: string): string {
+  return nodePath.relative(from, to)
+}
+
+export const path = { join, resolve, relative }
+}

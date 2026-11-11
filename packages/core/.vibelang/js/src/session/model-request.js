@@ -10,7 +10,7 @@ import { PluginHooks } from "../plugin/hooks.js";
 import { QuestionTool } from "../tool/plugin/question.js";
 import { Tool } from "../tool.js";
 import { SessionAffinity } from "./affinity.js";
-import { makeResponse } from "./model-request.platform.js";
+import { makeResponse } from "./model-request.vibe.platform.js";
 import { SessionModelTransport } from "./model-transport.js";
 import { SessionRunnerModel } from "./runner/model.js";
 import { SessionSchema } from "./schema.js";

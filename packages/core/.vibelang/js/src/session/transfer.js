@@ -6,7 +6,7 @@ import { Skill } from "@opencode/schema/skill";
 import { eq } from "drizzle-orm";
 import { Clock, Context, DateTime, Effect, Layer, Schema } from "effect";
 import { map } from "effect/Array";
-import { path } from "./transfer.platform.js";
+import { path } from "./transfer.vibe.platform.js";
 import { makeGlobalNode } from "@opencode/util/effect/app-node";
 import { App } from "../app.js";
 import { Bus } from "../bus.js";

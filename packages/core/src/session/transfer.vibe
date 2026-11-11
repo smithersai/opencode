@@ -6,7 +6,7 @@ import { Skill } from "@opencode/schema/skill"
 import { eq } from "drizzle-orm"
 import { Clock, Context, DateTime, Effect, Layer, Schema } from "effect"
 import { map } from "effect/Array"
-import { path } from "./transfer.platform.js"
+import { path } from platform
 import { makeGlobalNode } from "@opencode/util/effect/app-node"
 import { App } from "../app.js"
 import { Bus } from "../bus.js"
@@ -327,4 +327,17 @@ function sanitizeToolContent(id: string, content: Tool.Content): Tool.Content {
     uri: redact("tool-file-uri", id, content.uri),
     name: content.name === undefined ? undefined : redact("tool-file-name", id, content.name),
   }
+}
+
+module platform {
+// The platform code of transfer.vibe: host path arithmetic, which a .vibe file does not import (EK4402).
+
+import nodePath from "path"
+
+/** @throws {never} */
+function relative(from: string, to: string): string {
+  return nodePath.relative(from, to)
+}
+
+export const path = { relative }
 }

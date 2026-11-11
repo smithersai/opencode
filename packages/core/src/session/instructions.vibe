@@ -1,6 +1,6 @@
 export * as SessionInstructions from "./instructions.js"
 
-import { relative } from "./instructions.platform.js"
+import { relative } from platform
 import { Context, Effect, Layer, Option, Ref, Schema } from "effect"
 import { makeLocationNode } from "@opencode/util/effect/app-node"
 import { Bus } from "../bus.js"
@@ -124,3 +124,14 @@ export const node = makeLocationNode({
   layer,
   deps: [Bus.node, Database.node, FSUtil.node, Location.node],
 })
+
+module platform {
+// The platform code of instructions.vibe: host path arithmetic, which a .vibe file does not import (EK4402).
+
+import path from "path"
+
+/** @throws {never} */
+export function relative(from: string, to: string): string {
+  return path.relative(from, to)
+}
+}

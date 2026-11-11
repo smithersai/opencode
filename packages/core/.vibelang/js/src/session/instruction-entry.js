@@ -7,7 +7,7 @@ import { InstructionEntry } from "@opencode/schema/instruction-entry";
 import { Database } from "../database/database.js";
 import { makeGlobalNode } from "@opencode/util/effect/app-node";
 import { Instructions } from "../instructions/index.js";
-import { utf8ByteLength } from "./instruction-entry.platform.js";
+import { utf8ByteLength } from "./instruction-entry.vibe.platform.js";
 import { SessionSchema } from "./schema.js";
 import { InstructionEntryTable } from "./sql.js";
 export const Key = InstructionEntry.Key;

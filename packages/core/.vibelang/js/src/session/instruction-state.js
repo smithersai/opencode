@@ -7,7 +7,7 @@ import { Instructions } from "../instructions/index.js";
 import { SessionEvent } from "./event.js";
 import { SessionSchema } from "./schema.js";
 import { InstructionBlobTable, InstructionStateTable } from "./sql.js";
-import { dereference, dereferenceDelta, requireBlob } from "./instruction-state.platform.js";
+import { dereference, dereferenceDelta, requireBlob } from "./instruction-state.vibe.platform.js";
 export const observe = Effect.fn("InstructionState.observe")(function* (db, instructions, sessionID) {
     const [observed, stored] = yield* Effect.all([Instructions.read(instructions), find(db, sessionID)], {
         concurrency: "unbounded",

@@ -2,7 +2,7 @@ export * as SessionProjector from "./projector.js"
 
 import { and, asc, desc, eq, gt, gte, inArray, isNull, lt, lte, or, sql } from "drizzle-orm"
 import { DateTime, Effect, Layer, Schema, Stream } from "effect"
-import { path } from "./projector.platform.js"
+import { path } from platform
 import { Database } from "../database/database.js"
 import { Bus } from "../bus.js"
 import { makeGlobalNode } from "@opencode/util/effect/app-node"
@@ -915,3 +915,21 @@ const layer = Layer.effectDiscard(
 )
 
 export const node = makeGlobalNode({ name: "session-projector", layer, deps: [Bus.node, Database.node] })
+
+module platform {
+// The platform code of projector.vibe: host path resolution, which a .vibe file does not import (EK4402).
+
+import nodePath from "path"
+
+/** @throws {never} */
+function resolve(...paths: string[]): string {
+  return nodePath.resolve(...paths)
+}
+
+/** @throws {never} */
+function relative(from: string, to: string): string {
+  return nodePath.relative(from, to)
+}
+
+export const path = { resolve, relative }
+}

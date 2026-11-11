@@ -9,7 +9,7 @@ import {
 } from "@opencode/ai/effect"
 import type { Model } from "@opencode/schema/model"
 import { Option, Schema } from "effect"
-import { base64Text, fileURLToPath } from "./to-llm-message.platform.js"
+import { base64Text, fileURLToPath } from platform
 import { SessionMessage } from "../message.js"
 import { SessionHistory } from "../history.js"
 import { SessionRecentText } from "../recent-text.js"
@@ -320,3 +320,19 @@ export const toLLMMessages = (
   model: Model.Ref,
   providerMetadataKey: string = model.providerID,
 ) => messages.flatMap((message) => toLLMMessage(message, model, providerMetadataKey))
+
+module platform {
+// The platform code of to-llm-message.vibe: file URLs and Buffer decoding, which a .vibe file does not use (EK4402).
+
+import url from "url"
+
+/** @throws {TypeError} when `target` is not an absolute `file:` URL for this platform. */
+export function fileURLToPath(target: URL): string {
+  return url.fileURLToPath(target)
+}
+
+/** Decodes base64 leniently and reads the bytes as UTF-8 text. @throws {never} */
+export function base64Text(data: string): string {
+  return Buffer.from(data, "base64").toString("utf8")
+}
+}

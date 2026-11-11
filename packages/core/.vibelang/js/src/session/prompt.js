@@ -5,7 +5,7 @@ import { PromptInput } from "@opencode/schema/prompt-input";
 import { SessionInbox } from "@opencode/schema/session-inbox";
 import { FSUtil } from "@opencode/util/fs-util";
 import { Effect, Option, Schema } from "effect";
-import { base64, decodeDataURLBytes, fileURLToPath, path, utf8, utf8Bytes } from "./prompt.platform.js";
+import { base64, decodeDataURLBytes, fileURLToPath, path, utf8, utf8Bytes } from "./prompt.vibe.platform.js";
 import { Database } from "../database/database.js";
 import { Image } from "../image.js";
 import { Mime } from "../mime.js";

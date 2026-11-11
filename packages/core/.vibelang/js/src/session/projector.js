@@ -3,7 +3,7 @@ import * as Effect_1 from "effect/Effect";
 export * as SessionProjector from "./projector.js";
 import { and, asc, desc, eq, gt, gte, inArray, isNull, lt, lte, or, sql } from "drizzle-orm";
 import { DateTime, Effect, Layer, Schema, Stream } from "effect";
-import { path } from "./projector.platform.js";
+import { path } from "./projector.vibe.platform.js";
 import { Database } from "../database/database.js";
 import { Bus } from "../bus.js";
 import { makeGlobalNode } from "@opencode/util/effect/app-node";

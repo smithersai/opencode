@@ -6,6 +6,8 @@ Release notes for OpenCode V2, newest first.
 
 ### Changed
 
+- The AI tutorial, the HTTP recorder package check and the config schema script now use VibeLang behind their existing .ts entry points, and the config schema script also runs from packages without a VibeLang preload.
+
 - The CLI schema and service smoke scripts and the dev TUI runner now use VibeLang behind their existing .ts entry points.
 
 - The core benchmark, migration and models snapshot scripts now use VibeLang behind their existing .ts entry points, with host access in platform modules.

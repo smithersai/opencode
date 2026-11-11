@@ -6,6 +6,8 @@ Release notes for OpenCode V2, newest first.
 
 ### Changed
 
+- The browser plugin tools now use VibeLang while preserving their declarations and the synchronous browser URL check.
+
 - Plugin entrypoint resolution and the plugin GUI host contract now use VibeLang while preserving their declarations, native file access and the synchronous plugin bundle checks.
 
 - The HTTP recorder cassette store now uses VibeLang while preserving its declarations, native file access and the synchronous cassette name checks; an invalid name passed to the file cassette service still dies with the same error.

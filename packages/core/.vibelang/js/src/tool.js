@@ -5,7 +5,7 @@ import * as Result from "effect/Result";
 import * as Schema from "effect/Schema";
 import * as SchemaIssue from "effect/SchemaIssue";
 import { withSpan } from "effect/Effect";
-import { $catchExpression, $matchCache, $noMatch } from "vibelang-runtime/internal";
+import { $catchExpression, $matchCache } from "vibelang-runtime/internal";
 import * as Effect_1 from "effect/Effect";
 import * as runtime from "vibelang-runtime/internal";
 export * as Tool from "./tool.js";
@@ -172,12 +172,12 @@ const layer = Layer.effect(Service, Effect_1.gen(function* () {
                 try {
                     const $match7 = failure;
                     {
-                        if ((typeof $match7 === "function" || typeof $match7 === "object") && $match7
-                            !== null && $matchCache8.propertyHas($match7, "_tag") && $matchCache8.get($match7, "_tag") === "Tool.Error") {
+                        {
+                            runtime.$assertMatch((typeof $match7 === "function" || typeof $match7 === "object") && $match7
+                                !== null && $matchCache8.propertyHas($match7, "_tag") && $matchCache8.get($match7, "_tag") === "Tool.Error", $match7);
                             return ({ failure });
                         }
                     }
-                    return $noMatch($match7);
                 }
                 catch (matchError_4) {
                     $matchCache8.threw(matchError_4);

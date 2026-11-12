@@ -59,19 +59,49 @@ test("native self namespace exports retain one identity across relative import p
     )
     const output = path.join(temporary, "bundle.js")
     for (const command of [
-      [process.execPath, "build", entry, "--target=bun", "--format=esm", "--packages=bundle", "--outfile=" + output],
+      [process.execPath, "-e", namespaceBundle],
       [process.execPath, output],
     ]) {
-      const child = Bun.spawn(command, { cwd: root, stdout: "pipe", stderr: "pipe" })
+      const child = Bun.spawn(command, {
+        cwd: root,
+        env: {
+          ...process.env,
+          NAMESPACE_ENTRY: entry,
+          NAMESPACE_OUTDIR: temporary,
+          NAMESPACE_OUTFILE: path.basename(output),
+          VIBELANG_BUN_PLUGIN: Bun.resolveSync("vibelang-unplugin/bun", path.join(root, "packages/cli")),
+          SOLID_BUN_PLUGIN: Bun.resolveSync("@opentui/solid/bun-plugin", path.join(root, "packages/cli")),
+        },
+        stdout: "pipe",
+        stderr: "pipe",
+      })
       const [code, stdout, stderr] = await Promise.all([
         child.exited,
         new Response(child.stdout).text(),
         new Response(child.stderr).text(),
       ])
+      if (code !== 0) console.error(stdout + stderr)
       expect(stdout + stderr).not.toContain("No matching export")
       expect(code).toBe(0)
     }
   } finally {
     await rm(temporary, { recursive: true, force: true })
   }
+}, 60_000)
+
+// Uses the CLI production plugins with the same entry, target, format, packages and output.
+// Cold plugin bundles take 11–16 seconds, so the test allows their real compilation work.
+const namespaceBundle = `
+const { default: vibelang } = await import(process.env.VIBELANG_BUN_PLUGIN)
+const { createSolidTransformPlugin } = await import(process.env.SOLID_BUN_PLUGIN)
+const result = await Bun.build({
+  entrypoints: [process.env.NAMESPACE_ENTRY],
+  target: "bun",
+  format: "esm",
+  packages: "bundle",
+  outdir: process.env.NAMESPACE_OUTDIR,
+  naming: process.env.NAMESPACE_OUTFILE,
+  plugins: [vibelang(), createSolidTransformPlugin()],
 })
+if (!result.success) throw new AggregateError(result.logs, "Failed to bundle the native namespace fixture")
+`

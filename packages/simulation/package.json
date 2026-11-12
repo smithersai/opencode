@@ -40,7 +40,8 @@
       "types": "./src/frontend/renderer.d.vibe.ts",
       "vibelang-source": "./src/frontend/renderer.vibe",
       "default": "./.vibelang/js/src/frontend/renderer.js"
-    }
+    },
+    "./frontend/simulation.impl.vibe.platform": null
   },
   "scripts": {
     "build": "bun run script/build.ts",

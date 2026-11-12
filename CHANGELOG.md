@@ -6,6 +6,8 @@ Release notes for OpenCode V2, newest first.
 
 ### Changed
 
+- The interpreter and package boundary helpers use VibeLang module bodies while preserving their public declarations and native entry paths.
+
 - The server namespace bundle check uses the CLI production plugins while retaining its import variants and identity assertions.
 
 - Database path columns now use VibeLang, and migration commands run Drizzle under Bun so the package loader can load their schema dependencies.

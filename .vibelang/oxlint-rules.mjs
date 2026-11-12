@@ -29,34 +29,19 @@ SOFTWARE.
 const functions = new Set(["ArrowFunctionExpression", "FunctionExpression", "FunctionDeclaration"])
 const loops = new Set(["ForStatement", "ForInStatement", "ForOfStatement", "WhileStatement", "DoWhileStatement"])
 const contains = (outer, inner) => outer.range[0] <= inner.range[0] && outer.range[1] >= inner.range[1]
-const inner = (node) =>
-  ["TSAsExpression", "TSTypeAssertion", "TSNonNullExpression", "ChainExpression"].includes(node?.type)
-    ? inner(node.expression)
-    : node
-const parents = function* (node) {
-  for (let parent = node.parent; parent; parent = parent.parent) yield parent
-}
+const inner = node => ["TSAsExpression", "TSTypeAssertion", "TSNonNullExpression", "ChainExpression"].includes(node?.type) ? inner(node.expression) : node
+const parents = function* (node) { for (let parent = node.parent; parent; parent = parent.parent) yield parent }
 export default {
   rules: {
     "no-accumulating-spread": {
-      meta: {
-        type: "problem",
-        schema: [],
-        messages: {
-          reduce: "Do not spread accumulators in Array.prototype.reduce()",
-          loop: "Do not spread accumulators in loops",
-        },
-      },
+      meta: { type: "problem", schema: [], messages: { reduce: "Do not spread accumulators in Array.prototype.reduce()", loop: "Do not spread accumulators in loops" } },
       create(context) {
         return {
           SpreadElement(node) {
             if (node.argument.type !== "Identifier") return
             let scope = context.sourceCode.getScope(node.argument)
             let variable
-            while (scope && !variable) {
-              variable = scope.variables.find((variable) => variable.name === node.argument.name)
-              scope = scope.upper
-            }
+            while (scope && !variable) { variable = scope.variables.find(variable => variable.name === node.argument.name); scope = scope.upper }
             const def = variable?.defs[0]
             if (!def) return
             if (def.type === "Parameter") {
@@ -69,20 +54,16 @@ export default {
                 if (functions.has(parent.type)) return
               }
               for (const parent of parents(fn)) {
-                if (parent.type !== "CallExpression" || parent.arguments.length < 1 || parent.arguments.length > 2)
-                  continue
+                if (parent.type !== "CallExpression" || parent.arguments.length < 1 || parent.arguments.length > 2) continue
                 const callee = inner(parent.callee)
                 if (callee?.type !== "MemberExpression") continue
                 const method = callee.computed ? callee.property.value : callee.property.name
-                if (method === "reduce" || method === "reduceRight") {
-                  context.report({ node, messageId: "reduce" })
-                  return
-                }
+                if (method === "reduce" || method === "reduceRight") { context.report({ node, messageId: "reduce" }); return }
               }
             }
             if (def.type !== "Variable" || def.parent.kind !== "let") return
             // Oxlint uses the first non-initializing write of the binding.
-            const write = variable.references.find((reference) => reference.isWrite() && !reference.init)
+            const write = variable.references.find(reference => reference.isWrite() && !reference.init)
             const assignment = write?.identifier.parent
             if (assignment?.type !== "AssignmentExpression" || assignment.left !== write.identifier) return
             const right = inner(assignment.right)
@@ -93,9 +74,9 @@ export default {
                 return
               }
             }
-          },
+          }
         }
-      },
-    },
-  },
+      }
+    }
+  }
 }

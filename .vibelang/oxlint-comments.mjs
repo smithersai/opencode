@@ -15,33 +15,17 @@ export function blanketReasonPolicy(tool, command = []) {
   if (policies.has(key)) return policies.get(key)
   const root = mkdtempSync(join(tmpdir(), "vibelang-oxlint-directives-"))
   try {
-    const config = join(root, ".oxlintrc.json"),
-      source = join(root, "input.ts")
+    const config = join(root, ".oxlintrc.json"), source = join(root, "input.ts")
     writeFileSync(config, JSON.stringify({ categories: { correctness: "off" }, rules: { "no-debugger": "warn" } }))
     writeFileSync(source, "// oxlint-disable-next-line -- reason\ndebugger;\n")
     // This isolated probe has no source plugins. Resolve no package preload
     // from its temporary directory; preserve the caller's other Node options.
     const preloads = (process.env.NODE_OPTIONS ?? "").replace(/--import(?:=|\s+)vibelang\/register/g, "").trim()
-    const run = spawnSync(tool, [...command, "--threads", "1", "--format", "json", "--config", config, source], {
-      cwd: process.cwd(),
-      encoding: "utf8",
-      timeout: 30000,
-      maxBuffer: 1024 * 1024,
-      env: { ...process.env, NODE_OPTIONS: preloads },
-    })
-    if (run.error || run.status !== 0)
-      throw new Error(
-        "Oxlint directive compatibility probe failed (status " +
-          run.status +
-          ", signal " +
-          run.signal +
-          "): " +
-          (run.stderr ?? "").slice(-2000),
-        { cause: run.error },
-      )
+    const run = spawnSync(tool, [...command, "--threads", "1", "--format", "json", "--config", config, source],
+      { cwd: process.cwd(), encoding: "utf8", timeout: 30000, maxBuffer: 1024 * 1024, env: { ...process.env, NODE_OPTIONS: preloads } })
+    if (run.error || run.status !== 0) throw new Error("Oxlint directive compatibility probe failed (status " + run.status + ", signal " + run.signal + "): " + (run.stderr ?? "").slice(-2000), { cause: run.error })
     const result = JSON.parse(run.stdout)
-    if (!Array.isArray(result.diagnostics))
-      throw new Error("Oxlint directive compatibility probe returned no diagnostics array")
+    if (!Array.isArray(result.diagnostics)) throw new Error("Oxlint directive compatibility probe returned no diagnostics array")
     const blanket = result.diagnostics.length === 0
     policies.set(key, blanket)
     return blanket
@@ -54,13 +38,14 @@ export function withOxlintComments(parser, aliases, blanketReasons = false) {
   return {
     ...parser,
     parseForESLint(...args) {
-      const result =
-        typeof parser.parseForESLint === "function" ? parser.parseForESLint(...args) : { ast: parser.parse(...args) }
+      const result = typeof parser.parseForESLint === "function"
+        ? parser.parseForESLint(...args)
+        : { ast: parser.parse(...args) }
       // Oxlint plugins read start/end on nodes, tokens and comments. ESLint's
       // parsers supply range instead; preserve each source object and expose
       // the same UTF-16 offsets before any plugin visits the tree.
       const seen = new WeakSet()
-      const offsets = (value) => {
+      const offsets = value => {
         if (!value || typeof value !== "object" || seen.has(value)) return
         seen.add(value)
         if (typeof value.type === "string" && Array.isArray(value.range)) {
@@ -71,16 +56,10 @@ export function withOxlintComments(parser, aliases, blanketReasons = false) {
       }
       offsets(result.ast)
       const reverse = new Map([...aliases].map(([actual, native]) => [native, actual]))
-      const rule = (name) =>
-        reverse.get(name) ??
-        reverse.get("eslint/" + name) ??
-        (name.startsWith("eslint/")
-          ? name.slice(7)
-          : name.startsWith("typescript-eslint/")
-            ? "@" + name
-            : name.startsWith("typescript/")
-              ? "@typescript-eslint/" + name.slice(11)
-              : name)
+      const rule = name => reverse.get(name) ?? reverse.get("eslint/" + name)
+        ?? (name.startsWith("eslint/") ? name.slice(7)
+          : name.startsWith("typescript-eslint/") ? "@" + name
+          : name.startsWith("typescript/") ? "@typescript-eslint/" + name.slice(11) : name)
       for (const comment of result.ast.comments ?? []) {
         const match = /^(\s*)(?:oxlint|eslint)-(disable(?:-next-line|-line)?|enable)\b([\s\S]*)$/.exec(comment.value)
         if (!match) continue
@@ -92,16 +71,10 @@ export function withOxlintComments(parser, aliases, blanketReasons = false) {
           comment.value = match[1] + "oxlint-" + match[2] + tail
           continue
         }
-        const mapped = names
-          ? " " +
-            names
-              .split(",")
-              .map((name) => rule(name.trim()))
-              .join(", ")
-          : ""
+        const mapped = names ? " " + names.split(",").map(name => rule(name.trim())).join(", ") : ""
         comment.value = match[1] + "eslint-" + match[2] + mapped + tail.slice(reasonAt)
       }
       return result
-    },
+    }
   }
 }

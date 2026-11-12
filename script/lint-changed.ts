@@ -27,11 +27,12 @@ const packages = [
 // oxlint skips declaration files and prints a non-JSON message when given only those.
 const files = [...new Set([...tracked, ...untracked])].filter(
   (file) =>
-    /\.(ts|tsx|vibe)$/.test(file) &&
+    /\.(ts|tsx|vibe|vibex)$/.test(file) &&
     !file.endsWith(".d.ts") &&
     packages.some((prefix) => file.startsWith(prefix)) &&
     Bun.file(file).size > 0 &&
-    !file.endsWith(".d.vibe.ts"),
+    !file.endsWith(".d.vibe.ts") &&
+    !file.endsWith(".d.vibex.ts"),
 )
 
 if (files.length === 0) {

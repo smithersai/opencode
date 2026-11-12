@@ -36,7 +36,7 @@
     "sso": "aws sso login --sso-session=opencode --no-browser",
     "test": "echo 'do not run tests from root' && exit 1",
     "sidecars": "bun run script/vibelang-sidecars.ts && bun run script/vibelang-runtime.ts",
-    "lint:source": "(oxlint --no-error-on-unmatched-pattern && ast-grep scan -c script/ast-grep/gui-plugins/sgconfig.yml && bun script/sdk-docs.ts) && eslint --config .vibelang/eslint.config.mjs \"**/*.vibe\" --no-error-on-unmatched-pattern",
+    "lint:source": "(oxlint --no-error-on-unmatched-pattern && ast-grep scan -c script/ast-grep/gui-plugins/sgconfig.yml && bun script/sdk-docs.ts) && eslint --config .vibelang/eslint.config.mjs \"**/*.{vibe,vibex}\" --no-error-on-unmatched-pattern",
     "typecheck:source": "bun turbo typecheck --concurrency=3"
   },
   "workspaces": {

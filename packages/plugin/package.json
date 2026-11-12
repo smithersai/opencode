@@ -24,8 +24,8 @@
       "default": "./.vibelang/js/src/effect/index.js"
     },
     "./host": {
-      "types": "./src/host.ts",
-      "vibelang-source": "./src/host.ts",
+      "types": "./src/host.d.vibe.ts",
+      "vibelang-source": "./src/host.vibe",
       "default": "./.vibelang/js/src/host.js"
     },
     "./runtime": {
@@ -84,6 +84,7 @@
       "default": "./.vibelang/js/src/gui/vite.js"
     },
     "./gui/*": null,
+    "./host.vibe.platform": null,
     "./effect/agent": {
       "types": "./src/effect/agent.d.vibe.ts",
       "vibelang-source": "./src/effect/agent.vibe",

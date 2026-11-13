@@ -18,7 +18,7 @@ export interface Viewport {
   readonly rows: number
 }
 
-export const create = Effect.fn("SimulationRenderer.create")(function* (
+export const create = Effect.fn("SimulationRenderer.create")(function*(
   options: CliRendererConfig,
   path?: string,
   viewport?: Viewport,
@@ -27,14 +27,12 @@ export const create = Effect.fn("SimulationRenderer.create")(function* (
   const rows = viewport?.rows ?? 40
   const recording = path
     ? yield* Effect.acquireRelease(
-        Effect.tryPromise(() => Timeline.create(path, cols, rows)),
-        (recording) =>
-          Effect.tryPromise(() => recording.finish()).pipe(
-            Effect.catch((error) =>
-              Effect.sync(() => writeError(`Failed to finish UI recording: ${error}\n`)),
-            ),
-          ),
-      )
+      Effect.tryPromise(() => Timeline.create(path, cols, rows)),
+      (recording) =>
+        Effect.tryPromise(() => recording.finish()).pipe(
+          Effect.catch((error) => Effect.sync(() => writeError(`Failed to finish UI recording: ${error}\n`))),
+        ),
+    )
     : undefined
   const setup = yield* Effect.acquireRelease(
     Effect.tryPromise(() =>
@@ -45,12 +43,12 @@ export const create = Effect.fn("SimulationRenderer.create")(function* (
         kittyKeyboard: Boolean(options.useKittyKeyboard),
         ...(recording
           ? {
-              // Finishing a recording must not close the live renderer's output sink.
-              stdout: recordingOutput(recording),
-              bufferedOutput: "stdout" as const,
-            }
+            // Finishing a recording must not close the live renderer's output sink.
+            stdout: recordingOutput(recording),
+            bufferedOutput: "stdout" as const,
+          }
           : {}),
-      }),
+      })
     ),
     (setup) =>
       Effect.promise(async () => {

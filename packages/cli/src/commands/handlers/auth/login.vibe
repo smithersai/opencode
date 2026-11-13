@@ -72,8 +72,8 @@ const findIntegration = Effect.fn("cli.auth.login.integration")(
     if (target && URL.canParse(target)) {
       const protocol = new URL(target).protocol
       if (protocol === "http:" || protocol === "https:") {
-        const progress = try ((args: Parameters<typeof spinner>) =>
-          Effect.try(() => spinner(...args)).pipe(Effect.orDie))([])
+        const progress =
+          try ((args: Parameters<typeof spinner>) => Effect.try(() => spinner(...args)).pipe(Effect.orDie))([])
         void (try ((args: Parameters<typeof progress.start>) =>
           Effect.try(() => progress.start(...args)).pipe(Effect.orDie))(["Discovering authentication provider..."]))
         try request((signal) => client.integration.wellknown.add({ url: target, location }, { signal })).pipe(
@@ -230,8 +230,8 @@ export const oauthLogin = Effect.fn("cli.auth.login.oauth")(effect function(
     const code = try prompt<string>(() =>
       text({ message: "Paste the authorization code", validate: (value) => (!value ? "Required" : undefined) })
     )
-    const completing = try ((args: Parameters<typeof spinner>) =>
-      Effect.try(() => spinner(...args)).pipe(Effect.orDie))([])
+    const completing =
+      try ((args: Parameters<typeof spinner>) => Effect.try(() => spinner(...args)).pipe(Effect.orDie))([])
     void (try ((args: Parameters<typeof completing.start>) =>
       Effect.try(() => completing.start(...args)).pipe(Effect.orDie))(["Completing authorization..."]))
     try request((signal) =>

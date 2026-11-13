@@ -19,7 +19,7 @@ export const node = LayerNode.unbound(Service, tags.values.location)
 const layer = (ref: Ref) =>
   Layer.effect(
     Service,
-    Effect.gen(function* () {
+    Effect.gen(function*() {
       const project = yield* Project.Service
       const resolved = yield* project.resolve(ref.directory)
       return Service.of({

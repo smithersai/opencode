@@ -39,15 +39,15 @@ module platform {
       case "resource":
         if ("text" in block.resource) {
           const parsed = URL.canParse(block.resource.uri) ? new URL(block.resource.uri) : undefined
-          const decoded =
-            parsed?.protocol === "file:"
-              ? Result.try(() => fileURLToPath(parsed)).pipe(
-                  Result.orElse(() => Result.try(() => decodeURIComponent(parsed.pathname))),
-                  Result.getOrUndefined,
-                )
-              : undefined
-          if (!parsed || decoded === undefined)
+          const decoded = parsed?.protocol === "file:"
+            ? Result.try(() => fileURLToPath(parsed)).pipe(
+              Result.orElse(() => Result.try(() => decodeURIComponent(parsed.pathname))),
+              Result.getOrUndefined,
+            )
+            : undefined
+          if (!parsed || decoded === undefined) {
             return [{ type: "text", text: `[${block.resource.uri}]\n${block.resource.text}` }]
+          }
           const line = parsed.hash.match(/^#L(\d+)/)?.[1]
           const filepath = path.sep === "\\" ? decoded.replace(/\\/g, "/") : decoded
           return [{ type: "text", text: `[${filepath}${line ? `:${line}` : ""}]\n${block.resource.text}` }]
@@ -119,18 +119,17 @@ module platform {
         {
           content: {
             type: "resource",
-            resource:
-              mime.startsWith("text/") || mime === "application/json"
-                ? {
-                    uri: pathToFileURL(part.filename ?? "file").href,
-                    mimeType: mime,
-                    text: Buffer.from(data, "base64").toString("utf8"),
-                  }
-                : {
-                    uri: pathToFileURL(part.filename ?? "file").href,
-                    mimeType: mime,
-                    blob: data,
-                  },
+            resource: mime.startsWith("text/") || mime === "application/json"
+              ? {
+                uri: pathToFileURL(part.filename ?? "file").href,
+                mimeType: mime,
+                text: Buffer.from(data, "base64").toString("utf8"),
+              }
+              : {
+                uri: pathToFileURL(part.filename ?? "file").href,
+                mimeType: mime,
+                blob: data,
+              },
           },
         },
       ]
@@ -149,13 +148,14 @@ module platform {
     }
     if (link.uri.startsWith("zed://") && URL.canParse(link.uri)) {
       const pathname = new URL(link.uri).searchParams.get("path")
-      if (pathname)
+      if (pathname) {
         return {
           type: "file",
           url: pathToFileURL(pathname).href,
           filename: link.name || path.basename(pathname) || "file",
           mime: link.mimeType ?? "text/plain",
         }
+      }
     }
     return linkReference(link.name, link.uri)
   }

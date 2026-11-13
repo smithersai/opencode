@@ -94,7 +94,11 @@ const OpenRouterDetailFields = {
 }
 const ReasoningDetail = Schema.Union([
   Schema.StructWithRest(
-    Schema.Struct({ type: Schema.Literal("reasoning.text"), text: Schema.optional(Schema.String), ...OpenRouterDetailFields }),
+    Schema.Struct({
+      type: Schema.Literal("reasoning.text"),
+      text: Schema.optional(Schema.String),
+      ...OpenRouterDetailFields,
+    }),
     [Schema.Record(Schema.String, Schema.Unknown)],
   ),
   Schema.StructWithRest(
@@ -376,9 +380,9 @@ const lowerToolCall = (
   extra_content: decodeExtraContent(part.providerMetadata?.[options.providerMetadataKey]?.extraContent),
 })
 
-const lowerMedia = Effect.fnUntraced(function* (part: MediaPart) {
+const lowerMedia = Effect.fnUntraced(function*(part: MediaPart) {
   // Chat Completions accepts PDFs, and no other documents, as inline `file` parts; file URLs are not supported.
-  if (part.media.mediaType.toLowerCase() === "application/pdf")
+  if (part.media.mediaType.toLowerCase() === "application/pdf") {
     return {
       type: "file" as const,
       file: {
@@ -386,10 +390,12 @@ const lowerMedia = Effect.fnUntraced(function* (part: MediaPart) {
         file_data: (yield* ProviderShared.requireInlineMedia("OpenAI Chat", part.media)).dataUrl,
       },
     }
-  if (part.media.kind !== "image" && part.media.kind !== "video")
+  }
+  if (part.media.kind !== "image" && part.media.kind !== "video") {
     return yield* ProviderShared.invalidRequest(`OpenAI Chat does not support media type ${part.media.mediaType}`)
-  const url =
-    ProviderShared.mediaUrl(part.media) ?? (yield* ProviderShared.requireInlineMedia("OpenAI Chat", part.media)).dataUrl
+  }
+  const url = ProviderShared.mediaUrl(part.media)
+    ?? (yield* ProviderShared.requireInlineMedia("OpenAI Chat", part.media)).dataUrl
   if (part.media.kind === "video") return { type: "video_url" as const, video_url: { url } }
   return { type: "image_url" as const, image_url: { url } }
 })
@@ -407,10 +413,12 @@ const reasoningDetails = (parts: ReadonlyArray<ReasoningPart>, native: unknown, 
     const details = part.providerMetadata?.[providerMetadataKey]?.reasoningDetails
     return Array.isArray(details) ? details : []
   })
-  if (parts.some((part) => Array.isArray(part.providerMetadata?.[providerMetadataKey]?.reasoningDetails)))
+  if (parts.some((part) => Array.isArray(part.providerMetadata?.[providerMetadataKey]?.reasoningDetails))) {
     return knownReasoningDetails(observed).map(lowerReasoningDetail)
-  if (isRecord(native) && Array.isArray(native.reasoning_details))
+  }
+  if (isRecord(native) && Array.isArray(native.reasoning_details)) {
     return knownReasoningDetails(native.reasoning_details).map(lowerReasoningDetail)
+  }
 }
 
 // Kimi rejects its stream-only `index` on requests
@@ -423,7 +431,7 @@ const lowerReasoningDetail = (detail: ReasoningDetail) => {
 
 const isKimiDetail = (detail: { readonly type: string }) => detail.type === "summary" || detail.type === "encrypted"
 
-const lowerUserMessage = Effect.fnUntraced(function* (
+const lowerUserMessage = Effect.fnUntraced(function*(
   message: OpenAIChatRequestMessage,
   options: LoweringOptions,
 ) {
@@ -439,15 +447,16 @@ const lowerUserMessage = Effect.fnUntraced(function* (
     }
     return yield* ProviderShared.unsupportedContent("OpenAI Chat", "user", ["text", "media"])
   }
-  if (content.every((part) => part.type === "text" && part.cache_control === undefined))
+  if (content.every((part) => part.type === "text" && part.cache_control === undefined)) {
     return {
       role: "user" as const,
       content: content.map((part) => (part.type === "text" ? part.text : "")).join(""),
     }
+  }
   return { role: "user" as const, content }
 })
 
-const lowerAssistantMessage = Effect.fnUntraced(function* (
+const lowerAssistantMessage = Effect.fnUntraced(function*(
   message: OpenAIChatRequestMessage,
   configuredField: string | undefined,
   requireReasoning: boolean,
@@ -457,8 +466,9 @@ const lowerAssistantMessage = Effect.fnUntraced(function* (
   const reasoning: ReasoningPart[] = []
   const toolCalls: OpenAIChatAssistantToolCall[] = []
   for (const part of message.content) {
-    if (!ProviderShared.supportsContent(part, ["text", "reasoning", "tool-call"]))
+    if (!ProviderShared.supportsContent(part, ["text", "reasoning", "tool-call"])) {
       return yield* ProviderShared.unsupportedContent("OpenAI Chat", "assistant", ["text", "reasoning", "tool-call"])
+    }
     if (part.type === "text") {
       content.push({ type: "text", text: part.text, cache_control: options.cacheControl?.(part.cache) })
       continue
@@ -479,11 +489,12 @@ const lowerAssistantMessage = Effect.fnUntraced(function* (
     .find((value) => value !== undefined)
   const nativeReasoning = openAICompatibleReasoningContent(message.native?.openaiCompatible)
   const fullyStructured = reasoning.every((part) =>
-    Array.isArray(part.providerMetadata?.[options.providerMetadataKey]?.reasoningDetails),
+    Array.isArray(part.providerMetadata?.[options.providerMetadataKey]?.reasoningDetails)
   )
   const field = (() => {
-    if (configuredField !== undefined && (requireReasoning || reasoning.length > 0 || nativeReasoning !== undefined))
+    if (configuredField !== undefined && (requireReasoning || reasoning.length > 0 || nativeReasoning !== undefined)) {
       return configuredField
+    }
     if (reasoning.length === 0) return requireReasoning ? "reasoning_content" : undefined
     if (observedField !== undefined) return observedField
     if (nativeReasoning !== undefined) return "reasoning_content"
@@ -493,8 +504,9 @@ const lowerAssistantMessage = Effect.fnUntraced(function* (
     if (details?.some(isKimiDetail)) return "reasoning_content"
   })()
   const reasoningText = (() => {
-    if (configuredField !== undefined)
+    if (configuredField !== undefined) {
       return reasoning.length === 0 ? (nativeReasoning ?? (requireReasoning ? "" : undefined)) : text
+    }
     if (reasoning.length === 0) return nativeReasoning ?? (requireReasoning ? "" : undefined)
     return text
   })()
@@ -512,15 +524,16 @@ const lowerAssistantMessage = Effect.fnUntraced(function* (
   return { ...result, [field]: reasoningText }
 })
 
-const lowerToolMessages = Effect.fnUntraced(function* (
+const lowerToolMessages = Effect.fnUntraced(function*(
   message: OpenAIChatRequestMessage,
   options: LoweringOptions,
 ) {
   const messages: OpenAIChatMessage[] = []
   const attachments: OpenAIChatUserContent[] = []
   for (const part of message.content) {
-    if (!ProviderShared.supportsContent(part, ["tool-result"]))
+    if (!ProviderShared.supportsContent(part, ["tool-result"])) {
       return yield* ProviderShared.unsupportedContent("OpenAI Chat", "tool", ["tool-result"])
+    }
     if (part.result.type !== "content") {
       messages.push(
         toolMessage(
@@ -538,11 +551,13 @@ const lowerToolMessages = Effect.fnUntraced(function* (
     )
     const files = content.filter((item) => item.type === "file")
     attachments.push(
-      ...(yield* Effect.forEach(files, (item) =>
-        Effect.try({ try: () => ProviderShared.toolFileMedia(item), catch: (cause) => cause }).pipe(
-          Effect.orDie,
-          Effect.flatMap(lowerMedia),
-        ),
+      ...(yield* Effect.forEach(
+        files,
+        (item) =>
+          Effect.try({ try: () => ProviderShared.toolFileMedia(item), catch: (cause) => cause }).pipe(
+            Effect.orDie,
+            Effect.flatMap(lowerMedia),
+          ),
       )),
     )
   }
@@ -556,7 +571,7 @@ const toolMessage = (toolCallID: string, text: string, cacheControl: OpenAIChatC
   content: cacheControl === undefined ? text : [{ type: "text" as const, text, cache_control: cacheControl }],
 })
 
-const lowerMessage = Effect.fnUntraced(function* (
+const lowerMessage = Effect.fnUntraced(function*(
   message: OpenAIChatRequestMessage,
   reasoningField: string | undefined,
   requireReasoning: boolean,
@@ -570,51 +585,52 @@ const lowerMessage = Effect.fnUntraced(function* (
   return (yield* lowerToolMessages(message, options)).messages
 })
 
-const lowerMessages = Effect.fnUntraced(function* (request: LLMRequest, options: LoweringOptions) {
-  const system: OpenAIChatMessage[] =
-    request.system.length === 0
-      ? []
-      : request.system.some((part) => part.cache !== undefined) && options.cacheControl !== undefined
-        ? [
-            {
-              role: "system",
-              content: request.system.map((part) => ({
-                type: "text",
-                text: part.text,
-                cache_control: options.cacheControl?.(part.cache),
-              })),
-            },
-          ]
-        : [{ role: "system", content: ProviderShared.joinText(request.system) }]
+const lowerMessages = Effect.fnUntraced(function*(request: LLMRequest, options: LoweringOptions) {
+  const system: OpenAIChatMessage[] = request.system.length === 0
+    ? []
+    : request.system.some((part) => part.cache !== undefined) && options.cacheControl !== undefined
+    ? [
+      {
+        role: "system",
+        content: request.system.map((part) => ({
+          type: "text",
+          text: part.text,
+          cache_control: options.cacheControl?.(part.cache),
+        })),
+      },
+    ]
+    : [{ role: "system", content: ProviderShared.joinText(request.system) }]
   const messages = [...system]
   const modelID = request.model.id.toLowerCase()
-  const requireReasoning =
-    request.model.compatibility?.requireReasoning ??
-    (request.model.compatibility?.reasoningField !== undefined ||
-      request.model.provider === "deepseek" ||
-      request.model.route.endpoint.baseURL?.toLowerCase().includes("deepseek.com") ||
-      modelID.includes("deepseek"))
+  const requireReasoning = request.model.compatibility?.requireReasoning
+    ?? (request.model.compatibility?.reasoningField !== undefined
+      || request.model.provider === "deepseek"
+      || request.model.route.endpoint.baseURL?.toLowerCase().includes("deepseek.com")
+      || modelID.includes("deepseek"))
   const reasoningField = request.model.compatibility?.reasoningField
   const mistral = ["mistral", "devstral", "codestral", "pixtral", "mixtral"].some((family) => modelID.includes(family))
   const lowering = {
     ...options,
     providerMetadataKey: request.model.route.providerMetadataKey ?? request.model.provider,
     toolCallID: (id: string) => {
-      if (mistral)
+      if (mistral) {
         return id
           .replace(/[^a-zA-Z0-9]/g, "")
           .slice(0, 9)
           .padEnd(9, "0")
+      }
       if (modelID.includes("claude")) return id.replace(/[^a-zA-Z0-9_-]/g, "_")
-      if (request.model.provider === "openai" || request.model.provider === "azure" || modelID.startsWith("openai/"))
+      if (request.model.provider === "openai" || request.model.provider === "azure" || modelID.startsWith("openai/")) {
         return id.slice(0, 40)
+      }
       return id
     },
   }
   const requireAssistantAfterTool = request.model.compatibility?.requireAssistantAfterTool ?? mistral
   const bridgeTools = () => {
-    if (requireAssistantAfterTool && messages.at(-1)?.role === "tool")
+    if (requireAssistantAfterTool && messages.at(-1)?.role === "tool") {
       messages.push({ role: "assistant", content: "Done." })
+    }
   }
   const pendingAttachments: OpenAIChatUserContent[] = []
   const flushAttachments = () => {
@@ -638,17 +654,17 @@ const lowerMessages = Effect.fnUntraced(function* (request: LLMRequest, options:
         continue
       }
       const previous = messages.at(-1)
-      if (previous?.role === "user" && typeof previous.content === "string")
+      if (previous?.role === "user" && typeof previous.content === "string") {
         messages[messages.length - 1] = cacheControl
           ? {
-              role: "user",
-              content: [
-                { type: "text", text: previous.content },
-                { type: "text", text: part.text, cache_control: cacheControl },
-              ],
-            }
+            role: "user",
+            content: [
+              { type: "text", text: previous.content },
+              { type: "text", text: part.text, cache_control: cacheControl },
+            ],
+          }
           : { role: "user", content: `${previous.content}\n${part.text}` }
-      else if (previous?.role === "user" && Array.isArray(previous.content))
+      } else if (previous?.role === "user" && Array.isArray(previous.content)) {
         messages[messages.length - 1] = {
           role: "user",
           content: [
@@ -656,22 +672,24 @@ const lowerMessages = Effect.fnUntraced(function* (request: LLMRequest, options:
             { type: "text", text: part.text, cache_control: cacheControl },
           ],
         }
-      else
+      } else {
         messages.push(
           cacheControl
             ? {
-                role: "user",
-                content: [{ type: "text", text: part.text, cache_control: cacheControl }],
-              }
+              role: "user",
+              content: [{ type: "text", text: part.text, cache_control: cacheControl }],
+            }
             : { role: "user", content: part.text },
         )
+      }
       continue
     }
     if (
-      message.role === "assistant" &&
-      message.content.every((part) => part.type === "text" && part.text.trim() === "")
-    )
+      message.role === "assistant"
+      && message.content.every((part) => part.type === "text" && part.text.trim() === "")
+    ) {
       continue
+    }
     if (message.role === "tool") {
       const lowered = yield* lowerToolMessages(message, lowering)
       messages.push(...lowered.messages)
@@ -708,30 +726,31 @@ const detectMaxTokensField = (
   const p = provider.toLowerCase()
   const url = (baseURL ?? "").toLowerCase()
   if (
-    p === "deepseek" ||
-    url.includes("deepseek.com") ||
-    p === "moonshotai" ||
-    url.includes("api.moonshot.ai") ||
-    p === "togetherai" ||
-    url.includes("api.together.") ||
-    p === "zai" ||
-    p === "zai-coding-plan" ||
-    p === "zhipuai" ||
-    p === "zhipuai-coding-plan" ||
-    url.includes("api.z.ai") ||
-    url.includes("open.bigmodel.cn") ||
-    p === "nvidia" ||
-    url.includes("integrate.api.nvidia.com") ||
-    p === "cerebras" ||
-    url.includes("cerebras.ai") ||
-    url.includes("llm.chutes.ai") ||
-    p === "chutes" ||
-    p === "cloudflare-ai-gateway" ||
-    url.includes("gateway.ai.cloudflare.com") ||
-    p === "cloudflare-workers-ai" ||
-    url.includes("api.cloudflare.com")
-  )
+    p === "deepseek"
+    || url.includes("deepseek.com")
+    || p === "moonshotai"
+    || url.includes("api.moonshot.ai")
+    || p === "togetherai"
+    || url.includes("api.together.")
+    || p === "zai"
+    || p === "zai-coding-plan"
+    || p === "zhipuai"
+    || p === "zhipuai-coding-plan"
+    || url.includes("api.z.ai")
+    || url.includes("open.bigmodel.cn")
+    || p === "nvidia"
+    || url.includes("integrate.api.nvidia.com")
+    || p === "cerebras"
+    || url.includes("cerebras.ai")
+    || url.includes("llm.chutes.ai")
+    || p === "chutes"
+    || p === "cloudflare-ai-gateway"
+    || url.includes("gateway.ai.cloudflare.com")
+    || p === "cloudflare-workers-ai"
+    || url.includes("api.cloudflare.com")
+  ) {
     return "max_tokens"
+  }
   return "max_completion_tokens"
 }
 
@@ -742,12 +761,12 @@ const detectSupportsStore = (provider: string, baseURL: string | undefined): boo
   const p = provider.toLowerCase()
   const url = (baseURL ?? "").toLowerCase()
   return (
-    p === "openai" ||
-    p === "azure" ||
-    url.includes("api.openai.com") ||
-    url.includes(".openai.azure.com") ||
-    url.includes(".cognitiveservices.azure.com") ||
-    url.includes(".services.ai.azure.com")
+    p === "openai"
+    || p === "azure"
+    || url.includes("api.openai.com")
+    || url.includes(".openai.azure.com")
+    || url.includes(".cognitiveservices.azure.com")
+    || url.includes(".services.ai.azure.com")
   )
 }
 
@@ -764,13 +783,12 @@ const detectSupportsStrictMode = (provider: string, baseURL: string | undefined)
 const detectZaiToolStream = (provider: string, baseURL: string | undefined, modelID: string): boolean => {
   const p = provider.toLowerCase()
   const url = (baseURL ?? "").toLowerCase()
-  const isZai =
-    p === "zai" ||
-    p === "zai-coding-plan" ||
-    p === "zhipuai" ||
-    p === "zhipuai-coding-plan" ||
-    url.includes("api.z.ai") ||
-    url.includes("open.bigmodel.cn")
+  const isZai = p === "zai"
+    || p === "zai-coding-plan"
+    || p === "zhipuai"
+    || p === "zhipuai-coding-plan"
+    || url.includes("api.z.ai")
+    || url.includes("open.bigmodel.cn")
   if (!isZai) return false
   const id = modelID.toLowerCase()
   if (id === "glm-4.5" || id === "glm-4.5-air" || id === "glm-4.5-flash" || id === "glm-4.5v") return false
@@ -784,8 +802,9 @@ const lowerOptions = (request: LLMRequest, supportsStore: boolean, hasActiveTool
   // Default off: strict providers 400 on unknown body fields, so only send
   // the key where compatibility explicitly allows it. Header-based affinity
   // (x-session-affinity, x-grok-conv-id, ...) is unaffected.
-  const cacheKey =
-    (request.model.compatibility?.supportsPromptCacheKey ?? false) ? ProviderShared.promptCacheKey(request) : undefined
+  const cacheKey = (request.model.compatibility?.supportsPromptCacheKey ?? false)
+    ? ProviderShared.promptCacheKey(request)
+    : undefined
   return {
     ...(supportsStore ? { store: options.store ?? false } : {}),
     ...(cacheKey ? { prompt_cache_key: cacheKey } : {}),
@@ -800,17 +819,18 @@ const lowerOptions = (request: LLMRequest, supportsStore: boolean, hasActiveTool
   }
 }
 
-export const fromRequest = Effect.fn("OpenAIChat.fromRequest")(function* (
+export const fromRequest = Effect.fn("OpenAIChat.fromRequest")(function*(
   request: LLMRequest,
   options: LoweringOptions = {},
 ) {
   // `fromRequest` returns the provider body only. Endpoint, auth, framing,
   // validation, and HTTP execution are composed by `Route.make`.
   const reasoningField = request.model.compatibility?.reasoningField
-  if (reasoningField && RESERVED_REASONING_FIELDS.has(reasoningField))
+  if (reasoningField && RESERVED_REASONING_FIELDS.has(reasoningField)) {
     return yield* ProviderShared.invalidRequest(
       `OpenAI Chat reasoning field conflicts with reserved field ${reasoningField}`,
     )
+  }
   const generation = request.generation
   const flattened = ProviderShared.flattenToolRequest(request)
   const provider = request.model.provider
@@ -818,22 +838,21 @@ export const fromRequest = Effect.fn("OpenAIChat.fromRequest")(function* (
   const detectedMaxTokensField = detectMaxTokensField(provider, baseURL)
   const maxTokensField = request.model.compatibility?.maxTokensField ?? detectedMaxTokensField
   const supportsStore = request.model.compatibility?.supportsStore ?? detectSupportsStore(provider, baseURL)
-  const supportsStrictMode =
-    request.model.compatibility?.supportsStrictMode ?? detectSupportsStrictMode(provider, baseURL)
-  const zaiToolStream =
-    request.model.compatibility?.zaiToolStream ?? detectZaiToolStream(provider, baseURL, request.model.id)
+  const supportsStrictMode = request.model.compatibility?.supportsStrictMode
+    ?? detectSupportsStrictMode(provider, baseURL)
+  const zaiToolStream = request.model.compatibility?.zaiToolStream
+    ?? detectZaiToolStream(provider, baseURL, request.model.id)
   const hasHistory = hasToolHistory(request.messages)
   const hasActiveTools = flattened.tools.length > 0
   const lowering = { ...options, cacheControl: options.cacheControl ?? declaredCacheControl(request) }
   return {
     model: request.model.id,
     messages: yield* lowerMessages(flattened.request, lowering),
-    tools:
-      flattened.tools.length === 0
-        ? hasHistory
-          ? []
-          : undefined
-        : flattened.tools.map((tool) => lowerTool(tool, lowering, supportsStrictMode)),
+    tools: flattened.tools.length === 0
+      ? hasHistory
+        ? []
+        : undefined
+      : flattened.tools.map((tool) => lowerTool(tool, lowering, supportsStrictMode)),
     tool_choice: hasActiveTools && request.toolChoice ? yield* lowerToolChoice(request.toolChoice) : undefined,
     stream: true as const,
     ...((request.model.compatibility?.streamUsage ?? true) ? { stream_options: { include_usage: true } } : {}),
@@ -861,7 +880,7 @@ const declaredCacheControl = (request: LLMRequest) =>
 // Streaming parsers are small state machines: every event returns a new state
 // plus the common `LLMEvent`s produced by that event. Tool calls are accumulated
 // because OpenAI streams JSON arguments across multiple deltas.
-const mapFinishReason = Effect.fnUntraced(function* (event: OpenAIChatEvent, reason: string) {
+const mapFinishReason = Effect.fnUntraced(function*(event: OpenAIChatEvent, reason: string) {
   switch (reason) {
     case "error":
       return yield* new AIError({
@@ -905,12 +924,11 @@ const mapUsage = (usage: OpenAIChatEvent["usage"], providerMetadataKey: string):
   if (!usage) return undefined
   const input = usage.prompt_tokens ?? undefined
   const output = usage.completion_tokens ?? undefined
-  const cached =
-    usage.prompt_tokens_details?.cached_tokens ??
-    usage.prompt_cache_hit_tokens ??
-    usage.cached_tokens ??
-    usage.cache_read_input_tokens ??
-    undefined
+  const cached = usage.prompt_tokens_details?.cached_tokens
+    ?? usage.prompt_cache_hit_tokens
+    ?? usage.cached_tokens
+    ?? usage.cache_read_input_tokens
+    ?? undefined
   const cacheWrite = usage.prompt_tokens_details?.cache_write_tokens ?? usage.cache_created_input_tokens ?? undefined
   const reasoning = usage.completion_tokens_details?.reasoning_tokens ?? undefined
   const nonCached = ProviderShared.subtractTokens(input, ProviderShared.sumTokens(cached, cacheWrite))
@@ -979,22 +997,25 @@ const appendReasoningDetails = (result: Array<ReasoningDetail>, details: Readonl
 // entry; encrypted entries are opaque and never merge.
 const mergeReasoningDetails = (previous: ReasoningDetail, detail: ReasoningDetail): ReasoningDetail | undefined => {
   if (conflictingReasoningDetails(previous, detail)) return undefined
-  if (previous.type === "reasoning.text" && detail.type === "reasoning.text")
+  if (previous.type === "reasoning.text" && detail.type === "reasoning.text") {
     return {
       ...previous,
       ...detail,
       text: `${previous.text ?? ""}${detail.text ?? ""}`,
       ...mergeDetailIdentity(previous, detail),
     }
-  if (previous.type === "reasoning.summary" && detail.type === "reasoning.summary")
+  }
+  if (previous.type === "reasoning.summary" && detail.type === "reasoning.summary") {
     return {
       ...previous,
       ...detail,
       summary: `${previous.summary ?? ""}${detail.summary ?? ""}`,
       ...mergeDetailIdentity(previous, detail),
     }
-  if (previous.type === "summary" && detail.type === "summary")
+  }
+  if (previous.type === "summary" && detail.type === "summary") {
     return { ...previous, ...detail, summary: previous.summary + detail.summary }
+  }
 }
 
 type DetailIdentity = {
@@ -1019,10 +1040,10 @@ const mergeDetailValue = <T>(previous: T | undefined, current: T | undefined) =>
   previous || current || (previous !== undefined ? previous : current)
 
 const conflictingReasoningDetails = (previous: DetailIdentity, current: DetailIdentity) =>
-  conflictingDetailValue(previous.id, current.id) ||
-  conflictingDetailValue(previous.index, current.index) ||
-  conflictingDetailValue(previous.format, current.format) ||
-  (Boolean(previous.signature) && Boolean(current.signature) && previous.signature !== current.signature)
+  conflictingDetailValue(previous.id, current.id)
+  || conflictingDetailValue(previous.index, current.index)
+  || conflictingDetailValue(previous.format, current.format)
+  || (Boolean(previous.signature) && Boolean(current.signature) && previous.signature !== current.signature)
 
 const conflictingDetailValue = (previous: unknown, current: unknown) =>
   previous !== undefined && previous !== null && current !== undefined && current !== null && previous !== current
@@ -1039,7 +1060,7 @@ const reasoningMetadata = (
 })
 
 const step = (state: ParserState, event: OpenAIChatEvent) =>
-  Effect.gen(function* () {
+  Effect.gen(function*() {
     if (event.error) {
       const body = ProviderShared.encodeJson(event)
       return yield* new AIError({
@@ -1054,16 +1075,15 @@ const step = (state: ParserState, event: OpenAIChatEvent) =>
     const choice = event.choices?.[0]
     // Moonshot (and a few other OpenAI-compatible providers) attach usage to
     // `choice.usage` instead of the top-level `usage` field.
-    const usage =
-      mapUsage(event.usage, state.providerMetadataKey) ??
-      mapUsage(choice?.usage, state.providerMetadataKey) ??
-      state.usage
+    const usage = mapUsage(event.usage, state.providerMetadataKey)
+      ?? mapUsage(choice?.usage, state.providerMetadataKey)
+      ?? state.usage
     const rawFinishReason = choice?.finish_reason
     const finishReason = rawFinishReason
       ? {
-          normalized: yield* mapFinishReason(event, rawFinishReason),
-          raw: choice?.native_finish_reason ?? rawFinishReason,
-        }
+        normalized: yield* mapFinishReason(event, rawFinishReason),
+        raw: choice?.native_finish_reason ?? rawFinishReason,
+      }
       : state.finishReason
     const delta = choice?.delta
     const toolDeltas = delta?.tool_calls ?? []
@@ -1076,14 +1096,17 @@ const step = (state: ParserState, event: OpenAIChatEvent) =>
 
     const reasoning = reasoningDelta(delta, state.reasoningField)
     if (
-      state.finishReason !== undefined &&
-      toolDeltas.some((tool) => Boolean(tool.id) || Boolean(tool.function?.name) || Boolean(tool.function?.arguments))
-    )
+      state.finishReason !== undefined
+      && toolDeltas.some((tool) =>
+        Boolean(tool.id) || Boolean(tool.function?.name) || Boolean(tool.function?.arguments)
+      )
+    ) {
       return yield* ProviderShared.eventError(
         ADAPTER,
         "OpenAI Chat received content after the finish reason",
         ProviderShared.encodeJson(event),
       )
+    }
 
     const reasoningField = state.reasoningField ?? reasoning?.field
     const reasoningTextObserved = state.reasoningTextObserved || reasoning !== undefined
@@ -1098,11 +1121,12 @@ const step = (state: ParserState, event: OpenAIChatEvent) =>
       : reasoning?.text
     if (text !== undefined) lifecycle = Lifecycle.reasoningDelta(lifecycle, events, "reasoning-0", text, deltaMetadata)
     else if (
-      reasoningDetailsObserved &&
-      !lifecycle.reasoning.has("reasoning-0") &&
-      (Boolean(delta?.content) || Boolean(delta?.refusal) || toolDeltas.length > 0)
-    )
+      reasoningDetailsObserved
+      && !lifecycle.reasoning.has("reasoning-0")
+      && (Boolean(delta?.content) || Boolean(delta?.refusal) || toolDeltas.length > 0)
+    ) {
       lifecycle = Lifecycle.reasoningStart(lifecycle, events, "reasoning-0", deltaMetadata)
+    }
     const reasoningEmitted = state.reasoningEmitted || lifecycle.reasoning.has("reasoning-0")
 
     // Reasoning is one response-wide channel: it stays open alongside text and
@@ -1118,8 +1142,8 @@ const step = (state: ParserState, event: OpenAIChatEvent) =>
       const matched = toolIndexByID(tools, pendingTools, tool.id || undefined)
       const fallback = toolDeltas.length > 1 ? position : (latestToolIndex ?? position)
       const fallbackTool = tools[fallback] ?? pendingTools[fallback]
-      const index =
-        tool.index ?? matched ?? (tool.id && fallbackTool?.id && fallbackTool.id !== tool.id ? nextToolIndex : fallback)
+      const index = tool.index ?? matched
+        ?? (tool.id && fallbackTool?.id && fallbackTool.id !== tool.id ? nextToolIndex : fallback)
       const current = tools[index]
       const pending = pendingTools[index]
       const id = current?.id ?? pending?.id ?? (tool.id || undefined)
@@ -1151,7 +1175,7 @@ const step = (state: ParserState, event: OpenAIChatEvent) =>
         },
         "OpenAI Chat tool call delta is missing id or name",
       )
-      if (ToolStream.isError(result))
+      if (ToolStream.isError(result)) {
         return yield* new AIError({
           reason: AIErrorReason.make({
             ...result.reason,
@@ -1160,6 +1184,7 @@ const step = (state: ParserState, event: OpenAIChatEvent) =>
             body: ProviderShared.encodeJson(event),
           }),
         })
+      }
       tools = result.tools
       if (result.events.length) lifecycle = Lifecycle.stepStart(lifecycle, events)
       events.push(...result.events)
@@ -1167,25 +1192,25 @@ const step = (state: ParserState, event: OpenAIChatEvent) =>
 
     const incompleteTools = finishReason?.normalized === "content-filter" || finishReason?.normalized === "length"
     if (
-      finishReason !== undefined &&
-      !incompleteTools &&
-      state.finishReason === undefined &&
-      Object.keys(pendingTools).length
-    )
+      finishReason !== undefined
+      && !incompleteTools
+      && state.finishReason === undefined
+      && Object.keys(pendingTools).length
+    ) {
       return yield* ProviderShared.eventError(
         ADAPTER,
         "OpenAI Chat tool call delta is missing id or name",
         ProviderShared.encodeJson(event),
       )
+    }
 
     // Filtering or truncation terminates the response without confirming pending tool calls.
-    const finished =
-      finishReason !== undefined &&
-      !incompleteTools &&
-      state.finishReason === undefined &&
-      Object.keys(tools).length > 0
-        ? yield* ToolStream.finishAll(ADAPTER, tools)
-        : undefined
+    const finished = finishReason !== undefined
+        && !incompleteTools
+        && state.finishReason === undefined
+        && Object.keys(tools).length > 0
+      ? yield* ToolStream.finishAll(ADAPTER, tools)
+      : undefined
 
     return [
       {
@@ -1209,8 +1234,8 @@ const step = (state: ParserState, event: OpenAIChatEvent) =>
     ] as const
   })
 
-export const finishEvents = Effect.fnUntraced(function* (state: ParserState) {
-  if (state.finishReason === undefined && state.requireFinishReason)
+export const finishEvents = Effect.fnUntraced(function*(state: ParserState) {
+  if (state.finishReason === undefined && state.requireFinishReason) {
     return yield* new AIError({
       reason: new InvalidProviderOutputError({
         message: "OpenAI Chat stream ended without finish_reason",
@@ -1218,18 +1243,19 @@ export const finishEvents = Effect.fnUntraced(function* (state: ParserState) {
         route: ADAPTER,
       }),
     })
+  }
   const events: LLMEvent[] = []
-  const toolCallEvents =
-    state.finishReason === undefined && Object.keys(state.tools).length > 0
-      ? (yield* ToolStream.finishAll(ADAPTER, state.tools)).events
-      : state.toolCallEvents
+  const toolCallEvents = state.finishReason === undefined && Object.keys(state.tools).length > 0
+    ? (yield* ToolStream.finishAll(ADAPTER, state.tools)).events
+    : state.toolCallEvents
   const hasToolCalls = toolCallEvents.length > 0
   const reason = state.finishReason
     ? {
-        ...state.finishReason,
-        normalized:
-          state.finishReason.normalized === "stop" && hasToolCalls ? "tool-calls" : state.finishReason.normalized,
-      }
+      ...state.finishReason,
+      normalized: state.finishReason.normalized === "stop" && hasToolCalls
+        ? "tool-calls"
+        : state.finishReason.normalized,
+    }
     : { normalized: hasToolCalls ? ("tool-calls" as const) : ("stop" as const) }
   // Snapshot details at publish time so the emitted event never observes later
   // mutation of the accumulated `reasoningDetails` array.
@@ -1238,15 +1264,14 @@ export const finishEvents = Effect.fnUntraced(function* (state: ParserState) {
     state.reasoningField,
     state.reasoningDetailsObserved ? [...state.reasoningDetails] : undefined,
   )
-  const started =
-    state.reasoningDetailsObserved && !state.reasoningEmitted
-      ? Lifecycle.reasoningStart(
-          state.lifecycle,
-          events,
-          "reasoning-0",
-          reasoningMetadata(state.providerMetadataKey, state.reasoningField),
-        )
-      : state.lifecycle
+  const started = state.reasoningDetailsObserved && !state.reasoningEmitted
+    ? Lifecycle.reasoningStart(
+      state.lifecycle,
+      events,
+      "reasoning-0",
+      reasoningMetadata(state.providerMetadataKey, state.reasoningField),
+    )
+    : state.lifecycle
   const ended = Lifecycle.reasoningEnd(started, events, "reasoning-0", metadata)
   const lifecycle = toolCallEvents.length ? Lifecycle.stepStart(ended, events) : ended
   events.push(...toolCallEvents)

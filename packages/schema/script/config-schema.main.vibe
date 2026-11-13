@@ -72,7 +72,7 @@ function merge(current: Readonly<Record<string, JsonSchema>>, previous: Readonly
 // either shape.
 function combine(current: JsonSchema, previous: JsonSchema): JsonSchema {
   const description = current.description ?? previous.description
-  if (current.type === "object" && previous.type === "object")
+  if (current.type === "object" && previous.type === "object") {
     return {
       ...current,
       description,
@@ -82,8 +82,10 @@ function combine(current: JsonSchema, previous: JsonSchema): JsonSchema {
           ? current.additionalProperties
           : { ...previous.additionalProperties, deprecated: true },
     }
-  if (current.type !== undefined && previous.type !== undefined && current.type !== previous.type)
+  }
+  if (current.type !== undefined && previous.type !== undefined && current.type !== previous.type) {
     return { description, anyOf: [current, { ...previous, deprecated: true }] }
+  }
   return { ...current, description }
 }
 

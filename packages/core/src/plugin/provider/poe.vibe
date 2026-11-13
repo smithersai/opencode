@@ -24,7 +24,7 @@ const decodeError = Schema.decodeUnknownOption(
 
 export const PoePlugin = define({
   id: "opencode.provider.poe",
-  effect: Effect.fn(function* (ctx) {
+  effect: Effect.fn(function*(ctx) {
     const http = yield* HttpClient.HttpClient
     yield* ctx.integration.transform((editor) => {
       editor.method.update({
@@ -36,11 +36,11 @@ export const PoePlugin = define({
             Effect.flatMap((now) =>
               value.expires > now
                 ? Effect.succeed(value)
-                : Effect.fail(new Error("Poe API key expired. Log in with Poe again.")),
+                : Effect.fail(new Error("Poe API key expired. Log in with Poe again."))
             ),
           ),
         authorize: () =>
-          Effect.gen(function* () {
+          Effect.gen(function*() {
             const verifier = randomBase64Url(32)
             const challenge = yield* Effect.promise(() => sha256Base64Url(verifier))
             const state = randomBase64Url(32)
@@ -61,33 +61,37 @@ export const PoePlugin = define({
                 Effect.runSync(Deferred.fail(callback, new Error(error)))
                 return
               }
-              if (!Effect.runSync(Deferred.succeed(callback, { code: url.searchParams.get("code") ?? "", response })))
+              if (!Effect.runSync(Deferred.succeed(callback, { code: url.searchParams.get("code") ?? "", response }))) {
                 response.writeHead(409).end("OAuth callback already received")
+              }
             })
             yield* Effect.addFinalizer(() =>
               Effect.sync(() => {
                 server.close()
                 server.closeAllConnections()
-              }),
+              })
             )
             yield* Effect.tryPromise(() => EventEmitter.once(server.listen(0, "127.0.0.1"), "listening"))
             const address = server.address()
-            if (!address || typeof address === "string")
+            if (!address || typeof address === "string") {
               return yield* Effect.fail(new Error("Missing OAuth callback port"))
+            }
             const redirect = `http://127.0.0.1:${address.port}/callback`
             return {
               mode: "auto" as const,
-              url: `${issuer}/oauth/authorize?${new URLSearchParams({
-                response_type: "code",
-                client_id: clientID,
-                redirect_uri: redirect,
-                scope: "apikey:create",
-                code_challenge: challenge,
-                code_challenge_method: "S256",
-                state,
-              }).toString()}`,
+              url: `${issuer}/oauth/authorize?${
+                new URLSearchParams({
+                  response_type: "code",
+                  client_id: clientID,
+                  redirect_uri: redirect,
+                  scope: "apikey:create",
+                  code_challenge: challenge,
+                  code_challenge_method: "S256",
+                  state,
+                }).toString()
+              }`,
               instructions: "Complete authorization in your browser. This window will close automatically.",
-              callback: Effect.gen(function* () {
+              callback: Effect.gen(function*() {
                 const request = yield* Deferred.await(callback)
                 const respond = (error?: string) =>
                   Effect.sync(() =>
@@ -97,7 +101,7 @@ export const PoePlugin = define({
                         error
                           ? OauthCallbackPage.error(error, { provider: "Poe" })
                           : OauthCallbackPage.success({ provider: "Poe" }),
-                      ),
+                      )
                   )
                 return yield* exchangeCode(http, { code: request.code, redirect, verifier }).pipe(
                   Effect.tap(() => respond()),
@@ -125,7 +129,7 @@ function callbackError(params: URLSearchParams, state: string) {
 }
 
 function exchangeCode(http: HttpClient.HttpClient, input: { code: string; redirect: string; verifier: string }) {
-  return Effect.gen(function* () {
+  return Effect.gen(function*() {
     const response = yield* http
       .execute(
         HttpClientRequest.post("https://api.poe.com/token").pipe(
@@ -153,35 +157,37 @@ function exchangeCode(http: HttpClient.HttpClient, input: { code: string; redire
     const token = yield* HttpClientResponse.schemaBodyJson(Token)(response).pipe(
       Effect.mapError(() => new Error("Invalid Poe token response")),
     )
-    const expires =
-      token.api_key_expires_in == null ? maxExpiry : (yield* Clock.currentTimeMillis) + token.api_key_expires_in * 1000
-    if (!Number.isSafeInteger(expires) || expires > maxExpiry)
+    const expires = token.api_key_expires_in == null
+      ? maxExpiry
+      : (yield* Clock.currentTimeMillis) + token.api_key_expires_in * 1000
+    if (!Number.isSafeInteger(expires) || expires > maxExpiry) {
       return yield* Effect.fail(new Error("Invalid Poe API key expiry"))
+    }
     return Credential.OAuth.make({ type: "oauth", methodID, access: token.api_key, refresh: "", expires })
   })
 }
 
 module platform {
-// The platform code of poe.vibe: host randomness, digests, Buffer encoding and lazy node imports, which a .vibe file
-// does not use directly (EK4402).
+  // The platform code of poe.vibe: host randomness, digests, Buffer encoding and lazy node imports, which a .vibe file
+  // does not use directly (EK4402).
 
-/** `size` random bytes as base64url; sizes stay far below the 65536-byte getRandomValues limit. @throws {never} */
-export function randomBase64Url(size: number): string {
-  return Buffer.from(crypto.getRandomValues(new Uint8Array(size))).toString("base64url")
-}
+  /** `size` random bytes as base64url; sizes stay far below the 65536-byte getRandomValues limit. @throws {never} */
+  export function randomBase64Url(size: number): string {
+    return Buffer.from(crypto.getRandomValues(new Uint8Array(size))).toString("base64url")
+  }
 
-/** The base64url SHA-256 digest of `text`, the PKCE S256 challenge. A digest failure rejects. @throws {never} */
-export async function sha256Base64Url(text: string): Promise<string> {
-  return Buffer.from(await crypto.subtle.digest("SHA-256", new TextEncoder().encode(text))).toString("base64url")
-}
+  /** The base64url SHA-256 digest of `text`, the PKCE S256 challenge. A digest failure rejects. @throws {never} */
+  export async function sha256Base64Url(text: string): Promise<string> {
+    return Buffer.from(await crypto.subtle.digest("SHA-256", new TextEncoder().encode(text))).toString("base64url")
+  }
 
-/** Loads node:http only when called, so runtimes without a loopback listener never evaluate it. @throws {never} */
-export function importHttp(): Promise<typeof import("node:http")> {
-  return import("node:http")
-}
+  /** Loads node:http only when called, so runtimes without a loopback listener never evaluate it. @throws {never} */
+  export function importHttp(): Promise<typeof import("node:http")> {
+    return import("node:http")
+  }
 
-/** Loads node:events only when called. @throws {never} */
-export function importEvents() {
-  return import("node:events")
-}
+  /** Loads node:events only when called. @throws {never} */
+  export function importEvents() {
+    return import("node:events")
+  }
 }

@@ -24,20 +24,20 @@ const CHAIN_SEPARATOR = "\n" + "─".repeat(40) + "\n"
 
 function isIssue(value: unknown): value is { message: string; path: string[] } {
   return (
-    Predicate.hasProperty(value, "message") &&
-    Predicate.hasProperty(value, "path") &&
-    Predicate.isString(value.message) &&
-    Array.isArray(value.path) &&
-    value.path.every(Predicate.isString)
+    Predicate.hasProperty(value, "message")
+    && Predicate.hasProperty(value, "path")
+    && Predicate.isString(value.message)
+    && Array.isArray(value.path)
+    && value.path.every(Predicate.isString)
   )
 }
 
 function isInitError(value: unknown): value is InitError {
   return (
-    Predicate.hasProperty(value, "name") &&
-    Predicate.hasProperty(value, "data") &&
-    Predicate.isObjectKeyword(value.data) &&
-    !Predicate.isFunction(value.data)
+    Predicate.hasProperty(value, "name")
+    && Predicate.hasProperty(value, "data")
+    && Predicate.isObjectKeyword(value.data)
+    && !Predicate.isFunction(value.data)
   )
 }
 
@@ -277,14 +277,13 @@ export const ErrorPage: Component<ErrorPageProps> = (props) => {
   })
 
   function ensureFatalErrorRecorded() {
-    recordedFatalError ??=
-      platform.recordFatalRendererError?.({
-        error: formattedError(),
-        url: currentUrl(),
-        version: platform.version,
-        platform: platform.platform,
-        os: platform.os,
-      }) ?? Promise.resolve()
+    recordedFatalError ??= platform.recordFatalRendererError?.({
+      error: formattedError(),
+      url: currentUrl(),
+      version: platform.version,
+      platform: platform.platform,
+      os: platform.os,
+    }) ?? Promise.resolve()
 
     return recordedFatalError
   }

@@ -28,13 +28,12 @@ export default Runtime.handler(
       try ServiceConfig.set("remote", "true")
     }
     const endpoint = try Service.ensure(try ServiceConfig.options())
-    const client = try ((args: Parameters<typeof OpenCode.make>) =>
-      Effect.try(() => OpenCode.make(...args)).pipe(Effect.orDie))([{
+    const client =
+      try ((args: Parameters<typeof OpenCode.make>) => Effect.try(() => OpenCode.make(...args)).pipe(Effect.orDie))([{
         baseUrl: endpoint.url,
-        headers: (try ((args: Parameters<typeof Service.headers>) =>
-          Effect.try(() =>
-            Service.headers(...args)
-          ).pipe(Effect.orDie))([endpoint])),
+        headers:
+          try ((args: Parameters<typeof Service.headers>) =>
+            Effect.try(() => Service.headers(...args)).pipe(Effect.orDie))([endpoint]),
       }])
     const urls = try pairingURLs(client, input)
     const pairing = try Effect.tryPromise(() => client.server.pair())

@@ -95,17 +95,17 @@ export class Service extends Context.Service<Service, Interface>()("@opencode/Re
 
 export function isError(error: unknown): error is Error {
   return (
-    error instanceof InvalidBranchError ||
-    error instanceof CloneFailedError ||
-    error instanceof FetchFailedError ||
-    error instanceof CheckoutFailedError ||
-    error instanceof ResetFailedError ||
-    error instanceof LockFailedError ||
-    error instanceof CacheOperationError
+    error instanceof InvalidBranchError
+    || error instanceof CloneFailedError
+    || error instanceof FetchFailedError
+    || error instanceof CheckoutFailedError
+    || error instanceof ResetFailedError
+    || error instanceof LockFailedError
+    || error instanceof CacheOperationError
   )
 }
 
-export const validateBranch = Effect.fn("RepositoryCache.validateBranch")(function* (branch: string) {
+export const validateBranch = Effect.fn("RepositoryCache.validateBranch")(function*(branch: string) {
   return yield* Effect.try({
     try: () => Repository.validateBranch(branch),
     catch: (error) => new InvalidBranchError({ branch, message: errorMessage(error) }),
@@ -114,7 +114,7 @@ export const validateBranch = Effect.fn("RepositoryCache.validateBranch")(functi
 
 const layer = Layer.effect(
   Service,
-  Effect.gen(function* () {
+  Effect.gen(function*() {
     const fs = yield* FSUtil.Service
     const git = yield* Git.Service
     const flock = yield* EffectFlock.Service
@@ -122,7 +122,7 @@ const layer = Layer.effect(
     const kv = yield* KV.Service
 
     return Service.of({
-      ensure: Effect.fn("RepositoryCache.ensure")(function* (input) {
+      ensure: Effect.fn("RepositoryCache.ensure")(function*(input) {
         if (input.branch) yield* validateBranch(input.branch)
 
         const repository = input.reference.label
@@ -132,7 +132,7 @@ const layer = Layer.effect(
 
         return yield* flock
           .withLock(
-            Effect.gen(function* () {
+            Effect.gen(function*() {
               yield* cacheOperation(fs.ensureDir(path.dirname(localPath)), "ensure cache directory", localPath)
 
               const existing = yield* git.repo.discover(AbsolutePath.make(localPath))
@@ -145,10 +145,10 @@ const layer = Layer.effect(
               // requires the checkout to live exactly at the cache path.
               const worktree = existing ? yield* fs.resolve(localPath) : undefined
               const reuse = Boolean(
-                existing &&
-                  existing.worktree === worktree &&
-                  originReference &&
-                  Repository.same(originReference, cloneTarget),
+                existing
+                  && existing.worktree === worktree
+                  && originReference
+                  && Repository.same(originReference, cloneTarget),
               )
               if (!reuse && (yield* fs.existsSafe(localPath))) {
                 yield* cacheOperation(fs.remove(localPath, { recursive: true }), "remove stale cache", localPath)
@@ -156,8 +156,9 @@ const layer = Layer.effect(
 
               const now = yield* Clock.currentTimeMillis
               const previous = Option.getOrUndefined(Schema.decodeUnknownOption(Refresh)(yield* kv.get(key)))
-              const refresh =
-                input.refresh === "daily" ? !previous || now - previous.attemptedAt >= refreshInterval : input.refresh
+              const refresh = input.refresh === "daily"
+                ? !previous || now - previous.attemptedAt >= refreshInterval
+                : input.refresh
               const status = !reuse ? ("cloned" as const) : refresh ? ("refreshed" as const) : ("cached" as const)
 
               if (status !== "cached") {
@@ -175,8 +176,9 @@ const layer = Layer.effect(
                 }
 
                 if (status === "refreshed") {
-                  if (!existing)
+                  if (!existing) {
                     return yield* new FetchFailedError({ repository, message: "Repository is unavailable" })
+                  }
                   yield* git.sync
                     .fetchRemotes(existing)
                     .pipe(Effect.mapError((error) => new FetchFailedError({ repository, message: error.message })))
@@ -224,7 +226,7 @@ const layer = Layer.effect(
           )
           .pipe(
             Effect.mapError((error) =>
-              isError(error) ? error : new LockFailedError({ localPath, message: errorMessage(error) }),
+              isError(error) ? error : new LockFailedError({ localPath, message: errorMessage(error) })
             ),
           )
       }),
@@ -251,13 +253,13 @@ function cacheOperation<A, E, R>(effect: Effect.Effect<A, E, R>, operation: stri
 export * as RepositoryCache from "./repository-cache.js"
 
 module platform {
-// The platform code of repository-cache.vibe: host path rules, which a .vibe file does not read (EK4402).
+  // The platform code of repository-cache.vibe: host path rules, which a .vibe file does not read (EK4402).
 
-import nodePath from "path"
+  import nodePath from "path"
 
-/** Host path functions with Node's `path` names. */
-export const path = {
-  /** @throws {never} */
-  dirname: (target: string) => nodePath.dirname(target),
-}
+  /** Host path functions with Node's `path` names. */
+  export const path = {
+    /** @throws {never} */
+    dirname: (target: string) => nodePath.dirname(target),
+  }
 }

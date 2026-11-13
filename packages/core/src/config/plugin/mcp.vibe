@@ -10,7 +10,9 @@ import { Mcp } from "../../mcp/index.js"
 export const Plugin = define({
   id: "opencode.config.mcp",
   effect: effect (ctx) => {
-    try register(try Effect.orDie(Effect.try({ try: () => ctx.event.subscribe({ types: ["config.updated"] }), catch: (e) => e })))
+    try register(
+      try Effect.orDie(Effect.try({ try: () => ctx.event.subscribe({ types: ["config.updated"] }), catch: (e) => e })),
+    )
   },
 })
 

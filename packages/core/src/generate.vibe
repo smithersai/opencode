@@ -76,7 +76,9 @@ export interface Interface {
   readonly decisions: (input: DecisionRequest) => DecisionResult!Error
 }
 
-export service Service: Interface { static readonly key = "@opencode/Generate";}
+export service Service: Interface {
+  static readonly key = "@opencode/Generate"
+}
 
 // Image and decision clients are built here, on the shared request executor, so only Generate depends on them.
 export const layer = Layer.effect(
@@ -221,7 +223,12 @@ export const layer = Layer.effect(
           const usage = response.usage
           return {
             answers: response.answers,
-            ...(try Effect.orDie(Effect.try({ try: () => usage?.cost === undefined ? {} : { cost: Money.USD.make(usage.cost) }, catch: (e) => e }))),
+            ...(try Effect.orDie(
+              Effect.try({
+                try: () => usage?.cost === undefined ? {} : { cost: Money.USD.make(usage.cost) },
+                catch: (e) => e,
+              }),
+            )),
             ...(usage?.inputTokens === undefined && usage?.outputTokens === undefined
               ? {}
               : { tokens: { input: usage.inputTokens, output: usage.outputTokens } }),

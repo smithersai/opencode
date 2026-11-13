@@ -106,7 +106,9 @@ const fromRequest = effect (request: Request) =>
       const form = MediaInput.formData()
       const url = try Effect.orDie(Effect.try({ try: () => ProviderShared.mediaUrl(request.audio), catch: (e) => e }))
       if (url === undefined) {
-        const extension = try Effect.orDie(Effect.try({ try: () => mediaTypeExtension(request.audio.mediaType), catch: (e) => e }))
+        const extension = try Effect.orDie(
+          Effect.try({ try: () => mediaTypeExtension(request.audio.mediaType), catch: (e) => e }),
+        )
         const audio = try MediaInput.inlineBytes(route.id, request.audio)
         form.append(
           "file",

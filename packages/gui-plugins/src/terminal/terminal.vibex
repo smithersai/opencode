@@ -155,7 +155,7 @@ const useTerminalUiBindings = (input: {
   input.cleanups.push(() =>
     input.container.removeEventListener("click", input.handleLinkClick, {
       capture: true,
-    }),
+    })
   )
 
   input.term.textarea?.addEventListener("focus", handleTextareaFocus)
@@ -224,16 +224,15 @@ export const Terminal = (props: TerminalProps) => {
   const restore = local.pty.buffer ?? ""
   const stored = { cols: local.pty.cols, rows: local.pty.rows }
 
-  const restoreSize =
-    restore &&
-    stored.cols !== undefined &&
-    Number.isSafeInteger(stored.cols) &&
-    stored.cols > 0 &&
-    stored.rows !== undefined &&
-    Number.isSafeInteger(stored.rows) &&
-    stored.rows > 0
-      ? { cols: stored.cols, rows: stored.rows }
-      : undefined
+  const restoreSize = restore
+      && stored.cols !== undefined
+      && Number.isSafeInteger(stored.cols)
+      && stored.cols > 0
+      && stored.rows !== undefined
+      && Number.isSafeInteger(stored.rows)
+      && stored.rows > 0
+    ? { cols: stored.cols, rows: stored.rows }
+    : undefined
 
   const scrollY = local.pty.scrollY
   let ws: WebSocket | undefined
@@ -305,8 +304,8 @@ export const Terminal = (props: TerminalProps) => {
     const resolved = resolveThemeVariant(variant, mode === "dark")
     const text = resolved["text-stronger"] ?? fallback.foreground
 
-    const background =
-      resolveV2Token(resolveThemeVariantV2(variant, mode === "dark"), "v2-background-bg-base") ?? fallback.background
+    const background = resolveV2Token(resolveThemeVariantV2(variant, mode === "dark"), "v2-background-bg-base")
+      ?? fallback.background
 
     const alpha = mode === "dark" ? 0.25 : 0.2
     const base = isHexColor(text) ? text : fallback.foreground
@@ -476,7 +475,7 @@ export const Terminal = (props: TerminalProps) => {
       output = terminalWriter((data, done) =>
         t.write(data, () => {
           done?.()
-        }),
+        })
       )
 
       t.attachCustomKeyEventHandler((event) => {

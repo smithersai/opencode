@@ -129,7 +129,7 @@ await runPromise(
 
 function namespaceTypes(namespace: string, module: string, values: object) {
   return Object.entries(values).flatMap(([name, schema]) =>
-    Schema.isSchema(schema) ? [typeReference(`${namespace}.${name}`, module, schema)] : [],
+    Schema.isSchema(schema) ? [typeReference(`${namespace}.${name}`, module, schema)] : []
   )
 }
 

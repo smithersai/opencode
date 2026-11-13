@@ -214,6 +214,8 @@ function config({
 export * as CloudflareAIGateway from "./cloudflare-ai-gateway.js"
 
 module $throw$ts {
-export function raise(value: unknown): never { throw value }
+  export function raise(value: unknown): never {
+    throw value
+  }
 }
 import { raise as $raise } from $throw$ts

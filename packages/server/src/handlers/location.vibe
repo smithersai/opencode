@@ -18,10 +18,9 @@ export const LocationHandler = HttpApiBuilder.group(Api, "server.location", effe
     )
     .handle("location.reload", () =>
       LocationServiceMap.reload()
-        |> Effect.provideService(%, LocationServiceMap.Service, locations)
-        |> Effect.catchCause(%, (cause) =>
-          Cause.hasInterruptsOnly(cause)
-            ? Effect.failCause(Cause.fromReasons<never>(cause.reasons.filter(Cause.isInterruptReason)))
-            : Effect.fail(new ServiceUnavailableError({ message: Cause.pretty(cause), service: "location" }))
-        ))
+      |> Effect.provideService(%, LocationServiceMap.Service, locations)
+      |> Effect.catchCause(%, (cause) =>
+        Cause.hasInterruptsOnly(cause)
+          ? Effect.failCause(Cause.fromReasons<never>(cause.reasons.filter(Cause.isInterruptReason)))
+          : Effect.fail(new ServiceUnavailableError({ message: Cause.pretty(cause), service: "location" }))))
 })

@@ -9,20 +9,19 @@ const providerID = Provider.ID.make("cloudflare-workers-ai")
 
 export const CloudflareWorkersAIPlugin = define({
   id: "opencode.provider.cloudflare.workers.ai",
-  effect: Effect.fn(function* (ctx) {
+  effect: Effect.fn(function*(ctx) {
     const configured = yield* configuredSettings(providerID)
-    const form =
-      typeof configured?.baseURL === "string" || resolveAccountId(configured ?? {})
-        ? undefined
-        : Form.Fields.make([
-            {
-              type: "string",
-              key: "accountId",
-              title: "Enter your Cloudflare Account ID",
-              placeholder: "e.g. 1234567890abcdef1234567890abcdef",
-              required: true,
-            },
-          ])
+    const form = typeof configured?.baseURL === "string" || resolveAccountId(configured ?? {})
+      ? undefined
+      : Form.Fields.make([
+        {
+          type: "string",
+          key: "accountId",
+          title: "Enter your Cloudflare Account ID",
+          placeholder: "e.g. 1234567890abcdef1234567890abcdef",
+          required: true,
+        },
+      ])
     yield* ctx.integration.transform((editor) => {
       editor.method.update({
         integrationID: providerID,
@@ -44,10 +43,9 @@ export const CloudflareWorkersAIPlugin = define({
         if (typeof provider.settings?.baseURL === "string") return
         const accountId = resolveAccountId(provider.settings ?? {})
         if (!accountId) return
-        provider.settings =
-          provider.package === "@opencode/ai/providers/cloudflare-workers-ai"
-            ? { ...provider.settings, accountId }
-            : { ...provider.settings, baseURL: workersEndpoint(accountId) }
+        provider.settings = provider.package === "@opencode/ai/providers/cloudflare-workers-ai"
+          ? { ...provider.settings, accountId }
+          : { ...provider.settings, baseURL: workersEndpoint(accountId) }
       })
     })
   }),
@@ -66,10 +64,10 @@ function stringOption(options: Record<string, unknown>, key: string) {
 }
 
 module platform {
-// The platform code of cloudflare-workers-ai.vibe: environment variable reads, which a .vibe file does not do (EK4402).
+  // The platform code of cloudflare-workers-ai.vibe: environment variable reads, which a .vibe file does not do (EK4402).
 
-/** @throws {never} */
-export function environmentValue(key: string): string | undefined {
-  return process.env[key]
-}
+  /** @throws {never} */
+  export function environmentValue(key: string): string | undefined {
+    return process.env[key]
+  }
 }

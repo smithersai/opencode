@@ -82,12 +82,16 @@ function make(
       const content = try fs
         .readFileString(joinPath(input.worktree, item.file))
         .pipe(Effect.orElseSucceed(() => undefined))
-      if (content === undefined || byteLength(content) > MAX_PATCH_BYTES) return try Effect.try({ try: () => emptyPatch(item.file), catch: (cause) => cause }).pipe(Effect.orDie)
+      if (content === undefined || byteLength(content) > MAX_PATCH_BYTES) {
+        return try Effect.try({ try: () => emptyPatch(item.file), catch: (cause) => cause }).pipe(Effect.orDie)
+      }
       return try Effect.try({ try: () => addPatch(item.file, content), catch: (cause) => cause }).pipe(Effect.orDie)
     }
     if (item.code === "!") {
       const content = try hg.cat(rev ?? ".", item.file)
-      if (content === undefined || byteLength(content) > MAX_PATCH_BYTES) return try Effect.try({ try: () => emptyPatch(item.file), catch: (cause) => cause }).pipe(Effect.orDie)
+      if (content === undefined || byteLength(content) > MAX_PATCH_BYTES) {
+        return try Effect.try({ try: () => emptyPatch(item.file), catch: (cause) => cause }).pipe(Effect.orDie)
+      }
       return try Effect.try({ try: () => deletePatch(item.file, content), catch: (cause) => cause }).pipe(Effect.orDie)
     }
     return try Effect.try({ try: () => emptyPatch(item.file), catch: (cause) => cause }).pipe(Effect.orDie)
@@ -98,7 +102,9 @@ function make(
       [hg.status(rev, scope), hg.diff(rev, scope, { context: options?.context ?? PATCH_CONTEXT_LINES })],
       { concurrency: 2 },
     )
-    const chunks = try Effect.try({ try: () => chunksByFile(batch, () => undefined), catch: (cause) => cause }).pipe(Effect.orDie)
+    const chunks = try Effect.try({ try: () => chunksByFile(batch, () => undefined), catch: (cause) => cause }).pipe(
+      Effect.orDie,
+    )
     const list: FileDiff.Info[] = []
     for (const item of items.toSorted((a, b) => a.file.localeCompare(b.file))) {
       const patch = try patchFor(item, rev, chunks.get(item.file))
@@ -165,22 +171,25 @@ const kind = (code: string): Kind => {
 
 function makeHg(proc: AppProcess.Interface, worktree: string) {
   const run = (args: string[], opts?: { maxOutputBytes?: number }) =>
-    Effect.orElseSucceed(effect {
-      const result = try proc.run(
-        ChildProcess.make("hg", args, {
-          cwd: worktree,
-          env: { HGPLAIN: "1" },
-          extendEnv: true,
-          stdin: "ignore",
-        }),
-        { maxOutputBytes: opts?.maxOutputBytes },
-      )
-      return {
-        exitCode: result.exitCode,
-        text: () => result.stdout.toString("utf8"),
-        truncated: result.stdoutTruncated || result.stderrTruncated,
-      }
-    }, () => ({ exitCode: 1, text: () => "", truncated: false }))
+    Effect.orElseSucceed(
+      effect {
+        const result = try proc.run(
+          ChildProcess.make("hg", args, {
+            cwd: worktree,
+            env: { HGPLAIN: "1" },
+            extendEnv: true,
+            stdin: "ignore",
+          }),
+          { maxOutputBytes: opts?.maxOutputBytes },
+        )
+        return {
+          exitCode: result.exitCode,
+          text: () => result.stdout.toString("utf8"),
+          truncated: result.stdoutTruncated || result.stderrTruncated,
+        }
+      },
+      () => ({ exitCode: 1, text: () => "", truncated: false }),
+    )
 
   const status = Effect.fn("VcsHg.statusNames")(effect (rev: string | undefined, scope: string) => {
     const result = try run(["status", "-0", ...(rev ? ["--rev", rev] : []), scope])
@@ -232,22 +241,22 @@ function makeHg(proc: AppProcess.Interface, worktree: string) {
 }
 
 module platform {
-// The platform code of hg.vibe: host paths and byte lengths, which a .vibe file does not read (EK4402).
+  // The platform code of hg.vibe: host paths and byte lengths, which a .vibe file does not read (EK4402).
 
-import path from "path"
+  import path from "path"
 
-/** @throws {never} */
-export function relativePath(from: string, to: string): string {
-  return path.relative(from, to)
-}
+  /** @throws {never} */
+  export function relativePath(from: string, to: string): string {
+    return path.relative(from, to)
+  }
 
-/** @throws {never} */
-export function joinPath(...parts: string[]): string {
-  return path.join(...parts)
-}
+  /** @throws {never} */
+  export function joinPath(...parts: string[]): string {
+    return path.join(...parts)
+  }
 
-/** UTF-8 byte length of a string. @throws {never} */
-export function byteLength(text: string): number {
-  return Buffer.byteLength(text)
-}
+  /** UTF-8 byte length of a string. @throws {never} */
+  export function byteLength(text: string): number {
+    return Buffer.byteLength(text)
+  }
 }

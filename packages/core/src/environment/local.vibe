@@ -2,7 +2,18 @@ import { Effect } from "effect"
 import type { ChildProcessSpawner } from "effect/process/ChildProcessSpawner"
 import type { Driver } from "./driver.js"
 import { Failed, NotFound, WrongKind, type FileInfo, type FilesImpl, type FileType } from "./files.js"
-import { basename, join, mkdir, readdir, readFile, readRange, rename, rm, statEntry, writeFile } from "./local.platform.js"
+import {
+  basename,
+  join,
+  mkdir,
+  readdir,
+  readFile,
+  readRange,
+  rename,
+  rm,
+  statEntry,
+  writeFile,
+} from "./local.platform.js"
 
 /**
  * The host filesystem binding. Deliberately raw node:fs rather than effect's
@@ -16,7 +27,7 @@ import { basename, join, mkdir, readdir, readFile, readRange, rename, rm, statEn
 export const makeLocalDriver = (spawner: ChildProcessSpawner["Service"]): Driver => {
   const overrides: FilesImpl = {
     read: (value, range) =>
-      Effect.gen(function* () {
+      Effect.gen(function*() {
         const info = yield* stat(value, true)
         if (info.type !== "file") return yield* new WrongKind({ path: value, actual: info.type })
         if (range === undefined) {
@@ -28,17 +39,16 @@ export const makeLocalDriver = (spawner: ChildProcessSpawner["Service"]): Driver
       }),
     stat: (value) => stat(value, false),
     list: (value) =>
-      Effect.gen(function* () {
+      Effect.gen(function*() {
         const info = yield* stat(value, true)
         if (info.type !== "directory") return yield* new WrongKind({ path: value, actual: info.type })
         const entries = yield* attempt(value, () => readdir(value), true)
         return entries.map((entry) => ({ name: entry.name, type: fileType(entry) }))
       }),
-    write: (value, bytes) =>
-      attempt(value, () => writeFile(value, bytes)),
+    write: (value, bytes) => attempt(value, () => writeFile(value, bytes)),
     remove: (value) => attempt(value, () => rm(value)),
     move: (from, to) =>
-      Effect.gen(function* () {
+      Effect.gen(function*() {
         yield* stat(from, false)
         const destination = yield* stat(to, false).pipe(
           Effect.map((info) => (info.type === "directory" ? join(to, basename(from)) : to)),
@@ -72,15 +82,14 @@ function attempt<A>(value: string, run: () => Promise<A>, missing: true): Effect
 function attempt<A>(value: string, run: () => Promise<A>, missing = false) {
   return Effect.tryPromise({
     try: run,
-    catch: (cause) =>
-      missing && isMissing(cause) ? new NotFound({ path: value }) : new Failed({ path: value, cause }),
+    catch: (cause) => missing && isMissing(cause) ? new NotFound({ path: value }) : new Failed({ path: value, cause }),
   })
 }
 
 const isMissing = (cause: unknown) =>
-  cause !== null &&
-  typeof cause === "object" &&
-  "code" in cause &&
-  (cause.code === "ENOENT" || cause.code === "ENOTDIR")
+  cause !== null
+  && typeof cause === "object"
+  && "code" in cause
+  && (cause.code === "ENOENT" || cause.code === "ENOTDIR")
 
 export * as EnvironmentLocal from "./local.js"

@@ -1,7 +1,16 @@
 #!/usr/bin/env bun
 
 import { NodeFileSystem } from "@effect/platform-node"
-import { args, envDirectory, environment, environmentValue, envPath, handleCancellation, interactive, recordingUI } from platform
+import {
+  args,
+  envDirectory,
+  environment,
+  environmentValue,
+  envPath,
+  handleCancellation,
+  interactive,
+  recordingUI,
+} from platform
 import { confirm, multiselect, password, text } from "@clack/prompts"
 import { AwsV4Signer } from "aws4fetch"
 import { FetchHttpClient, HttpClient, HttpClientRequest, type HttpClientResponse } from "effect/http"
@@ -57,7 +66,9 @@ const PROVIDERS: ReadonlyArray<Provider> = [
     vars: [{ name: "GOOGLE_GENERATIVE_AI_API_KEY" }],
     validate: (env) =>
       HttpClientRequest.get(
-        `https://generativelanguage.googleapis.com/v1beta/models?key=${encodeURIComponent(env.GOOGLE_GENERATIVE_AI_API_KEY)}`,
+        `https://generativelanguage.googleapis.com/v1beta/models?key=${
+          encodeURIComponent(env.GOOGLE_GENERATIVE_AI_API_KEY)
+        }`,
       ).pipe(executeRequest),
   },
   {
@@ -225,9 +236,11 @@ const PROVIDERS: ReadonlyArray<Provider> = [
     ],
     validate: (env) =>
       validateChat({
-        url: `${CloudflareAIGateway.baseURL({
-          accountId: env.CLOUDFLARE_ACCOUNT_ID,
-        })}/chat/completions`,
+        url: `${
+          CloudflareAIGateway.baseURL({
+            accountId: env.CLOUDFLARE_ACCOUNT_ID,
+          })
+        }/chat/completions`,
         token: Redacted.make(envValue(env, CloudflareAIGateway.authEnvVars)),
         tokenHeader: "cf-aig-authorization",
         model: "workers-ai/@cf/meta/llama-3.1-8b-instruct",
@@ -354,8 +367,9 @@ const providerOption = option("--providers")
 const envNames = Array.from(new Set(PROVIDERS.flatMap((provider) => provider.vars.map((item) => item.name))))
 
 const providersForOption = (value: string | undefined) => {
-  if (!value || value === "recommended")
+  if (!value || value === "recommended") {
     return PROVIDERS.filter((provider) => provider.tier === "core" || provider.tier === "canary")
+  }
   if (value === "recorded") return PROVIDERS.filter((provider) => provider.tier !== "optional")
   if (value === "all") return PROVIDERS
   const ids = new Set(
@@ -395,9 +409,8 @@ const readConfigString = (provider: ConfigProvider.ConfigProvider, name: string)
 const parseEnv = fn("RecordingEnv.parseEnv")(effect (contents: string) => {
   const provider = ConfigProvider.fromDotEnvContents(contents)
   return Object.fromEntries(
-    (try forEach(envNames, (name) =>
-      readConfigString(provider, name).pipe(map((value) => [name, value] as const)),
-    )).filter((entry): entry is readonly [string, string] => entry[1] !== undefined),
+    (try forEach(envNames, (name) => readConfigString(provider, name).pipe(map((value) => [name, value] as const))))
+      .filter((entry): entry is readonly [string, string] => entry[1] !== undefined),
   )
 })
 
@@ -416,12 +429,17 @@ const statusLine = (provider: Provider, fileEnv: Env) =>
     ...provider.vars.map((item) => {
       const value = status(item.name, fileEnv)
       const suffix = item.optional ? " optional" : ""
-      return `  ${value === "missing" ? "missing" : "set"} ${item.name}${suffix}${value === "shell" ? " (shell only)" : ""}`
+      return `  ${value === "missing" ? "missing" : "set"} ${item.name}${suffix}${
+        value === "shell" ? " (shell only)" : ""
+      }`
     }),
   ].join("\n")
 
 const printStatus = (providers: ReadonlyArray<Provider>, fileEnv: Env) => {
-  return recordingUI.note(providers.map((provider) => statusLine(provider, fileEnv)).join("\n\n"), `Recording env: ${envPath}`)
+  return recordingUI.note(
+    providers.map((provider) => statusLine(provider, fileEnv)).join("\n\n"),
+    `Recording env: ${envPath}`,
+  )
 }
 
 const upsertEnv = (contents: string, values: Env) => {
@@ -518,7 +536,7 @@ const validateBedrock = (env: Env) =>
         accessKeyId: env.AWS_ACCESS_KEY_ID,
         secretAccessKey: env.AWS_SECRET_ACCESS_KEY,
         sessionToken: env.AWS_SESSION_TOKEN || undefined,
-      }).sign(),
+      }).sign()
     )
     return try HttpClientRequest.get(request.url.toString()).pipe(
       HttpClientRequest.setHeaders(Object.fromEntries(request.headers.entries())),
@@ -577,14 +595,16 @@ const chooseConfigurableProviders = fn("RecordingEnv.chooseConfigurableProviders
       options: configurable.map((provider) => ({
         value: provider.id,
         label: provider.label,
-        hint: `${providerRequiredStatus(provider, fileEnv)} - ${requiredVars(provider)
-          .map((item) => item.name)
-          .join(", ")}`,
+        hint: `${providerRequiredStatus(provider, fileEnv)} - ${
+          requiredVars(provider)
+            .map((item) => item.name)
+            .join(", ")
+        }`,
       })),
       initialValues: configurable
         .filter((provider) => providerRequiredStatus(provider, fileEnv) === "missing")
         .map((provider) => provider.id),
-    }),
+    })
   )
   return configurable.filter((provider) => selected.includes(provider.id))
 })
@@ -640,8 +660,8 @@ const main = fn("RecordingEnv.main")(effect () => {
   }
 
   if (
-    interactive &&
-    (try prompt(() => confirm({ message: "Validate credentials before saving?", initialValue: true })))
+    interactive
+    && (try prompt(() => confirm({ message: "Validate credentials before saving?", initialValue: true })))
   ) {
     try validateProviders(selectedProviders, envWithValues(fileEnv, values))
   }

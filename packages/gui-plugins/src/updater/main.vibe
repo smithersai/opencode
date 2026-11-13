@@ -43,9 +43,13 @@ const setup: Plugin.MainSetup = async (ctx) => {
           catch: (error) => error,
         }),
       persistence: {
-        get: effect { return ready.value ?? undefined },
+        get: effect {
+          return ready.value ?? undefined
+        },
         set: effect (value) => try Effect.orDie(Effect.try({ try: () => ready.set(value), catch: (error) => error })),
-        clear: effect { return try Effect.orDie(Effect.try({ try: () => ready.set(null), catch: (error) => error })) },
+        clear: effect {
+          return try Effect.orDie(Effect.try({ try: () => ready.set(null), catch: (error) => error }))
+        },
       },
       changed: () => publish.changed(),
     }) |> Scope.provide(%, scope),
@@ -68,7 +72,7 @@ const setup: Plugin.MainSetup = async (ctx) => {
           type: "error",
           message: ctx.t("dialog.checkFailed.message"),
           title: ctx.t("dialog.checkFailed.title"),
-        }),
+        })
       )
 
       return
@@ -80,7 +84,7 @@ const setup: Plugin.MainSetup = async (ctx) => {
           type: "info",
           message: ctx.t("dialog.upToDate.message"),
           title: ctx.t("dialog.upToDate.title"),
-        }),
+        })
       )
 
       return
@@ -96,7 +100,7 @@ const setup: Plugin.MainSetup = async (ctx) => {
         buttons: [ctx.t("dialog.restart"), ctx.t("dialog.later")],
         defaultId: 0,
         cancelId: 1,
-      }),
+      })
     )
 
     if (response.response === 0) try updater.install

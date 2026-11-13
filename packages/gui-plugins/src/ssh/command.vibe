@@ -27,11 +27,12 @@ export class SshFailure extends Schema.TaggedError<SshFailure>()("SshFailure", {
     if (cause instanceof RemoteCli.Failure) return new SshFailure(cause.code, cause.detail)
 
     if (
-      cause instanceof PlatformError.PlatformError &&
-      Predicate.isTagged(cause.reason, "NotFound") &&
-      cause.reason.method === "spawn"
-    )
+      cause instanceof PlatformError.PlatformError
+      && Predicate.isTagged(cause.reason, "NotFound")
+      && cause.reason.method === "spawn"
+    ) {
       return new SshFailure("ssh-missing", cause.message)
+    }
 
     return cause instanceof SshFailure
       ? cause
@@ -119,8 +120,9 @@ module parse {
 
       if (!value || value.startsWith("-")) throw new SshFailure("input")
 
-      if (flag === "-p" && (!/^\d+$/.test(value) || Number(value) < 1 || Number(value) > 65535))
+      if (flag === "-p" && (!/^\d+$/.test(value) || Number(value) < 1 || Number(value) > 65535)) {
         throw new SshFailure("input")
+      }
 
       if (flag === "-o" && !options.has((value.split(/[=\s]/)[0] ?? "").toLowerCase())) throw new SshFailure("input")
       args.push(flag, value)
@@ -128,8 +130,9 @@ module parse {
 
     const host = tokens[0]
 
-    if (tokens.length !== 1 || !host || !/^[a-zA-Z0-9_@.:[\]%-]+$/.test(host) || host.startsWith("-"))
+    if (tokens.length !== 1 || !host || !/^[a-zA-Z0-9_@.:[\]%-]+$/.test(host) || host.startsWith("-")) {
       throw new SshFailure("input")
+    }
 
     if (host.includes("@") && host.slice(0, host.lastIndexOf("@")).includes(":")) throw new SshFailure("input")
 
@@ -190,7 +193,7 @@ import { sshExecutable } from platform
 
 export { sshExecutable } from platform
 
-export const runSsh = Effect.fn("Ssh.run")(function* (input: {
+export const runSsh = Effect.fn("Ssh.run")(function*(input: {
   args: string[]
   env?: NodeJS.ProcessEnv
   stdin?: string | Uint8Array
@@ -198,7 +201,7 @@ export const runSsh = Effect.fn("Ssh.run")(function* (input: {
 }) {
   const spawner = yield* ChildProcessSpawner.ChildProcessSpawner
 
-  return yield* Effect.gen(function* () {
+  return yield* Effect.gen(function*() {
     const child = yield* spawner.spawn(
       ChildProcess.make(sshExecutable(), input.args, {
         env: input.env,
@@ -206,15 +209,14 @@ export const runSsh = Effect.fn("Ssh.run")(function* (input: {
         windowsHide: true,
         killSignal: "SIGTERM",
         forceKillAfter: "2 seconds",
-        stdin:
-          input.stdin === undefined
-            ? "ignore"
-            : {
-                stream: Stream.make(
-                  Predicate.isString(input.stdin) ? new TextEncoder().encode(input.stdin) : input.stdin,
-                ),
-                endOnDone: true,
-              },
+        stdin: input.stdin === undefined
+          ? "ignore"
+          : {
+            stream: Stream.make(
+              Predicate.isString(input.stdin) ? new TextEncoder().encode(input.stdin) : input.stdin,
+            ),
+            endOnDone: true,
+          },
       }),
     )
 
@@ -239,8 +241,9 @@ export const runSsh = Effect.fn("Ssh.run")(function* (input: {
       { concurrency: "unbounded" },
     )
 
-    if (output.code !== 0)
+    if (output.code !== 0) {
       return yield* Effect.fail(new SshFailure("connection", commandFailureDetail(output.code, output)))
+    }
 
     return output.stdout
   }).pipe(Effect.scoped, Effect.timeout(input.timeout ?? 600_000), Effect.mapError(SshFailure.from))

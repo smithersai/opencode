@@ -7,8 +7,9 @@ const migration: DatabaseMigration.Migration = {
       // This column briefly shipped again under 20260530232709_lovely_romulus.
       if (
         (try tx.all<{ name: string }>(`PRAGMA table_info(\`session\`)`)).some((column) => column.name === "metadata")
-      )
+      ) {
         return
+      }
       try tx.run(`ALTER TABLE \`session\` ADD \`metadata\` text;`)
     }
   },

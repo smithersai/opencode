@@ -108,7 +108,7 @@ const make = (options: LayerOptions) =>
     let activeGate: { readonly started: Queue.Queue<void>; readonly release: Latch.Latch } | undefined
     const wait = (count: number): Effect.Effect<void> =>
       Effect.suspend(() =>
-        requests.length >= count ? Effect.void : Deferred.await(started).pipe(Effect.andThen(wait(count))),
+        requests.length >= count ? Effect.void : Deferred.await(started).pipe(Effect.andThen(wait(count)))
       )
 
     const take = (request: LLMRequest) =>
@@ -131,8 +131,9 @@ const make = (options: LayerOptions) =>
       Stream.unwrap(
         take(request).pipe(
           Effect.map((response) => {
-            if (response instanceof CompactionResponse || response instanceof CompactionCheckpointResponse)
+            if (response instanceof CompactionResponse || response instanceof CompactionCheckpointResponse) {
               return Stream.die("TestLLM generation requires an event response")
+            }
             return Stream.isStream(response) ? response : Stream.fromIterable(response)
           }),
         ),
@@ -151,10 +152,11 @@ const make = (options: LayerOptions) =>
     ): Effect.Effect<CompactionResponse | CompactionCheckpointResponse, AIError> {
       return take(request).pipe(
         Effect.flatMap((response): Effect.Effect<CompactionResponse | CompactionCheckpointResponse> => {
-          if (options?.mechanism === "trigger")
+          if (options?.mechanism === "trigger") {
             return response instanceof CompactionCheckpointResponse
               ? Effect.succeed(response)
               : Effect.die("TestLLM trigger compaction requires a CompactionCheckpointResponse")
+          }
           return response instanceof CompactionResponse
             ? Effect.succeed(response)
             : Effect.die("TestLLM compaction requires a CompactionResponse")
@@ -188,7 +190,7 @@ const make = (options: LayerOptions) =>
         }),
       wait,
       gate: () =>
-        Effect.gen(function* () {
+        Effect.gen(function*() {
           const gate = {
             started: yield* Effect.acquireRelease(Queue.unbounded<void>(), Queue.shutdown),
             release: yield* Latch.make(),

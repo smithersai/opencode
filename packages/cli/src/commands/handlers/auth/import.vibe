@@ -30,10 +30,11 @@ import { EOL, setExitCode, stdinIsTTY, writeError } from platform
 export default Runtime.handler(
   Commands.commands.auth.commands.import,
   Effect.fn("cli.auth.import")(
-    function* (input) {
+    function*(input) {
       const file = Option.getOrUndefined(input.file)
-      if (!file && stdinIsTTY())
+      if (!file && stdinIsTTY()) {
         return yield* Effect.fail(new Error("Pipe auth export output into stdin or pass a file to import"))
+      }
       const text = yield* request(() => (file ? Bun.file(file).text() : readStdin()))
       const credentials = yield* Schema.decodeUnknownEffect(
         Schema.fromJsonString(Schema.Array(CredentialLegacy.Entry)),
@@ -56,7 +57,7 @@ export default Runtime.handler(
               activate: credential.active && !integrations.has(credential.integrationID),
             },
             { signal },
-          ),
+          )
         ).pipe(
           Effect.as(true),
           Effect.catchIf((error) => isConflictError(error), () => Effect.succeed(false)),
@@ -66,9 +67,9 @@ export default Runtime.handler(
       yield* Effect.try({
         try: () =>
           writeError(
-            `Imported ${imported} ${imported === 1 ? "credential" : "credentials"}` +
-              (results.length > imported ? `, skipped ${results.length - imported} already present` : "") +
-              EOL,
+            `Imported ${imported} ${imported === 1 ? "credential" : "credentials"}`
+              + (results.length > imported ? `, skipped ${results.length - imported} already present` : "")
+              + EOL,
           ),
         catch: (cause) => cause,
       }).pipe(Effect.orDie)
@@ -77,7 +78,7 @@ export default Runtime.handler(
       Effect.sync(() => {
         writeError(errorMessage(error) + EOL)
         setExitCode(1)
-      }),
+      })
     ),
   ),
 )

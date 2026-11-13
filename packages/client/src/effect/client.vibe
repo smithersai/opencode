@@ -15,7 +15,7 @@ const CurrentHeaders = Context.Reference<RpcCallOptions["headers"]>("@opencode/c
   defaultValue: () => undefined,
 })
 
-export const make = Effect.fn("OpenCode.make")(effect function (options?: { readonly baseUrl?: URL | string }) {
+export const make = Effect.fn("OpenCode.make")(effect function(options?: { readonly baseUrl?: URL | string }) {
   const httpClient = try HttpClient.HttpClient
   const raw = try OpenCode.make(options).pipe(
     Effect.provideService(
@@ -23,16 +23,14 @@ export const make = Effect.fn("OpenCode.make")(effect function (options?: { read
       HttpClient.mapRequestEffect(httpClient, (request) =>
         Effect.flatMap(CurrentHeaders, (headers) =>
           headers
-            ? // Invalid headers stay the defect the Fetch constructor raised.
-              Effect.orDie(
-                Effect.try({
-                  try: () => HttpClientRequest.setHeaders(request, fetchHeaders(headers)),
-                  catch: (cause) => cause,
-                }),
-              )
-            : Effect.succeed(request),
-        ),
-      ),
+            // Invalid headers stay the defect the Fetch constructor raised.
+            ? Effect.orDie(
+              Effect.try({
+                try: () => HttpClientRequest.setHeaders(request, fetchHeaders(headers)),
+                catch: (cause) => cause,
+              }),
+            )
+            : Effect.succeed(request))),
     ),
   )
   const context = try Effect.context()
@@ -52,7 +50,7 @@ export const make = Effect.fn("OpenCode.make")(effect function (options?: { read
               Stream.catchCause((cause) => Stream.fail(new EventFailure(cause))),
             ),
             context,
-          ),
+          )
         ),
       catch: (cause) => cause,
     }),
@@ -64,7 +62,7 @@ export const make = Effect.fn("OpenCode.make")(effect function (options?: { read
       ),
     ).pipe(
       Stream.catch((error) =>
-        Stream.failCause(error instanceof EventFailure ? error.cause : Cause.fail(new ClientError({ cause: error }))),
+        Stream.failCause(error instanceof EventFailure ? error.cause : Cause.fail(new ClientError({ cause: error })))
       ),
     )
   return {

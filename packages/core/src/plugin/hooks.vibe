@@ -58,32 +58,38 @@ export interface Interface {
   ) => Domains[Domain][Name]!Failures[Domain][Name]
 }
 
-export service Service: Interface { static readonly key = "@opencode/PluginHooks";}
+export service Service: Interface {
+  static readonly key = "@opencode/PluginHooks"
+}
 
 const layer = Layer.effect(
   Service,
-  Effect.gen(function* () {
+  Effect.gen(function*() {
     const callbacks = new Map<string, Entry[]>()
     const key = (domain: keyof Domains, name: PropertyKey) => `${domain}.${String(name)}`
 
-    const register: Interface["register"] = effect (domain, name, callback, options): State.Registration!!Scope.Scope => try withSpan((effect (): State.Registration!!Scope.Scope => {
-      const scope = try Scope.Scope
-      const id = key(domain, name)
-      let active = true
-      const entry = { callback, options }
-      callbacks.set(id, [...(callbacks.get(id) ?? []), entry])
-      const dispose = Effect.sync(() => {
-        if (!active) return
-        active = false
-        const next = (callbacks.get(id) ?? []).filter((item) => item !== entry)
-        if (next.length === 0) callbacks.delete(id)
-        else callbacks.set(id, next)
-      })
-      try Scope.addFinalizer(scope, dispose)
-      return { dispose }
-    })(), "PluginHooks.register")
+    const register: Interface["register"] = effect (domain, name, callback, options): State.Registration!!Scope.Scope =>
+      try withSpan(
+        (effect (): State.Registration!!Scope.Scope => {
+          const scope = try Scope.Scope
+          const id = key(domain, name)
+          let active = true
+          const entry = { callback, options }
+          callbacks.set(id, [...(callbacks.get(id) ?? []), entry])
+          const dispose = Effect.sync(() => {
+            if (!active) return
+            active = false
+            const next = (callbacks.get(id) ?? []).filter((item) => item !== entry)
+            if (next.length === 0) callbacks.delete(id)
+            else callbacks.set(id, next)
+          })
+          try Scope.addFinalizer(scope, dispose)
+          return { dispose }
+        })(),
+        "PluginHooks.register",
+      )
 
-    const trigger: Interface["trigger"] = Effect.fnUntraced(function* (domain, name, event) {
+    const trigger: Interface["trigger"] = Effect.fnUntraced(function*(domain, name, event) {
       for (const entry of callbacks.get(key(domain, name)) ?? []) {
         if (entry.options?.providerID !== undefined && entry.options.providerID !== eventProviderID(event)) continue
         const result: void!Failures[typeof domain][typeof name] = entry.callback(event)
@@ -94,8 +100,8 @@ const layer = Layer.effect(
 
     const has: Interface["has"] = effect (domain, name, providerID) =>
       (callbacks.get(key(domain, name)) ?? []).some(
-          (entry) => entry.options?.providerID === undefined || entry.options.providerID === providerID,
-        )
+        (entry) => entry.options?.providerID === undefined || entry.options.providerID === providerID,
+      )
 
     return Service.of({ has, register, trigger })
   }),

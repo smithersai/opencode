@@ -58,20 +58,22 @@ export type Method = Integration.Method
 export const Info = Integration.Info
 export type Info = Integration.Info
 
-export type OAuthAuthorization = {
-  readonly url: string
-  readonly instructions: string
-  readonly expiresAt?: number
-} & (
-  | {
+export type OAuthAuthorization =
+  & {
+    readonly url: string
+    readonly instructions: string
+    readonly expiresAt?: number
+  }
+  & (
+    | {
       readonly mode: "auto"
       readonly callback: Effect.Effect<Credential.OAuth, unknown>
     }
-  | {
+    | {
       readonly mode: "code"
       readonly callback: (code: string) => Effect.Effect<Credential.OAuth, unknown>
     }
-)
+  )
 
 export interface OAuthImplementation {
   readonly integrationID: ID
@@ -304,7 +306,7 @@ type CommandAttemptEntry = PendingCommandAttempt | TerminalCommandAttempt
 
 const layer = Layer.effect(
   Service,
-  Effect.gen(function* () {
+  Effect.gen(function*() {
     const credentials = yield* Credential.Service
     const bus = yield* Bus.Service
     const processes = yield* AppProcess.Service
@@ -348,12 +350,15 @@ const layer = Layer.effect(
             }
             const index = current.methods.findIndex((method) => {
               if (method.type !== implementation.method.type) return false
-              if (method.type === "oauth" && implementation.method.type === "oauth")
+              if (method.type === "oauth" && implementation.method.type === "oauth") {
                 return method.id === implementation.method.id
-              if (method.type === "command" && implementation.method.type === "command")
+              }
+              if (method.type === "command" && implementation.method.type === "command") {
                 return method.id === implementation.method.id
-              if (method.type === "external" && implementation.method.type === "external")
+              }
+              if (method.type === "external" && implementation.method.type === "external") {
                 return method.id === implementation.method.id
+              }
               return true
             })
             if (index === -1) current.methods.push(implementation.method)
@@ -396,7 +401,7 @@ const layer = Layer.effect(
       return entries
     }
 
-    const createCredential = Effect.fnUntraced(function* (input: Parameters<Credential.Interface["create"]>[0]) {
+    const createCredential = Effect.fnUntraced(function*(input: Parameters<Credential.Interface["create"]>[0]) {
       if (input.label !== undefined) return yield* credentials.create(input)
       const name = state.get().integrations.get(input.integrationID)?.ref.name ?? input.integrationID
       const labels = new Set((yield* credentials.list(input.integrationID)).map((credential) => credential.label))
@@ -446,7 +451,7 @@ const layer = Layer.effect(
       return error instanceof Error ? error.message : String(error)
     }
 
-    const settle = Effect.fnUntraced(function* (attemptID: AttemptID, exit: Exit.Exit<Credential.OAuth, unknown>) {
+    const settle = Effect.fnUntraced(function*(attemptID: AttemptID, exit: Exit.Exit<Credential.OAuth, unknown>) {
       const now = yield* Clock.currentTimeMillis
       const attempt = yield* SynchronizedRef.modify(attempts, (current) => {
         const match = current.get(attemptID)
@@ -454,12 +459,12 @@ const layer = Layer.effect(
         const next = Exit.isSuccess(exit)
           ? { ...match, persisting: true }
           : {
-              status: "failed" as const,
-              integrationID: match.integrationID,
-              message: message(exit.cause),
-              time: match.time,
-              removeAt: now + terminalRetention,
-            }
+            status: "failed" as const,
+            integrationID: match.integrationID,
+            message: message(exit.cause),
+            time: match.time,
+            removeAt: now + terminalRetention,
+          }
         return [match, new Map(current).set(attemptID, next)]
       })
       if (!attempt) return
@@ -468,7 +473,7 @@ const layer = Layer.effect(
         return
       }
 
-      yield* Effect.gen(function* () {
+      yield* Effect.gen(function*() {
         const persistence = yield* Effect.try({
           try: () => {
             const implementation = state
@@ -486,25 +491,25 @@ const layer = Layer.effect(
         const settledAt = yield* Clock.currentTimeMillis
         const terminal: TerminalAttempt = Exit.isSuccess(persistence)
           ? {
-              status: "complete",
-              integrationID: attempt.integrationID,
-              time: attempt.time,
-              removeAt: settledAt + terminalRetention,
-            }
+            status: "complete",
+            integrationID: attempt.integrationID,
+            time: attempt.time,
+            removeAt: settledAt + terminalRetention,
+          }
           : {
-              status: "failed",
-              integrationID: attempt.integrationID,
-              message: message(persistence.cause),
-              time: attempt.time,
-              removeAt: settledAt + terminalRetention,
-            }
+            status: "failed",
+            integrationID: attempt.integrationID,
+            message: message(persistence.cause),
+            time: attempt.time,
+            removeAt: settledAt + terminalRetention,
+          }
         // Persisting attempts cannot be cancelled, expired, or claimed again.
         yield* SynchronizedRef.update(attempts, (current) => new Map(current).set(attemptID, terminal))
         yield* persistence
       }).pipe(Effect.ensuring(close(attempt.scope)))
     }, Effect.uninterruptible)
 
-    const settleCommand = Effect.fnUntraced(function* (attemptID: AttemptID, exit: Exit.Exit<string, unknown>) {
+    const settleCommand = Effect.fnUntraced(function*(attemptID: AttemptID, exit: Exit.Exit<string, unknown>) {
       const now = yield* Clock.currentTimeMillis
       const attempt = yield* SynchronizedRef.modify(commandAttempts, (current) => {
         const match = current.get(attemptID)
@@ -512,12 +517,12 @@ const layer = Layer.effect(
         const next = Exit.isSuccess(exit)
           ? { ...match, persisting: true }
           : {
-              status: "failed" as const,
-              integrationID: match.integrationID,
-              message: message(exit.cause),
-              time: match.time,
-              removeAt: now + terminalRetention,
-            }
+            status: "failed" as const,
+            integrationID: match.integrationID,
+            message: message(exit.cause),
+            time: match.time,
+            removeAt: now + terminalRetention,
+          }
         return [match, new Map(current).set(attemptID, next)]
       })
       if (!attempt) return
@@ -534,23 +539,23 @@ const layer = Layer.effect(
       const settledAt = yield* Clock.currentTimeMillis
       const terminal: TerminalCommandAttempt = Exit.isSuccess(persistence)
         ? {
-            status: "complete",
-            integrationID: attempt.integrationID,
-            time: attempt.time,
-            removeAt: settledAt + terminalRetention,
-          }
+          status: "complete",
+          integrationID: attempt.integrationID,
+          time: attempt.time,
+          removeAt: settledAt + terminalRetention,
+        }
         : {
-            status: "failed",
-            integrationID: attempt.integrationID,
-            message: message(persistence.cause),
-            time: attempt.time,
-            removeAt: settledAt + terminalRetention,
-          }
+          status: "failed",
+          integrationID: attempt.integrationID,
+          message: message(persistence.cause),
+          time: attempt.time,
+          removeAt: settledAt + terminalRetention,
+        }
       yield* SynchronizedRef.update(commandAttempts, (current) => new Map(current).set(attemptID, terminal))
       yield* close(attempt.scope)
     }, Effect.uninterruptible)
 
-    const scrub = Effect.fnUntraced(function* () {
+    const scrub = Effect.fnUntraced(function*() {
       const now = yield* Clock.currentTimeMillis
       const expired = yield* SynchronizedRef.modify(attempts, (current) => {
         const next = new Map(current)
@@ -582,7 +587,7 @@ const layer = Layer.effect(
       )
     })
 
-    const scrubCommands = Effect.fnUntraced(function* () {
+    const scrubCommands = Effect.fnUntraced(function*() {
       const now = yield* Clock.currentTimeMillis
       const expired = yield* SynchronizedRef.modify(commandAttempts, (current) => {
         const next = new Map(current)
@@ -608,7 +613,7 @@ const layer = Layer.effect(
     yield* scrub().pipe(Effect.repeat(Schedule.spaced(scrubInterval)), Effect.forkIn(scope))
     yield* scrubCommands().pipe(Effect.repeat(Schedule.spaced(scrubInterval)), Effect.forkIn(scope))
 
-    const connectOAuth = Effect.fn("Integration.oauth.connect")(function* (input: {
+    const connectOAuth = Effect.fn("Integration.oauth.connect")(function*(input: {
       readonly integrationID: ID
       readonly methodID: MethodID
       readonly answer?: Form.Answer
@@ -642,8 +647,7 @@ const layer = Layer.effect(
           label: input.label,
           scope: attemptScope,
           time,
-        }),
-      )
+        }))
       if (authorization.mode === "auto") {
         yield* authorization.callback.pipe(
           Effect.exit,
@@ -660,7 +664,7 @@ const layer = Layer.effect(
       })
     })
 
-    const connectCommand = Effect.fn("Integration.command.connect")(function* (input: {
+    const connectCommand = Effect.fn("Integration.command.connect")(function*(input: {
       readonly integrationID: ID
       readonly methodID: MethodID
       readonly label?: string
@@ -685,10 +689,9 @@ const layer = Layer.effect(
           persisting: false,
           scope: attemptScope,
           time,
-        }),
-      )
+        }))
 
-      yield* Effect.gen(function* () {
+      yield* Effect.gen(function*() {
         const handle = yield* processes.spawn(
           ChildProcess.make(method.command[0], method.command.slice(1), {
             extendEnv: true,
@@ -704,7 +707,7 @@ const layer = Layer.effect(
               if (!attempt || attempt.status !== "pending") return current
               const message = (attempt.message ?? "") + chunk
               return new Map(current).set(attemptID, { ...attempt, message })
-            }),
+            })
           ),
           Stream.runDrain,
         )
@@ -730,21 +733,21 @@ const layer = Layer.effect(
       transform: state.transform,
       reload: state.reload,
       revision: state.revision,
-      get: Effect.fn("Integration.get")(function* (id) {
+      get: Effect.fn("Integration.get")(function*(id) {
         const entry = state.get().integrations.get(id)
         if (!entry) return undefined
         return project(entry, resolveConnections(entry, yield* credentials.list(id)))
       }),
-      list: Effect.fn("Integration.list")(function* () {
+      list: Effect.fn("Integration.list")(function*() {
         const saved = Map.groupBy(yield* credentials.all(), (credential) => credential.integrationID)
         return sortedEntries().map((entry) => project(entry, resolveConnections(entry, saved.get(entry.ref.id) ?? [])))
       }),
       connection: {
-        active: Effect.fn("Integration.connection.active")(function* (id) {
+        active: Effect.fn("Integration.connection.active")(function*(id) {
           const entry = state.get().integrations.get(id)
           return resolveConnections(entry, yield* credentials.list(id))[0]
         }),
-        resolve: Effect.fn("Integration.connection.resolve")(function* (connection) {
+        resolve: Effect.fn("Integration.connection.resolve")(function*(connection) {
           if (connection.type === "env") {
             const key = hostEnv(connection.name)
             return key ? Credential.Key.make({ type: "key", key }) : undefined
@@ -764,7 +767,7 @@ const layer = Layer.effect(
           return yield* authorize(
             credentials.lock(
               credential.id,
-              Effect.gen(function* () {
+              Effect.gen(function*() {
                 // Another Location may have refreshed while this caller waited.
                 const current = yield* credentials.get(credential.id)
                 if (!current || current.value.type !== "oauth") return undefined
@@ -776,7 +779,7 @@ const layer = Layer.effect(
             ),
           )
         }),
-        key: Effect.fn("Integration.connection.key")(function* (input) {
+        key: Effect.fn("Integration.connection.key")(function*(input) {
           const method = state
             .get()
             .integrations.get(input.integrationID)
@@ -800,13 +803,14 @@ const layer = Layer.effect(
             }),
           })
         }),
-        external: Effect.fn("Integration.connection.external")(function* (input) {
+        external: Effect.fn("Integration.connection.external")(function*(input) {
           const method = state
             .get()
             .integrations.get(input.integrationID)
             ?.methods.find((method) => method.type === "external" && method.id === input.methodID)
-          if (method?.type !== "external")
+          if (method?.type !== "external") {
             return yield* new AuthorizationError({ cause: new Error(`External method not found: ${input.methodID}`) })
+          }
           const answer = input.answer ?? {}
           if (method.form) {
             const invalid = Form.validateFields(method.form) ?? Form.validateAnswer(method.form, answer)
@@ -827,10 +831,10 @@ const layer = Layer.effect(
         }),
         activate: Effect.fn("Integration.connection.activate")((credentialID) => credentials.activate(credentialID)),
         update: Effect.fn("Integration.connection.update")((credentialID, updates) =>
-          credentials.update(credentialID, updates),
+          credentials.update(credentialID, updates)
         ),
         remove: Effect.fn("Integration.connection.remove")((credentialID) => credentials.remove(credentialID)),
-        status: Effect.fn("Integration.connection.status")(function* (input) {
+        status: Effect.fn("Integration.connection.status")(function*(input) {
           const key = statusKey(input.integrationID, input.connection)
           if (Equal.equals(statuses.get(key), input.status)) return
           if (input.status) statuses.set(key, input.status)
@@ -840,7 +844,7 @@ const layer = Layer.effect(
       },
       oauth: {
         connect: connectOAuth,
-        status: Effect.fn("Integration.oauth.status")(function* (input) {
+        status: Effect.fn("Integration.oauth.status")(function*(input) {
           const attempt = (yield* SynchronizedRef.get(attempts)).get(input.attemptID)
           if (!attempt || attempt.integrationID !== input.integrationID) return yield* new AttemptNotFoundError(input)
           if (attempt.status === "failed") {
@@ -848,7 +852,7 @@ const layer = Layer.effect(
           }
           return { status: attempt.status, time: attempt.time }
         }),
-        complete: Effect.fn("Integration.oauth.complete")(function* (input) {
+        complete: Effect.fn("Integration.oauth.complete")(function*(input) {
           const attempt = yield* SynchronizedRef.modify(attempts, (current) => {
             const match = current.get(input.attemptID)
             if (!match || match.integrationID !== input.integrationID) return [undefined, current]
@@ -861,21 +865,24 @@ const layer = Layer.effect(
           if (attempt.authorization.mode === "code" && input.code === undefined) {
             return yield* new CodeRequiredError({ attemptID: input.attemptID })
           }
-          if (attempt.completing)
+          if (attempt.completing) {
             return yield* Effect.die(new Error(`OAuth attempt already completing: ${input.attemptID}`))
-          const callback =
-            attempt.authorization.mode === "auto"
-              ? attempt.authorization.callback
-              : attempt.authorization.callback(input.code as string)
+          }
+          const callback = attempt.authorization.mode === "auto"
+            ? attempt.authorization.callback
+            : attempt.authorization.callback(input.code as string)
           const exit = yield* authorize(callback).pipe(Effect.exit)
           yield* settle(input.attemptID, exit)
           if (Exit.isFailure(exit)) return yield* exit
         }),
-        cancel: Effect.fn("Integration.oauth.cancel")(function* (input) {
+        cancel: Effect.fn("Integration.oauth.cancel")(function*(input) {
           const attempt = yield* SynchronizedRef.modify(attempts, (current) => {
             const match = current.get(input.attemptID)
-            if (!match || match.integrationID !== input.integrationID || match.status !== "pending" || match.persisting)
+            if (
+              !match || match.integrationID !== input.integrationID || match.status !== "pending" || match.persisting
+            ) {
               return [undefined, current]
+            }
             const next = new Map(current)
             next.delete(input.attemptID)
             return [match, next]
@@ -891,7 +898,7 @@ const layer = Layer.effect(
       },
       command: {
         connect: connectCommand,
-        status: Effect.fn("Integration.command.status")(function* (input) {
+        status: Effect.fn("Integration.command.status")(function*(input) {
           const attempt = (yield* SynchronizedRef.get(commandAttempts)).get(input.attemptID)
           if (!attempt || attempt.integrationID !== input.integrationID) return yield* new AttemptNotFoundError(input)
           if (attempt.status === "pending") {
@@ -906,11 +913,14 @@ const layer = Layer.effect(
           }
           return { status: attempt.status, time: attempt.time }
         }),
-        cancel: Effect.fn("Integration.command.cancel")(function* (input) {
+        cancel: Effect.fn("Integration.command.cancel")(function*(input) {
           const attempt = yield* SynchronizedRef.modify(commandAttempts, (current) => {
             const match = current.get(input.attemptID)
-            if (!match || match.integrationID !== input.integrationID || match.status !== "pending" || match.persisting)
+            if (
+              !match || match.integrationID !== input.integrationID || match.status !== "pending" || match.persisting
+            ) {
               return [undefined, current]
+            }
             const next = new Map(current)
             next.delete(input.attemptID)
             return [match, next]

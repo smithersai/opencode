@@ -54,13 +54,12 @@ export const Plugin = define({
             current.findLast(
               (policy) =>
                 policy.action === "tool.use" && Wildcard.match(`${event.action}:${resource}`, policy.resource),
-            ),
+            )
           )
           .find((policy) => policy?.effect === "deny")
         if (!denied) return
         event.effect = "deny"
         event.message = denied.message
-      }),
-    )
+      }))
   }),
 })

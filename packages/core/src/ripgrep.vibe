@@ -103,7 +103,7 @@ const isInvalidPattern = (stderr: string) =>
 
 const layer = Layer.effect(
   Service,
-  Effect.gen(function* () {
+  Effect.gen(function*() {
     const environment = yield* Environment.Service
     const binary = yield* RipgrepBinary.Service
 
@@ -117,7 +117,7 @@ const layer = Layer.effect(
       readonly onItem?: (item: A) => Effect.Effect<void>
     }) => {
       const program = Effect.scoped(
-        Effect.gen(function* () {
+        Effect.gen(function*() {
           // Hosted environments will resolve rg through their driver image; the spawner is the execution seam.
           const handle = yield* environment.spawner.spawn(
             ChildProcess.make(yield* binary.filepath, input.args, { cwd: input.cwd, extendEnv: true, stdin: "ignore" }),
@@ -158,7 +158,7 @@ const layer = Layer.effect(
         Effect.mapError((cause) =>
           cause instanceof Error || cause instanceof InvalidPatternError
             ? cause
-            : failure("ripgrep execution failed", cause),
+            : failure("ripgrep execution failed", cause)
         ),
       )
     }
@@ -187,8 +187,8 @@ const layer = Layer.effect(
               Entry.make({
                 path: RelativePath.make(relative),
                 type: "file",
-              }),
-            ),
+              })
+            )
           ),
           Effect.catchTag("Ripgrep.InvalidPatternError", (cause) => Effect.fail(failure(cause.message, cause))),
         ),
@@ -238,16 +238,16 @@ const layer = Layer.effect(
             decodeJsonRecord(line).pipe(
               Effect.mapError((cause) => failure("Invalid ripgrep JSON output", cause)),
               Effect.flatMap((json) => {
-                if (!json || typeof json !== "object" || !("type" in json) || json.type !== "match")
+                if (!json || typeof json !== "object" || !("type" in json) || json.type !== "match") {
                   return Effect.undefined
+                }
                 return Schema.decodeUnknownEffect(RawMatch)(json).pipe(
                   Effect.map((match) => ({
                     ...match.data,
                     lines: {
-                      text:
-                        match.data.lines.text.length > MAX_LINE_CHARS
-                          ? utf8(match.data.lines.text.slice(0, MAX_LINE_CHARS)) + "..."
-                          : match.data.lines.text,
+                      text: match.data.lines.text.length > MAX_LINE_CHARS
+                        ? utf8(match.data.lines.text.slice(0, MAX_LINE_CHARS)) + "..."
+                        : match.data.lines.text,
                     },
                     path: { text: normalizePath(match.data.path.text) },
                     submatches: match.data.submatches.slice(0, MAX_SUBMATCHES),
@@ -272,8 +272,8 @@ const layer = Layer.effect(
                   start: submatch.start,
                   end: submatch.end,
                 })),
-              }),
-            ),
+              })
+            )
           ),
         ),
     })
@@ -283,10 +283,10 @@ const layer = Layer.effect(
 export const node = makeLocationNode({ service: Service, layer, deps: [Environment.node, RipgrepBinary.node] })
 
 module platform {
-// The platform code of ripgrep.vibe: UTF-8 buffers, which a .vibe file does not use (EK4402).
+  // The platform code of ripgrep.vibe: UTF-8 buffers, which a .vibe file does not use (EK4402).
 
-/** Round-trips text through UTF-8 bytes, so a cut surrogate pair becomes a replacement character. @throws {never} */
-export function utf8(text: string) {
-  return Buffer.from(text, "utf8").toString()
-}
+  /** Round-trips text through UTF-8 bytes, so a cut surrogate pair becomes a replacement character. @throws {never} */
+  export function utf8(text: string) {
+    return Buffer.from(text, "utf8").toString()
+  }
 }

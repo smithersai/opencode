@@ -41,7 +41,7 @@ export class Service extends Context.Service<Service, Interface>()("@opencode/Wo
 
 const layer = Layer.effect(
   Service,
-  Effect.gen(function* () {
+  Effect.gen(function*() {
     const location = yield* Location.Service
     const global = yield* Global.Service
     const git = yield* WorktreeGit.make
@@ -74,12 +74,12 @@ export const node = makeLocationNode({
 })
 
 module platform {
-// The platform code of strategies.vibe: host path joining, which a .vibe file does not read (EK4402).
+  // The platform code of strategies.vibe: host path joining, which a .vibe file does not read (EK4402).
 
-import path from "path"
+  import path from "path"
 
-/** @throws {never} */
-export function join(...parts: string[]): string {
-  return path.join(...parts)
-}
+  /** @throws {never} */
+  export function join(...parts: string[]): string {
+    return path.join(...parts)
+  }
 }

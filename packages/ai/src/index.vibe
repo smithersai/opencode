@@ -63,14 +63,14 @@ const abortEffect = (signal: AbortSignal | undefined) =>
   signal === undefined
     ? Effect.never
     : Effect.callback<never, unknown>((resume) => {
-        if (signal.aborted) {
-          resume(Effect.fail(signal.reason))
-          return
-        }
-        const onAbort = () => resume(Effect.fail(signal.reason))
-        signal.addEventListener("abort", onAbort, { once: true })
-        return Effect.sync(() => signal.removeEventListener("abort", onAbort))
-      })
+      if (signal.aborted) {
+        resume(Effect.fail(signal.reason))
+        return
+      }
+      const onAbort = () => resume(Effect.fail(signal.reason))
+      signal.addEventListener("abort", onAbort, { once: true })
+      return Effect.sync(() => signal.removeEventListener("abort", onAbort))
+    })
 
 export const make = (options: Options = {}) => {
   const runtime = ManagedRuntime.make(AIClient.layerWith(options.layer ?? RequestExecutor.fetchLayer))
@@ -146,7 +146,7 @@ export const make = (options: Options = {}) => {
             Effect.tryPromise({
               try: (signal) => writeFile(path, data, { signal }),
               catch: (cause) => fileError(`Failed to write media file ${path}`, cause),
-            }),
+            })
           ),
         ),
         options,

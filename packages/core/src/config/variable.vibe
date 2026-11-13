@@ -7,14 +7,14 @@ import { dirname, environmentVariable, homedir, isAbsolute, joinPath, resolve } 
 
 type ParseSource =
   | {
-      type: "path"
-      path: string
-    }
+    type: "path"
+    path: string
+  }
   | {
-      type: "virtual"
-      source: string
-      dir: string
-    }
+    type: "virtual"
+    source: string
+    dir: string
+  }
 
 type SubstituteInput = ParseSource & {
   text: string
@@ -22,7 +22,7 @@ type SubstituteInput = ParseSource & {
 }
 
 /** Apply {env:VAR} and {file:path} substitutions to config text. */
-export const substitute = Effect.fn("ConfigVariable.substitute")(function* (input: SubstituteInput) {
+export const substitute = Effect.fn("ConfigVariable.substitute")(function*(input: SubstituteInput) {
   const env = (escape: boolean) =>
     input.text.replace(/\{env:([^}]+)\}/g, (_, name: string) => {
       const value = (input.env?.[name] ?? environmentVariable(name)) || ""
@@ -36,7 +36,7 @@ export const substitute = Effect.fn("ConfigVariable.substitute")(function* (inpu
   return yield* substituteFiles(input, env(true))
 })
 
-const substituteFiles = Effect.fnUntraced(function* (input: SubstituteInput, text: string) {
+const substituteFiles = Effect.fnUntraced(function*(input: SubstituteInput, text: string) {
   const fs = yield* FSUtil.Service
   const configDir = input.type === "path" ? dirname(input.path) : input.dir
   const configSource = input.type === "path" ? input.path : input.source
@@ -68,7 +68,7 @@ const substituteFiles = Effect.fnUntraced(function* (input: SubstituteInput, tex
           reference: token,
           path: resolvedPath,
           cause,
-        }).pipe(Effect.as("")),
+        }).pipe(Effect.as(""))
       ),
     )
 
@@ -80,36 +80,36 @@ const substituteFiles = Effect.fnUntraced(function* (input: SubstituteInput, tex
 })
 
 module platform {
-import os from "os"
-import path from "path"
+  import os from "os"
+  import path from "path"
 
-/** @throws {never} */
-export function environmentVariable(name: string) {
-  return process.env[name]
-}
+  /** @throws {never} */
+  export function environmentVariable(name: string) {
+    return process.env[name]
+  }
 
-/** The current user's home directory, which may be unavailable. */
-export function homedir() {
-  return os.homedir()
-}
+  /** The current user's home directory, which may be unavailable. */
+  export function homedir() {
+    return os.homedir()
+  }
 
-/** @throws {never} */
-export function dirname(target: string) {
-  return path.dirname(target)
-}
+  /** @throws {never} */
+  export function dirname(target: string) {
+    return path.dirname(target)
+  }
 
-/** @throws {never} */
-export function joinPath(directory: string, name: string) {
-  return path.join(directory, name)
-}
+  /** @throws {never} */
+  export function joinPath(directory: string, name: string) {
+    return path.join(directory, name)
+  }
 
-/** @throws {never} */
-export function isAbsolute(target: string) {
-  return path.isAbsolute(target)
-}
+  /** @throws {never} */
+  export function isAbsolute(target: string) {
+    return path.isAbsolute(target)
+  }
 
-/** Resolves against the process working directory, which may be unavailable. */
-export function resolve(directory: string, target: string) {
-  return path.resolve(directory, target)
-}
+  /** Resolves against the process working directory, which may be unavailable. */
+  export function resolve(directory: string, target: string) {
+    return path.resolve(directory, target)
+  }
 }

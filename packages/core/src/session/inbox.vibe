@@ -90,45 +90,51 @@ const fromRow = effect (row: typeof SessionInboxTable.$inferSelect): Info!! => {
     sessionID: row.session_id,
     time: { created: DateTime.makeUnsafe(row.time_created) },
   }
-  if (row.type === "compaction")
+  if (row.type === "compaction") {
     return Compaction.make({
       ...base,
       type: "compaction",
-      payload: try Effect.try({ try: () => decodeCompaction(row.payload), catch: (cause) => cause }).pipe(Effect.orDie),
+      payload: try Effect.try({ try: () => decodeCompaction(row.payload), catch: (cause) => cause }).pipe(
+        Effect.orDie,
+      ),
       delivery: row.delivery,
     })
-  if (row.type === "move")
+  }
+  if (row.type === "move") {
     return Move.make({
       ...base,
       type: "move",
       payload: try Effect.try({ try: () => decodeMove(row.payload), catch: (cause) => cause }).pipe(Effect.orDie),
       delivery: row.delivery,
     })
-  if (row.type === "user")
+  }
+  if (row.type === "user") {
     return User.make({
       ...base,
       type: "user",
       payload: try Effect.try({ try: () => decodeUser(row.payload), catch: (cause) => cause }).pipe(Effect.orDie),
       delivery: row.delivery,
     })
-  if (row.type === "synthetic")
+  }
+  if (row.type === "synthetic") {
     return Synthetic.make({
       ...base,
       type: "synthetic",
       payload: try Effect.try({ try: () => decodeSynthetic(row.payload), catch: (cause) => cause }).pipe(Effect.orDie),
       delivery: row.delivery,
     })
+  }
   return try die(new LifecycleConflict({ id: base.id }))
 }
 
-export const find = Effect.fn("SessionInbox.find")(function* (db: DatabaseService, id: SessionMessage.ID) {
+export const find = Effect.fn("SessionInbox.find")(function*(db: DatabaseService, id: SessionMessage.ID) {
   const row = yield* db.select().from(SessionInboxTable).where(eq(SessionInboxTable.id, id)).get().pipe(Effect.orDie)
   if (row === undefined) return undefined
   const [hydrated] = yield* SessionBlob.hydrateInbox(db, [row])
   return hydrated && (yield* fromRow(hydrated))
 })
 
-const promotedFromMessage = Effect.fn("SessionInbox.promotedFromMessage")(function* (
+const promotedFromMessage = Effect.fn("SessionInbox.promotedFromMessage")(function*(
   db: DatabaseService,
   sessionID: SessionSchema.ID,
   id: SessionMessage.ID,
@@ -141,12 +147,13 @@ const promotedFromMessage = Effect.fn("SessionInbox.promotedFromMessage")(functi
     .get()
     .pipe(Effect.orDie)
   if (row === undefined) return undefined
-  if (row.session_id !== sessionID || (row.type !== "user" && row.type !== "synthetic"))
+  if (row.session_id !== sessionID || (row.type !== "user" && row.type !== "synthetic")) {
     return yield* new LifecycleConflict({ id })
+  }
   const [message] = yield* SessionHistory.decodeMessageRows(db, [row]).pipe(Effect.orDie)
   if (!message) return undefined
   const base = { id, sessionID, time: { created: message.time.created }, delivery }
-  if (message.type === "user")
+  if (message.type === "user") {
     return User.make({
       ...base,
       type: "user",
@@ -158,7 +165,8 @@ const promotedFromMessage = Effect.fn("SessionInbox.promotedFromMessage")(functi
         metadata: message.metadata,
       }),
     })
-  if (message.type === "synthetic")
+  }
+  if (message.type === "synthetic") {
     return Synthetic.make({
       ...base,
       type: "synthetic",
@@ -168,33 +176,35 @@ const promotedFromMessage = Effect.fn("SessionInbox.promotedFromMessage")(functi
         metadata: message.metadata,
       }),
     })
+  }
 })
 
 export type Interface = Effect.Success<ReturnType<typeof make>>
 
 export class Service extends Context.Service<Service, Interface>()("@opencode/SessionInbox") {}
 
-export const make = Effect.fn("SessionInbox.make")(function* () {
+export const make = Effect.fn("SessionInbox.make")(function*() {
   const database = yield* Database.Service
   const db = database.db
   const bus = yield* Bus.Service
 
   /** First admission wins for matching Session and type, without preparing a new payload. */
-  const reconcile = Effect.fn("SessionInbox.reconcile")(function* <Type extends Item["type"]>(request: {
+  const reconcile = Effect.fn("SessionInbox.reconcile")(function*<Type extends Item["type"]>(request: {
     readonly id: SessionMessage.ID
     readonly sessionID: SessionSchema.ID
     readonly type: Type
     readonly delivery: Delivery
   }) {
-    const existing =
-      (yield* find(db, request.id)) ?? (yield* promotedFromMessage(db, request.sessionID, request.id, request.delivery))
+    const existing = (yield* find(db, request.id))
+      ?? (yield* promotedFromMessage(db, request.sessionID, request.id, request.delivery))
     if (existing === undefined) return undefined
-    if (existing.type === "compaction" || !matches(existing, request))
+    if (existing.type === "compaction" || !matches(existing, request)) {
       return yield* new LifecycleConflict({ id: request.id })
+    }
     return existing
   })
 
-  const admit = Effect.fn("SessionInbox.admit")(function* <Type extends Item["type"]>(request: {
+  const admit = Effect.fn("SessionInbox.admit")(function*<Type extends Item["type"]>(request: {
     readonly id: SessionMessage.ID
     readonly sessionID: SessionSchema.ID
     readonly item: Item & { readonly type: Type }
@@ -214,36 +224,38 @@ export const make = Effect.fn("SessionInbox.make")(function* () {
             sessionID: request.sessionID,
             time: { created: DateTime.makeUnsafe(event.created) },
             ...request.item,
-          }),
+          })
         ),
         Effect.catchDefect((defect) =>
           defect instanceof LifecycleConflict
             ? find(db, request.id).pipe(
-                Effect.flatMap((stored) => (stored === undefined ? Effect.fail(defect) : Effect.succeed(stored))),
-              )
-            : Effect.die(defect),
+              Effect.flatMap((stored) => (stored === undefined ? Effect.fail(defect) : Effect.succeed(stored))),
+            )
+            : Effect.die(defect)
         ),
       )
-    if (!matches(admitted, { ...request, type: request.item.type }))
+    if (!matches(admitted, { ...request, type: request.item.type })) {
       return yield* new LifecycleConflict({ id: request.id })
+    }
     return admitted
   })
 
-  const admitCompaction = Effect.fn("SessionInbox.admitCompaction")(function* (input: {
+  const admitCompaction = Effect.fn("SessionInbox.admitCompaction")(function*(input: {
     readonly id: SessionMessage.ID
     readonly sessionID: SessionSchema.ID
     readonly delivery: Delivery
   }) {
     return yield* serialized(
       input.sessionID,
-      Effect.gen(function* () {
+      Effect.gen(function*() {
         const exact = yield* find(db, input.id)
         if (exact) {
           if (exact.type === "compaction" && exact.sessionID === input.sessionID) return exact
           return yield* new LifecycleConflict({ id: input.id })
         }
-        if (yield* promotedFromMessage(db, input.sessionID, input.id, input.delivery))
+        if (yield* promotedFromMessage(db, input.sessionID, input.id, input.delivery)) {
           return yield* new LifecycleConflict({ id: input.id })
+        }
         const pending = (yield* list(db, input.sessionID)).find((item) => item.type === "compaction")
         if (pending) return pending
         return yield* admit({
@@ -262,7 +274,7 @@ export const make = Effect.fn("SessionInbox.make")(function* () {
         sessionID: input.sessionID,
         inboxID: input.id,
       }),
-    ),
+    )
   )
 
   const steer = Effect.fn("SessionInbox.steer")((input: PendingRef) =>
@@ -273,7 +285,7 @@ export const make = Effect.fn("SessionInbox.make")(function* () {
         inboxID: input.id,
         delivery: "steer",
       }),
-    ),
+    )
   )
 
   const queue = Effect.fn("SessionInbox.queue")((input: PendingRef) =>
@@ -284,7 +296,7 @@ export const make = Effect.fn("SessionInbox.make")(function* () {
         inboxID: input.id,
         delivery: "queue",
       }),
-    ),
+    )
   )
 
   return {
@@ -302,7 +314,7 @@ export const layer = Layer.effect(Service, make())
 
 export const node = makeGlobalNode({ service: Service, layer, deps: [Database.node, Bus.node] })
 
-export const projectAdmitted = Effect.fn("SessionInbox.projectAdmitted")(function* (
+export const projectAdmitted = Effect.fn("SessionInbox.projectAdmitted")(function*(
   db: DatabaseService,
   request: {
     readonly enqueuedSeq: number
@@ -319,14 +331,13 @@ export const projectAdmitted = Effect.fn("SessionInbox.projectAdmitted")(functio
     .get()
     .pipe(Effect.orDie)
   if (message !== undefined) return yield* Effect.die(new LifecycleConflict({ id: request.id }))
-  const payload =
-    request.item.type === "user"
-      ? encodeStoredUser(yield* SessionBlob.externalizePayload(db, request.item.payload))
-      : request.item.type === "synthetic"
-        ? encodeSynthetic(request.item.payload)
-        : request.item.type === "compaction"
-          ? encodeCompaction(request.item.payload)
-          : encodeMove(request.item.payload)
+  const payload = request.item.type === "user"
+    ? encodeStoredUser(yield* SessionBlob.externalizePayload(db, request.item.payload))
+    : request.item.type === "synthetic"
+    ? encodeSynthetic(request.item.payload)
+    : request.item.type === "compaction"
+    ? encodeCompaction(request.item.payload)
+    : encodeMove(request.item.payload)
   const stored = yield* db
     .insert(SessionInboxTable)
     .values({
@@ -355,7 +366,7 @@ export const projectAdmitted = Effect.fn("SessionInbox.projectAdmitted")(functio
  * message insert inside the same event transaction; the deleted row is what
  * makes the table pending-only.
  */
-export const projectDelivered = Effect.fn("SessionInbox.projectDelivered")(function* (
+export const projectDelivered = Effect.fn("SessionInbox.projectDelivered")(function*(
   db: DatabaseService,
   input: PendingRef,
 ) {
@@ -381,7 +392,7 @@ const delivered = (row: typeof SessionInboxTable.$inferSelect): Delivered => {
   return { id: row.id, type: row.type }
 }
 
-export const projectCancelled = Effect.fn("SessionInbox.projectCancelled")(function* (
+export const projectCancelled = Effect.fn("SessionInbox.projectCancelled")(function*(
   db: DatabaseService,
   input: PendingRef,
 ) {
@@ -401,7 +412,7 @@ export const projectCancelled = Effect.fn("SessionInbox.projectCancelled")(funct
   yield* SessionBlob.releaseMessage(db, input.sessionID, input.id)
 })
 
-const projectDelivery = Effect.fn("SessionInbox.projectDelivery")(function* (
+const projectDelivery = Effect.fn("SessionInbox.projectDelivery")(function*(
   db: DatabaseService,
   input: PendingRef & { readonly from: Delivery; readonly to: Delivery },
 ) {
@@ -444,19 +455,21 @@ const listRows = (db: DatabaseService, sessionID: SessionSchema.ID) =>
     return try query.all().pipe(Effect.orDie)
   }
 
-export const list = Effect.fn("SessionInbox.list")(function* (db: DatabaseService, sessionID: SessionSchema.ID) {
+export const list = Effect.fn("SessionInbox.list")(function*(db: DatabaseService, sessionID: SessionSchema.ID) {
   return yield* Effect.forEach(yield* SessionBlob.hydrateInbox(db, yield* listRows(db, sessionID)), fromRow)
 })
 
 /** {@link list} for clients that fetch media themselves: files stored in `blob` stay `media:` refs. */
-export const listWithRefs = Effect.fn("SessionInbox.listWithRefs")(function* (
+export const listWithRefs = Effect.fn("SessionInbox.listWithRefs")(function*(
   db: DatabaseService,
   sessionID: SessionSchema.ID,
 ) {
   const kept = yield* SessionBlob.keepInboxRefs(db, yield* listRows(db, sessionID))
   return yield* Effect.forEach(kept.rows, effect (row): MediaInfo!! => {
     if (row.type !== "user") return try fromRow(row)
-    const payload = try Effect.try({ try: () => decodeMediaUser(row.payload), catch: (cause) => cause }).pipe(Effect.orDie)
+    const payload = try Effect.try({ try: () => decodeMediaUser(row.payload), catch: (cause) => cause }).pipe(
+      Effect.orDie,
+    )
     return MediaUser.make({
       id: row.id,
       sessionID: row.session_id,
@@ -468,7 +481,7 @@ export const listWithRefs = Effect.fn("SessionInbox.listWithRefs")(function* (
   })
 })
 
-export const moveIDs = Effect.fn("SessionInbox.moveIDs")(function* (db: DatabaseService, sessionID: SessionSchema.ID) {
+export const moveIDs = Effect.fn("SessionInbox.moveIDs")(function*(db: DatabaseService, sessionID: SessionSchema.ID) {
   return yield* db
     .select({ id: SessionInboxTable.id })
     .from(SessionInboxTable)
@@ -478,7 +491,7 @@ export const moveIDs = Effect.fn("SessionInbox.moveIDs")(function* (db: Database
     .pipe(Effect.orDie)
 })
 
-export const nextPromotable = Effect.fn("SessionInbox.nextPromotable")(function* (
+export const nextPromotable = Effect.fn("SessionInbox.nextPromotable")(function*(
   db: DatabaseService,
   sessionID: SessionSchema.ID,
   promotable: Promotable,
@@ -501,11 +514,11 @@ export const nextPromotable = Effect.fn("SessionInbox.nextPromotable")(function*
 export type Promotion =
   | { readonly id: SessionMessage.ID; readonly type: "user" | "synthetic" | "compaction"; readonly delivery: Delivery }
   | {
-      readonly id: SessionMessage.ID
-      readonly type: "move"
-      readonly delivery: Delivery
-      readonly payload: MovePayload
-    }
+    readonly id: SessionMessage.ID
+    readonly type: "move"
+    readonly delivery: Delivery
+    readonly payload: MovePayload
+  }
 
 const promotion = (row: typeof SessionInboxTable.$inferSelect): Promotion =>
   row.type === "move"
@@ -515,7 +528,7 @@ const promotion = (row: typeof SessionInboxTable.$inferSelect): Promotion =>
 /** Which pending rows count: "input" means any item in either delivery mode. */
 export type Scope = "input" | Delivery
 
-export const has = Effect.fn("SessionInbox.has")(function* (
+export const has = Effect.fn("SessionInbox.has")(function*(
   db: DatabaseService,
   sessionID: SessionSchema.ID,
   scope: Scope,
@@ -544,7 +557,7 @@ const publishMutation = <A, E, R>(input: PendingRef, effect: Effect.Effect<A, E,
     Effect.catchDefect((defect) => (defect instanceof LifecycleConflict ? Effect.fail(defect) : Effect.die(defect))),
   )
 
-const publish = Effect.fn("SessionInbox.publish")(function* (
+const publish = Effect.fn("SessionInbox.publish")(function*(
   db: DatabaseService,
   bus: Bus.Interface,
   sessionID: SessionSchema.ID,
@@ -553,8 +566,9 @@ const publish = Effect.fn("SessionInbox.publish")(function* (
   yield* Effect.forEach(
     rows,
     (row) => {
-      if (row.type !== "move" && row.type !== "user" && row.type !== "synthetic")
+      if (row.type !== "move" && row.type !== "user" && row.type !== "synthetic") {
         return Effect.die(new LifecycleConflict({ id: row.id }))
+      }
       return bus
         .publish(SessionEvent.InboxDelivered, {
           sessionID,
@@ -564,10 +578,10 @@ const publish = Effect.fn("SessionInbox.publish")(function* (
           Effect.catchDefect((defect) =>
             defect instanceof LifecycleConflict
               ? promotedFromMessage(db, sessionID, row.id, row.delivery).pipe(
-                  Effect.flatMap((stored) => (stored !== undefined ? Effect.void : Effect.die(defect))),
-                  Effect.orDie,
-                )
-              : Effect.die(defect),
+                Effect.flatMap((stored) => (stored !== undefined ? Effect.void : Effect.die(defect))),
+                Effect.orDie,
+              )
+              : Effect.die(defect)
           ),
         )
     },
@@ -582,7 +596,7 @@ const publish = Effect.fn("SessionInbox.publish")(function* (
  * Steered compaction takes priority over pending prompts, without crossing a move.
  * Only the "input" scope may fall through to one queued input.
  */
-export const promote = Effect.fn("SessionInbox.promote")(function* (
+export const promote = Effect.fn("SessionInbox.promote")(function*(
   db: DatabaseService,
   bus: Bus.Interface,
   sessionID: SessionSchema.ID,
@@ -590,7 +604,7 @@ export const promote = Effect.fn("SessionInbox.promote")(function* (
 ) {
   return yield* serialized(
     sessionID,
-    Effect.gen(function* () {
+    Effect.gen(function*() {
       const steers = yield* pendingSteers(db, sessionID)
       if (steers.length > 0 || scope === "steer") {
         const control = steers.findIndex((row) => row.type === "compaction" || row.type === "move")
@@ -612,8 +626,8 @@ export const promote = Effect.fn("SessionInbox.promote")(function* (
       const arrivedSteers = yield* pendingSteers(db, sessionID)
       const control = arrivedSteers.findIndex((row) => row.type === "compaction" || row.type === "move")
       return (
-        promoted +
-        (yield* publish(db, bus, sessionID, control === -1 ? arrivedSteers : arrivedSteers.slice(0, control)))
+        promoted
+        + (yield* publish(db, bus, sessionID, control === -1 ? arrivedSteers : arrivedSteers.slice(0, control)))
       )
     }),
   )

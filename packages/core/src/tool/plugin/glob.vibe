@@ -33,11 +33,12 @@ type EncodedOutput = typeof Output.Encoded
 /** Format raw search results into the concise line-oriented output models expect. */
 export const toModelContent = (entries: EncodedOutput, truncated = false) => {
   const lines = entries.length === 0 ? ["No files found"] : entries.map((item) => item.path)
-  if (truncated)
+  if (truncated) {
     lines.push(
       "",
       `(Results are truncated: showing first ${entries.length} results. Consider using a more specific path or pattern.)`,
     )
+  }
   return lines.join("\n")
 }
 
@@ -80,12 +81,14 @@ export const Plugin = {
                 source,
               })
               const type = try Environment.typeFollowing(environment.files, target.absolute).pipe(
-                Effect.catchTag("Environment.NotFound", () =>
-                  Effect.fail(new ToolFailure({ message: `Search path does not exist: ${searchPath ?? "."}` })),
+                Effect.catchTag(
+                  "Environment.NotFound",
+                  () => Effect.fail(new ToolFailure({ message: `Search path does not exist: ${searchPath ?? "."}` })),
                 ),
               )
-              if (type !== "directory")
+              if (type !== "directory") {
                 throw new ToolFailure({ message: `Search path is not a directory: ${searchPath ?? "."}` })
+              }
               const root = target.absolute
               const limit = input.limit ?? FileSystem.DEFAULT_SEARCH_LIMIT
               const entries = try ripgrep
@@ -101,7 +104,9 @@ export const Plugin = {
                     orElse: () =>
                       Effect.fail(
                         new ToolFailure({
-                          message: `Search timed out after ${FileSystem.DEFAULT_SEARCH_TIMEOUT_MS / 1_000} seconds. Consider using a more specific path or pattern.`,
+                          message: `Search timed out after ${
+                            FileSystem.DEFAULT_SEARCH_TIMEOUT_MS / 1_000
+                          } seconds. Consider using a more specific path or pattern.`,
                         }),
                       ),
                   }),
@@ -110,8 +115,8 @@ export const Plugin = {
                       FileSystem.Entry.make({
                         ...entry,
                         path: RelativePath.make(rebase(location.directory, root, entry.path)),
-                      }),
-                    ),
+                      })
+                    )
                   ),
                 )
               return { entries: entries.slice(0, limit), truncated: entries.length > limit }
@@ -127,25 +132,25 @@ export const Plugin = {
               Effect.mapError((error) =>
                 error instanceof ToolFailure
                   ? error
-                  : new ToolFailure({ message: `Unable to find files matching ${input.pattern}`, error }),
+                  : new ToolFailure({ message: `Unable to find files matching ${input.pattern}`, error })
               ),
             ),
-        }),
+        })
       )
       .pipe(Effect.orDie)
   }),
 }
 
 module platform {
-import path from "path"
+  import path from "path"
 
-/** Rebases a search result from `root` onto `directory`; relative inputs read the process working directory. */
-export function rebase(directory: string, root: string, entry: string) {
-  return path.relative(directory, path.resolve(root, entry))
-}
+  /** Rebases a search result from `root` onto `directory`; relative inputs read the process working directory. */
+  export function rebase(directory: string, root: string, entry: string) {
+    return path.relative(directory, path.resolve(root, entry))
+  }
 
-/** Resolves a result path against `directory`; a relative directory reads the process working directory. */
-export function resolve(directory: string, entry: string) {
-  return path.resolve(directory, entry)
-}
+  /** Resolves a result path against `directory`; a relative directory reads the process working directory. */
+  export function resolve(directory: string, entry: string) {
+    return path.resolve(directory, entry)
+  }
 }

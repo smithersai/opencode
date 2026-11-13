@@ -58,10 +58,10 @@ export interface Interface {
   /** Selects auxiliary title capabilities without instruction or tool preflight. */
   readonly selectTitle: (session: SessionSchema.Info) => Effect.Effect<
     | {
-        readonly agent: Agent.Info
-        readonly primary: SessionRunnerModel.Resolved | undefined
-        readonly selected: SessionRunnerModel.Resolved
-      }
+      readonly agent: Agent.Info
+      readonly primary: SessionRunnerModel.Resolved | undefined
+      readonly selected: SessionRunnerModel.Resolved
+    }
     | undefined
   >
   readonly request: SessionModelRequest.Interface
@@ -72,7 +72,7 @@ export class Service extends Context.Service<Service, Interface>()("@opencode/Se
 
 const layer = Layer.effect(
   Service,
-  (effect {
+  effect {
     const agents = try Agent.Service
     const builtins = try InstructionBuiltIns.Service
     const model = try Model.Service
@@ -108,9 +108,8 @@ const layer = Layer.effect(
         const variant = info && lowerVariant(info, primary.ref.variant)
         return variant && { info, variant }
       })
-      const preferred =
-        candidate &&
-        (try resolveModel({
+      const preferred = candidate
+        && (try resolveModel({
           ...session,
           model: Model.Ref.make({
             providerID: candidate.info.providerID,
@@ -126,8 +125,9 @@ const layer = Layer.effect(
     const select = fn("SessionContext.select")(effect (sessionID: SessionSchema.ID) => {
       const session = try store.get(sessionID)
       if (!session) return try die(new Error(`Session not found: ${sessionID}`))
-      if (session.location.directory !== location.directory || session.location.workspaceID !== location.workspaceID)
+      if (session.location.directory !== location.directory || session.location.workspaceID !== location.workspaceID) {
         return try Effect.interrupt
+      }
 
       try mcpTools.flush
       const agent = try agents.select(session.agent)
@@ -158,13 +158,13 @@ const layer = Layer.effect(
         // the date and environment, which vary by day and directory.
         instructions: try Effect.try({
           try: () => Instructions.combine([
-          CodeModeInstructions.make(loaded.tools.codeModeCatalog),
-          loaded.mcp,
-          loaded.references,
-          loaded.skills,
-          loaded.discovery,
-          loaded.builtins,
-          loaded.entries,
+            CodeModeInstructions.make(loaded.tools.codeModeCatalog),
+            loaded.mcp,
+            loaded.references,
+            loaded.skills,
+            loaded.discovery,
+            loaded.builtins,
+            loaded.entries,
           ]),
           catch: (cause) => cause,
         }).pipe(orDie),
@@ -191,7 +191,7 @@ const layer = Layer.effect(
     })
 
     return Service.of({ select, load, resolveModel, selectTitle, request })
-  }),
+  },
 )
 
 /** Variant IDs that minimize reasoning output, in preference order. */

@@ -45,7 +45,7 @@ export class Service extends Context.Service<Service, Interface>()("@opencode/Se
 
 const layer = Layer.effect(
   Service,
-  Effect.gen(function* () {
+  Effect.gen(function*() {
     const app = yield* App.Metadata
     const bus = yield* Bus.Service
     const { db } = yield* Database.Service
@@ -54,14 +54,14 @@ const layer = Layer.effect(
     const encodeMessage = Schema.encodeSync(SessionMessage.Info)
 
     return Service.of({
-      export: Effect.fn("SessionTransfer.export")(function* (input) {
+      export: Effect.fn("SessionTransfer.export")(function*(input) {
         const data = {
           info: yield* sessions.get(input.sessionID),
           messages: (yield* sessions.messages({ sessionID: input.sessionID, order: "asc" })).filter(isSettled),
         }
         return input.sanitize ? sanitize(data) : data
       }),
-      import: Effect.fn("SessionTransfer.import")(function* (input) {
+      import: Effect.fn("SessionTransfer.import")(function*(input) {
         const sessionID = input.data.info.id
         const recorded = yield* db
           .select({ id: SessionTable.id })
@@ -108,7 +108,7 @@ const layer = Layer.effect(
             {
               location: input.location,
               commit: (seq) =>
-                Effect.gen(function* () {
+                Effect.gen(function*() {
                   if (messages.length > 0) {
                     yield* db.insert(SessionMessageTable).values(messages).run().pipe(Effect.orDie)
                     yield* Bus.reserveSequence(db, sessionID, seq + messages.length)
@@ -125,13 +125,12 @@ const layer = Layer.effect(
                       time_created: DateTime.toEpochMillis(input.data.info.time.created),
                       time_updated: importedAt,
                       time_idle: input.data.info.time.idle ? DateTime.toEpochMillis(input.data.info.time.idle) : null,
-                      time_viewed:
-                        input.data.info.time.idle && input.data.info.time.viewed
-                          ? Math.min(
-                              DateTime.toEpochMillis(input.data.info.time.idle),
-                              DateTime.toEpochMillis(input.data.info.time.viewed),
-                            )
-                          : null,
+                      time_viewed: input.data.info.time.idle && input.data.info.time.viewed
+                        ? Math.min(
+                          DateTime.toEpochMillis(input.data.info.time.idle),
+                          DateTime.toEpochMillis(input.data.info.time.viewed),
+                        )
+                        : null,
                       idle_outcome: input.data.info.time.idle ? (input.data.info.outcome ?? null) : null,
                       time_archived: input.data.info.time.archived
                         ? DateTime.toEpochMillis(input.data.info.time.archived)
@@ -147,7 +146,7 @@ const layer = Layer.effect(
             Effect.catchDefect((defect) =>
               defect instanceof SessionProjector.SessionAlreadyProjected
                 ? Effect.fail(new ImportConflictError({ sessionID }))
-                : Effect.die(defect),
+                : Effect.die(defect)
             ),
           )
         return yield* sessions.get(sessionID).pipe(Effect.orDie)
@@ -182,23 +181,22 @@ function sanitize(data: Data): Data {
     info: {
       ...data.info,
       title: data.info.title === undefined ? undefined : redact("session-title", data.info.id, data.info.title),
-      metadata:
-        data.info.metadata && Object.keys(data.info.metadata).length > 0
-          ? { redacted: `session-metadata:${data.info.id}` }
-          : data.info.metadata,
+      metadata: data.info.metadata && Object.keys(data.info.metadata).length > 0
+        ? { redacted: `session-metadata:${data.info.id}` }
+        : data.info.metadata,
       location: {
         ...data.info.location,
         directory: AbsolutePath.make(`/${redact("session-directory", data.info.id, data.info.location.directory)}`),
       },
       revert: data.info.revert
         ? {
-            ...data.info.revert,
-            files: data.info.revert.files?.map((file, index) => ({
-              ...file,
-              file: redact("revert-file", String(index), file.file),
-              patch: redact("revert-patch", String(index), file.patch),
-            })),
-          }
+          ...data.info.revert,
+          files: data.info.revert.files?.map((file, index) => ({
+            ...file,
+            file: redact("revert-file", String(index), file.file),
+            patch: redact("revert-patch", String(index), file.patch),
+          })),
+        }
         : undefined,
     },
     messages: data.messages.map(sanitizeMessage),
@@ -207,7 +205,7 @@ function sanitize(data: Data): Data {
 
 function sanitizeMessage(message: SessionMessage.Info): SessionMessage.Info {
   const meta = metadata("message-metadata", message.id, message.metadata)
-  if (message.type === "user")
+  if (message.type === "user") {
     return {
       ...message,
       metadata: meta,
@@ -217,8 +215,9 @@ function sanitizeMessage(message: SessionMessage.Info): SessionMessage.Info {
         data: "",
         source: { type: "inline" },
         name: file.name === undefined ? undefined : redact("file-name", String(index), file.name),
-        description:
-          file.description === undefined ? undefined : redact("file-description", String(index), file.description),
+        description: file.description === undefined
+          ? undefined
+          : redact("file-description", String(index), file.description),
         mention: file.mention
           ? { ...file.mention, text: redact("file-mention", String(index), file.mention.text) }
           : undefined,
@@ -239,19 +238,20 @@ function sanitizeMessage(message: SessionMessage.Info): SessionMessage.Info {
           : undefined,
       })),
     }
-  if (message.type === "synthetic")
+  }
+  if (message.type === "synthetic") {
     return {
       ...message,
       metadata: meta,
       text: redact("synthetic", message.id, message.text),
-      description:
-        message.description === undefined
-          ? undefined
-          : redact("synthetic-description", message.id, message.description),
+      description: message.description === undefined
+        ? undefined
+        : redact("synthetic-description", message.id, message.description),
     }
+  }
   if (message.type === "system") return { ...message, metadata: meta, text: redact("system", message.id, message.text) }
   if (message.type === "skill") return { ...message, metadata: meta, text: redact("skill", message.id, message.text) }
-  if (message.type === "shell")
+  if (message.type === "shell") {
     return {
       ...message,
       metadata: meta,
@@ -260,23 +260,26 @@ function sanitizeMessage(message: SessionMessage.Info): SessionMessage.Info {
         ? { ...message.output, output: redact("shell-output", message.id, message.output.output) }
         : undefined,
     }
-  if (message.type === "assistant")
+  }
+  if (message.type === "assistant") {
     return {
       ...message,
       metadata: meta,
       content: message.content.map((content) => {
-        if (content.type === "text")
+        if (content.type === "text") {
           return {
             ...content,
             text: redact("text", message.id, content.text),
             native: content.native ? { redacted: `text-native:${message.id}` } : undefined,
           }
-        if (content.type === "reasoning")
+        }
+        if (content.type === "reasoning") {
           return {
             ...content,
             text: redact("reasoning", message.id, content.text),
             native: content.native ? { redacted: `reasoning-native:${message.id}` } : undefined,
           }
+        }
         return {
           ...content,
           native: content.native ? { redacted: `tool-native:${message.id}` } : undefined,
@@ -284,12 +287,14 @@ function sanitizeMessage(message: SessionMessage.Info): SessionMessage.Info {
         }
       }),
     }
+  }
   if (message.type === "compaction") {
-    if (message.status === "failed")
+    if (message.status === "failed") {
       return {
         ...message,
         metadata: meta,
       }
+    }
     return {
       ...message,
       metadata: meta,
@@ -302,16 +307,18 @@ function sanitizeMessage(message: SessionMessage.Info): SessionMessage.Info {
 
 function sanitizeToolState(id: string, state: SessionMessage.ToolState): SessionMessage.ToolState {
   if (state.status === "streaming") return { ...state, input: redact("tool-input", id, state.input) }
-  if (state.status === "running")
+  if (state.status === "running") {
     return { ...state, input: { redacted: `tool-input:${id}` }, metadata: { redacted: `tool-metadata:${id}` } }
+  }
   const meta = state.metadata === undefined ? undefined : { redacted: `tool-metadata:${id}` }
-  if (state.status === "completed")
+  if (state.status === "completed") {
     return {
       ...state,
       input: { redacted: `tool-input:${id}` },
       content: map(state.content, (item) => sanitizeToolContent(id, item)),
       metadata: meta,
     }
+  }
   return {
     ...state,
     input: { redacted: `tool-input:${id}` },
@@ -330,14 +337,14 @@ function sanitizeToolContent(id: string, content: Tool.Content): Tool.Content {
 }
 
 module platform {
-// The platform code of transfer.vibe: host path arithmetic, which a .vibe file does not import (EK4402).
+  // The platform code of transfer.vibe: host path arithmetic, which a .vibe file does not import (EK4402).
 
-import nodePath from "path"
+  import nodePath from "path"
 
-/** @throws {never} */
-function relative(from: string, to: string): string {
-  return nodePath.relative(from, to)
-}
+  /** @throws {never} */
+  function relative(from: string, to: string): string {
+    return nodePath.relative(from, to)
+  }
 
-export const path = { relative }
+  export const path = { relative }
 }

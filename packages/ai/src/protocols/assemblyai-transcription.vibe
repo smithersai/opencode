@@ -97,7 +97,15 @@ const prepare = effect (request: Request, send: MediaProtocol.Send) =>
       const uploaded = try decodeUpload(
         try send(UPLOAD_PATH, MediaProtocol.binary(audio, "application/octet-stream")),
       )
-      return { ...request, audio: try Effect.orDie(Effect.try({ try: () => Media.url(uploaded.value.upload_url, { mediaType: request.audio.mediaType }), catch: (e) => e })) }
+      return {
+        ...request,
+        audio: try Effect.orDie(
+          Effect.try({
+            try: () => Media.url(uploaded.value.upload_url, { mediaType: request.audio.mediaType }),
+            catch: (e) => e,
+          }),
+        ),
+      }
     },
     "AssemblyAITranscription.prepare",
   )

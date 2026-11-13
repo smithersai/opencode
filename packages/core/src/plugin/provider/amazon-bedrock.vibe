@@ -21,7 +21,7 @@ const isBedrock = (item: { readonly package: string }) =>
 
 export const AmazonBedrockPlugin = define({
   id: "opencode.provider.amazon.bedrock",
-  effect: Effect.fn(function* (ctx) {
+  effect: Effect.fn(function*(ctx) {
     const fs = yield* FSUtil.Service
     const paths = [
       environmentValue("AWS_CONFIG_FILE") ?? joinPath(Global.Path.home, ".aws", "config"),
@@ -39,7 +39,7 @@ export const AmazonBedrockPlugin = define({
             // The credentials file uses bare names; the config file prefixes all but "default" with "profile ".
             if (index === 1 || section === "default") return [section]
             return section.startsWith("profile ") ? [section.slice(8).trim()] : []
-          }),
+          })
         ),
       ),
     )
@@ -111,18 +111,18 @@ export const AmazonBedrockPlugin = define({
 })
 
 module platform {
-// The platform code of amazon-bedrock.vibe: environment variable reads and host path joining, which a .vibe file
-// does not do (EK4402).
+  // The platform code of amazon-bedrock.vibe: environment variable reads and host path joining, which a .vibe file
+  // does not do (EK4402).
 
-import path from "node:path"
+  import path from "node:path"
 
-/** @throws {never} */
-export function environmentValue(key: string): string | undefined {
-  return process.env[key]
-}
+  /** @throws {never} */
+  export function environmentValue(key: string): string | undefined {
+    return process.env[key]
+  }
 
-/** @throws {never} */
-export function joinPath(...parts: string[]): string {
-  return path.join(...parts)
-}
+  /** @throws {never} */
+  export function joinPath(...parts: string[]): string {
+    return path.join(...parts)
+  }
 }

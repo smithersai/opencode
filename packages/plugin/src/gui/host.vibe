@@ -266,8 +266,9 @@ module bundle {
       )
     }
 
-    if (!plugin.setup && !plugin.main)
+    if (!plugin.setup && !plugin.main) {
       throw new Error("A plugin's GUI must have a window `setup`, a `main` setup, or both")
+    }
 
     return {
       definition: {
@@ -426,53 +427,53 @@ export interface BridgePluginGuis {
  */
 export type BridgeMessage =
   | {
-      /** An Ipc's new state. */
-      readonly type: "state"
-      /** The Ipc's id. */
-      readonly ipc: string
-      /** The encoded state. */
-      readonly state: unknown
-    }
+    /** An Ipc's new state. */
+    readonly type: "state"
+    /** The Ipc's id. */
+    readonly ipc: string
+    /** The encoded state. */
+    readonly state: unknown
+  }
   | {
-      /** An Ipc event. */
-      readonly type: "event"
-      /** The Ipc's id. */
-      readonly ipc: string
-      /** The event's name. */
-      readonly name: string
-      /** The encoded data. */
-      readonly data: unknown
-    }
+    /** An Ipc event. */
+    readonly type: "event"
+    /** The Ipc's id. */
+    readonly ipc: string
+    /** The event's name. */
+    readonly name: string
+    /** The encoded data. */
+    readonly data: unknown
+  }
   | {
-      /** An Ipc's provider came or went. */
-      readonly type: "available"
-      /** The Ipc's id. */
-      readonly ipc: string
-      /** It is provided now. */
-      readonly available: boolean
-    }
+    /** An Ipc's provider came or went. */
+    readonly type: "available"
+    /** The Ipc's id. */
+    readonly ipc: string
+    /** It is provided now. */
+    readonly available: boolean
+  }
   | {
-      /** The installed list changed. */
-      readonly type: "installed"
-      /** The new list. */
-      readonly list: readonly Installed[]
-    }
+    /** The installed list changed. */
+    readonly type: "installed"
+    /** The new list. */
+    readonly list: readonly Installed[]
+  }
   | {
-      /** The window gained or lost focus; focus inside one of its embeds counts as the window's. */
-      readonly type: "focus"
-      /** The window is focused now. */
-      readonly focused: boolean
-    }
+    /** The window gained or lost focus; focus inside one of its embeds counts as the window's. */
+    readonly type: "focus"
+    /** The window is focused now. */
+    readonly focused: boolean
+  }
   | ({
-      /** The plugin GUIs main runs changed. */
-      readonly type: "pluginGuis"
-    } & BridgePluginGuis)
+    /** The plugin GUIs main runs changed. */
+    readonly type: "pluginGuis"
+  } & BridgePluginGuis)
   | {
-      /** The native menu's plugin items changed. */
-      readonly type: "menubarItems"
-      /** The new items. */
-      readonly items: readonly BridgeMenubarItem[]
-    }
+    /** The native menu's plugin items changed. */
+    readonly type: "menubarItems"
+    /** The new items. */
+    readonly items: readonly BridgeMenubarItem[]
+  }
 
 /** A `MenubarItem` as main publishes it to windows that draw their own menu. */
 export interface BridgeMenubarItem {

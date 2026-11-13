@@ -17,7 +17,9 @@ export interface Interface {
   ) => DecisionResponseFor<Questions>!AIError
 }
 
-export service Service: Interface { static readonly key = "@opencode/AI/DecisionClient";}
+export service Service: Interface {
+  static readonly key = "@opencode/AI/DecisionClient"
+}
 
 export const generate = <Options extends DecisionOptions, const Questions extends DecisionQuestions>(
   request: DecisionRequestFor<Options, Questions>,

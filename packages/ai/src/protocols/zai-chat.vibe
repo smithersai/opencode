@@ -43,7 +43,9 @@ const supportsToolStreaming = (modelID: string) => {
 const fromRequest = effect (request: LLMRequest) =>
   try withSpan(
     effect {
-      const options = try (try Effect.orDie(Effect.try({ try: () => ProviderShared.validateWith(Schema.decodeUnknownEffect(Options)), catch: (e) => e })))(
+      const options = try (try Effect.orDie(
+        Effect.try({ try: () => ProviderShared.validateWith(Schema.decodeUnknownEffect(Options)), catch: (e) => e }),
+      ))(
         request.providerOptions ?? {},
       )
       const body = try OpenAIChat.protocol.body.from(request)

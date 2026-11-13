@@ -132,7 +132,13 @@ export const ConsoleEntry = Schema.Struct({
 export interface ConsoleEntry extends Schema.Schema.Type<typeof ConsoleEntry> {}
 const snapshot = Schema.Struct({ ...page, content: text, truncated: Schema.Boolean })
 schema entry { readonly name: short; readonly count: count; readonly bytes: Schema.Finite }
-schema node { readonly id: Schema.Finite; readonly name: text; readonly type: short; readonly selfBytes: count; readonly edgeCount: count }
+schema node {
+  readonly id: Schema.Finite
+  readonly name: text
+  readonly type: short
+  readonly selfBytes: count
+  readonly edgeCount: count
+}
 const metrics = Schema.Array(Schema.Struct({ name: short, value: Schema.Finite, unit: short }))
 const profiled = Schema.Struct({ ...page, ...files, durationMs: Schema.Finite })
 const recording = Schema.Struct({ ...page, recording: Schema.Boolean })

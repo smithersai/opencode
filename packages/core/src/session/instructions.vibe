@@ -28,7 +28,7 @@ export class Service extends Context.Service<Service, Interface>()("@opencode/Se
 
 const layer = Layer.effect(
   Service,
-  Effect.gen(function* () {
+  Effect.gen(function*() {
     const bus = yield* Bus.Service
     const fs = yield* FSUtil.Service
     const db = (yield* Database.Service).db
@@ -44,7 +44,7 @@ const layer = Layer.effect(
     // are re-discovered and re-injected instead of staying silently lost.
     const inFlight = yield* Ref.make<Map<SessionSchema.ID, Set<string>>>(new Map())
 
-    const load = Effect.fn("SessionInstructions.load")(function* (input: Parameters<Interface["load"]>[0]) {
+    const load = Effect.fn("SessionInstructions.load")(function*(input: Parameters<Interface["load"]>[0]) {
       const claimed = yield* Ref.modify(inFlight, (map) => {
         const existing = map.get(input.sessionID) ?? new Set<string>()
         const newlyClaimed = input.paths.filter((path) => !existing.has(path))
@@ -54,7 +54,7 @@ const layer = Layer.effect(
         return [newlyClaimed, next]
       })
       if (claimed.length === 0) return
-      yield* Effect.gen(function* () {
+      yield* Effect.gen(function*() {
         const alreadyInjected = yield* previouslyInjected(db, input.sessionID)
         const toInject = claimed.filter((path) => !alreadyInjected.has(path))
         if (toInject.length === 0) return
@@ -98,15 +98,15 @@ const layer = Layer.effect(
 )
 
 function previouslyInjected(db: Database.Interface["db"], sessionID: SessionSchema.ID) {
-  return Effect.gen(function* () {
+  return Effect.gen(function*() {
     const history = yield* SessionHistory.synthetics(db, sessionID)
     return new Set(
       history
         .filter((message): message is SessionMessage.Synthetic => message.type === "synthetic")
         .flatMap(
           (message) =>
-            Option.getOrUndefined(Schema.decodeUnknownOption(InjectedMetadata)(message.metadata))?.instruction.paths ??
-            [],
+            Option.getOrUndefined(Schema.decodeUnknownOption(InjectedMetadata)(message.metadata))?.instruction.paths
+              ?? [],
         ),
     )
   })
@@ -126,12 +126,12 @@ export const node = makeLocationNode({
 })
 
 module platform {
-// The platform code of instructions.vibe: host path arithmetic, which a .vibe file does not import (EK4402).
+  // The platform code of instructions.vibe: host path arithmetic, which a .vibe file does not import (EK4402).
 
-import path from "path"
+  import path from "path"
 
-/** @throws {never} */
-export function relative(from: string, to: string): string {
-  return path.relative(from, to)
-}
+  /** @throws {never} */
+  export function relative(from: string, to: string): string {
+    return path.relative(from, to)
+  }
 }

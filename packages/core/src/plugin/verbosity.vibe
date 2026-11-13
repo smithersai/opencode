@@ -19,28 +19,30 @@ const gateways = new Set([
   Provider.aisdk("@ai-sdk/gateway"),
 ])
 
-export const Plugin = define({
-  id: "opencode.prompt.verbosity",
-  effect: Effect.fn("VerbosityPlugin")(effect (ctx) => {
-    const models = try Model.Service
-    const hook = (event: SessionRequest) =>
-      effect {
-        if (event.options.textVerbosity !== undefined) return
-        const model = try models.get(event.model.providerID, event.model.id)
-        if (!model) return
-        const id = openAIModelID(model)
-        if (!id || !supportsVerbosity(id)) return
-        if (model.settings?.textVerbosity !== undefined) return
-        const variant = model.variants.find((item) => item.id === event.model.variant)
-        if (variant?.settings?.textVerbosity !== undefined) return
-        event.options.textVerbosity = "low"
-      }
-    try ctx.session.hook("context", hook)
-    try ctx.session.hook("compaction", hook)
-    try ctx.session.hook("generate", hook)
-    try ctx.session.hook("title", hook)
-  }),
-} satisfies PluginInternal.InternalPlugin)
+export const Plugin = define(
+  {
+    id: "opencode.prompt.verbosity",
+    effect: Effect.fn("VerbosityPlugin")(effect (ctx) => {
+      const models = try Model.Service
+      const hook = (event: SessionRequest) =>
+        effect {
+          if (event.options.textVerbosity !== undefined) return
+          const model = try models.get(event.model.providerID, event.model.id)
+          if (!model) return
+          const id = openAIModelID(model)
+          if (!id || !supportsVerbosity(id)) return
+          if (model.settings?.textVerbosity !== undefined) return
+          const variant = model.variants.find((item) => item.id === event.model.variant)
+          if (variant?.settings?.textVerbosity !== undefined) return
+          event.options.textVerbosity = "low"
+        }
+      try ctx.session.hook("context", hook)
+      try ctx.session.hook("compaction", hook)
+      try ctx.session.hook("generate", hook)
+      try ctx.session.hook("title", hook)
+    }),
+  } satisfies PluginInternal.InternalPlugin,
+)
 
 function supportsVerbosity(id: string) {
   if (id.includes("gpt-6")) return true
@@ -52,7 +54,8 @@ function supportsVerbosity(id: string) {
 function openAIModelID(model: Model.Info) {
   const id = model.modelID.toLowerCase()
   if (direct.has(model.package ?? "")) return id
-  if (model.package === "@opencode/ai/providers/amazon-bedrock/mantle/responses" && id.startsWith("openai."))
+  if (model.package === "@opencode/ai/providers/amazon-bedrock/mantle/responses" && id.startsWith("openai.")) {
     return id.slice("openai.".length)
+  }
   if (gateways.has(model.package ?? "") && id.startsWith("openai/")) return id.slice("openai/".length)
 }

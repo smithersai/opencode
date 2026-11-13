@@ -145,10 +145,14 @@ const TOOL_CHOICE = { auto: undefined, none: "NONE", required: "REQUIRED", tool:
 const fromRequest = effect (request: LLMRequest) =>
   try withSpan(
     effect {
-      const options = try (try Effect.orDie(Effect.try({ try: () => ProviderShared.validateWith(Schema.decodeUnknownEffect(Options)), catch: (e) => e })))(
+      const options = try (try Effect.orDie(
+        Effect.try({ try: () => ProviderShared.validateWith(Schema.decodeUnknownEffect(Options)), catch: (e) => e }),
+      ))(
         request.providerOptions ?? {},
       )
-      const flattened = try Effect.orDie(Effect.try({ try: () => ProviderShared.flattenToolRequest(request), catch: (e) => e }))
+      const flattened = try Effect.orDie(
+        Effect.try({ try: () => ProviderShared.flattenToolRequest(request), catch: (e) => e }),
+      )
       const messages: (typeof Message.Type)[] = request.system.length
         ? [
           {
@@ -174,9 +178,20 @@ const fromRequest = effect (request: LLMRequest) =>
             }
             const result = part.result
             if (result.type === "content" && result.value.some((item) => item.type === "file")) {
-              throw try Effect.orDie(Effect.try({ try: () => ProviderShared.invalidRequest("Cohere Chat does not support file content in tool results"), catch: (e) => e }))
+              throw try Effect.orDie(
+                Effect.try({
+                  try: () => ProviderShared.invalidRequest("Cohere Chat does not support file content in tool results"),
+                  catch: (e) => e,
+                }),
+              )
             }
-            messages.push({ role: "tool", tool_call_id: part.id, content: try Effect.orDie(Effect.try({ try: () => ProviderShared.toolResultText(part), catch: (e) => e })) })
+            messages.push({
+              role: "tool",
+              tool_call_id: part.id,
+              content: try Effect.orDie(
+                Effect.try({ try: () => ProviderShared.toolResultText(part), catch: (e) => e }),
+              ),
+            })
           }
           continue
         }
@@ -198,9 +213,15 @@ const fromRequest = effect (request: LLMRequest) =>
             calls.push({ id: part.id, type: "function", function: { name: part.name, arguments: args } })
             continue
           }
-          if (message.role === "user" && part.type === "media" && (try Effect.orDie(Effect.try({ try: () => part.media.mediaType.startsWith("image/"), catch: (e) => e })))) {
-            const url = (try Effect.orDie(Effect.try({ try: () => ProviderShared.mediaUrl(part.media), catch: (e) => e })))
-              ?? (try ProviderShared.requireInlineMedia("Cohere Chat", part.media)).dataUrl
+          if (
+            message.role === "user" && part.type === "media"
+            && (try Effect.orDie(
+              Effect.try({ try: () => part.media.mediaType.startsWith("image/"), catch: (e) => e }),
+            ))
+          ) {
+            const url =
+              (try Effect.orDie(Effect.try({ try: () => ProviderShared.mediaUrl(part.media), catch: (e) => e })))
+                ?? (try ProviderShared.requireInlineMedia("Cohere Chat", part.media)).dataUrl
             content.push({ type: "image_url", image_url: { url } })
             continue
           }
@@ -220,10 +241,20 @@ const fromRequest = effect (request: LLMRequest) =>
       const selected = request.toolChoice?.type === "tool" ? request.toolChoice.name : undefined
       const tools = selected === undefined ? flattened.tools : flattened.tools.filter((tool) => tool.name === selected)
       if (selected !== undefined && tools.length === 0) {
-        throw try Effect.orDie(Effect.try({ try: () => ProviderShared.invalidRequest("Cohere Chat tool choice must name an available tool"), catch: (e) => e }))
+        throw try Effect.orDie(
+          Effect.try({
+            try: () => ProviderShared.invalidRequest("Cohere Chat tool choice must name an available tool"),
+            catch: (e) => e,
+          }),
+        )
       }
       if (tools.some((tool) => tool.native !== undefined)) {
-        throw try Effect.orDie(Effect.try({ try: () => ProviderShared.invalidRequest("Cohere Chat does not support provider-defined tools"), catch: (e) => e }))
+        throw try Effect.orDie(
+          Effect.try({
+            try: () => ProviderShared.invalidRequest("Cohere Chat does not support provider-defined tools"),
+            catch: (e) => e,
+          }),
+        )
       }
       return {
         model: request.model.id,
@@ -236,13 +267,17 @@ const fromRequest = effect (request: LLMRequest) =>
           }))
           : undefined,
         tool_choice: TOOL_CHOICE[request.toolChoice?.type ?? "auto"],
-        thinking: try Effect.orDie(Effect.try({ try: () => options.thinking && {
-          type: options.thinking.type ?? "enabled",
-          // Cohere rejects budgets above max_tokens; fitting also leaves room for the answer.
-          token_budget: options.thinking.tokenBudget === undefined
-            ? undefined
-            : ProviderShared.fitThinkingBudget(options.thinking.tokenBudget, request.generation?.maxTokens),
-        }, catch: (e) => e })),
+        thinking: try Effect.orDie(Effect.try({
+          try: () =>
+            options.thinking && {
+              type: options.thinking.type ?? "enabled",
+              // Cohere rejects budgets above max_tokens; fitting also leaves room for the answer.
+              token_budget: options.thinking.tokenBudget === undefined
+                ? undefined
+                : ProviderShared.fitThinkingBudget(options.thinking.tokenBudget, request.generation?.maxTokens),
+            },
+          catch: (e) => e,
+        })),
         max_tokens: request.generation?.maxTokens,
         temperature: request.generation?.temperature,
         p: request.generation?.topP,

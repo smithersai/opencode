@@ -60,10 +60,10 @@ export const typeFollowing = (files: Files, path: string) =>
     Effect.flatMap((info) =>
       info.type === "symlink"
         ? files.read(path, { offset: 0, length: 0 }).pipe(
-            Effect.map((result) => result.info.type),
-            Effect.catchTag("Environment.WrongKind", (error) => Effect.succeed(error.actual)),
-          )
-        : Effect.succeed(info.type),
+          Effect.map((result) => result.info.type),
+          Effect.catchTag("Environment.WrongKind", (error) => Effect.succeed(error.actual)),
+        )
+        : Effect.succeed(info.type)
     ),
   )
 

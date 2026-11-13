@@ -87,10 +87,9 @@ function prepareOptions(model: RuntimeInfo, pkg: string) {
     // A plain AbortSignal.timeout would keep running into the body stream, so the header limit uses
     // a timer that is cleared once headers arrive. The whole-request limit is meant to span the body.
     const headers = new AbortController()
-    const headerTimer =
-      timeouts.headerTimeout === false
-        ? undefined
-        : scheduleTimeout(() => headers.abort(new Error(HEADER_TIMEOUT_MESSAGE)), timeouts.headerTimeout)
+    const headerTimer = timeouts.headerTimeout === false
+      ? undefined
+      : scheduleTimeout(() => headers.abort(new Error(HEADER_TIMEOUT_MESSAGE)), timeouts.headerTimeout)
     const chunks = new AbortController()
     opts.signal = AbortSignal.any(
       [
@@ -135,20 +134,20 @@ function throughMiddleware(
   const toError = (cause: unknown) => (cause instanceof Error ? cause : new Error(String(cause)))
   const request = toRequest(input, init)
   return Effect.runPromiseWith(store.context)(
-    Effect.gen(function* () {
+    Effect.gen(function*() {
       // Hooks see a byte body like on the native route, so they may convert it to a web Request
       // as many times as they like without contending for one stream.
       const body = request.body ? new Uint8Array(yield* Effect.promise(() => request.arrayBuffer())) : undefined
       const response = yield* store.http(
         body
           ? HttpClientRequest.bodyUint8Array(
-              HttpClientRequest.fromWeb(request),
-              body,
-              request.headers.get("content-type") ?? undefined,
-            )
+            HttpClientRequest.fromWeb(request),
+            body,
+            request.headers.get("content-type") ?? undefined,
+          )
           : HttpClientRequest.fromWeb(request),
         (sent) =>
-          Effect.gen(function* () {
+          Effect.gen(function*() {
             const web = yield* HttpClientRequest.toWeb(sent)
             const response = yield* Effect.tryPromise(async () =>
               send(web.url, {
@@ -156,7 +155,7 @@ function throughMiddleware(
                 method: web.method,
                 headers: web.headers,
                 body: web.body ? await web.arrayBuffer() : undefined,
-              }),
+              })
             )
             return HttpClientResponse.fromWeb(sent, response)
           }).pipe(Effect.mapError(toError)),
@@ -203,7 +202,7 @@ export class Service extends Context.Service<Service, Interface>()("@opencode/AI
 
 export const locationLayer = Layer.effect(
   Service,
-  Effect.gen(function* () {
+  Effect.gen(function*() {
     let sdkHooks: ((event: SDKEvent) => Effect.Effect<void> | void)[] = []
     let languageHooks: ((event: LanguageEvent) => Effect.Effect<void> | void)[] = []
     const languages = new Map<string, LanguageModelV3>()
@@ -224,7 +223,7 @@ export const locationLayer = Layer.effect(
       hooks: () => ((event: Event) => Effect.Effect<void> | void)[],
       update: (hooks: ((event: Event) => Effect.Effect<void> | void)[]) => void,
     ) =>
-      Effect.fn("AISDK.hook")(function* (callback: (event: Event) => Effect.Effect<void> | void) {
+      Effect.fn("AISDK.hook")(function*(callback: (event: Event) => Effect.Effect<void> | void) {
         const scope = yield* Scope.Scope
         let active = true
         update([...hooks(), callback])
@@ -237,7 +236,7 @@ export const locationLayer = Layer.effect(
         return { dispose }
       })
 
-    const run = Effect.fnUntraced(function* <Event>(
+    const run = Effect.fnUntraced(function*<Event>(
       hooks: readonly ((event: Event) => Effect.Effect<void> | void)[],
       event: Event,
     ) {
@@ -261,7 +260,7 @@ export const locationLayer = Layer.effect(
       },
       runSDK: (event) => run(sdkHooks, event),
       runLanguage: (event) => run(languageHooks, event),
-      language: Effect.fn("AISDK.language")(function* (model) {
+      language: Effect.fn("AISDK.language")(function*(model) {
         const key = cacheKey({
           providerID: model.providerID,
           canonical: model.canonical,
@@ -275,11 +274,12 @@ export const locationLayer = Layer.effect(
         })
         const existing = languages.get(key)
         if (existing) return existing
-        if (!Provider.isAISDK(model.package))
+        if (!Provider.isAISDK(model.package)) {
           return yield* new InitError({
             providerID: model.providerID,
             cause: new Error(`Unsupported package ${model.package}`),
           })
+        }
 
         const packageName = Provider.packageName(model.package)
         const options = prepareOptions(model, packageName)
@@ -291,14 +291,14 @@ export const locationLayer = Layer.effect(
           headers: model.headers,
           body: model.body,
         })
-        const sdk =
-          sdks.get(sdkKey) ??
-          (yield* service.runSDK({ model, package: packageName, options }).pipe(initError(model.providerID))).sdk
-        if (!sdk)
+        const sdk = sdks.get(sdkKey)
+          ?? (yield* service.runSDK({ model, package: packageName, options }).pipe(initError(model.providerID))).sdk
+        if (!sdk) {
           return yield* new InitError({
             providerID: model.providerID,
             cause: new Error("No AISDK provider plugin returned an SDK"),
           })
+        }
         sdks.set(sdkKey, sdk)
         const result = yield* service.runLanguage({ model, sdk, options }).pipe(initError(model.providerID))
         const language = yield* Effect.sync(() => result.language ?? sdk.languageModel(model.modelID ?? model.id)).pipe(
@@ -307,7 +307,7 @@ export const locationLayer = Layer.effect(
         languages.set(key, language)
         return language
       }),
-      model: Effect.fn("AISDK.model")(function* (model) {
+      model: Effect.fn("AISDK.model")(function*(model) {
         return modelFromLanguage(model, yield* service.language(model))
       }),
     })
@@ -337,13 +337,12 @@ function modelFromLanguage(info: RuntimeInfo, language: LanguageModelV3) {
     },
     defaults: {
       headers: info.headers,
-      http:
-        projected.body === undefined && info.headers === undefined
-          ? undefined
-          : {
-              body: projected.body === undefined ? undefined : { ...projected.body },
-              headers: info.headers,
-            },
+      http: projected.body === undefined && info.headers === undefined
+        ? undefined
+        : {
+          body: projected.body === undefined ? undefined : { ...projected.body },
+          headers: info.headers,
+        },
       providerOptions: projected.settings,
     },
     body: {
@@ -353,7 +352,7 @@ function modelFromLanguage(info: RuntimeInfo, language: LanguageModelV3) {
           Effect.catchDefect((cause) =>
             Effect.fail(
               cause instanceof AIError ? cause : ProviderShared.invalidRequest("Invalid AI SDK request", cause),
-            ),
+            )
           ),
         ),
     },
@@ -379,8 +378,9 @@ function gatewayProviderOptions(modelID: ID, settings: Readonly<Record<string, J
 
   const separator = modelID.indexOf("/")
   const prefix = separator > 0 ? modelID.slice(0, separator) : undefined
-  if (prefix)
+  if (prefix) {
     return { ...(gateway === undefined ? {} : { gateway }), [prefix === "amazon" ? "bedrock" : prefix]: model }
+  }
   if (gateway !== undefined) return { gateway: { ...gateway, ...model } }
   return { gateway: model }
 }
@@ -417,9 +417,8 @@ function requestSettings(settings: Provider.Settings | undefined) {
 function mapBodyToProviderOptions(model: RuntimeInfo, packageName: string) {
   const settings = requestSettings(model.settings)
   const pro = Schema.is(Schema.Struct({ mode: Schema.Literal("pro") }))(model.body?.reasoning)
-  const forceReasoning =
-    ["@ai-sdk/openai", "@ai-sdk/azure", "@ai-sdk/amazon-bedrock/mantle"].includes(packageName) &&
-    (pro || settings?.reasoningEffort !== undefined || settings?.reasoningSummary !== undefined)
+  const forceReasoning = ["@ai-sdk/openai", "@ai-sdk/azure", "@ai-sdk/amazon-bedrock/mantle"].includes(packageName)
+    && (pro || settings?.reasoningEffort !== undefined || settings?.reasoningSummary !== undefined)
   const normalized = forceReasoning ? Provider.mergeOverlay(settings, { forceReasoning: true }) : settings
   if (!pro) return { settings: normalized, body: model.body }
   const body = { ...model.body }
@@ -522,7 +521,9 @@ effect function toolMessage(input: LLMRequest["messages"][number]) {
         type: "file",
         mediaType: item.mime,
         data: try fileData(
-          (try Effect.try({ try: () => ProviderShared.toolFileMedia(item), catch: (cause) => cause }).pipe(Effect.orDie))
+          (try Effect.try({ try: () => ProviderShared.toolFileMedia(item), catch: (cause) => cause }).pipe(
+            Effect.orDie,
+          ))
             .media,
         ),
         filename: item.name,
@@ -531,10 +532,9 @@ effect function toolMessage(input: LLMRequest["messages"][number]) {
     })
     return toolResultPart({
       ...part,
-      result:
-        value.length === 0
-          ? { type: "text", value: "Media attached in the following user message." }
-          : { ...part.result, value },
+      result: value.length === 0
+        ? { type: "text", value: "Media attached in the following user message." }
+        : { ...part.result, value },
     })
   })).flat()
   return {
@@ -545,8 +545,9 @@ effect function toolMessage(input: LLMRequest["messages"][number]) {
 
 effect function userPart(part: ContentPart): UserContent!AIError {
   if (part.type === "text") return [{ type: "text", text: part.text }]
-  if (part.type === "media")
+  if (part.type === "media") {
     return [{ type: "file", mediaType: part.media.mediaType, data: try fileData(part.media), filename: part.filename }]
+  }
   return []
 }
 
@@ -561,7 +562,12 @@ effect function assistantPart(part: ContentPart): AssistantContent!AIError {
     case "text":
       return [{ type: "text", text: part.text, providerOptions: metadataProviderOptions(part.providerMetadata) }]
     case "media":
-      return [{ type: "file", mediaType: part.media.mediaType, data: try fileData(part.media), filename: part.filename }]
+      return [{
+        type: "file",
+        mediaType: part.media.mediaType,
+        data: try fileData(part.media),
+        filename: part.filename,
+      }]
     case "reasoning":
       return [{ type: "reasoning", text: part.text, providerOptions: metadataProviderOptions(part.providerMetadata) }]
     case "tool-call":
@@ -591,8 +597,9 @@ effect function assistantPart(part: ContentPart): AssistantContent!AIError {
 effect function fileData(media: Media.Asset) {
   const source = media.source
   if (source.type === "bytes" || source.type === "base64") return source.data
-  if (source.type === "url")
+  if (source.type === "url") {
     return try Effect.try({ try: () => new URL(source.url), catch: (cause) => cause }).pipe(Effect.orDie)
+  }
   throw ProviderShared.unsupportedOperation({
     operation: "media-ref",
     provider: source.provider,
@@ -625,10 +632,11 @@ function toolOutput(result: ToolResultValue) {
           if (item.type === "text") return { type: "text" as const, text: item.text }
           const data = /^data:[^;,]+(?:;[^,]*)*;base64,(.*)$/s.exec(item.uri)?.[1]
           const image = item.mime.toLowerCase().startsWith("image/")
-          if (data !== undefined)
+          if (data !== undefined) {
             return image
               ? { type: "image-data" as const, data, mediaType: item.mime }
               : { type: "file-data" as const, data, mediaType: item.mime, filename: item.name }
+          }
           return image ? { type: "image-url" as const, url: item.uri } : { type: "file-url" as const, url: item.uri }
         }),
       }
@@ -675,7 +683,7 @@ function streamLanguage(language: LanguageModelV3, options: LanguageModelV3CallO
   return Stream.concat(
     Stream.make(LLMEvent.stepStart({ index: state.step })),
     Stream.unwrap(
-      Effect.gen(function* () {
+      Effect.gen(function*() {
         const context = yield* Effect.context<never>()
         return yield* Effect.tryPromise({
           try: () =>
@@ -690,7 +698,7 @@ function streamLanguage(language: LanguageModelV3, options: LanguageModelV3CallO
           }).pipe(
             Stream.mapEffect((event) => streamPartEvents(state, event)),
             Stream.flatMap((events) => Stream.fromIterable(events)),
-          ),
+          )
         ),
       ),
     ),
@@ -781,12 +789,12 @@ function streamPartEvents(
           event.providerExecuted
             ? Effect.fail(error)
             : Effect.succeed([
-                LLMEvent.toolInputError({
-                  id: event.toolCallId,
-                  name: event.toolName,
-                  raw: event.input,
-                }),
-              ]),
+              LLMEvent.toolInputError({
+                id: event.toolCallId,
+                name: event.toolName,
+                raw: event.input,
+              }),
+            ])
         ),
       )
     case "tool-result":
@@ -826,8 +834,9 @@ function openFragment(state: StreamState, kind: Fragment, id: string, providerMe
   const open = state.open[kind]
   if (open === id) return []
   state.open[kind] = id
-  const start =
-    kind === "text" ? LLMEvent.textStart({ id, providerMetadata }) : LLMEvent.reasoningStart({ id, providerMetadata })
+  const start = kind === "text"
+    ? LLMEvent.textStart({ id, providerMetadata })
+    : LLMEvent.reasoningStart({ id, providerMetadata })
   if (open === undefined) return [start]
   return [fragmentEnd(kind, open), start]
 }
@@ -850,10 +859,9 @@ function usage(input: Extract<LanguageModelV3StreamPart, { type: "finish" }>["us
     cacheWriteInputTokens: input.inputTokens.cacheWrite,
     outputTokens: input.outputTokens.total,
     reasoningTokens: input.outputTokens.reasoning,
-    totalTokens:
-      input.inputTokens.total === undefined || input.outputTokens.total === undefined
-        ? undefined
-        : input.inputTokens.total + input.outputTokens.total,
+    totalTokens: input.inputTokens.total === undefined || input.outputTokens.total === undefined
+      ? undefined
+      : input.inputTokens.total + input.outputTokens.total,
   }
   return Object.values(output).some((value) => value !== undefined) ? output : undefined
 }
@@ -884,7 +892,7 @@ function llmError(error: unknown, operation: "request" | "read") {
   const apiCall = asAPICallError(error)
   if (apiCall) return apiCallError(apiCall)
   const network = networkFailure(error)
-  if (network)
+  if (network) {
     return new AIError({
       reason: new TransportError({
         message: network.message.trim() === "" ? unknownErrorMessage(error) : network.message,
@@ -894,6 +902,7 @@ function llmError(error: unknown, operation: "request" | "read") {
         code: network.code,
       }),
     })
+  }
   return RequestExecutor.httpFailure({
     message: unknownErrorMessage(error),
     data: errorValue(error) ?? error,
@@ -949,10 +958,12 @@ function networkFailure(error: unknown, depth = 0): { message: string; code?: st
   // carry the specific network code on their cause.
   const cause = networkFailure(shape.cause, depth + 1)
   if (cause) return cause
-  if (shape.code !== undefined && (NETWORK_ERROR_CODES.has(shape.code) || shape.code.startsWith("UND_ERR")))
+  if (shape.code !== undefined && (NETWORK_ERROR_CODES.has(shape.code) || shape.code.startsWith("UND_ERR"))) {
     return { message: shape.message, code: shape.code }
-  if (NETWORK_ERROR_MESSAGES.has(shape.message.trim().toLowerCase()))
+  }
+  if (NETWORK_ERROR_MESSAGES.has(shape.message.trim().toLowerCase())) {
     return { message: shape.message, code: shape.code }
+  }
   return undefined
 }
 
@@ -999,15 +1010,14 @@ const decodeProviderError = Schema.decodeUnknownOption(
 )
 
 function unknownErrorMessage(error: unknown) {
-  const message =
-    error instanceof Error
-      ? error.message
-      : typeof error === "string"
-        ? error
-        : ([error, errorValue(error)]
-            .map((value) => Option.getOrUndefined(decodeProviderError(value)))
-            .flatMap((decoded) => [decoded?.error?.message, decoded?.message])
-            .find((value) => value?.trim()) ?? "")
+  const message = error instanceof Error
+    ? error.message
+    : typeof error === "string"
+    ? error
+    : ([error, errorValue(error)]
+      .map((value) => Option.getOrUndefined(decodeProviderError(value)))
+      .flatMap((decoded) => [decoded?.error?.message, decoded?.message])
+      .find((value) => value?.trim()) ?? "")
   return message.trim() === "" ? "Provider request failed" : message
 }
 
@@ -1018,122 +1028,123 @@ function providerErrorMessage(error: APICallError) {
   const message = details.map((detail) => detail?.message).find((value) => value?.trim())
   const value = details.map((detail) => detail?.code).find((value) => value !== undefined)
   const code = value === undefined ? undefined : String(value)
-  const prefix =
-    error.statusCode === undefined ? "Provider request failed" : `Provider request failed with HTTP ${error.statusCode}`
+  const prefix = error.statusCode === undefined
+    ? "Provider request failed"
+    : `Provider request failed with HTTP ${error.statusCode}`
   return error.message.trim() !== "" ? error.message : (message ?? (code === undefined ? prefix : `${prefix}: ${code}`))
 }
 
 export const node = makeLocationNode({ service: Service, layer: locationLayer, deps: [] })
 
 module platform {
-// The platform code of aisdk.vibe: web fetch, timers, SSE body streams and async context, which a .vibe file does not use (EK4402).
-import type { HttpMiddleware } from "@opencode/ai/route"
-import type { Context } from "effect"
-import { makeParser } from "effect/encoding/Sse"
-import { AsyncLocalStorage } from "node:async_hooks"
+  // The platform code of aisdk.vibe: web fetch, timers, SSE body streams and async context, which a .vibe file does not use (EK4402).
+  import type { HttpMiddleware } from "@opencode/ai/route"
+  import type { Context } from "effect"
+  import { makeParser } from "effect/encoding/Sse"
+  import { AsyncLocalStorage } from "node:async_hooks"
 
-/**
- * Wraps a server-sent event response so a read that waits longer than `ms` aborts the request.
- *
- * @throws {TypeError} When the response body is already locked to another reader.
- */
-export function wrapSSE(res: Response, ms: number, ctl: AbortController) {
-  if (typeof ms !== "number" || ms <= 0) return res
-  if (!res.body) return res
-  if (!res.headers.get("content-type")?.includes("text/event-stream")) return res
+  /**
+   * Wraps a server-sent event response so a read that waits longer than `ms` aborts the request.
+   *
+   * @throws {TypeError} When the response body is already locked to another reader.
+   */
+  export function wrapSSE(res: Response, ms: number, ctl: AbortController) {
+    if (typeof ms !== "number" || ms <= 0) return res
+    if (!res.body) return res
+    if (!res.headers.get("content-type")?.includes("text/event-stream")) return res
 
-  const reader = res.body.getReader()
-  const decoder = new TextDecoder()
-  let deadline: number | undefined
-  const parser = makeParser((event) => {
-    if (event._tag === "Event") deadline = Date.now() + ms
-  })
-  const body = new ReadableStream<Uint8Array>({
-    async pull(ctrl) {
-      const expires = deadline ?? Date.now() + ms
-      deadline = expires
-      const part = await new Promise<Awaited<ReturnType<typeof reader.read>>>((resolve, reject) => {
-        const remaining = Math.max(0, expires - Date.now())
-        const id = setTimeout(() => {
-          const err = new Error("SSE read timed out")
-          ctl.abort(err)
-          void reader.cancel(err)
-          reject(err)
-        }, remaining)
-
-        reader.read().then(
-          (part) => {
-            clearTimeout(id)
-            resolve(part)
-          },
-          (err) => {
-            clearTimeout(id)
+    const reader = res.body.getReader()
+    const decoder = new TextDecoder()
+    let deadline: number | undefined
+    const parser = makeParser((event) => {
+      if (event._tag === "Event") deadline = Date.now() + ms
+    })
+    const body = new ReadableStream<Uint8Array>({
+      async pull(ctrl) {
+        const expires = deadline ?? Date.now() + ms
+        deadline = expires
+        const part = await new Promise<Awaited<ReturnType<typeof reader.read>>>((resolve, reject) => {
+          const remaining = Math.max(0, expires - Date.now())
+          const id = setTimeout(() => {
+            const err = new Error("SSE read timed out")
+            ctl.abort(err)
+            void reader.cancel(err)
             reject(err)
-          },
-        )
-      })
+          }, remaining)
 
-      if (part.done) {
-        ctrl.close()
-        return
-      }
+          reader.read().then(
+            (part) => {
+              clearTimeout(id)
+              resolve(part)
+            },
+            (err) => {
+              clearTimeout(id)
+              reject(err)
+            },
+          )
+        })
 
-      parser.feed(decoder.decode(part.value, { stream: true }))
-      ctrl.enqueue(part.value)
-    },
-    async cancel(reason) {
-      ctl.abort(reason)
-      await reader.cancel(reason)
-    },
-  })
+        if (part.done) {
+          ctrl.close()
+          return
+        }
 
-  return new Response(body, {
-    headers: new Headers(res.headers),
-    status: res.status,
-    statusText: res.statusText,
-  })
-}
+        parser.feed(decoder.decode(part.value, { stream: true }))
+        ctrl.enqueue(part.value)
+      },
+      async cancel(reason) {
+        ctl.abort(reason)
+        await reader.cancel(reason)
+      },
+    })
 
-/** Runs `callback` once after `delay` milliseconds. @throws {never} */
-export function scheduleTimeout(callback: () => void, delay?: number) {
-  return setTimeout(callback, delay)
-}
+    return new Response(body, {
+      headers: new Headers(res.headers),
+      status: res.status,
+      statusText: res.statusText,
+    })
+  }
 
-/** Cancels a timer from `scheduleTimeout`; `undefined` is ignored. @throws {never} */
-export function cancelTimeout(timer: ReturnType<typeof setTimeout> | undefined) {
-  clearTimeout(timer)
-}
+  /** Runs `callback` once after `delay` milliseconds. @throws {never} */
+  export function scheduleTimeout(callback: () => void, delay?: number) {
+    return setTimeout(callback, delay)
+  }
 
-/**
- * `AbortSignal.timeout`: a signal that aborts after `milliseconds`.
- *
- * @throws {TypeError} When `milliseconds` is negative or not finite.
- */
-export function timeoutSignal(milliseconds: number) {
-  return AbortSignal.timeout(milliseconds)
-}
+  /** Cancels a timer from `scheduleTimeout`; `undefined` is ignored. @throws {never} */
+  export function cancelTimeout(timer: ReturnType<typeof setTimeout> | undefined) {
+    clearTimeout(timer)
+  }
 
-/** The host `fetch`, looked up when called; its failures reject the returned Promise. @throws {never} */
-export async function fetch(input: Parameters<typeof globalThis.fetch>[0], init?: BunFetchRequestInit) {
-  return globalThis.fetch(input, init)
-}
+  /**
+   * `AbortSignal.timeout`: a signal that aborts after `milliseconds`.
+   *
+   * @throws {TypeError} When `milliseconds` is negative or not finite.
+   */
+  export function timeoutSignal(milliseconds: number) {
+    return AbortSignal.timeout(milliseconds)
+  }
 
-/** Builds the web Request a middleware hook sees from a fetch call's arguments; an invalid URL or option throws a TypeError. */
-export function toRequest(input: Parameters<typeof globalThis.fetch>[0], init: BunFetchRequestInit) {
-  return input instanceof Request ? new Request(input, init) : new Request(String(input), init)
-}
+  /** The host `fetch`, looked up when called; its failures reject the returned Promise. @throws {never} */
+  export async function fetch(input: Parameters<typeof globalThis.fetch>[0], init?: BunFetchRequestInit) {
+    return globalThis.fetch(input, init)
+  }
 
-/**
- * Builds a web Response.
- *
- * @throws {RangeError} When the status is outside 200 to 599.
- * @throws {TypeError} When a body is given for a null-body status.
- */
-export function toResponse(body: ReadableStream<Uint8Array> | null, init: ResponseInit) {
-  return new Response(body, init)
-}
+  /** Builds the web Request a middleware hook sees from a fetch call's arguments; an invalid URL or option throws a TypeError. */
+  export function toRequest(input: Parameters<typeof globalThis.fetch>[0], init: BunFetchRequestInit) {
+    return input instanceof Request ? new Request(input, init) : new Request(String(input), init)
+  }
 
-// HTTP hook middleware is scoped to one model request, but the SDK's fetch is baked into the
-// cached language model, so the active middleware rides along in async context instead.
-export const httpMiddleware = new AsyncLocalStorage<{ http: HttpMiddleware; context: Context.Context<never> }>()
+  /**
+   * Builds a web Response.
+   *
+   * @throws {RangeError} When the status is outside 200 to 599.
+   * @throws {TypeError} When a body is given for a null-body status.
+   */
+  export function toResponse(body: ReadableStream<Uint8Array> | null, init: ResponseInit) {
+    return new Response(body, init)
+  }
+
+  // HTTP hook middleware is scoped to one model request, but the SDK's fetch is baked into the
+  // cached language model, so the active middleware rides along in async context instead.
+  export const httpMiddleware = new AsyncLocalStorage<{ http: HttpMiddleware; context: Context.Context<never> }>()
 }

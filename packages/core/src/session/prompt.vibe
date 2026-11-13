@@ -30,7 +30,7 @@ export type Input = {
   delivery?: SessionInbox.Delivery
 }
 
-export const prepare = Effect.fn("SessionPrompt.prepare")(function* (request: {
+export const prepare = Effect.fn("SessionPrompt.prepare")(function*(request: {
   session: Session.Info
   messageID: SessionMessage.ID
   input: Input
@@ -55,12 +55,12 @@ export const prepare = Effect.fn("SessionPrompt.prepare")(function* (request: {
     ? yield* Effect.forEach(input.files, materializeAttachment, { concurrency: 8 })
     : undefined
   const requested = input.skills
-  const selected = yield* Effect.gen(function* () {
+  const selected = yield* Effect.gen(function*() {
     if (!requested?.length) return undefined
     const skillService = yield* Skill.Service
     const prepared = new Map<Skill.ID, Skill.Name>()
     return yield* Effect.forEach(requested, (attachment) =>
-      Effect.gen(function* () {
+      Effect.gen(function*() {
         const name = prepared.get(attachment.id)
         if (name !== undefined) return { id: attachment.id, name, mention: attachment.mention }
         const skill = yield* skillService.get(attachment.id)
@@ -72,8 +72,7 @@ export const prepare = Effect.fn("SessionPrompt.prepare")(function* (request: {
           text: (yield* Skill.prepare(fs, skill).pipe(Effect.orDie)).output,
           mention: attachment.mention,
         }
-      }),
-    )
+      }))
   })
   return {
     type: "user",
@@ -88,7 +87,7 @@ export const prepare = Effect.fn("SessionPrompt.prepare")(function* (request: {
   } satisfies SessionInbox.Item
 })
 
-const materializeAttachment = Effect.fn("SessionPrompt.materializeAttachment")(function* (
+const materializeAttachment = Effect.fn("SessionPrompt.materializeAttachment")(function*(
   input: PromptInput.FileAttachment,
 ) {
   // Stored blob bytes were normalized when first admitted, so a `media:` ref re-admits them unchanged.
@@ -107,30 +106,30 @@ const materializeAttachment = Effect.fn("SessionPrompt.materializeAttachment")(f
   const label = attachmentLabel(input)
   const resolved = input.uri.startsWith("data:")
     ? {
-        bytes: yield* decodeDataURL(input.uri, label),
-        source: { type: "inline" as const },
-        start: undefined,
-        end: undefined,
-        name: undefined,
-        mime: undefined,
-      }
+      bytes: yield* decodeDataURL(input.uri, label),
+      source: { type: "inline" as const },
+      start: undefined,
+      end: undefined,
+      name: undefined,
+      mime: undefined,
+    }
     : yield* readFileAttachment(input.uri)
-  if (resolved.bytes.byteLength > MAX_ATTACHMENT_BYTES)
+  if (resolved.bytes.byteLength > MAX_ATTACHMENT_BYTES) {
     return yield* new AttachmentError({
       uri: label,
       message: `Attachment exceeds the ${MAX_ATTACHMENT_BYTES} byte limit: ${label}`,
     })
+  }
 
   const mime = resolved.mime ?? Mime.detect(resolved.bytes)
-  const content =
-    mime === "text/plain" && resolved.start !== undefined
-      ? utf8Bytes(
-          utf8(resolved.bytes)
-            .split("\n")
-            .slice(resolved.start - 1, resolved.end)
-            .join("\n"),
-        )
-      : resolved.bytes
+  const content = mime === "text/plain" && resolved.start !== undefined
+    ? utf8Bytes(
+      utf8(resolved.bytes)
+        .split("\n")
+        .slice(resolved.start - 1, resolved.end)
+        .join("\n"),
+    )
+    : resolved.bytes
   const normalized = yield* normalizeImageAttachment(input, base64(content), mime)
   return FileAttachment.create({
     data: normalized.data,
@@ -142,7 +141,7 @@ const materializeAttachment = Effect.fn("SessionPrompt.materializeAttachment")(f
   })
 })
 
-const normalizeImageAttachment = Effect.fn("SessionPrompt.normalizeImageAttachment")(function* (
+const normalizeImageAttachment = Effect.fn("SessionPrompt.normalizeImageAttachment")(function*(
   input: PromptInput.FileAttachment,
   data: string,
   mime: string,
@@ -159,21 +158,22 @@ const normalizeImageAttachment = Effect.fn("SessionPrompt.normalizeImageAttachme
 })
 
 /** A `media:` ref a client received from an experimental `experimental-media-uri` read, sent back as an attachment. */
-const readBlobAttachment = Effect.fn("SessionPrompt.readBlobAttachment")(function* (uri: SessionStored.Ref) {
+const readBlobAttachment = Effect.fn("SessionPrompt.readBlobAttachment")(function*(uri: SessionStored.Ref) {
   const { db } = yield* Database.Service
   const blob = yield* SessionBlob.read(db, SessionStored.refHash(uri))
   if (!blob) return yield* new AttachmentError({ uri, message: `Attachment is no longer stored: ${uri}` })
   return blob
 })
 
-const readFileAttachment = Effect.fn("SessionPrompt.readFileAttachment")(function* (uri: string) {
+const readFileAttachment = Effect.fn("SessionPrompt.readFileAttachment")(function*(uri: string) {
   const fs = yield* FSUtil.Service
   const url = yield* Effect.try({
     try: () => new URL(uri),
     catch: () => new AttachmentError({ uri, message: `Invalid attachment URI: ${uri}` }),
   })
-  if (url.protocol !== "file:")
+  if (url.protocol !== "file:") {
     return yield* new AttachmentError({ uri, message: `Unsupported attachment URI: ${uri}` })
+  }
   const start = positiveInt(url.searchParams.get("start"))
   const end = positiveInt(url.searchParams.get("end"))
   const target = yield* Effect.try({
@@ -207,11 +207,12 @@ const readFileAttachment = Effect.fn("SessionPrompt.readFileAttachment")(functio
     }
   }
   if (info.type !== "File") return yield* new AttachmentError({ uri, message: `Attachment is not a file: ${uri}` })
-  if (Number(info.size) > MAX_ATTACHMENT_BYTES)
+  if (Number(info.size) > MAX_ATTACHMENT_BYTES) {
     return yield* new AttachmentError({
       uri,
       message: `Attachment exceeds the ${MAX_ATTACHMENT_BYTES} byte limit: ${uri}`,
     })
+  }
   const bytes = yield* fs
     .readFile(target)
     .pipe(Effect.mapError(() => new AttachmentError({ uri, message: `Unable to read attachment: ${uri}` })))
@@ -239,53 +240,54 @@ function positiveInt(value: string | null) {
 }
 
 module platform {
-// The platform code of prompt.vibe: host paths, file URLs and Buffer encoding, which a .vibe file does not use
-// (EK4402).
+  // The platform code of prompt.vibe: host paths, file URLs and Buffer encoding, which a .vibe file does not use
+  // (EK4402).
 
-import nodePath from "path"
-import url from "url"
+  import nodePath from "path"
+  import url from "url"
 
-export const path = {
-  sep: nodePath.sep,
+  export const path = {
+    sep: nodePath.sep,
+    /** @throws {never} */
+    basename(target: string): string {
+      return nodePath.basename(target)
+    },
+  }
+
+  /** @throws {TypeError} when `target` is not an absolute `file:` URL for this platform. */
+  export function fileURLToPath(target: URL): string {
+    return url.fileURLToPath(target)
+  }
+
   /** @throws {never} */
-  basename(target: string): string {
-    return nodePath.basename(target)
-  },
-}
+  export function base64(bytes: Uint8Array): string {
+    return Buffer.from(bytes).toString("base64")
+  }
 
-/** @throws {TypeError} when `target` is not an absolute `file:` URL for this platform. */
-export function fileURLToPath(target: URL): string {
-  return url.fileURLToPath(target)
-}
+  /** @throws {never} */
+  export function utf8(bytes: Uint8Array): string {
+    return Buffer.from(bytes).toString("utf8")
+  }
 
-/** @throws {never} */
-export function base64(bytes: Uint8Array): string {
-  return Buffer.from(bytes).toString("base64")
-}
+  /** @throws {never} */
+  export function utf8Bytes(text: string): Buffer {
+    return Buffer.from(text)
+  }
 
-/** @throws {never} */
-export function utf8(bytes: Uint8Array): string {
-  return Buffer.from(bytes).toString("utf8")
-}
-
-/** @throws {never} */
-export function utf8Bytes(text: string): Buffer {
-  return Buffer.from(text)
-}
-
-/**
- * The bytes of a `data:` URL. Base64 payloads must be canonical.
- * @throws {Error} when the URL has no comma, its base64 payload is not canonical, or its text is malformed.
- */
-export function decodeDataURLBytes(uri: string): Buffer {
-  const comma = uri.indexOf(",")
-  if (comma === -1) throw new Error("Invalid data URL")
-  const metadata = uri.slice(5, comma)
-  const payload = uri.slice(comma + 1)
-  if (!metadata.split(";").some((part) => part.toLowerCase() === "base64"))
-    return Buffer.from(decodeURIComponent(payload))
-  const bytes = Buffer.from(payload, "base64")
-  if (bytes.toString("base64") !== payload) throw new Error("Non-canonical base64")
-  return bytes
-}
+  /**
+   * The bytes of a `data:` URL. Base64 payloads must be canonical.
+   * @throws {Error} when the URL has no comma, its base64 payload is not canonical, or its text is malformed.
+   */
+  export function decodeDataURLBytes(uri: string): Buffer {
+    const comma = uri.indexOf(",")
+    if (comma === -1) throw new Error("Invalid data URL")
+    const metadata = uri.slice(5, comma)
+    const payload = uri.slice(comma + 1)
+    if (!metadata.split(";").some((part) => part.toLowerCase() === "base64")) {
+      return Buffer.from(decodeURIComponent(payload))
+    }
+    const bytes = Buffer.from(payload, "base64")
+    if (bytes.toString("base64") !== payload) throw new Error("Non-canonical base64")
+    return bytes
+  }
 }

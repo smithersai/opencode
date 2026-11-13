@@ -26,7 +26,7 @@ export class Service extends Context.Service<Service, Interface>()("@opencode/v2
 
 const layer = Layer.effect(
   Service,
-  Effect.gen(function* () {
+  Effect.gen(function*() {
     const location = yield* Location.Service
     const processes = yield* AppProcess.Service
     const commands = new WeakMap<Info, string[] | false>()
@@ -45,7 +45,7 @@ const layer = Layer.effect(
       }),
     })
 
-    const command = Effect.fnUntraced(function* (formatter: Info) {
+    const command = Effect.fnUntraced(function*(formatter: Info) {
       const cached = commands.get(formatter)
       if (cached !== undefined) return cached
       const result = yield* formatter.enabled
@@ -53,7 +53,7 @@ const layer = Layer.effect(
       return result
     })
 
-    const file = Effect.fn("Formatter.file")(function* (filepath: string) {
+    const file = Effect.fn("Formatter.file")(function*(filepath: string) {
       const extension = extname(filepath)
       const matching = state.get().formatters.filter((formatter) => formatter.extensions.includes(extension))
 
@@ -79,7 +79,7 @@ const layer = Layer.effect(
                 file: filepath,
                 command: cmd,
                 error: error.message,
-              }).pipe(Effect.as(undefined)),
+              }).pipe(Effect.as(undefined))
             ),
           )
         if (!result) continue
@@ -104,12 +104,12 @@ export const node = makeLocationNode({
 })
 
 module platform {
-// The platform code of formatter.vibe: host path rules, which a .vibe file does not use (EK4402).
+  // The platform code of formatter.vibe: host path rules, which a .vibe file does not use (EK4402).
 
-import path from "path"
+  import path from "path"
 
-/** The extension of a file path, with its leading dot. @throws {never} */
-export function extname(filepath: string) {
-  return path.extname(filepath)
-}
+  /** The extension of a file path, with its leading dot. @throws {never} */
+  export function extname(filepath: string) {
+    return path.extname(filepath)
+  }
 }

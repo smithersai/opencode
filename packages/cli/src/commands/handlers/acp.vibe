@@ -34,7 +34,7 @@ import { exit, setEnvironment, standardStreams, writeError } from platform
 
 export default Runtime.handler(
   Commands.commands.acp,
-  Effect.fn("cli.acp")(function* (input) {
+  Effect.fn("cli.acp")(function*(input) {
     if (input.login) {
       const login = yield* Effect.promise(() => import("./auth/login.vibe"))
       return yield* login.default({
@@ -63,7 +63,7 @@ export default Runtime.handler(
         Effect.map(() =>
           connection.signal.reason instanceof MessageTooLargeError
             ? `incoming message exceeded the ${connection.signal.reason.maxMessageBytes / 1024 / 1024} MiB limit`
-            : undefined,
+            : undefined
         ),
       ),
       endpoint.exited.pipe(

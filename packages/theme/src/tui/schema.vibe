@@ -247,7 +247,12 @@ schema CompleteThemeTokensDefinition {
   readonly border: { readonly base: ColorValue }
   readonly scrollbar: { readonly base: ColorValue }
   readonly diff: {
-    readonly text: { readonly added: ColorValue; readonly removed: ColorValue; readonly context: ColorValue; readonly hunkHeader: ColorValue }
+    readonly text: {
+      readonly added: ColorValue
+      readonly removed: ColorValue
+      readonly context: ColorValue
+      readonly hunkHeader: ColorValue
+    }
     readonly background: { readonly added: ColorValue; readonly removed: ColorValue; readonly context: ColorValue }
     readonly highlight: { readonly added: ColorValue; readonly removed: ColorValue }
     readonly lineNumber: {

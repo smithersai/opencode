@@ -117,10 +117,10 @@ export function derive(baseURL: string, remote: Snapshot, existing: readonly Mod
 
 function usable(model: RemoteModel): model is UsableModel {
   return (
-    model.policy?.state !== "disabled" &&
-    model.capabilities.limits?.max_output_tokens !== undefined &&
-    model.capabilities.limits.max_prompt_tokens !== undefined &&
-    model.capabilities.supports.tool_calls !== undefined
+    model.policy?.state !== "disabled"
+    && model.capabilities.limits?.max_output_tokens !== undefined
+    && model.capabilities.limits.max_prompt_tokens !== undefined
+    && model.capabilities.supports.tool_calls !== undefined
   )
 }
 
@@ -129,16 +129,14 @@ function build(id: Model.ID, remote: UsableModel, baseURL: string, previous?: Mo
   const endpoint = messages
     ? "messages"
     : remote.supported_endpoints?.includes("/responses")
-      ? "responses"
-      : remote.supported_endpoints?.includes("/chat/completions")
-        ? "chat"
-        : undefined
-  const image =
-    (remote.capabilities.supports.vision ?? false) ||
-    (remote.capabilities.limits.vision?.supported_media_types ?? []).some((item) => item.startsWith("image/"))
-  const pdf =
-    (remote.capabilities.supports.vision ?? false) &&
-    (remote.capabilities.limits.vision?.supported_media_types.includes("application/pdf") ?? false)
+    ? "responses"
+    : remote.supported_endpoints?.includes("/chat/completions")
+    ? "chat"
+    : undefined
+  const image = (remote.capabilities.supports.vision ?? false)
+    || (remote.capabilities.limits.vision?.supported_media_types ?? []).some((item) => item.startsWith("image/"))
+  const pdf = (remote.capabilities.supports.vision ?? false)
+    && (remote.capabilities.limits.vision?.supported_media_types.includes("application/pdf") ?? false)
   const input = ["text"]
   if (image) input.push("image")
   if (pdf) input.push("pdf")
@@ -232,10 +230,10 @@ function variants(remote: UsableModel, messages: boolean): Model.Info["variants"
 }
 
 module platform {
-// The platform code of models.vibe: the host fetch and its timeout signal, which a .vibe file does not read (EK4402).
+  // The platform code of models.vibe: the host fetch and its timeout signal, which a .vibe file does not read (EK4402).
 
-/** Fetches a URL with the given headers, aborting after `timeout` milliseconds. @throws {never} */
-export function request(url: string, headers: RequestInit["headers"], timeout: number): Promise<Response> {
-  return fetch(url, { headers, signal: AbortSignal.timeout(timeout) })
-}
+  /** Fetches a URL with the given headers, aborting after `timeout` milliseconds. @throws {never} */
+  export function request(url: string, headers: RequestInit["headers"], timeout: number): Promise<Response> {
+    return fetch(url, { headers, signal: AbortSignal.timeout(timeout) })
+  }
 }

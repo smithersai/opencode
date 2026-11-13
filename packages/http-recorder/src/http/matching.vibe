@@ -9,7 +9,18 @@ export const canonicalSnapshot = (snapshot: RequestSnapshot): string =>
     method: snapshot.method,
     url: snapshot.url,
     headers: canonicalizeJson(snapshot.headers),
-    body: do { const $optionSubject = decodeJson(snapshot.body); const $optionHandlers: { onNone: () => string; onSome: (value: unknown) => unknown; } = { onNone: () => snapshot.body, onSome: canonicalizeJson }; const { onNone: $optionNone, onSome: $optionSome } = $optionHandlers; match ($optionSubject) { when Option.Some(let $optionValue): $optionSome($optionValue); default: $optionNone(); }; },
+    body: do {
+      const $optionSubject = decodeJson(snapshot.body)
+      const $optionHandlers: { onNone: () => string; onSome: (value: unknown) => unknown } = {
+        onNone: () => snapshot.body,
+        onSome: canonicalizeJson,
+      }
+      const { onNone: $optionNone, onSome: $optionSome } = $optionHandlers
+      match ($optionSubject) {
+        when Option.Some(let $optionValue): $optionSome($optionValue);
+        default: $optionNone();
+      }
+    },
   })
 export const defaultMatcher: RequestMatcher = (incoming, recorded) =>
   canonicalSnapshot(incoming) === canonicalSnapshot(recorded)

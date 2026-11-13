@@ -40,7 +40,9 @@ export interface Interface {
   ) => WriteResult!(Environment.WrongKind | Environment.Failed)
 }
 
-export service Service: Interface { static readonly key = "@opencode/FileMutation";}
+export service Service: Interface {
+  static readonly key = "@opencode/FileMutation"
+}
 
 export const readText = effect (files: Files, target: string) =>
   try withSpan(
@@ -98,7 +100,7 @@ const layer = Layer.effect(
           const existed = (environment.files.stat(input.target.absolute)
             |> Effect.as(%, true)) catch effect (e) => match (e) {
               when { _tag: "Environment.NotFound" }: false;
-              default: (try die( e));
+              default: try die(e);
             }
           try environment.files.write(
             input.target.absolute,
@@ -115,9 +117,9 @@ const layer = Layer.effect(
           const next = try Effect.orDie(Effect.try({ try: () => Bom.split(input.content), catch: (error) => error }))
           const current = (environment.files.read(input.target.absolute, { offset: 0, length: 3 })
             |> Effect.map(%, (result) => result.bytes)) catch effect (e) => match (e) {
-            when { _tag: "Environment.NotFound" }: undefined;
-            default: throw e;
-          }
+              when { _tag: "Environment.NotFound" }: undefined;
+              default: throw e;
+            }
           try environment.files.write(
             input.target.absolute,
             new TextEncoder().encode(

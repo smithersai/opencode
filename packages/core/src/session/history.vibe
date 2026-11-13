@@ -42,14 +42,14 @@ const decodesWindow = (messages: unknown) => Option.isSome(decodeNativeWindow(me
 // Like other native data, a window only replays on the model that made it. One that no longer decodes, for example
 // a malformed one from a compaction hook, is skipped the same way instead of failing the session.
 const replayable = (message: SessionMessage.Info, boundary: Boundary) =>
-  !isNativeCompaction(message) ||
-  boundary === "latest" ||
-  (boundary !== "local" &&
-    message.model?.providerID === boundary.providerID &&
-    message.model.id === boundary.id &&
-    decodesWindow(message.native.messages))
+  !isNativeCompaction(message)
+  || boundary === "latest"
+  || (boundary !== "local"
+    && message.model?.providerID === boundary.providerID
+    && message.model.id === boundary.id
+    && decodesWindow(message.native.messages))
 
-const latestCompaction = Effect.fnUntraced(function* (
+const latestCompaction = Effect.fnUntraced(function*(
   db: DatabaseService,
   sessionID: SessionSchema.ID,
   boundary: Boundary,
@@ -67,15 +67,15 @@ const latestCompaction = Effect.fnUntraced(function* (
         boundary === "latest"
           ? undefined
           : or(
-              // Rows written before v2.1 hold the window in `providerContext`.
-              sql`coalesce(json_extract(${SessionMessageTable.data}, '$.native.messages'), json_extract(${SessionMessageTable.data}, '$.providerContext')) is null`,
-              boundary === "local"
-                ? undefined
-                : and(
-                    sql`json_extract(${SessionMessageTable.data}, '$.model.providerID') = ${boundary.providerID}`,
-                    sql`json_extract(${SessionMessageTable.data}, '$.model.id') = ${boundary.id}`,
-                  ),
-            ),
+            // Rows written before v2.1 hold the window in `providerContext`.
+            sql`coalesce(json_extract(${SessionMessageTable.data}, '$.native.messages'), json_extract(${SessionMessageTable.data}, '$.providerContext')) is null`,
+            boundary === "local"
+              ? undefined
+              : and(
+                sql`json_extract(${SessionMessageTable.data}, '$.model.providerID') = ${boundary.providerID}`,
+                sql`json_extract(${SessionMessageTable.data}, '$.model.id') = ${boundary.id}`,
+              ),
+          ),
       ),
     )
     .orderBy(desc(SessionMessageTable.seq))
@@ -109,7 +109,7 @@ const decodeStoredRow = (
   row.type === "user" ? decodeStoredUser(rowInput(row)).pipe(Effect.mapError(decodeError(row))) : decodeMessageRow(row)
 
 /** Decodes rows after restoring media stored in `blob`. Reads that return media must use this. */
-export const decodeMessageRows = Effect.fnUntraced(function* (
+export const decodeMessageRows = Effect.fnUntraced(function*(
   db: DatabaseService,
   rows: ReadonlyArray<typeof SessionMessageTable.$inferSelect>,
 ) {
@@ -117,7 +117,7 @@ export const decodeMessageRows = Effect.fnUntraced(function* (
 })
 
 /** Decodes rows for clients that fetch media themselves, so files stored in `blob` stay `media:` refs. */
-export const decodeMessageRowsWithRefs = Effect.fnUntraced(function* (
+export const decodeMessageRowsWithRefs = Effect.fnUntraced(function*(
   db: DatabaseService,
   rows: ReadonlyArray<typeof SessionMessageTable.$inferSelect>,
 ) {
@@ -130,14 +130,14 @@ export const decodeMessageRowsWithRefs = Effect.fnUntraced(function* (
         Effect.map((message) =>
           message.type === "user" && message.files
             ? { ...message, files: SessionBlob.describe(message.files, kept.meta) }
-            : message,
+            : message
         ),
       ),
     { concurrency: 1 },
   )
 })
 
-const messageEntries = Effect.fnUntraced(function* (
+const messageEntries = Effect.fnUntraced(function*(
   db: DatabaseService,
   sessionID: SessionSchema.ID,
   boundary: Boundary,
@@ -166,8 +166,9 @@ const messageEntries = Effect.fnUntraced(function* (
   )
   // A window that cannot replay leaves nothing to start from, so read from the compaction before it.
   const start = decoded[0]
-  if (compaction && start && !replayable(start.message, boundary))
+  if (compaction && start && !replayable(start.message, boundary)) {
     return yield* messageEntries(db, sessionID, boundary, compaction.seq)
+  }
   const entries = compaction ? yield* withRecentText(db, sessionID, decoded) : decoded
   // Re-expansion may cross a native checkpoint whose completion already advanced the instruction
   // epoch: the baseline supersedes the chronological updates before it. Forks seed their baseline
@@ -185,7 +186,7 @@ const messageEntries = Effect.fnUntraced(function* (
  * history rebuilds their text from the messages between that one and the compaction, in memory only (see
  * `SessionRecentText.kept`). Compactions written before the reference have none and keep the text they stored.
  */
-const withRecentText = Effect.fnUntraced(function* (
+const withRecentText = Effect.fnUntraced(function*(
   db: DatabaseService,
   sessionID: SessionSchema.ID,
   entries: ReadonlyArray<{ readonly seq: number; readonly message: SessionMessage.Info }>,
@@ -221,7 +222,7 @@ const withRecentText = Effect.fnUntraced(function* (
   return [{ ...first, message: { ...compaction, metadata: { ...compaction.metadata, recent } } }, ...entries.slice(1)]
 })
 
-export const load = Effect.fn("SessionHistory.load")(function* (
+export const load = Effect.fn("SessionHistory.load")(function*(
   db: DatabaseService,
   sessionID: SessionSchema.ID,
   boundary: Boundary,
@@ -229,7 +230,7 @@ export const load = Effect.fn("SessionHistory.load")(function* (
   return (yield* messageEntries(db, sessionID, boundary)).map((entry) => entry.message)
 })
 
-export const entriesForRunner = Effect.fn("SessionHistory.entriesForRunner")(function* (
+export const entriesForRunner = Effect.fn("SessionHistory.entriesForRunner")(function*(
   db: DatabaseService,
   sessionID: SessionSchema.ID,
   instructions: Instructions.List,
@@ -237,18 +238,18 @@ export const entriesForRunner = Effect.fn("SessionHistory.entriesForRunner")(fun
 ) {
   return yield* db
     .transaction(() =>
-      Effect.gen(function* () {
+      Effect.gen(function*() {
         const messages = yield* messageEntries(db, sessionID, boundary)
         return {
           initial: yield* InstructionState.initial(db, sessionID, instructions),
           entries: messages,
         }
-      }),
+      })
     )
     .pipe(Effect.orDie)
 })
 
-export const preview = Effect.fn("SessionHistory.preview")(function* (
+export const preview = Effect.fn("SessionHistory.preview")(function*(
   db: DatabaseService,
   sessionID: SessionSchema.ID,
   instructions: Instructions.List,
@@ -257,7 +258,7 @@ export const preview = Effect.fn("SessionHistory.preview")(function* (
   const observed = yield* Instructions.read(instructions)
   return yield* db
     .transaction(() =>
-      Effect.gen(function* () {
+      Effect.gen(function*() {
         const messages = yield* messageEntries(db, sessionID, boundary)
         // An active assistant may contain an unresolved tool call, so only preview the settled prefix.
         const unsettled = messages.findIndex(
@@ -270,7 +271,7 @@ export const preview = Effect.fn("SessionHistory.preview")(function* (
           messages: settled.map((entry) => entry.message),
           instructionUpdate: assembled.update,
         }
-      }),
+      })
     )
     .pipe(Effect.catch((error) => (error instanceof Instructions.InitializationBlocked ? error : Effect.die(error))))
 })
@@ -279,7 +280,7 @@ export const preview = Effect.fn("SessionHistory.preview")(function* (
  * The synthetic messages `load(db, sessionID, "latest")` would return, read without the rest of the transcript. Under
  * that boundary every row from the latest completed compaction on is kept, and synthetic rows carry no media.
  */
-export const synthetics = Effect.fn("SessionHistory.synthetics")(function* (
+export const synthetics = Effect.fn("SessionHistory.synthetics")(function*(
   db: DatabaseService,
   sessionID: SessionSchema.ID,
 ) {
@@ -301,7 +302,7 @@ export const synthetics = Effect.fn("SessionHistory.synthetics")(function* (
 })
 
 /** The id and text of the session's first user message. */
-export const firstUserMessage = Effect.fn("SessionHistory.firstUserMessage")(function* (
+export const firstUserMessage = Effect.fn("SessionHistory.firstUserMessage")(function*(
   db: DatabaseService,
   sessionID: SessionSchema.ID,
 ) {

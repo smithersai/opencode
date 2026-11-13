@@ -4,7 +4,7 @@ import { homedir, isAbsolute, join } from platform
 
 const InstanceName = Schema.String.check(
   Schema.makeFilter((value) =>
-    /^[a-zA-Z0-9][a-zA-Z0-9._-]{0,63}$/.test(value) ? undefined : "a valid Drive instance name",
+    /^[a-zA-Z0-9][a-zA-Z0-9._-]{0,63}$/.test(value) ? undefined : "a valid Drive instance name"
   ),
 )
 
@@ -65,7 +65,7 @@ const configError = (cause: unknown) =>
     cause,
   })
 
-export const resolve = Effect.fn("DriveManifest.resolve")(function* () {
+export const resolve = Effect.fn("DriveManifest.resolve")(function*() {
   const name = yield* Config.schema(InstanceName, "OPENCODE_DRIVE").pipe(Effect.mapError(configError))
   if (name === "1") return defaults
 
@@ -86,10 +86,9 @@ export const resolve = Effect.fn("DriveManifest.resolve")(function* () {
         new ResolveError({
           reason: cause.reason._tag === "NotFound" ? "not-found" : "read",
           path: file,
-          message:
-            cause.reason._tag === "NotFound"
-              ? `Drive manifest not found: ${file}`
-              : `Failed to read Drive manifest: ${file}: ${cause.message}`,
+          message: cause.reason._tag === "NotFound"
+            ? `Drive manifest not found: ${file}`
+            : `Failed to read Drive manifest: ${file}: ${cause.message}`,
           cause,
         }),
     ),

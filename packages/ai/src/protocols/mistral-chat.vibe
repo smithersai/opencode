@@ -218,9 +218,8 @@ const MistralStreamEvent = Schema.Union([Schema.Literal(DONE), Protocol.jsonEven
 
 const lowerMedia = effect (part: MediaPart) => {
   const mime = part.media.mediaType.toLowerCase()
-  const url =
-    (try Effect.orDie(Effect.try({ try: () => ProviderShared.mediaUrl(part.media), catch: (e) => e }))) ??
-    (try ProviderShared.requireInlineMedia("Mistral Chat", part.media)).dataUrl
+  const url = (try Effect.orDie(Effect.try({ try: () => ProviderShared.mediaUrl(part.media), catch: (e) => e })))
+    ?? (try ProviderShared.requireInlineMedia("Mistral Chat", part.media)).dataUrl
   if (mime.startsWith("image/")) return { type: "image_url" as const, image_url: url }
   if (mime === "application/pdf") return { type: "document_url" as const, document_url: url }
   throw ProviderShared.invalidRequest(`Mistral Chat does not support media type ${part.media.mediaType}`)
@@ -239,8 +238,9 @@ const lowerUser = effect (message: LLMRequest["messages"][number]) => {
     }
     throw ProviderShared.unsupportedContent("Mistral Chat", "user", ["text", "media"])
   }
-  if (content.every((part) => part.type === "text"))
+  if (content.every((part) => part.type === "text")) {
     return { role: "user" as const, content: content.map((part) => part.text).join("") }
+  }
   return { role: "user" as const, content }
 }
 
@@ -294,8 +294,9 @@ const lowerToolResults = effect (
 ) => {
   const output: MistralMessage[] = []
   for (const part of message.content) {
-    if (part.type !== "tool-result")
+    if (part.type !== "tool-result") {
       throw ProviderShared.unsupportedContent("Mistral Chat", "tool", ["tool-result"])
+    }
     if (part.result.type !== "content") {
       output.push({
         role: "tool",
@@ -311,7 +312,11 @@ const lowerToolResults = effect (
         content.push({ type: "text", text: item.text })
         continue
       }
-      content.push(try lowerMedia(try Effect.orDie(Effect.try({ try: () => ProviderShared.toolFileMedia(item), catch: (e) => e }))))
+      content.push(
+        try lowerMedia(
+          try Effect.orDie(Effect.try({ try: () => ProviderShared.toolFileMedia(item), catch: (e) => e })),
+        ),
+      )
     }
     output.push({
       role: "tool",
@@ -327,18 +332,16 @@ const lowerToolResults = effect (
 
 const lowerMessages = effect (request: LLMRequest) => {
   const normalizeID = try Effect.orDie(Effect.try({ try: () => MistralToolID.normalizer(request), catch: (e) => e }))
-  const messages: MistralMessage[] =
-    request.system.length === 0
-      ? []
-      : [
-          {
-            role: "system",
-            content:
-              request.system.length === 1
-                ? request.system[0].text
-                : request.system.map((part) => ({ type: "text", text: part.text })),
-          },
-        ]
+  const messages: MistralMessage[] = request.system.length === 0
+    ? []
+    : [
+      {
+        role: "system",
+        content: request.system.length === 1
+          ? request.system[0].text
+          : request.system.map((part) => ({ type: "text", text: part.text })),
+      },
+    ]
   for (const message of request.messages) {
     if (message.role === "system") {
       const update = try ProviderShared.wrappedSystemUpdate("Mistral Chat", message)
@@ -374,48 +377,61 @@ const lowerTool = (tool: ToolDefinition): MistralTool => ({
   function: { name: tool.name, description: tool.description, parameters: tool.inputSchema, strict: false },
 })
 
-export const fromRequest = effect (request: LLMRequest) => try withSpan(effect {
-  const options = try (try Effect.orDie(Effect.try({ try: () => ProviderShared.validateWith(Schema.decodeUnknownEffect(MistralOptions)), catch: (e) => e })))(
-    request.providerOptions ?? {},
+export const fromRequest = effect (request: LLMRequest) =>
+  try withSpan(
+    effect {
+      const options = try (try Effect.orDie(
+        Effect.try({
+          try: () => ProviderShared.validateWith(Schema.decodeUnknownEffect(MistralOptions)),
+          catch: (e) => e,
+        }),
+      ))(
+        request.providerOptions ?? {},
+      )
+      if (options.reasoningEffort !== undefined && options.promptMode !== undefined) {
+        throw ProviderShared.invalidRequest(
+          "Mistral Chat reasoningEffort and promptMode provider options are mutually exclusive",
+        )
+      }
+      const toolChoice = request.toolChoice
+        ? try ProviderShared.matchToolChoice("Mistral Chat", request.toolChoice, {
+          auto: () => "auto" as const,
+          none: () => "none" as const,
+          required: () => "any" as const,
+          tool: (name) => ({ type: "function" as const, function: { name } }),
+        })
+        : undefined
+      const flattened = try Effect.orDie(
+        Effect.try({ try: () => ProviderShared.flattenToolRequest(request), catch: (e) => e }),
+      )
+      return {
+        model: request.model.id,
+        messages: try lowerMessages(flattened.request),
+        tools: flattened.tools.length > 0 ? flattened.tools.map(lowerTool) : undefined,
+        tool_choice: toolChoice,
+        stream: true as const,
+        max_tokens: request.generation?.maxTokens,
+        random_seed: request.generation?.seed,
+        temperature: request.generation?.temperature,
+        top_p: request.generation?.topP,
+        frequency_penalty: request.generation?.frequencyPenalty,
+        presence_penalty: request.generation?.presencePenalty,
+        stop: request.generation?.stop,
+        prompt_cache_key:
+          (try Effect.orDie(Effect.try({ try: () => ProviderShared.sendsPromptCacheKey(request), catch: (e) => e })))
+            ? (options.promptCacheKey ?? request.promptCacheKey)
+            : undefined,
+        safe_prompt: options.safePrompt,
+        document_image_limit: options.documentImageLimit,
+        document_page_limit: options.documentPageLimit,
+        parallel_tool_calls: options.parallelToolCalls
+          ?? (request.toolChoice?.disableParallelToolUse === true ? false : undefined),
+        reasoning_effort: options.reasoningEffort,
+        prompt_mode: options.promptMode,
+      }
+    },
+    "MistralChat.fromRequest",
   )
-  if (options.reasoningEffort !== undefined && options.promptMode !== undefined)
-    throw ProviderShared.invalidRequest(
-      "Mistral Chat reasoningEffort and promptMode provider options are mutually exclusive",
-    )
-  const toolChoice = request.toolChoice
-    ? try ProviderShared.matchToolChoice("Mistral Chat", request.toolChoice, {
-        auto: () => "auto" as const,
-        none: () => "none" as const,
-        required: () => "any" as const,
-        tool: (name) => ({ type: "function" as const, function: { name } }),
-      })
-    : undefined
-  const flattened = try Effect.orDie(Effect.try({ try: () => ProviderShared.flattenToolRequest(request), catch: (e) => e }))
-  return {
-    model: request.model.id,
-    messages: try lowerMessages(flattened.request),
-    tools: flattened.tools.length > 0 ? flattened.tools.map(lowerTool) : undefined,
-    tool_choice: toolChoice,
-    stream: true as const,
-    max_tokens: request.generation?.maxTokens,
-    random_seed: request.generation?.seed,
-    temperature: request.generation?.temperature,
-    top_p: request.generation?.topP,
-    frequency_penalty: request.generation?.frequencyPenalty,
-    presence_penalty: request.generation?.presencePenalty,
-    stop: request.generation?.stop,
-    prompt_cache_key: (try Effect.orDie(Effect.try({ try: () => ProviderShared.sendsPromptCacheKey(request), catch: (e) => e })))
-      ? (options.promptCacheKey ?? request.promptCacheKey)
-      : undefined,
-    safe_prompt: options.safePrompt,
-    document_image_limit: options.documentImageLimit,
-    document_page_limit: options.documentPageLimit,
-    parallel_tool_calls:
-      options.parallelToolCalls ?? (request.toolChoice?.disableParallelToolUse === true ? false : undefined),
-    reasoning_effort: options.reasoningEffort,
-    prompt_mode: options.promptMode,
-  }
-}, "MistralChat.fromRequest")
 
 type ToolKey = string | number
 interface PendingTool {
@@ -449,11 +465,10 @@ export interface ParserState {
 const mapUsage = (usage: MistralEvent["usage"]): Usage | undefined => {
   if (!usage) return undefined
   const input = usage.prompt_tokens ?? undefined
-  const reported =
-    usage.num_cached_tokens ??
-    usage.prompt_tokens_details?.cached_tokens ??
-    usage.prompt_token_details?.cached_tokens ??
-    undefined
+  const reported = usage.num_cached_tokens
+    ?? usage.prompt_tokens_details?.cached_tokens
+    ?? usage.prompt_token_details?.cached_tokens
+    ?? undefined
   const cached = input === undefined || reported === undefined ? undefined : Math.max(0, Math.min(input, reported))
   const output = usage.completion_tokens ?? undefined
   return new Usage({
@@ -498,16 +513,15 @@ const thinkingMetadata = (thinking: MistralThinkingContent) => ({ mistral: { thi
 
 const closeActive = (state: ParserState, events: LLMEvent[]) => {
   if (!state.active) return state
-  const lifecycle =
-    state.active.type === "text"
-      ? Lifecycle.textEnd(state.lifecycle, events, state.active.id)
-      : Lifecycle.reasoningEnd(
-          state.lifecycle,
-          events,
-          state.active.id,
-          thinkingMetadata({ ...state.active.thinking, type: "thinking", thinking: state.active.thinkingUnits ?? [] }),
-          thinkingText(state.active.thinkingUnits ?? []),
-        )
+  const lifecycle = state.active.type === "text"
+    ? Lifecycle.textEnd(state.lifecycle, events, state.active.id)
+    : Lifecycle.reasoningEnd(
+      state.lifecycle,
+      events,
+      state.active.id,
+      thinkingMetadata({ ...state.active.thinking, type: "thinking", thinking: state.active.thinkingUnits ?? [] }),
+      thinkingText(state.active.thinkingUnits ?? []),
+    )
   return { ...state, lifecycle, active: undefined }
 }
 
@@ -539,10 +553,9 @@ const appendThinking = (state: ParserState, events: LLMEvent[], part: MistralOut
   const text = thinkingText(units)
   return {
     ...current,
-    lifecycle:
-      text.length > 0
-        ? Lifecycle.reasoningDelta(current.lifecycle, events, active.id, text)
-        : Lifecycle.reasoningStart(current.lifecycle, events, active.id),
+    lifecycle: text.length > 0
+      ? Lifecycle.reasoningDelta(current.lifecycle, events, active.id, text)
+      : Lifecycle.reasoningStart(current.lifecycle, events, active.id),
     active: { ...active, thinking, thinkingUnits: accumulated },
     nextContent: current.active ? current.nextContent : current.nextContent + 1,
   }
@@ -562,8 +575,9 @@ const appendContent = (
 }
 
 const normalizeStreamToolID = (state: ParserState, source: string) => {
-  if (MistralToolID.valid.test(source))
+  if (MistralToolID.valid.test(source)) {
     return { id: source, state: { ...state, usedToolIDs: new Set([...state.usedToolIDs, source]) } }
+  }
   const previous = state.toolIDs.get(source)
   if (previous) return { id: previous, state }
   let attempt = 0
@@ -588,25 +602,35 @@ const toolText = (tool: MistralToolDelta) => {
 const appendTools = effect (
   initial: ParserState,
   events: any[],
-  deltas: readonly { readonly index?: number | null | undefined; readonly id?: string | null | undefined; readonly function?: { readonly name?: string | null | undefined; readonly arguments?: string | { readonly [x: string]: unknown; } | null | undefined; } | null | undefined; }[],
+  deltas: readonly {
+    readonly index?: number | null | undefined
+    readonly id?: string | null | undefined
+    readonly function?:
+      | {
+        readonly name?: string | null | undefined
+        readonly arguments?: string | { readonly [x: string]: unknown } | null | undefined
+      }
+      | null
+      | undefined
+  }[],
 ) => {
   if (deltas.length === 0) return initial
   let state = closeActive(initial, events)
   for (const [position, delta] of deltas.entries()) {
     const wireID = delta.id?.trim() || undefined
     const providedID = wireID === "null" ? undefined : wireID
-    const key =
-      delta.index ??
-      (providedID
+    const key = delta.index
+      ?? (providedID
         ? `id:${providedID}`
         : deltas.length > 1
-          ? `position:${position}`
-          : (state.latestToolKey ?? `missing:${state.generatedTools}`))
+        ? `position:${position}`
+        : (state.latestToolKey ?? `missing:${state.generatedTools}`))
     const existing = state.tools[key]
     const pending = state.pendingTools[key]
     const source = providedID ?? `generated:${String(key)}`
-    const normalized =
-      existing || pending ? { id: existing?.id ?? pending?.id ?? "", state } : normalizeStreamToolID(state, source)
+    const normalized = existing || pending
+      ? { id: existing?.id ?? pending?.id ?? "", state }
+      : normalizeStreamToolID(state, source)
     state = normalized.state
     const name = existing?.name ?? pending?.name ?? (delta.function?.name?.trim() || undefined)
     const text = `${pending?.input ?? ""}${toolText(delta)}`
@@ -627,7 +651,14 @@ const appendTools = effect (
       "Mistral Chat tool call delta is missing a name",
     )
     if (ToolStream.isError(result)) throw result
-    if (result.events.length > 0) state = { ...state, lifecycle: try Effect.orDie(Effect.try({ try: () => Lifecycle.stepStart(state.lifecycle, events), catch: (e) => e })) }
+    if (result.events.length > 0) {
+      state = {
+        ...state,
+        lifecycle: try Effect.orDie(
+          Effect.try({ try: () => Lifecycle.stepStart(state.lifecycle, events), catch: (e) => e }),
+        ),
+      }
+    }
     events.push(...result.events)
     const pendingTools = { ...state.pendingTools }
     delete pendingTools[key]
@@ -651,7 +682,71 @@ const hasLateContent = (event: MistralEvent) => {
   )
 }
 
-const step = effect (state: ParserState, event: { readonly [x: string]: unknown; readonly choices?: readonly { readonly [x: string]: unknown; readonly delta?: { readonly [x: string]: unknown; readonly content?: string | readonly { readonly [x: string]: unknown; readonly type: string; readonly text?: string | null | undefined; readonly thinking?: unknown; }[] | null | undefined; readonly tool_calls?: readonly { readonly index?: number | null | undefined; readonly id?: string | null | undefined; readonly function?: { readonly name?: string | null | undefined; readonly arguments?: string | { readonly [x: string]: unknown; } | null | undefined; } | null | undefined; }[] | null | undefined; } | null | undefined; readonly finish_reason?: string | null | undefined; }[] | null | undefined; readonly usage?: { readonly [x: string]: unknown; readonly prompt_tokens?: number | null | undefined; readonly completion_tokens?: number | null | undefined; readonly total_tokens?: number | null | undefined; readonly num_cached_tokens?: number | null | undefined; readonly prompt_token_details?: { readonly [x: string]: unknown; readonly cached_tokens?: number | null | undefined; } | null | undefined; readonly prompt_tokens_details?: { readonly [x: string]: unknown; readonly cached_tokens?: number | null | undefined; } | null | undefined; } | null | undefined; readonly error?: { readonly [x: string]: unknown; readonly message: string; readonly code?: string | number | null | undefined; } | null | undefined; }) => {
+const step = effect (
+  state: ParserState,
+  event: {
+    readonly [x: string]: unknown
+    readonly choices?:
+      | readonly {
+        readonly [x: string]: unknown
+        readonly delta?:
+          | {
+            readonly [x: string]: unknown
+            readonly content?:
+              | string
+              | readonly {
+                readonly [x: string]: unknown
+                readonly type: string
+                readonly text?: string | null | undefined
+                readonly thinking?: unknown
+              }[]
+              | null
+              | undefined
+            readonly tool_calls?:
+              | readonly {
+                readonly index?: number | null | undefined
+                readonly id?: string | null | undefined
+                readonly function?:
+                  | {
+                    readonly name?: string | null | undefined
+                    readonly arguments?: string | { readonly [x: string]: unknown } | null | undefined
+                  }
+                  | null
+                  | undefined
+              }[]
+              | null
+              | undefined
+          }
+          | null
+          | undefined
+        readonly finish_reason?: string | null | undefined
+      }[]
+      | null
+      | undefined
+    readonly usage?:
+      | {
+        readonly [x: string]: unknown
+        readonly prompt_tokens?: number | null | undefined
+        readonly completion_tokens?: number | null | undefined
+        readonly total_tokens?: number | null | undefined
+        readonly num_cached_tokens?: number | null | undefined
+        readonly prompt_token_details?:
+          | { readonly [x: string]: unknown; readonly cached_tokens?: number | null | undefined }
+          | null
+          | undefined
+        readonly prompt_tokens_details?:
+          | { readonly [x: string]: unknown; readonly cached_tokens?: number | null | undefined }
+          | null
+          | undefined
+      }
+      | null
+      | undefined
+    readonly error?:
+      | { readonly [x: string]: unknown; readonly message: string; readonly code?: string | number | null | undefined }
+      | null
+      | undefined
+  },
+) => {
   if (event.error) {
     const body = ProviderShared.encodeJson(event)
     throw new AIError({
@@ -665,12 +760,13 @@ const step = effect (state: ParserState, event: { readonly [x: string]: unknown;
   const events: LLMEvent[] = []
   const usage = mapUsage(event.usage) ?? state.usage
   if (state.finishReason) {
-    if (hasLateContent(event))
+    if (hasLateContent(event)) {
       throw ProviderShared.eventError(
         ADAPTER,
         "Mistral Chat received content after the finish reason",
         ProviderShared.encodeJson(event),
       )
+    }
     return [{ ...state, usage }, events] as const
   }
   const choice = event.choices?.[0]
@@ -688,21 +784,22 @@ const step = effect (state: ParserState, event: { readonly [x: string]: unknown;
       body: ProviderShared.encodeJson(event),
     }
     throw new AIError({
-      reason:
-        finishReason.raw === "network_error" ? new ProviderInternalError(details) : new UnknownProviderError(details),
+      reason: finishReason.raw === "network_error"
+        ? new ProviderInternalError(details)
+        : new UnknownProviderError(details),
     })
   }
   const incomplete = finishReason.normalized === "length" || finishReason.normalized === "content-filter"
-  if (!incomplete && Object.keys(withTools.pendingTools).length > 0)
+  if (!incomplete && Object.keys(withTools.pendingTools).length > 0) {
     throw ProviderShared.eventError(
       ADAPTER,
       "Mistral Chat tool call delta is missing a name",
       ProviderShared.encodeJson(event),
     )
-  const finished =
-    !incomplete && Object.keys(withTools.tools).length > 0
-      ? try ToolStream.finishAll(ADAPTER, withTools.tools)
-      : undefined
+  }
+  const finished = !incomplete && Object.keys(withTools.tools).length > 0
+    ? try ToolStream.finishAll(ADAPTER, withTools.tools)
+    : undefined
   return [
     {
       ...withTools,
@@ -716,7 +813,7 @@ const step = effect (state: ParserState, event: { readonly [x: string]: unknown;
 }
 
 const finishEvents = effect (state: ParserState) => {
-  if (!state.finishReason)
+  if (!state.finishReason) {
     throw new AIError({
       reason: new InvalidProviderOutputError({
         message: "Mistral Chat stream ended without finish_reason",
@@ -724,15 +821,19 @@ const finishEvents = effect (state: ParserState) => {
         route: ADAPTER,
       }),
     })
+  }
   const events: LLMEvent[] = []
   const closed = closeActive(state, events)
-  const lifecycle = closed.completedTools.length > 0 ? try Effect.orDie(Effect.try({ try: () => Lifecycle.stepStart(closed.lifecycle, events), catch: (e) => e })) : closed.lifecycle
+  const lifecycle = closed.completedTools.length > 0
+    ? try Effect.orDie(Effect.try({ try: () => Lifecycle.stepStart(closed.lifecycle, events), catch: (e) => e }))
+    : closed.lifecycle
   events.push(...closed.completedTools)
-  const reason =
-    state.finishReason.normalized === "stop" && closed.completedTools.some(LLMEvent.is.toolCall)
-      ? { ...state.finishReason, normalized: "tool-calls" as const }
-      : state.finishReason
-  try Effect.orDie(Effect.try({ try: () => Lifecycle.finish(lifecycle, events, { reason, usage: closed.usage }), catch: (e) => e }))
+  const reason = state.finishReason.normalized === "stop" && closed.completedTools.some(LLMEvent.is.toolCall)
+    ? { ...state.finishReason, normalized: "tool-calls" as const }
+    : state.finishReason
+  try Effect.orDie(
+    Effect.try({ try: () => Lifecycle.finish(lifecycle, events, { reason, usage: closed.usage }), catch: (e) => e }),
+  )
   return events
 }
 

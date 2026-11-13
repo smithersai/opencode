@@ -133,7 +133,12 @@ export const protocol = DecisionRoute.protocol({
           )
           const byName = new Map(answers.map((answer) => [answer.name, answer]))
           const ordered = context.request.questions.flatMap((question) => byName.get(question.name) ?? [])
-          const usage = try Effect.orDie(Effect.try({ try: () => OpenResponses.mapUsage(output.value.usage, context.providerMetadataKey), catch: (e) => e }))
+          const usage = try Effect.orDie(
+            Effect.try({
+              try: () => OpenResponses.mapUsage(output.value.usage, context.providerMetadataKey),
+              catch: (e) => e,
+            }),
+          )
           return new DecisionResponse({
             answers: ordered.length === answers.length ? ordered : answers,
             usage: usage === undefined

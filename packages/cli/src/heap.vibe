@@ -20,7 +20,7 @@ import { HeapSnapshot } from "@opencode/util/heap-snapshot"
 import { Effect, Queue } from "effect"
 import { addSignalListener, platform, removeSignalListener } from host
 
-export const listen = Effect.gen(function* () {
+export const listen = Effect.gen(function*() {
   const global = yield* Global.Service
   if (platform() === "win32") return
   const signals = yield* Queue.dropping<void>(1)

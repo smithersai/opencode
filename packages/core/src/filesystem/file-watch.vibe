@@ -29,7 +29,9 @@ export interface Interface {
   readonly unwatch: (input: Input) => void!!
 }
 
-export service Service: Interface { static readonly key = "@opencode/FileWatch";}
+export service Service: Interface {
+  static readonly key = "@opencode/FileWatch"
+}
 
 export schema Options {
   readonly enabled?: boolean

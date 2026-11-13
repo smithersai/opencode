@@ -119,7 +119,7 @@ export class Service extends Context.Service<Service, Interface>()("@opencode/Pe
 const makeLayer = (options: Options = {}) =>
   Layer.effect(
     Service,
-    Effect.gen(function* () {
+    Effect.gen(function*() {
       const bus = yield* Bus.Service
       const global = yield* Global.Service
       const context = yield* Effect.context()
@@ -128,18 +128,17 @@ const makeLayer = (options: Options = {}) =>
       const daemon = yield* makeDaemonTransport(
         options.root ?? joinPath(global.state, "pty"),
         randomUUID(),
-        () =>
-          (binary ??= resolveBinary(global.bin).catch(async (error) => {
-            binary = undefined
-            throw error
-          })),
+        () => (binary ??= resolveBinary(global.bin).catch(async (error) => {
+          binary = undefined
+          throw error
+        })),
         options.handoff,
       ).pipe(Effect.mapError(unavailable))
       const removing = new Set<Pty.ID>()
       // Controller activity selects a terminal; observer reads and pane visibility do not.
       const current = new Map<Session.ID, Pty.ID>()
 
-      const list = Effect.fn("PersistentPty.list")(function* (sessionID?: Session.ID) {
+      const list = Effect.fn("PersistentPty.list")(function*(sessionID?: Session.ID) {
         const response = yield* optionalRequest(daemon, { op: "list" })
         if (!response) return []
         if (response.type !== "terminals") return yield* unexpected(response)
@@ -148,13 +147,13 @@ const makeLayer = (options: Options = {}) =>
           .filter((terminal) => sessionID === undefined || terminal.sessionID === sessionID)
       })
 
-      const get = Effect.fn("PersistentPty.get")(function* (id: Pty.ID) {
+      const get = Effect.fn("PersistentPty.get")(function*(id: Pty.ID) {
         const found = (yield* list()).find((terminal) => terminal.id === id)
         if (!found) return yield* new NotFoundError({ ptyID: id })
         return found
       })
 
-      const create = Effect.fn("PersistentPty.create")(function* (
+      const create = Effect.fn("PersistentPty.create")(function*(
         sessionID: Session.ID,
         input: Parameters<Interface["create"]>[1],
       ) {
@@ -179,7 +178,7 @@ const makeLayer = (options: Options = {}) =>
         return terminal
       })
 
-      const write = Effect.fn("PersistentPty.write")(function* (id: Pty.ID, data: string, attachmentID?: string) {
+      const write = Effect.fn("PersistentPty.write")(function*(id: Pty.ID, data: string, attachmentID?: string) {
         yield* get(id)
         const response = yield* request(daemon, {
           op: "write",
@@ -191,7 +190,7 @@ const makeLayer = (options: Options = {}) =>
         return undefined
       })
 
-      const resize = Effect.fn("PersistentPty.resize")(function* (
+      const resize = Effect.fn("PersistentPty.resize")(function*(
         id: Pty.ID,
         cols: number,
         rows: number,
@@ -210,7 +209,7 @@ const makeLayer = (options: Options = {}) =>
         return undefined
       })
 
-      const control = Effect.fn("PersistentPty.control")(function* (
+      const control = Effect.fn("PersistentPty.control")(function*(
         id: Pty.ID,
         attachmentID: string,
         cols: number,
@@ -229,7 +228,7 @@ const makeLayer = (options: Options = {}) =>
         return undefined
       })
 
-      const input = Effect.fn("PersistentPty.input")(function* (
+      const input = Effect.fn("PersistentPty.input")(function*(
         id: Pty.ID,
         attachmentID: string,
         cols: number,
@@ -250,7 +249,7 @@ const makeLayer = (options: Options = {}) =>
         return undefined
       })
 
-      const snapshot = Effect.fn("PersistentPty.snapshot")(function* (id: Pty.ID) {
+      const snapshot = Effect.fn("PersistentPty.snapshot")(function*(id: Pty.ID) {
         yield* get(id)
         const response = yield* request(daemon, { op: "snapshot", id: yield* fromID(id) })
         if (response.type !== "snapshot") return yield* unexpected(response)
@@ -262,9 +261,10 @@ const makeLayer = (options: Options = {}) =>
         }
       })
 
-      const read = Effect.fn("PersistentPty.read")(function* (sessionID: Session.ID, lines?: number) {
-        if (lines !== undefined && !Schema.is(ReadLines)(lines))
+      const read = Effect.fn("PersistentPty.read")(function*(sessionID: Session.ID, lines?: number) {
+        if (lines !== undefined && !Schema.is(ReadLines)(lines)) {
           return yield* new UnavailableError({ message: "lines must be an integer between 1 and 65535" })
+        }
         const id = current.get(sessionID)
         if (!id) return null
         const terminal = yield* get(id).pipe(Effect.catchTag("PersistentPty.NotFoundError", () => Effect.succeed(null)))
@@ -290,7 +290,7 @@ const makeLayer = (options: Options = {}) =>
         }
       })
 
-      const remove = Effect.fn("PersistentPty.remove")(function* (id: Pty.ID) {
+      const remove = Effect.fn("PersistentPty.remove")(function*(id: Pty.ID) {
         const terminal = yield* get(id)
         const response = yield* request(daemon, { op: "terminate", id: yield* fromID(id) })
         if (response.type !== "ok") return yield* unexpected(response)
@@ -299,7 +299,7 @@ const makeLayer = (options: Options = {}) =>
         return undefined
       })
 
-      const shutdown = Effect.fn("PersistentPty.shutdown")(function* () {
+      const shutdown = Effect.fn("PersistentPty.shutdown")(function*() {
         const response = yield* daemon.shutdown.pipe(Effect.mapError(unavailable))
         current.clear()
         if (!response) return
@@ -323,7 +323,7 @@ const makeLayer = (options: Options = {}) =>
         )
       }
 
-      const attach = Effect.fn("PersistentPty.attach")(function* (
+      const attach = Effect.fn("PersistentPty.attach")(function*(
         id: Pty.ID,
         input: Parameters<Interface["attach"]>[1],
       ) {
@@ -415,36 +415,37 @@ function toID(value: number) {
 effect function fromID(value: Pty.ID) {
   if (!value.startsWith("pty_persistent_")) return try Effect.die(new Error(`invalid persistent PTY ID: ${value}`))
   const parsed = Number(value.slice("pty_persistent_".length))
-  if (!Number.isSafeInteger(parsed) || parsed < 1)
+  if (!Number.isSafeInteger(parsed) || parsed < 1) {
     return try Effect.die(new Error(`invalid persistent PTY ID: ${value}`))
+  }
   return parsed
 }
 
 module platform {
-import path from "node:path"
+  import path from "node:path"
 
-/** @throws {never} */
-export function joinPath(directory: string, name: string) {
-  return path.join(directory, name)
-}
+  /** @throws {never} */
+  export function joinPath(directory: string, name: string) {
+    return path.join(directory, name)
+  }
 
-/** The filesystem root, which needs no working directory. @throws {never} */
-export function filesystemRoot() {
-  return path.resolve("/")
-}
+  /** The filesystem root, which needs no working directory. @throws {never} */
+  export function filesystemRoot() {
+    return path.resolve("/")
+  }
 
-/** @throws {never} */
-export function randomUUID() {
-  return crypto.randomUUID()
-}
+  /** @throws {never} */
+  export function randomUUID() {
+    return crypto.randomUUID()
+  }
 
-/** @throws {never} */
-export function encodeBase64(data: string | Uint8Array) {
-  return (typeof data === "string" ? Buffer.from(data) : Buffer.from(data)).toString("base64")
-}
+  /** @throws {never} */
+  export function encodeBase64(data: string | Uint8Array) {
+    return (typeof data === "string" ? Buffer.from(data) : Buffer.from(data)).toString("base64")
+  }
 
-/** @throws {never} */
-export function decodeBase64(data: string) {
-  return Buffer.from(data, "base64")
-}
+  /** @throws {never} */
+  export function decodeBase64(data: string) {
+    return Buffer.from(data, "base64")
+  }
 }

@@ -200,12 +200,21 @@ const fromRequest = effect (request: MediaProtocol.Addressed<Request>) =>
       const images = request.images ?? []
       const mask = request.providerOptions?.mask
       if (mask !== undefined && images.length === 0) {
-        throw try Effect.orDie(Effect.try({ try: () => ProviderShared.invalidRequest("An OpenAI image mask requires at least one input image"), catch: (e) => e }))
+        throw try Effect.orDie(
+          Effect.try({
+            try: () => ProviderShared.invalidRequest("An OpenAI image mask requires at least one input image"),
+            catch: (e) => e,
+          }),
+        )
       }
       if (request.providerOptions?.size !== undefined && ImageSizing.isRequested(request)) {
-        throw try Effect.orDie(Effect.try({ try: () => ProviderShared.invalidRequest(
-          "OpenAI providerOptions.size replaces aspect and resolution; set one or the other",
-        ), catch: (e) => e }))
+        throw try Effect.orDie(Effect.try({
+          try: () =>
+            ProviderShared.invalidRequest(
+              "OpenAI providerOptions.size replaces aspect and resolution; set one or the other",
+            ),
+          catch: (e) => e,
+        }))
       }
       const chosen = size(request)
       const fields = mergeJsonRecords(

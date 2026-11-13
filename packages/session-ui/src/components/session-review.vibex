@@ -181,7 +181,7 @@ export const SessionReview = (props: SessionReviewProps) => {
       props.diffs
         .filter((diff): diff is ReviewDiff => diff.file !== undefined)
         .map((diff) => [diff.file, { ...normalize(diff), preloaded: diff.preloaded }]),
-    ),
+    )
   )
 
   const files = createMemo(() => props.diffs.map((diff) => diff.file!))
@@ -239,11 +239,11 @@ export const SessionReview = (props: SessionReviewProps) => {
   }
 
   const pinned = (file: string) =>
-    props.focusedComment?.file === file ||
-    props.focusedFile === file ||
-    selection()?.file === file ||
-    commenting()?.file === file ||
-    opened()?.file === file
+    props.focusedComment?.file === file
+    || props.focusedFile === file
+    || selection()?.file === file
+    || commenting()?.file === file
+    || opened()?.file === file
 
   const handleScroll: JSX.EventHandler<HTMLDivElement, Event> = (event) => {
     queue()
@@ -323,8 +323,7 @@ export const SessionReview = (props: SessionReviewProps) => {
         const wrapper = anchors.get(focus.file)
         const anchor = wrapper?.querySelector(`[data-comment-id="${focus.id}"]`)
 
-        const ready =
-          isHTMLElement(anchor) && anchor.style.pointerEvents !== "none" && anchor.style.opacity !== "0"
+        const ready = isHTMLElement(anchor) && anchor.style.pointerEvents !== "none" && anchor.style.opacity !== "0"
 
         const target = ready ? anchor : wrapper
 
@@ -515,12 +514,12 @@ export const SessionReview = (props: SessionReviewProps) => {
                       editSubmitLabel: props.lineCommentActions?.saveLabel,
                       renderCommentActions: props.lineCommentActions
                         ? (comment, controls) => (
-                            <ReviewCommentMenu
-                              labels={props.lineCommentActions!}
-                              onEdit={controls.edit}
-                              onDelete={controls.remove}
-                            />
-                          )
+                          <ReviewCommentMenu
+                            labels={props.lineCommentActions!}
+                            onEdit={controls.edit}
+                            onDelete={controls.remove}
+                          />
+                        )
                         : undefined,
                     })
 
@@ -691,9 +690,9 @@ export const SessionReview = (props: SessionReviewProps) => {
                                     onLineSelectionEnd={handleLineSelectionEnd}
                                     annotations={commentsUi.annotations()}
                                     renderAnnotation={commentsUi.renderAnnotation}
-                                    renderGutterUtility={
-                                      props.onLineComment ? commentsUi.renderGutterUtility : undefined
-                                    }
+                                    renderGutterUtility={props.onLineComment
+                                      ? commentsUi.renderGutterUtility
+                                      : undefined}
                                     selectedLines={selectedLines()}
                                     commentedLines={commentedLines()}
                                     media={{

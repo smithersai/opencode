@@ -15,7 +15,7 @@ import { PluginUpdate } from "./update.js"
 import { Watcher } from "../filesystem/watcher.js"
 import { isAbsolute, randomUUID } from platform
 
-const resolve = Effect.fn("PluginSupervisor.resolve")(function* (
+const resolve = Effect.fn("PluginSupervisor.resolve")(function*(
   modules: Effect.Success<ReturnType<typeof PluginModule.make>>,
   pre: readonly Plugin.Generation[],
   post: readonly Plugin.Generation[],
@@ -45,11 +45,10 @@ const resolve = Effect.fn("PluginSupervisor.resolve")(function* (
     }
 
     const matched = plugins().filter((plugin) => matches(operation.target, plugin.id))
-    const selectsPlugins =
-      matched.length > 0 ||
-      operation.target === "*" ||
-      operation.target.endsWith(".*") ||
-      operation.target.startsWith("opencode.")
+    const selectsPlugins = matched.length > 0
+      || operation.target === "*"
+      || operation.target.endsWith(".*")
+      || operation.target.startsWith("opencode.")
     if (selectsPlugins) {
       matched.forEach((plugin) => enabled.add(plugin.id))
       continue
@@ -121,7 +120,7 @@ const resolve = Effect.fn("PluginSupervisor.resolve")(function* (
 })
 
 export const layer = Layer.effectDiscard(
-  Effect.gen(function* () {
+  Effect.gen(function*() {
     const registry = yield* Plugin.Service
     const sdk = yield* SdkPlugins.Service
     const instance = yield* InstancePlugins.Service
@@ -142,7 +141,7 @@ export const layer = Layer.effectDiscard(
     let generation = 0
     let observed = 0
 
-    const activate = Effect.fn("PluginSupervisor.activate")(function* () {
+    const activate = Effect.fn("PluginSupervisor.activate")(function*() {
       const current = ++generation
       // Combine internal plugins with host-contributed plugins in boot order.
       // Instance-bound plugins come last: later activation can override earlier
@@ -163,10 +162,10 @@ export const layer = Layer.effectDiscard(
       const source = (source: Plugin.Source) =>
         source.type === "package"
           ? {
-              ...source,
-              ...(outdated.has(source.target) ? { outdated: true as const } : {}),
-              ...(updating.has(source.target) ? { updating: true as const } : {}),
-            }
+            ...source,
+            ...(outdated.has(source.target) ? { outdated: true as const } : {}),
+            ...(updating.has(source.target) ? { updating: true as const } : {}),
+          }
           : source
       const apply = (resolved: typeof immediate) =>
         registry.activate(
@@ -181,7 +180,7 @@ export const layer = Layer.effectDiscard(
       running = resolved.packages
       const targets = new Set(
         [...resolved.plugins, ...resolved.failures].flatMap((plugin) =>
-          plugin.source?.type === "package" ? [plugin.source.target] : [],
+          plugin.source?.type === "package" ? [plugin.source.target] : []
         ),
       )
       packages = targets
@@ -204,7 +203,7 @@ export const layer = Layer.effectDiscard(
     // Each source owns its upstream subscriptions; the queue retains the latest observed request.
     const triggers = yield* Queue.sliding<number>(1)
     // Make accepted work visible to awaitActivation before coalescing the burst.
-    const notify = Effect.gen(function* () {
+    const notify = Effect.gen(function*() {
       observed++
       if (!release) release = yield* registry.hold()
       yield* Queue.offer(triggers, observed)
@@ -225,20 +224,20 @@ export const layer = Layer.effectDiscard(
           Effect.sync(() => {
             update.outdated ? outdated.add(update.target) : outdated.delete(update.target)
             update.updating ? updating.add(update.target) : updating.delete(update.target)
-          }),
+          })
         ),
       ),
     )
     // Run initial activation immediately; debounce only later requests. One consumer serializes both.
     yield* Stream.concat(Stream.succeed(0), Stream.fromQueue(triggers).pipe(Stream.debounce("100 millis"))).pipe(
       Stream.runForEach((target) =>
-        Effect.gen(function* () {
+        Effect.gen(function*() {
           yield* activate().pipe(Effect.catchCause((cause) => Effect.logError("failed to reload plugins", { cause })))
           if (observed !== target) return
           const settled = release
           release = undefined
           if (settled) yield* settled
-        }),
+        })
       ),
       Effect.forkScoped({ startImmediately: true }),
     )
@@ -265,18 +264,18 @@ function pluginSource(target: string): Plugin.Source {
 export const node = makeLocationNode({ name: "plugin-supervisor", layer, deps: nodeDeps })
 
 module platform {
-// The platform code of supervisor.vibe: host path checks and random identifiers, which a .vibe file does not use
-// directly (EK4402).
+  // The platform code of supervisor.vibe: host path checks and random identifiers, which a .vibe file does not use
+  // directly (EK4402).
 
-import path from "path"
+  import path from "path"
 
-/** @throws {never} */
-export function isAbsolute(target: string): boolean {
-  return path.isAbsolute(target)
-}
+  /** @throws {never} */
+  export function isAbsolute(target: string): boolean {
+    return path.isAbsolute(target)
+  }
 
-/** @throws {never} */
-export function randomUUID(): string {
-  return crypto.randomUUID()
-}
+  /** @throws {never} */
+  export function randomUUID(): string {
+    return crypto.randomUUID()
+  }
 }

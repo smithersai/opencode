@@ -86,25 +86,29 @@ export class VideoRequest extends Schema.Class<VideoRequest>("Video.Request")({
   declare protected readonly _VideoRequest: void
 }
 
-export type VideoRequestFor<Options extends VideoOptions = VideoOptions> = Omit<
-  VideoRequest,
-  "model" | "providerOptions"
-> & {
-  readonly model: VideoModel<Options>
-  readonly providerOptions?: Options
-}
+export type VideoRequestFor<Options extends VideoOptions = VideoOptions> =
+  & Omit<
+    VideoRequest,
+    "model" | "providerOptions"
+  >
+  & {
+    readonly model: VideoModel<Options>
+    readonly providerOptions?: Options
+  }
 
 export type VideoModelOptions<Model> = Model extends VideoModel<infer Options> ? Options : never
 
-export type VideoRequestInput<Model extends VideoModel = VideoModel> = Omit<
-  ConstructorParameters<typeof VideoRequest>[0],
-  "model" | "providerOptions" | "http" | "resolution"
-> & {
-  readonly model: Model
-  readonly resolution?: VideoResolution
-  readonly providerOptions?: NoInfer<VideoModelOptions<Model>>
-  readonly http?: HttpOptions.Input
-}
+export type VideoRequestInput<Model extends VideoModel = VideoModel> =
+  & Omit<
+    ConstructorParameters<typeof VideoRequest>[0],
+    "model" | "providerOptions" | "http" | "resolution"
+  >
+  & {
+    readonly model: Model
+    readonly resolution?: VideoResolution
+    readonly providerOptions?: NoInfer<VideoModelOptions<Model>>
+    readonly http?: HttpOptions.Input
+  }
 
 // ---------------------------------------------------------------------------
 // Response and events

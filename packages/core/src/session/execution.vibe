@@ -53,7 +53,7 @@ export function terminal(exit: Exit.Exit<void, SessionRunner.RunError>, reason?:
 /** Process-local execution: drains run in this process using the selected instance. */
 export const layer = Layer.effect(
   Service,
-  Effect.gen(function* () {
+  Effect.gen(function*() {
     const store = yield* SessionStore.Service
     const instances = yield* Instance.Service
     const bus = yield* Bus.Service
@@ -65,8 +65,8 @@ export const layer = Layer.effect(
           Cause.hasInterruptsOnly(cause)
             ? Effect.void
             : Effect.logError("Failed to publish Session execution lifecycle", cause).pipe(
-                Effect.annotateLogs({ sessionID }),
-              ),
+              Effect.annotateLogs({ sessionID }),
+            )
         ),
         Effect.asVoid,
       )
@@ -81,7 +81,7 @@ export const layer = Layer.effect(
     const releaseOnCommit = (sessionID: SessionSchema.ID) => ({
       commit: () => store.release(sessionID),
     })
-    const drain = Effect.fnUntraced(function* (
+    const drain = Effect.fnUntraced(function*(
       sessionID: SessionSchema.ID,
       force: boolean,
       continuation?: SessionRunner.Continuation,
@@ -90,13 +90,13 @@ export const layer = Layer.effect(
       const session = yield* store.get(sessionID)
       if (!session) return yield* Effect.die(new Error(`Session not found: ${sessionID}`))
       const result = yield* SessionRunner.Service.use((runner) =>
-        runner.drain({ sessionID, force, continuation, promotable }),
+        runner.drain({ sessionID, force, continuation, promotable })
       ).pipe(
         instances.provide(session),
         Effect.tapCause((cause) =>
           Cause.hasInterruptsOnly(cause)
             ? Effect.void
-            : Effect.logError("Failed to drain Session", cause).pipe(Effect.annotateLogs({ sessionID })),
+            : Effect.logError("Failed to drain Session", cause).pipe(Effect.annotateLogs({ sessionID }))
         ),
       )
       return yield* SessionRunner.DrainResult.$match(result, {
@@ -116,7 +116,7 @@ export const layer = Layer.effect(
       settled: (sessionID, exit, reason) =>
         reportLifecycle(
           sessionID,
-          Effect.gen(function* () {
+          Effect.gen(function*() {
             const outcome = terminal(exit, reason)
             if (outcome.type === "succeeded") {
               yield* bus.publish(SessionEvent.Execution.Succeeded, { sessionID }, releaseOnCommit(sessionID))
@@ -148,7 +148,7 @@ export const layer = Layer.effect(
       active: coordinator.active,
       isActive: coordinator.isActive,
       interrupt: (sessionID, options) =>
-        Effect.gen(function* () {
+        Effect.gen(function*() {
           const interrupted = yield* coordinator.interrupt(sessionID, "user")
           if (!options?.resume) return interrupted
           // Resume steering input and between-turn control work from the interrupted
@@ -161,8 +161,9 @@ export const layer = Layer.effect(
           // promotable here or was fully delivered and needs no resumption.
           const next = yield* SessionInbox.nextPromotable(db, sessionID, "input")
           if (next === undefined) return interrupted
-          if (next.delivery === "steer" || next.type === "compaction" || next.type === "move")
+          if (next.delivery === "steer" || next.type === "compaction" || next.type === "move") {
             yield* coordinator.wake(sessionID, "steer")
+          }
           return interrupted
         }),
       resume: coordinator.run,

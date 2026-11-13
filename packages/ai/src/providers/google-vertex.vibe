@@ -171,6 +171,8 @@ function config({ accessToken, apiKey, baseURL, body, headers, location, project
 }
 
 module $throw$ts {
-export function raise(value: unknown): never { throw value }
+  export function raise(value: unknown): never {
+    throw value
+  }
 }
 import { raise as $raise } from $throw$ts

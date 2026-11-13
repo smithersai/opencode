@@ -107,7 +107,7 @@ export class Service extends Context.Service<Service, Interface>()("@opencode/Fi
 
 const baseLayer = Layer.effect(
   Service,
-  Effect.gen(function* () {
+  Effect.gen(function*() {
     const fs = yield* FSUtil.Service
     const location = yield* Location.Service
     const search = yield* FileSystemSearch.Service
@@ -120,22 +120,23 @@ const baseLayer = Layer.effect(
     const root = location.workspaceID
       ? location.directory
       : yield* fs.realPath(location.directory).pipe(
-          // Linux realpath succeeds on an unreadable directory, so probe readability explicitly.
-          Effect.tap((real) => fs.access(real, { readable: true })),
-          Effect.catch((cause): Effect.Effect<never, DirectoryNotFoundError | DirectoryAccessDeniedError> => {
-            if (cause.reason._tag === "NotFound")
-              return Effect.fail(new DirectoryNotFoundError({ directory: location.directory, cause }))
-            return Effect.try({ try: () => FSUtil.isAccessDenied(cause), catch: (error) => error }).pipe(
-              Effect.orDie,
-              Effect.flatMap((denied) =>
-                denied
-                  ? Effect.fail(new DirectoryAccessDeniedError({ directory: location.directory, cause }))
-                  : Effect.die(cause),
-              ),
-            )
-          }),
-        )
-    const resolve = Effect.fnUntraced(function* (input: RelativePath) {
+        // Linux realpath succeeds on an unreadable directory, so probe readability explicitly.
+        Effect.tap((real) => fs.access(real, { readable: true })),
+        Effect.catch((cause): Effect.Effect<never, DirectoryNotFoundError | DirectoryAccessDeniedError> => {
+          if (cause.reason._tag === "NotFound") {
+            return Effect.fail(new DirectoryNotFoundError({ directory: location.directory, cause }))
+          }
+          return Effect.try({ try: () => FSUtil.isAccessDenied(cause), catch: (error) => error }).pipe(
+            Effect.orDie,
+            Effect.flatMap((denied) =>
+              denied
+                ? Effect.fail(new DirectoryAccessDeniedError({ directory: location.directory, cause }))
+                : Effect.die(cause)
+            ),
+          )
+        }),
+      )
+    const resolve = Effect.fnUntraced(function*(input: RelativePath) {
       if (input.includes("\u0000")) return yield* Effect.fail(new NotFoundError({ path: input }))
       const absolute = resolvePath(location.directory, input)
       if (!FSUtil.contains(location.directory, absolute)) return yield* Effect.fail(new NotFoundError({ path: input }))
@@ -152,7 +153,7 @@ const baseLayer = Layer.effect(
     })
     return Service.of({
       find: search.find,
-      read: Effect.fn("FileSystem.read")(function* (input) {
+      read: Effect.fn("FileSystem.read")(function*(input) {
         const target = yield* resolve(input.path)
         const info = yield* fs.stat(target.real).pipe(
           Effect.catchReason(
@@ -170,7 +171,7 @@ const baseLayer = Layer.effect(
           stream: (options) => fs.stream(target.real, options),
         }
       }),
-      list: Effect.fn("FileSystem.list")(function* (input = {}) {
+      list: Effect.fn("FileSystem.list")(function*(input = {}) {
         // Navigation can leave the cwd without activating another Location.
         const directory = resolvePath(location.directory, input.path ?? ".")
         const missing = new NotFoundError({ path: RelativePath.make(input.path ?? ".") })
@@ -198,13 +199,13 @@ const baseLayer = Layer.effect(
                   }),
                 ]
               })
-              .sort((a, b) => (a.type === b.type ? a.path.localeCompare(b.path) : a.type === "directory" ? -1 : 1)),
+              .sort((a, b) => (a.type === b.type ? a.path.localeCompare(b.path) : a.type === "directory" ? -1 : 1))
           ),
         )
       }),
       // Unlike read, write reaches outside the location so clients can stage files in the
       // server tmp directory, which the model is already told to prefer and permitted to access.
-      write: Effect.fn("FileSystem.write")(function* (input) {
+      write: Effect.fn("FileSystem.write")(function*(input) {
         const target = resolvePath(location.directory, input.path)
         yield* fs.writeWithDirs(target, input.data).pipe(Effect.orDie)
         return Write.make({ path: AbsolutePath.make(target) })
@@ -220,25 +221,25 @@ export const node = makeLocationNode({
 })
 
 module platform {
-// The platform code of filesystem.vibe: host path rules, which a .vibe file does not use (EK4402).
+  // The platform code of filesystem.vibe: host path rules, which a .vibe file does not use (EK4402).
 
-import path from "path"
+  import path from "path"
 
-/** Resolves `target` against an absolute directory, so the process working directory is never read. @throws {never} */
-export function resolvePath(directory: string, target: string) {
-  return path.resolve(directory, target)
-}
+  /** Resolves `target` against an absolute directory, so the process working directory is never read. @throws {never} */
+  export function resolvePath(directory: string, target: string) {
+    return path.resolve(directory, target)
+  }
 
-/** Joins path segments with the host path rules. @throws {never} */
-export function joinPath(...segments: string[]) {
-  return path.join(...segments)
-}
+  /** Joins path segments with the host path rules. @throws {never} */
+  export function joinPath(...segments: string[]) {
+    return path.join(...segments)
+  }
 
-/** The path of an absolute `to` relative to an absolute `from`. @throws {never} */
-export function relativePath(from: string, to: string) {
-  return path.relative(from, to)
-}
+  /** The path of an absolute `to` relative to an absolute `from`. @throws {never} */
+  export function relativePath(from: string, to: string) {
+    return path.relative(from, to)
+  }
 
-/** The host path separator. */
-export const sep = path.sep
+  /** The host path separator. */
+  export const sep = path.sep
 }

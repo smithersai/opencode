@@ -6,9 +6,9 @@ module platform {
   export const readText = (file: string) =>
     file.startsWith("http://") || file.startsWith("https://")
       ? fetch(file).then((response) => {
-          if (!response.ok) throw new Error(`Failed to fetch session data: ${response.statusText}`)
-          return response.text()
-        })
+        if (!response.ok) throw new Error(`Failed to fetch session data: ${response.statusText}`)
+        return response.text()
+      })
       : Bun.file(file).text()
 
   export const send = (pathname: string, base: string, init: RequestInit) => fetch(new URL(pathname, base), init)
@@ -33,7 +33,7 @@ import { ServerConnection } from "../../../services/server-connection.ts"
 
 export default Runtime.handler(
   Commands.commands.session.commands.import,
-  Effect.fn("cli.session.import")(function* (input) {
+  Effect.fn("cli.session.import")(function*(input) {
     const text = yield* Effect.tryPromise({
       try: () => readText(input.file),
       catch: (cause) =>
@@ -51,7 +51,7 @@ export default Runtime.handler(
     const location = yield* Effect.promise(() =>
       client.location.get({
         location: { directory: resolvePath(Option.getOrElse(input.directory, () => currentDirectory())) },
-      }),
+      })
     )
     const response = yield* Effect.promise(() =>
       send("/api/experimental/session/import", server.endpoint.url, {
@@ -61,7 +61,7 @@ export default Runtime.handler(
           ...data,
           location: { directory: location.directory },
         }),
-      }),
+      })
     )
     if (response.status === 409) {
       writeError(`Session already exists${EOL}`)

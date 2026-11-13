@@ -1,5 +1,10 @@
 import type { Database } from "bun:sqlite"
-import { makeNativeConnection, openNativeDatabase, closeNativeDatabase, enableNativeWal } from "./sqlite.bun.platform.ts"
+import {
+  makeNativeConnection,
+  openNativeDatabase,
+  closeNativeDatabase,
+  enableNativeWal,
+} from "./sqlite.bun.platform.ts"
 import { Effect, Layer } from "effect"
 import { Reactivity } from "effect/reactivity"
 import { SqlClient } from "effect/sql"

@@ -12,7 +12,9 @@ module platform {
   // caller passes the module URL.
   export async function main(moduleURL: string) {
     const nodeBuild = process.argv.includes("--node")
-    const target = `cli${nodeBuild ? "-node" : ""}-${process.platform === "win32" ? "windows" : process.platform}-${process.arch}`
+    const target = `cli${nodeBuild ? "-node" : ""}-${
+      process.platform === "win32" ? "windows" : process.platform
+    }-${process.arch}`
     const directory = path.join(
       path.dirname(fileURLToPath(moduleURL)),
       "..",
@@ -48,7 +50,9 @@ module platform {
       spawnService()
       const registration = await waitForRegistration()
       const info = await Schema.decodeUnknownPromise(Service.Info)(await Bun.file(registration).json())
-      if (info.id === undefined || info.password === undefined) throw new Error("Registration is missing service identity")
+      if (info.id === undefined || info.password === undefined) {
+        throw new Error("Registration is missing service identity")
+      }
       const credential = btoa(`opencode:${info.password}`)
       const headers = { authorization: "Basic " + credential }
       const token = encodeURIComponent(credential)
@@ -63,7 +67,9 @@ module platform {
       })
       if (tokenOpenApi.status !== 200) throw new Error("Compiled application rejected query authentication")
       await verifyWebUi(info.url)
-      if ((await pluginIDs(info.url, headers)).includes("smoke")) throw new Error("Smoke plugin existed before creation")
+      if ((await pluginIDs(info.url, headers)).includes("smoke")) {
+        throw new Error("Smoke plugin existed before creation")
+      }
       const plugin = path.join(root, ".opencode", "plugins", "smoke.ts")
       await fs.writeFile(plugin, pluginSource())
       await waitForPlugin(info.url, headers, plugin)
@@ -75,8 +81,9 @@ module platform {
       const unauthorizedOpenApi = await fetch(new URL("/openapi.json", info.url), {
         signal: AbortSignal.timeout(5_000),
       })
-      if (unauthorizedOpenApi.status !== 401)
+      if (unauthorizedOpenApi.status !== 401) {
         throw new Error("Compiled service exposed application routes without authentication")
+      }
       const stopRoute = await fetch(new URL("/api/service/stop", info.url), {
         method: "POST",
         headers: { ...headers, "content-type": "application/json" },
@@ -99,8 +106,9 @@ module platform {
     } finally {
       processes.forEach((process) => process.kill())
       await Promise.all(processes.map((process) => process.exited))
-      if (failure)
+      if (failure) {
         errors.push(fs.readFile(path.join(root, "data", "opencode", "log", "opencode.log"), "utf8").catch(() => ""))
+      }
     }
 
     const output = await Promise.all(errors)
@@ -109,10 +117,11 @@ module platform {
       console.error("Failed to remove service smoke-test directory", cause)
       failure ??= cause
     })
-    if (failure)
+    if (failure) {
       throw new Error(output.filter(Boolean).join("\n") || "Compiled service lifecycle smoke test failed", {
         cause: failure,
       })
+    }
 
     function spawnService() {
       const process = Bun.spawn([binary, "serve", "--service"], { env, stdout: "ignore", stderr: "pipe" })
@@ -142,8 +151,9 @@ module platform {
       const script = html.match(/<script[^>]*\bsrc="(\/_assets\/[^"]+\.js)"/)?.[1]
       if (!script) throw new Error("Compiled web UI names no entry script")
       const entry = await fetch(new URL(script, url), { signal: AbortSignal.timeout(5_000) })
-      if (entry.status !== 200 || (await entry.text()).length === 0)
+      if (entry.status !== 200 || (await entry.text()).length === 0) {
         throw new Error(`Compiled service did not serve ${script}`)
+      }
     }
 
     async function waitForReady(url: string, headers: HeadersInit) {
@@ -182,7 +192,9 @@ module platform {
         throw new Error("Compiled service returned an invalid plugin list")
       }
       return body.data.flatMap((plugin) =>
-        typeof plugin === "object" && plugin !== null && "id" in plugin && typeof plugin.id === "string" ? [plugin.id] : [],
+        typeof plugin === "object" && plugin !== null && "id" in plugin && typeof plugin.id === "string"
+          ? [plugin.id]
+          : []
       )
     }
 

@@ -73,11 +73,11 @@ function authorizedSessionCookie(request: HttpServerRequest.HttpServerRequest, c
 
 export const authorizationLayer = Layer.effect(
   Authorization,
-  Effect.gen(function* () {
+  Effect.gen(function*() {
     const config = yield* ServerAuth.Config
     if (!ServerAuth.required(config)) return Authorization.of((effect) => effect)
     return Authorization.of((effect) =>
-      Effect.gen(function* () {
+      Effect.gen(function*() {
         const request = yield* HttpServerRequest.HttpServerRequest
         const route = yield* HttpRouter.RouteContext
         // Ticketed PTY and client MCP connects (browsers cannot set headers on WebSocket upgrades) and pairing links
@@ -85,20 +85,22 @@ export const authorizationLayer = Layer.effect(
         // route selected by Effect so authorization and dispatch cannot disagree about the request path.
         const url = new URL(request.url, "http://localhost")
         if (
-          ((route.route.path === PTY_CONNECT_PATH ||
-            route.route.path === PERSISTENT_PTY_CONNECT_PATH ||
-            route.route.path === MCP_CLIENT_PATH) &&
-            !!url.searchParams.get(PTY_CONNECT_TICKET_QUERY)) ||
-          route.route.path === PAIRING_CONNECT_PATH
-        )
+          ((route.route.path === PTY_CONNECT_PATH
+            || route.route.path === PERSISTENT_PTY_CONNECT_PATH
+            || route.route.path === MCP_CLIENT_PATH)
+            && !!url.searchParams.get(PTY_CONNECT_TICKET_QUERY))
+          || route.route.path === PAIRING_CONNECT_PATH
+        ) {
           return yield* effect
+        }
         if (yield* authorizedRequest(request, config)) return yield* effect
-        if (challengeRequest(request))
+        if (challengeRequest(request)) {
           yield* HttpEffect.appendPreResponseHandler((_request, response) =>
-            Effect.succeed(HttpServerResponse.setHeader(response, "www-authenticate", WWW_AUTHENTICATE)),
+            Effect.succeed(HttpServerResponse.setHeader(response, "www-authenticate", WWW_AUTHENTICATE))
           )
+        }
         return yield* new UnauthorizedError({ message: UNAUTHORIZED_MESSAGE })
-      }),
+      })
     )
   }),
 )

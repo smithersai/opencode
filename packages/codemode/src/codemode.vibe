@@ -63,7 +63,18 @@ export type DataValue = Schema.Json
 /** Schema for a host tool input containing CodeMode source. */
 export schema Input { readonly code: string }
 
-export schema DiagnosticKind = "ParseError" | "UnsupportedSyntax" | "UnknownTool" | "InvalidToolInput" | "InvalidToolOutput" | "InvalidDataValue" | "ToolCallLimitExceeded" | "TimeoutExceeded" | "ToolFailure" | "ExecutionFailure" | "Truncated"
+export schema DiagnosticKind =
+  | "ParseError"
+  | "UnsupportedSyntax"
+  | "UnknownTool"
+  | "InvalidToolInput"
+  | "InvalidToolOutput"
+  | "InvalidDataValue"
+  | "ToolCallLimitExceeded"
+  | "TimeoutExceeded"
+  | "ToolFailure"
+  | "ExecutionFailure"
+  | "Truncated"
 /** Stable categories produced by program, schema, tool, limit, and truncation diagnostics. */
 export type DiagnosticKind = typeof DiagnosticKind.Type
 
@@ -151,6 +162,8 @@ export const make = <const Provided extends Record<string, unknown> = {}>(
 }
 
 module $throw$ts {
-export function raise(value: unknown): never { throw value }
+  export function raise(value: unknown): never {
+    throw value
+  }
 }
 import { raise as $raise } from $throw$ts

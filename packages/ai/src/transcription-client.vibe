@@ -8,7 +8,9 @@ import {
 
 export type Interface = MediaClient.Interface<TranscriptionRequestFor, TranscriptionEvent, TranscriptionResponse>
 
-export service TranscriptionClientService: Interface { static readonly key = "@opencode/TranscriptionClient";}
+export service TranscriptionClientService: Interface {
+  static readonly key = "@opencode/TranscriptionClient"
+}
 export const Service = TranscriptionClientService
 export type Service = TranscriptionClientService
 

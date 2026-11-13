@@ -45,18 +45,18 @@ const decodeError = Schema.decodeUnknownOption(
 
 export const SnowflakeCortexPlugin = define({
   id: "opencode.provider.snowflake.cortex",
-  effect: Effect.fn(function* (ctx) {
+  effect: Effect.fn(function*(ctx) {
     const http = yield* HttpClient.HttpClient
     const credentials = yield* Credential.Service
     const integrations = yield* Integration.Service
     const bus = yield* Bus.Service
     const configured = yield* configuredSettings(providerID)
     const account = { value: "" }
-    const saved = Effect.gen(function* () {
+    const saved = Effect.gen(function*() {
       const connection = yield* integrations.connection.active(integrationID)
       return connection?.type === "credential" ? yield* credentials.get(connection.id) : undefined
     })
-    const token = Effect.fn(function* (account: string, form: Record<string, string>) {
+    const token = Effect.fn(function*(account: string, form: Record<string, string>) {
       if (!account) return yield* Effect.fail(new Error("Snowflake account is required"))
       const response = yield* http.execute(
         HttpClientRequest.post(`${issuer(account)}/oauth/token-request`).pipe(
@@ -69,10 +69,11 @@ export const SnowflakeCortexPlugin = define({
           HttpClientRequest.bodyUrlParams({ ...form, client_id: clientID }),
         ),
       )
-      if (response.status < 200 || response.status >= 300)
+      if (response.status < 200 || response.status >= 300) {
         return yield* Effect.fail(
           new Error(`Snowflake token request failed (${response.status}): ${yield* response.text}`),
         )
+      }
       const tokens = yield* HttpClientResponse.schemaBodyJson(Token)(response)
       const refresh = tokens.refresh_token || form.refresh_token
       if (!refresh) return yield* Effect.fail(new Error("Snowflake token response did not include refresh_token"))
@@ -110,7 +111,7 @@ export const SnowflakeCortexPlugin = define({
         refresh: (value) => (envToken() ? Effect.succeed(value) : refresh(value)),
         label: (value) => normalizeAccount(value.metadata?.account),
         authorize: (answer) =>
-          Effect.gen(function* () {
+          Effect.gen(function*() {
             const account = normalizeAccount(answer.account)
             if (!account) return yield* Effect.fail(new Error("Snowflake account is required"))
             const role = typeof answer.role === "string" ? answer.role.trim() : ""
@@ -127,12 +128,11 @@ export const SnowflakeCortexPlugin = define({
                 return
               }
               const value = url.searchParams.get("code")
-              const error =
-                url.searchParams.get("state") !== state
-                  ? "Invalid OAuth state"
-                  : url.searchParams.get("error_description") ||
-                    url.searchParams.get("error") ||
-                    (!value ? "Missing authorization code" : undefined)
+              const error = url.searchParams.get("state") !== state
+                ? "Invalid OAuth state"
+                : url.searchParams.get("error_description")
+                  || url.searchParams.get("error")
+                  || (!value ? "Missing authorization code" : undefined)
               Effect.runFork(error ? Deferred.fail(code, new Error(error)) : Deferred.succeed(code, value ?? ""))
               response
                 .writeHead(error ? 400 : 200, { "Content-Type": "text/html" })
@@ -145,26 +145,29 @@ export const SnowflakeCortexPlugin = define({
             yield* Effect.addFinalizer(() => Effect.sync(() => server.close()))
             yield* Effect.tryPromise(() => EventEmitter.once(server.listen(0, "127.0.0.1"), "listening"))
             const address = server.address()
-            if (!address || typeof address === "string")
+            if (!address || typeof address === "string") {
               return yield* Effect.fail(new Error("Missing OAuth callback port"))
+            }
             const redirect = `http://127.0.0.1:${address.port}/`
             return {
               mode: "auto" as const,
-              url: `${issuer(account)}/oauth/authorize?${new URLSearchParams({
-                client_id: clientID,
-                response_type: "code",
-                redirect_uri: redirect,
-                state,
-                scope: !role
-                  ? "refresh_token"
-                  : /^[-_A-Za-z0-9]+$/.test(role)
+              url: `${issuer(account)}/oauth/authorize?${
+                new URLSearchParams({
+                  client_id: clientID,
+                  response_type: "code",
+                  redirect_uri: redirect,
+                  state,
+                  scope: !role
+                    ? "refresh_token"
+                    : /^[-_A-Za-z0-9]+$/.test(role)
                     ? `refresh_token session:role:${role}`
                     : `refresh_token session:role-encoded:${encodeURIComponent(role)}`,
-                code_challenge: challenge,
-                code_challenge_method: "S256",
-              }).toString()}`,
+                  code_challenge: challenge,
+                  code_challenge_method: "S256",
+                }).toString()
+              }`,
               instructions: "Complete Snowflake sign-in in your browser.",
-              callback: Effect.gen(function* () {
+              callback: Effect.gen(function*() {
                 return yield* token(account, {
                   grant_type: "authorization_code",
                   code: yield* Deferred.await(code),
@@ -177,7 +180,7 @@ export const SnowflakeCortexPlugin = define({
       })
     })
 
-    const load = Effect.gen(function* () {
+    const load = Effect.gen(function*() {
       const value = (yield* saved)?.value
       account.value = normalizeAccount(
         environmentValue("SNOWFLAKE_ACCOUNT") ?? value?.metadata?.account ?? configured?.account,
@@ -201,10 +204,12 @@ export const SnowflakeCortexPlugin = define({
         models.update(providerID, item.id, (model) => {
           model.compatibility = { maxTokensField: "max_completion_tokens", ...model.compatibility }
           // Cortex Chat Completions caches Claude only through explicit `cache_control` breakpoints.
-          if ((model.modelID ?? model.id).includes("claude"))
+          if ((model.modelID ?? model.id).includes("claude")) {
             model.compatibility = { cacheFormat: "anthropic", ...model.compatibility }
-          if (model.settings?.baseURL !== undefined)
+          }
+          if (model.settings?.baseURL !== undefined) {
             model.settings.baseURL = endpoint(model.settings.baseURL, account.value)
+          }
         })
       }
     })
@@ -229,7 +234,7 @@ export const SnowflakeCortexPlugin = define({
     )
     yield* ctx.session.hook(
       "http.response",
-      Effect.fn(function* (event) {
+      Effect.fn(function*(event) {
         if (event.response.status !== 400) return
         const error = Option.getOrUndefined(decodeError(yield* Effect.promise(() => event.response.clone().text())))
         // oxlint-disable-next-line typescript-eslint/no-base-to-string -- Preserve V1's error-body coercion.
@@ -247,7 +252,7 @@ export const SnowflakeCortexPlugin = define({
     )
     yield* ctx.session.hook(
       "retry",
-      Effect.fn(function* (event) {
+      Effect.fn(function*(event) {
         if (event.error.status !== 401 || event.attempt !== 2 || envToken()) return
         const current = yield* saved
         if (current?.value.type !== "oauth" || current.value.methodID !== methodID) return
@@ -282,44 +287,44 @@ function envToken() {
 }
 
 module platform {
-// The platform code of snowflake-cortex.vibe: environment variable reads, host randomness, digests, Buffer encoding,
-// host Response construction and lazy node imports, which a .vibe file does not use directly (EK4402).
+  // The platform code of snowflake-cortex.vibe: environment variable reads, host randomness, digests, Buffer encoding,
+  // host Response construction and lazy node imports, which a .vibe file does not use directly (EK4402).
 
-/** `size` random bytes as base64url; sizes stay far below the 65536-byte getRandomValues limit. @throws {never} */
-export function randomBase64Url(size: number): string {
-  return Buffer.from(crypto.getRandomValues(new Uint8Array(size))).toString("base64url")
-}
+  /** `size` random bytes as base64url; sizes stay far below the 65536-byte getRandomValues limit. @throws {never} */
+  export function randomBase64Url(size: number): string {
+    return Buffer.from(crypto.getRandomValues(new Uint8Array(size))).toString("base64url")
+  }
 
-/** The base64url SHA-256 digest of `text`, the PKCE S256 challenge. A digest failure rejects. @throws {never} */
-export async function sha256Base64Url(text: string): Promise<string> {
-  return Buffer.from(await crypto.subtle.digest("SHA-256", new TextEncoder().encode(text))).toString("base64url")
-}
+  /** The base64url SHA-256 digest of `text`, the PKCE S256 challenge. A digest failure rejects. @throws {never} */
+  export async function sha256Base64Url(text: string): Promise<string> {
+    return Buffer.from(await crypto.subtle.digest("SHA-256", new TextEncoder().encode(text))).toString("base64url")
+  }
 
-/** Loads node:http only when called, so runtimes without a loopback listener never evaluate it. @throws {never} */
-export function importHttp(): Promise<typeof import("node:http")> {
-  return import("node:http")
-}
+  /** Loads node:http only when called, so runtimes without a loopback listener never evaluate it. @throws {never} */
+  export function importHttp(): Promise<typeof import("node:http")> {
+    return import("node:http")
+  }
 
-/** Loads node:events only when called. @throws {never} */
-export function importEvents() {
-  return import("node:events")
-}
+  /** Loads node:events only when called. @throws {never} */
+  export function importEvents() {
+    return import("node:events")
+  }
 
-/** @throws {never} */
-export function environmentValue(key: string): string | undefined {
-  return process.env[key]
-}
+  /** @throws {never} */
+  export function environmentValue(key: string): string | undefined {
+    return process.env[key]
+  }
 
-/** @throws {never} */
-export function encodeBase64(text: string): string {
-  return Buffer.from(text).toString("base64")
-}
+  /** @throws {never} */
+  export function encodeBase64(text: string): string {
+    return Buffer.from(text).toString("base64")
+  }
 
-/**
- * Builds a host `Response`.
- * @throws {TypeError} when the init holds an invalid header or status.
- */
-export function createResponse(body: ConstructorParameters<typeof Response>[0], init: ResponseInit): Response {
-  return new Response(body, init)
-}
+  /**
+   * Builds a host `Response`.
+   * @throws {TypeError} when the init holds an invalid header or status.
+   */
+  export function createResponse(body: ConstructorParameters<typeof Response>[0], init: ResponseInit): Response {
+    return new Response(body, init)
+  }
 }

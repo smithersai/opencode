@@ -185,7 +185,6 @@ type ModelAggregate = {
   totalCostMicrocents: number
 }
 
-
 export function getStatsHomeData(): Effect.Effect<StatsHomeData, StatsDataError> {
   return Effect.tryPromise({
     try: async () => {
@@ -266,12 +265,11 @@ async function listCountryTotals(
   window: DateWindow,
   opts?: { provider?: string; model?: string },
 ): Promise<CountryTotalRow[]> {
-  const scope =
-    opts?.model && opts.provider
-      ? "and provider = ? and model = ?"
-      : opts?.model
-        ? "and model = ?"
-        : "and provider = 'all' and model = 'all'"
+  const scope = opts?.model && opts.provider
+    ? "and provider = ? and model = ?"
+    : opts?.model
+    ? "and model = ?"
+    : "and provider = 'all' and model = 'all'"
   const params = opts?.model && opts.provider ? [opts.provider, opts.model] : opts?.model ? [opts.model] : []
   return (
     await queryRows(
@@ -309,7 +307,6 @@ async function listRetentionWeekly(): Promise<RetentionMetricRow[]> {
   }
 }
 
-
 function stringValue(value: unknown) {
   return value == null ? "" : String(value)
 }
@@ -329,7 +326,7 @@ export function getStatsModelsComparisonData(
     try: async () => {
       const [rows, retentionRows] = await Promise.all([listModelDaily(), listRetentionWeekly()])
       const entries = models.map((model) =>
-        toComparisonEntry(buildStatsModelData(model.model, rows, [], model.provider, retentionRows)),
+        toComparisonEntry(buildStatsModelData(model.model, rows, [], model.provider, retentionRows))
       )
       const latest = entries
         .map((model) => model?.updatedAt)
@@ -377,8 +374,8 @@ export function buildStatsHomeData(
           range,
           getWindow(range, earliest, latest),
           getWindow("1W", earliest, latest),
-        ),
-      ),
+        )
+      )
     ),
     users: createUsageProductRecord((product) =>
       createRangeRecord((range) =>
@@ -389,23 +386,23 @@ export function buildStatsHomeData(
           getWindow(range, earliest, latest),
           getWindow("1W", earliest, latest),
           "users",
-        ),
-      ),
+        )
+      )
     ),
     leaderboard: createUsageProductRecord((product) =>
       createRangeRecord((range) =>
-        buildLeaderboard(normalized, product, getWindow(range === "1D" ? "1D" : "1W", earliest, latest)),
-      ),
+        buildLeaderboard(normalized, product, getWindow(range === "1D" ? "1D" : "1W", earliest, latest))
+      )
     ),
     market: createRangeRecord((range) => buildMarketShare(normalized, "Go", range, getWindow(range, earliest, latest))),
     tokenCost: createTokenProductRecord((product) =>
-      buildTokenCost(normalized, product, getWindow("1W", earliest, latest)),
+      buildTokenCost(normalized, product, getWindow("1W", earliest, latest))
     ),
     cacheRatio: createTokenProductRecord((product) =>
-      buildCacheRatio(normalized, product, getWindow("1W", earliest, latest)),
+      buildCacheRatio(normalized, product, getWindow("1W", earliest, latest))
     ),
     sessionCost: createTokenProductRecord((product) =>
-      buildSessionCost(normalized, product, getWindow("1W", earliest, latest)),
+      buildSessionCost(normalized, product, getWindow("1W", earliest, latest))
     ),
     retention: buildRetentionEntries(retentionRows)
       .filter((item) => item.rank !== null)
@@ -474,13 +471,13 @@ function buildStatsModelData(
       tokens: current.totalTokens,
       cost: round(microcentsToDollars(current.totalCostMicrocents), 2),
       tokensPerSession: current.sessions > 0 ? Math.round(current.totalTokens / current.sessions) : 0,
-      costPerSession:
-        current.sessions > 0 ? round(microcentsToDollars(current.totalCostMicrocents) / current.sessions, 4) : 0,
+      costPerSession: current.sessions > 0
+        ? round(microcentsToDollars(current.totalCostMicrocents) / current.sessions, 4)
+        : 0,
       costPerMillion: costPerMillion(current.totalCostMicrocents, current.totalTokens),
-      cacheRatio:
-        current.inputTokens + current.cacheReadTokens > 0
-          ? round((current.cacheReadTokens / (current.inputTokens + current.cacheReadTokens)) * 100, 1)
-          : 0,
+      cacheRatio: current.inputTokens + current.cacheReadTokens > 0
+        ? round((current.cacheReadTokens / (current.inputTokens + current.cacheReadTokens)) * 100, 1)
+        : 0,
     },
     usage: buildModelUsage(currentRows, window, "2M"),
     tokenMix: buildModelTokenMix(current),
@@ -895,18 +892,18 @@ function getWindow(range: UsageRange, earliest: number, latest: number): DateWin
     range === "1D"
       ? latest
       : range === "1W"
-        ? latest - 6 * DAY_MS
-        : range === "2W"
-          ? latest - 13 * DAY_MS
-          : range === "1M"
-            ? latest - 27 * DAY_MS
-            : range === "2M"
-              ? latest - 55 * DAY_MS
-              : range === "3M"
-                ? latest - 89 * DAY_MS
-                : range === "YTD"
-                  ? Date.UTC(new Date(latest).getUTCFullYear(), 0, 1)
-                  : earliest,
+      ? latest - 6 * DAY_MS
+      : range === "2W"
+      ? latest - 13 * DAY_MS
+      : range === "1M"
+      ? latest - 27 * DAY_MS
+      : range === "2M"
+      ? latest - 55 * DAY_MS
+      : range === "3M"
+      ? latest - 89 * DAY_MS
+      : range === "YTD"
+      ? Date.UTC(new Date(latest).getUTCFullYear(), 0, 1)
+      : earliest,
   )
   const duration = end - start
   return { start, end, previousStart: start - duration, previousEnd: start }
@@ -914,12 +911,11 @@ function getWindow(range: UsageRange, earliest: number, latest: number): DateWin
 
 function createBuckets(window: DateWindow, range: UsageRange): Bucket[] {
   const span = Math.max(window.end - window.start, DAY_MS)
-  const count =
-    range === "1D"
-      ? 1
-      : range === "1W" || range === "2W" || range === "1M" || range === "2M" || range === "3M"
-        ? Math.ceil(span / DAY_MS)
-        : Math.max(1, Math.min(7, Math.ceil(span / DAY_MS)))
+  const count = range === "1D"
+    ? 1
+    : range === "1W" || range === "2W" || range === "1M" || range === "2M" || range === "3M"
+    ? Math.ceil(span / DAY_MS)
+    : Math.max(1, Math.min(7, Math.ceil(span / DAY_MS)))
   const size = span / count
   return Array.from({ length: count }, (_, index) => {
     const start = window.start + index * size
@@ -969,8 +965,8 @@ export function normalizeStatRows(rows: ModelStatMetric[]) {
   return rows
     .filter(
       (row) =>
-        row.provider !== "unknown" ||
-        !current.has(
+        row.provider !== "unknown"
+        || !current.has(
           [
             row.periodKey,
             normalizeTier(row.tier),
@@ -992,10 +988,9 @@ function normalizeStatRow(row: ModelStatMetric): StatMetricRow[] {
       periodStart,
       updatedAt,
       tier: normalizeTier(row.tier),
-      provider:
-        row.provider === "unknown" || RETIRED_STAT_PROVIDERS.includes(row.provider.toLowerCase())
-          ? statProvider(row.model, undefined, row.provider) || "unknown"
-          : row.provider,
+      provider: row.provider === "unknown" || RETIRED_STAT_PROVIDERS.includes(row.provider.toLowerCase())
+        ? statProvider(row.model, undefined, row.provider) || "unknown"
+        : row.provider,
       model: row.model || "unknown",
     },
   ]
@@ -1024,10 +1019,11 @@ function periodKeyTime(value: string) {
 function formatBucketLabel(start: number, _end: number, range: UsageRange) {
   const date = new Date(start)
   if (range === "YTD") return months[date.getUTCMonth()]
-  if (range === "ALL")
+  if (range === "ALL") {
     return date.getUTCFullYear() === new Date().getUTCFullYear()
       ? months[date.getUTCMonth()]
       : String(date.getUTCFullYear())
+  }
   return formatDay(start)
 }
 

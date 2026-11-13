@@ -17,7 +17,9 @@ type Handoff = {
   readonly sender: (clientId: number) => WebContents | undefined
 }
 
-export service IpcPortHandoff: Handoff { static readonly key = "opencode/desktop/IpcPortHandoff";}
+export service IpcPortHandoff: Handoff {
+  static readonly key = "opencode/desktop/IpcPortHandoff"
+}
 
 // Messages cross the port by structured clone, like Effect's worker protocol: no serialization
 // layer, so binary payloads stay binary and nothing is packed into a shared buffer. Electron's
@@ -44,9 +46,13 @@ export const IpcServerProtocolLive = Layer.unwrap(
             bindings.delete(id)
 
             if (senderBindings.get(binding.sender.id) === id) senderBindings.delete(binding.sender.id)
-            try Effect.orDie(Effect.try({ try: () => binding.port.off("message", binding.onMessage), catch: (e) => e }))
+            try Effect.orDie(
+              Effect.try({ try: () => binding.port.off("message", binding.onMessage), catch: (e) => e }),
+            )
             try Effect.orDie(Effect.try({ try: () => binding.port.off("close", binding.onClose), catch: (e) => e }))
-            try Effect.orDie(Effect.try({ try: () => binding.sender.off("destroyed", binding.onClose), catch: (e) => e }))
+            try Effect.orDie(
+              Effect.try({ try: () => binding.sender.off("destroyed", binding.onClose), catch: (e) => e }),
+            )
             try binding.unbindEvents
             try Effect.orDie(Effect.try({ try: () => binding.port.close(), catch: (e) => e }))
             Queue.offerUnsafe(disconnects, id)
@@ -98,7 +104,9 @@ export const IpcServerProtocolLive = Layer.unwrap(
                 bindings.get(clientId)?.port.postMessage(response)
               }),
             end: disconnect,
-            clientIds: effect { return new Set(bindings.keys()) },
+            clientIds: effect {
+              return new Set(bindings.keys())
+            },
             initialMessage: Effect.succeed(Option.none()),
             supportsAck: true,
             supportsTransferables: false,

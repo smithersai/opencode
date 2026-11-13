@@ -31,29 +31,30 @@ export const connect = effect function(client: OpenCodeClient, stream: Stream) {
     readonly service: ACPService.Interface
     readonly connection: ACPConnection.Interface
   }>()
-  const handle = <Params, A>(
-    call: (service: ACPService.Interface, ctx: AgentHandlerContext<Params>) => Effect.Effect<A, ACPError.Failure>,
-  ) =>
-  (name: string) => {
-    const handler = Effect.fn(name)(
-      effect function(ctx: HandlerContext<Params>) {
-        const connected = try Deferred.await(ready)
-        if (ctx.requestId === undefined) return try call(connected.service, ctx)
-        return try call(connected.service, ctx).pipe(
-          Effect.provideService(ACPConnection.Responded, connected.connection.responded(ctx.requestId)),
-        )
-      },
-      Effect.catchTags({
-        ACPCatalogLoadError: (error) => ACPClient.classify(error.cause),
-        ACPCatalogNotReadyError: (error) =>
-          Effect.fail(new ACPError.ServiceFailureError({ safeMessage: error.message, errorName: "CatalogNotReady" })),
-      }),
-      Effect.mapError((error) => (error instanceof RequestError ? error : ACPError.toRequestError(error))),
-      Effect.tapCauseIf(Cause.hasDies, (cause) => Effect.logError("ACP request failed", cause)),
-      Effect.catchDefect((defect) => Effect.fail(ACPError.toRequestError(ACPError.fromUnknown(defect)))),
-    )
-    return (ctx: HandlerContext<Params>) => run(handler(ctx))
-  }
+  const handle =
+    <Params, A>(
+      call: (service: ACPService.Interface, ctx: AgentHandlerContext<Params>) => Effect.Effect<A, ACPError.Failure>,
+    ) =>
+    (name: string) => {
+      const handler = Effect.fn(name)(
+        effect function(ctx: HandlerContext<Params>) {
+          const connected = try Deferred.await(ready)
+          if (ctx.requestId === undefined) return try call(connected.service, ctx)
+          return try call(connected.service, ctx).pipe(
+            Effect.provideService(ACPConnection.Responded, connected.connection.responded(ctx.requestId)),
+          )
+        },
+        Effect.catchTags({
+          ACPCatalogLoadError: (error) => ACPClient.classify(error.cause),
+          ACPCatalogNotReadyError: (error) =>
+            Effect.fail(new ACPError.ServiceFailureError({ safeMessage: error.message, errorName: "CatalogNotReady" })),
+        }),
+        Effect.mapError((error) => (error instanceof RequestError ? error : ACPError.toRequestError(error))),
+        Effect.tapCauseIf(Cause.hasDies, (cause) => Effect.logError("ACP request failed", cause)),
+        Effect.catchDefect((defect) => Effect.fail(ACPError.toRequestError(ACPError.fromUnknown(defect)))),
+      )
+      return (ctx: HandlerContext<Params>) => run(handler(ctx))
+    }
   const app = try Effect.try(() => agent({ name: "opencode" })).pipe(Effect.orDie)
   const request = <Method extends AgentRequestMethod>(
     method: Method,

@@ -27,7 +27,7 @@ export interface EmbedOptions {
   readonly overrides?: LayerNode.Replacements
 }
 
-export const create = Effect.fn("EmbeddedHost.create")(function* <R = never>(
+export const create = Effect.fn("EmbeddedHost.create")(function*<R = never>(
   options: CreateOptions<R> = {},
   embed: EmbedOptions = {},
 ) {
@@ -47,7 +47,7 @@ export const create = Effect.fn("EmbeddedHost.create")(function* <R = never>(
     ).pipe(Layer.provide(HttpServer.layerServices), Layer.provideMerge(layer(log))),
   )
 
-  return yield* Effect.gen(function* () {
+  return yield* Effect.gen(function*() {
     const services = yield* runtime.contextEffect
     const sdkPlugins = Context.get(services, SdkPlugins.Service)
     for (const plugin of plugins ?? []) yield* sdkPlugins.register(plugin)

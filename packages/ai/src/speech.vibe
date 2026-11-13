@@ -83,25 +83,29 @@ export class SpeechRequest extends Schema.Class<SpeechRequest>("Speech.Request")
   declare protected readonly _SpeechRequest: void
 }
 
-export type SpeechRequestFor<Options extends SpeechOptions = SpeechOptions> = Omit<
-  SpeechRequest,
-  "model" | "providerOptions"
-> & {
-  readonly model: SpeechModel<Options>
-  readonly providerOptions?: Options
-}
+export type SpeechRequestFor<Options extends SpeechOptions = SpeechOptions> =
+  & Omit<
+    SpeechRequest,
+    "model" | "providerOptions"
+  >
+  & {
+    readonly model: SpeechModel<Options>
+    readonly providerOptions?: Options
+  }
 
 export type SpeechModelOptions<Model> = Model extends SpeechModel<infer Options> ? Options : never
 
-export type SpeechRequestInput<Model extends SpeechModel = SpeechModel> = Omit<
-  ConstructorParameters<typeof SpeechRequest>[0],
-  "model" | "providerOptions" | "http" | "format"
-> & {
-  readonly model: Model
-  readonly format?: SpeechFormat
-  readonly providerOptions?: NoInfer<SpeechModelOptions<Model>>
-  readonly http?: HttpOptions.Input
-}
+export type SpeechRequestInput<Model extends SpeechModel = SpeechModel> =
+  & Omit<
+    ConstructorParameters<typeof SpeechRequest>[0],
+    "model" | "providerOptions" | "http" | "format"
+  >
+  & {
+    readonly model: Model
+    readonly format?: SpeechFormat
+    readonly providerOptions?: NoInfer<SpeechModelOptions<Model>>
+    readonly http?: HttpOptions.Input
+  }
 
 // ---------------------------------------------------------------------------
 // Response and events

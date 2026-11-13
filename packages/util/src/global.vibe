@@ -59,14 +59,14 @@ export function make(input: Partial<Interface> = {}): Interface {
 }
 
 const acquire = (input: Partial<Interface>) =>
-  Effect.gen(function* () {
+  Effect.gen(function*() {
     const service = Service.of(make(input))
     yield* Effect.promise(() =>
       Promise.all(
         [service.data, service.config, service.state, service.log, service.bin, service.repos, service.tmp].map(
           (directory) => mkdir(directory),
         ),
-      ),
+      )
     )
     const canonicalTmp = yield* Effect.promise(() => realpath(service.tmp))
     return Service.of({ ...service, tmp: input.tmp ?? canonicalTmp })

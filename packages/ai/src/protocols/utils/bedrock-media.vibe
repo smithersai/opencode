@@ -77,7 +77,12 @@ function documentName(filename: string | undefined, names: Set<string>) {
 const mediaBase64 = effect (part: MediaPart) => {
   const media = try ProviderShared.requireInlineMedia("Bedrock Converse", part.media)
   const bytes = Effect.fromResult(Base64.decode(media.base64)) catch effect (cause) => {
-    throw try Effect.orDie(Effect.try({ try: () => ProviderShared.invalidRequest("Bedrock Converse media data must be valid base64", cause), catch: (e) => e }))
+    throw try Effect.orDie(
+      Effect.try({
+        try: () => ProviderShared.invalidRequest("Bedrock Converse media data must be valid base64", cause),
+        catch: (e) => e,
+      }),
+    )
   }
   return Base64.encode(bytes)
 }
@@ -94,9 +99,13 @@ export const lower = effect (part: MediaPart, documentNames: Set<string>) => {
     return [{ image: { format: imageFormat, source: { bytes: try mediaBase64(part) } } } satisfies ImageBlock]
   }
   if (mime.startsWith("image/")) {
-    throw try Effect.orDie(Effect.try({ try: () => ProviderShared.invalidRequest(
-      `Bedrock Converse does not support image media type ${part.media.mediaType}`,
-    ), catch: (e) => e }))
+    throw try Effect.orDie(Effect.try({
+      try: () =>
+        ProviderShared.invalidRequest(
+          `Bedrock Converse does not support image media type ${part.media.mediaType}`,
+        ),
+      catch: (e) => e,
+    }))
   }
   const documentFormat = DOCUMENT_FORMATS[mime as keyof typeof DOCUMENT_FORMATS]
   if (documentFormat) {
@@ -113,7 +122,12 @@ export const lower = effect (part: MediaPart, documentNames: Set<string>) => {
       ]
       : [block]
   }
-  throw try Effect.orDie(Effect.try({ try: () => ProviderShared.invalidRequest(`Bedrock Converse does not support media type ${part.media.mediaType}`), catch: (e) => e }))
+  throw try Effect.orDie(
+    Effect.try({
+      try: () => ProviderShared.invalidRequest(`Bedrock Converse does not support media type ${part.media.mediaType}`),
+      catch: (e) => e,
+    }),
+  )
 }
 
 export * as BedrockMedia from "./bedrock-media.js"

@@ -39,7 +39,7 @@ type PromptRequest = SessionPrompt.Input & {
  * Build once in the host Scope: `const sessions = yield* Session.make()`.
  * Use `sessions.forSession(id)` for handles that share host services and reload current state.
  */
-export const make = Effect.fn("Session.make")(function* () {
+export const make = Effect.fn("Session.make")(function*() {
   const bus = yield* Bus.Service
   const database = yield* Database.Service
   const store = yield* SessionStore.Service
@@ -49,71 +49,73 @@ export const make = Effect.fn("Session.make")(function* () {
   const fs = yield* FSUtil.Service
   const scope = yield* Scope.Scope
 
-  const get = Effect.fn("Session.get")(function* (sessionID: SessionSchema.ID) {
+  const get = Effect.fn("Session.get")(function*(sessionID: SessionSchema.ID) {
     const session = yield* store.get(sessionID)
     if (!session) return yield* new NotFoundError({ sessionID })
     return session
   })
-  const message = Effect.fn("Session.message")(function* (sessionID: SessionSchema.ID, messageID: SessionMessage.ID) {
+  const message = Effect.fn("Session.message")(function*(sessionID: SessionSchema.ID, messageID: SessionMessage.ID) {
     const stored = yield* store.message(messageID)
     return stored?.sessionID === sessionID ? stored.message : undefined
   })
-  const view = Effect.fn("Session.view")(function* (sessionID: SessionSchema.ID, input: { idle: number }) {
+  const view = Effect.fn("Session.view")(function*(sessionID: SessionSchema.ID, input: { idle: number }) {
     const session = yield* get(sessionID)
     if (
-      session.time.idle === undefined ||
-      input.idle > DateTime.toEpochMillis(session.time.idle) ||
-      (session.time.viewed !== undefined && DateTime.toEpochMillis(session.time.viewed) >= input.idle)
-    )
+      session.time.idle === undefined
+      || input.idle > DateTime.toEpochMillis(session.time.idle)
+      || (session.time.viewed !== undefined && DateTime.toEpochMillis(session.time.viewed) >= input.idle)
+    ) {
       return
+    }
     yield* bus.publish(SessionEvent.Viewed, { sessionID, idle: input.idle })
   })
-  const rename = Effect.fn("Session.rename")(function* (sessionID: SessionSchema.ID, input: { title: string }) {
+  const rename = Effect.fn("Session.rename")(function*(sessionID: SessionSchema.ID, input: { title: string }) {
     yield* get(sessionID)
     yield* bus.publish(SessionEvent.Renamed, { sessionID, title: input.title })
   })
-  const archive = Effect.fn("Session.archive")(function* (sessionID: SessionSchema.ID) {
+  const archive = Effect.fn("Session.archive")(function*(sessionID: SessionSchema.ID) {
     const session = yield* get(sessionID)
     if (session.time.archived) return
     yield* bus.publish(SessionEvent.Archived, { sessionID })
   })
-  const unarchive = Effect.fn("Session.unarchive")(function* (sessionID: SessionSchema.ID) {
+  const unarchive = Effect.fn("Session.unarchive")(function*(sessionID: SessionSchema.ID) {
     const session = yield* get(sessionID)
     if (!session.time.archived) return
     yield* bus.publish(SessionEvent.Unarchived, { sessionID })
   })
-  const setMetadata = Effect.fn("Session.setMetadata")(function* (
+  const setMetadata = Effect.fn("Session.setMetadata")(function*(
     sessionID: SessionSchema.ID,
     input: { metadata: SessionSchema.Metadata },
   ) {
     yield* get(sessionID)
     yield* bus.publish(SessionEvent.MetadataUpdated, { sessionID, metadata: input.metadata })
   })
-  const setPermissions = Effect.fn("Session.setPermissions")(function* (
+  const setPermissions = Effect.fn("Session.setPermissions")(function*(
     sessionID: SessionSchema.ID,
     input: { permissions: Permission.Ruleset },
   ) {
     yield* get(sessionID)
     yield* bus.publish(SessionEvent.Permissions, { sessionID, permissions: input.permissions })
   })
-  const switchAgent = Effect.fn("Session.switchAgent")(function* (
+  const switchAgent = Effect.fn("Session.switchAgent")(function*(
     sessionID: SessionSchema.ID,
     input: { agent: Agent.ID },
   ) {
     const session = yield* get(sessionID)
     yield* bus.publish(SessionEvent.AgentSelected, { sessionID, agent: input.agent, previous: session.agent })
   })
-  const switchModel = Effect.fn("Session.switchModel")(function* (
+  const switchModel = Effect.fn("Session.switchModel")(function*(
     sessionID: SessionSchema.ID,
     input: { model: Model.Ref },
   ) {
     const session = yield* get(sessionID)
     if (
-      session.model?.providerID === input.model.providerID &&
-      session.model.id === input.model.id &&
-      (session.model.variant ?? "default") === (input.model.variant ?? "default")
-    )
+      session.model?.providerID === input.model.providerID
+      && session.model.id === input.model.id
+      && (session.model.variant ?? "default") === (input.model.variant ?? "default")
+    ) {
       return
+    }
     yield* bus.publish(SessionEvent.ModelSelected, { sessionID, model: input.model, previous: session.model })
   })
   const mutatePending = (
@@ -126,14 +128,13 @@ export const make = Effect.fn("Session.make")(function* () {
   ) =>
     mutation({ sessionID, id: inboxID }).pipe(
       Effect.catchTag("SessionInbox.LifecycleConflict", () =>
-        Effect.gen(function* () {
+        Effect.gen(function*() {
           yield* get(sessionID)
           return yield* new InboxConflictError({ sessionID, inboxID })
-        }),
-      ),
+        })),
     )
 
-  const inbox = Effect.fn("Session.inbox")(function* (sessionID: SessionSchema.ID) {
+  const inbox = Effect.fn("Session.inbox")(function*(sessionID: SessionSchema.ID) {
     yield* get(sessionID)
     return yield* admission.list(sessionID)
   })
@@ -141,7 +142,7 @@ export const make = Effect.fn("Session.make")(function* () {
     (sessionID: SessionSchema.ID, inboxID: SessionMessage.ID) => mutatePending(sessionID, inboxID, admission.cancel),
     Effect.uninterruptible,
   )
-  const steerInbox = Effect.fn("Session.steerInbox")(function* (
+  const steerInbox = Effect.fn("Session.steerInbox")(function*(
     sessionID: SessionSchema.ID,
     inboxID: SessionMessage.ID,
   ) {
@@ -154,10 +155,10 @@ export const make = Effect.fn("Session.make")(function* () {
   )
   const prompt = Effect.fn("Session.prompt")((sessionID: SessionSchema.ID, input: PromptRequest) =>
     Effect.uninterruptibleMask((restore) =>
-      Effect.gen(function* () {
+      Effect.gen(function*() {
         const session = yield* get(sessionID)
         const messageID = input.id ?? SessionMessage.ID.create()
-        const admitted = yield* Effect.gen(function* () {
+        const admitted = yield* Effect.gen(function*() {
           const existing = yield* admission.reconcile({
             id: messageID,
             sessionID: session.id,
@@ -167,7 +168,7 @@ export const make = Effect.fn("Session.make")(function* () {
           if (existing) return existing
           // Preparation, the staged revert commit and admission share one acquisition of the session's location
           // services, so projections see its config whoever called prompt.
-          return yield* Effect.gen(function* () {
+          return yield* Effect.gen(function*() {
             const item = yield* restore(SessionPrompt.prepare({ session, messageID, input }))
             // Commit a staged revert only after preparation succeeds, before admitting new work.
             if (session.revert) yield* SessionRevert.commit(bus, session)
@@ -186,16 +187,16 @@ export const make = Effect.fn("Session.make")(function* () {
         )
         if (input.resume !== false) yield* execution.wake(sessionID)
         return admitted
-      }),
-    ),
+      })
+    )
   )
-  const shell = Effect.fn("Session.shell")(function* (
+  const shell = Effect.fn("Session.shell")(function*(
     sessionID: SessionSchema.ID,
     input: { id?: SessionMessage.ID; command: string },
   ) {
     const session = yield* get(sessionID)
     // The server owns completion recording even if the submitting client disconnects.
-    const running = yield* Effect.gen(function* () {
+    const running = yield* Effect.gen(function*() {
       const started = yield* SessionShell.start({ session, command: input.command }).pipe(
         Effect.provideService(Instance.Service, instances),
         Effect.tapError((error) =>
@@ -204,7 +205,7 @@ export const make = Effect.fn("Session.make")(function* () {
             description: input.command,
             metadata: { source: "shell", state: "error" },
             resume: false,
-          }),
+          })
         ),
         Effect.orDie,
       )
@@ -233,7 +234,7 @@ export const make = Effect.fn("Session.make")(function* () {
     }).pipe(Effect.forkIn(scope, { startImmediately: true }))
     yield* Fiber.join(running)
   })
-  const skill = Effect.fn("Session.skill")(function* (
+  const skill = Effect.fn("Session.skill")(function*(
     sessionID: SessionSchema.ID,
     input: { messageID?: SessionMessage.ID; skill: Skill.ID; resume?: boolean },
   ) {
@@ -251,12 +252,13 @@ export const make = Effect.fn("Session.make")(function* () {
       },
       { id: input.messageID ? Event.ID.make(input.messageID.replace(/^msg_/, "evt_")) : undefined },
     )
-    if (input.resume !== false)
+    if (input.resume !== false) {
       yield* execution
         .resume(sessionID)
         .pipe(Effect.ignore, Effect.forkIn(scope, { startImmediately: true }), Effect.asVoid)
+    }
   })
-  const compact = Effect.fn("Session.compact")(function* (
+  const compact = Effect.fn("Session.compact")(function*(
     sessionID: SessionSchema.ID,
     input: { id?: SessionMessage.ID; delivery?: SessionInbox.Delivery },
   ) {
@@ -275,11 +277,11 @@ export const make = Effect.fn("Session.make")(function* () {
     yield* execution.wake(sessionID)
     return admitted
   })
-  const wait = Effect.fn("Session.wait")(function* (sessionID: SessionSchema.ID) {
+  const wait = Effect.fn("Session.wait")(function*(sessionID: SessionSchema.ID) {
     yield* get(sessionID)
     yield* execution.awaitIdle(sessionID)
   })
-  const resume = Effect.fn("Session.resume")(function* (sessionID: SessionSchema.ID) {
+  const resume = Effect.fn("Session.resume")(function*(sessionID: SessionSchema.ID) {
     yield* get(sessionID)
     yield* execution.resume(sessionID)
   })
@@ -296,7 +298,7 @@ export const make = Effect.fn("Session.make")(function* () {
       },
     ) =>
       Effect.uninterruptible(
-        Effect.gen(function* () {
+        Effect.gen(function*() {
           yield* get(sessionID)
           const inputID = input.id ?? SessionMessage.ID.create()
           const admittedInput = {
@@ -329,7 +331,7 @@ export const make = Effect.fn("Session.make")(function* () {
     (sessionID: SessionSchema.ID, options?: { readonly resume?: boolean }) =>
       Effect.uninterruptible(execution.interrupt(sessionID, options)),
   )
-  const stage = Effect.fn("Session.revert.stage")(function* (
+  const stage = Effect.fn("Session.revert.stage")(function*(
     sessionID: SessionSchema.ID,
     input: { messageID: SessionMessage.ID; files?: boolean },
   ) {
@@ -341,7 +343,7 @@ export const make = Effect.fn("Session.make")(function* () {
       Effect.provideService(Bus.Service, bus),
     )
   })
-  const clear = Effect.fn("Session.revert.clear")(function* (sessionID: SessionSchema.ID) {
+  const clear = Effect.fn("Session.revert.clear")(function*(sessionID: SessionSchema.ID) {
     const session = yield* get(sessionID)
     if (yield* execution.isActive(sessionID)) return yield* new BusyError({ sessionID })
     yield* SessionRevert.clear(session).pipe(
@@ -350,7 +352,7 @@ export const make = Effect.fn("Session.make")(function* () {
     )
     return yield* execution.wake(sessionID)
   })
-  const commit = Effect.fn("Session.revert.commit")(function* (sessionID: SessionSchema.ID) {
+  const commit = Effect.fn("Session.revert.commit")(function*(sessionID: SessionSchema.ID) {
     const session = yield* get(sessionID)
     if (yield* execution.isActive(sessionID)) return yield* new BusyError({ sessionID })
     return yield* SessionRevert.commit(bus, session)

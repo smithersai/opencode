@@ -52,7 +52,12 @@ export const protocol = Protocol.make({
     from: effect (request: LLMRequest) =>
       try withSpan(
         effect {
-          const options = try (try Effect.orDie(Effect.try({ try: () => ProviderShared.validateWith(Schema.decodeUnknownEffect(Options)), catch: (e) => e })))(
+          const options = try (try Effect.orDie(
+            Effect.try({
+              try: () => ProviderShared.validateWith(Schema.decodeUnknownEffect(Options)),
+              catch: (e) => e,
+            }),
+          ))(
             request.providerOptions ?? {},
           )
           const gptOSS = request.model.id.startsWith("openai/gpt-oss-")

@@ -24,19 +24,17 @@ export interface Item {
 
 export const inspect = Effect.fn("cli.plugin.inspect")(effect function(selected?: string) {
   const { endpoint } = try ServerConnection.resolve()
-  const client = try ((args: Parameters<typeof OpenCode.make>) =>
-    Effect.try(() => OpenCode.make(...args)).pipe(Effect.orDie))([{
+  const client =
+    try ((args: Parameters<typeof OpenCode.make>) => Effect.try(() => OpenCode.make(...args)).pipe(Effect.orDie))([{
       baseUrl: endpoint.url,
-      headers: (try ((args: Parameters<typeof Service.headers>) =>
-        Effect.try(() =>
-          Service.headers(...args)
-        ).pipe(Effect.orDie))([endpoint])),
+      headers:
+        try ((args: Parameters<typeof Service.headers>) =>
+          Effect.try(() => Service.headers(...args)).pipe(Effect.orDie))([endpoint]),
     }])
   const location = {
-    directory: (try ((args: Parameters<typeof currentDirectory>) =>
-      Effect.try(() =>
-        currentDirectory(...args)
-      ).pipe(Effect.orDie))([])),
+    directory:
+      try ((args: Parameters<typeof currentDirectory>) =>
+        Effect.try(() => currentDirectory(...args)).pipe(Effect.orDie))([]),
   }
   const listed = try Effect.promise(() => client.plugin.list({ location }))
   const serverTargets = new Set(

@@ -157,24 +157,24 @@ export const BuiltinSlot = Registry.define<BuiltinSlot>("slot")
 export type BuiltinStoreFrom =
   | StoreFrom
   | {
-      /** The raw stored key that holds the older value. */
-      readonly key: string
-      /**
-       * For session scope: `key` is a global key (e.g. "layout") whose field `sessions` holds every session's
-       * state by the host's session key. pick receives only this session's entry, or undefined.
-       */
-      readonly sessions?: string
-      /**
-       * Returns the part of the older JSON this store keeps, or undefined for none. The store decodes it as it decodes
-       * a stored value (see `StoreDeclaration.schema`). With `pick`, the older key stays for its other owners.
-       *
-       * @param value - The older key's parsed JSON, or null when it is missing; with `sessions`, this session's entry
-       *   or undefined.
-       */
-      // SAFETY: the older value is stored JSON with no schema of its own; the store decodes what pick returns.
-      // oxlint-disable-next-line anti-slop/no-unknown-parameters, anti-slop/no-unknown-returns -- see SAFETY above
-      pick(value: unknown): unknown
-    }
+    /** The raw stored key that holds the older value. */
+    readonly key: string
+    /**
+     * For session scope: `key` is a global key (e.g. "layout") whose field `sessions` holds every session's
+     * state by the host's session key. pick receives only this session's entry, or undefined.
+     */
+    readonly sessions?: string
+    /**
+     * Returns the part of the older JSON this store keeps, or undefined for none. The store decodes it as it decodes
+     * a stored value (see `StoreDeclaration.schema`). With `pick`, the older key stays for its other owners.
+     *
+     * @param value - The older key's parsed JSON, or null when it is missing; with `sessions`, this session's entry
+     *   or undefined.
+     */
+    // SAFETY: the older value is stored JSON with no schema of its own; the store decodes what pick returns.
+    // oxlint-disable-next-line anti-slop/no-unknown-parameters, anti-slop/no-unknown-returns -- see SAFETY above
+    pick(value: unknown): unknown
+  }
 
 /** A `StoreDeclaration` whose older homes may be parts of shared app keys. Build one with `BuiltinStore`. */
 export interface BuiltinStoreDeclaration<
@@ -223,7 +223,8 @@ export const BuiltinStore = {
 
 /** What `BuiltinStorage.store` opens: `StoreOptions` whose older homes may be parts of shared app keys. */
 export interface BuiltinStoreOptions<S extends Schema.ConstraintCodec<object, unknown>>
-  extends Omit<StoreOptions<S>, "from"> {
+  extends Omit<StoreOptions<S>, "from">
+{
   /** Older homes to import the value from once. See `BuiltinStoreFrom`. */
   readonly from?: BuiltinStoreFrom | readonly BuiltinStoreFrom[]
 }
@@ -338,15 +339,15 @@ export function builtinContext(ctx: Context): BuiltinContext {
  */
 export type MainStoreFrom =
   | {
-      /** The key in the settings file, e.g. `ssh.servers`. */
-      readonly settings: string
-      /** Another settings file of the desktop app, e.g. `opencode.updater`. Defaults to the app's settings file. */
-      readonly file?: string
-    }
+    /** The key in the settings file, e.g. `ssh.servers`. */
+    readonly settings: string
+    /** Another settings file of the desktop app, e.g. `opencode.updater`. Defaults to the app's settings file. */
+    readonly file?: string
+  }
   | {
-      /** The storage namespace and the key in it, e.g. `["opencode.settings", "keepScreenActive"]`. */
-      readonly state: readonly [namespace: string, key: string]
-    }
+    /** The storage namespace and the key in it, e.g. `["opencode.settings", "keepScreenActive"]`. */
+    readonly state: readonly [namespace: string, key: string]
+  }
 
 type MainStorage = MainContext["storage"]
 
@@ -443,9 +444,9 @@ export type BuiltinCatalog = {
   readonly [locale: string]:
     | Messages
     | (() => Promise<{
-        /** The locale's messages. */
-        readonly default: Messages
-      }>)
+      /** The locale's messages. */
+      readonly default: Messages
+    }>)
 }
 
 /**

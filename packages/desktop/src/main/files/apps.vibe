@@ -1,149 +1,169 @@
 import { execFilePromise } from platform
-import { currentPlatform,environmentValue } from platform
+import { currentPlatform, environmentValue } from platform
 
+export const checkAppExists = effect (appName: string) =>
+  try withSpan(
+    effect {
+      if ((try Effect.orDie(Effect.try({ try: () => currentPlatform(), catch: (e) => e }))) === "win32") return true
 
-export const checkAppExists = effect (appName: string) => try withSpan(effect {
-  if ((try Effect.orDie(Effect.try({ try: () => currentPlatform(), catch: (e) => e }))) === "win32") return true
+      if ((try Effect.orDie(Effect.try({ try: () => currentPlatform(), catch: (e) => e }))) === "linux") return true
 
-  if ((try Effect.orDie(Effect.try({ try: () => currentPlatform(), catch: (e) => e }))) === "linux") return true
+      return try checkMacosApp(appName)
+    },
+    "DesktopFiles.checkAppExists",
+  )
 
-  return try checkMacosApp(appName)
-}, "DesktopFiles.checkAppExists")
+export const resolveAppPath = effect (appName: string) =>
+  try withSpan(
+    effect {
+      if ((try Effect.orDie(Effect.try({ try: () => currentPlatform(), catch: (e) => e }))) !== "win32") return appName
 
-export const resolveAppPath = effect (appName: string) => try withSpan(effect {
-  if ((try Effect.orDie(Effect.try({ try: () => currentPlatform(), catch: (e) => e }))) !== "win32") return appName
+      return try resolveWindowsAppPath(appName)
+    },
+    "DesktopFiles.resolveAppPath",
+  )
 
-  return try resolveWindowsAppPath(appName)
-}, "DesktopFiles.resolveAppPath")
+const checkMacosApp = effect (appName: string) =>
+  try withSpan(
+    effect {
+      const fs = try FileSystem.FileSystem
+      const locations = [`/Applications/${appName}.app`, `/System/Applications/${appName}.app`]
 
-const checkMacosApp = effect (appName: string) => try withSpan(effect {
-  const fs = try FileSystem.FileSystem
-  const locations = [`/Applications/${appName}.app`, `/System/Applications/${appName}.app`]
+      const home = try Effect.orDie(Effect.try({ try: () => environmentValue("HOME"), catch: (e) => e }))
 
-  const home = try Effect.orDie(Effect.try({ try: () => environmentValue("HOME"), catch: (e) => e }))
+      if (home) locations.push(`${home}/Applications/${appName}.app`)
 
-  if (home) locations.push(`${home}/Applications/${appName}.app`)
-
-  for (const location of locations) {
-    if (try exists(fs, location)) return true
-  }
-
-  return (Effect.tryPromise(() => execFilePromise("which", [appName]))
-    |> Effect.as(%, true)) catch () => false
-}, "DesktopFiles.checkMacosApp")
-
-const resolveWindowsAppPath = effect (appName: string) => try withSpan(effect {
-  const fs = try FileSystem.FileSystem
-  const path = try Path.Path
-
-  const result = Effect.tryPromise(() => execFilePromise("where", [appName], { windowsHide: true })) catch () => undefined
-
-  if (!result) return null
-
-  const paths = result.stdout
-    .toString()
-    .split(/\r?\n/)
-    .map((line) => line.trim())
-    .filter((line) => line.length > 0)
-
-  const hasExt = (value: string, ext: string) => path.extname(value).toLowerCase() === `.${ext}`
-
-  const exe = paths.find((path) => hasExt(path, "exe"))
-
-  if (exe) return exe
-
-  const resolveCmd = effect (file: string) => {
-    const content = try fs.readFileString(file)
-
-    for (const token of content.split('"').map((value: string) => value.trim())) {
-      const lower = token.toLowerCase()
-
-      if (!lower.includes(".exe")) continue
-
-      const index = lower.indexOf("%~dp0")
-
-      if (index >= 0) {
-        const base = path.dirname(file)
-        const suffix = token.slice(index + 5)
-
-        const resolved = suffix
-          .replace(/\//g, "\\")
-          .split("\\")
-          .filter((part: string) => part && part !== ".")
-          .reduce((current: string, part: string) => {
-            if (part === "..") return path.dirname(current)
-
-            return path.join(current, part)
-          }, base)
-
-        if (try exists(fs, resolved)) return resolved
+      for (const location of locations) {
+        if (try exists(fs, location)) return true
       }
 
-      if (try exists(fs, token)) return token
-    }
+      return (Effect.tryPromise(() => execFilePromise("which", [appName]))
+        |> Effect.as(%, true)) catch () => false
+    },
+    "DesktopFiles.checkMacosApp",
+  )
 
-    return null
-  }
+const resolveWindowsAppPath = effect (appName: string) =>
+  try withSpan(
+    effect {
+      const fs = try FileSystem.FileSystem
+      const path = try Path.Path
 
-  for (const file of paths) {
-    if (hasExt(file, "cmd") || hasExt(file, "bat")) {
-      const resolved = try resolveCmd(file)
+      const result = Effect.tryPromise(() => execFilePromise("where", [appName], { windowsHide: true })) catch () =>
+        undefined
 
-      if (resolved) return resolved
-    }
+      if (!result) return null
 
-    if (!path.extname(file)) {
-      const cmd = `${file}.cmd`
+      const paths = result.stdout
+        .toString()
+        .split(/\r?\n/)
+        .map((line) => line.trim())
+        .filter((line) => line.length > 0)
 
-      if (try exists(fs, cmd)) {
-        const resolved = try resolveCmd(cmd)
+      const hasExt = (value: string, ext: string) => path.extname(value).toLowerCase() === `.${ext}`
 
-        if (resolved) return resolved
+      const exe = paths.find((path) => hasExt(path, "exe"))
+
+      if (exe) return exe
+
+      const resolveCmd = effect (file: string) => {
+        const content = try fs.readFileString(file)
+
+        for (const token of content.split('"').map((value: string) => value.trim())) {
+          const lower = token.toLowerCase()
+
+          if (!lower.includes(".exe")) continue
+
+          const index = lower.indexOf("%~dp0")
+
+          if (index >= 0) {
+            const base = path.dirname(file)
+            const suffix = token.slice(index + 5)
+
+            const resolved = suffix
+              .replace(/\//g, "\\")
+              .split("\\")
+              .filter((part: string) => part && part !== ".")
+              .reduce((current: string, part: string) => {
+                if (part === "..") return path.dirname(current)
+
+                return path.join(current, part)
+              }, base)
+
+            if (try exists(fs, resolved)) return resolved
+          }
+
+          if (try exists(fs, token)) return token
+        }
+
+        return null
       }
 
-      const bat = `${file}.bat`
+      for (const file of paths) {
+        if (hasExt(file, "cmd") || hasExt(file, "bat")) {
+          const resolved = try resolveCmd(file)
 
-      if (try exists(fs, bat)) {
-        const resolved = try resolveCmd(bat)
+          if (resolved) return resolved
+        }
 
-        if (resolved) return resolved
-      }
-    }
-  }
+        if (!path.extname(file)) {
+          const cmd = `${file}.cmd`
 
-  const key = appName
-    .split("")
-    .filter((value: string) => /[a-z0-9]/i.test(value))
-    .map((value: string) => value.toLowerCase())
-    .join("")
+          if (try exists(fs, cmd)) {
+            const resolved = try resolveCmd(cmd)
 
-  if (key) {
-    for (const file of paths) {
-      const dirs = [path.dirname(file), path.dirname(path.dirname(file)), path.dirname(path.dirname(path.dirname(file)))]
+            if (resolved) return resolved
+          }
 
-      for (const dir of dirs) {
-        const entries = fs.readDirectory(dir) catch () => []
+          const bat = `${file}.bat`
 
-        for (const entry of entries) {
-          const candidate = path.join(dir, entry)
+          if (try exists(fs, bat)) {
+            const resolved = try resolveCmd(bat)
 
-          if (!hasExt(candidate, "exe")) continue
-          const stem = entry.replace(/\.exe$/i, "")
-
-          const name = stem
-            .split("")
-            .filter((value: string) => /[a-z0-9]/i.test(value))
-            .map((value: string) => value.toLowerCase())
-            .join("")
-
-          if (name.includes(key) || key.includes(name)) return candidate
+            if (resolved) return resolved
+          }
         }
       }
-    }
-  }
 
-  return paths[0] ?? null
-}, "DesktopFiles.resolveWindowsAppPath")
+      const key = appName
+        .split("")
+        .filter((value: string) => /[a-z0-9]/i.test(value))
+        .map((value: string) => value.toLowerCase())
+        .join("")
+
+      if (key) {
+        for (const file of paths) {
+          const dirs = [
+            path.dirname(file),
+            path.dirname(path.dirname(file)),
+            path.dirname(path.dirname(path.dirname(file))),
+          ]
+
+          for (const dir of dirs) {
+            const entries = fs.readDirectory(dir) catch () => []
+
+            for (const entry of entries) {
+              const candidate = path.join(dir, entry)
+
+              if (!hasExt(candidate, "exe")) continue
+              const stem = entry.replace(/\.exe$/i, "")
+
+              const name = stem
+                .split("")
+                .filter((value: string) => /[a-z0-9]/i.test(value))
+                .map((value: string) => value.toLowerCase())
+                .join("")
+
+              if (name.includes(key) || key.includes(name)) return candidate
+            }
+          }
+        }
+      }
+
+      return paths[0] ?? null
+    },
+    "DesktopFiles.resolveWindowsAppPath",
+  )
 
 function exists(fs: FileSystem.FileSystem, path: string) {
   return fs.exists(path) |> Effect.orElseSucceed(%, () => false)

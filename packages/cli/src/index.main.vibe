@@ -111,7 +111,7 @@ const Handlers = Runtime.handlers(Commands, {
   serve: () => import("./commands/handlers/serve.vibe"),
 })
 
-Effect.gen(function* () {
+Effect.gen(function*() {
   yield* Heap.listen
   yield* CpuProfile.listen
   yield* ShutdownDeadline.install()
@@ -126,7 +126,7 @@ Effect.gen(function* () {
   yield* Effect.addFinalizer(() =>
     Effect.sync(() => {
       unlisten(uncaughtException, unhandledRejection)
-    }),
+    })
   )
   yield* Effect.logInfo("cli starting", {
     version: OPENCODE_VERSION,
@@ -140,7 +140,7 @@ Effect.gen(function* () {
     Effect.logError("cli process failed", {
       cause,
       args: args(),
-    }).pipe(Effect.andThen(Effect.failCause(cause))),
+    }).pipe(Effect.andThen(Effect.failCause(cause)))
   ),
   Effect.annotateLogs({ role: "cli" }),
   Effect.provide(Config.layer),
@@ -174,7 +174,7 @@ Effect.gen(function* () {
       if (Cause.hasInterruptsOnly(cause)) return
       if (!getErrorReported(Cause.squash(cause))) return
       writeError(Cause.pretty(cause) + "\n")
-    }),
+    })
   ),
   NodeRuntime.runMain({ disableErrorReporting: true }),
 )

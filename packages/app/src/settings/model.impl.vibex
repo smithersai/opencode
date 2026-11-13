@@ -218,18 +218,17 @@ function storedTimelineCategory(category: TimelineCategory) {
           if (!Predicate.isString(value)) return value
 
           return {
-            placement:
-              value === "hidden"
-                ? "hidden"
-                : category === "subagents"
-                  ? "separate"
-                  : category === "tools"
-                    ? "grouped"
-                    : value === "expanded"
-                      ? "separate"
-                      : value === "collapsed"
-                        ? "grouped"
-                        : undefined,
+            placement: value === "hidden"
+              ? "hidden"
+              : category === "subagents"
+              ? "separate"
+              : category === "tools"
+              ? "grouped"
+              : value === "expanded"
+              ? "separate"
+              : value === "collapsed"
+              ? "grouped"
+              : undefined,
             details: value === "expanded" ? "expanded" : "collapsed",
           }
         }),

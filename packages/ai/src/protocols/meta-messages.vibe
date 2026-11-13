@@ -27,7 +27,9 @@ const Body = Schema.Struct({
 const fromRequest = effect (request: LLMRequest) =>
   try withSpan(
     effect {
-      const projected = try Effect.orDie(Effect.try({ try: () => ProviderShared.flattenToolRequest(request), catch: (e) => e }))
+      const projected = try Effect.orDie(
+        Effect.try({ try: () => ProviderShared.flattenToolRequest(request), catch: (e) => e }),
+      )
       const body = try AnthropicMessages.protocol.body.from(projected.request)
       return {
         ...body,
@@ -46,11 +48,21 @@ const fromRequest = effect (request: LLMRequest) =>
           : try Effect.forEach(body.tools, effect (tool, index) => {
             const native = projected.tools[index]?.native
             if (native === undefined) return tool
-            const search = try (try Effect.orDie(Effect.try({ try: () => ProviderShared.validateWith(Schema.decodeUnknownEffect(MetaResponses.WebSearch)), catch: (e) => e })))(
+            const search = try (try Effect.orDie(
+              Effect.try({
+                try: () => ProviderShared.validateWith(Schema.decodeUnknownEffect(MetaResponses.WebSearch)),
+                catch: (e) => e,
+              }),
+            ))(
               native.meta,
             )
             if (search.search_context_size !== undefined) {
-              throw try Effect.orDie(Effect.try({ try: () => ProviderShared.invalidRequest("Meta Messages does not support searchContextSize"), catch: (e) => e }))
+              throw try Effect.orDie(
+                Effect.try({
+                  try: () => ProviderShared.invalidRequest("Meta Messages does not support searchContextSize"),
+                  catch: (e) => e,
+                }),
+              )
             }
             return { type: "web_search" as const, name: "web_search" as const, user_location: search.user_location }
           }),

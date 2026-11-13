@@ -133,10 +133,12 @@ const unsupportedMedia = (
   const unsupported = !capabilities.input.some((item) => item.startsWith(modality))
     ? modality
     : provider === "xai" && modality === "image" && !XAI_IMAGE_MIMES.has(mime.toLowerCase())
-      ? mime
-      : undefined
+    ? mime
+    : undefined
   if (!unsupported) return
-  return `ERROR: Cannot read ${name ? `"${name}"` : modality} (this model does not support ${unsupported} input). Inform the user.`
+  return `ERROR: Cannot read ${
+    name ? `"${name}"` : modality
+  } (this model does not support ${unsupported} input). Inform the user.`
 }
 
 // The inline budget counts base64 characters, which are ASCII, so a string's length is its size without scanning it.
@@ -187,9 +189,9 @@ export const boundImages = (messages: LLMRequest["messages"]) => {
       if (part.type === "media") return isImage(part.media.mediaType) ? [mediaBytes(part.media)] : []
       if (part.type !== "tool-result" || part.result.type !== "content") return []
       return part.result.value.flatMap((item: Content) =>
-        item.type === "file" && isImage(item.mime) ? [item.uri.length] : [],
+        item.type === "file" && isImage(item.mime) ? [item.uri.length] : []
       )
-    }),
+    })
   )
   // Replay the images in order, dropping the oldest down to the target whenever the kept payload passes the trigger.
   // A new image then moves the cut only every (trigger - target) bytes instead of on every request, so the replaced
@@ -224,11 +226,11 @@ export class Service extends Context.Service<Service, Interface>()("@opencode/Se
 
 export const layer = Layer.effect(
   Service,
-  Effect.gen(function* () {
+  Effect.gen(function*() {
     const hooks = yield* PluginHooks.Service
     const transport = yield* SessionModelTransport.Service
     const app = yield* App.Metadata
-    const prepare = Effect.fn("SessionModelRequest.prepare")(function* <
+    const prepare = Effect.fn("SessionModelRequest.prepare")(function*<
       S extends SessionRequest & { tools?: Definitions },
     >(kind: SessionRequestKind, input: Input, shape: (draft: SessionRequest, tools: Definitions) => Effect.Effect<S>) {
       const session = input.session
@@ -259,10 +261,9 @@ export const layer = Layer.effect(
           model: model.ref,
           system: input.system,
           messages: input.messages,
-          options:
-            kind === "primary" || kind === "compaction"
-              ? { maxTokens: outputLimit(model.limit, input.inputTokens) }
-              : {},
+          options: kind === "primary" || kind === "compaction"
+            ? { maxTokens: outputLimit(model.limit, input.inputTokens) }
+            : {},
         },
         Object.fromEntries(Array.from(given, ([d, t]) => [t.name, d])),
       )
@@ -311,10 +312,9 @@ export const layer = Layer.effect(
         baseURL,
         headers: { ...base.http?.headers },
       })
-      const route =
-        modelHook.baseURL !== undefined && modelHook.baseURL !== baseURL
-          ? base.model.route.with({ endpoint: { baseURL: modelHook.baseURL } })
-          : base.model.route
+      const route = modelHook.baseURL !== undefined && modelHook.baseURL !== baseURL
+        ? base.model.route.with({ endpoint: { baseURL: modelHook.baseURL } })
+        : base.model.route
       const request = LLMRequest.update(base, {
         model: route === base.model.route ? base.model : LanguageModel.update(base.model, { route }),
         http: new HttpOptions({
@@ -322,66 +322,63 @@ export const layer = Layer.effect(
           headers: Object.keys(modelHook.headers).length === 0 ? undefined : modelHook.headers,
         }),
       })
-      const hasHttpHooks =
-        (yield* hooks.has("session", "http.request", model.ref.providerID)) ||
-        (yield* hooks.has("session", "http.response", model.ref.providerID))
+      const hasHttpHooks = (yield* hooks.has("session", "http.request", model.ref.providerID))
+        || (yield* hooks.has("session", "http.response", model.ref.providerID))
       const http: StreamOptions["http"] = hasHttpHooks
         ? (req, handler) =>
-            Effect.gen(function* () {
-              const request = yield* HttpClientRequest.toWeb(req)
-              const before = yield* hooks.trigger("session", "http.request", { ...scope, request })
-              // A hook that kept the request object cannot have replaced its body, so the original body is sent as is.
-              // Reading it back would hold a second full copy of the request, screenshots included, for the whole call.
-              const sent =
-                before.request === request
-                  ? HttpClientRequest.setBody(HttpClientRequest.fromWeb(request), req.body)
-                  : before.request.body
-                    ? HttpClientRequest.bodyUint8Array(
-                        HttpClientRequest.fromWeb(before.request),
-                        new Uint8Array(yield* Effect.promise(() => before.request.clone().arrayBuffer())),
-                        before.request.headers.get("content-type") ?? undefined,
-                      )
-                    : HttpClientRequest.fromWeb(before.request)
-              const res = yield* handler(sent)
-              const body = [204, 205, 304].includes(res.status) ? null : yield* Stream.toReadableStreamEffect(res.stream)
-              const after = yield* hooks.trigger("session", "http.response", {
-                ...scope,
-                request: before.request,
-                response: yield* Effect.try({
-                  try: () => makeResponse(body, { status: res.status, headers: res.headers }),
-                  catch: (cause) => cause,
-                }).pipe(Effect.orDie),
-              })
-              return HttpClientResponse.fromWeb(sent, after.response)
+          Effect.gen(function*() {
+            const request = yield* HttpClientRequest.toWeb(req)
+            const before = yield* hooks.trigger("session", "http.request", { ...scope, request })
+            // A hook that kept the request object cannot have replaced its body, so the original body is sent as is.
+            // Reading it back would hold a second full copy of the request, screenshots included, for the whole call.
+            const sent = before.request === request
+              ? HttpClientRequest.setBody(HttpClientRequest.fromWeb(request), req.body)
+              : before.request.body
+              ? HttpClientRequest.bodyUint8Array(
+                HttpClientRequest.fromWeb(before.request),
+                new Uint8Array(yield* Effect.promise(() => before.request.clone().arrayBuffer())),
+                before.request.headers.get("content-type") ?? undefined,
+              )
+              : HttpClientRequest.fromWeb(before.request)
+            const res = yield* handler(sent)
+            const body = [204, 205, 304].includes(res.status) ? null : yield* Stream.toReadableStreamEffect(res.stream)
+            const after = yield* hooks.trigger("session", "http.response", {
+              ...scope,
+              request: before.request,
+              response: yield* Effect.try({
+                try: () => makeResponse(body, { status: res.status, headers: res.headers }),
+                catch: (cause) => cause,
+              }).pipe(Effect.orDie),
             })
+            return HttpClientResponse.fromWeb(sent, after.response)
+          })
         : undefined
       // HTTP hooks wrap every HTTP request, including the WebSocket fallback path. The route decides
       // which transport actually carries the request, so both hook families are always offered.
-      const webSocket =
-        input.webSocket === "session" && model.transport === "websocket"
-          ? transport.bind(
-              session.id,
-              {
-                handshake: (connect) =>
-                  hooks
-                    .trigger("session", "experimental.ws.handshake", {
-                      ...scope,
-                      url: connect.url,
-                      headers: connect.headers,
-                    })
-                    .pipe(Effect.map((event) => ({ url: event.url, headers: event.headers }))),
-                send: (frame) =>
-                  hooks
-                    .trigger("session", "experimental.ws.send", { ...scope, frame })
-                    .pipe(Effect.map((event) => event.frame)),
-                receive: (frame) =>
-                  hooks
-                    .trigger("session", "experimental.ws.receive", { ...scope, frame })
-                    .pipe(Effect.map((event) => event.frame)),
-              },
-              model.chunkTimeout,
-            )
-          : undefined
+      const webSocket = input.webSocket === "session" && model.transport === "websocket"
+        ? transport.bind(
+          session.id,
+          {
+            handshake: (connect) =>
+              hooks
+                .trigger("session", "experimental.ws.handshake", {
+                  ...scope,
+                  url: connect.url,
+                  headers: connect.headers,
+                })
+                .pipe(Effect.map((event) => ({ url: event.url, headers: event.headers }))),
+            send: (frame) =>
+              hooks
+                .trigger("session", "experimental.ws.send", { ...scope, frame })
+                .pipe(Effect.map((event) => event.frame)),
+            receive: (frame) =>
+              hooks
+                .trigger("session", "experimental.ws.receive", { ...scope, frame })
+                .pipe(Effect.map((event) => event.frame)),
+          },
+          model.chunkTimeout,
+        )
+        : undefined
 
       return {
         event: shaped,
@@ -431,13 +428,13 @@ export const node = makeLocationNode({
 })
 
 module platform {
-// The platform code of model-request.vibe: the global Response, which VibeLang code does not construct (EK4402).
+  // The platform code of model-request.vibe: the global Response, which VibeLang code does not construct (EK4402).
 
-/** @throws {RangeError} for a status outside 200-599. @throws {TypeError} for a body on a null-body status. */
-export function makeResponse(
-  body: ConstructorParameters<typeof Response>[0],
-  init: ConstructorParameters<typeof Response>[1],
-): Response {
-  return new Response(body, init)
-}
+  /** @throws {RangeError} for a status outside 200-599. @throws {TypeError} for a body on a null-body status. */
+  export function makeResponse(
+    body: ConstructorParameters<typeof Response>[0],
+    init: ConstructorParameters<typeof Response>[1],
+  ): Response {
+    return new Response(body, init)
+  }
 }

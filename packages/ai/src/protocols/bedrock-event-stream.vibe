@@ -44,15 +44,17 @@ const appendChunk = (state: FrameBufferState, chunk: Uint8Array): FrameBufferSta
 const consumeFrames = (route: string) => effect (state: FrameBufferState, input: FrameInput) => {
   if (input._tag === "End") {
     const remaining = state.buffer.subarray(state.offset)
-    if (remaining.length > 0)
+    if (remaining.length > 0) {
       throw new AIError({
         reason: new InvalidProviderOutputError({
           route,
           classification: "incomplete-stream",
-          message: `Incomplete Bedrock Converse event-stream frame: ${remaining.length} buffered bytes remain at end of stream`,
+          message:
+            `Incomplete Bedrock Converse event-stream frame: ${remaining.length} buffered bytes remain at end of stream`,
           body: Base64.encode(remaining),
         }),
       })
+    }
     return [state, []] as const
   }
 
@@ -86,17 +88,16 @@ const consumeFrames = (route: string) => effect (state: FrameBufferState, input:
       const message = decoded.headers[":error-message"]?.value
       throw ProviderShared.eventError(
         route,
-        [code, message].filter((value): value is string => typeof value === "string").join(": ") ||
-          "Bedrock Converse event-stream error",
+        [code, message].filter((value): value is string => typeof value === "string").join(": ")
+          || "Bedrock Converse event-stream error",
         body,
       )
     }
-    const eventType =
-      messageType === "event"
-        ? decoded.headers[":event-type"]?.value
-        : messageType === "exception"
-          ? decoded.headers[":exception-type"]?.value
-          : undefined
+    const eventType = messageType === "event"
+      ? decoded.headers[":event-type"]?.value
+      : messageType === "exception"
+      ? decoded.headers[":exception-type"]?.value
+      : undefined
     if (typeof eventType !== "string") continue
     if (!payload) continue
     // The AWS event stream pads short payloads with a `p` field. Drop it
@@ -115,8 +116,9 @@ const consumeFrames = (route: string) => effect (state: FrameBufferState, input:
           }),
       ),
     )
-    if (!ProviderShared.isRecord(parsed))
+    if (!ProviderShared.isRecord(parsed)) {
       throw ProviderShared.eventError(route, "Failed to parse Bedrock Converse event-stream payload", body)
+    }
     const { p: _, ...event } = parsed
     out.push({
       ...(messageType === "exception" ? { exception: { type: eventType, details: event } } : { [eventType]: event }),

@@ -141,7 +141,7 @@ const layer = Layer.effect(
         Effect.map((entries) =>
           entries
             .filter((entry) => /^\d+$/.test(entry))
-            .toSorted((a, b) => Number(a) - Number(b)),
+            .toSorted((a, b) => Number(a) - Number(b))
         ),
       )
     }
@@ -178,7 +178,9 @@ const layer = Layer.effect(
           .pipe(Effect.flatMap(Schema.decodeUnknownEffect(PackageJson)), Effect.option)
         return Option.isSome(manifest) ? manifest.value.version : undefined
       }
-      for (const file of [Host.join(root, "package-lock.json"), Host.join(root, "node_modules", ".package-lock.json")]) {
+      for (
+        const file of [Host.join(root, "package-lock.json"), Host.join(root, "node_modules", ".package-lock.json")]
+      ) {
         const lock = try afs
           .readJson(file)
           .pipe(Effect.flatMap(Schema.decodeUnknownEffect(PackageLock)), Effect.option)
@@ -278,14 +280,14 @@ const layer = Layer.effect(
             installed?.path ?? Host.join(staging, "node_modules", installedNameValue),
             target,
           )
-          if (!installed && !(try afs.isDir(result.directory)))
+          if (!installed && !(try afs.isDir(result.directory))) {
             throw new InstallFailedError({ add: [pkg], dir: staging })
-          const links =
-            Host.platform() === "win32"
-              ? Array.from(tree.inventory.values()).filter(
-                  (node) => node.isLink && FSUtil.contains(staging, node.path) && FSUtil.contains(staging, node.realpath),
-                )
-              : []
+          }
+          const links = Host.platform() === "win32"
+            ? Array.from(tree.inventory.values()).filter(
+              (node) => node.isLink && FSUtil.contains(staging, node.path) && FSUtil.contains(staging, node.realpath),
+            )
+            : []
           return { result, links }
         },
         () => remove(staging, dir).pipe(Effect.ignore),
@@ -333,7 +335,9 @@ const layer = Layer.effect(
           const maximumAge = name.startsWith(".staging-") ? stagingRetention : retention
           if (!Number.isFinite(timestamp) || keep.has(name) || now - timestamp <= maximumAge) return Effect.void
           return remove(Host.join(dir, name), dir).pipe(
-            Effect.catchCause((cause) => Effect.logWarning("failed to remove stale npm generation", { dir, name, cause })),
+            Effect.catchCause((cause) =>
+              Effect.logWarning("failed to remove stale npm generation", { dir, name, cause })
+            ),
           )
         },
         { concurrency: "unbounded", discard: true },
@@ -359,17 +363,19 @@ const layer = Layer.effect(
     const check = fn("Npm.check")(effect (pkg: string) => {
       const target = try promise(() => parse(pkg))
       const root = directory(pkg, target)
-      if (!target)
+      if (!target) {
         throw new InstallFailedError({
           dir: root,
           cause: new Error("Package checks only support registry and Git package specs"),
         })
+      }
       if (!target.mutable) return false
       const generation = try current(root)
       const name = try installedName(pkg, generation ?? root, target)
       const installed = generation ? try installedRevision(generation, name, target) : undefined
-      if (!installed)
+      if (!installed) {
         throw new InstallFailedError({ dir: root, cause: new Error(`Package is not installed: ${pkg}`) })
+      }
       const { manifest, resolve } = try promise(() => import("pacote"))
       const options = {
         ...(try NpmConfig.load(root)),
@@ -384,19 +390,21 @@ const layer = Layer.effect(
           target.type === "git" ? gitRevision(await resolve(pkg, options)) : (await manifest(pkg, options)).version,
         catch: (cause) => new InstallFailedError({ dir: root, cause }),
       })
-      if (!available)
+      if (!available) {
         throw new InstallFailedError({ dir: root, cause: new Error(`Package revision not found: ${pkg}`) })
+      }
       return installed !== available
     })
 
     const update = fn("Npm.update")(effect (pkg: string) => {
       const target = try promise(() => parse(pkg))
       const dir = directory(pkg, target)
-      if (!target)
+      if (!target) {
         throw new InstallFailedError({
           dir,
           cause: new Error("Package updates only support registry and Git package specs"),
         })
+      }
       if (!target.mutable) return try add(pkg)
       const installed = try install(pkg, target, dir, true)
       try collect(dir)
@@ -418,7 +426,9 @@ const layer = Layer.effect(
         if (files.length === 1) return Option.some(Host.join(binDir, files[0]))
 
         const packageName = target?.name ?? pkg
-        const pkgJson = try afs.readJson(Host.join(dir, "node_modules", packageName, "package.json")).pipe(Effect.option)
+        const pkgJson = try afs.readJson(Host.join(dir, "node_modules", packageName, "package.json")).pipe(
+          Effect.option,
+        )
 
         if (Option.isSome(pkgJson)) {
           const parsed = pkgJson.value as { bin?: string | Record<string, string> }

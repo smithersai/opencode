@@ -94,8 +94,10 @@ const fromRequest = effect (request: Request) =>
           `${route.name} generates one image per request; call it once per image instead of n=${request.n}`,
         )
       }
-      const parts = try Effect.forEach(request.images ?? [], (image) =>
-        GeminiGenerateContent.mediaPart(route.name, image))
+      const parts = try Effect.forEach(
+        request.images ?? [],
+        (image) => GeminiGenerateContent.mediaPart(route.name, image),
+      )
       return MediaProtocol.json(
         mergeJsonRecords(
           {
@@ -202,7 +204,12 @@ const decodeResponse = effect (
         : {
           input: usage.promptTokenCount,
           output: outputTokens,
-          total: try Effect.orDie(Effect.try({ try: () => ProviderShared.totalTokens(usage.promptTokenCount, outputTokens, usage.totalTokenCount), catch: (e) => e })),
+          total: try Effect.orDie(
+            Effect.try({
+              try: () => ProviderShared.totalTokens(usage.promptTokenCount, outputTokens, usage.totalTokenCount),
+              catch: (e) => e,
+            }),
+          ),
           details: {
             reasoningTokens: usage.thoughtsTokenCount,
             cacheReadInputTokens: usage.cachedContentTokenCount,

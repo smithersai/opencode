@@ -17,13 +17,13 @@ module platform {
   import { sender } from "./context"
 
   export const windowHandlers = WindowRpcs.toLayer(
-    Effect.gen(function* () {
+    Effect.gen(function*() {
       const handoff = yield* IpcPortHandoff
 
       return WindowRpcs.of({
         WindowRequestMicrophone: () =>
           Effect.promise(() =>
-            process.platform === "darwin" ? systemPreferences.askForMediaAccess("microphone") : Promise.resolve(true),
+            process.platform === "darwin" ? systemPreferences.askForMediaAccess("microphone") : Promise.resolve(true)
           ),
         WindowSetVoiceCallActive: ({ active }, context) =>
           Effect.sync(() => {

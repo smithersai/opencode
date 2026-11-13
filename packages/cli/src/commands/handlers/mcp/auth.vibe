@@ -33,13 +33,12 @@ const authenticate = Effect.fn("cli.mcp.auth.run")(effect function(name?: string
     "Authenticate an MCP server",
   ]))
   const { endpoint } = try ServerConnection.resolve()
-  const client = try ((args: Parameters<typeof OpenCode.make>) =>
-    Effect.try(() => OpenCode.make(...args)).pipe(Effect.orDie))([{
+  const client =
+    try ((args: Parameters<typeof OpenCode.make>) => Effect.try(() => OpenCode.make(...args)).pipe(Effect.orDie))([{
       baseUrl: endpoint.url,
-      headers: (try ((args: Parameters<typeof Service.headers>) =>
-        Effect.try(() =>
-          Service.headers(...args)
-        ).pipe(Effect.orDie))([endpoint])),
+      headers:
+        try ((args: Parameters<typeof Service.headers>) =>
+          Effect.try(() => Service.headers(...args)).pipe(Effect.orDie))([endpoint]),
     }])
   const integrations = try loadIntegrations(client)
   const servers = try request((signal) => client.mcp.list({ location }, { signal }))
@@ -76,8 +75,8 @@ const authenticate = Effect.fn("cli.mcp.auth.run")(effect function(name?: string
       ]))
     }
     if (
-      status !== "needs_auth" && (try ((args: Parameters<typeof inputIsTTY>) =>
-        Effect.try(() => inputIsTTY(...args)).pipe(Effect.orDie))([]))
+      status !== "needs_auth"
+      && (try ((args: Parameters<typeof inputIsTTY>) => Effect.try(() => inputIsTTY(...args)).pipe(Effect.orDie))([]))
       && (try ((args: Parameters<typeof outputIsTTY>) => Effect.try(() => outputIsTTY(...args)).pipe(Effect.orDie))(
         [],
       ))

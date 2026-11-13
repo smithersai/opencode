@@ -71,7 +71,7 @@ export class Service extends Context.Service<Service, Interface>()("@opencode/Sn
 
 const layer = Layer.effect(
   Service,
-  Effect.gen(function* () {
+  Effect.gen(function*() {
     const fs = yield* FSUtil.Service
     const git = yield* Git.Service
     const global = yield* Global.Service
@@ -88,7 +88,7 @@ const layer = Layer.effect(
     })
     // Cache a scope-owned fiber so caller cancellation stops waiting without poisoning shared initialization.
     const repositoryFiber = yield* Effect.cached(
-      Effect.gen(function* () {
+      Effect.gen(function*() {
         const source = yield* git.repo.discover(location.project.directory)
         if (!source) return yield* new Error({ operation: "capture", message: "Project is not a Git repository" })
         const worktree = AbsolutePath.make(yield* fs.realPath(source.worktree).pipe(Effect.orDie))
@@ -98,16 +98,17 @@ const layer = Layer.effect(
         const snapshotRepository = (yield* fs.existsSafe(path.join(gitDirectory, "HEAD")))
           ? new Git.Repository({ worktree, gitDirectory, commonDirectory: gitDirectory })
           : yield* git.repo
-              .create({ worktree, gitDirectory, seed: source })
-              .pipe(Effect.mapError((cause) => failure("capture", cause)))
+            .create({ worktree, gitDirectory, seed: source })
+            .pipe(Effect.mapError((cause) => failure("capture", cause)))
         return { source, worktree, snapshotRepository }
       }).pipe(Effect.forkIn(lifetime)),
     )
     const repository = repositoryFiber.pipe(Effect.uninterruptible, Effect.flatMap(Fiber.join))
 
-    const scope = Effect.fnUntraced(function* (worktree: AbsolutePath) {
-      if (!FSUtil.contains(worktree, location.directory))
+    const scope = Effect.fnUntraced(function*(worktree: AbsolutePath) {
+      if (!FSUtil.contains(worktree, location.directory)) {
         return yield* new Error({ operation: "capture", message: "Location is outside the project" })
+      }
       return RelativePath.make(path.relative(worktree, location.directory).replaceAll("\\", "/") || ".")
     })
 
@@ -115,7 +116,7 @@ const layer = Layer.effect(
 
     // `objects.pack` takes a cross-process lock, so a run that outlasts the interval never overlaps the next.
     let lastPackCheck = Number.NEGATIVE_INFINITY
-    const packWhenDue = Effect.fnUntraced(function* (repository: Git.Repository) {
+    const packWhenDue = Effect.fnUntraced(function*(repository: Git.Repository) {
       const now = yield* Clock.currentTimeMillis
       if (now - lastPackCheck < 10 * 60 * 1000) return
       lastPackCheck = now
@@ -125,9 +126,9 @@ const layer = Layer.effect(
       )
     })
 
-    const capture = Effect.fn("Snapshot.capture")(function* () {
+    const capture = Effect.fn("Snapshot.capture")(function*() {
       if (!enabled()) return undefined
-      return yield* Effect.gen(function* () {
+      return yield* Effect.gen(function*() {
         const repo = yield* repository
         const tree = yield* git.tree.capture({
           repository: repo.snapshotRepository,
@@ -142,7 +143,7 @@ const layer = Layer.effect(
       )
     })
 
-    const comparison = Effect.fnUntraced(function* (operation: "files" | "diff", input: CompareInput) {
+    const comparison = Effect.fnUntraced(function*(operation: "files" | "diff", input: CompareInput) {
       const repo = yield* repository.pipe(Effect.mapError((cause) => failure(operation, cause)))
       return {
         source: repo.source,
@@ -153,7 +154,7 @@ const layer = Layer.effect(
     })
 
     // Snapshots track every scoped file; the source repository's ignore rules decide what callers see.
-    const ignored = Effect.fnUntraced(function* (
+    const ignored = Effect.fnUntraced(function*(
       operation: "files" | "diff",
       source: Git.Repository,
       paths: readonly RelativePath[],
@@ -163,7 +164,7 @@ const layer = Layer.effect(
         .pipe(Effect.mapError((cause) => failure(operation, cause)))
     })
 
-    const files = Effect.fn("Snapshot.files")(function* (input: CompareInput) {
+    const files = Effect.fn("Snapshot.files")(function*(input: CompareInput) {
       const compared = yield* comparison("files", input)
       const changed = yield* git.tree
         .files({ repository: compared.repository, from: compared.from, to: compared.to })
@@ -173,7 +174,7 @@ const layer = Layer.effect(
       return changed.filter((file) => !skipped.has(file))
     })
 
-    const diff = Effect.fn("Snapshot.diff")(function* (input: DiffInput) {
+    const diff = Effect.fn("Snapshot.diff")(function*(input: DiffInput) {
       if (input.paths?.length === 0) return []
       const compared = yield* comparison("diff", input)
       // Only an explicit selection becomes a pathspec; ignored paths are dropped from the result instead.
@@ -192,18 +193,19 @@ const layer = Layer.effect(
       return diffs.filter((_, index) => !skipped.has(paths[index]!))
     })
 
-    const plan = Effect.fnUntraced(function* (worktree: AbsolutePath, input: RestoreInput) {
+    const plan = Effect.fnUntraced(function*(worktree: AbsolutePath, input: RestoreInput) {
       const files = new Map<RelativePath, Git.TreeID>()
       for (const [file, snapshot] of input.files) {
         const absolute = path.resolve(worktree, file)
-        if (!FSUtil.contains(worktree, absolute))
+        if (!FSUtil.contains(worktree, absolute)) {
           return yield* new Error({ operation: "restore", message: `Path escapes the project: ${file}` })
+        }
         files.set(file, Git.TreeID.make(snapshot))
       }
       return files
     })
 
-    const restore = Effect.fn("Snapshot.restore")(function* (input: RestoreInput) {
+    const restore = Effect.fn("Snapshot.restore")(function*(input: RestoreInput) {
       if (!enabled()) return yield* new Error({ operation: "restore", message: "Snapshots are disabled" })
       const repo = yield* repository.pipe(Effect.mapError((cause) => failure("restore", cause)))
       yield* git.tree
@@ -243,17 +245,17 @@ function failure(operation: Error["operation"], cause: unknown) {
 }
 
 module platform {
-// The platform code of snapshot.vibe: host path rules, which a .vibe file does not read (EK4402).
+  // The platform code of snapshot.vibe: host path rules, which a .vibe file does not read (EK4402).
 
-import nodePath from "path"
+  import nodePath from "path"
 
-/** Host path functions with Node's `path` names. */
-export const path = {
-  /** @throws {never} */
-  join: (...segments: string[]) => nodePath.join(...segments),
-  /** @throws {never} */
-  relative: (from: string, to: string) => nodePath.relative(from, to),
-  /** Resolves segments against the process working directory, which may be unavailable. */
-  resolve: (...segments: string[]) => nodePath.resolve(...segments),
-}
+  /** Host path functions with Node's `path` names. */
+  export const path = {
+    /** @throws {never} */
+    join: (...segments: string[]) => nodePath.join(...segments),
+    /** @throws {never} */
+    relative: (from: string, to: string) => nodePath.relative(from, to),
+    /** Resolves segments against the process working directory, which may be unavailable. */
+    resolve: (...segments: string[]) => nodePath.resolve(...segments),
+  }
 }

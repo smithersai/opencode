@@ -13,8 +13,8 @@ export class AppProcessError extends Schema.TaggedError<AppProcessError>()("AppP
   cause: Schema.optional(Schema.Defect()),
 }) {
   override get message() {
-    const detail =
-      this.stderr?.trim() || (this.cause instanceof Error ? this.cause.message : this.cause && String(this.cause))
+    const detail = this.stderr?.trim()
+      || (this.cause instanceof Error ? this.cause.message : this.cause && String(this.cause))
     const status = this.exitCode === undefined ? "" : ` (exit ${this.exitCode})`
     return `Command failed${status}: ${this.command}${detail ? `: ${detail}` : ""}`
   }
@@ -61,29 +61,26 @@ export const requireSuccess = (result: RunResult): Effect.Effect<RunResult, AppP
   result.exitCode === 0
     ? Effect.succeed(result)
     : Host.withUtf8(result.stderr, (stderr) =>
+      Effect.fail(
+        new AppProcessError({
+          command: result.command,
+          exitCode: result.exitCode,
+          stderr,
+        }),
+      ))
+
+export const requireExitIn =
+  (codes: ReadonlyArray<number>) => (result: RunResult): Effect.Effect<RunResult, AppProcessError> =>
+    codes.includes(result.exitCode)
+      ? Effect.succeed(result)
+      : Host.withUtf8(result.stderr, (stderr) =>
         Effect.fail(
           new AppProcessError({
             command: result.command,
             exitCode: result.exitCode,
             stderr,
           }),
-        ),
-      )
-
-export const requireExitIn =
-  (codes: ReadonlyArray<number>) =>
-  (result: RunResult): Effect.Effect<RunResult, AppProcessError> =>
-    codes.includes(result.exitCode)
-      ? Effect.succeed(result)
-      : Host.withUtf8(result.stderr, (stderr) =>
-          Effect.fail(
-            new AppProcessError({
-              command: result.command,
-              exitCode: result.exitCode,
-              stderr,
-            }),
-          ),
-        )
+        ))
 
 const describeCommand = (command: ChildProcess.Command): string => {
   if (command._tag === "StandardCommand") {
@@ -120,8 +117,8 @@ const normalizeStdin = (
   typeof input === "string"
     ? Stream.make(new TextEncoder().encode(input))
     : input instanceof Uint8Array
-      ? Stream.make(input)
-      : input
+    ? Stream.make(input)
+    : input
 
 export const collectStream = (stream: Stream.Stream<Uint8Array, PlatformError>, maxOutputBytes: number | undefined) =>
   Stream.runFold(
@@ -141,9 +138,10 @@ export const collectStream = (stream: Stream.Stream<Uint8Array, PlatformError>, 
     },
   ).pipe(
     Effect.flatMap((x) =>
-      Effect.try({ try: () => ({ buffer: Host.concat(x.chunks), truncated: x.truncated }), catch: (cause) => cause }).pipe(
-        Effect.orDie,
-      ),
+      Effect.try({ try: () => ({ buffer: Host.concat(x.chunks), truncated: x.truncated }), catch: (cause) => cause })
+        .pipe(
+          Effect.orDie,
+        )
     ),
   )
 
@@ -193,16 +191,16 @@ const layer = Layer.effect(
       )
       const timed = options?.timeout
         ? Effect.timeoutOrElse(collect, {
-            duration: options.timeout,
-            orElse: () => Effect.fail(new AppProcessError({ command: description, cause: new Error("Timed out") })),
-          })
+          duration: options.timeout,
+          orElse: () => Effect.fail(new AppProcessError({ command: description, cause: new Error("Timed out") })),
+        })
         : collect
       const aborted = options?.signal
         ? timed.pipe(
-            Effect.raceFirst(
-              waitForAbort(options.signal).pipe(Effect.mapError((cause) => wrapError(description, cause))),
-            ),
-          )
+          Effect.raceFirst(
+            waitForAbort(options.signal).pipe(Effect.mapError((cause) => wrapError(description, cause))),
+          ),
+        )
         : timed
       return aborted.pipe(Effect.mapError((cause) => wrapError(description, cause)))
     }
@@ -231,20 +229,19 @@ const layer = Layer.effect(
       const built: Stream.Stream<string, AppProcessError | PlatformError> = Stream.unwrap(
         effect {
           const handle = try spawner.spawn(command)
-          const streams =
-            options?.includeStderr === true
-              ? try handle.stderr.pipe(
-                  Stream.broadcastN({ n: 2, capacity: 16 }),
-                  Effect.map((copies) => ({
-                    source: Stream.merge(handle.stdout, copies[0]),
-                    diagnostics: copies[1],
-                  })),
-                )
-              : { source: handle.stdout, diagnostics: handle.stderr }
+          const streams = options?.includeStderr === true
+            ? try handle.stderr.pipe(
+              Stream.broadcastN({ n: 2, capacity: 16 }),
+              Effect.map((copies) => ({
+                source: Stream.merge(handle.stdout, copies[0]),
+                diagnostics: copies[1],
+              })),
+            )
+            : { source: handle.stdout, diagnostics: handle.stderr }
           const stderrFiber = try Effect.forkScoped(
             collectStream(streams.diagnostics, options?.maxErrorBytes).pipe(
               Effect.flatMap((x) =>
-                Effect.try({ try: () => Host.utf8(x.buffer), catch: (cause) => cause }).pipe(Effect.orDie),
+                Effect.try({ try: () => Host.utf8(x.buffer), catch: (cause) => cause }).pipe(Effect.orDie)
               ),
             ),
           )

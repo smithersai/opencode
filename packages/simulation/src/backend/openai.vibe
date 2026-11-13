@@ -30,7 +30,7 @@ type FinishReason = Extract<SimulatedProvider.ProviderResponseEvent, { readonly 
 function chunkOf(item: ProviderItem): OpenAIChatEvent | unknown {
   if (item.type === "textDelta") return { choices: [{ delta: { content: item.text } }] }
   if (item.type === "reasoningDelta") return { choices: [{ delta: { reasoning_content: item.text } }] }
-  if (item.type === "toolInputStart")
+  if (item.type === "toolInputStart") {
     return {
       choices: [
         {
@@ -46,7 +46,8 @@ function chunkOf(item: ProviderItem): OpenAIChatEvent | unknown {
         },
       ],
     }
-  if (item.type === "toolInputDelta")
+  }
+  if (item.type === "toolInputDelta") {
     return {
       choices: [
         {
@@ -56,7 +57,8 @@ function chunkOf(item: ProviderItem): OpenAIChatEvent | unknown {
         },
       ],
     }
-  if (item.type === "toolCall")
+  }
+  if (item.type === "toolCall") {
     return {
       choices: [
         {
@@ -72,6 +74,7 @@ function chunkOf(item: ProviderItem): OpenAIChatEvent | unknown {
         },
       ],
     }
+  }
   return item.chunk
 }
 
@@ -91,8 +94,9 @@ function sseBody(
 ): Stream.Stream<Uint8Array, SimulatedProvider.ProviderDisconnectedError> {
   return events.pipe(
     Stream.map((event) => {
-      if (event.type === "finish")
+      if (event.type === "finish") {
         return frame(encodeChunk({ choices: [{ delta: {}, finish_reason: finishReasonWire[event.reason] }] }))
+      }
       if (event.type === "raw") return frame(event.chunk)
       return frame(encodeChunk(chunkOf(event)))
     }),
@@ -104,22 +108,21 @@ export const route = (provider: SimulatedProvider.Interface): SimulationNetwork.
   match: (request, url) => {
     if (request.method !== "POST") return undefined
     if (url.origin + url.pathname !== DEFAULT_BASE_URL + PATH) return undefined
-    return Effect.gen(function* () {
-      const body =
-        request.body._tag === "Uint8Array"
-          ? yield* decodeBody(new TextDecoder().decode(request.body.body)).pipe(
-              Effect.mapError(
-                (cause) =>
-                  new HttpClientError({
-                    reason: new TransportError({
-                      request,
-                      cause,
-                      description: "Simulation received an invalid OpenAI request body",
-                    }),
-                  }),
-              ),
-            )
-          : {}
+    return Effect.gen(function*() {
+      const body = request.body._tag === "Uint8Array"
+        ? yield* decodeBody(new TextDecoder().decode(request.body.body)).pipe(
+          Effect.mapError(
+            (cause) =>
+              new HttpClientError({
+                reason: new TransportError({
+                  request,
+                  cause,
+                  description: "Simulation received an invalid OpenAI request body",
+                }),
+              }),
+          ),
+        )
+        : {}
       return HttpClientResponse.fromWeb(
         request,
         makeResponse(Stream.toReadableStream(sseBody(provider.stream({ url: url.toString(), body }))), {

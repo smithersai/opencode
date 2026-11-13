@@ -39,7 +39,7 @@ import { ServerConnection } from "../../../services/server-connection.ts"
 import { errorMessage } from "../../../util/error"
 import { currentDirectory, EOL, platform, setExitCode, stdoutIsTTY, writeError, writeOutput } from host
 
-const handler = Effect.fn("cli.session.list")(function* (
+const handler = Effect.fn("cli.session.list")(function*(
   input: Runtime.Input<typeof Commands.commands.session.commands.list>,
 ) {
   const server = yield* ServerConnection.resolve()
@@ -62,21 +62,20 @@ const handler = Effect.fn("cli.session.list")(function* (
     catch: (cause) => cause,
   })
   if (input.format === "table" && page.data.length === 0) return
-  const output =
-    (input.format === "json"
-      ? JSON.stringify(
-          page.data.map((session) => ({
-            id: session.id,
-            title: session.title,
-            updated: session.time.updated,
-            created: session.time.created,
-            projectId: session.projectID,
-            directory: session.location.directory,
-          })),
-          null,
-          2,
-        )
-      : formatList(page.data)) + EOL
+  const output = (input.format === "json"
+    ? JSON.stringify(
+      page.data.map((session) => ({
+        id: session.id,
+        title: session.title,
+        updated: session.time.updated,
+        created: session.time.created,
+        projectId: session.projectID,
+        directory: session.location.directory,
+      })),
+      null,
+      2,
+    )
+    : formatList(page.data)) + EOL
   const write = Effect.tryPromise(
     () =>
       new Promise<void>((resolve, reject) => {
@@ -91,7 +90,7 @@ const handler = Effect.fn("cli.session.list")(function* (
   const { AppProcess } = yield* Effect.promise(() => import("@opencode/util/process"))
   const { LayerNode } = yield* Effect.promise(() => import("@opencode/util/effect/layer-node"))
   const { ChildProcess } = yield* Effect.promise(() => import("effect/process"))
-  yield* Effect.gen(function* () {
+  yield* Effect.gen(function*() {
     const processService = yield* AppProcess.Service
     const pager = yield* processService
       .spawn(
@@ -120,10 +119,9 @@ export default Runtime.handler(Commands.commands.session.commands.list, (input) 
       Effect.sync(() => {
         writeError(errorMessage(error) + EOL)
         setExitCode(1)
-      }),
+      })
     ),
-  ),
-)
+  ))
 
 function formatList(sessions: ReadonlyArray<SessionInfo>) {
   return sessions
@@ -132,7 +130,7 @@ function formatList(sessions: ReadonlyArray<SessionInfo>) {
         session.id,
         (session.title ?? "Untitled session").replace(/[\r\n\t]/g, " "),
         new Date(session.time.updated).toLocaleString(),
-      ].join("\t"),
+      ].join("\t")
     )
     .join(EOL)
 }

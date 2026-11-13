@@ -99,7 +99,7 @@ export function make(input: {
     const session = try input.client.session.get({ sessionID }).pipe(Effect.catch(ACPClient.classify))
     if (
       (try Effect.try(() => FSUtil.resolve(cwd)).pipe(Effect.orDie))
-        !== (try Effect.try(() => FSUtil.resolve(session.location.directory)).pipe(Effect.orDie))
+      !== (try Effect.try(() => FSUtil.resolve(session.location.directory)).pipe(Effect.orDie))
     ) {
       return try new ACPError.SessionDirectoryMismatchError({ sessionId, cwd })
     }

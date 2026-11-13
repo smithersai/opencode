@@ -65,7 +65,7 @@ import { ServerConnection } from "../../services/server-connection.ts"
 
 export default Runtime.handler(
   Commands.commands.api,
-  Effect.fn("cli.api")(function* (input) {
+  Effect.fn("cli.api")(function*(input) {
     const server = yield* ServerConnection.resolve({
       mismatch: "ignore",
     })
@@ -77,19 +77,23 @@ export default Runtime.handler(
       const index = header.indexOf(":")
       if (index < 1) return yield* Effect.fail(new Error(`Invalid header, expected name:value: ${header}`))
       yield* Effect.orDie(
-        Effect.try({ try: () => headers.set(header.slice(0, index).trim(), header.slice(index + 1).trim()), catch: (e) => e }),
+        Effect.try({
+          try: () => headers.set(header.slice(0, index).trim(), header.slice(index + 1).trim()),
+          catch: (e) => e,
+        }),
       )
     }
     const body = Option.getOrUndefined(input.data)
-    if (body !== undefined && !headers.has("content-type"))
+    if (body !== undefined && !headers.has("content-type")) {
       yield* Effect.orDie(Effect.try({ try: () => headers.set("content-type", "application/json"), catch: (e) => e }))
+    }
 
     const response = yield* Effect.tryPromise(() =>
       send(request.path, endpoint.url, {
         method: request.method,
         headers,
         body,
-      }),
+      })
     )
     const output = yield* Effect.promise(() => response.text())
     if (output) writeOutput(output + (output.endsWith(EOL) ? "" : EOL))

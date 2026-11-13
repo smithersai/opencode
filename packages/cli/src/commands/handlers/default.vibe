@@ -33,11 +33,10 @@ export default Runtime.handler(Commands, (input) =>
       void (try ((args: Parameters<typeof changeDirectory>) =>
         Effect.try(() => changeDirectory(...args)).pipe(Effect.orDie))([requestedDirectory]))
     }
-    const preflight = try ((args: Parameters<typeof UpdatePreflight.make>) =>
-      Effect.try(() => UpdatePreflight.make(...args)).pipe(Effect.orDie))([])
-    try Effect.addFinalizer(() =>
-      Effect.promise(() => preflight.close())
-    )
+    const preflight =
+      try ((args: Parameters<typeof UpdatePreflight.make>) =>
+        Effect.try(() => UpdatePreflight.make(...args)).pipe(Effect.orDie))([])
+    try Effect.addFinalizer(() => Effect.promise(() => preflight.close()))
     const serviceStarts = try Queue.unbounded<{
       readonly reason: "missing" | "version-mismatch"
       readonly previousVersion?: string
@@ -69,13 +68,13 @@ export default Runtime.handler(Commands, (input) =>
     // A missing --session ID becomes the ID of the session the first prompt creates.
     const sessionExists = session !== undefined
       && (try Effect.tryPromise({
-          try: () =>
-            findSession(
-              OpenCode.make({ baseUrl: server.endpoint.url, headers: Service.headers(server.endpoint) }),
-              session,
-            ),
-          catch: (cause) => new Error(errorMessage(cause)),
-        })) !== undefined
+        try: () =>
+          findSession(
+            OpenCode.make({ baseUrl: server.endpoint.url, headers: Service.headers(server.endpoint) }),
+            session,
+          ),
+        catch: (cause) => new Error(errorMessage(cause)),
+      })) !== undefined
     const updater = try Updater.Service
     let installing: string | undefined
     let latest: Updater.RunResult | undefined
@@ -113,15 +112,14 @@ export default Runtime.handler(Commands, (input) =>
     const service = server.service
     void try run({
       app: {
-        name: (try ((args: Parameters<typeof environmentValue>) =>
-          Effect.try(() =>
-            environmentValue(...args)
-          ).pipe(Effect.orDie))(["OPENCODE_CLIENT"])) ?? OPENCODE_ARTIFACT,
+        name:
+          (try ((args: Parameters<typeof environmentValue>) =>
+            Effect.try(() => environmentValue(...args)).pipe(Effect.orDie))(["OPENCODE_CLIENT"])) ?? OPENCODE_ARTIFACT,
         version: OPENCODE_VERSION,
-        channel: (try ((args: Parameters<typeof environmentValue>) =>
-          Effect.try(() =>
-            environmentValue(...args)
-          ).pipe(Effect.orDie))(["OPENCODE_TUI_CHANNEL"])) ?? OPENCODE_CHANNEL,
+        channel:
+          (try ((args: Parameters<typeof environmentValue>) =>
+            Effect.try(() => environmentValue(...args)).pipe(Effect.orDie))(["OPENCODE_TUI_CHANNEL"]))
+            ?? OPENCODE_CHANNEL,
         highlights: OPENCODE_HIGHLIGHTS,
       },
       server: {

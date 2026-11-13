@@ -39,13 +39,11 @@ export type Transform = (app: App) => App
 
 const errorResponseLogger = HttpMiddleware.make((app) =>
   HttpMiddleware.logger(
-    Effect.tap(app, (response) =>
-      response.status < 400 ? HttpMiddleware.withLoggerDisabled(Effect.void) : Effect.void,
-    ),
-  ),
+    Effect.tap(app, (response) => response.status < 400 ? HttpMiddleware.withLoggerDisabled(Effect.void) : Effect.void),
+  )
 )
 
-export const start = Effect.fn("ServerProcess.start")(function* <E, R>(
+export const start = Effect.fn("ServerProcess.start")(function*<E, R>(
   options: ServerOptions,
   lifecycle?: Lifecycle<E, R>,
   transform?: Transform,
@@ -77,13 +75,14 @@ export const start = Effect.fn("ServerProcess.start")(function* <E, R>(
       errorResponseLogger,
     )
     .pipe(Effect.provide(NodeHttpServer.layerHttpServices), withoutParentSpan)
-  if (lifecycle)
+  if (lifecycle) {
     yield* lifecycle.onListen(bound.http.address, shutdown.open.pipe(Effect.asVoid)).pipe(
       Effect.flatMap((cleanup) =>
-        Effect.addFinalizer(() => Scope.close(bound.scope, Exit.void).pipe(Effect.andThen(cleanup))),
+        Effect.addFinalizer(() => Scope.close(bound.scope, Exit.void).pipe(Effect.andThen(cleanup)))
       ),
       Effect.uninterruptible,
     )
+  }
 
   const parentScope = yield* Scope.Scope
   const applicationScope = yield* Scope.fork(parentScope)
@@ -91,10 +90,10 @@ export const start = Effect.fn("ServerProcess.start")(function* <E, R>(
     status.beginStopping.pipe(
       Effect.andThen(Ref.set(application, Option.none())),
       Effect.andThen(Effect.sync(() => bound.server.closeAllConnections())),
-    ),
+    )
   )
 
-  const boot = Effect.gen(function* () {
+  const boot = Effect.gen(function*() {
     const context = yield* Layer.buildWithScope(
       createRoutes(
         {
@@ -127,7 +126,7 @@ export const start = Effect.fn("ServerProcess.start")(function* <E, R>(
         Effect.andThen(
           Scope.close(applicationScope, Exit.failCause(cause)).pipe(
             Effect.catchCause((cleanupCause) =>
-              Effect.logError("failed to clean up background service boot", { cause: cleanupCause }),
+              Effect.logError("failed to clean up background service boot", { cause: cleanupCause })
             ),
           ),
         ),
@@ -150,11 +149,11 @@ function listen(options: { readonly hostname: string; readonly port: Option.Opti
 }
 
 function bind(hostname: string, port: number) {
-  return Effect.gen(function* () {
+  return Effect.gen(function*() {
     const parentScope = yield* Scope.Scope
     const serverScope = yield* Scope.fork(parentScope)
     const server = yield* Effect.try({ try: () => createServer(), catch: (cause) => cause }).pipe(Effect.orDie)
-    return yield* Effect.gen(function* () {
+    return yield* Effect.gen(function*() {
       const http = yield* NodeHttpServer.make(() => server, { port, host: hostname })
       yield* Effect.addFinalizer(() => Effect.sync(() => server.closeAllConnections()))
       return { http, server, scope: serverScope }
@@ -180,7 +179,7 @@ function dispatch(
   tmp: string,
 ): App {
   const auth = ServerAuth.Config.of({ password: Option.some(password), username: "opencode" })
-  return Effect.gen(function* () {
+  return Effect.gen(function*() {
     const request = yield* HttpServerRequest.HttpServerRequest
     const url = new URL(request.url, "http://localhost")
     const state = yield* status.current
@@ -191,18 +190,19 @@ function dispatch(
       return yield* infoResponse(status, version, urls, tmp)
     }
     if (
-      !isPairingConnectURL(url) &&
-      (!ready ||
-        (!hasPtyConnectTicketURL(url) && !hasPersistentPtyConnectTicketURL(url) && !hasMcpClientTicketURL(url))) &&
-      !(yield* authorizedRequest(request, auth))
-    )
+      !isPairingConnectURL(url)
+      && (!ready
+        || (!hasPtyConnectTicketURL(url) && !hasPersistentPtyConnectTicketURL(url) && !hasMcpClientTicketURL(url)))
+      && !(yield* authorizedRequest(request, auth))
+    ) {
       return unauthorizedResponse(request)
+    }
     if (ready) return yield* app.value
     return unavailable(state)
   })
 }
 
-const infoResponse = Effect.fnUntraced(function* (
+const infoResponse = Effect.fnUntraced(function*(
   status: Status.Interface,
   version: string,
   urls: () => ReadonlyArray<string>,
@@ -219,7 +219,7 @@ const infoResponse = Effect.fnUntraced(function* (
 })
 
 function unavailable(status: Status.State) {
-  if (status.type === "failed")
+  if (status.type === "failed") {
     return HttpServerResponse.jsonUnsafe(
       {
         code: "service_failed",
@@ -228,6 +228,7 @@ function unavailable(status: Status.State) {
       },
       { status: 503 },
     )
+  }
   return HttpServerResponse.jsonUnsafe(
     { code: status.type === "stopping" ? "service_stopping" : "service_starting" },
     { status: 503, headers: { "retry-after": "1" } },
@@ -239,7 +240,7 @@ function unavailable(status: Status.State) {
  * never released. Claims are written when execution starts (see SessionExecution), so recovery covers
  * graceful restarts and unclean deaths alike — no shutdown hook participates.
  */
-const installRestartContinuity = Effect.fnUntraced(function* (restart: SessionRestart.Interface) {
+const installRestartContinuity = Effect.fnUntraced(function*(restart: SessionRestart.Interface) {
   yield* Effect.forkScoped(restart.resumeSuspendedSessions)
 })
 

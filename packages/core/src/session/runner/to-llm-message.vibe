@@ -37,14 +37,16 @@ const attachmentLocation = (file: FileAttachment) => {
 
 const textAttachment = (file: FileAttachment): ContentPart => ({
   type: "text",
-  text: `\n\n${[
-    `Attached file: ${file.name ?? (file.source.type === "uri" ? file.source.uri : "inline attachment")}`,
-    file.description === undefined ? undefined : `Description: ${file.description}`,
-    "",
-    base64Text(file.data),
-  ]
-    .filter((line): line is string => line !== undefined)
-    .join("\n")}`,
+  text: `\n\n${
+    [
+      `Attached file: ${file.name ?? (file.source.type === "uri" ? file.source.uri : "inline attachment")}`,
+      file.description === undefined ? undefined : `Description: ${file.description}`,
+      "",
+      base64Text(file.data),
+    ]
+      .filter((line): line is string => line !== undefined)
+      .join("\n")
+  }`,
   metadata: {
     attachment: {
       source: file.source,
@@ -56,14 +58,18 @@ const textAttachment = (file: FileAttachment): ContentPart => ({
 
 const directoryAttachment = (file: FileAttachment): ContentPart => ({
   type: "text",
-  text: `\n\n${[
-    `Attached directory: ${attachmentLocation(file) ?? file.name ?? (file.source.type === "uri" ? file.source.uri : "directory")}`,
-    file.description === undefined ? undefined : `Description: ${file.description}`,
-    file.data.length === 0 ? undefined : "",
-    file.data.length === 0 ? undefined : base64Text(file.data),
-  ]
-    .filter((line): line is string => line !== undefined)
-    .join("\n")}`,
+  text: `\n\n${
+    [
+      `Attached directory: ${
+        attachmentLocation(file) ?? file.name ?? (file.source.type === "uri" ? file.source.uri : "directory")
+      }`,
+      file.description === undefined ? undefined : `Description: ${file.description}`,
+      file.data.length === 0 ? undefined : "",
+      file.data.length === 0 ? undefined : base64Text(file.data),
+    ]
+      .filter((line): line is string => line !== undefined)
+      .join("\n")
+  }`,
   metadata: {
     attachment: {
       source: file.source,
@@ -91,8 +97,9 @@ const userAttachmentContent = (files: readonly FileAttachment[]) => {
 
   const seen = new Map<string, Set<string>>()
   return files.flatMap((file) => {
-    if (!imageMimes.has(file.mime) || file.source.type !== "inline" || !file.mention?.text)
+    if (!imageMimes.has(file.mime) || file.source.type !== "inline" || !file.mention?.text) {
       return attachmentContent(file)
+    }
     const metadata = JSON.stringify([file.mime, file.name ?? null, file.description ?? null, file.mention.text])
     const payloads = seen.get(metadata) ?? new Set<string>()
     if (payloads.has(file.data)) return []
@@ -132,10 +139,9 @@ const toolResult = (tool: SessionMessage.AssistantTool, providerMetadata: Provid
     return ToolResultPart.make({
       id: tool.id,
       name: tool.name,
-      result:
-        single?.type === "text"
-          ? { type: "text" as const, value: single.text }
-          : { type: "content" as const, value: content },
+      result: single?.type === "text"
+        ? { type: "text" as const, value: single.text }
+        : { type: "content" as const, value: content },
       providerExecuted: tool.executed,
       providerMetadata,
     })
@@ -160,7 +166,7 @@ const assistant = (message: SessionMessage.Assistant, model: Model.Ref, provider
     (item) => item.type === "reasoning" && item.time !== undefined && item.time.completed === undefined,
   )
   const content = message.content.flatMap((item): ContentPart[] => {
-    if (item.type === "text")
+    if (item.type === "text") {
       return [
         {
           type: "text",
@@ -170,25 +176,26 @@ const assistant = (message: SessionMessage.Assistant, model: Model.Ref, provider
           providerMetadata: reuseProviderMetadata ? providerMetadata(providerMetadataKey, item.native) : undefined,
         },
       ]
+    }
     // Let the destination adapter handle readable reasoning after a model/provider switch.
-    if (item.type === "reasoning")
+    if (item.type === "reasoning") {
       return reuseProviderMetadata && !reasoningInterrupted
         ? [
-            {
-              type: "reasoning",
-              text: item.text,
-              providerMetadata: providerMetadata(providerMetadataKey, item.native),
-            },
-          ]
+          {
+            type: "reasoning",
+            text: item.text,
+            providerMetadata: providerMetadata(providerMetadataKey, item.native),
+          },
+        ]
         : item.text.length > 0
-          ? [{ type: message.error === undefined && !reasoningInterrupted ? "reasoning" : "text", text: item.text }]
-          : []
+        ? [{ type: message.error === undefined && !reasoningInterrupted ? "reasoning" : "text", text: item.text }]
+        : []
+    }
     // Call-side metadata is model-scoped proof of generation (Gemini thought
     // signatures, OpenAI encrypted reasoning): only the producing model may
     // replay it.
-    const reuseToolProviderMetadata =
-      reuseProviderMetadata ||
-      (sameModel && item.executed === true && (item.state.status === "completed" || item.state.status === "error"))
+    const reuseToolProviderMetadata = reuseProviderMetadata
+      || (sameModel && item.executed === true && (item.state.status === "completed" || item.state.status === "error"))
     const call = toolCall(
       item,
       reuseToolProviderMetadata ? providerMetadata(providerMetadataKey, item.native) : undefined,
@@ -208,7 +215,7 @@ const assistant = (message: SessionMessage.Assistant, model: Model.Ref, provider
   const results = message.content
     .filter((item): item is SessionMessage.AssistantTool => item.type === "tool" && item.executed !== true)
     .map((item) =>
-      toolResult(item, reuseProviderMetadata ? providerMetadata(providerMetadataKey, item.native) : undefined),
+      toolResult(item, reuseProviderMetadata ? providerMetadata(providerMetadataKey, item.native) : undefined)
     )
     .filter((message) => message !== undefined)
     .map(Message.tool)
@@ -284,7 +291,9 @@ function toLLMMessage(message: SessionMessage.Info, model: Model.Ref, providerMe
         Message.make({
           id: message.id,
           role: "user",
-          content: `The following shell command was executed by the user:\n\nCommand:\n${message.command}\n\nOutput:\n${message.output?.output ?? ""}`,
+          content: `The following shell command was executed by the user:\n\nCommand:\n${message.command}\n\nOutput:\n${
+            message.output?.output ?? ""
+          }`,
           metadata: message.metadata,
         }),
       ]
@@ -322,17 +331,17 @@ export const toLLMMessages = (
 ) => messages.flatMap((message) => toLLMMessage(message, model, providerMetadataKey))
 
 module platform {
-// The platform code of to-llm-message.vibe: file URLs and Buffer decoding, which a .vibe file does not use (EK4402).
+  // The platform code of to-llm-message.vibe: file URLs and Buffer decoding, which a .vibe file does not use (EK4402).
 
-import url from "url"
+  import url from "url"
 
-/** @throws {TypeError} when `target` is not an absolute `file:` URL for this platform. */
-export function fileURLToPath(target: URL): string {
-  return url.fileURLToPath(target)
-}
+  /** @throws {TypeError} when `target` is not an absolute `file:` URL for this platform. */
+  export function fileURLToPath(target: URL): string {
+    return url.fileURLToPath(target)
+  }
 
-/** Decodes base64 leniently and reads the bytes as UTF-8 text. @throws {never} */
-export function base64Text(data: string): string {
-  return Buffer.from(data, "base64").toString("utf8")
-}
+  /** Decodes base64 leniently and reads the bytes as UTF-8 text. @throws {never} */
+  export function base64Text(data: string): string {
+    return Buffer.from(data, "base64").toString("utf8")
+  }
 }

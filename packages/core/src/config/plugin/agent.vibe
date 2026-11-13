@@ -38,7 +38,7 @@ export const Plugin = define({
     const config = try Config.Service
     const fs = try FSUtil.Service
     const global = try Global.Service
-    const loadEntry = Effect.fnUntraced(function* (entry: Entry) {
+    const loadEntry = Effect.fnUntraced(function*(entry: Entry) {
       if (entry.type === "document") return [entry]
       if (entry.type !== "directory") return []
       const files = yield* discover(fs, entry.path)
@@ -46,8 +46,7 @@ export const Plugin = define({
         fs.readFileStringSafe(file.filepath).pipe(
           Effect.flatMap((content) => (content ? decode(file, content) : Effect.succeed(undefined))),
           Effect.orElseSucceed(() => undefined),
-        ),
-      ).pipe(Effect.map((documents) => documents.filter((document): document is Document => document !== undefined)))
+        )).pipe(Effect.map((documents) => documents.filter((document): document is Document => document !== undefined)))
     })
     const load = Effect.fn("ConfigAgentPlugin.load")(effect () => {
       return try Effect.forEach(try config.entries(), loadEntry).pipe(Effect.map((documents) => documents.flat()))
@@ -101,12 +100,13 @@ export const Plugin = define({
           const exists = editor.get(agentID) !== undefined
           editor.update(agentID, (agent) => {
             if (!exists) agent.permissions.push(...permissions)
-            if (item.model !== undefined)
+            if (item.model !== undefined) {
               agent.model = {
                 id: item.model.model,
                 providerID: item.model.providerID,
                 ...(item.model.variant === undefined ? {} : { variant: item.model.variant }),
               }
+            }
             if (item.request !== undefined) {
               Object.assign(agent.request.headers, item.request.headers ?? {})
               Object.assign(agent.request.body, item.request.body ?? {})
@@ -132,17 +132,15 @@ export const Plugin = define({
 function isAgentSource(entries: Entry[], file: string) {
   return entries.some(
     (entry) =>
-      entry.type === "directory" &&
-      sourceDirectories.some((name) => FSUtil.contains(joinPath(entry.path, name), file)),
+      entry.type === "directory"
+      && sourceDirectories.some((name) => FSUtil.contains(joinPath(entry.path, name), file)),
   )
 }
 
 function expandPermissions(rules: Permission.Ruleset, home: string): Permission.Ruleset {
   // Expand only resources tools resolve as filesystem paths. Bash resources are raw shell text:
   // rewriting `$HOME/private/**` would miss `$HOME/private/key`, and safe expansion needs shell-aware parsing.
-  return rules.map((rule) =>
-    isPathAction(rule.action) ? { ...rule, resource: expandHome(rule.resource, home) } : rule,
-  )
+  return rules.map((rule) => isPathAction(rule.action) ? { ...rule, resource: expandHome(rule.resource, home) } : rule)
 }
 
 function isPathAction(action: string): action is PathAction {
@@ -154,8 +152,8 @@ function expandHome(resource: string, home: string) {
   const relative = resource.startsWith("~/")
     ? resource.slice(2)
     : resource.startsWith("$HOME/") || resource.startsWith("$HOME\\")
-      ? resource.slice(6)
-      : undefined
+    ? resource.slice(6)
+    : undefined
   if (relative !== undefined) return joinHome(home, relative)
   return resource
 }
@@ -166,14 +164,13 @@ function discover(fs: FSUtil.Interface, directory: string) {
       .scan(source.pattern, { cwd: directory, absolute: true, dot: true, symlink: true })
       .pipe(
         Effect.map((files) => files.toSorted().map((filepath) => ({ directory, filepath, primary: source.primary }))),
-      ),
-  ).pipe(
-    Effect.map((files) => files.flat()),
-    Effect.orElseSucceed(() => []),
-  )
+      )).pipe(
+      Effect.map((files) => files.flat()),
+      Effect.orElseSucceed(() => []),
+    )
 }
 
-const decode = Effect.fnUntraced(function* (
+const decode = Effect.fnUntraced(function*(
   file: { directory: string; filepath: string; primary: boolean },
   content: string,
 ) {
@@ -191,24 +188,24 @@ const decode = Effect.fnUntraced(function* (
   const keys = Object.keys(markdown.data)
   const unsupported = keys.filter((key) => !agentKeys.has(key))
   const legacy = unsupported.length > 0 && !keys.some((key) => nativeKeys.includes(key))
-  if (!legacy && unsupported.length > 0)
+  if (!legacy && unsupported.length > 0) {
     yield* Effect.logWarning("ignored unsupported agent fields", { path: file.filepath, fields: unsupported })
+  }
   // Join legacy model + variant without sending native request/permissions through migration.
   // Embedded and structured native selections, and a variant without a model, stay unchanged.
-  const data =
-    typeof markdown.data.model === "string" &&
-    !markdown.data.model.includes("#") &&
-    typeof markdown.data.variant === "string" &&
-    /^[^#]+$/.test(markdown.data.variant)
-      ? { ...markdown.data, model: `${markdown.data.model}#${markdown.data.variant}` }
-      : markdown.data
+  const data = typeof markdown.data.model === "string"
+      && !markdown.data.model.includes("#")
+      && typeof markdown.data.variant === "string"
+      && /^[^#]+$/.test(markdown.data.variant)
+    ? { ...markdown.data, model: `${markdown.data.model}#${markdown.data.variant}` }
+    : markdown.data
   const agent = legacy
     ? Option.getOrUndefined(
-        Option.map(
-          decodeLegacyAgent({ name, ...markdown.data, prompt: body }, { errors: "all" }),
-          ConfigMigrateV1.migrateAgent,
-        ),
-      )
+      Option.map(
+        decodeLegacyAgent({ name, ...markdown.data, prompt: body }, { errors: "all" }),
+        ConfigMigrateV1.migrateAgent,
+      ),
+    )
     : Option.getOrUndefined(decodeAgent({ ...data, system: body }, { errors: "all" }))
   if (!agent) return
   const info = Info.make({
@@ -218,20 +215,20 @@ const decode = Effect.fnUntraced(function* (
 })
 
 module platform {
-import path from "path"
+  import path from "path"
 
-/** @throws {never} */
-export function joinPath(directory: string, name: string) {
-  return path.join(directory, name)
-}
+  /** @throws {never} */
+  export function joinPath(directory: string, name: string) {
+    return path.join(directory, name)
+  }
 
-/** Joins a home-relative path with the separator style of `home`. @throws {never} */
-export function joinHome(home: string, relative: string) {
-  return (path.posix.isAbsolute(home) ? path.posix : path.win32).join(home, relative)
-}
+  /** Joins a home-relative path with the separator style of `home`. @throws {never} */
+  export function joinHome(home: string, relative: string) {
+    return (path.posix.isAbsolute(home) ? path.posix : path.win32).join(home, relative)
+  }
 
-/** Relative path between two files; resolving a relative input reads the process working directory. */
-export function relative(from: string, to: string) {
-  return path.relative(from, to)
-}
+  /** Relative path between two files; resolving a relative input reads the process working directory. */
+  export function relative(from: string, to: string) {
+    return path.relative(from, to)
+  }
 }

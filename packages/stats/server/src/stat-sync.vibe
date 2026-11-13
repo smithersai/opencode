@@ -62,7 +62,8 @@ const daemon = effect {
 const initialDelay = effect () => {
   const modelStats = try ModelStatRepo
   const lastSynced = try (modelStats
-    .lastSyncedAt((try Effect.orDie(Effect.try({ try: () => syncRange(new Date()), catch: (e) => e }))).periodStart) |> Effect.catchCause(%, () => Effect.succeed(null)))
+    .lastSyncedAt((try Effect.orDie(Effect.try({ try: () => syncRange(new Date()), catch: (e) => e }))).periodStart)
+    |> Effect.catchCause(%, () => Effect.succeed(null)))
   if (!lastSynced) return
   const delayMs = Math.min(SYNC_INTERVAL_MS - (Date.now() - lastSynced.getTime()), SYNC_INTERVAL_MS)
   if (delayMs <= 0) return

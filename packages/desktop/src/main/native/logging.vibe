@@ -74,14 +74,16 @@ module platform {
   }
 
   export function initLogging(fs: FileSystem.FileSystem, path: Path.Path) {
-    return Effect.gen(function* () {
+    return Effect.gen(function*() {
       yield* initRunDirectory(fs, path)
       yield* Effect.sync(() => {
         log.transports.file.maxSize = 5 * 1024 * 1024
         log.transports.file.resolvePathFn = (_vars, message) =>
           path.join(
             run,
-            `${safeLogName(message?.scope ?? (message?.variables?.processType === "renderer" ? "renderer" : "main"))}.log`,
+            `${
+              safeLogName(message?.scope ?? (message?.variables?.processType === "renderer" ? "renderer" : "main"))
+            }.log`,
           )
         log.initialize({ preload: false, spyRendererConsole: true })
         initConsoleTransport()
@@ -90,7 +92,7 @@ module platform {
   }
 
   export function initCrashReporter(fs: FileSystem.FileSystem, path: Path.Path) {
-    return Effect.gen(function* () {
+    return Effect.gen(function*() {
       const dir = path.join(app.getPath("userData"), "Crashpad")
       yield* fs.makeDirectory(dir, { recursive: true })
       yield* Effect.sync(() => {
@@ -106,13 +108,12 @@ module platform {
     const target = path.join(run, "network.netlog")
     netLogPath = target
 
-    return Effect.tryPromise(() =>
-      netLog.startLogging(target, { captureMode: "default", maxFileSize: NET_LOG_SIZE }),
-    ).pipe(Effect.tap(() => scoped("network", Effect.logInfo("net log started", { path: target }))))
+    return Effect.tryPromise(() => netLog.startLogging(target, { captureMode: "default", maxFileSize: NET_LOG_SIZE }))
+      .pipe(Effect.tap(() => scoped("network", Effect.logInfo("net log started", { path: target }))))
   }
 
   export function exportDebugLogsEffect(fs: FileSystem.FileSystem, path: Path.Path) {
-    return Effect.gen(function* () {
+    return Effect.gen(function*() {
       const restartNetLog = netLog.currentlyLogging
 
       if (restartNetLog) {
@@ -123,12 +124,13 @@ module platform {
 
       const output = path.join(app.getPath("downloads"), `opencode-debug-${stamp()}.zip`)
 
-      return yield* Effect.gen(function* () {
+      return yield* Effect.gen(function*() {
         yield* Effect.logInfo("exporting debug logs", { output })
 
         const files = [
           ...(yield* collect(fs, path, root, "desktop")),
-          ...(yield* Effect.forEach(serverLogRoots(path), (dir, i) => collect(fs, path, dir, `server-${i + 1}`))).flat(),
+          ...(yield* Effect.forEach(serverLogRoots(path), (dir, i) => collect(fs, path, dir, `server-${i + 1}`)))
+            .flat(),
           ...(yield* collect(fs, path, app.getPath("crashDumps"), "crashpad")),
         ]
 
@@ -144,8 +146,8 @@ module platform {
         Effect.ensuring(
           restartNetLog
             ? startNetLog(path).pipe(
-                Effect.catch((error) => scoped("network", Effect.logWarning("failed to restart net log", { error }))),
-              )
+              Effect.catch((error) => scoped("network", Effect.logWarning("failed to restart net log", { error }))),
+            )
             : Effect.void,
         ),
       )
@@ -171,14 +173,14 @@ module platform {
   }
 
   export function cleanup(fs: FileSystem.FileSystem, path: Path.Path) {
-    return Effect.gen(function* () {
+    return Effect.gen(function*() {
       const dir = root || path.dirname(log.transports.file.getFile().path)
       const cutoff = Date.now() - MAX_LOG_AGE_DAYS * 24 * 60 * 60 * 1000
       const entries = yield* fs.readDirectory(dir)
       yield* Effect.forEach(
         entries,
         (entry) =>
-          Effect.gen(function* () {
+          Effect.gen(function*() {
             const file = path.join(dir, entry)
             const info = yield* fs.stat(file)
 
@@ -219,13 +221,13 @@ module platform {
   type Entry = { name: string; path: string; offset: number } | { name: string; data: Uint8Array }
 
   function collect(fs: FileSystem.FileSystem, path: Path.Path, dir: string, prefix: string) {
-    return Effect.gen(function* () {
+    return Effect.gen(function*() {
       if (!(yield* fs.exists(dir).pipe(Effect.orElseSucceed(() => false)))) return []
       const cutoff = Date.now() - EXPORT_WINDOW
       const entries = yield* fs.readDirectory(dir, { recursive: true })
 
       return (yield* Effect.forEach(entries, (entry) =>
-        Effect.gen(function* () {
+        Effect.gen(function*() {
           const file = path.join(dir, entry)
           const info = yield* fs.stat(file)
 
@@ -239,25 +241,23 @@ module platform {
           const offset = Math.max(0, Number(info.size) - MAX_EXPORT_FILE_SIZE)
 
           return { name: path.join(prefix, entry).replace(/\\/g, "/"), path: file, offset }
-        }),
-      )).filter((entry) => entry !== null)
+        }))).filter((entry) => entry !== null)
     })
   }
 
   function writeZip(fs: FileSystem.FileSystem, output: string, entries: Entry[]) {
-    return Effect.gen(function* () {
+    return Effect.gen(function*() {
       const { BlobReader, BlobWriter, ZipWriter } = yield* Effect.promise(() => import("@zip.js/zip.js"))
       const writer = new ZipWriter(new BlobWriter("application/zip"))
       yield* Effect.forEach(
         entries,
         (entry) =>
-          Effect.gen(function* () {
-            const data =
-              "data" in entry
-                ? entry.data
-                : entry.offset === 0
-                  ? yield* fs.readFile(entry.path)
-                  : Buffer.concat(yield* Stream.runCollect(fs.stream(entry.path, { offset: entry.offset })))
+          Effect.gen(function*() {
+            const data = "data" in entry
+              ? entry.data
+              : entry.offset === 0
+              ? yield* fs.readFile(entry.path)
+              : Buffer.concat(yield* Stream.runCollect(fs.stream(entry.path, { offset: entry.offset })))
 
             yield* Effect.tryPromise(() => writer.add(entry.name, new BlobReader(new Blob([new Uint8Array(data)]))))
           }),
@@ -318,7 +318,7 @@ export class Service extends Context.Service<Service, Interface>()("opencode/des
 
 const serviceLayer = Layer.effect(
   Service,
-  Effect.gen(function* () {
+  Effect.gen(function*() {
     const fs = yield* FileSystem.FileSystem
     const path = yield* Path.Path
     yield* initLogging(fs, path).pipe(Effect.orDie)

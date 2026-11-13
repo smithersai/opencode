@@ -36,117 +36,122 @@ export function createLocalProviderPlugin<Discovered>(input: {
   const suffix = input.stripPathSuffix ?? /\/v1$/
 
   return function make(origin?: string, interval: Duration.Input = "30 seconds") {
-    return define({
-      id: input.id,
-      effect: effect (ctx) => {
-        const http = HttpClient.filterStatusOk(try HttpClient.HttpClient)
-        const config = try Config.Service
-        const environment = try Effect.serviceOption(Environment.Service)
-        const location = try Effect.serviceOption(Location.Service)
-        const defaultOrigin =
-          origin ??
-          (shellParserWasm.bash === "" ||
-          (Option.isSome(location) && location.value.workspaceID !== undefined) ||
-          (Option.isSome(environment) && environment.value.spawner === EnvironmentUnavailable.spawner)
-            ? undefined
-            : input.origin)
-        const source = { current: configured(try config.entries(), input.providerID, defaultOrigin, suffix) }
-        const loaded = { models: [] as readonly Discovered[], hash: "[]" }
+    return define(
+      {
+        id: input.id,
+        effect: effect (ctx) => {
+          const http = HttpClient.filterStatusOk(try HttpClient.HttpClient)
+          const config = try Config.Service
+          const environment = try Effect.serviceOption(Environment.Service)
+          const location = try Effect.serviceOption(Location.Service)
+          const defaultOrigin = origin
+            ?? (shellParserWasm.bash === ""
+                || (Option.isSome(location) && location.value.workspaceID !== undefined)
+                || (Option.isSome(environment) && environment.value.spawner === EnvironmentUnavailable.spawner)
+              ? undefined
+              : input.origin)
+          const source = { current: configured(try config.entries(), input.providerID, defaultOrigin, suffix) }
+          const loaded = { models: [] as readonly Discovered[], hash: "[]" }
 
-        try ctx.integration.transform((integrations) => {
-          if (loaded.models.length === 0) return
-          integrations.remove(input.providerID)
-        })
-
-        try ctx.provider.transform((providers) => {
-          if (loaded.models.length === 0) return
-          for (const model of providers.get(input.providerID)?.models.values() ?? []) {
-            providers.models.remove(input.providerID, model.id)
-          }
-          providers.update(input.providerID, (provider) => {
-            provider.name = input.name
-            provider.activation = "enabled"
-            provider.package = "@opencode/ai/providers/openai-compatible"
-            provider.settings = {
-              baseURL: source.current.baseURL,
-              provider: input.providerID,
-              apiKey: source.current.apiKey ?? "",
-            }
-            provider.integrationID = undefined
+          try ctx.integration.transform((integrations) => {
+            if (loaded.models.length === 0) return
+            integrations.remove(input.providerID)
           })
-          for (const item of loaded.models) {
-            const spec = input.model(item)
-            providers.models.update(input.providerID, spec.id, (model) => {
-              model.modelID = Model.ID.make(spec.id)
-              model.name = spec.name || spec.id
-              model.family = spec.family ? Model.Family.make(spec.family) : undefined
-              model.capabilities = {
-                tools: spec.tools ?? false,
-                input: ["text", ...(spec.vision ? ["image"] : [])],
-                output: ["text"],
+
+          try ctx.provider.transform((providers) => {
+            if (loaded.models.length === 0) return
+            for (const model of providers.get(input.providerID)?.models.values() ?? []) {
+              providers.models.remove(input.providerID, model.id)
+            }
+            providers.update(input.providerID, (provider) => {
+              provider.name = input.name
+              provider.activation = "enabled"
+              provider.package = "@opencode/ai/providers/openai-compatible"
+              provider.settings = {
+                baseURL: source.current.baseURL,
+                provider: input.providerID,
+                apiKey: source.current.apiKey ?? "",
               }
-              if (typeof spec.context === "number" && spec.context > 0) model.limit.context = spec.context
+              provider.integrationID = undefined
             })
-          }
-        })
-
-        const discover = fn("LocalProviderPlugin.discover")(effect () => {
-          const current = source.current
-          if (!current.endpoint) return undefined
-          return try discoveryLock.withPermit(
-            effect {
-              const cached = discovery.get(current.root)
-              if (
-                cached &&
-                cached.apiKey === current.apiKey &&
-                Date.now() - cached.checked < Duration.toMillis(interval)
-              )
-                return { source: current, models: cached.models }
-              discovery.set(current.root, {
-                checked: Date.now(),
-                apiKey: current.apiKey,
-                models: cached && cached.apiKey === current.apiKey ? cached.models : undefined,
+            for (const item of loaded.models) {
+              const spec = input.model(item)
+              providers.models.update(input.providerID, spec.id, (model) => {
+                model.modelID = Model.ID.make(spec.id)
+                model.name = spec.name || spec.id
+                model.family = spec.family ? Model.Family.make(spec.family) : undefined
+                model.capabilities = {
+                  tools: spec.tools ?? false,
+                  input: ["text", ...(spec.vision ? ["image"] : [])],
+                  output: ["text"],
+                }
+                if (typeof spec.context === "number" && spec.context > 0) model.limit.context = spec.context
               })
-              const models = try input.discover(createClient(http, current.root, current.apiKey, current.endpoint))
-              discovery.set(current.root, { checked: Date.now(), apiKey: current.apiKey, models })
-              return { source: current, models }
-            },
-          )
-        })
+            }
+          })
 
-        const refresh = fn("LocalProviderPlugin.refresh")(effect () => {
-          const result = try discover()
-          if (!result?.models || result.source !== source.current) return
-          const hash = try Effect.try({ try: () => JSON.stringify(result.models), catch: (cause) => cause }).pipe(Effect.orDie)
-          if (hash === loaded.hash) return
-          loaded.models = result.models
-          loaded.hash = hash
-          try ctx.integration.reload()
-          try ctx.provider.reload()
-        })
+          const discover = fn("LocalProviderPlugin.discover")(effect () => {
+            const current = source.current
+            if (!current.endpoint) return undefined
+            return try discoveryLock.withPermit(
+              effect {
+                const cached = discovery.get(current.root)
+                if (
+                  cached
+                  && cached.apiKey === current.apiKey
+                  && Date.now() - cached.checked < Duration.toMillis(interval)
+                ) {
+                  return { source: current, models: cached.models }
+                }
+                discovery.set(current.root, {
+                  checked: Date.now(),
+                  apiKey: current.apiKey,
+                  models: cached && cached.apiKey === current.apiKey ? cached.models : undefined,
+                })
+                const models = try input.discover(createClient(http, current.root, current.apiKey, current.endpoint))
+                discovery.set(current.root, { checked: Date.now(), apiKey: current.apiKey, models })
+                return { source: current, models }
+              },
+            )
+          })
 
-        // Keep the last successful inventory through transient outages instead of flickering model availability.
-        try refresh().pipe(Effect.ignore, Effect.repeat(Schedule.spaced(interval)), Effect.forkScoped)
-        const reload = fn("LocalProviderPlugin.reload")(effect () => {
-          const next = configured(try config.entries(), input.providerID, defaultOrigin, suffix)
-          if (
-            next.baseURL === source.current.baseURL &&
-            next.apiKey === source.current.apiKey &&
-            next.root === source.current.root
-          )
-            return
-          source.current = next
-          loaded.models = []
-          loaded.hash = "[]"
-          try ctx.integration.reload()
-          try ctx.provider.reload()
-          try refresh().pipe(Effect.ignore)
-        })
-        try ctx.event
-          .subscribe({ types: ["config.updated"] })
-          .pipe(Stream.runForEach(reload), Effect.forkScoped({ startImmediately: true }))
-      },
-    } satisfies PluginInternal.InternalPlugin)
+          const refresh = fn("LocalProviderPlugin.refresh")(effect () => {
+            const result = try discover()
+            if (!result?.models || result.source !== source.current) return
+            const hash = try Effect.try({ try: () => JSON.stringify(result.models), catch: (cause) => cause }).pipe(
+              Effect.orDie,
+            )
+            if (hash === loaded.hash) return
+            loaded.models = result.models
+            loaded.hash = hash
+            try ctx.integration.reload()
+            try ctx.provider.reload()
+          })
+
+          // Keep the last successful inventory through transient outages instead of flickering model availability.
+          try refresh().pipe(Effect.ignore, Effect.repeat(Schedule.spaced(interval)), Effect.forkScoped)
+          const reload = fn("LocalProviderPlugin.reload")(effect () => {
+            const next = configured(try config.entries(), input.providerID, defaultOrigin, suffix)
+            if (
+              next.baseURL === source.current.baseURL
+              && next.apiKey === source.current.apiKey
+              && next.root === source.current.root
+            ) {
+              return
+            }
+            source.current = next
+            loaded.models = []
+            loaded.hash = "[]"
+            try ctx.integration.reload()
+            try ctx.provider.reload()
+            try refresh().pipe(Effect.ignore)
+          })
+          try ctx.event
+            .subscribe({ types: ["config.updated"] })
+            .pipe(Stream.runForEach(reload), Effect.forkScoped({ startImmediately: true }))
+        },
+      } satisfies PluginInternal.InternalPlugin,
+    )
   }
 }
 
@@ -189,8 +194,8 @@ function configured(entries: readonly Entry[], providerID: string, origin: strin
     typeof settings?.baseURL === "string"
       ? settings.baseURL
       : origin !== undefined
-        ? `${origin.replace(/\/+$/, "")}/v1`
-        : ""
+      ? `${origin.replace(/\/+$/, "")}/v1`
+      : ""
   ).replace(/\/+$/, "")
   const apiKey = typeof settings?.apiKey === "string" ? settings.apiKey : undefined
   if (!URL.canParse(baseURL)) return { baseURL, apiKey }

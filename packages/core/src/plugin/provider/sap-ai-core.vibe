@@ -7,34 +7,34 @@ import { environmentValue, setEnvironmentValue } from platform
 
 export const SapAICorePlugin = define({
   id: "opencode.provider.sap.ai.core",
-  effect: Effect.fn(function* (ctx) {
+  effect: Effect.fn(function*(ctx) {
     const npm = yield* Npm.Service
     yield* ctx.aisdk.hook(
       "sdk",
-      Effect.fn(function* (evt) {
+      Effect.fn(function*(evt) {
         if (evt.model.providerID !== Provider.ID.make("sap-ai-core")) return
-        const serviceKey =
-          environmentValue("AICORE_SERVICE_KEY") ??
-          (typeof evt.options.serviceKey === "string" ? evt.options.serviceKey : undefined)
+        const serviceKey = environmentValue("AICORE_SERVICE_KEY")
+          ?? (typeof evt.options.serviceKey === "string" ? evt.options.serviceKey : undefined)
         if (serviceKey && !environmentValue("AICORE_SERVICE_KEY")) setEnvironmentValue("AICORE_SERVICE_KEY", serviceKey)
 
         const factory = yield* loadSDKFactory(npm, evt.package)
-        if (typeof factory !== "function")
+        if (typeof factory !== "function") {
           return yield* Effect.die(new Error(`Package ${evt.package} provider factory export is not callable`))
+        }
 
         evt.sdk = factory(
           serviceKey
             ? {
-                deploymentId: environmentValue("AICORE_DEPLOYMENT_ID"),
-                resourceGroup: environmentValue("AICORE_RESOURCE_GROUP"),
-              }
+              deploymentId: environmentValue("AICORE_DEPLOYMENT_ID"),
+              resourceGroup: environmentValue("AICORE_RESOURCE_GROUP"),
+            }
             : {},
         )
       }),
     )
     yield* ctx.aisdk.hook(
       "language",
-      Effect.fn(function* (evt) {
+      Effect.fn(function*(evt) {
         if (evt.model.providerID !== Provider.ID.make("sap-ai-core")) return
         evt.language = evt.sdk(evt.model.modelID ?? evt.model.id)
       }),
@@ -43,15 +43,15 @@ export const SapAICorePlugin = define({
 })
 
 module platform {
-// The platform code of sap-ai-core.vibe: environment variable access, which a .vibe file does not do (EK4402).
+  // The platform code of sap-ai-core.vibe: environment variable access, which a .vibe file does not do (EK4402).
 
-/** @throws {never} */
-export function environmentValue(key: string): string | undefined {
-  return process.env[key]
-}
+  /** @throws {never} */
+  export function environmentValue(key: string): string | undefined {
+    return process.env[key]
+  }
 
-/** @throws {never} */
-export function setEnvironmentValue(key: string, value: string): void {
-  process.env[key] = value
-}
+  /** @throws {never} */
+  export function setEnvironmentValue(key: string, value: string): void {
+    process.env[key] = value
+  }
 }

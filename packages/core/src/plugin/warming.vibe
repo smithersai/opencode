@@ -18,7 +18,9 @@ export const Plugin = define({
     const config = try Config.Service
     const loadSettings = Effect.fn("WarmingPlugin.loadSettings")(effect () => {
       const entries = try config.entries()
-      const warming = try Effect.try({ try: () => Config.latest(entries, "warming"), catch: (cause) => cause }).pipe(Effect.orDie)
+      const warming = try Effect.try({ try: () => Config.latest(entries, "warming"), catch: (cause) => cause }).pipe(
+        Effect.orDie,
+      )
       if (!warming) return
       const settings = warming === true ? defaults : { ...defaults, ...warming }
       const interval = Duration.toMillis(settings.interval)
@@ -50,7 +52,7 @@ export const Plugin = define({
             // Count the next interval from the end of the response, not from when a long request started.
             const current = sessions.get(event.data.sessionID)
             if (current) current.last = try Clock.currentTimeMillis
-          },
+          }
         ),
         Effect.forkScoped({ startImmediately: true }),
       )
@@ -100,10 +102,10 @@ export const Plugin = define({
         // Once generate exposes request metadata to context hooks, tag warm requests instead of matching the prompt.
         const message = event.messages.at(-1)
         if (
-          message?.role === "user" &&
-          message.content.length === 1 &&
-          message.content[0]?.type === "text" &&
-          (message.content[0].text === active?.settings.prompt || message.content[0].text === settings.prompt)
+          message?.role === "user"
+          && message.content.length === 1
+          && message.content[0]?.type === "text"
+          && (message.content[0].text === active?.settings.prompt || message.content[0].text === settings.prompt)
         ) {
           if (active) active.settings = settings
           return
@@ -125,13 +127,14 @@ export const Plugin = define({
         })
         try loop(event.sessionID).pipe(
           Effect.catchCause((cause) =>
-            Effect.logError("session warming loop failed", { sessionID: event.sessionID, cause }),
+            Effect.logError("session warming loop failed", { sessionID: event.sessionID, cause })
           ),
           Effect.forkIn(scope),
         )
       }
-    try ctx.session.hook("context", (event) =>
-      Effect.sync(() => requesting.add(event.sessionID)).pipe(Effect.andThen(hook(event))),
+    try ctx.session.hook(
+      "context",
+      (event) => Effect.sync(() => requesting.add(event.sessionID)).pipe(Effect.andThen(hook(event))),
     )
     try ctx.session.hook("compaction", hook)
     try ctx.session.hook("generate", hook)

@@ -69,7 +69,7 @@ export const FileSystemHandler = HttpApiBuilder.group(Api, "server.fs", (handler
           try fileWatch
             .watch({
               location: { directory: location.directory, workspaceID: location.workspaceID },
-              file: (try resolvePath(location.directory, ctx.payload.path)),
+              file: try resolvePath(location.directory, ctx.payload.path),
             })
             .pipe(
               Effect.mapError(
@@ -82,7 +82,7 @@ export const FileSystemHandler = HttpApiBuilder.group(Api, "server.fs", (handler
           const location = try Location.Service
           try fileWatch.unwatch({
             location: { directory: location.directory, workspaceID: location.workspaceID },
-            file: (try resolvePath(location.directory, ctx.payload.path)),
+            file: try resolvePath(location.directory, ctx.payload.path),
           })
         })
   })

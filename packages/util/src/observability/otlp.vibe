@@ -17,13 +17,13 @@ export interface App {
 function parseHeaders(value?: string) {
   return value
     ? value.split(",").reduce(
-        (acc, entry) => {
-          const [key, ...value] = entry.split("=")
-          acc[key] = value.join("=")
-          return acc
-        },
-        {} as Record<string, string>,
-      )
+      (acc, entry) => {
+        const [key, ...value] = entry.split("=")
+        acc[key] = value.join("=")
+        return acc
+      },
+      {} as Record<string, string>,
+    )
     : undefined
 }
 
@@ -73,7 +73,7 @@ export function loggers(options: Options | undefined, app: App) {
   ]
 }
 
-export const tracingLayer = Effect.fnUntraced(function* (options: Options | undefined, app: App) {
+export const tracingLayer = Effect.fnUntraced(function*(options: Options | undefined, app: App) {
   if (!options?.endpoint) return Layer.empty
   const [{ layer }, { OTLPTraceExporter }, { BatchSpanProcessor }, { AsyncLocalStorageContextManager }, { context }] =
     yield* Effect.all(

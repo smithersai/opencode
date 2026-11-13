@@ -214,23 +214,23 @@ type StepResult = readonly [ParserState, ReadonlyArray<LLMEvent>]
 // =============================================================================
 // Request Body Construction
 // =============================================================================
-const mediaContent = Effect.fnUntraced(function* (asset: Media.Asset) {
+const mediaContent = Effect.fnUntraced(function*(asset: Media.Asset) {
   if (
-    asset.kind !== "image" &&
-    asset.kind !== "audio" &&
-    asset.kind !== "video" &&
-    asset.mediaType !== "application/pdf" &&
-    asset.mediaType !== "text/csv"
-  )
+    asset.kind !== "image"
+    && asset.kind !== "audio"
+    && asset.kind !== "video"
+    && asset.mediaType !== "application/pdf"
+    && asset.mediaType !== "text/csv"
+  ) {
     return yield* ProviderShared.invalidRequest(
       `Google Interactions does not support ${asset.mediaType} document input`,
     )
+  }
   const type: (typeof MediaContent.Type)["type"] =
     asset.kind === "image" || asset.kind === "audio" || asset.kind === "video" ? asset.kind : "document"
-  const uri =
-    asset.kind === "video" && asset.source.type === "url" && /^https?:\/\//i.test(asset.source.url)
-      ? asset.source.url
-      : MediaInput.refID(asset, ProviderID.make("google"))
+  const uri = asset.kind === "video" && asset.source.type === "url" && /^https?:\/\//i.test(asset.source.url)
+    ? asset.source.url
+    : MediaInput.refID(asset, ProviderID.make("google"))
   if (uri !== undefined) return { type, uri, mime_type: asset.mediaType }
   const inline = yield* ProviderShared.requireInlineMedia("Google Interactions", asset)
   return { type, data: inline.base64, mime_type: inline.mime }
@@ -241,7 +241,7 @@ const signature = (metadata: ProviderMetadata | undefined, key: string) => {
   return typeof value?.interactionSignature === "string" ? value.interactionSignature : undefined
 }
 
-const lowerMessages = Effect.fnUntraced(function* (request: LLMRequest) {
+const lowerMessages = Effect.fnUntraced(function*(request: LLMRequest) {
   const steps: InputStep[] = []
   const key = request.model.route.providerMetadataKey ?? request.model.provider
   for (const message of request.messages) {
@@ -255,14 +255,15 @@ const lowerMessages = Effect.fnUntraced(function* (request: LLMRequest) {
     const append = (content: typeof Content.Type) => {
       const type = message.role === "assistant" ? "model_output" : "user_input"
       const last = steps.at(-1)
-      if (steps.length > start && last?.type === type)
+      if (steps.length > start && last?.type === type) {
         steps[steps.length - 1] = { type, content: [...last.content, content] }
-      else steps.push({ type, content: [content] })
+      } else steps.push({ type, content: [content] })
     }
     for (const part of message.content) {
       if (message.role === "tool") {
-        if (part.type !== "tool-result")
+        if (part.type !== "tool-result") {
           return yield* ProviderShared.unsupportedContent(ADAPTER, "tool", ["tool-result"])
+        }
         steps.push({
           type: "function_result",
           call_id: part.id,
@@ -308,7 +309,7 @@ const lowerMessages = Effect.fnUntraced(function* (request: LLMRequest) {
   return steps
 })
 
-const lowerToolResult = Effect.fnUntraced(function* (part: ToolResultPart) {
+const lowerToolResult = Effect.fnUntraced(function*(part: ToolResultPart) {
   if (part.result.type === "json" && ProviderShared.isRecord(part.result.value)) return part.result.value
   if (part.result.type !== "content") return ProviderShared.toolResultText(part)
 
@@ -318,28 +319,29 @@ const lowerToolResult = Effect.fnUntraced(function* (part: ToolResultPart) {
   })
 })
 
-const fromRequest = Effect.fn("GoogleInteractions.fromRequest")(function* (request: LLMRequest) {
+const fromRequest = Effect.fn("GoogleInteractions.fromRequest")(function*(request: LLMRequest) {
   const options = yield* decodeOptions(request.providerOptions ?? {})
   const flattened = ProviderShared.flattenToolRequest(request)
-  if (flattened.tools.some((tool) => tool.native !== undefined))
+  if (flattened.tools.some((tool) => tool.native !== undefined)) {
     return yield* ProviderShared.invalidRequest("Google Interactions hosted tools are not supported")
+  }
   if (
-    request.generation?.topK !== undefined ||
-    request.generation?.frequencyPenalty !== undefined ||
-    request.generation?.presencePenalty !== undefined
-  )
+    request.generation?.topK !== undefined
+    || request.generation?.frequencyPenalty !== undefined
+    || request.generation?.presencePenalty !== undefined
+  ) {
     return yield* ProviderShared.invalidRequest(
       "Google Interactions does not support topK, frequencyPenalty, or presencePenalty",
     )
-  const choice =
-    request.toolChoice === undefined
-      ? undefined
-      : yield* ProviderShared.matchToolChoice(ADAPTER, request.toolChoice, {
-          auto: () => "auto" as const,
-          none: () => "none" as const,
-          required: () => "any" as const,
-          tool: (name) => ({ allowed_tools: { mode: "any" as const, tools: [name] } }),
-        })
+  }
+  const choice = request.toolChoice === undefined
+    ? undefined
+    : yield* ProviderShared.matchToolChoice(ADAPTER, request.toolChoice, {
+      auto: () => "auto" as const,
+      none: () => "none" as const,
+      required: () => "any" as const,
+      tool: (name) => ({ allowed_tools: { mode: "any" as const, tools: [name] } }),
+    })
   return {
     model: request.model.id,
     input: yield* lowerMessages(flattened.request),
@@ -351,11 +353,11 @@ const fromRequest = Effect.fn("GoogleInteractions.fromRequest")(function* (reque
     service_tier: options.serviceTier,
     tools: flattened.tools.length
       ? flattened.tools.map((tool) => ({
-          type: "function" as const,
-          name: tool.name,
-          description: tool.description,
-          parameters: tool.inputSchema,
-        }))
+        type: "function" as const,
+        name: tool.name,
+        description: tool.description,
+        parameters: tool.inputSchema,
+      }))
       : undefined,
     generation_config: {
       max_output_tokens: request.generation?.maxTokens,
@@ -381,10 +383,9 @@ const mapUsage = (usage: RawUsage | undefined, key: string) => {
   const input = usage.total_input_tokens ?? undefined
   const cached = usage.total_cached_tokens ?? undefined
   const reasoning = usage.total_thought_tokens ?? undefined
-  const output =
-    usage.total_output_tokens === undefined || usage.total_output_tokens === null
-      ? undefined
-      : usage.total_output_tokens + (reasoning ?? 0)
+  const output = usage.total_output_tokens === undefined || usage.total_output_tokens === null
+    ? undefined
+    : usage.total_output_tokens + (reasoning ?? 0)
   return new Usage({
     contextTokens: usage.raw_prompt_token ?? input,
     inputTokens: input,
@@ -397,7 +398,7 @@ const mapUsage = (usage: RawUsage | undefined, key: string) => {
   })
 }
 
-const onStart = Effect.fnUntraced(function* (
+const onStart = Effect.fnUntraced(function*(
   state: ParserState,
   index: number,
   step: OutputStep,
@@ -412,17 +413,19 @@ const onStart = Effect.fnUntraced(function* (
   } else if (step.type === "model_output") {
     lifecycle = Lifecycle.textStart(lifecycle, events, id)
     for (const part of step.content ?? []) {
-      if (part.type !== "text")
+      if (part.type !== "text") {
         return yield* ProviderShared.eventError(
           ADAPTER,
           `Unsupported Interactions output: ${part.type}`,
           encodeJson(step),
         )
+      }
       if (part.text) lifecycle = Lifecycle.textDelta(lifecycle, events, id, part.text)
     }
   } else if (step.type === "function_call") {
-    if (!step.id || !step.name)
+    if (!step.id || !step.name) {
       return yield* ProviderShared.eventError(ADAPTER, "Interactions function call lacks id or name", encodeJson(step))
+    }
     tools = ToolStream.start(tools, index, {
       id: step.id,
       name: step.name,
@@ -430,30 +433,34 @@ const onStart = Effect.fnUntraced(function* (
       input: step.arguments && Object.keys(step.arguments).length ? encodeJson(step.arguments) : "",
     })
     events.push(LLMEvent.toolInputStart({ id: step.id, name: step.name, providerMetadata: metadata(state, step) }))
-  } else
+  } else {
     return yield* ProviderShared.eventError(ADAPTER, `Unsupported Interactions step: ${step.type}`, encodeJson(step))
+  }
   return [{ ...state, lifecycle, tools, steps: { ...state.steps, [index]: step } }, events] satisfies StepResult
 })
 
-const onDelta = Effect.fnUntraced(function* (
+const onDelta = Effect.fnUntraced(function*(
   state: ParserState,
   index: number,
   delta: typeof Delta.Type,
 ) {
   const step = state.steps[index]
-  if (!step)
+  if (!step) {
     return yield* ProviderShared.eventError(ADAPTER, "Interactions delta without step.start", encodeJson(delta))
+  }
   const events: LLMEvent[] = []
-  if (delta.type === "text" && step.type === "model_output")
+  if (delta.type === "text" && step.type === "model_output") {
     return [
       { ...state, lifecycle: Lifecycle.textDelta(state.lifecycle, events, String(index), delta.text) },
       events,
     ] satisfies StepResult
-  if (delta.type === "thought_summary" && step.type === "thought")
+  }
+  if (delta.type === "thought_summary" && step.type === "thought") {
     return [
       { ...state, lifecycle: Lifecycle.reasoningDelta(state.lifecycle, events, String(index), delta.content.text) },
       events,
     ] satisfies StepResult
+  }
   if (delta.type === "thought_signature") {
     const next = { ...step, signature: delta.signature }
     const tool = state.tools[index]
@@ -484,25 +491,27 @@ const onDelta = Effect.fnUntraced(function* (
   )
 })
 
-const onStop = Effect.fnUntraced(function* (state: ParserState, index: number) {
+const onStop = Effect.fnUntraced(function*(state: ParserState, index: number) {
   const step = state.steps[index]
   if (!step) return yield* ProviderShared.eventError(ADAPTER, "Interactions step.stop without step.start")
   const events: LLMEvent[] = []
-  if (step.type === "thought")
+  if (step.type === "thought") {
     return [
       { ...state, lifecycle: Lifecycle.reasoningEnd(state.lifecycle, events, String(index), metadata(state, step)) },
       events,
     ] satisfies StepResult
-  if (step.type === "model_output")
+  }
+  if (step.type === "model_output") {
     return [
       { ...state, lifecycle: Lifecycle.textEnd(state.lifecycle, events, String(index)) },
       events,
     ] satisfies StepResult
+  }
   const result = yield* ToolStream.finish(ADAPTER, state.tools, index)
   return [{ ...state, tools: result.tools }, result.events ?? []] satisfies StepResult
 })
 
-const step = Effect.fnUntraced(function* (state: ParserState, event: Event) {
+const step = Effect.fnUntraced(function*(state: ParserState, event: Event) {
   switch (event.event_type) {
     case "step.start":
       return yield* onStart(state, event.index, event.step)
@@ -535,22 +544,22 @@ const step = Effect.fnUntraced(function* (state: ParserState, event: Event) {
           }),
         })
       }
-      if (!["completed", "requires_action", "incomplete"].includes(interaction.status))
+      if (!["completed", "requires_action", "incomplete"].includes(interaction.status)) {
         return yield* ProviderShared.eventError(
           ADAPTER,
           `Unexpected terminal Interactions status: ${interaction.status}`,
           encodeJson(event),
         )
+      }
       const pending = yield* ToolStream.finishAll(ADAPTER, state.tools)
       const events = [...pending.events]
       const lifecycle = Lifecycle.finish(state.lifecycle, events, {
         reason: {
-          normalized:
-            interaction.status === "requires_action"
-              ? "tool-calls"
-              : interaction.status === "incomplete"
-                ? "length"
-                : "stop",
+          normalized: interaction.status === "requires_action"
+            ? "tool-calls"
+            : interaction.status === "incomplete"
+            ? "length"
+            : "stop",
           raw: interaction.status,
         },
         usage: mapUsage(interaction.usage, state.metadataKey),
@@ -584,8 +593,8 @@ export const protocol = Protocol.make({
       state.completed
         ? Effect.succeed([])
         : Effect.fail(
-            ProviderShared.eventError(ADAPTER, "Google Interactions stream ended before interaction.completed"),
-          ),
+          ProviderShared.eventError(ADAPTER, "Google Interactions stream ended before interaction.completed"),
+        ),
   },
 })
 

@@ -242,12 +242,14 @@ export const queued = <Request extends MediaRequest, Response, Token>(
   ) =>
     try withSpan(
       effect {
-        const token = decodeToken(raw) catch effect (cause) => { throw new AIError({
-                reason: new InvalidRequestError({
-                  message: `${protocol.id} cannot resume a generation from this token`,
-                  cause,
-                }),
-              }) }
+        const token = decodeToken(raw) catch effect (cause) => {
+          throw new AIError({
+            reason: new InvalidRequestError({
+              message: `${protocol.id} cannot resume a generation from this token`,
+              cause,
+            }),
+          })
+        }
         const route = generationRoute(token, transport.http(model), execute)
         return new Generation(route, encodeToken(token), try route.status)
       },
@@ -377,10 +379,12 @@ const makeTransport = <Request extends MediaRequest>(
           const headers = Headers.fromInput(http?.headers)
           const prepared = protocol.prepare === undefined
             ? request
-            : try protocol.prepare(request, (path, body) =>
-              send({ method: "POST", url: baseURL(path), headers, request, body }, execute)
-              |> Effect.map(%, (sent) =>
-                sent.response))
+            : try protocol.prepare(
+              request,
+              (path, body) =>
+                send({ method: "POST", url: baseURL(path), headers, request, body }, execute)
+                |> Effect.map(%, (sent) => sent.response),
+            )
           // Sanitize after merging so model-level overlays are covered; the model value is restored, not sanitized.
           const resolved: Request = {
             ...sanitizeSurrogates({ ...prepared, http, providerOptions }),
@@ -389,7 +393,12 @@ const makeTransport = <Request extends MediaRequest>(
           const body = try protocol.from(resolved)
           const url = withQuery(
             withQuery(
-              try Effect.orDie(Effect.try({ try: () => Endpoint.render(input.endpoint, { request: resolved, body }), catch: (e) => e })),
+              try Effect.orDie(
+                Effect.try({
+                  try: () => Endpoint.render(input.endpoint, { request: resolved, body }),
+                  catch: (e) => e,
+                }),
+              ),
               body.type === "multipart" ? undefined : body.query,
             ),
             http?.query,

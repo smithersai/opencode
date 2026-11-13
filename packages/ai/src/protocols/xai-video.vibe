@@ -178,10 +178,13 @@ const decodeResult = effect (
       const duration = decoded.video?.duration ?? undefined
       return new VideoResponse({
         videos: [
-          try Effect.orDie(Effect.try({ try: () => Media.url(url, {
-            mediaType: "video/mp4",
-            info: duration === undefined ? undefined : { durationSeconds: duration },
-          }), catch: (e) => e })),
+          try Effect.orDie(Effect.try({
+            try: () => Media.url(url, {
+              mediaType: "video/mp4",
+              info: duration === undefined ? undefined : { durationSeconds: duration },
+            }),
+            catch: (e) => e,
+          })),
         ],
         providerMetadata: {
           xai: {

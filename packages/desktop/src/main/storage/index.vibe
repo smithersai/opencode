@@ -12,7 +12,9 @@ import { readEnableState } from "../plugin/enable-state"
 
 export type Interface = ReturnType<typeof make>
 
-export service Service: Interface { static readonly key = "opencode/desktop/DesktopStorage";}
+export service Service: Interface {
+  static readonly key = "opencode/desktop/DesktopStorage"
+}
 
 export const layer = Layer.effect(
   Service,
@@ -22,9 +24,8 @@ export const layer = Layer.effect(
     const userData = try Effect.orDie(Effect.try({ try: () => app.getPath("userData"), catch: (error) => error }))
 
     const storage = try Effect.orDie(Effect.try({
-      try: () => make(path.join(userData, "drafts.sqlite"), (error) =>
-        runFork(logError("storage flush failed", { error })),
-      ),
+      try: () =>
+        make(path.join(userData, "drafts.sqlite"), (error) => runFork(logError("storage flush failed", { error }))),
       catch: (error) => error,
     }))
 
@@ -32,8 +33,7 @@ export const layer = Layer.effect(
       |> tap(%, (result) =>
         result.removed.length === 0
           ? Effect.void
-          : logInfo("imported legacy store files", { imported: result.imported, files: result.removed }),
-      )
+          : logInfo("imported legacy store files", { imported: result.imported, files: result.removed }))
       |> Effect.catch(%, (error) => logWarning("failed to import legacy store files", { error })))
     const wire = (_event: Electron.Event | undefined, win: BrowserWindow) => win.on("session-end", storage.flush)
     try sync(() => {
@@ -47,7 +47,7 @@ export const layer = Layer.effect(
         app.off("browser-window-created", wire)
         BrowserWindow.getAllWindows().forEach((win) => win.off("session-end", storage.flush))
         storage.close()
-      }),
+      })
     )
     try sync(() => setStorageSnapshotProvider((names) => ({
       storage: Object.fromEntries(names.map((name) => [name, storage.state.items(name)])),

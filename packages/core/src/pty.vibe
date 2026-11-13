@@ -93,7 +93,7 @@ export class Service extends Context.Service<Service, Interface>()("@opencode/Pt
 
 const layer = Layer.effect(
   Service,
-  Effect.gen(function* () {
+  Effect.gen(function*() {
     const bus = yield* Bus.Service
     const location = yield* Location.Service
     const shell = yield* ShellSelect.Service
@@ -131,16 +131,16 @@ const layer = Layer.effect(
         for (const session of sessions.values()) teardown(session)
         sessions.clear()
         exitOrder.length = 0
-      }),
+      })
     )
 
-    const requireSession = Effect.fn("Pty.requireSession")(function* (id: ID) {
+    const requireSession = Effect.fn("Pty.requireSession")(function*(id: ID) {
       const session = sessions.get(id)
       if (!session) return yield* new NotFoundError({ ptyID: id })
       return session
     })
 
-    const removeSession = Effect.fnUntraced(function* (id: ID) {
+    const removeSession = Effect.fnUntraced(function*(id: ID) {
       const session = sessions.get(id)
       if (!session) return
       sessions.delete(id)
@@ -151,20 +151,20 @@ const layer = Layer.effect(
       yield* bus.publish(Pty.Event.Deleted, { id: session.info.id })
     })
 
-    const remove = Effect.fn("Pty.remove")(function* (id: ID) {
+    const remove = Effect.fn("Pty.remove")(function*(id: ID) {
       yield* requireSession(id)
       yield* removeSession(id)
     })
 
-    const list = Effect.fn("Pty.list")(function* () {
+    const list = Effect.fn("Pty.list")(function*() {
       return Array.from(sessions.values()).map((session) => session.info)
     })
 
-    const get = Effect.fn("Pty.get")(function* (id: ID) {
+    const get = Effect.fn("Pty.get")(function*(id: ID) {
       return (yield* requireSession(id)).info
     })
 
-    const create = Effect.fn("Pty.create")(function* (input: CreateInput) {
+    const create = Effect.fn("Pty.create")(function*(input: CreateInput) {
       const id = ID.ascending()
       const command = input.command || (yield* shell.resolve({ priority: "config" }))
       const args = ShellSelect.login(command) ? [...(input.args ?? []), "-l"] : [...(input.args ?? [])]
@@ -229,7 +229,7 @@ const layer = Layer.effect(
           notifyEnd(session, { exitCode })
           exitOrder.push(id)
           runFork(
-            Effect.gen(function* () {
+            Effect.gen(function*() {
               yield* Effect.logInfo("session exited", { id, exitCode })
               yield* bus.publish(Pty.Event.Exited, { id, exitCode })
               while (exitOrder.length > EXITED_LIMIT) {
@@ -245,7 +245,7 @@ const layer = Layer.effect(
       return info
     })
 
-    const update = Effect.fn("Pty.update")(function* (id: ID, input: UpdateInput) {
+    const update = Effect.fn("Pty.update")(function*(id: ID, input: UpdateInput) {
       const session = yield* requireSession(id)
       if (input.title) session.info.title = input.title
       if (input.size && session.info.status === "running") session.process.resize(input.size.cols, input.size.rows)
@@ -253,12 +253,12 @@ const layer = Layer.effect(
       return session.info
     })
 
-    const write = Effect.fn("Pty.write")(function* (id: ID, data: string) {
+    const write = Effect.fn("Pty.write")(function*(id: ID, data: string) {
       const session = yield* requireSession(id)
       if (session.info.status === "running") session.process.write(data)
     })
 
-    const attach = Effect.fn("Pty.attach")(function* (id: ID, input: AttachInput) {
+    const attach = Effect.fn("Pty.attach")(function*(id: ID, input: AttachInput) {
       const session = yield* requireSession(id)
       if (session.info.status !== "running") return yield* new ExitedError({ ptyID: id })
       yield* Effect.logInfo("client attached to session", { id, directory: location.directory })
@@ -273,12 +273,11 @@ const layer = Layer.effect(
       session.subscribers.set(token, subscriber)
       const start = session.bufferCursor
       const end = session.cursor
-      const from =
-        input.cursor === -1
-          ? end
-          : input.cursor !== undefined && Number.isSafeInteger(input.cursor)
-            ? Math.max(0, input.cursor)
-            : 0
+      const from = input.cursor === -1
+        ? end
+        : input.cursor !== undefined && Number.isSafeInteger(input.cursor)
+        ? Math.max(0, input.cursor)
+        : 0
       const replay = (() => {
         if (!session.buffer || from >= end) return ""
         const offset = Math.max(0, from - start)
@@ -322,15 +321,15 @@ export const node = makeLocationNode({
 })
 
 module platform {
-// The platform code of pty.vibe: the process environment and platform, which a .vibe file does not read (EK4402).
+  // The platform code of pty.vibe: the process environment and platform, which a .vibe file does not read (EK4402).
 
-/** The process environment variables. @throws {never} */
-export function processEnv(): Record<string, string | undefined> {
-  return process.env
-}
+  /** The process environment variables. @throws {never} */
+  export function processEnv(): Record<string, string | undefined> {
+    return process.env
+  }
 
-/** Reports whether the host is Windows. @throws {never} */
-export function isWindows() {
-  return process.platform === "win32"
-}
+  /** Reports whether the host is Windows. @throws {never} */
+  export function isWindows() {
+    return process.platform === "win32"
+  }
 }

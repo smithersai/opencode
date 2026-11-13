@@ -177,37 +177,38 @@ type TypeOf<C> = C extends Codec ? C["Type"] : void
  * const active = await pairing.screenActive({ signal: ctx.signal })
  * ```
  */
-export type IpcClient<S extends IpcSpec> = {
-  readonly [Name in keyof S["methods"]]: S["methods"][Name] extends { readonly input: Codec }
-    ? (
+export type IpcClient<S extends IpcSpec> =
+  & {
+    readonly [Name in keyof S["methods"]]: S["methods"][Name] extends { readonly input: Codec } ? (
         /** The argument decoded by this method's input schema. */
         input: TypeOf<S["methods"][Name]["input"]>,
         /** Optional per-call cancellation. */
         options?: IpcCallOptions,
       ) => Promise<TypeOf<S["methods"][Name]["output"]>>
-    : (
+      : (
         /** Optional per-call cancellation; no input placeholder is accepted. */
         options?: IpcCallOptions,
       ) => Promise<TypeOf<S["methods"][Name]["output"]>>
-} & {
-  /**
-   * This window's state, as main's `IpcImpl.state` last pushed it. Undefined until the first snapshot arrives and
-   * after the Ipc goes away. An event always wins over an older snapshot. Reactive.
-   */
-  state(): TypeOf<S["state"]> | undefined
-  /**
-   * Listens to one event. The listener is removed with the current owner (for example a `createKeyed` run), else
-   * with the plugin.
-   *
-   * @param name - The event's name in `spec.events`.
-   * @param listener - Receives the decoded event data.
-   * @returns Removes the listener.
-   */
-  on<Name extends keyof NonNullable<S["events"]> & string>(
-    name: Name,
-    listener: (data: TypeOf<NonNullable<S["events"]>[Name]>) => void,
-  ): Cleanup
-}
+  }
+  & {
+    /**
+     * This window's state, as main's `IpcImpl.state` last pushed it. Undefined until the first snapshot arrives and
+     * after the Ipc goes away. An event always wins over an older snapshot. Reactive.
+     */
+    state(): TypeOf<S["state"]> | undefined
+    /**
+     * Listens to one event. The listener is removed with the current owner (for example a `createKeyed` run), else
+     * with the plugin.
+     *
+     * @param name - The event's name in `spec.events`.
+     * @param listener - Receives the decoded event data.
+     * @returns Removes the listener.
+     */
+    on<Name extends keyof NonNullable<S["events"]> & string>(
+      name: Name,
+      listener: (data: TypeOf<NonNullable<S["events"]>[Name]>) => void,
+    ): Cleanup
+  }
 
 /** Options for any Ipc method. A method without an input schema takes these as its only argument. */
 export interface IpcCallOptions {
@@ -236,27 +237,27 @@ export type TokenValue<T> = T extends Ipc<infer S> ? IpcClient<S> : T extends Co
  */
 export type Live<T> =
   | {
-      /** The provider has not started yet. */
-      readonly status: "pending"
-    }
+    /** The provider has not started yet. */
+    readonly status: "pending"
+  }
   | {
-      /** The provider is running. */
-      readonly status: "active"
-      /** The contract, or the Ipc client. */
-      readonly value: T
-      /** Counts activations, starting at 1; each restart brings a new one. */
-      readonly generation: number
-    }
+    /** The provider is running. */
+    readonly status: "active"
+    /** The contract, or the Ipc client. */
+    readonly value: T
+    /** Counts activations, starting at 1; each restart brings a new one. */
+    readonly generation: number
+  }
   | {
-      /** The provider is gone. */
-      readonly status: "inactive"
-      /**
-       * Why the provider is gone.
-       * - `disabled`: turned off, not composed, or not on this platform.
-       * - `failed`: its setup threw.
-       */
-      readonly reason: "disabled" | "failed"
-    }
+    /** The provider is gone. */
+    readonly status: "inactive"
+    /**
+     * Why the provider is gone.
+     * - `disabled`: turned off, not composed, or not on this platform.
+     * - `failed`: its setup threw.
+     */
+    readonly reason: "disabled" | "failed"
+  }
 
 /** Identifies the window an Ipc call came from. Main uses it to scope state and events. */
 export interface Caller {
@@ -271,13 +272,14 @@ export interface Caller {
  * A method receives the decoded input and the `Caller`; its result is encoded with the method's output schema. A
  * throw rejects the window's call.
  */
-export type IpcImpl<S extends IpcSpec> = {
-  readonly [Name in keyof S["methods"]]: (
-    input: TypeOf<S["methods"][Name]["input"]>,
-    caller: Caller,
-  ) => TypeOf<S["methods"][Name]["output"]> | Promise<TypeOf<S["methods"][Name]["output"]>>
-} & (S["state"] extends Codec
-  ? {
+export type IpcImpl<S extends IpcSpec> =
+  & {
+    readonly [Name in keyof S["methods"]]: (
+      input: TypeOf<S["methods"][Name]["input"]>,
+      caller: Caller,
+    ) => TypeOf<S["methods"][Name]["output"]> | Promise<TypeOf<S["methods"][Name]["output"]>>
+  }
+  & (S["state"] extends Codec ? {
       /**
        * The state one window sees. Main reads it when the window subscribes and on every `changed`.
        *
@@ -285,7 +287,7 @@ export type IpcImpl<S extends IpcSpec> = {
        */
       state(window: number): TypeOf<S["state"]>
     }
-  : unknown)
+    : unknown)
 
 /**
  * Returned by `ctx.provide(ipc, impl)` in main. Every method does nothing once the provider is withdrawn.
@@ -569,9 +571,8 @@ export type Mutable<T> = T extends object ? { -readonly [K in keyof T]: Mutable<
 
 /** The stores a definition declares; `{}` when it declares none. */
 export type DeclaredStores<D> = D extends { readonly stores?: infer M }
-  ? M extends Readonly<Record<string, StoreDeclaration>>
-    ? M
-    : {}
+  ? M extends Readonly<Record<string, StoreDeclaration>> ? M
+  : {}
   : {}
 
 /**

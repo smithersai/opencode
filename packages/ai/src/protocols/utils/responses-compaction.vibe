@@ -79,81 +79,101 @@ const Response = Schema.Struct({
   usage: Schema.optional(Schema.StructWithRest(OpenResponses.OpenResponsesUsage, [JsonObject])),
 })
 
-export const make = (
-  adapter: OpenResponses.ProviderAdapter,
-  lowerTools: (request: LLMRequest) => ReadonlyArray<Record<string, unknown>>!AIError,
-): CompactOperation =>
-effect (request, executor, options) =>
-  try withSpan(
-    effect {
-      const route = request.model.route
-      // The standalone compaction endpoint rejects histories containing configuration updates.
-      const native = try OpenResponses.lowerConversation(try Effect.orDie(Effect.try({ try: () => stripEffortUpdates(request), catch: (e) => e })), adapter)
-      const generation = try Effect.orDie(Effect.try({ try: () => OpenResponses.lowerGeneration(request), catch: (e) => e }))
-      const tools = request.tools.length === 0 ? undefined : try lowerTools(request)
-      const body = try (try Effect.orDie(Effect.try({ try: () => ProviderShared.validateWith(Schema.decodeUnknownEffect(Body)), catch: (e) => e })))(
-        mergeJsonRecords(
-          {
-            ...native,
-            service_tier: generation.service_tier,
-            reasoning: generation.reasoning,
-            text: generation.text,
-            include: generation.include,
-            parallel_tool_calls: generation.parallel_tool_calls,
-            tools,
-            prompt_cache_key: generation.prompt_cache_key,
-          },
-          request.http?.body,
-        ),
-      )
-      const url = try Effect.orDie(Effect.try({ try: () => Endpoint.render(route.endpoint, { request, body: native }), catch: (e) => e }))
-      url.pathname = `${url.pathname.replace(/\/$/, "")}/compact`
-      const parts = try HttpTransport.jsonRequestParts({
-        request: LLMRequest.update(request, {
-          http: request.http === undefined ? undefined : new HttpOptions({ ...request.http, body: undefined }),
-        }),
-        body,
-        endpoint: try Effect.orDie(Effect.try({ try: () => Endpoint.path(url.toString()), catch: (e) => e })),
-        auth: route.auth,
-        encodeBody: Schema.encodeSync(Schema.fromJsonString(Body)),
-      })
-      const response = try executor.execute(
-        try Effect.orDie(Effect.try({ try: () => ProviderShared.jsonPost({
-          url: parts.url,
-          body: parts.bodyText,
-          headers: parts.headers,
-          encoding: request.http?.encoding,
-        }), catch: (e) => e })),
-        options?.http,
-      )
-      const text = try RequestExecutor.responseStream(response).pipe(
-        Stream.decodeText(),
-        Stream.runFold(
-          () => "",
-          (text, chunk) => text + chunk,
-        ),
-      )
-      const invalid = (message: string, cause?: unknown) =>
-        new AIError({
-          reason: new InvalidProviderOutputError({
-            route: route.id,
-            message,
-            body: text,
-            cause,
-            http: RequestExecutor.responseHttp(response),
+export const make =
+  (
+    adapter: OpenResponses.ProviderAdapter,
+    lowerTools: (request: LLMRequest) => ReadonlyArray<Record<string, unknown>>!AIError,
+  ): CompactOperation =>
+  effect (request, executor, options) =>
+    try withSpan(
+      effect {
+        const route = request.model.route
+        // The standalone compaction endpoint rejects histories containing configuration updates.
+        const native = try OpenResponses.lowerConversation(
+          try Effect.orDie(Effect.try({ try: () => stripEffortUpdates(request), catch: (e) => e })),
+          adapter,
+        )
+        const generation = try Effect.orDie(
+          Effect.try({ try: () => OpenResponses.lowerGeneration(request), catch: (e) => e }),
+        )
+        const tools = request.tools.length === 0 ? undefined : try lowerTools(request)
+        const body = try (try Effect.orDie(
+          Effect.try({ try: () => ProviderShared.validateWith(Schema.decodeUnknownEffect(Body)), catch: (e) => e }),
+        ))(
+          mergeJsonRecords(
+            {
+              ...native,
+              service_tier: generation.service_tier,
+              reasoning: generation.reasoning,
+              text: generation.text,
+              include: generation.include,
+              parallel_tool_calls: generation.parallel_tool_calls,
+              tools,
+              prompt_cache_key: generation.prompt_cache_key,
+            },
+            request.http?.body,
+          ),
+        )
+        const url = try Effect.orDie(
+          Effect.try({ try: () => Endpoint.render(route.endpoint, { request, body: native }), catch: (e) => e }),
+        )
+        url.pathname = `${url.pathname.replace(/\/$/, "")}/compact`
+        const parts = try HttpTransport.jsonRequestParts({
+          request: LLMRequest.update(request, {
+            http: request.http === undefined ? undefined : new HttpOptions({ ...request.http, body: undefined }),
           }),
+          body,
+          endpoint: try Effect.orDie(Effect.try({ try: () => Endpoint.path(url.toString()), catch: (e) => e })),
+          auth: route.auth,
+          encodeBody: Schema.encodeSync(Schema.fromJsonString(Body)),
         })
-      const result = Schema.decodeUnknownEffect(Schema.fromJsonString(Response))(text) catch effect (cause) => { throw invalid("Invalid compaction response", cause) }
-      if (!result.output.some((item) => item.type === "compaction")) {
-        throw invalid("Compaction response did not contain a checkpoint")
-      }
-      return new CompactionResponse({
-        replacement: result.output.map((item) => toMessage(item, request.model)),
-        usage: try Effect.orDie(Effect.try({ try: () => OpenResponses.mapUsage(result.usage, OpenResponses.metadataKey(request.model)), catch: (e) => e })),
-      })
-    },
-    "ResponsesCompaction.execute",
-  )
+        const response = try executor.execute(
+          try Effect.orDie(Effect.try({
+            try: () => ProviderShared.jsonPost({
+              url: parts.url,
+              body: parts.bodyText,
+              headers: parts.headers,
+              encoding: request.http?.encoding,
+            }),
+            catch: (e) => e,
+          })),
+          options?.http,
+        )
+        const text = try RequestExecutor.responseStream(response).pipe(
+          Stream.decodeText(),
+          Stream.runFold(
+            () => "",
+            (text, chunk) => text + chunk,
+          ),
+        )
+        const invalid = (message: string, cause?: unknown) =>
+          new AIError({
+            reason: new InvalidProviderOutputError({
+              route: route.id,
+              message,
+              body: text,
+              cause,
+              http: RequestExecutor.responseHttp(response),
+            }),
+          })
+        const result = Schema.decodeUnknownEffect(Schema.fromJsonString(Response))(text) catch effect (cause) => {
+          throw invalid("Invalid compaction response", cause)
+        }
+        if (!result.output.some((item) => item.type === "compaction")) {
+          throw invalid("Compaction response did not contain a checkpoint")
+        }
+        return new CompactionResponse({
+          replacement: result.output.map((item) => toMessage(item, request.model)),
+          usage: try Effect.orDie(
+            Effect.try({
+              try: () => OpenResponses.mapUsage(result.usage, OpenResponses.metadataKey(request.model)),
+              catch: (e) => e,
+            }),
+          ),
+        })
+      },
+      "ResponsesCompaction.execute",
+    )
 
 function toMessage(item: (typeof Response.Type.output)[number], model: LLMRequest["model"]): Message {
   if (item.type === "compaction") {

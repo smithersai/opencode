@@ -11,7 +11,9 @@ export interface Interface {
   readonly clear: (sessionID: SessionSchema.ID) => void!!
 }
 
-export service Service: Interface { static readonly key = "@opencode/SessionEnvironment";}
+export service Service: Interface {
+  static readonly key = "@opencode/SessionEnvironment"
+}
 
 const layer = Layer.sync(Service, () => {
   const environments = new Map<SessionSchema.ID, Variables>()

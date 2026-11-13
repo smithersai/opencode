@@ -23,7 +23,7 @@ export const windowRecovery = effect {
       if (action === "export-logs") {
         const sampling = sampler.stopAndFlush()
         await runPromise(logging.exportDebug).catch((error) =>
-          runFork(Effect.logError("failed to export debug logs", { error })),
+          runFork(Effect.logError("failed to export debug logs", { error }))
         )
 
         if (wait && sampling) sampler.start()
@@ -54,15 +54,15 @@ export const windowRecovery = effect {
         while (!win.isDestroyed()) {
           const actions: { id: RecoveryAction; label: string }[] = wait
             ? [
-                { id: "relaunch", label: nativeT("desktop.recovery.action.relaunch") },
-                { id: "export-logs", label: nativeT("desktop.recovery.action.exportLogs") },
-                { id: "keep-waiting", label: nativeT("desktop.recovery.action.keepWaiting") },
-              ]
+              { id: "relaunch", label: nativeT("desktop.recovery.action.relaunch") },
+              { id: "export-logs", label: nativeT("desktop.recovery.action.exportLogs") },
+              { id: "keep-waiting", label: nativeT("desktop.recovery.action.keepWaiting") },
+            ]
             : [
-                { id: "relaunch", label: nativeT("desktop.recovery.action.relaunch") },
-                { id: "export-logs", label: nativeT("desktop.recovery.action.exportLogs") },
-                { id: "quit", label: nativeT("desktop.recovery.action.quit") },
-              ]
+              { id: "relaunch", label: nativeT("desktop.recovery.action.relaunch") },
+              { id: "export-logs", label: nativeT("desktop.recovery.action.exportLogs") },
+              { id: "quit", label: nativeT("desktop.recovery.action.quit") },
+            ]
 
           const result = await dialog.showMessageBox(win, {
             type: "warning",

@@ -131,7 +131,13 @@ const fromUpscaleRequest = effect (request: UpscaleRequest) =>
   try withSpan(
     effect {
       if ((request.images?.length ?? 0) === 0) {
-        throw try Effect.orDie(Effect.try({ try: () => ProviderShared.invalidRequest(`${upscaleRoute.name} upscale requires the source image in images`), catch: (e) => e }))
+        throw try Effect.orDie(
+          Effect.try({
+            try: () =>
+              ProviderShared.invalidRequest(`${upscaleRoute.name} upscale requires the source image in images`),
+            catch: (e) => e,
+          }),
+        )
       }
       return try form(
         upscaleRoute,

@@ -77,14 +77,15 @@ function applyUsage(db: DatabaseService, sessionID: SessionSchema.ID, value: Usa
 function touch(db: DatabaseService, event: MessageEvent) {
   return effect {
     const query = try Effect.try({
-      try: () => db.update(SessionTable).set({ time_updated: event.created }).where(eq(SessionTable.id, event.data.sessionID)),
+      try: () =>
+        db.update(SessionTable).set({ time_updated: event.created }).where(eq(SessionTable.id, event.data.sessionID)),
       catch: (cause) => cause,
     }).pipe(Effect.orDie)
     return try query.run().pipe(Effect.orDie)
   }
 }
 
-const publishSessionUsage = Effect.fn("SessionProjector.publishUsage")(function* (
+const publishSessionUsage = Effect.fn("SessionProjector.publishUsage")(function*(
   db: DatabaseService,
   bus: Bus.Interface,
   sessionID: SessionSchema.ID,
@@ -115,7 +116,7 @@ const publishSessionUsage = Effect.fn("SessionProjector.publishUsage")(function*
   })
 })
 
-const projectFork = Effect.fn("SessionProjector.projectFork")(function* (
+const projectFork = Effect.fn("SessionProjector.projectFork")(function*(
   db: DatabaseService,
   event: typeof SessionEvent.Forked.Type,
 ) {
@@ -137,8 +138,9 @@ const projectFork = Effect.fn("SessionProjector.projectFork")(function* (
     )
     .get()
     .pipe(Effect.orDie)
-  if (!boundary)
+  if (!boundary) {
     return yield* Effect.die(new Error(`Fork boundary message not found: ${event.data.boundary.messageID}`))
+  }
   const copied = yield* db
     .select({ seq: SessionMessageTable.seq })
     .from(SessionMessageTable)
@@ -189,8 +191,9 @@ const projectFork = Effect.fn("SessionProjector.projectFork")(function* (
     .pipe(Effect.orDie)
   if (!stored) return yield* Effect.die(new SessionAlreadyProjected())
 
-  if (event.data.instructionEntries)
+  if (event.data.instructionEntries) {
     yield* InstructionEntry.initialize(db, event.data.sessionID, event.data.instructionEntries, event.created)
+  }
 
   const forkedID = (seq: number) => SessionMessage.ID.make(`${SessionMessage.ID.fromEvent(event.id)}_${seq}`)
   let cursor = -1
@@ -216,7 +219,7 @@ const projectFork = Effect.fn("SessionProjector.projectFork")(function* (
     if (rows.length === 0) break
 
     const values = yield* Effect.forEach(rows, (row) =>
-      Effect.gen(function* () {
+      Effect.gen(function*() {
         const copy = {
           id: forkedID(row.seq),
           session_id: event.data.sessionID,
@@ -240,8 +243,7 @@ const projectFork = Effect.fn("SessionProjector.projectFork")(function* (
           ...copy,
           data: { ...row.data, metadata: { ...row.data.metadata, keepID: forkedID(kept.seq) } },
         }
-      }),
-    )
+      }))
     yield* db.insert(SessionMessageTable).values(values).run().pipe(Effect.orDie)
     yield* Effect.forEach(
       values,
@@ -257,13 +259,14 @@ const projectFork = Effect.fn("SessionProjector.projectFork")(function* (
     cursor = rows.at(-1)!.seq
   }
   if (copiedSeq !== undefined) yield* Bus.reserveSequence(db, event.data.sessionID, copiedSeq)
-  if (event.data.instructions)
+  if (event.data.instructions) {
     yield* InstructionState.initialize(db, event.data.sessionID, event.durable.seq, event.data.instructions)
+  }
 })
 
 function run(db: DatabaseService, event: MessageEvent) {
-  return Effect.gen(function* () {
-    const updateMessage = Effect.fnUntraced(function* (message: SessionMessage.Info) {
+  return Effect.gen(function*() {
+    const updateMessage = Effect.fnUntraced(function*(message: SessionMessage.Info) {
       const stored = yield* SessionBlob.externalize(db, message)
       const { id: _, type, ...data } = encodeStored(stored)
       const updated = yield* db
@@ -286,7 +289,9 @@ function run(db: DatabaseService, event: MessageEvent) {
         return effect {
           const query = try Effect.try({
             try: () =>
-              db.select({ agent: SessionTable.agent }).from(SessionTable).where(eq(SessionTable.id, event.data.sessionID)),
+              db.select({ agent: SessionTable.agent }).from(SessionTable).where(
+                eq(SessionTable.id, event.data.sessionID),
+              ),
             catch: (cause) => cause,
           }).pipe(Effect.orDie)
           return try query.get().pipe(
@@ -299,7 +304,9 @@ function run(db: DatabaseService, event: MessageEvent) {
         return effect {
           const query = try Effect.try({
             try: () =>
-              db.select({ model: SessionTable.model }).from(SessionTable).where(eq(SessionTable.id, event.data.sessionID)),
+              db.select({ model: SessionTable.model }).from(SessionTable).where(
+                eq(SessionTable.id, event.data.sessionID),
+              ),
             catch: (cause) => cause,
           }).pipe(Effect.orDie)
           return try query.get().pipe(
@@ -328,20 +335,20 @@ function run(db: DatabaseService, event: MessageEvent) {
             Effect.map((row) =>
               row
                 ? {
-                    location: {
-                      directory: AbsolutePath.make(row.directory),
-                      workspaceID: row.workspaceID ?? undefined,
-                    },
-                    projectID: row.projectID,
-                    subpath: row.subpath === null ? undefined : RelativePath.make(row.subpath),
-                  }
-                : undefined,
+                  location: {
+                    directory: AbsolutePath.make(row.directory),
+                    workspaceID: row.workspaceID ?? undefined,
+                  },
+                  projectID: row.projectID,
+                  subpath: row.subpath === null ? undefined : RelativePath.make(row.subpath),
+                }
+                : undefined
             ),
           )
         }
       },
       getCurrentAssistant() {
-        return Effect.gen(function* () {
+        return Effect.gen(function*() {
           // A newer step supersedes stale incomplete rows; never resume an older assistant projection.
           const row = yield* db
             .select()
@@ -359,7 +366,7 @@ function run(db: DatabaseService, event: MessageEvent) {
         })
       },
       getAssistant(messageID) {
-        return Effect.gen(function* () {
+        return Effect.gen(function*() {
           const row = yield* db
             .select()
             .from(SessionMessageTable)
@@ -378,7 +385,7 @@ function run(db: DatabaseService, event: MessageEvent) {
         })
       },
       getShell(shellID) {
-        return Effect.gen(function* () {
+        return Effect.gen(function*() {
           const row = yield* db
             .select()
             .from(SessionMessageTable)
@@ -399,7 +406,7 @@ function run(db: DatabaseService, event: MessageEvent) {
         })
       },
       getCompaction() {
-        return Effect.gen(function* () {
+        return Effect.gen(function*() {
           const row = yield* db
             .select()
             .from(SessionMessageTable)
@@ -431,7 +438,7 @@ function run(db: DatabaseService, event: MessageEvent) {
 const encodeStored = (message: SessionMessage.Info | SessionStored.User) =>
   message.type === "user" ? encodeStoredUser(message) : encodeMessage(message)
 
-const insertMessage = Effect.fnUntraced(function* (
+const insertMessage = Effect.fnUntraced(function*(
   db: DatabaseService,
   event: SessionEvent.DurableEvent,
   message: SessionMessage.Info | SessionStored.User,
@@ -463,16 +470,15 @@ function projectIdle(
     | typeof SessionEvent.Execution.Failed.Type
     | typeof SessionEvent.Execution.Interrupted.Type,
 ) {
-  return Effect.gen(function* () {
+  return Effect.gen(function*() {
     yield* run(db, event)
     if (event.type === SessionEvent.Execution.Interrupted.type && event.data.reason === "shutdown") return
     const time = event.created
-    const outcome =
-      event.type === SessionEvent.Execution.Succeeded.type
-        ? "succeeded"
-        : event.type === SessionEvent.Execution.Failed.type
-          ? "failed"
-          : "interrupted"
+    const outcome = event.type === SessionEvent.Execution.Succeeded.type
+      ? "succeeded"
+      : event.type === SessionEvent.Execution.Failed.type
+      ? "failed"
+      : "interrupted"
     yield* db
       .update(SessionTable)
       .set({
@@ -488,11 +494,11 @@ function projectIdle(
 }
 
 const layer = Layer.effectDiscard(
-  Effect.gen(function* () {
+  Effect.gen(function*() {
     const bus = yield* Bus.Service
     const db = (yield* Database.Service).db
     yield* bus.project(SessionEvent.Created, (event) =>
-      Effect.gen(function* () {
+      Effect.gen(function*() {
         const stored = yield* db
           .insert(SessionTable)
           .values({
@@ -517,10 +523,9 @@ const layer = Layer.effectDiscard(
           .get()
           .pipe(Effect.orDie)
         if (!stored) return yield* Effect.die(new SessionAlreadyProjected())
-      }),
-    )
+      }))
     yield* bus.project(SessionEvent.Moved, (event) =>
-      Effect.gen(function* () {
+      Effect.gen(function*() {
         yield* run(db, event)
         yield* db
           .update(SessionTable)
@@ -534,13 +539,12 @@ const layer = Layer.effectDiscard(
           .where(eq(SessionTable.id, event.data.sessionID))
           .run()
           .pipe(Effect.orDie)
-      }),
-    )
+      }))
     // Sessions whose ownership came from the directory's previous resolution
     // follow its new identity. Location, transcript, instructions, and recency
     // are untouched: the session did not move, its directory got identified.
     yield* bus.project(Worktree.Event.Resolved, (event) =>
-      Effect.gen(function* () {
+      Effect.gen(function*() {
         const candidates = [
           ...new Set(
             [event.data.previous, Project.ID.global, ...(event.data.adopted ?? [])].filter(
@@ -602,16 +606,14 @@ const layer = Layer.effectDiscard(
             },
           { discard: true },
         )
-      }),
-    )
+      }))
     yield* bus.project(SessionEvent.Deleted, (event) =>
-      Effect.gen(function* () {
+      Effect.gen(function*() {
         yield* SessionBlob.releaseSession(db, event.data.sessionID)
         yield* db.delete(SessionTable).where(eq(SessionTable.id, event.data.sessionID)).run().pipe(Effect.orDie)
-      }),
-    )
+      }))
     yield* bus.project(SessionEvent.AgentSelected, (event) =>
-      Effect.gen(function* () {
+      Effect.gen(function*() {
         yield* run(db, event)
         yield* db
           .update(SessionTable)
@@ -619,10 +621,9 @@ const layer = Layer.effectDiscard(
           .where(eq(SessionTable.id, event.data.sessionID))
           .run()
           .pipe(Effect.orDie)
-      }),
-    )
+      }))
     yield* bus.project(SessionEvent.ModelSelected, (event) =>
-      Effect.gen(function* () {
+      Effect.gen(function*() {
         yield* run(db, event)
         yield* db
           .update(SessionTable)
@@ -630,8 +631,7 @@ const layer = Layer.effectDiscard(
           .where(eq(SessionTable.id, event.data.sessionID))
           .run()
           .pipe(Effect.orDie)
-      }),
-    )
+      }))
     yield* bus.project(SessionEvent.Renamed, (event) =>
       effect {
         const query = try Effect.try({
@@ -643,8 +643,7 @@ const layer = Layer.effectDiscard(
           catch: (cause) => cause,
         }).pipe(Effect.orDie)
         return try query.run().pipe(Effect.orDie)
-      },
-    )
+      })
     yield* bus.project(SessionEvent.MetadataUpdated, (event) =>
       effect {
         const query = try Effect.try({
@@ -656,8 +655,7 @@ const layer = Layer.effectDiscard(
           catch: (cause) => cause,
         }).pipe(Effect.orDie)
         return try query.run().pipe(Effect.orDie)
-      },
-    )
+      })
     yield* bus.project(SessionEvent.Permissions, (event) =>
       effect {
         const query = try Effect.try({
@@ -669,8 +667,7 @@ const layer = Layer.effectDiscard(
           catch: (cause) => cause,
         }).pipe(Effect.orDie)
         return try query.run().pipe(Effect.orDie)
-      },
-    )
+      })
     yield* bus.project(SessionEvent.Viewed, (event) => {
       const idle = event.data.idle
       return effect {
@@ -701,8 +698,7 @@ const layer = Layer.effectDiscard(
           catch: (cause) => cause,
         }).pipe(Effect.orDie)
         return try query.run().pipe(Effect.orDie)
-      },
-    )
+      })
     yield* bus.project(SessionEvent.Unarchived, (event) =>
       effect {
         const query = try Effect.try({
@@ -714,19 +710,18 @@ const layer = Layer.effectDiscard(
           catch: (cause) => cause,
         }).pipe(Effect.orDie)
         return try query.run().pipe(Effect.orDie)
-      },
-    )
+      })
     yield* bus.project(SessionEvent.MessageContentUpdated, (event) => run(db, event))
     yield* bus.project(SessionEvent.UsageRecorded, (event) => applyUsage(db, event.data.sessionID, event.data))
     yield* bus.project(SessionEvent.Forked, (event) => projectFork(db, event))
     yield* bus.project(SessionEvent.InboxDelivered, (event) =>
-      Effect.gen(function* () {
+      Effect.gen(function*() {
         const input = yield* SessionInbox.projectDelivered(db, {
           id: event.data.inboxID,
           sessionID: event.data.sessionID,
         })
         const time = { created: DateTime.makeUnsafe(event.created) }
-        if (input.type === "user")
+        if (input.type === "user") {
           yield* insertMessage(db, event, {
             id: input.id,
             type: "user",
@@ -737,7 +732,8 @@ const layer = Layer.effectDiscard(
             skills: input.payload.skills,
             time,
           })
-        if (input.type === "synthetic")
+        }
+        if (input.type === "synthetic") {
           yield* insertMessage(db, event, {
             id: input.id,
             type: "synthetic",
@@ -746,10 +742,10 @@ const layer = Layer.effectDiscard(
             metadata: input.payload.metadata,
             time,
           })
-      }),
-    )
+        }
+      }))
     yield* bus.project(SessionEvent.InboxEnqueued, (event) =>
-      Effect.gen(function* () {
+      Effect.gen(function*() {
         yield* SessionInbox.projectAdmitted(db, {
           enqueuedSeq: event.durable.seq,
           id: event.data.inboxID,
@@ -763,60 +759,53 @@ const layer = Layer.effectDiscard(
           .where(eq(SessionTable.id, event.data.sessionID))
           .run()
           .pipe(Effect.orDie)
-      }),
-    )
+      }))
     yield* bus.project(SessionEvent.InboxCancelled, (event) =>
       SessionInbox.projectCancelled(db, {
         id: event.data.inboxID,
         sessionID: event.data.sessionID,
-      }),
-    )
+      }))
     yield* bus.project(SessionEvent.InboxDeliveryChanged, (event) =>
       SessionInbox.projectDeliveryChanged(db, {
         id: event.data.inboxID,
         sessionID: event.data.sessionID,
         delivery: event.data.delivery,
-      }),
-    )
+      }))
     yield* bus.project(SessionEvent.Execution.Succeeded, (event) => projectIdle(db, event))
     yield* bus.project(SessionEvent.Execution.Failed, (event) => projectIdle(db, event))
     yield* bus.project(SessionEvent.Execution.Interrupted, (event) => projectIdle(db, event))
     yield* bus.project(SessionEvent.InstructionsUpdated, (event) =>
-      Effect.gen(function* () {
+      Effect.gen(function*() {
         yield* run(db, event)
         yield* InstructionState.apply(db, event.data.sessionID, event.durable.seq, event.data.delta)
-      }),
-    )
+      }))
     yield* bus.project(SessionEvent.Synthetic, (event) => run(db, event))
     yield* bus.project(SessionEvent.Skill.Activated, (event) => run(db, event))
     yield* bus.project(SessionEvent.Shell.Started, (event) => run(db, event))
     yield* bus.project(SessionEvent.Shell.Ended, (event) => run(db, event))
     yield* bus.project(SessionEvent.Step.Started, (event) =>
-      Effect.gen(function* () {
+      Effect.gen(function*() {
         yield* run(db, event)
         yield* touch(db, event)
-      }),
-    )
+      }))
     yield* bus.project(SessionEvent.Step.Streamed, (event) => run(db, event))
     yield* bus.project(SessionEvent.Step.Ended, (event) =>
-      Effect.gen(function* () {
+      Effect.gen(function*() {
         yield* run(db, event)
         yield* applyUsage(db, event.data.sessionID, event.data, event.created)
-      }),
-    )
+      }))
     yield* bus.project(SessionEvent.Step.Failed, (event) =>
-      Effect.gen(function* () {
+      Effect.gen(function*() {
         yield* run(db, event)
-        if (event.data.cost !== undefined && event.data.tokens !== undefined)
+        if (event.data.cost !== undefined && event.data.tokens !== undefined) {
           yield* applyUsage(
             db,
             event.data.sessionID,
             { cost: event.data.cost, tokens: event.data.tokens },
             event.created,
           )
-        else yield* touch(db, event)
-      }),
-    )
+        } else yield* touch(db, event)
+      }))
     yield* bus.project(SessionEvent.Text.Started, (event) => run(db, event))
     yield* bus.project(SessionEvent.Text.Ended, (event) => run(db, event))
     yield* bus.project(SessionEvent.Tool.Input.Started, (event) => run(db, event))
@@ -829,14 +818,13 @@ const layer = Layer.effectDiscard(
     yield* bus.project(SessionEvent.RetryScheduled, (event) => run(db, event))
     yield* bus.project(SessionEvent.Compaction.Started, (event) => run(db, event))
     yield* bus.project(SessionEvent.Compaction.Ended, (event) =>
-      Effect.gen(function* () {
+      Effect.gen(function*() {
         yield* run(db, event)
         yield* InstructionState.advanceEpoch(db, event.data.sessionID, event.durable.seq)
-      }),
-    )
+      }))
     yield* bus.project(SessionEvent.Compaction.Failed, (event) => run(db, event))
     yield* bus.project(SessionEvent.RevertEvent.Staged, (event) =>
-      Effect.gen(function* () {
+      Effect.gen(function*() {
         const revert = event.data.revert
         yield* db
           .update(SessionTable)
@@ -847,8 +835,7 @@ const layer = Layer.effectDiscard(
           .where(eq(SessionTable.id, event.data.sessionID))
           .run()
           .pipe(Effect.orDie)
-      }),
-    )
+      }))
     yield* bus.project(SessionEvent.RevertEvent.Cleared, (event) =>
       effect {
         const query = try Effect.try({
@@ -860,10 +847,9 @@ const layer = Layer.effectDiscard(
           catch: (cause) => cause,
         }).pipe(Effect.orDie)
         return try query.run().pipe(Effect.orDie, Effect.asVoid)
-      },
-    )
+      })
     yield* bus.project(SessionEvent.RevertEvent.Committed, (event) =>
-      Effect.gen(function* () {
+      Effect.gen(function*() {
         const boundary = yield* db
           .select({ seq: SessionMessageTable.seq })
           .from(SessionMessageTable)
@@ -898,15 +884,15 @@ const layer = Layer.effectDiscard(
           .pipe(Effect.orDie)
         yield* InstructionState.rewind(db, event.data.sessionID, boundary.seq)
         yield* SessionBlob.releaseFrom(db, event.data.sessionID, boundary.seq)
-      }),
-    )
+      }))
     yield* bus.subscribe([SessionEvent.Step.Ended, SessionEvent.Step.Failed, SessionEvent.UsageRecorded]).pipe(
       Stream.runForEach((event) => {
         if (
-          event.type === SessionEvent.Step.Failed.type &&
-          (event.data.cost === undefined || event.data.tokens === undefined)
-        )
+          event.type === SessionEvent.Step.Failed.type
+          && (event.data.cost === undefined || event.data.tokens === undefined)
+        ) {
           return Effect.void
+        }
         return publishSessionUsage(db, bus, event.data.sessionID)
       }),
       Effect.forkScoped({ startImmediately: true }),
@@ -917,19 +903,19 @@ const layer = Layer.effectDiscard(
 export const node = makeGlobalNode({ name: "session-projector", layer, deps: [Bus.node, Database.node] })
 
 module platform {
-// The platform code of projector.vibe: host path resolution, which a .vibe file does not import (EK4402).
+  // The platform code of projector.vibe: host path resolution, which a .vibe file does not import (EK4402).
 
-import nodePath from "path"
+  import nodePath from "path"
 
-/** @throws {never} */
-function resolve(...paths: string[]): string {
-  return nodePath.resolve(...paths)
-}
+  /** @throws {never} */
+  function resolve(...paths: string[]): string {
+    return nodePath.resolve(...paths)
+  }
 
-/** @throws {never} */
-function relative(from: string, to: string): string {
-  return nodePath.relative(from, to)
-}
+  /** @throws {never} */
+  function relative(from: string, to: string): string {
+    return nodePath.relative(from, to)
+  }
 
-export const path = { resolve, relative }
+  export const path = { resolve, relative }
 }

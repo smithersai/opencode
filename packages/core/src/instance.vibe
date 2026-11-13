@@ -163,8 +163,9 @@ export function layer(ref: Location.Ref, options: Options = {}): Layer.Layer<Ser
   }).pipe(Effect.orDie)
 
   return Layer.unwrap(
-    Effect.map(replacements, (replacements) =>
-      LayerNode.compile(graph, { replacements, shared: Node.tags.values.global }),
+    Effect.map(
+      replacements,
+      (replacements) => LayerNode.compile(graph, { replacements, shared: Node.tags.values.global }),
     ),
   ).pipe(
     // A missing directory is expected; other instance boot failures remain defects.
@@ -185,16 +186,16 @@ export function layer(ref: Location.Ref, options: Options = {}): Layer.Layer<Ser
         directory: ref.directory,
         workspaceID: ref.workspaceID,
         durationMs: Math.round(now() - startedAt),
-      }),
+      })
     ),
   )
 }
 
 module platform {
-// The platform code of instance.vibe: the host high-resolution clock, which a .vibe file does not read (EK4402).
+  // The platform code of instance.vibe: the host high-resolution clock, which a .vibe file does not read (EK4402).
 
-/** Milliseconds on the host high-resolution clock. @throws {never} */
-export function now() {
-  return performance.now()
-}
+  /** Milliseconds on the host high-resolution clock. @throws {never} */
+  export function now() {
+    return performance.now()
+  }
 }

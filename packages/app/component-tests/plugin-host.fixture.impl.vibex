@@ -68,15 +68,7 @@ type Json = string | number | boolean | null | readonly Json[] | { readonly [key
 export { createComponent, createMemo, createSignal, getOwner, onCleanup, runWithOwner }
 
 module fakes {
-  import type {
-    Appearance,
-    App,
-    Keybinds,
-    Router,
-    Servers,
-    Storage,
-    Workspaces,
-  } from "@opencode/plugin/gui"
+  import type { Appearance, App, Keybinds, Router, Servers, Storage, Workspaces } from "@opencode/plugin/gui"
   import type { BuiltinLayout, BuiltinLocale } from "@opencode/plugin/gui/builtin"
   import type { HostApiFactories } from "../src/runtime/plugin/host"
   import { ui } from "../src/runtime/plugin/ui"
@@ -310,7 +302,7 @@ export function mountPlugins(input: {
 
       return new Set(
         definitions().flatMap((definition) =>
-          pluginEnabled({ id: definition.id, builtin: false }, state) ? [] : [definition.id],
+          pluginEnabled({ id: definition.id, builtin: false }, state) ? [] : [definition.id]
         ),
       )
     })

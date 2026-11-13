@@ -82,7 +82,7 @@ export const configured = (options: Options = {}) =>
 const layer = (options: Options) =>
   Layer.effect(
     Service,
-    Effect.gen(function* () {
+    Effect.gen(function*() {
       const db = (yield* Database.Service).db
       const registry = yield* WorkspaceDriver.RegistryService
       const lifetime = yield* Scope.Scope
@@ -102,7 +102,7 @@ const layer = (options: Options) =>
           Effect.flatMap((query) => query.get().pipe(Effect.orDie)),
         )
 
-      const load = Effect.fn("Workspace.load")(function* (workspaceID: ID) {
+      const load = Effect.fn("Workspace.load")(function*(workspaceID: ID) {
         const row = yield* find(workspaceID)
         if (!row) return yield* new NotFound({ workspaceID })
         return row
@@ -137,7 +137,7 @@ const layer = (options: Options) =>
             withKeyedLock(
               locks,
               workspaceID,
-              Effect.gen(function* () {
+              Effect.gen(function*() {
                 const row = yield* load(workspaceID)
                 if (row.binding) return info(row, row.binding)
                 const driver = yield* registry.get(row.provider)
@@ -151,17 +151,17 @@ const layer = (options: Options) =>
                 Effect.sync(() => {
                   if (attempts.get(workspaceID) === attempt) attempts.delete(workspaceID)
                   Deferred.doneUnsafe(attempt, exit)
-                }),
+                })
               ),
               Effect.exit,
               Effect.asVoid,
             ),
           )
           return Deferred.await(attempt)
-        }),
+        })
       )
 
-      const open = Effect.fn("Workspace.open")(function* (workspaceID: ID) {
+      const open = Effect.fn("Workspace.open")(function*(workspaceID: ID) {
         const existing = connections.get(workspaceID)
         if (existing) return existing
 
@@ -201,7 +201,7 @@ const layer = (options: Options) =>
         return connection
       })
 
-      yield* Effect.gen(function* () {
+      yield* Effect.gen(function*() {
         const now = yield* Clock.currentTimeMillis
         yield* Effect.forEach(
           [...connections.entries()],
@@ -209,7 +209,7 @@ const layer = (options: Options) =>
             withKeyedLock(
               locks,
               workspaceID,
-              Effect.gen(function* () {
+              Effect.gen(function*() {
                 const connection = connections.get(workspaceID)
                 if (connection !== expected || (yield* Ref.get(connection.active)) > 0) return
                 const lastActivity = yield* Ref.get(connection.lastActivity)
@@ -237,7 +237,7 @@ const layer = (options: Options) =>
       }).pipe(Effect.repeat(Schedule.spaced(options.pollInterval ?? Duration.minutes(1))), Effect.forkScoped)
 
       return Service.of({
-        create: Effect.fn("Workspace.create")(function* (input) {
+        create: Effect.fn("Workspace.create")(function*(input) {
           const workspaceID = input.id ?? ID.create()
           const existing = yield* db
             .select({ provider: WorkspaceTable.provider })
@@ -264,16 +264,17 @@ const layer = (options: Options) =>
             .pipe(Effect.orDie)
           if (inserted) return workspaceID
           const row = yield* load(workspaceID).pipe(Effect.orDie)
-          if (row.provider !== input.provider)
+          if (row.provider !== input.provider) {
             return yield* new CreateConflict({
               workspaceID,
               provider: input.provider,
               existingProvider: row.provider,
             })
+          }
           return workspaceID
         }),
         provision,
-        connect: Effect.fn("Workspace.connect")(function* (workspaceID) {
+        connect: Effect.fn("Workspace.connect")(function*(workspaceID) {
           const acquire = Effect.acquireRelease(
             // A live connection implies the binding is already persisted, so skip the provision hop.
             Effect.suspend(() => (connections.has(workspaceID) ? Effect.void : provision(workspaceID))).pipe(
@@ -281,7 +282,7 @@ const layer = (options: Options) =>
                 withKeyedLock(
                   locks,
                   workspaceID,
-                  Effect.gen(function* () {
+                  Effect.gen(function*() {
                     const connection = yield* open(workspaceID)
                     yield* Ref.set(connection.lastActivity, yield* Clock.currentTimeMillis)
                     yield* Ref.update(connection.active, (active) => active + 1)
@@ -294,7 +295,7 @@ const layer = (options: Options) =>
               withKeyedLock(
                 locks,
                 workspaceID,
-                Effect.gen(function* () {
+                Effect.gen(function*() {
                   yield* Ref.update(connection.active, (active) => active - 1)
                   yield* Ref.set(connection.lastActivity, yield* Clock.currentTimeMillis)
                 }),
@@ -309,10 +310,10 @@ const layer = (options: Options) =>
                   method: "spawn",
                   description: `Failed to wake workspace ${workspaceID}`,
                   cause,
-                }),
+                })
               ),
               Effect.flatMap((connection) => connection.environment.spawner.spawn(command)),
-            ),
+            )
           )
           const withFiles = <A, E>(
             path: string,
@@ -335,7 +336,7 @@ const layer = (options: Options) =>
           }
           return { spawner, overrides }
         }),
-        destroy: Effect.fn("Workspace.destroy")(function* (workspaceID) {
+        destroy: Effect.fn("Workspace.destroy")(function*(workspaceID) {
           // Settling the shared attempt cancels its racing provision body and fails
           // waiters with NotFound before teardown commits. Accepted tradeoffs: if the
           // locked teardown below fails, those waiters saw NotFound for a workspace
@@ -347,7 +348,7 @@ const layer = (options: Options) =>
             Deferred.doneUnsafe(attempt, Exit.fail(new NotFound({ workspaceID })))
           }
           return yield* locks.withLock(workspaceID)(
-            Effect.gen(function* () {
+            Effect.gen(function*() {
               const row = yield* find(workspaceID)
               if (!row) return { destroyed: false }
               const connection = connections.get(workspaceID)
@@ -359,8 +360,9 @@ const layer = (options: Options) =>
               // never-provisioned row.
               yield* registry.get(row.provider).pipe(
                 Effect.flatMap((driver) => driver.destroy({ workspaceID, binding: row.binding })),
-                Effect.catchTag("WorkspaceDriver.ProviderNotFound", (error) =>
-                  row.binding ? Effect.fail(error) : Effect.void,
+                Effect.catchTag(
+                  "WorkspaceDriver.ProviderNotFound",
+                  (error) => row.binding ? Effect.fail(error) : Effect.void,
                 ),
               )
               yield* db.delete(WorkspaceTable).where(eq(WorkspaceTable.id, workspaceID)).run().pipe(Effect.orDie)

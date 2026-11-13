@@ -19,11 +19,12 @@ export function make() {
     })
 
   return {
-    open: Effect.fn("BrowserTunnel.open")(function* (target: Browser.TunnelTarget) {
+    open: Effect.fn("BrowserTunnel.open")(function*(target: Browser.TunnelTarget) {
       const { createConnection } = yield* Effect.promise(() => net())
       if (disposed) return yield* Effect.fail(new Error("Browser attachment is closed."))
-      if (sockets.size >= 64)
+      if (sockets.size >= 64) {
         return yield* Effect.fail(new Error("Browser attachment has reached its 64-connection limit."))
+      }
       const socket = yield* Effect.try({
         try: () => createConnection({ ...target, allowHalfOpen: true }),
         catch: (cause) => (cause instanceof Error ? cause : new Error(String(cause))),
@@ -65,7 +66,7 @@ export function make() {
       )
       return id
     }),
-    read: Effect.fn("BrowserTunnel.read")(function* (id: string) {
+    read: Effect.fn("BrowserTunnel.read")(function*(id: string) {
       const entry = sockets.get(id)
       if (!entry) return yield* Effect.fail(new Error("Browser tunnel is closed or unknown."))
       if (entry.reading) return yield* Effect.fail(new Error("Only one read may be pending per browser tunnel."))
@@ -82,8 +83,9 @@ export function make() {
             const data: Buffer = entry.socket.read(size)
             return done(Effect.succeed({ data, eof: false }))
           }
-          if (entry.socket.readableEnded || entry.socket.destroyed)
+          if (entry.socket.readableEnded || entry.socket.destroyed) {
             done(Effect.succeed({ data: new Uint8Array(), eof: true }))
+          }
         }
         const cleanup = () => {
           entry.reading = false
@@ -100,10 +102,11 @@ export function make() {
         return Effect.sync(cleanup)
       })
     }),
-    write: Effect.fn("BrowserTunnel.write")(function* (id: string, data: Uint8Array, end: boolean = false) {
+    write: Effect.fn("BrowserTunnel.write")(function*(id: string, data: Uint8Array, end: boolean = false) {
       const entry = sockets.get(id)
-      if (!entry || entry.socket.destroyed || entry.socket.writableEnded)
+      if (!entry || entry.socket.destroyed || entry.socket.writableEnded) {
         return yield* Effect.fail(new Error("Browser tunnel is not writable."))
+      }
       yield* Effect.callback<void, Error>((resume) => {
         const done = (error?: Error | null) => {
           entry.socket.off("error", failed)

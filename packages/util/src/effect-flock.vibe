@@ -132,7 +132,7 @@ export namespace EffectFlock {
             effect {
               try forceRemove(lockDir)
               throw new LockCompromisedError({ detail })
-            },
+            }
           ),
         )
 
@@ -277,8 +277,9 @@ export namespace EffectFlock {
         const lockfile = Host.join(lockDir, hash + ".lock")
 
         // acquireRelease: acquire is uninterruptible, release is guaranteed
-        const handle = try Effect.acquireRelease(acquireHandle(lockfile, key, { staleMs, timeoutMs }), (handle) =>
-          release(handle),
+        const handle = try Effect.acquireRelease(
+          acquireHandle(lockfile, key, { staleMs, timeoutMs }),
+          (handle) => release(handle),
         )
 
         // Heartbeat fiber — scoped, so it's interrupted before release runs

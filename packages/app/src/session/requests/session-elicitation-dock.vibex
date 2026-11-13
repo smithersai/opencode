@@ -49,7 +49,7 @@ export function SessionElicitationDock(props: {
       props.request.fields.flatMap((field) =>
         (field.type === "number" || field.type === "integer") && field.default !== undefined
           ? [[field.key, String(field.default)]]
-          : [],
+          : []
       ),
     ),
     flag: Object.fromEntries(
@@ -57,7 +57,7 @@ export function SessionElicitationDock(props: {
     ),
     list: Object.fromEntries(
       props.request.fields.flatMap((field) =>
-        field.type === "multiselect" ? [[field.key, [...(field.default ?? [])]]] : [],
+        field.type === "multiselect" ? [[field.key, [...(field.default ?? [])]]] : []
       ),
     ),
   })
@@ -229,9 +229,7 @@ export function SessionElicitationDock(props: {
                                 setValues("list", multi().key, (current = []) =>
                                   checked
                                     ? [...current, option.value]
-                                    : current.filter((value) => value !== option.value),
-                                )
-                              }
+                                    : current.filter((value) => value !== option.value))}
                             >
                               {option.label}
                             </Checkbox>

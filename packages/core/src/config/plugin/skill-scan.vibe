@@ -31,25 +31,27 @@ export const scan = Effect.fn("SkillScan.scan")(effect (root: string) => {
       files.push(skill.path)
       continue
     }
-    if (item.depth === 0)
+    if (item.depth === 0) {
       files.push(
         ...children.filter((child) => child.type === "file" && child.name.endsWith(".md")).map((child) => child.path),
       )
-    if (item.depth < MAX_DEPTH)
+    }
+    if (item.depth < MAX_DEPTH) {
       queue.push(
         ...children
           .filter((child) => child.type === "directory")
           .map((child) => ({ directory: child.path, depth: item.depth + 1 })),
       )
+    }
   }
   return files.toSorted()
 })
 
 module platform {
-import path from "path"
+  import path from "path"
 
-/** @throws {never} */
-export function joinPath(directory: string, name: string) {
-  return path.join(directory, name)
-}
+  /** @throws {never} */
+  export function joinPath(directory: string, name: string) {
+    return path.join(directory, name)
+  }
 }

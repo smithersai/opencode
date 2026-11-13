@@ -105,10 +105,9 @@ function build(id: Model.ID, remote: RemoteModel, baseURL: string, previous?: Mo
     providerID,
     name: remote.name ?? previous?.name ?? remote.id,
     family: previous?.family,
-    compatibility:
-      remote.interleaved === undefined
-        ? previous?.compatibility
-        : (Model.compatibility(remote.interleaved) ?? previous?.compatibility),
+    compatibility: remote.interleaved === undefined
+      ? previous?.compatibility
+      : (Model.compatibility(remote.interleaved) ?? previous?.compatibility),
     package: "@opencode/ai/providers/openai-compatible",
     settings: Provider.mergeOverlay(previous?.settings, { baseURL, provider: providerID }),
     headers: previous?.headers,
@@ -145,18 +144,19 @@ function variants(remote: RemoteModel): Model.Info["variants"] {
   for (const option of remote.reasoning_options ?? []) {
     for (const value of option.values) {
       const effort = value ?? "none"
-      if (!seen.has(effort))
+      if (!seen.has(effort)) {
         seen.set(effort, { id: Model.VariantID.make(effort), settings: { reasoningEffort: effort } })
+      }
     }
   }
   return [...seen.values()]
 }
 
 module platform {
-// The platform code of models.vibe: the host fetch and its timeout signal, which a .vibe file does not read (EK4402).
+  // The platform code of models.vibe: the host fetch and its timeout signal, which a .vibe file does not read (EK4402).
 
-/** Fetches a URL with the given headers, aborting after `timeout` milliseconds. @throws {never} */
-export function request(url: string, headers: RequestInit["headers"], timeout: number): Promise<Response> {
-  return fetch(url, { headers, signal: AbortSignal.timeout(timeout) })
-}
+  /** Fetches a URL with the given headers, aborting after `timeout` milliseconds. @throws {never} */
+  export function request(url: string, headers: RequestInit["headers"], timeout: number): Promise<Response> {
+    return fetch(url, { headers, signal: AbortSignal.timeout(timeout) })
+  }
 }

@@ -28,12 +28,12 @@ export function readError(method: Rpc.Method, error: unknown): never!unknown {
         data === undefined
           ? { type: error.type, message: error.message }
           : { type: error.type, message: error.message, data },
-      ),
+      )
     ),
   )
 }
 
-export const event = Effect.fn("Client.Rpc.event")(effect function <
+export const event = Effect.fn("Client.Rpc.event")(effect function<
   D extends Rpc.Definition,
   Name extends keyof D["events"] & string,
 >(

@@ -90,9 +90,13 @@ const fromRequest = effect (request: Request) =>
         return MediaProtocol.json(mergeJsonRecords({ url }, request.http?.body) ?? {}, try query(request))
       }
       if (request.http?.body !== undefined) {
-        throw try Effect.orDie(Effect.try({ try: () => ProviderShared.invalidRequest(
-          `${route.name} sends inline audio as the raw body, so http.body cannot apply`,
-        ), catch: (e) => e }))
+        throw try Effect.orDie(Effect.try({
+          try: () =>
+            ProviderShared.invalidRequest(
+              `${route.name} sends inline audio as the raw body, so http.body cannot apply`,
+            ),
+          catch: (e) => e,
+        }))
       }
       const audio = try MediaInput.inlineBytes(route.id, request.audio)
       return MediaProtocol.binary(audio, request.audio.mediaType, try query(request))

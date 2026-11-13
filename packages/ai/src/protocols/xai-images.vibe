@@ -60,8 +60,10 @@ const isEdit = (request: Request) => (request.images?.length ?? 0) > 0
 
 const reference = (asset: Media.Asset) =>
   ProviderShared.mediaReference(asset, route.provider, route.name)
-  |> Effect.map(%, (item) =>
-    item.type === "ref" ? { file_id: item.value } : { url: item.value, type: "image_url" as const })
+  |> Effect.map(
+    %,
+    (item) => item.type === "ref" ? { file_id: item.value } : { url: item.value, type: "image_url" as const },
+  )
 
 const fromRequest = effect (request: Request) =>
   try withSpan(
@@ -100,12 +102,15 @@ const decodeResponse = effect (
     effect {
       const output = try decodeDocument(response)
       const decoded = output.value
-      const images = try Effect.forEach(decoded.data, (item, index) =>
-        MediaInput.imageOutput(output.invalid, `${route.name} result ${index}`, item, item.mime_type ?? undefined, {
-          providerMetadata: item.revised_prompt === undefined || item.revised_prompt === null
-            ? undefined
-            : { xai: { revisedPrompt: item.revised_prompt } },
-        }))
+      const images = try Effect.forEach(
+        decoded.data,
+        (item, index) =>
+          MediaInput.imageOutput(output.invalid, `${route.name} result ${index}`, item, item.mime_type ?? undefined, {
+            providerMetadata: item.revised_prompt === undefined || item.revised_prompt === null
+              ? undefined
+              : { xai: { revisedPrompt: item.revised_prompt } },
+          }),
+      )
       if (images.length === 0) {
         return try output.invalid(`${route.name} returned no images`)
       }

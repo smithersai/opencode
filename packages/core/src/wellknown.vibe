@@ -62,7 +62,7 @@ export const Event = {
 
 const requestTimeout = "15 seconds"
 
-export const inspect = Effect.fn("WellKnown.inspect")(function* (origin: string) {
+export const inspect = Effect.fn("WellKnown.inspect")(function*(origin: string) {
   const url = `${origin.replace(/\/+$/, "")}/.well-known/opencode`
   const http = HttpClient.filterStatusOk(yield* HttpClient.HttpClient)
   return yield* http.execute(HttpClientRequest.get(url).pipe(HttpClientRequest.acceptJson)).pipe(
@@ -72,7 +72,7 @@ export const inspect = Effect.fn("WellKnown.inspect")(function* (origin: string)
   )
 })
 
-export const resolve = Effect.fn("WellKnown.resolve")(function* (input: ResolveInput) {
+export const resolve = Effect.fn("WellKnown.resolve")(function*(input: ResolveInput) {
   const manifest = yield* inspect(input.origin)
   return yield* resolveEntry(
     { origin: input.origin, integrationID: Integration.ID.make(input.origin.replace(/\/+$/, "")), manifest },
@@ -80,7 +80,7 @@ export const resolve = Effect.fn("WellKnown.resolve")(function* (input: ResolveI
   )
 })
 
-const resolveEntry = Effect.fnUntraced(function* (entry: Entry, variables: Readonly<Record<string, string>>) {
+const resolveEntry = Effect.fnUntraced(function*(entry: Entry, variables: Readonly<Record<string, string>>) {
   const configs = entry.manifest.config ? [entry.manifest.config] : []
   if (!entry.manifest.remote_config) return configs
 
@@ -110,13 +110,13 @@ const Configs = Schema.Array(Config)
 
 const layer = Layer.effect(
   Service,
-  Effect.gen(function* () {
+  Effect.gen(function*() {
     const http = yield* HttpClient.HttpClient
     const kv = yield* KV.Service
     const bus = yield* Bus.Service
     const cache = yield* Ref.make(new Map<string, Entry>())
     const lock = Semaphore.makeUnsafe(1)
-    const loadEntry = Effect.fn("WellKnown.loadEntry")(function* (origin: string) {
+    const loadEntry = Effect.fn("WellKnown.loadEntry")(function*(origin: string) {
       const manifest = yield* inspect(origin).pipe(
         Effect.provideService(HttpClient.HttpClient, http),
         Effect.tap((manifest) => kv.set(manifestKey(origin), manifest)),
@@ -128,15 +128,15 @@ const layer = Layer.effect(
               Effect.flatMap((cached) =>
                 Schema.is(Manifest)(cached)
                   ? Effect.logWarning("failed to load wellknown manifest", { origin, error }).pipe(Effect.as(cached))
-                  : Effect.fail(error),
+                  : Effect.fail(error)
               ),
-            ),
+            )
         ),
       )
       return { origin, integrationID: Integration.ID.make(origin), manifest }
     })
 
-    const load = Effect.fn("WellKnown.load")(function* () {
+    const load = Effect.fn("WellKnown.load")(function*() {
       const value = yield* kv.get(sourcesKey)
       const origins = Schema.is(Sources)(value) ? value : []
       const current = yield* Ref.get(cache)
@@ -150,7 +150,7 @@ const layer = Layer.effect(
     })
 
     const refresh = Effect.fn("WellKnown.refresh")(
-      function* () {
+      function*() {
         const value = yield* kv.get(sourcesKey)
         const origins = Schema.is(Sources)(value) ? value : []
         if (!origins.length) return false
@@ -174,7 +174,7 @@ const layer = Layer.effect(
       snapshot: () => Array.from(Ref.getUnsafe(cache).values()),
       refresh,
       add: Effect.fn("WellKnown.add")(
-        function* (value) {
+        function*(value) {
           const origin = value.replace(/\/+$/, "")
           const entry = yield* loadEntry(origin)
           if (!entry.manifest.auth) return yield* Effect.fail(new Error(`No authentication method found at ${origin}`))
@@ -188,7 +188,7 @@ const layer = Layer.effect(
         (effect, _value) => lock.withPermit(effect),
       ),
       remove: Effect.fn("WellKnown.remove")(
-        function* (value) {
+        function*(value) {
           const origin = value.replace(/\/+$/, "")
           const sources = yield* kv.get(sourcesKey)
           const origins = Schema.is(Sources)(sources) ? sources : []
@@ -207,12 +207,12 @@ const layer = Layer.effect(
         },
         (effect, _value) => lock.withPermit(effect),
       ),
-      resolve: Effect.fn("WellKnown.resolveEntry")(function* (entry, variables) {
+      resolve: Effect.fn("WellKnown.resolveEntry")(function*(entry, variables) {
         const configs = yield* resolveEntry(entry, variables).pipe(Effect.provideService(HttpClient.HttpClient, http))
         yield* kv.set(configKey(entry.origin), configs)
         return configs
       }),
-      cached: Effect.fn("WellKnown.cached")(function* (origin) {
+      cached: Effect.fn("WellKnown.cached")(function*(origin) {
         const value = yield* kv.get(configKey(origin))
         return Schema.is(Configs)(value) ? [...value] : []
       }),
@@ -223,17 +223,17 @@ const layer = Layer.effect(
 export const node = makeGlobalNode({ service: Service, layer, deps: [httpClient, KV.node, Bus.node] })
 
 module platform {
-// The platform code of wellknown.vibe: the process environment and deep equality, which a .vibe file does not use (EK4402).
+  // The platform code of wellknown.vibe: the process environment and deep equality, which a .vibe file does not use (EK4402).
 
-import { isDeepStrictEqual } from "node:util"
+  import { isDeepStrictEqual } from "node:util"
 
-/** The value of a process environment variable. @throws {never} */
-export function env(name: string): string | undefined {
-  return process.env[name]
-}
+  /** The value of a process environment variable. @throws {never} */
+  export function env(name: string): string | undefined {
+    return process.env[name]
+  }
 
-// A getter or proxy inside a compared value may throw; callers keep such a throw a defect.
-const platformIsDeepStrictEqual = (left: unknown, right: unknown) => isDeepStrictEqual(left, right)
+  // A getter or proxy inside a compared value may throw; callers keep such a throw a defect.
+  const platformIsDeepStrictEqual = (left: unknown, right: unknown) => isDeepStrictEqual(left, right)
 
-export { platformIsDeepStrictEqual as isDeepStrictEqual }
+  export { platformIsDeepStrictEqual as isDeepStrictEqual }
 }

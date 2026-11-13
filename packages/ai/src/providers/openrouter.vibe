@@ -37,11 +37,11 @@ export interface OpenRouterProviderRouting {
 
 export type OpenRouterPlugin =
   | Readonly<{
-      id: "web"
-      max_results?: number
-      search_prompt?: string
-      engine?: OpenString<"native" | "exa">
-    }>
+    id: "web"
+    max_results?: number
+    search_prompt?: string
+    engine?: OpenString<"native" | "exa">
+  }>
   | Readonly<{ id: "file-parser"; max_files?: number; pdf?: { engine?: string } }>
   | Readonly<{ id: "moderation" }>
   | Readonly<{ id: "response-healing" }>
@@ -79,14 +79,18 @@ export interface OpenRouterDecisionOptions {
   readonly user?: string
 }
 
-export type LanguageModelOptions = Omit<RouteDefaultsInput, "providerOptions"> &
-  ProviderAuthOption<"optional"> & {
+export type LanguageModelOptions =
+  & Omit<RouteDefaultsInput, "providerOptions">
+  & ProviderAuthOption<"optional">
+  & {
     readonly baseURL?: string
     readonly providerOptions?: OpenRouterProviderOptionsInput
   }
 
-export type Settings = ProviderPackage.Settings &
-  OpenRouterProviderOptionsInput & {
+export type Settings =
+  & ProviderPackage.Settings
+  & OpenRouterProviderOptionsInput
+  & {
     readonly apiKey?: string
     readonly baseURL?: string
   }
@@ -153,12 +157,11 @@ const bodyOptions = (body: OpenAIChat.OpenAIChatBody, input: unknown, maxTokens:
     Object.entries(openrouter).filter(([key]) => !(key in Options.fields) && key !== "promptCacheKey"),
   )
   const known = decodeOptions(openrouter)
-  const usage =
-    openrouter.usage === undefined || known.usage === true
-      ? { include: true }
-      : known.usage === false
-        ? { include: false }
-        : known.usage
+  const usage = openrouter.usage === undefined || known.usage === true
+    ? { include: true }
+    : known.usage === false
+    ? { include: false }
+    : known.usage
   return {
     ...options,
     ...body,

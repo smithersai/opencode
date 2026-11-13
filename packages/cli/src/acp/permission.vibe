@@ -57,18 +57,18 @@ export const ask = effect function(input: Input) {
   )
   const title = permissionTitle(toolName, toolInput, previews)
   const toolCall = pendingToolCall({
-    toolCallId: (try ((args: Parameters<typeof ACPChild.toolCallID>) =>
-      Effect.try(() =>
-        ACPChild.toolCallID(...args)
-      ).pipe(Effect.orDie))([input.child, input.tool?.id ?? input.event.data.id])),
+    toolCallId:
+      try ((args: Parameters<typeof ACPChild.toolCallID>) =>
+        Effect.try(() => ACPChild.toolCallID(...args)).pipe(Effect.orDie))([
+          input.child,
+          input.tool?.id ?? input.event.data.id,
+        ]),
     toolName,
     state: {
       input: toolInput,
       title: title
         ? (try ((args: Parameters<typeof ACPChild.prefixTitle>) =>
-          Effect.try(() =>
-            ACPChild.prefixTitle(...args)
-          ).pipe(Effect.orDie))([input.child, title]))
+          Effect.try(() => ACPChild.prefixTitle(...args)).pipe(Effect.orDie))([input.child, title]))
         : input.child?.title,
     },
     cwd: input.cwd,
@@ -83,10 +83,9 @@ export const ask = effect function(input: Input) {
       ...(previews.length > 0 ? { content: previews } : {}),
       ...(input.child
         ? {
-          _meta: (try ((args: Parameters<typeof ACPChild.meta>) =>
-            Effect.try(() =>
-              ACPChild.meta(...args)
-            ).pipe(Effect.orDie))([input.child])),
+          _meta:
+            try ((args: Parameters<typeof ACPChild.meta>) =>
+              Effect.try(() => ACPChild.meta(...args)).pipe(Effect.orDie))([input.child]),
         }
         : {}),
     },
@@ -117,14 +116,14 @@ export const withCompletedDiffs = effect function(
         const path = absolutePath(file.file, cwd)
         const newText = file.status === "deleted" ? "" : try Effect.tryPromise(() => readFileText(path))
         if (file.status === "added") return [diff(path, null, newText)]
-        const recorded = (try ((args: Parameters<typeof parsePatch>) =>
-          Effect.try(() => parsePatch(...args)).pipe(Effect.orDie))([file.patch]))[0]
+        const recorded =
+          (try ((args: Parameters<typeof parsePatch>) => Effect.try(() => parsePatch(...args)).pipe(Effect.orDie))([
+            file.patch,
+          ]))[0]
         if (!recorded) {
           return []
         }
-        const oldText = try Effect.try(() =>
-          applyPatch(newText, reversePatch(recorded))
-        )
+        const oldText = try Effect.try(() => applyPatch(newText, reversePatch(recorded)))
         if (oldText !== false) return [diff(path, oldText, newText)]
         // Core trims indentation from patch-tool diffs, so rebuild those from its hunks and keep them if the ranges agree.
         const hunk = hunks.find(

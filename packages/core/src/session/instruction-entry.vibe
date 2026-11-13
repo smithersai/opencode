@@ -22,7 +22,7 @@ export const ValueTooLargeError = InstructionEntry.ValueTooLargeError
 type DatabaseService = Database.Interface["db"]
 const InsertBatchSize = 10
 
-export const snapshot = Effect.fn("InstructionEntry.snapshot")(function* (
+export const snapshot = Effect.fn("InstructionEntry.snapshot")(function*(
   db: DatabaseService,
   sessionID: SessionSchema.ID,
 ) {
@@ -39,14 +39,15 @@ export const snapshot = Effect.fn("InstructionEntry.snapshot")(function* (
     .pipe(Effect.orDie)
 })
 
-export const initialize = Effect.fn("InstructionEntry.initialize")(function* (
+export const initialize = Effect.fn("InstructionEntry.initialize")(function*(
   db: DatabaseService,
   sessionID: SessionSchema.ID,
   entries: Snapshot,
   created: number,
 ) {
-  const batches = Array.from({ length: Math.ceil(entries.length / InsertBatchSize) }, (_, index) =>
-    entries.slice(index * InsertBatchSize, (index + 1) * InsertBatchSize),
+  const batches = Array.from(
+    { length: Math.ceil(entries.length / InsertBatchSize) },
+    (_, index) => entries.slice(index * InsertBatchSize, (index + 1) * InsertBatchSize),
   )
   yield* Effect.forEach(
     batches,
@@ -109,10 +110,10 @@ const source = (entry: Info & { readonly removed: boolean }) =>
 
 const layer = Layer.effect(
   Service,
-  Effect.gen(function* () {
+  Effect.gen(function*() {
     const { db } = yield* Database.Service
 
-    const rows = Effect.fnUntraced(function* (sessionID: SessionSchema.ID, includeRemoved: boolean) {
+    const rows = Effect.fnUntraced(function*(sessionID: SessionSchema.ID, includeRemoved: boolean) {
       return yield* db
         .select({
           key: InstructionEntryTable.key,
@@ -131,22 +132,22 @@ const layer = Layer.effect(
         .pipe(Effect.orDie)
     })
 
-    const list = Effect.fn("InstructionEntry.list")(function* (sessionID: SessionSchema.ID) {
+    const list = Effect.fn("InstructionEntry.list")(function*(sessionID: SessionSchema.ID) {
       return (yield* rows(sessionID, false)).map((row) => ({ key: row.key, value: row.value }))
     })
 
-    const put = Effect.fn("InstructionEntry.put")(function* (input: Parameters<Interface["put"]>[0]) {
+    const put = Effect.fn("InstructionEntry.put")(function*(input: Parameters<Interface["put"]>[0]) {
       const actualBytes = utf8ByteLength(JSON.stringify(input.value))
-      if (actualBytes > MaxValueBytes)
+      if (actualBytes > MaxValueBytes) {
         yield* new ValueTooLargeError({
           actualBytes,
           maxBytes: MaxValueBytes,
           message: `Instruction entry value is ${actualBytes} bytes; the limit is ${MaxValueBytes} bytes`,
         })
-      const changed =
-        input.value === null
-          ? isNotNull(InstructionEntryTable.value)
-          : or(isNull(InstructionEntryTable.value), ne(InstructionEntryTable.value, input.value))
+      }
+      const changed = input.value === null
+        ? isNotNull(InstructionEntryTable.value)
+        : or(isNull(InstructionEntryTable.value), ne(InstructionEntryTable.value, input.value))
       yield* db
         .insert(InstructionEntryTable)
         .values({ session_id: input.sessionID, key: input.key, value: input.value, removed: false })
@@ -159,7 +160,7 @@ const layer = Layer.effect(
         .pipe(Effect.orDie)
     })
 
-    const remove = Effect.fn("InstructionEntry.remove")(function* (input: Parameters<Interface["remove"]>[0]) {
+    const remove = Effect.fn("InstructionEntry.remove")(function*(input: Parameters<Interface["remove"]>[0]) {
       yield* db
         .update(InstructionEntryTable)
         .set({ value: null, removed: true, time_updated: Date.now() })
@@ -174,7 +175,7 @@ const layer = Layer.effect(
         .pipe(Effect.orDie)
     })
 
-    const load = Effect.fn("InstructionEntry.load")(function* (sessionID: SessionSchema.ID) {
+    const load = Effect.fn("InstructionEntry.load")(function*(sessionID: SessionSchema.ID) {
       return Instructions.combine((yield* rows(sessionID, true)).map(source))
     })
 
@@ -185,10 +186,10 @@ const layer = Layer.effect(
 export const node = makeGlobalNode({ service: Service, layer, deps: [Database.node] })
 
 module platform {
-// The platform code of instruction-entry.vibe: Buffer byte counting, which a .vibe file does not use (EK4402).
+  // The platform code of instruction-entry.vibe: Buffer byte counting, which a .vibe file does not use (EK4402).
 
-/** The UTF-8 byte length of `text`. @throws {never} */
-export function utf8ByteLength(text: string): number {
-  return Buffer.byteLength(text, "utf8")
-}
+  /** The UTF-8 byte length of `text`. @throws {never} */
+  export function utf8ByteLength(text: string): number {
+    return Buffer.byteLength(text, "utf8")
+  }
 }

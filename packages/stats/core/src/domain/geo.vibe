@@ -76,11 +76,15 @@ export class GeoStatRepo extends Context.Service<GeoStatRepo, GeoStatRepo.Servic
       ) =>
         try withSpan(
           effect {
-            const scope = try Effect.orDie(Effect.try({ try: () => opts?.model && opts.provider
-              ? and(eq(geoStat.provider, opts.provider), eq(geoStat.model, opts.model))
-              : opts?.model
-              ? eq(geoStat.model, opts.model)
-              : and(eq(geoStat.provider, "all"), eq(geoStat.model, "all")), catch: (e) => e }))
+            const scope = try Effect.orDie(Effect.try({
+              try: () =>
+                opts?.model && opts.provider
+                  ? and(eq(geoStat.provider, opts.provider), eq(geoStat.model, opts.model))
+                  : opts?.model
+                  ? eq(geoStat.model, opts.model)
+                  : and(eq(geoStat.provider, "all"), eq(geoStat.model, "all")),
+              catch: (e) => e,
+            }))
             return try Effect.tryPromise({
               try: () =>
                 db

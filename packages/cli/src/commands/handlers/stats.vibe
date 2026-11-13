@@ -48,13 +48,12 @@ const handler = Effect.fn("cli.stats")(effect function(input: Runtime.Input<type
   }
 
   const server = try ServerConnection.resolve()
-  const client = try ((args: Parameters<typeof OpenCode.make>) =>
-    Effect.try(() => OpenCode.make(...args)).pipe(Effect.orDie))([{
+  const client =
+    try ((args: Parameters<typeof OpenCode.make>) => Effect.try(() => OpenCode.make(...args)).pipe(Effect.orDie))([{
       baseUrl: server.endpoint.url,
-      headers: (try ((args: Parameters<typeof Service.headers>) =>
-        Effect.try(() =>
-          Service.headers(...args)
-        ).pipe(Effect.orDie))([server.endpoint])),
+      headers:
+        try ((args: Parameters<typeof Service.headers>) =>
+          Effect.try(() => Service.headers(...args)).pipe(Effect.orDie))([server.endpoint]),
     }])
   const range = statsRange({ days, year, all: input.all })
   const projectID = project === "."
@@ -84,12 +83,14 @@ const handler = Effect.fn("cli.stats")(effect function(input: Runtime.Input<type
       tools: input.tools || input.full,
       cost: input.cost || input.full,
       limit: input.limit,
-      color: (try ((args: Parameters<typeof outputIsTTY>) =>
-        Effect.try(() => outputIsTTY(...args)).pipe(Effect.orDie))([]))
+      color:
+        (try ((args: Parameters<typeof outputIsTTY>) => Effect.try(() => outputIsTTY(...args)).pipe(Effect.orDie))([]))
         && (try ((args: Parameters<typeof environmentValue>) =>
-            Effect.try(() => environmentValue(...args)).pipe(Effect.orDie))(["NO_COLOR"])) === undefined,
-      width: (try ((args: Parameters<typeof outputColumns>) =>
-        Effect.try(() => outputColumns(...args)).pipe(Effect.orDie))([])) ?? 80,
+          Effect.try(() => environmentValue(...args)).pipe(Effect.orDie))(["NO_COLOR"])) === undefined,
+      width:
+        (try ((args: Parameters<typeof outputColumns>) => Effect.try(() => outputColumns(...args)).pipe(Effect.orDie))(
+          [],
+        )) ?? 80,
     })
   void (try ((args: Parameters<typeof writeOutput>) => Effect.try(() => writeOutput(...args)).pipe(Effect.orDie))([
     output + EOL,

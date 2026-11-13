@@ -63,7 +63,7 @@ export const description = [
 
 export const Plugin = {
   id: "opencode.tool.subagent",
-  effect: Effect.fn("SubagentTool.Plugin")(function* (ctx: Context) {
+  effect: Effect.fn("SubagentTool.Plugin")(function*(ctx: Context) {
     const sessions = yield* Session.Service
     const jobs = yield* Job.Service
     const agents = yield* Agent.Service
@@ -72,7 +72,7 @@ export const Plugin = {
     const models = yield* Model.Service
     const subagents = yield* SubagentJob.Service
 
-    const resolveModel = Effect.fn("SubagentTool.resolveModel")(function* (input: string) {
+    const resolveModel = Effect.fn("SubagentTool.resolveModel")(function*(input: string) {
       const ref = yield* Effect.try({
         try: () => Model.Ref.parse(input),
         catch: () =>
@@ -83,17 +83,21 @@ export const Plugin = {
       const model = (yield* models.available()).find(
         (model) => model.providerID === ref.providerID && model.id === ref.id,
       )
-      if (model === undefined)
-        return yield* new ToolFailure({
-          message: `Model "${ref.providerID}/${ref.id}" is not available. Use the models tool to see what is available.`,
-        })
-      if (ref.variant !== undefined && !model.variants.some((variant) => variant.id === ref.variant))
+      if (model === undefined) {
         return yield* new ToolFailure({
           message:
-            model.variants.length === 0
-              ? `Model "${ref.providerID}/${ref.id}" has no variants. Omit the variant.`
-              : `Variant "${ref.variant}" is not available for "${ref.providerID}/${ref.id}". Available: ${model.variants.map((variant) => variant.id).join(", ")}.`,
+            `Model "${ref.providerID}/${ref.id}" is not available. Use the models tool to see what is available.`,
         })
+      }
+      if (ref.variant !== undefined && !model.variants.some((variant) => variant.id === ref.variant)) {
+        return yield* new ToolFailure({
+          message: model.variants.length === 0
+            ? `Model "${ref.providerID}/${ref.id}" has no variants. Omit the variant.`
+            : `Variant "${ref.variant}" is not available for "${ref.providerID}/${ref.id}". Available: ${
+              model.variants.map((variant) => variant.id).join(", ")
+            }.`,
+        })
+      }
       return ref
     })
 
@@ -106,7 +110,7 @@ export const Plugin = {
           input: Input,
           output: Output,
           execute: (input, context) =>
-            Effect.gen(function* () {
+            Effect.gen(function*() {
               const parent = yield* sessions
                 .get(context.sessionID)
                 .pipe(
@@ -127,14 +131,17 @@ export const Plugin = {
                   )
               }
               const limit = Config.latest(yield* config.entries(), "experimental")?.subagent_depth ?? 1
-              if (depth >= limit)
+              if (depth >= limit) {
                 return yield* new ToolFailure({
-                  message: `Subagent depth limit reached (${limit}). Increase "experimental.subagent_depth" to allow nested subagents.`,
+                  message:
+                    `Subagent depth limit reached (${limit}). Increase "experimental.subagent_depth" to allow nested subagents.`,
                 })
+              }
               const agent = yield* agents.resolve(input.agent)
               if (agent === undefined) return yield* new ToolFailure({ message: `Unknown agent: ${input.agent}` })
-              if (agent.mode === "primary")
+              if (agent.mode === "primary") {
                 return yield* new ToolFailure({ message: `Agent ${input.agent} cannot run as a subagent` })
+              }
               yield* permission
                 .assert({
                   action: name,
@@ -150,21 +157,20 @@ export const Plugin = {
                 })
                 .pipe(Effect.mapError((error) => new ToolFailure({ message: `Subagent denied: ${agent.id}`, error })))
 
-              const existing =
-                input.sessionID === undefined
-                  ? undefined
-                  : yield* sessions
-                      .get(input.sessionID)
-                      .pipe(
-                        Effect.mapError(
-                          (error) =>
-                            new ToolFailure({ message: `Subagent session not found: ${input.sessionID}`, error }),
-                        ),
-                      )
-              if (existing !== undefined && existing.parentID !== context.sessionID)
+              const existing = input.sessionID === undefined
+                ? undefined
+                : yield* sessions
+                  .get(input.sessionID)
+                  .pipe(
+                    Effect.mapError(
+                      (error) => new ToolFailure({ message: `Subagent session not found: ${input.sessionID}`, error }),
+                    ),
+                  )
+              if (existing !== undefined && existing.parentID !== context.sessionID) {
                 return yield* new ToolFailure({
                   message: `Session ${existing.id} is not a child of the current session`,
                 })
+              }
               const override = input.model === undefined ? undefined : yield* resolveModel(input.model)
               // Continuing with a different agent switches the child, mirroring create semantics
               // where an explicit model wins over the agent's configured model, which wins over the inherited one.
@@ -182,9 +188,8 @@ export const Plugin = {
               }
 
               const model = override ?? agent.model ?? parent.model
-              const child =
-                existing ??
-                (yield* sessions
+              const child = existing
+                ?? (yield* sessions
                   .create({
                     parentID: context.sessionID,
                     title: input.description,
@@ -205,10 +210,9 @@ export const Plugin = {
               yield* sessions
                 .prompt({
                   sessionID: child.id,
-                  text:
-                    existing === undefined
-                      ? ["You are a subagent spawned by another session.", input.prompt].join("\n")
-                      : input.prompt,
+                  text: existing === undefined
+                    ? ["You are a subagent spawned by another session.", input.prompt].join("\n")
+                    : input.prompt,
                   ...(background && existing === undefined ? { resume: false } : {}),
                 })
                 .pipe(
@@ -235,7 +239,7 @@ export const Plugin = {
                 Effect.onInterrupt(() =>
                   Effect.all([sessions.interrupt(child.id), jobs.cancel(child.id)], {
                     discard: true,
-                  }),
+                  })
                 ),
               )
               if (result?.type === "backgrounded") {
@@ -243,12 +247,14 @@ export const Plugin = {
                 return backgroundResult(child.id)
               }
               // Failure surfaces keep the sessionID visible so the model can continue the child.
-              if (result?.info.status === "error")
+              if (result?.info.status === "error") {
                 return yield* new ToolFailure({
                   message: `Subagent failed (sessionID: ${child.id}): ${result.info.error ?? "unknown error"}`,
                 })
-              if (result?.info.status === "cancelled")
+              }
+              if (result?.info.status === "cancelled") {
                 return yield* new ToolFailure({ message: `Subagent cancelled (sessionID: ${child.id})` })
+              }
               return {
                 sessionID: child.id,
                 status: "completed" as const,
@@ -257,14 +263,13 @@ export const Plugin = {
             }).pipe(
               Effect.map((output) => ({
                 output,
-                content:
-                  output.status === "completed"
-                    ? `<subagent sessionID="${output.sessionID}" state="completed">\n${output.output}\n</subagent>`
-                    : output.output,
+                content: output.status === "completed"
+                  ? `<subagent sessionID="${output.sessionID}" state="completed">\n${output.output}\n</subagent>`
+                  : output.output,
                 metadata: { sessionID: output.sessionID, status: output.status },
               })),
             ),
-        }),
+        })
       )
       .pipe(Effect.orDie)
 
@@ -276,11 +281,10 @@ export const Plugin = {
         if (input.model === "") delete input.model
         if (input.sessionID === "") delete input.sessionID
         event.input = input
-      }),
-    )
+      }))
 
     const hook = (event: SessionHooks["context"]) =>
-      Effect.gen(function* () {
+      Effect.gen(function*() {
         const tool = event.tools[name]
         if (!tool) return
         const selected = yield* agents.resolve(event.agent)
@@ -288,9 +292,9 @@ export const Plugin = {
         const available = (yield* agents.list())
           .filter(
             (agent) =>
-              agent.mode !== "primary" &&
-              !agent.hidden &&
-              Permission.evaluate(name, agent.id, selected.permissions).effect !== "deny",
+              agent.mode !== "primary"
+              && !agent.hidden
+              && Permission.evaluate(name, agent.id, selected.permissions).effect !== "deny",
           )
           .toSorted((a, b) => a.id.localeCompare(b.id))
         if (available.length === 0) return

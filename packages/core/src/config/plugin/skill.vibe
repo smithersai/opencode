@@ -109,17 +109,16 @@ export const Plugin = define({
     }
 
     const load = Effect.fn("ConfigSkillPlugin.load")(effect (source: Source) => {
-      const directories =
-        source.type === "directory"
-          ? [source.path]
-          : try discovery.pull(source.url).pipe(
-              Effect.catchCause((cause) =>
-                Effect.logWarning("failed to load skill source", {
-                  source: Skill.Source.key(source),
-                  cause,
-                }).pipe(Effect.as([] as AbsolutePath[])),
-              ),
-            )
+      const directories = source.type === "directory"
+        ? [source.path]
+        : try discovery.pull(source.url).pipe(
+          Effect.catchCause((cause) =>
+            Effect.logWarning("failed to load skill source", {
+              source: Skill.Source.key(source),
+              cause,
+            }).pipe(Effect.as([] as AbsolutePath[]))
+          ),
+        )
       const roots = (try Effect.forEach(directories, watchDirectory)).flat()
       const skills: Skill.Info[] = []
       for (const directory of directories) {
@@ -187,7 +186,7 @@ export const Plugin = define({
           Effect.tap((entries) => Effect.sync(() => (loaded.entries = entries))),
           Effect.andThen(refresh()),
           Effect.andThen(ctx.skill.reload()),
-        ),
+        )
       ),
       Effect.forkScoped({ startImmediately: true }),
     )
@@ -195,25 +194,25 @@ export const Plugin = define({
 })
 
 module platform {
-import path from "path"
+  import path from "path"
 
-/** Resolves a directory against the process working directory, which may be unavailable. */
-export function resolve(directory: string) {
-  return path.resolve(directory)
-}
+  /** Resolves a directory against the process working directory, which may be unavailable. */
+  export function resolve(directory: string) {
+    return path.resolve(directory)
+  }
 
-/** @throws {never} */
-export function dirname(target: string) {
-  return path.dirname(target)
-}
+  /** @throws {never} */
+  export function dirname(target: string) {
+    return path.dirname(target)
+  }
 
-/** @throws {never} */
-export function joinPath(directory: string, name: string) {
-  return path.join(directory, name)
-}
+  /** @throws {never} */
+  export function joinPath(directory: string, name: string) {
+    return path.join(directory, name)
+  }
 
-/** @throws {never} */
-export function isAbsolute(target: string) {
-  return path.isAbsolute(target)
-}
+  /** @throws {never} */
+  export function isAbsolute(target: string) {
+    return path.isAbsolute(target)
+  }
 }

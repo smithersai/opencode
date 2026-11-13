@@ -72,25 +72,29 @@ export class ImageRequest extends Schema.Class<ImageRequest>("Image.Request")({
   declare protected readonly _ImageRequest: void
 }
 
-export type ImageRequestFor<Options extends ImageOptions = ImageOptions> = Omit<
-  ImageRequest,
-  "model" | "providerOptions"
-> & {
-  readonly model: ImageModel<Options>
-  readonly providerOptions?: Options
-}
+export type ImageRequestFor<Options extends ImageOptions = ImageOptions> =
+  & Omit<
+    ImageRequest,
+    "model" | "providerOptions"
+  >
+  & {
+    readonly model: ImageModel<Options>
+    readonly providerOptions?: Options
+  }
 
 export type ImageModelOptions<Model> = Model extends ImageModel<infer Options> ? Options : never
 
-export type ImageRequestInput<Model extends ImageModel = ImageModel> = Omit<
-  ConstructorParameters<typeof ImageRequest>[0],
-  "model" | "providerOptions" | "http" | "resolution"
-> & {
-  readonly model: Model
-  readonly resolution?: ImageResolution
-  readonly providerOptions?: NoInfer<ImageModelOptions<Model>>
-  readonly http?: HttpOptions.Input
-}
+export type ImageRequestInput<Model extends ImageModel = ImageModel> =
+  & Omit<
+    ConstructorParameters<typeof ImageRequest>[0],
+    "model" | "providerOptions" | "http" | "resolution"
+  >
+  & {
+    readonly model: Model
+    readonly resolution?: ImageResolution
+    readonly providerOptions?: NoInfer<ImageModelOptions<Model>>
+    readonly http?: HttpOptions.Input
+  }
 
 // ---------------------------------------------------------------------------
 // Response and events

@@ -159,18 +159,19 @@ const ARITY: Record<string, number> = {
 }
 const PREFIX_LENGTH = Math.max(...Object.values(ARITY))
 
-export const scan = Effect.fnUntraced(function* (
+export const scan = Effect.fnUntraced(function*(
   command: string,
   shell: string,
   cwd: string,
   options?: { portable?: boolean; wasm?: typeof shellParserWasm },
 ) {
-  if (options?.portable || (options?.wasm ?? shellParserWasm).bash === "")
+  if (options?.portable || (options?.wasm ?? shellParserWasm).bash === "") {
     return yield* scanPortable(command, shell, cwd)
+  }
   return yield* scanLegacy(command, shell, cwd)
 })
 
-const scanLegacy = Effect.fnUntraced(function* (command: string, shell: string, cwd: string) {
+const scanLegacy = Effect.fnUntraced(function*(command: string, shell: string, cwd: string) {
   const parsers = yield* Effect.tryPromise({ try: () => load(), catch: (cause) => cause }).pipe(Effect.orDie)
   const powershell = ShellSelect.ps(shell)
   const tree = (powershell ? parsers.ps : parsers.bash).parse(command)
@@ -198,13 +199,13 @@ const scanLegacy = Effect.fnUntraced(function* (command: string, shell: string, 
             return result
           },
           { commands: [] as Array<{ resource: string; save: string }>, directories: [] as string[] },
-        ),
+        )
       ),
     (tree) => Effect.sync(() => tree.delete()),
   )
 })
 
-export const scanPortable = Effect.fnUntraced(function* (command: string, shell: string, cwd: string) {
+export const scanPortable = Effect.fnUntraced(function*(command: string, shell: string, cwd: string) {
   const { ShellScan } = yield* Effect.tryPromise({
     try: () => import("./scan.js"),
     catch: (cause) => new Error(`Portable shell scanner failed to load: ${cause}`, { cause }),
@@ -214,8 +215,9 @@ export const scanPortable = Effect.fnUntraced(function* (command: string, shell:
   const result = powershell
     ? ShellScan.scanPowerShell(command)
     : ShellScan.scan(command, name === "bash" || name === "zsh" ? name : "posix")
-  if (result.kind === "opaque")
+  if (result.kind === "opaque") {
     return yield* Effect.fail(new Error(`Portable shell scanner cannot analyze command: ${result.reason}`))
+  }
 
   const output: Result = { commands: [], directories: [] }
   for (const item of result.commands) {
@@ -224,37 +226,40 @@ export const scanPortable = Effect.fnUntraced(function* (command: string, shell:
     const words = item.redirectWordCount === undefined ? item.rawWords : item.rawWords.slice(0, item.redirectWordCount)
     // The shipped PowerShell grammar treats bare statement-head foreach blocks as control flow.
     if (
-      powershell &&
-      item.statementHead &&
-      /^foreach(?:-|$)/i.test(words[0] ?? "") &&
-      words.length > 1 &&
-      words.slice(1).every((word) => word.startsWith("{"))
-    )
+      powershell
+      && item.statementHead
+      && /^foreach(?:-|$)/i.test(words[0] ?? "")
+      && words.length > 1
+      && words.slice(1).every((word) => word.startsWith("{"))
+    ) {
       continue
+    }
     const name = powershell ? words[0]?.toLowerCase() : words[0]
     if (CWD.has(name)) {
       output.directories.push(
         ...directoryArgs(
           powershell
             ? words.flatMap((raw, index): Part[] => {
-                const text =
-                  !raw.includes("`$") && /['"`]/.test(raw) ? (item.words[index] ?? raw) : raw.replaceAll("`$", "\0")
-                if (!/^-[A-Za-z_?][\w?-]*(?::|$)/.test(raw)) return [{ type: "word", text }]
-                const colon = text.indexOf(":")
-                if (colon >= 0)
-                  return colon + 1 < text.length
-                    ? [
-                        { type: "command_parameter", text: text.slice(0, colon) },
-                        { type: "word", text: text.slice(colon + 1) },
-                      ]
-                    : [{ type: "command_parameter", text: text.slice(0, colon) }]
-                return [{ type: "command_parameter", text }]
-              })
+              const text = !raw.includes("`$") && /['"`]/.test(raw)
+                ? (item.words[index] ?? raw)
+                : raw.replaceAll("`$", "\0")
+              if (!/^-[A-Za-z_?][\w?-]*(?::|$)/.test(raw)) return [{ type: "word", text }]
+              const colon = text.indexOf(":")
+              if (colon >= 0) {
+                return colon + 1 < text.length
+                  ? [
+                    { type: "command_parameter", text: text.slice(0, colon) },
+                    { type: "word", text: text.slice(colon + 1) },
+                  ]
+                  : [{ type: "command_parameter", text: text.slice(0, colon) }]
+              }
+              return [{ type: "command_parameter", text }]
+            })
             : item.rawWords.map((text, index) => ({
-                type: "word",
-                // Only literal quoting resolves to a static directory.
-                text: text.startsWith("$'") || (!/[$`~\\]/.test(text) && /['"]/.test(text)) ? item.words[index] : text,
-              })),
+              type: "word",
+              // Only literal quoting resolves to a static directory.
+              text: text.startsWith("$'") || (!/[$`~\\]/.test(text) && /['"]/.test(text)) ? item.words[index] : text,
+            })),
           powershell,
           cwd,
           shell,
@@ -266,17 +271,15 @@ export const scanPortable = Effect.fnUntraced(function* (command: string, shell:
     const conventional = `${selected.join(" ")} *`
     const end = item.wordEnds?.[selected.length - 1]
     // Keep existing grants stable unless normalized spacing loses the original source boundary.
-    const save =
-      !powershell || end === undefined || Wildcard.match(item.resource, conventional)
-        ? conventional
-        : (() => {
-            const boundary =
-              item.wordEnds?.find(
-                (value) => value >= end && (value >= item.resource.length || /\s/.test(item.resource[value])),
-              ) ?? end
-            const separator = /^\s+(?:`(?:\r\n|\r|\n)\s*)?/.exec(item.resource.slice(boundary))?.[0]
-            return `${item.resource.slice(0, boundary)}${separator ?? " "}*`
-          })()
+    const save = !powershell || end === undefined || Wildcard.match(item.resource, conventional)
+      ? conventional
+      : (() => {
+        const boundary = item.wordEnds?.find(
+          (value) => value >= end && (value >= item.resource.length || /\s/.test(item.resource[value])),
+        ) ?? end
+        const separator = /^\s+(?:`(?:\r\n|\r|\n)\s*)?/.exec(item.resource.slice(boundary))?.[0]
+        return `${item.resource.slice(0, boundary)}${separator ?? " "}*`
+      })()
     output.commands.push({
       resource: item.resource,
       save,
@@ -289,25 +292,28 @@ function parts(node: Node) {
   return Array.from({ length: node.childCount }).flatMap((_, index): Part[] => {
     const child = node.child(index)
     if (!child) return []
-    if (child.type === "command_elements")
+    if (child.type === "command_elements") {
       return Array.from({ length: child.childCount }).flatMap((_, itemIndex): Part[] => {
         const item = child.child(itemIndex)
         if (!item || item.type === "command_argument_sep" || item.type === "redirection") return []
         return [{ type: item.type, text: item.text }]
       })
-    if (!["command_name", "command_name_expr", "word", "string", "raw_string", "concatenation"].includes(child.type))
+    }
+    if (!["command_name", "command_name_expr", "word", "string", "raw_string", "concatenation"].includes(child.type)) {
       return []
+    }
     return [{ type: child.type, text: child.text }]
   })
 }
 
 function directoryArgs(command: Part[], powershell: boolean, cwd: string, shell: string) {
-  if (!powershell)
+  if (!powershell) {
     return command
       .slice(1)
       .filter((part) => !part.text.startsWith("-"))
       .map((part) => directoryArgument(part.text, powershell, cwd, shell))
       .filter((part) => part !== undefined)
+  }
 
   const directories: string[] = []
   let path = false

@@ -3,21 +3,26 @@ import { DesktopCli } from "../service/desktop-cli.vibe"
 import { nativeT } from "./translations.ts"
 
 export function showCliInstaller(desktopCli: DesktopCli.Interface) {
-  return (do { const catchProgram = (desktopCli.install
-    |> Effect.tap(%, (path) =>
-      Effect.promise(() =>
-        dialog.showMessageBox({
-          type: "info",
-          message: nativeT("desktop.cli.installed.message", { path }),
-          title: nativeT("desktop.cli.installed.title"),
-        }),
-      ),
-    )); effect { return catchProgram catch effect (error) => try Effect.promise(() =>
-        dialog.showMessageBox({
-          type: "error",
-          message: nativeT("desktop.cli.failed.message", { error: error.message }),
-          title: nativeT("desktop.cli.failed.title"),
-        }),
-      ) } })
+  return (do {
+    const catchProgram = desktopCli.install
+      |> Effect.tap(%, (path) =>
+        Effect.promise(() =>
+          dialog.showMessageBox({
+            type: "info",
+            message: nativeT("desktop.cli.installed.message", { path }),
+            title: nativeT("desktop.cli.installed.title"),
+          })
+        ))
+    effect {
+      return catchProgram catch effect (error) =>
+        try Effect.promise(() =>
+          dialog.showMessageBox({
+            type: "error",
+            message: nativeT("desktop.cli.failed.message", { error: error.message }),
+            title: nativeT("desktop.cli.failed.title"),
+          })
+        )
+    }
+  })
     |> Effect.asVoid(%)
 }

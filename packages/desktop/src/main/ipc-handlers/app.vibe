@@ -20,7 +20,7 @@ module platform {
   import { sender } from "./context"
 
   export const appHandlers = AppRpcs.toLayer(
-    Effect.gen(function* () {
+    Effect.gen(function*() {
       const handoff = yield* IpcPortHandoff
       const lifecycle = yield* ApplicationLifecycle.Service
       const background = yield* BackgroundService.Service

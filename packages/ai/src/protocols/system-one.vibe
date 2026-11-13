@@ -286,8 +286,10 @@ export const protocol = DecisionRoute.protocol({
   response: {
     decode: (response, context) =>
       decodeDocument(response)
-      |> Effect.flatMap(%, (output) =>
-        toResponse(output.value, context.request, context.providerMetadataKey, output.invalid)),
+      |> Effect.flatMap(
+        %,
+        (output) => toResponse(output.value, context.request, context.providerMetadataKey, output.invalid),
+      ),
   },
 })
 

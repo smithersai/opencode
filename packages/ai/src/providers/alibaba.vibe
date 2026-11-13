@@ -166,6 +166,8 @@ function hostedTool(type: "web_search" | "web_extractor" | "code_interpreter", d
 export * as Alibaba from "./alibaba.js"
 
 module $throw$ts {
-export function raise(value: unknown): never { throw value }
+  export function raise(value: unknown): never {
+    throw value
+  }
 }
 import { raise as $raise } from $throw$ts

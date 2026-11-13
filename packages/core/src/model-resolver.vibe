@@ -91,7 +91,9 @@ export class UnresolvedProviderVariablesError extends Schema.TaggedError<Unresol
   },
 ) {
   override get message() {
-    return `Cannot initialize ${this.providerID}/${this.modelID}: ${this.variables.join(", ")} ${this.variables.length === 1 ? "is" : "are"} required to resolve the provider endpoint`
+    return `Cannot initialize ${this.providerID}/${this.modelID}: ${this.variables.join(", ")} ${
+      this.variables.length === 1 ? "is" : "are"
+    } required to resolve the provider endpoint`
   }
 }
 
@@ -164,7 +166,7 @@ export const withVariant = (
 ): Effect.Effect<Info, VariantUnavailableError> => {
   const id = variantID === "default" ? undefined : variantID
   const variant = model.variants?.find((item) => item.id === id)
-  if (!variant && id !== undefined)
+  if (!variant && id !== undefined) {
     return Effect.fail(
       new VariantUnavailableError({
         providerID: model.providerID,
@@ -172,18 +174,19 @@ export const withVariant = (
         variant: id,
       }),
     )
+  }
   return Effect.succeed(
     variant
       ? {
-          ...model,
-          // Config accepts unknown variant keys, so drop `cache` here too; a variant can't change the prompt cache.
-          settings: Provider.mergeOverlay(
-            model.settings,
-            Provider.modelSettings(variant.settings && Struct.omit(variant.settings, ["cache"])),
-          ),
-          headers: Provider.mergeHeaders(model.headers, variant.headers),
-          body: Provider.mergeOverlay(model.body, variant.body),
-        }
+        ...model,
+        // Config accepts unknown variant keys, so drop `cache` here too; a variant can't change the prompt cache.
+        settings: Provider.mergeOverlay(
+          model.settings,
+          Provider.modelSettings(variant.settings && Struct.omit(variant.settings, ["cache"])),
+        ),
+        headers: Provider.mergeHeaders(model.headers, variant.headers),
+        body: Provider.mergeOverlay(model.body, variant.body),
+      }
       : model,
   )
 }
@@ -210,18 +213,19 @@ export const fromCatalogModel = (
     Effect.flatMap((resolved) => {
       // Reject provider compaction policies up front so the misconfiguration surfaces before any step runs.
       if (
-        model.settings?.compaction?.type !== "native" ||
-        resolved.route.compact?.trigger ||
-        resolved.route.compact?.endpoint
-      )
+        model.settings?.compaction?.type !== "native"
+        || resolved.route.compact?.trigger
+        || resolved.route.compact?.endpoint
+      ) {
         return Effect.succeed(resolved)
+      }
       return Effect.fail(
         new UnsupportedCompactionError({ providerID: model.providerID, modelID: model.id, route: resolved.route.id }),
       )
     }),
   )
 
-const resolveCatalogModel = Effect.fn("ModelResolver.resolveCatalogModel")(function* (
+const resolveCatalogModel = Effect.fn("ModelResolver.resolveCatalogModel")(function*(
   model: RuntimeInfo,
   credential?: Credential.Value,
   dependencies?: Dependencies,
@@ -265,7 +269,7 @@ const resolveCatalogModel = Effect.fn("ModelResolver.resolveCatalogModel")(funct
 })
 
 /** Settings and package loading shared by every model type: credentials, variables, canonical provider, overlays. */
-const loadCatalogPackage = Effect.fn("ModelResolver.loadCatalogPackage")(function* (
+const loadCatalogPackage = Effect.fn("ModelResolver.loadCatalogPackage")(function*(
   model: RuntimeInfo,
   credential?: Credential.Value,
   dependencies?: Dependencies,
@@ -292,7 +296,7 @@ const loadCatalogPackage = Effect.fn("ModelResolver.loadCatalogPackage")(functio
  * Builds an image or decision model from its catalog package. The entrypoint (`providers/<P>/images`) exports the
  * same `model(modelID, settings)` as chat; a package that returns another kind of model cannot serve this type.
  */
-const fromCatalogMedia = Effect.fn("ModelResolver.fromCatalogMedia")(function* <Runtime>(
+const fromCatalogMedia = Effect.fn("ModelResolver.fromCatalogMedia")(function*<Runtime>(
   model: RuntimeInfo,
   is: (value: unknown) => value is Runtime,
   credential?: Credential.Value,
@@ -305,13 +309,12 @@ const fromCatalogMedia = Effect.fn("ModelResolver.fromCatalogMedia")(function* <
   })
   // Catalog and config compatibility tell a decision route how its host takes media, as chat does above.
   const mediaInput = resolved.compatibility?.mediaInput
-  const adapted =
-    runtime instanceof DecisionModel && mediaInput !== undefined
-      ? new DecisionModel({
-          ...runtime,
-          compatibility: DecisionModelCompatibility.make({ ...runtime.compatibility, mediaInput }),
-        })
-      : runtime
+  const adapted = runtime instanceof DecisionModel && mediaInput !== undefined
+    ? new DecisionModel({
+      ...runtime,
+      compatibility: DecisionModelCompatibility.make({ ...runtime.compatibility, mediaInput }),
+    })
+    : runtime
   if (!is(adapted)) return yield* unsupported(resolved)
   return adapted
 })
@@ -319,11 +322,11 @@ const fromCatalogMedia = Effect.fn("ModelResolver.fromCatalogMedia")(function* <
 const constructionError = (model: RuntimeInfo, cause: unknown) =>
   cause instanceof ProviderConfigurationError
     ? new ModelConfigurationError({
-        providerID: model.providerID,
-        modelID: model.id,
-        package: model.package ?? "unknown",
-        detail: cause.message,
-      })
+      providerID: model.providerID,
+      modelID: model.id,
+      package: model.package ?? "unknown",
+      detail: cause.message,
+    })
     : initialization(model, "construct", cause)
 
 const isImageModel = Schema.is(ImageModelSchema)
@@ -394,13 +397,15 @@ const nativeCredentialSettings = (model: RuntimeInfo, specifier: string, credent
 }
 
 const tokenSettings = (specifier: string, token: string) => {
-  if (specifier === "@opencode/ai/providers/anthropic" || specifier === "@opencode/ai/providers/anthropic-compatible")
+  if (specifier === "@opencode/ai/providers/anthropic" || specifier === "@opencode/ai/providers/anthropic-compatible") {
     return { authToken: token }
+  }
   if (
-    specifier === "@opencode/ai/providers/google-vertex" ||
-    specifier.startsWith("@opencode/ai/providers/google-vertex/")
-  )
+    specifier === "@opencode/ai/providers/google-vertex"
+    || specifier.startsWith("@opencode/ai/providers/google-vertex/")
+  ) {
     return { accessToken: token }
+  }
   return { apiKey: token }
 }
 
@@ -441,7 +446,7 @@ export const hasPackage = (model: Info) => Boolean(model.package)
 /** Resolves catalog selections into runtime models for the current Location. */
 export const layer = Layer.effect(
   Service,
-  Effect.gen(function* () {
+  Effect.gen(function*() {
     const providers = yield* Provider.Service
     const models = yield* Model.Service
     const integrations = yield* Integration.Service
@@ -451,7 +456,7 @@ export const layer = Layer.effect(
       loadPackage: (specifier) => Provider.loadPackage(specifier, npm),
       loadAISDK: (model) => aisdk.model(model),
     }
-    const prepare = Effect.fn("ModelResolver.prepare")(function* (selected: Info, variant?: VariantID) {
+    const prepare = Effect.fn("ModelResolver.prepare")(function*(selected: Info, variant?: VariantID) {
       const provider = yield* providers.get(selected.providerID)
       const connection = yield* integrations.connection.active(
         provider?.integrationID ?? Integration.ID.make(selected.providerID),
@@ -464,16 +469,15 @@ export const layer = Layer.effect(
       }
       return { provider, credential, runtimeInfo }
     })
-    const load = Effect.fn("ModelResolver.resolveModel")(function* (selected: Info, variant?: VariantID) {
+    const load = Effect.fn("ModelResolver.resolveModel")(function*(selected: Info, variant?: VariantID) {
       const { provider, credential, runtimeInfo } = yield* prepare(selected, variant)
       const model = yield* fromCatalogModel(runtimeInfo, credential, dependencies)
-      const runtime =
-        provider?.activation === "enabled" &&
-        credential === undefined &&
-        !hasConfiguredAuth(runtimeInfo) &&
-        usesAPIKeyAuth(runtimeInfo.package)
-          ? LanguageModel.update(model, { route: model.route.with({ auth: Auth.none }) })
-          : model
+      const runtime = provider?.activation === "enabled"
+          && credential === undefined
+          && !hasConfiguredAuth(runtimeInfo)
+          && usesAPIKeyAuth(runtimeInfo.package)
+        ? LanguageModel.update(model, { route: model.route.with({ auth: Auth.none }) })
+        : model
       return {
         model: runtime,
         ref: Ref.make({
@@ -490,7 +494,7 @@ export const layer = Layer.effect(
         chunkTimeout: Provider.timeout(provider?.settings?.chunkTimeout),
       }
     })
-    const loadMedia = Effect.fnUntraced(function* <Runtime>(
+    const loadMedia = Effect.fnUntraced(function*<Runtime>(
       ref: Ref,
       type: Model.Type,
       is: (value: unknown) => value is Runtime,
@@ -503,28 +507,29 @@ export const layer = Layer.effect(
       return yield* fromCatalogMedia(runtimeInfo, is, credential, dependencies)
     })
     return Service.of({
-      resolve: Effect.fn("ModelResolver.resolve")(function* (requested) {
+      resolve: Effect.fn("ModelResolver.resolve")(function*(requested) {
         const selected = requested
           ? yield* models.get(requested.providerID, requested.id)
           : yield* models
-              .default()
-              .pipe(
-                Effect.flatMap((model) =>
-                  model && hasPackage(model)
-                    ? Effect.succeed(model)
-                    : Effect.map(models.available(), (models) =>
-                        models.find((model) => hasPackage(model) && Model.supportsText(model)),
-                      ),
-                ),
-              )
+            .default()
+            .pipe(
+              Effect.flatMap((model) =>
+                model && hasPackage(model)
+                  ? Effect.succeed(model)
+                  : Effect.map(
+                    models.available(),
+                    (models) => models.find((model) => hasPackage(model) && Model.supportsText(model)),
+                  )
+              ),
+            )
         if (!selected) return undefined
         return yield* load(selected, requested?.variant)
       }),
       resolveModel: load,
-      resolveImage: Effect.fn("ModelResolver.resolveImage")(function* (ref) {
+      resolveImage: Effect.fn("ModelResolver.resolveImage")(function*(ref) {
         return yield* loadMedia(ref, "image", isImageModel)
       }),
-      resolveDecision: Effect.fn("ModelResolver.resolveDecision")(function* (ref) {
+      resolveDecision: Effect.fn("ModelResolver.resolveDecision")(function*(ref) {
         return yield* loadMedia(ref, "decision", isDecisionModel)
       }),
     })
@@ -540,40 +545,40 @@ function hasConfiguredAuth(model: RuntimeInfo) {
 function usesAPIKeyAuth(packageName: string | undefined) {
   const name = Provider.packageName(packageName)
   return (
-    name === "@ai-sdk/openai" ||
-    name === "@ai-sdk/anthropic" ||
-    name === "@ai-sdk/cerebras" ||
-    name === "@ai-sdk/deepinfra" ||
-    name === "@ai-sdk/openai-compatible" ||
-    name === "@ai-sdk/google" ||
-    name === "@ai-sdk/groq" ||
-    name === "@ai-sdk/mistral" ||
-    name === "@ai-sdk/togetherai" ||
-    name === "@ai-sdk/xai" ||
-    name === "@openrouter/ai-sdk-provider" ||
-    name === "@ai-sdk/azure" ||
-    name === "@opencode/ai/providers/openai" ||
-    name?.startsWith("@opencode/ai/providers/openai/") === true ||
-    name === "@opencode/ai/providers/anthropic" ||
-    name === "@opencode/ai/providers/anthropic-compatible" ||
-    name === "@opencode/ai/providers/baseten" ||
-    name === "@opencode/ai/providers/cerebras" ||
-    name === "@opencode/ai/providers/cloudflare-ai-gateway" ||
-    name === "@opencode/ai/providers/cloudflare-workers-ai" ||
-    name === "@opencode/ai/providers/deepinfra" ||
-    name === "@opencode/ai/providers/deepseek" ||
-    name === "@opencode/ai/providers/fireworks" ||
-    name === "@opencode/ai/providers/openai-compatible" ||
-    name === "@opencode/ai/providers/google" ||
-    name === "@opencode/ai/providers/google/interactions" ||
-    name === "@opencode/ai/providers/groq" ||
-    name === "@opencode/ai/providers/mistral" ||
-    name === "@opencode/ai/providers/togetherai" ||
-    name === "@opencode/ai/providers/vercel-ai-gateway" ||
-    name === "@opencode/ai/providers/xai" ||
-    name === "@opencode/ai/providers/openrouter" ||
-    name === "@opencode/ai/providers/azure" ||
-    name?.startsWith("@opencode/ai/providers/azure/") === true
+    name === "@ai-sdk/openai"
+    || name === "@ai-sdk/anthropic"
+    || name === "@ai-sdk/cerebras"
+    || name === "@ai-sdk/deepinfra"
+    || name === "@ai-sdk/openai-compatible"
+    || name === "@ai-sdk/google"
+    || name === "@ai-sdk/groq"
+    || name === "@ai-sdk/mistral"
+    || name === "@ai-sdk/togetherai"
+    || name === "@ai-sdk/xai"
+    || name === "@openrouter/ai-sdk-provider"
+    || name === "@ai-sdk/azure"
+    || name === "@opencode/ai/providers/openai"
+    || name?.startsWith("@opencode/ai/providers/openai/") === true
+    || name === "@opencode/ai/providers/anthropic"
+    || name === "@opencode/ai/providers/anthropic-compatible"
+    || name === "@opencode/ai/providers/baseten"
+    || name === "@opencode/ai/providers/cerebras"
+    || name === "@opencode/ai/providers/cloudflare-ai-gateway"
+    || name === "@opencode/ai/providers/cloudflare-workers-ai"
+    || name === "@opencode/ai/providers/deepinfra"
+    || name === "@opencode/ai/providers/deepseek"
+    || name === "@opencode/ai/providers/fireworks"
+    || name === "@opencode/ai/providers/openai-compatible"
+    || name === "@opencode/ai/providers/google"
+    || name === "@opencode/ai/providers/google/interactions"
+    || name === "@opencode/ai/providers/groq"
+    || name === "@opencode/ai/providers/mistral"
+    || name === "@opencode/ai/providers/togetherai"
+    || name === "@opencode/ai/providers/vercel-ai-gateway"
+    || name === "@opencode/ai/providers/xai"
+    || name === "@opencode/ai/providers/openrouter"
+    || name === "@opencode/ai/providers/azure"
+    || name?.startsWith("@opencode/ai/providers/azure/") === true
   )
 }
 
@@ -584,10 +589,10 @@ export const node = makeLocationNode({
 })
 
 module platform {
-// The platform code of model-resolver.vibe: the process environment, which a .vibe file does not read (EK4402).
+  // The platform code of model-resolver.vibe: the process environment, which a .vibe file does not read (EK4402).
 
-/** The value of a process environment variable. @throws {never} */
-export function env(name: string): string | undefined {
-  return process.env[name]
-}
+  /** The value of a process environment variable. @throws {never} */
+  export function env(name: string): string | undefined {
+    return process.env[name]
+  }
 }

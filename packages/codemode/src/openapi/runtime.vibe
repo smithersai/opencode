@@ -82,8 +82,10 @@ const buildRequest = effect (
   const setBody = (value: unknown, mediaType: string) =>
     HttpClientRequest.bodyJson(request, value)
     |> Effect.map(%, (next) => HttpClientRequest.setHeader(next, "content-type", mediaType))
-    |> Effect.mapError(%, (cause) =>
-      toolError(`Invalid JSON body for ${plan.operation.method} ${plan.operation.path}.`, cause))
+    |> Effect.mapError(
+      %,
+      (cause) => toolError(`Invalid JSON body for ${plan.operation.method} ${plan.operation.path}.`, cause),
+    )
   if (plan.body?.mode === "value") {
     const field = plan.fields.find((field) => field.location === "body")
     const body = field === undefined ? undefined : own(input, field.inputName)
@@ -288,11 +290,12 @@ module platform {
     response: HttpClientResponse.HttpClientResponse,
     plan: Plan,
   ): Effect.Effect<string, ToolError> =>
-    Effect.gen(function* () {
+    Effect.gen(function*() {
       const contentLength = response.headers["content-length"]
       const parsedSize = contentLength === undefined ? undefined : Number.parseInt(contentLength, 10)
-      const declaredSize =
-        parsedSize !== undefined && Number.isSafeInteger(parsedSize) && parsedSize >= 0 ? parsedSize : undefined
+      const declaredSize = parsedSize !== undefined && Number.isSafeInteger(parsedSize) && parsedSize >= 0
+        ? parsedSize
+        : undefined
       if (declaredSize !== undefined && declaredSize > maxResponseBodyBytes) {
         return yield* Effect.fail(toolError(`${plan.operation.method} ${plan.operation.path} response exceeds 50 MiB.`))
       }

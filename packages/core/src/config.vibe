@@ -86,7 +86,7 @@ export const testLayer = (
   },
 ) =>
   Layer.effectContext(
-    Effect.gen(function* () {
+    Effect.gen(function*() {
       const entries = yield* Ref.make(initial)
       const integrations = yield* Ref.make(new Map<string, ConfigIntegration.Document>())
       const updates = yield* PubSub.unbounded<Watcher.Update>()
@@ -113,7 +113,7 @@ export const testLayer = (
 export const layer = (options?: Options) =>
   Layer.effect(
     Service,
-    Effect.gen(function* () {
+    Effect.gen(function*() {
       const fs = yield* FSUtil.Service
       const location = yield* Location.Service
       const watcher = yield* Watcher.Service
@@ -129,7 +129,7 @@ export const layer = (options?: Options) =>
       const updateLock = Semaphore.makeUnsafe(1)
       const decodeOptions = { errors: "all", onExcessProperty: "ignore" } as const
       const decodeInfo = Schema.decodeUnknownOption(Info, decodeOptions)
-      const parseInfo = Effect.fn("Config.parseInfo")(function* (text: string, source: string) {
+      const parseInfo = Effect.fn("Config.parseInfo")(function*(text: string, source: string) {
         const errors: ParseError[] = []
         const input: unknown = parse(text, errors, { allowTrailingComma: true })
         if (errors.length) {
@@ -142,13 +142,15 @@ export const layer = (options?: Options) =>
           return
         }
         const result = ConfigNormalize.normalize(input)
-        yield* Effect.forEach(result.diagnostics, (diagnostic) =>
-          Effect.logWarning("configuration normalization diagnostic", {
-            source,
-            path: diagnostic.path[0] === "$" ? "$" : `$.${diagnostic.path.join(".")}`,
-            kind: diagnostic.kind,
-            action: diagnostic.message,
-          }),
+        yield* Effect.forEach(
+          result.diagnostics,
+          (diagnostic) =>
+            Effect.logWarning("configuration normalization diagnostic", {
+              source,
+              path: diagnostic.path[0] === "$" ? "$" : `$.${diagnostic.path.join(".")}`,
+              kind: diagnostic.kind,
+              action: diagnostic.message,
+            }),
         )
         if (result.type === "rejected") return
         const info = Option.getOrUndefined(decodeInfo(result.encoded))
@@ -161,7 +163,7 @@ export const layer = (options?: Options) =>
         })
       })
 
-      const loadFile = Effect.fnUntraced(function* (filepath: string) {
+      const loadFile = Effect.fnUntraced(function*(filepath: string) {
         const text = yield* fs.readFileStringSafe(filepath)
         if (text === undefined) return
         const substituted = yield* ConfigVariable.substitute({ type: "path", path: filepath, text })
@@ -170,7 +172,7 @@ export const layer = (options?: Options) =>
         return new Document({ type: "document", path: AbsolutePath.make(filepath), info })
       })
 
-      const loadWellknownEntry = Effect.fnUntraced(function* (entry: WellKnown.Entry) {
+      const loadWellknownEntry = Effect.fnUntraced(function*(entry: WellKnown.Entry) {
         const auth = entry.manifest.auth
         const credential = (yield* credentials.list(entry.integrationID)).at(-1)
         const variables = auth && credential?.value.type === "key" ? { [auth.env]: credential.value.key } : undefined
@@ -182,7 +184,7 @@ export const layer = (options?: Options) =>
           Effect.catch((error) =>
             Effect.logWarning("failed to load wellknown config", { source: entry.origin, error }).pipe(
               Effect.andThen(wellknown.cached(entry.origin)),
-            ),
+            )
           ),
         )
         return yield* Effect.forEach(configs, (config) =>
@@ -195,22 +197,21 @@ export const layer = (options?: Options) =>
           }).pipe(
             Effect.flatMap((text) => parseInfo(text, entry.origin)),
             Effect.map((info) => (info ? new Document({ type: "document", info }) : undefined)),
-          ),
-        ).pipe(Effect.map((documents) => documents.filter((document) => document !== undefined)))
+          )).pipe(Effect.map((documents) => documents.filter((document) => document !== undefined)))
       })
 
-      const loadWellknown = Effect.fn("Config.loadWellknown")(function* () {
+      const loadWellknown = Effect.fn("Config.loadWellknown")(function*() {
         const entries = yield* wellknown
           .entries()
           .pipe(
             Effect.catch((error) =>
-              Effect.logWarning("failed to discover wellknown config", { error }).pipe(Effect.as([] as const)),
+              Effect.logWarning("failed to discover wellknown config", { error }).pipe(Effect.as([] as const))
             ),
           )
         return yield* Effect.forEach(entries, loadWellknownEntry).pipe(Effect.map((documents) => documents.flat()))
       })
 
-      const loadPreferences = Effect.fn("Config.loadPreferences")(function* (plist: AbsolutePath) {
+      const loadPreferences = Effect.fn("Config.loadPreferences")(function*(plist: AbsolutePath) {
         const result = yield* processes
           .run(ChildProcess.make("plutil", ["-convert", "json", "-o", "-", plist], { stdin: "ignore" }), {
             timeout: "10 seconds",
@@ -230,7 +231,7 @@ export const layer = (options?: Options) =>
         return info ? [new Document({ type: "document", path: plist, info })] : []
       })
 
-      const loadDirectory = Effect.fnUntraced(function* (directory: AbsolutePath) {
+      const loadDirectory = Effect.fnUntraced(function*(directory: AbsolutePath) {
         return [
           ...(yield* Effect.forEach(ConfigDiscovery.names, (file) => loadFile(joinPath(directory, file))).pipe(
             Effect.map((configs) => configs.filter((config): config is Document => config !== undefined)),
@@ -239,7 +240,7 @@ export const layer = (options?: Options) =>
         ]
       })
 
-      const load = Effect.fn("Config.load")(function* (sources: ConfigDiscovery.Sources) {
+      const load = Effect.fn("Config.load")(function*(sources: ConfigDiscovery.Sources) {
         const direct = yield* Effect.forEach(sources.direct, (filepath) => loadFile(filepath)).pipe(
           Effect.orDie,
           Effect.map((entries) => entries.filter((entry): entry is Document => entry !== undefined)),
@@ -247,23 +248,22 @@ export const layer = (options?: Options) =>
 
         const explicit = sources.explicit
           ? yield* loadFile(sources.explicit).pipe(
-              Effect.map((config) => (config ? [config] : [])),
-              Effect.orDie,
-            )
+            Effect.map((config) => (config ? [config] : [])),
+            Effect.orDie,
+          )
           : []
-        const content =
-          options?.content !== undefined
-            ? yield* ConfigVariable.substitute({
-                type: "virtual",
-                source: "OPENCODE_CONFIG_CONTENT",
-                dir: location.directory,
-                text: options.content,
-              }).pipe(
-                Effect.flatMap((text) => parseInfo(text, "OPENCODE_CONFIG_CONTENT")),
-                Effect.map((info) => (info ? [new Document({ type: "document", info })] : [])),
-                Effect.orDie,
-              )
-            : []
+        const content = options?.content !== undefined
+          ? yield* ConfigVariable.substitute({
+            type: "virtual",
+            source: "OPENCODE_CONFIG_CONTENT",
+            dir: location.directory,
+            text: options.content,
+          }).pipe(
+            Effect.flatMap((text) => parseInfo(text, "OPENCODE_CONFIG_CONTENT")),
+            Effect.map((info) => (info ? [new Document({ type: "document", info })] : [])),
+            Effect.orDie,
+          )
+          : []
 
         // Managed settings load last so they override everything, and MDM
         // preferences outrank the system directory as in V1. Policies evaluate
@@ -277,19 +277,19 @@ export const layer = (options?: Options) =>
           .flatMap((entry) =>
             entry.type === "document" && entry.info.policies
               ? [
-                  new Document({
-                    type: "document",
-                    path: entry.path,
-                    info: new Info({ policies: entry.info.policies }),
-                  }),
-                ]
-              : [],
+                new Document({
+                  type: "document",
+                  path: entry.path,
+                  info: new Info({ policies: entry.info.policies }),
+                }),
+              ]
+              : []
           )
           .toReversed()
         const managedSettings = managed.map((entry) =>
           entry.type === "document" && entry.info.policies
             ? new Document({ ...entry, info: new Info({ ...entry.info, policies: undefined }) })
-            : entry,
+            : entry
         )
         // Integration documents load right after managed policies: every remote, user, and project layer overrides
         // their settings, and since policies evaluate earliest-loaded first, only managed policies outrank theirs.
@@ -323,7 +323,7 @@ export const layer = (options?: Options) =>
       // Readiness rescans recover writes made before a watch attached.
       const requestReload = PubSub.publish(reloads, undefined).pipe(Effect.asVoid)
       const watched = yield* FiberMap.make<string>()
-      const reconcile = Effect.fn("Config.reconcileWatches")(function* (sources: ConfigDiscovery.Sources) {
+      const reconcile = Effect.fn("Config.reconcileWatches")(function*(sources: ConfigDiscovery.Sources) {
         const plan = ConfigWatch.plan(sources)
         for (const key of Array.from(watched, ([key]) => key)) {
           if (!plan.has(key)) yield* FiberMap.remove(watched, key)
@@ -341,12 +341,12 @@ export const layer = (options?: Options) =>
       })
 
       const reload = Effect.fn("Config.reload")(
-        function* () {
+        function*() {
           const discovered = yield* ConfigDiscovery.discover(options)
           const next = yield* load(discovered)
           yield* reconcile(discovered)
-          const compatibilityChanged =
-            !(yield* equal(sources.claude, discovered.claude)) || !(yield* equal(sources.agents, discovered.agents))
+          const compatibilityChanged = !(yield* equal(sources.claude, discovered.claude))
+            || !(yield* equal(sources.agents, discovered.agents))
           if ((yield* equal(configs, next)) && !compatibilityChanged) return
           sources = discovered
           configs = next
@@ -360,7 +360,7 @@ export const layer = (options?: Options) =>
       yield* Stream.fromSubscription(pendingReloads).pipe(
         Stream.debounce("100 millis"),
         Stream.runForEach(() =>
-          reload().pipe(Effect.catchCause((cause) => Effect.logError("failed to reload config", { cause }))),
+          reload().pipe(Effect.catchCause((cause) => Effect.logError("failed to reload config", { cause })))
         ),
         Effect.forkScoped({ startImmediately: true }),
       )
@@ -369,16 +369,16 @@ export const layer = (options?: Options) =>
           wellknown.entries().pipe(
             Effect.map((entries) => entries.some((entry) => entry.integrationID === event.data.integrationID)),
             Effect.orElseSucceed(() => false),
-          ),
+          )
         ),
         Stream.runForEach(() =>
-          reload().pipe(Effect.catchCause((cause) => Effect.logError("failed to reload wellknown config", { cause }))),
+          reload().pipe(Effect.catchCause((cause) => Effect.logError("failed to reload wellknown config", { cause })))
         ),
         Effect.forkScoped({ startImmediately: true }),
       )
       yield* bus.subscribe(WellKnown.Event.Updated).pipe(
         Stream.runForEach(() =>
-          reload().pipe(Effect.catchCause((cause) => Effect.logError("failed to reload wellknown sources", { cause }))),
+          reload().pipe(Effect.catchCause((cause) => Effect.logError("failed to reload wellknown sources", { cause })))
         ),
         Effect.forkScoped({ startImmediately: true }),
       )
@@ -386,12 +386,12 @@ export const layer = (options?: Options) =>
         Effect.andThen(
           Effect.suspend(() => {
             if (!wellknown.snapshot().length) return Effect.void
-            return Effect.gen(function* () {
+            return Effect.gen(function*() {
               const changed = yield* wellknown
                 .refresh()
                 .pipe(
                   Effect.catch((error) =>
-                    Effect.logWarning("failed to refresh wellknown manifests", { error }).pipe(Effect.as(false)),
+                    Effect.logWarning("failed to refresh wellknown manifests", { error }).pipe(Effect.as(false))
                   ),
                 )
               if (!changed) yield* reload()
@@ -404,11 +404,10 @@ export const layer = (options?: Options) =>
       yield* reloadLock.withPermit(reconcile(initial))
 
       const update = Effect.fn("Config.update")(
-        function* (patch: Patch) {
+        function*(patch: Patch) {
           const directory = initial.global ?? AbsolutePath.make(globalService.config)
           const candidates = ConfigDiscovery.names.map((name) => joinPath(directory, name))
-          const filepath =
-            (yield* Effect.filter(candidates, fs.isFile)).at(-1) ?? joinPath(directory, "opencode.jsonc")
+          const filepath = (yield* Effect.filter(candidates, fs.isFile)).at(-1) ?? joinPath(directory, "opencode.jsonc")
           const text = (yield* fs.readFileStringSafe(filepath)) ?? "{}\n"
           const updated = yield* Effect.try({
             try: () =>
@@ -427,7 +426,7 @@ export const layer = (options?: Options) =>
       )
 
       return Service.of({
-        entries: Effect.fnUntraced(function* () {
+        entries: Effect.fnUntraced(function*() {
           return configs
         }),
         compatibility: () =>
@@ -437,7 +436,7 @@ export const layer = (options?: Options) =>
           }),
         changes: () => Stream.fromPubSub(updates),
         update,
-        integration: Effect.fn("Config.integration")(function* (integrationID, document) {
+        integration: Effect.fn("Config.integration")(function*(integrationID, document) {
           if (yield* equal(integrations.get(integrationID), document)) return
           integrations.delete(integrationID)
           if (document) integrations.set(integrationID, document)
@@ -475,23 +474,23 @@ export function configured(options?: Options) {
 export const node = configured()
 
 module platform {
-// The platform code of config.vibe: host path rules and deep equality, which a .vibe file does not use (EK4402).
+  // The platform code of config.vibe: host path rules and deep equality, which a .vibe file does not use (EK4402).
 
-import path from "path"
-import { isDeepStrictEqual } from "node:util"
+  import path from "path"
+  import { isDeepStrictEqual } from "node:util"
 
-/** The directory of a path. @throws {never} */
-export function dirname(target: string) {
-  return path.dirname(target)
-}
+  /** The directory of a path. @throws {never} */
+  export function dirname(target: string) {
+    return path.dirname(target)
+  }
 
-/** Joins path segments with the host path rules. @throws {never} */
-export function joinPath(...segments: string[]) {
-  return path.join(...segments)
-}
+  /** Joins path segments with the host path rules. @throws {never} */
+  export function joinPath(...segments: string[]) {
+    return path.join(...segments)
+  }
 
-// A getter or proxy inside a compared value may throw; callers keep such a throw a defect.
-const platformIsDeepStrictEqual = (left: unknown, right: unknown) => isDeepStrictEqual(left, right)
+  // A getter or proxy inside a compared value may throw; callers keep such a throw a defect.
+  const platformIsDeepStrictEqual = (left: unknown, right: unknown) => isDeepStrictEqual(left, right)
 
-export { platformIsDeepStrictEqual as isDeepStrictEqual }
+  export { platformIsDeepStrictEqual as isDeepStrictEqual }
 }

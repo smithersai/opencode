@@ -17,7 +17,7 @@ module platform {
 
   const RegisteredService = Schema.Struct({ version: Schema.optional(Schema.String) })
 
-  export const connect = Effect.fn("BackgroundService.connect")(function* (mode: "initial" | "reconnect") {
+  export const connect = Effect.fn("BackgroundService.connect")(function*(mode: "initial" | "reconnect") {
     yield* Effect.logInfo("starting v2 background service")
     const fs = yield* FileSystem.FileSystem
     const path = yield* Path.Path
@@ -30,14 +30,13 @@ module platform {
     if (isolated) process.env.XDG_STATE_HOME = app.getPath("userData")
     const client = yield* Effect.promise(() => import("@opencode/client/service"))
 
-    const file =
-      process.env.OPENCODE_DESKTOP_SERVER_CHANNEL === "local"
-        ? path.join(
-            process.env.XDG_STATE_HOME ?? path.join(app.getPath("home"), ".local", "state"),
-            "opencode",
-            "service-local.json",
-          )
-        : undefined
+    const file = process.env.OPENCODE_DESKTOP_SERVER_CHANNEL === "local"
+      ? path.join(
+        process.env.XDG_STATE_HOME ?? path.join(app.getPath("home"), ".local", "state"),
+        "opencode",
+        "service-local.json",
+      )
+      : undefined
 
     const ensure = (required = version) =>
       client.Service.ensure({
@@ -91,12 +90,13 @@ module platform {
 
     // Only packaged and isolated builds run a staged copy; any other binary sits in the source tree.
     // Keep both the bundled stage and any adopted server's stage so its executable stays on disk.
-    if (mode === "initial" && (app.isPackaged || isolated) && cli.binary && runningVersion)
+    if (mode === "initial" && (app.isPackaged || isolated) && cli.binary && runningVersion) {
       runFork(
         cleanStages(cli.binary, { keep: keptStages(cli.version, runningVersion) }).pipe(
           Effect.catch((error) => Effect.logError("failed to clean staged v2 CLIs", { error })),
         ),
       )
+    }
 
     const ready = { url: url.origin, password: service.auth.password } satisfies SidecarCredentials.Data
     SidecarCredentials.set(ready)
@@ -123,7 +123,7 @@ export class Service extends Context.Service<Service, Interface>()("opencode/des
 
 export const layer = Layer.effect(
   Service,
-  Effect.gen(function* () {
+  Effect.gen(function*() {
     const context = yield* Effect.context<FileSystem.FileSystem | Path.Path | DesktopCli.Service>()
 
     return Service.of(

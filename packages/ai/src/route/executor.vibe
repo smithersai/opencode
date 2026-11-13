@@ -234,7 +234,9 @@ export const layer: Layer.Layer<Service, never, HttpClient.HttpClient> = Layer.e
       const response = middleware(request, (input) =>
         http
           .execute(input)
-        |> Effect.mapError(%, (cause) => (cause instanceof Error ? cause : new Error(String(cause))))) catch effect (error) => { throw httpError({ error, request, operation: "request" }) }
+        |> Effect.mapError(%, (cause) => (cause instanceof Error ? cause : new Error(String(cause))))) catch effect (error) => {
+            throw httpError({ error, request, operation: "request" })
+          }
       return try statusError(response)
     }
     return Service.of({

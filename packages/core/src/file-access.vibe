@@ -72,8 +72,8 @@ export const resolvePath = (directory: string, input: string, home = Global.Path
     normalized === "~"
       ? home
       : normalized.startsWith("~/") || (isWindows() && normalized.startsWith("~\\"))
-        ? path.join(home, normalized.slice(2))
-        : normalized,
+      ? path.join(home, normalized.slice(2))
+      : normalized,
   )
 }
 
@@ -86,27 +86,25 @@ const invocation = (context: Invocation) => ({
 
 const layer = Layer.effect(
   Service,
-  Effect.gen(function* () {
+  Effect.gen(function*() {
     const { files } = yield* Environment.Service
     const exists = (file: string) => Environment.exists(files, file)
     const location = yield* Location.Service
     const permission = yield* Permission.Service
 
-    const resolve = Effect.fn("FileAccess.resolve")(function* (input: ResolveInput) {
+    const resolve = Effect.fn("FileAccess.resolve")(function*(input: ResolveInput) {
       const absolute = AbsolutePath.make(resolvePath(location.directory, input.path))
       const worktree = path.resolve(location.project.directory)
-      const internal =
-        FSUtil.contains(location.directory, absolute) ||
-        (worktree !== path.parse(worktree).root && FSUtil.contains(worktree, absolute))
+      const internal = FSUtil.contains(location.directory, absolute)
+        || (worktree !== path.parse(worktree).root && FSUtil.contains(worktree, absolute))
       if (internal) {
         return {
           absolute,
           resource: slash(path.relative(location.directory, absolute) || "."),
         } satisfies Target
       }
-      const type =
-        input.kind ??
-        (yield* Environment.typeFollowing(files, absolute).pipe(
+      const type = input.kind
+        ?? (yield* Environment.typeFollowing(files, absolute).pipe(
           Effect.catchTag("Environment.NotFound", () => Effect.undefined),
         ))
       const directory = AbsolutePath.make(type === "directory" ? absolute : path.dirname(absolute))
@@ -122,7 +120,7 @@ const layer = Layer.effect(
       } satisfies Target
     })
 
-    const authorizeExternal = Effect.fn("FileAccess.authorizeExternal")(function* (
+    const authorizeExternal = Effect.fn("FileAccess.authorizeExternal")(function*(
       targets: readonly Target[],
       context: Invocation,
       metadata?: Permission.AssertInput["metadata"],
@@ -141,7 +139,7 @@ const layer = Layer.effect(
       })
     })
 
-    const authorizeRead = Effect.fn("FileAccess.authorizeRead")(function* (
+    const authorizeRead = Effect.fn("FileAccess.authorizeRead")(function*(
       file: string,
       context: Invocation,
       options?: ReadOptions,
@@ -171,26 +169,26 @@ export const node = makeLocationNode({
 })
 
 module platform {
-// The platform code of file-access.vibe: host path rules and the host platform, which a .vibe file does not read (EK4402).
+  // The platform code of file-access.vibe: host path rules and the host platform, which a .vibe file does not read (EK4402).
 
-import nodePath from "path"
+  import nodePath from "path"
 
-/** Host path functions with Node's `path` names. */
-export const path = {
-  /** Resolves segments against the process working directory, which may be unavailable. */
-  resolve: (...segments: string[]) => nodePath.resolve(...segments),
-  /** @throws {never} */
-  join: (...segments: string[]) => nodePath.join(...segments),
-  /** @throws {never} */
-  relative: (from: string, to: string) => nodePath.relative(from, to),
-  /** @throws {never} */
-  dirname: (target: string) => nodePath.dirname(target),
-  /** @throws {never} */
-  parse: (target: string) => nodePath.parse(target),
-}
+  /** Host path functions with Node's `path` names. */
+  export const path = {
+    /** Resolves segments against the process working directory, which may be unavailable. */
+    resolve: (...segments: string[]) => nodePath.resolve(...segments),
+    /** @throws {never} */
+    join: (...segments: string[]) => nodePath.join(...segments),
+    /** @throws {never} */
+    relative: (from: string, to: string) => nodePath.relative(from, to),
+    /** @throws {never} */
+    dirname: (target: string) => nodePath.dirname(target),
+    /** @throws {never} */
+    parse: (target: string) => nodePath.parse(target),
+  }
 
-/** Reports whether the host runs Windows. @throws {never} */
-export function isWindows() {
-  return process.platform === "win32"
-}
+  /** Reports whether the host runs Windows. @throws {never} */
+  export function isWindows() {
+    return process.platform === "win32"
+  }
 }

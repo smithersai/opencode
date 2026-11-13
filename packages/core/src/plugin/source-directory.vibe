@@ -6,7 +6,7 @@ import { joinPath } from platform
 
 export const names = ["plugin", "plugins"] as const
 
-export const discover = Effect.fn("PluginSourceDirectory.discover")(function* (
+export const discover = Effect.fn("PluginSourceDirectory.discover")(function*(
   fs: FSUtil.Interface,
   directory: string,
 ) {
@@ -14,12 +14,11 @@ export const discover = Effect.fn("PluginSourceDirectory.discover")(function* (
     fs.readDirectoryEntries(joinPath(directory, source)).pipe(
       Effect.orElseSucceed(() => []),
       Effect.map((entries) => entries.map((entry) => ({ ...entry, target: joinPath(directory, source, entry.name) }))),
-    ),
-  ))
+    )))
     .flat()
     .sort((a, b) => (a.target < b.target ? -1 : a.target > b.target ? 1 : 0))
   const targets = yield* Effect.forEach(children, (entry) =>
-    Effect.gen(function* () {
+    Effect.gen(function*() {
       const source = entry.target.endsWith(".ts") || entry.target.endsWith(".js")
       if (entry.type === "file" && source) return Option.some(entry.target)
       if (entry.type === "directory") return Option.some(entry.target)
@@ -27,18 +26,17 @@ export const discover = Effect.fn("PluginSourceDirectory.discover")(function* (
       if (source && (yield* fs.isFile(entry.target))) return Option.some(entry.target)
       if (yield* fs.isDir(entry.target)) return Option.some(entry.target)
       return Option.none<string>()
-    }),
-  )
+    }))
   return targets.flatMap(Option.toArray)
 })
 
 module platform {
-// The platform code of source-directory.vibe: host path joining, which a .vibe file does not import (EK4402).
+  // The platform code of source-directory.vibe: host path joining, which a .vibe file does not import (EK4402).
 
-import path from "path"
+  import path from "path"
 
-/** @throws {never} */
-export function joinPath(...parts: string[]): string {
-  return path.join(...parts)
-}
+  /** @throws {never} */
+  export function joinPath(...parts: string[]): string {
+    return path.join(...parts)
+  }
 }

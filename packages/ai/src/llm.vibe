@@ -86,7 +86,9 @@ export function loop(input: LoopInput, options?: StreamOptions) {
         Stream.concat(
           Stream.unwrap(
             effect {
-              const response = try Effect.orDie(Effect.try({ try: () => LLMResponse.fromEvents(events), catch: (e) => e }))
+              const response = try Effect.orDie(
+                Effect.try({ try: () => LLMResponse.fromEvents(events), catch: (e) => e }),
+              )
               const calls = response?.toolCalls.filter((call) => call.providerExecuted !== true) ?? []
               if (!response || calls.length === 0 || events.some(LLMEvent.is.providerError)) return Stream.empty
               const done = [...steps, response]
@@ -209,12 +211,14 @@ const runGenerateObject = effect (
           }),
         })
       }
-      const object = tool._decode(call.input) catch effect (error) => { throw new AIError({
-              reason: new InvalidProviderOutputError({
-                message: `generateObject: tool input failed schema decode: ${error.message}`,
-                cause: error,
-              }),
-            }) }
+      const object = tool._decode(call.input) catch effect (error) => {
+        throw new AIError({
+          reason: new InvalidProviderOutputError({
+            message: `generateObject: tool input failed schema decode: ${error.message}`,
+            cause: error,
+          }),
+        })
+      }
       return new GenerateObjectResponse(object, response)
     },
     "LLM.generateObject",

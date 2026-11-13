@@ -71,8 +71,9 @@ module platform {
         const name = coerceToString(get(value, "name"))
         const message = get(value, "message")
         const text = message === undefined ? "" : coerceToString(message)
-        const copied =
-          name === "AggregateError" ? new AggregateError([], text) : new (hostErrors.get(name) ?? Error)(text)
+        const copied = name === "AggregateError"
+          ? new AggregateError([], text)
+          : new (hostErrors.get(name) ?? Error)(text)
         for (const key of new Set(["cause", ...keys(value)])) {
           if (uncrossed.has(key) || !has(value, key)) continue
           const item = crossing(() => next(get(value, key)))
@@ -162,11 +163,10 @@ module platform {
         const settle = (run: Effect.Effect<unknown, unknown, R>) =>
           (describe === undefined
             ? run
-            : hooked(describe(args), hooks["extension.before"], hooks["extension.after"], run)
-          ).pipe(
-            Effect.mapError((reason) => new Throw(fromHost(reason, label))),
-            Effect.map((settled) => fromHost(settled, label)),
-          )
+            : hooked(describe(args), hooks["extension.before"], hooks["extension.after"], run)).pipe(
+              Effect.mapError((reason) => new Throw(fromHost(reason, label))),
+              Effect.map((settled) => fromHost(settled, label)),
+            )
         let result: unknown
         try {
           result = value.apply(undefined, args)
@@ -188,7 +188,7 @@ module platform {
     return extensions.flatMap((extension) =>
       Object.entries(extension.globals).map(
         ([name, value]) => [name, wrap(value, name, (args) => ({ extension: extension.name, name, args }))] as const,
-      ),
+      )
     )
   }
   // A synchronous host call: its hooks run before any other job, as the call itself did.
@@ -220,11 +220,11 @@ module platform {
   ])
   // The primitives the interpreter operates on; symbols and BigInts are not among them.
   const isPrimitive = (value: unknown): value is string | number | boolean | null | undefined =>
-    value === null ||
-    value === undefined ||
-    typeof value === "string" ||
-    typeof value === "number" ||
-    typeof value === "boolean"
+    value === null
+    || value === undefined
+    || typeof value === "string"
+    || typeof value === "number"
+    || typeof value === "boolean"
   const describeHost = (value: unknown): string => {
     if (typeof value !== "object" || value === null) return `a ${typeof value}`
     const name = (value as { constructor?: { name?: string } }).constructor?.name

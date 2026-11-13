@@ -59,12 +59,12 @@ export function make(app: AgentApp, stream: Stream) {
       sessionUpdate: (params) => promise(() => agent.client.notify(methods.client.session.update, params)),
       requestPermission: (params) =>
         promise((signal) =>
-          agent.client.request(methods.client.session.requestPermission, params, { cancellationSignal: signal }),
+          agent.client.request(methods.client.session.requestPermission, params, { cancellationSignal: signal })
         ),
       extNotification: (method, params) => promise(() => agent.client.notify(method, params)),
       createElicitation: (params) =>
         promise((signal) =>
-          agent.client.request(methods.client.elicitation.create, params, { cancellationSignal: signal }),
+          agent.client.request(methods.client.elicitation.create, params, { cancellationSignal: signal })
         ),
       responded: (requestId) => {
         const responded = Deferred.makeUnsafe<void>()

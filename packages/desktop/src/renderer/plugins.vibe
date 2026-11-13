@@ -19,12 +19,19 @@ module platform {
     const attach = () => {
       const stops = [
         listen("PluginState", (event) => dispatch({ type: "state", ipc: event.ipc, state: event.state })),
-        listen("PluginEvent", (event) => dispatch({ type: "event", ipc: event.ipc, name: event.name, data: event.data })),
-        listen("PluginAvailable", (event) => dispatch({ type: "available", ipc: event.ipc, available: event.available })),
+        listen(
+          "PluginEvent",
+          (event) => dispatch({ type: "event", ipc: event.ipc, name: event.name, data: event.data }),
+        ),
+        listen(
+          "PluginAvailable",
+          (event) => dispatch({ type: "available", ipc: event.ipc, available: event.available }),
+        ),
         listen("PluginsChanged", (event) => dispatch({ type: "installed", list: event.list })),
         listen("WindowFocusChanged", (event) => dispatch({ type: "focus", focused: event.focused })),
-        listen("PluginGuisChanged", (event) =>
-          dispatch({ type: "pluginGuis", plugins: event.plugins, reserved: event.reserved }),
+        listen(
+          "PluginGuisChanged",
+          (event) => dispatch({ type: "pluginGuis", plugins: event.plugins, reserved: event.reserved }),
         ),
         listen("PluginMenubarItemsChanged", (event) => {
           menubar.revision++

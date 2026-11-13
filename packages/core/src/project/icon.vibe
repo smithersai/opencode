@@ -22,7 +22,7 @@ const CANDIDATES = [
     "extension/icons/icon",
   ].flatMap((b) => [`${b}.svg`, `${b}.png`]),
   ...["favicon.svg", "icon.svg", "favicon.png", "apple-touch-icon.png", "icon.png", "favicon.ico"].flatMap((f) =>
-    ["public/", "app/", "src/app/", "site/public/", ""].map((d) => `${d}${f}`),
+    ["public/", "app/", "src/app/", "site/public/", ""].map((d) => `${d}${f}`)
   ),
   ...["assets/icon", "assets/logo", "public/logo", "logo"].flatMap((b) => [`${b}.svg`, `${b}.png`]),
 ]
@@ -42,7 +42,7 @@ const composer = Schema.decodeUnknownOption(
   ),
 )
 
-export const refresh = Effect.fn("ProjectIcon.refresh")(function* (
+export const refresh = Effect.fn("ProjectIcon.refresh")(function*(
   fs: FSUtil.Interface,
   db: EffectDrizzleSqlite.EffectSQLiteDatabase,
   id: ProjectSchema.ID,
@@ -54,7 +54,7 @@ export const refresh = Effect.fn("ProjectIcon.refresh")(function* (
   return yield* db.update(ProjectTable).set({ icon_url: image.url }).where(eq(ProjectTable.id, id)).returning().get()
 })
 
-export const discover = Effect.fn("ProjectIcon.discover")(function* (fs: FSUtil.Interface, directory: string) {
+export const discover = Effect.fn("ProjectIcon.discover")(function*(fs: FSUtil.Interface, directory: string) {
   const root = yield* fs.realPath(directory)
   const children = yield* fs.readDirectoryEntries(root).pipe(Effect.orElseSucceed(() => []))
   const catalogs = children
@@ -64,14 +64,16 @@ export const discover = Effect.fn("ProjectIcon.discover")(function* (fs: FSUtil.
     .slice(0, 128)
     .map((name) => `${name}/Assets.xcassets/AppIcon.appiconset`)
   // Prefer flattened icons: a small Composer layer may be only a glow beneath an oversized foreground.
-  for (const name of [
-    ...CANDIDATES,
-    "AppIcon.icon",
-    "app/AppIcon.icon",
-    "assets/AppIcon.icon",
-    ...catalogs,
-    "resources/windows",
-  ]) {
+  for (
+    const name of [
+      ...CANDIDATES,
+      "AppIcon.icon",
+      "app/AppIcon.icon",
+      "assets/AppIcon.icon",
+      ...catalogs,
+      "resources/windows",
+    ]
+  ) {
     const candidate = yield* fs.realPath(join(root, name)).pipe(Effect.orElseSucceed(() => undefined))
     if (!candidate || candidate === root || !FSUtil.contains(root, candidate)) continue
     if (name.endsWith(".icon")) {
@@ -94,18 +96,17 @@ export const discover = Effect.fn("ProjectIcon.discover")(function* (fs: FSUtil.
       continue
     }
     const windows = name === "resources/windows"
-    const entries =
-      name.endsWith(".appiconset") || windows
-        ? yield* fs.readDirectoryEntries(candidate).pipe(Effect.orElseSucceed(() => []))
-        : undefined
+    const entries = name.endsWith(".appiconset") || windows
+      ? yield* fs.readDirectoryEntries(candidate).pipe(Effect.orElseSucceed(() => []))
+      : undefined
     const rank = (file: string) =>
       windows ? Math.abs(Number(file.match(/^icon-(\d+)\.png$/i)?.[1]) - 128) : /128|256/.test(file) ? 0 : 1
     const files = entries
       ?.flatMap((e) =>
-        e.type === "file" &&
-        (windows ? /^icon-\d+\.png$/i.test(e.name) : IMAGES.has(extname(e.name).toLowerCase()))
+        e.type === "file"
+          && (windows ? /^icon-\d+\.png$/i.test(e.name) : IMAGES.has(extname(e.name).toLowerCase()))
           ? [e.name]
-          : [],
+          : []
       )
       .toSorted()
       .sort((a, b) => rank(a) - rank(b))
@@ -121,7 +122,7 @@ export const discover = Effect.fn("ProjectIcon.discover")(function* (fs: FSUtil.
 })
 
 const read = Effect.fn("ProjectIcon.read")(
-  function* (fs: FSUtil.Interface, root: string, name: string, extensions: ReadonlySet<string>) {
+  function*(fs: FSUtil.Interface, root: string, name: string, extensions: ReadonlySet<string>) {
     const file = yield* fs.realPath(name)
     if (file === root || !FSUtil.contains(root, file) || !extensions.has(extname(file).toLowerCase())) return
     const info = yield* fs.stat(file)
@@ -142,22 +143,26 @@ function backdrop(url: string, fill: { solid?: string; "linear-gradient"?: Reado
     const match = /^(gray|srgb|display-p3):([\d.,]+)$/.exec(color)
     const values = match?.[2]?.split(",").map(Number) ?? []
     if (
-      !match ||
-      values.length !== (match[1] === "gray" ? 2 : 4) ||
-      values.some((n) => !Number.isFinite(n) || n < 0 || n > 1)
-    )
+      !match
+      || values.length !== (match[1] === "gray" ? 2 : 4)
+      || values.some((n) => !Number.isFinite(n) || n < 0 || n > 1)
+    ) {
       return
+    }
     const rgb = match[1] === "gray" ? [values[0], values[0], values[0]] : values.slice(0, 3)
     return `color(${match[1] === "display-p3" ? "display-p3" : "srgb"} ${rgb.join(" ")} / ${values.at(-1)})`
   })
   if (!colors.length || colors.some((color) => !color)) return url
-  const gradient =
-    colors.length > 1
-      ? `<defs><linearGradient id="bg" x2="0" y2="1">${colors.map((color, i) => `<stop offset="${i / (colors.length - 1)}" stop-color="${color}"/>`).join("")}</linearGradient></defs>`
-      : ""
+  const gradient = colors.length > 1
+    ? `<defs><linearGradient id="bg" x2="0" y2="1">${
+      colors.map((color, i) => `<stop offset="${i / (colors.length - 1)}" stop-color="${color}"/>`).join("")
+    }</linearGradient></defs>`
+    : ""
   // Embed the layer as an image, never as SVG markup: its content stays in an inert image document.
   return dataURL(
     "icon.svg",
-    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">${gradient}<rect width="128" height="128" rx="28" fill="${colors.length > 1 ? "url(#bg)" : colors[0]}"/><image width="128" height="128" href="${url}"/></svg>`,
+    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">${gradient}<rect width="128" height="128" rx="28" fill="${
+      colors.length > 1 ? "url(#bg)" : colors[0]
+    }"/><image width="128" height="128" href="${url}"/></svg>`,
   )
 }

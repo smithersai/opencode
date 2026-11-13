@@ -67,7 +67,7 @@ export const Plugin = define({
         .synthetic({ sessionID: event.sessionID, text, resume: false })
         .pipe(
           Effect.catchCause((cause) =>
-            Effect.logWarning("failed to persist Plan mode reminder", { sessionID: event.sessionID, cause }),
+            Effect.logWarning("failed to persist Plan mode reminder", { sessionID: event.sessionID, cause })
           ),
         )
     })
@@ -84,7 +84,7 @@ export const Plugin = define({
           })
           .pipe(
             Effect.catchCause((cause) =>
-              Effect.logWarning("failed to inject Plan mode reminder", { sessionID: event.data.sessionID, cause }),
+              Effect.logWarning("failed to inject Plan mode reminder", { sessionID: event.data.sessionID, cause })
             ),
           )
       }),
@@ -116,12 +116,12 @@ function lastReminder(messages: ReadonlyArray<Message>, enterReminder: string) {
 }
 
 module platform {
-// The platform code of plan.vibe: host path joining, which a .vibe file does not import (EK4402).
+  // The platform code of plan.vibe: host path joining, which a .vibe file does not import (EK4402).
 
-import path from "path"
+  import path from "path"
 
-/** @throws {never} */
-export function joinPath(...parts: string[]): string {
-  return path.join(...parts)
-}
+  /** @throws {never} */
+  export function joinPath(...parts: string[]): string {
+    return path.join(...parts)
+  }
 }

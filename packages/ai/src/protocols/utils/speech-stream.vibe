@@ -91,7 +91,12 @@ export const finish = effect (
   if (state.chunks.length === 0) {
     throw route.frameError(`The provider returned no audio${output.detail === undefined ? "" : ` (${output.detail})`}`)
   }
-  const audio = try Effect.orDie(Effect.try({ try: () => Media.bytes(concatBytes(state.chunks), output.mediaType, { info: output.info }), catch: (e) => e }))
+  const audio = try Effect.orDie(
+    Effect.try({
+      try: () => Media.bytes(concatBytes(state.chunks), output.mediaType, { info: output.info }),
+      catch: (e) => e,
+    }),
+  )
   return [
     SpeechFinishEvent.make({
       audio,

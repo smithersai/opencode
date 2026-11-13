@@ -77,21 +77,34 @@ const inputDelta = (tool: PendingTool, text: string): LLMEvent => {
 
 const toolCall = (route: string, tool: PendingTool, inputOverride?: string) => {
   const raw = inputOverride ?? tool.input
-  return do { const catchProgram = (parseToolInput(route, tool.name, raw)
-    |> Effect.map(
-      %,
-      (input): ToolCall =>
-        LLMEvent.toolCall({
-          id: tool.id,
-          name: tool.name,
-          namespace: tool.namespace,
-          input,
-          providerExecuted: tool.providerExecuted ? true : undefined,
-          providerMetadata: tool.providerMetadata,
-        }),
-    )); effect { return catchProgram catch effect (error) => try (tool.providerExecuted
-        ? Effect.fail(error)
-        : Effect.succeed(try Effect.orDie(Effect.try({ try: () => LLMEvent.toolInputError({ id: tool.id, name: tool.name, namespace: tool.namespace, raw }), catch: (e) => e })))) } }
+  return do {
+    const catchProgram = parseToolInput(route, tool.name, raw)
+      |> Effect.map(
+        %,
+        (input): ToolCall =>
+          LLMEvent.toolCall({
+            id: tool.id,
+            name: tool.name,
+            namespace: tool.namespace,
+            input,
+            providerExecuted: tool.providerExecuted ? true : undefined,
+            providerMetadata: tool.providerMetadata,
+          }),
+      )
+    effect {
+      return catchProgram catch effect (error) =>
+        try (tool.providerExecuted
+          ? Effect.fail(error)
+          : Effect.succeed(
+            try Effect.orDie(
+              Effect.try({
+                try: () => LLMEvent.toolInputError({ id: tool.id, name: tool.name, namespace: tool.namespace, raw }),
+                catch: (e) => e,
+              }),
+            ),
+          ))
+    }
+  }
 }
 
 const finishEvents = (tool: PendingTool, event: ToolCall | ToolInputError): ReadonlyArray<LLMEvent> => [

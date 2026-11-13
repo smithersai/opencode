@@ -39,10 +39,9 @@ export const answerForm = Effect.fn("cli.auth.form")(effect function(
       ? field.default
       : try answerField(field)
     if (field.type !== "external") {
-      const invalid = try ((args: Parameters<typeof formValidateValue>) =>
-        Effect.try(() =>
-          formValidateValue(...args)
-        ).pipe(Effect.orDie))([field, value])
+      const invalid =
+        try ((args: Parameters<typeof formValidateValue>) =>
+          Effect.try(() => formValidateValue(...args)).pipe(Effect.orDie))([field, value])
       if (invalid) return try Effect.fail(new Error(`${field.key}: ${invalid}`))
     }
     if (value !== undefined) answer[field.key] = value

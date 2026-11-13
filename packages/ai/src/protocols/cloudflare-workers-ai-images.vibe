@@ -68,7 +68,11 @@ const fromRequest = effect (request: Request) =>
           throw route.unsupported("media.images", `${request.model.id} takes one input image as image_b64`)
         }
         const image = try Effect.orDie(Effect.try({ try: () => images[0]?.inline(), catch: (e) => e }))
-        if (images[0] !== undefined && image === undefined) throw try Effect.orDie(Effect.try({ try: () => ProviderShared.inlineRequired(route.id, images[0]), catch: (e) => e }))
+        if (images[0] !== undefined && image === undefined) {
+          throw try Effect.orDie(
+            Effect.try({ try: () => ProviderShared.inlineRequired(route.id, images[0]), catch: (e) => e }),
+          )
+        }
         return MediaProtocol.json(mergeJsonRecords({ ...fields, image_b64: image?.base64 }, native) ?? {})
       }
       const body = MediaInput.formData()
@@ -99,7 +103,9 @@ const decodeResponse = effect (
     effect {
       if (!response.headers["content-type"]?.startsWith("application/json")) {
         const data = try route.bytes(response)
-        return new ImageResponse({ images: [try Effect.orDie(Effect.try({ try: () => Media.bytes(data), catch: (e) => e }))] })
+        return new ImageResponse({
+          images: [try Effect.orDie(Effect.try({ try: () => Media.bytes(data), catch: (e) => e }))],
+        })
       }
       const output = try decodeDocument(response)
       const result = output.value.result

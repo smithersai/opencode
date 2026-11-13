@@ -27,11 +27,12 @@ export const toBoundary = <R>(ctx: Interpreter<R>, value: Value) => walk(ctx, va
 /** Host JSON as program values: objects and arrays are copied, primitives pass through. */
 export const fromJson = <R>(ctx: Interpreter<R>, value: Json | undefined): Value => {
   if (value === null || typeof value !== "object") return value
-  if (Array.isArray(value))
+  if (Array.isArray(value)) {
     return new Arr(
       ctx.builtins.Array,
       value.map((item) => fromJson(ctx, item)),
     )
+  }
   const copied = new Obj(ctx.builtins.Object)
   for (const [key, item] of Object.entries(value)) define(copied, key, fromJson(ctx, item))
   return copied
@@ -73,7 +74,7 @@ module walker {
   ): Eval<Json | undefined> => {
     const stack = new Set<object>()
     /** @throws {unknown} the program's RangeError, TypeError or invalid-data error for values JSON cannot carry */
-    const visit = function* (holder: Obj, key: string, depth: number): Eval<Json | undefined> {
+    const visit = function*(holder: Obj, key: string, depth: number): Eval<Json | undefined> {
       // Shared references expand into a tree, so the work is not bounded by the value's size or depth.
       if (ctx.runner.tick()) yield Slice
       if (depth > MAX_VALUE_DEPTH) throw rangeError(`Value exceeds the maximum depth of ${MAX_VALUE_DEPTH}.`)
@@ -112,8 +113,9 @@ module walker {
       const copied: Record<string, Json> = {}
       // Own data property regardless of the key, so "__proto__" never reaches the Object.prototype setter.
       const put = (name: string, item: Json | undefined) => {
-        if (item !== undefined)
+        if (item !== undefined) {
           Object.defineProperty(copied, name, { value: item, enumerable: true, writable: true, configurable: true })
+        }
       }
       // Errors serialize as { name, message, ...own }: both may be inherited, and neither is enumerable in JS.
       if (target instanceof ErrorObj) {

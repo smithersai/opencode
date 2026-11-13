@@ -22,7 +22,7 @@ export const ServerHandler = HttpApiBuilder.group(Api, "server.server", (handler
             version: info.app.version ?? "unknown",
             pid: (try pid) ?? 0,
             hostname: (try hostname) || undefined,
-            urls: (try Effect.try(() => info.urls()).pipe(Effect.orDie)),
+            urls: try Effect.try(() => info.urls()).pipe(Effect.orDie),
             paths: info.paths,
             capabilities: { persistentPty: PersistentPty.available },
           }

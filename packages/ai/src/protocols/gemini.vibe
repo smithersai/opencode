@@ -303,7 +303,7 @@ const lowerToolConfig = (toolChoice: NonNullable<LLMRequest["toolChoice"]>) =>
     tool: (name) => ({ functionCallingConfig: { mode: "ANY" as const, allowedFunctionNames: [name] } }),
   })
 
-const lowerContentPart = Effect.fnUntraced(function* (part: TextPart | MediaPart) {
+const lowerContentPart = Effect.fnUntraced(function*(part: TextPart | MediaPart) {
   if (part.type === "text") return { text: part.text }
   return yield* GeminiGenerateContent.mediaPart("Gemini", part.media)
 })
@@ -320,7 +320,7 @@ const lowerToolCall = (part: ToolCallPart, omitIds: boolean, metadataKey: string
   thoughtSignature: thoughtSignature(part.providerMetadata, metadataKey),
 })
 
-const lowerMessages = Effect.fnUntraced(function* (request: LLMRequest) {
+const lowerMessages = Effect.fnUntraced(function*(request: LLMRequest) {
   const contents: GeminiContent[] = []
   const metadataKey = request.model.route.providerMetadataKey ?? request.model.provider
   const omitCallIds = omitsFunctionCallIds(request.model.id)
@@ -339,17 +339,18 @@ const lowerMessages = Effect.fnUntraced(function* (request: LLMRequest) {
       const previous = contents.at(-1)
       // Gemini rejects a continuation whose function-response turn carries extra
       // parts, so an update after a tool result starts its own user turn.
-      if (previous?.role === "user" && !(previous.parts ?? []).some((item) => "functionResponse" in item))
+      if (previous?.role === "user" && !(previous.parts ?? []).some((item) => "functionResponse" in item)) {
         contents[contents.length - 1] = { role: "user", parts: [...(previous.parts ?? []), { text: part.text }] }
-      else contents.push({ role: "user", parts: [{ text: part.text }] })
+      } else contents.push({ role: "user", parts: [{ text: part.text }] })
       continue
     }
 
     if (message.role === "user") {
       const parts: Array<Schema.Schema.Type<typeof GeminiContentPart>> = []
       for (const part of message.content) {
-        if (!ProviderShared.supportsContent(part, ["text", "media"]))
+        if (!ProviderShared.supportsContent(part, ["text", "media"])) {
           return yield* ProviderShared.unsupportedContent("Gemini", "user", ["text", "media"])
+        }
         parts.push(yield* lowerContentPart(part))
       }
       contents.push({ role: "user", parts })
@@ -361,13 +362,14 @@ const lowerMessages = Effect.fnUntraced(function* (request: LLMRequest) {
       // Parallel Gemini 3 calls may carry one signature on the first call; unsigned sibling calls are valid.
       let hasSignedToolCall = false
       for (const part of message.content) {
-        if (!ProviderShared.supportsContent(part, ["text", "reasoning", "tool-call", "media"]))
+        if (!ProviderShared.supportsContent(part, ["text", "reasoning", "tool-call", "media"])) {
           return yield* ProviderShared.unsupportedContent("Gemini", "assistant", [
             "text",
             "reasoning",
             "tool-call",
             "media",
           ])
+        }
         if (part.type === "text") {
           parts.push({ text: part.text, thoughtSignature: thoughtSignature(part.providerMetadata, metadataKey) })
           continue
@@ -391,9 +393,8 @@ const lowerMessages = Effect.fnUntraced(function* (request: LLMRequest) {
           const signature = lowered.thoughtSignature
           parts.push({
             ...lowered,
-            thoughtSignature:
-              signature ??
-              (requiresThoughtSignatureFallback(request.model.id) && !hasSignedToolCall
+            thoughtSignature: signature
+              ?? (requiresThoughtSignatureFallback(request.model.id) && !hasSignedToolCall
                 ? SKIP_THOUGHT_SIGNATURE_VALIDATOR
                 : undefined),
           })
@@ -407,8 +408,9 @@ const lowerMessages = Effect.fnUntraced(function* (request: LLMRequest) {
 
     const parts: Array<Schema.Schema.Type<typeof GeminiContentPart>> = []
     for (const part of message.content) {
-      if (!ProviderShared.supportsContent(part, ["tool-result"]))
+      if (!ProviderShared.supportsContent(part, ["tool-result"])) {
         return yield* ProviderShared.unsupportedContent("Gemini", "tool", ["tool-result"])
+      }
       if (part.result.type !== "content") {
         parts.push({
           functionResponse: {
@@ -447,16 +449,16 @@ const lowerMessages = Effect.fnUntraced(function* (request: LLMRequest) {
     // Gemini requires every response to a parallel call batch in one user turn,
     // so consecutive tool results join the open function-response turn.
     const previous = contents.at(-1)
-    if (previous?.role === "user" && (previous.parts ?? []).some((item) => "functionResponse" in item))
+    if (previous?.role === "user" && (previous.parts ?? []).some((item) => "functionResponse" in item)) {
       contents[contents.length - 1] = { role: "user", parts: [...(previous.parts ?? []), ...parts] }
-    else contents.push({ role: "user", parts })
+    } else contents.push({ role: "user", parts })
   }
 
   flushMedia()
   return contents
 })
 
-const fromRequest = Effect.fn("Gemini.fromRequest")(function* (request: LLMRequest) {
+const fromRequest = Effect.fn("Gemini.fromRequest")(function*(request: LLMRequest) {
   const flattened = ProviderShared.flattenToolRequest(request)
   const hasTools = flattened.tools.length > 0
   const generation = request.generation
@@ -471,21 +473,19 @@ const fromRequest = Effect.fn("Gemini.fromRequest")(function* (request: LLMReque
     seed: generation?.seed,
     stopSequences: generation?.stop,
     // Gemini accepts a budget above `maxOutputTokens`, but thinking then leaves the answer empty.
-    thinkingConfig:
-      options.thinkingConfig === undefined
-        ? undefined
-        : {
-            ...options.thinkingConfig,
-            includeThoughts: options.thinkingConfig.includeThoughts ?? true,
-            thinkingBudget:
-              options.thinkingConfig.thinkingBudget === undefined
-                ? undefined
-                : ProviderShared.fitThinkingBudget(
-                    options.thinkingConfig.thinkingBudget,
-                    generation?.maxTokens,
-                    MIN_THINKING_BUDGET,
-                  ),
-          },
+    thinkingConfig: options.thinkingConfig === undefined
+      ? undefined
+      : {
+        ...options.thinkingConfig,
+        includeThoughts: options.thinkingConfig.includeThoughts ?? true,
+        thinkingBudget: options.thinkingConfig.thinkingBudget === undefined
+          ? undefined
+          : ProviderShared.fitThinkingBudget(
+            options.thinkingConfig.thinkingBudget,
+            generation?.maxTokens,
+            MIN_THINKING_BUDGET,
+          ),
+      },
   }
 
   return {
@@ -493,14 +493,15 @@ const fromRequest = Effect.fn("Gemini.fromRequest")(function* (request: LLMReque
     contents: yield* lowerMessages(flattened.request),
     safetySettings: options.safetySettings,
     serviceTier: options.serviceTier,
-    systemInstruction:
-      request.system.length === 0 ? undefined : { parts: request.system.map((part) => ({ text: part.text })) },
+    systemInstruction: request.system.length === 0
+      ? undefined
+      : { parts: request.system.map((part) => ({ text: part.text })) },
     tools: hasTools
       ? [
-          {
-            functionDeclarations: flattened.tools.map(lowerTool),
-          },
-        ]
+        {
+          functionDeclarations: flattened.tools.map(lowerTool),
+        },
+      ]
       : undefined,
     toolConfig: hasTools && request.toolChoice ? yield* lowerToolConfig(request.toolChoice) : undefined,
     generationConfig: Object.values(generationConfig).some((value) => value !== undefined)
@@ -579,28 +580,30 @@ const mapFinishReason = (finishReason: string | undefined, hasToolCalls: boolean
   if (finishReason === "MAX_TOKENS") return "length"
   if (GeminiGenerateContent.contentFiltered(finishReason)) return "content-filter"
   if (
-    finishReason === "MALFORMED_FUNCTION_CALL" ||
-    finishReason === "UNEXPECTED_TOOL_CALL" ||
-    finishReason === "NO_IMAGE" ||
-    finishReason === "TOO_MANY_TOOL_CALLS" ||
-    finishReason === "MISSING_THOUGHT_SIGNATURE" ||
-    finishReason === "MALFORMED_RESPONSE"
-  )
+    finishReason === "MALFORMED_FUNCTION_CALL"
+    || finishReason === "UNEXPECTED_TOOL_CALL"
+    || finishReason === "NO_IMAGE"
+    || finishReason === "TOO_MANY_TOOL_CALLS"
+    || finishReason === "MISSING_THOUGHT_SIGNATURE"
+    || finishReason === "MALFORMED_RESPONSE"
+  ) {
     return "error"
+  }
   return "unknown"
 }
 
 const finish = (state: ParserState): ReadonlyArray<LLMEvent> => {
   // `?? undefined` normalizes an explicit `null` blockReason back to absent so
   // the "nothing to finish" check below keeps its meaning.
-  const promptBlockReason =
-    state.finishReason === undefined ? (state.promptFeedback?.blockReason ?? undefined) : undefined
+  const promptBlockReason = state.finishReason === undefined
+    ? (state.promptFeedback?.blockReason ?? undefined)
+    : undefined
   const finishReason = state.finishReason ?? promptBlockReason
   if (finishReason === undefined && state.usage === undefined && state.continuedUsage === undefined) return []
 
   const events: LLMEvent[] = []
   let lifecycle = state.lifecycle
-  if (state.reasoningId !== undefined)
+  if (state.reasoningId !== undefined) {
     lifecycle = Lifecycle.reasoningEnd(
       lifecycle,
       events,
@@ -609,7 +612,8 @@ const finish = (state: ParserState): ReadonlyArray<LLMEvent> => {
         ? undefined
         : providerMetadata(state.providerMetadataKey, { thoughtSignature: state.reasoningSignature }),
     )
-  if (state.textId !== undefined)
+  }
+  if (state.textId !== undefined) {
     lifecycle = Lifecycle.textEnd(
       lifecycle,
       events,
@@ -618,27 +622,27 @@ const finish = (state: ParserState): ReadonlyArray<LLMEvent> => {
         ? undefined
         : providerMetadata(state.providerMetadataKey, { thoughtSignature: state.textSignature }),
     )
+  }
   Lifecycle.finish(lifecycle, events, {
     reason: {
-      normalized:
-        promptBlockReason === undefined ? mapFinishReason(finishReason, state.hasToolCalls) : "content-filter",
+      normalized: promptBlockReason === undefined
+        ? mapFinishReason(finishReason, state.hasToolCalls)
+        : "content-filter",
       raw: finishReason,
     },
-    usage:
-      state.continuedUsage === undefined
-        ? mapUsage(state.usage, state.providerMetadataKey)
-        : mapContinuedUsage([...state.continuedUsage, state.usage ?? {}], state.providerMetadataKey),
-    providerMetadata:
-      state.promptFeedback === undefined
-        ? undefined
-        : providerMetadata(state.providerMetadataKey, { promptFeedback: state.promptFeedback }),
+    usage: state.continuedUsage === undefined
+      ? mapUsage(state.usage, state.providerMetadataKey)
+      : mapContinuedUsage([...state.continuedUsage, state.usage ?? {}], state.providerMetadataKey),
+    providerMetadata: state.promptFeedback === undefined
+      ? undefined
+      : providerMetadata(state.providerMetadataKey, { promptFeedback: state.promptFeedback }),
   })
   return events
 }
 
 const step = effect (state: ParserState, event: GeminiEvent | NextRequest) => {
   // Usage is cumulative within one request, so the next request of the same response counts from zero.
-  if (event instanceof NextRequest)
+  if (event instanceof NextRequest) {
     return [
       {
         ...state,
@@ -649,6 +653,7 @@ const step = effect (state: ParserState, event: GeminiEvent | NextRequest) => {
       },
       [],
     ] as const
+  }
   if (event.error) {
     const body = ProviderShared.encodeJson(event)
     throw new AIError({
@@ -667,7 +672,7 @@ const step = effect (state: ParserState, event: GeminiEvent | NextRequest) => {
     finishReason: candidate?.finishReason ?? state.finishReason,
   }
   // Gemini sporadically ends a valid request with MALFORMED_RESPONSE; continuing or resending it recovers.
-  if (candidate?.finishReason === "MALFORMED_RESPONSE")
+  if (candidate?.finishReason === "MALFORMED_RESPONSE") {
     throw new AIError({
       reason: new InvalidProviderOutputError({
         route: state.route,
@@ -676,12 +681,14 @@ const step = effect (state: ParserState, event: GeminiEvent | NextRequest) => {
         classification: "incomplete-stream",
       }),
     })
-  if (candidate?.finishReason && mapFinishReason(candidate.finishReason, state.hasToolCalls) === "error")
+  }
+  if (candidate?.finishReason && mapFinishReason(candidate.finishReason, state.hasToolCalls) === "error") {
     throw ProviderShared.eventError(
       state.route,
       `Gemini stopped with ${candidate.finishReason}`,
       ProviderShared.encodeJson(event),
     )
+  }
   if (!candidate?.content) return [nextState, []] as const
 
   const events: LLMEvent[] = []
@@ -698,16 +705,18 @@ const step = effect (state: ParserState, event: GeminiEvent | NextRequest) => {
 
   for (const input of candidate.content.parts ?? []) {
     if (
-      ProviderShared.isRecord(input) &&
-      !("text" in input) &&
-      !("inlineData" in input) &&
-      !("functionCall" in input) &&
-      !("functionResponse" in input)
-    )
+      ProviderShared.isRecord(input)
+      && !("text" in input)
+      && !("inlineData" in input)
+      && !("functionCall" in input)
+      && !("functionResponse" in input)
+    ) {
       continue
+    }
     const decoded = decodeGeminiContentPart(input)
-    if (Option.isNone(decoded))
+    if (Option.isNone(decoded)) {
       throw ProviderShared.eventError(ADAPTER, `Invalid ${state.route} stream event`, ProviderShared.encodeJson(event))
+    }
     const part = decoded.value
     const signature = "thoughtSignature" in part && part.thoughtSignature ? part.thoughtSignature : undefined
     // Gemini attaches replay signatures to thought parts, visible text, or function calls;
@@ -719,7 +728,9 @@ const step = effect (state: ParserState, event: GeminiEvent | NextRequest) => {
       lifecycle = try Effect.orDie(Effect.try({ try: () => Lifecycle.stepStart(lifecycle, events), catch: (e) => e }))
       events.push(
         LLMEvent.media({
-          media: try Effect.orDie(Effect.try({ try: () => Media.base64(part.inlineData.data, part.inlineData.mimeType), catch: (e) => e })),
+          media: try Effect.orDie(
+            Effect.try({ try: () => Media.base64(part.inlineData.data, part.inlineData.mimeType), catch: (e) => e }),
+          ),
           providerMetadata: signature
             ? providerMetadata(state.providerMetadataKey, { thoughtSignature: signature })
             : undefined,
@@ -731,14 +742,18 @@ const step = effect (state: ParserState, event: GeminiEvent | NextRequest) => {
       if (part.thought) {
         if (textId !== undefined) {
           const currentTextId = textId
-          lifecycle = try Effect.orDie(Effect.try({ try: () => Lifecycle.textEnd(
-            lifecycle,
-            events,
-            currentTextId,
-            textSignature
-              ? providerMetadata(state.providerMetadataKey, { thoughtSignature: textSignature })
-              : undefined,
-          ), catch: (e) => e }))
+          lifecycle = try Effect.orDie(Effect.try({
+            try: () =>
+              Lifecycle.textEnd(
+                lifecycle,
+                events,
+                currentTextId,
+                textSignature
+                  ? providerMetadata(state.providerMetadataKey, { thoughtSignature: textSignature })
+                  : undefined,
+              ),
+            catch: (e) => e,
+          }))
           textId = undefined
           textSignature = undefined
         }
@@ -747,25 +762,33 @@ const step = effect (state: ParserState, event: GeminiEvent | NextRequest) => {
           nextReasoningId += 1
         }
         const currentReasoningId = reasoningId
-        lifecycle = try Effect.orDie(Effect.try({ try: () => Lifecycle.reasoningDelta(
-          lifecycle,
-          events,
-          currentReasoningId,
-          part.text,
-          signature ? providerMetadata(state.providerMetadataKey, { thoughtSignature: signature }) : undefined,
-        ), catch: (e) => e }))
+        lifecycle = try Effect.orDie(Effect.try({
+          try: () =>
+            Lifecycle.reasoningDelta(
+              lifecycle,
+              events,
+              currentReasoningId,
+              part.text,
+              signature ? providerMetadata(state.providerMetadataKey, { thoughtSignature: signature }) : undefined,
+            ),
+          catch: (e) => e,
+        }))
         continue
       }
       if (reasoningId !== undefined) {
         const currentReasoningId = reasoningId
-        lifecycle = try Effect.orDie(Effect.try({ try: () => Lifecycle.reasoningEnd(
-          lifecycle,
-          events,
-          currentReasoningId,
-          reasoningSignature
-            ? providerMetadata(state.providerMetadataKey, { thoughtSignature: reasoningSignature })
-            : undefined,
-        ), catch: (e) => e }))
+        lifecycle = try Effect.orDie(Effect.try({
+          try: () =>
+            Lifecycle.reasoningEnd(
+              lifecycle,
+              events,
+              currentReasoningId,
+              reasoningSignature
+                ? providerMetadata(state.providerMetadataKey, { thoughtSignature: reasoningSignature })
+                : undefined,
+            ),
+          catch: (e) => e,
+        }))
         reasoningId = undefined
         reasoningSignature = undefined
       }
@@ -774,13 +797,19 @@ const step = effect (state: ParserState, event: GeminiEvent | NextRequest) => {
         nextTextId += 1
       }
       const currentTextId = textId
-      lifecycle = try Effect.orDie(Effect.try({ try: () => Lifecycle.textDelta(
-        lifecycle,
-        events,
-        currentTextId,
-        part.text,
-        textSignature ? providerMetadata(state.providerMetadataKey, { thoughtSignature: textSignature }) : undefined,
-      ), catch: (e) => e }))
+      lifecycle = try Effect.orDie(Effect.try({
+        try: () =>
+          Lifecycle.textDelta(
+            lifecycle,
+            events,
+            currentTextId,
+            part.text,
+            textSignature
+              ? providerMetadata(state.providerMetadataKey, { thoughtSignature: textSignature })
+              : undefined,
+          ),
+        catch: (e) => e,
+      }))
       textSignature = undefined
       continue
     }
@@ -797,25 +826,35 @@ const step = effect (state: ParserState, event: GeminiEvent | NextRequest) => {
       const id = supplied !== undefined && !duplicate ? supplied : `tool_${randomUUID().replaceAll("-", "")}`
       if (reasoningId !== undefined) {
         const currentReasoningId = reasoningId
-        lifecycle = try Effect.orDie(Effect.try({ try: () => Lifecycle.reasoningEnd(
-          lifecycle,
-          events,
-          currentReasoningId,
-          reasoningSignature
-            ? providerMetadata(state.providerMetadataKey, { thoughtSignature: reasoningSignature })
-            : undefined,
-        ), catch: (e) => e }))
+        lifecycle = try Effect.orDie(Effect.try({
+          try: () =>
+            Lifecycle.reasoningEnd(
+              lifecycle,
+              events,
+              currentReasoningId,
+              reasoningSignature
+                ? providerMetadata(state.providerMetadataKey, { thoughtSignature: reasoningSignature })
+                : undefined,
+            ),
+          catch: (e) => e,
+        }))
         reasoningId = undefined
         reasoningSignature = undefined
       }
       if (textId !== undefined) {
         const currentTextId = textId
-        lifecycle = try Effect.orDie(Effect.try({ try: () => Lifecycle.textEnd(
-          lifecycle,
-          events,
-          currentTextId,
-          textSignature ? providerMetadata(state.providerMetadataKey, { thoughtSignature: textSignature }) : undefined,
-        ), catch: (e) => e }))
+        lifecycle = try Effect.orDie(Effect.try({
+          try: () =>
+            Lifecycle.textEnd(
+              lifecycle,
+              events,
+              currentTextId,
+              textSignature
+                ? providerMetadata(state.providerMetadataKey, { thoughtSignature: textSignature })
+                : undefined,
+            ),
+          catch: (e) => e,
+        }))
         textId = undefined
         textSignature = undefined
       }
@@ -884,7 +923,7 @@ export const transport: Transport<GeminiBody, Prepared, unknown> = {
   id: sse.id,
   prepare: (input) => sse.prepare(input).pipe(Effect.map((http) => ({ http, input }))),
   execute: (prepared, request, runtime) =>
-    Effect.gen(function* () {
+    Effect.gen(function*() {
       const route = request.model.route.id
       const label = `${request.model.provider}/${route}`
       // Frames are parsed once here, so errors recover each frame's raw text for their body.
@@ -904,7 +943,7 @@ export const transport: Transport<GeminiBody, Prepared, unknown> = {
                   finishReason = candidate?.finishReason ?? finishReason
                   return event
                 }),
-              ),
+              )
             ),
             Stream.catchIf(
               // A connection failure may resume; a timeout keeps its meaning and ends the response.
@@ -916,11 +955,13 @@ export const transport: Transport<GeminiBody, Prepared, unknown> = {
             ),
             Stream.concat(
               Stream.suspend(() => {
-                if (token !== undefined && (finishReason === undefined || finishReason === CONTINUATION))
+                if (token !== undefined && (finishReason === undefined || finishReason === CONTINUATION)) {
                   return Stream.concat(Stream.succeed(new NextRequest()), next(token))
+                }
                 if (dropped) return Stream.fail(dropped)
-                if (finishReason === CONTINUATION)
+                if (finishReason === CONTINUATION) {
                   return Stream.fail(ProviderShared.eventError(label, "Gemini continued the response without a token"))
+                }
                 return Stream.empty
               }),
             ),

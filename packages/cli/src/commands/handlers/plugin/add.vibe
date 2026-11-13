@@ -14,10 +14,13 @@ module platform {
     })
     const errors: ParseError[] = []
     const config: unknown = parse(text, errors, { allowTrailingComma: true })
-    if (errors.length || typeof config !== "object" || config === null || Array.isArray(config))
+    if (errors.length || typeof config !== "object" || config === null || Array.isArray(config)) {
       throw new Error(`Invalid global configuration: ${configPath}`)
+    }
     const plugins = "plugins" in config ? config.plugins : undefined
-    if (plugins !== undefined && !Array.isArray(plugins)) throw new Error(`Invalid plugins configuration: ${configPath}`)
+    if (plugins !== undefined && !Array.isArray(plugins)) {
+      throw new Error(`Invalid plugins configuration: ${configPath}`)
+    }
     if (configured(plugins, spec)) return false
 
     const updated = applyEdits(
@@ -51,14 +54,16 @@ import { Config } from "../../../config"
 
 export default Runtime.handler(
   Commands.commands.plugin.commands.add,
-  Effect.fn("cli.plugin.add")(function* (input) {
-    if (!(yield* Effect.promise(() => Npm.isInstallablePackage(input.package))))
+  Effect.fn("cli.plugin.add")(function*(input) {
+    if (!(yield* Effect.promise(() => Npm.isInstallablePackage(input.package)))) {
       return yield* Effect.fail(new Error("Plugin target must be an npm registry package or Git package specifier"))
+    }
     const npm = yield* Npm.Service
     const installed = yield* npm.add(input.package)
     const target = configurationTarget(Host.resolve(installed))
-    if (!target)
+    if (!target) {
       return yield* Effect.fail(new Error(`Plugin package has no server, GUI, or TUI entrypoint: ${input.package}`))
+    }
 
     if (target === "server") {
       const global = yield* Global.Service

@@ -36,12 +36,11 @@ export const Plugin = define({
       const start = try fs.resolve(location.directory)
       const root = try fs.resolve(location.project.directory)
       const home = try fs.resolve(global.home)
-      const project =
-        discovery.project &&
-        (try Effect.try({ try: () => FSUtil.contains(root, start), catch: (cause) => cause }).pipe(Effect.orDie))
+      const project = discovery.project
+        && (try Effect.try({ try: () => FSUtil.contains(root, start), catch: (cause) => cause }).pipe(Effect.orDie))
       const stop = (try Effect.try({ try: () => FSUtil.contains(home, start), catch: (cause) => cause }).pipe(
-        Effect.orDie,
-      ))
+          Effect.orDie,
+        ))
         ? home
         : root
       const globalFile = try fs.resolve(joinPath(global.config, "AGENTS.md"))
@@ -58,8 +57,8 @@ export const Plugin = define({
         ...(discovery.global ? [globalFile] : []),
         ...(project
           ? ancestorDirectories(start, stop)
-              .map((directory) => joinPath(directory, "AGENTS.md"))
-              .filter((file) => discovery.global || file !== globalFile)
+            .map((directory) => joinPath(directory, "AGENTS.md"))
+            .filter((file) => discovery.global || file !== globalFile)
           : []),
       ]
       for (const file of new Set(candidates)) {
@@ -171,7 +170,7 @@ export const Plugin = define({
                 Effect.catchCause((cause) =>
                   Effect.logWarning("failed to fetch instruction url", { url, cause }).pipe(
                     Effect.as(configured.remote.get(url)),
-                  ),
+                  )
                 ),
               ),
             { concurrency: 4 },
@@ -189,7 +188,7 @@ export const Plugin = define({
           Effect.catchCause((cause) =>
             Effect.logWarning("failed to load instruction source", { source, cause }).pipe(
               Effect.as(Instructions.unavailable),
-            ),
+            )
           ),
         )
 
@@ -207,8 +206,9 @@ export const Plugin = define({
           if (!file) return
           try Effect.logDebug("instructions rescanned", {
             file,
-            instructions:
-              loaded.current.type === "available" ? loaded.current.files.map((item) => item.path) : "unavailable",
+            instructions: loaded.current.type === "available"
+              ? loaded.current.files.map((item) => item.path)
+              : "unavailable",
           })
         },
         (self, ..._args: [file?: string]) => lock.withPermit(self),
@@ -241,7 +241,7 @@ export const Plugin = define({
         Effect.logWarning("failed to activate instruction source", { cause }).pipe(
           Effect.andThen(discovery.transform((editor) => editor.unavailable())),
           Effect.asVoid,
-        ),
+        )
       ),
     )
   }),
@@ -260,30 +260,30 @@ function isUrl(source: string) {
 }
 
 module platform {
-import path from "path"
+  import path from "path"
 
-/** @throws {never} */
-export function joinPath(directory: string, name: string) {
-  return path.join(directory, name)
-}
+  /** @throws {never} */
+  export function joinPath(directory: string, name: string) {
+    return path.join(directory, name)
+  }
 
-/** @throws {never} */
-export function dirname(target: string) {
-  return path.dirname(target)
-}
+  /** @throws {never} */
+  export function dirname(target: string) {
+    return path.dirname(target)
+  }
 
-/** @throws {never} */
-export function basename(target: string) {
-  return path.basename(target)
-}
+  /** @throws {never} */
+  export function basename(target: string) {
+    return path.basename(target)
+  }
 
-/** @throws {never} */
-export function isAbsolute(target: string) {
-  return path.isAbsolute(target)
-}
+  /** @throws {never} */
+  export function isAbsolute(target: string) {
+    return path.isAbsolute(target)
+  }
 
-/** Rewrites platform separators as `/` for glob patterns. @throws {never} */
-export function toGlobSeparators(target: string) {
-  return target.replaceAll(path.sep, "/")
-}
+  /** Rewrites platform separators as `/` for glob patterns. @throws {never} */
+  export function toGlobSeparators(target: string) {
+    return target.replaceAll(path.sep, "/")
+  }
 }

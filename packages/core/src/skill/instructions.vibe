@@ -40,11 +40,12 @@ const update = (previous: ReadonlyArray<Summary>, current: ReadonlyArray<Summary
     (before, after) => before.name !== after.name || before.description !== after.description,
   )
   // Added, changed, and removed skills render as deltas; the full list is restated only when no entry differs.
-  if (diff.added.length === 0 && diff.changed.length === 0 && diff.removed.length === 0)
+  if (diff.added.length === 0 && diff.changed.length === 0 && diff.removed.length === 0) {
     return [
       "The available skills have changed. This list supersedes the previous available skills list.",
       render(current),
     ].join("\n")
+  }
   return [
     ...(diff.added.length === 0
       ? []
@@ -52,14 +53,16 @@ const update = (previous: ReadonlyArray<Summary>, current: ReadonlyArray<Summary
     ...(diff.changed.length === 0
       ? []
       : [
-          "The following skills have changed. Each entry replaces the previously listed skill with the same ID:",
-          ...entries(diff.changed.map((change) => change.current)),
-        ]),
+        "The following skills have changed. Each entry replaces the previously listed skill with the same ID:",
+        ...entries(diff.changed.map((change) => change.current)),
+      ]),
     ...(diff.removed.length === 0
       ? []
       : [
-          `The following skill IDs are no longer available and must not be used: ${diff.removed.map((skill) => skill.id).join(", ")}.`,
-        ]),
+        `The following skill IDs are no longer available and must not be used: ${
+          diff.removed.map((skill) => skill.id).join(", ")
+        }.`,
+      ]),
   ].join("\n")
 }
 
@@ -72,16 +75,16 @@ export class Service extends Context.Service<Service, Interface>()("@opencode/Sk
 
 const layer = Layer.effect(
   Service,
-  Effect.gen(function* () {
+  Effect.gen(function*() {
     const skills = yield* Skill.Service
 
     return Service.of({
-      load: Effect.fn("SkillInstructions.load")(function* (permissions) {
+      load: Effect.fn("SkillInstructions.load")(function*(permissions) {
         const available = Skill.available(yield* skills.list(), permissions)
           .flatMap((skill) =>
             skill.description === undefined || skill.autoinvoke === false
               ? []
-              : [{ id: skill.id, name: skill.name, description: skill.description }],
+              : [{ id: skill.id, name: skill.name, description: skill.description }]
           )
           .toSorted((a, b) => a.id.localeCompare(b.id))
         return Instructions.make<ReadonlyArray<Summary>>({

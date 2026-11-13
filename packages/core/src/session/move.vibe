@@ -53,7 +53,7 @@ export class Service extends Context.Service<Service, Interface>()("@opencode/Se
 
 const layer = Layer.effect(
   Service,
-  Effect.gen(function* () {
+  Effect.gen(function*() {
     const fs = yield* FSUtil.Service
     const global = yield* Global.Service
     const projects = yield* Project.Service
@@ -65,19 +65,22 @@ const layer = Layer.effect(
     const database = yield* Database.Service
     const bus = yield* Bus.Service
 
-    const get = Effect.fn("SessionMove.get")(function* (sessionID: Session.ID) {
+    const get = Effect.fn("SessionMove.get")(function*(sessionID: Session.ID) {
       const session = yield* store.get(sessionID)
       if (!session) return yield* new NotFoundError({ sessionID })
       return session
     })
 
-    const resolveDestination = Effect.fn("SessionMove.resolveDestination")(function* (
+    const resolveDestination = Effect.fn("SessionMove.resolveDestination")(function*(
       session: Session.Info,
       input: Parameters<Interface["move"]>[0],
     ) {
       const value = input.directory.trim()
-      const expanded =
-        value === "~" ? global.home : value.startsWith("~/") ? path.join(global.home, value.slice(2)) : value
+      const expanded = value === "~"
+        ? global.home
+        : value.startsWith("~/")
+        ? path.join(global.home, value.slice(2))
+        : value
       const directory = AbsolutePath.make(path.resolve(session.location.directory, expanded))
       const info = yield* fs.stat(directory).pipe(Effect.orElseSucceed(() => undefined))
       if (!info) return yield* new DestinationNotFoundError({ directory })
@@ -91,8 +94,9 @@ const layer = Layer.effect(
       yield* locations.contextEffect(destination.location).pipe(
         Effect.scoped,
         Effect.catchCause((cause) => {
-          if (Cause.hasInterruptsOnly(cause))
+          if (Cause.hasInterruptsOnly(cause)) {
             return Effect.failCause(Cause.fromReasons<never>(cause.reasons.filter(Cause.isInterruptReason)))
+          }
           return Effect.logWarning("session move destination unavailable", { directory, cause }).pipe(
             Effect.andThen(Effect.fail(new DestinationUnavailableError({ directory }))),
           )
@@ -101,7 +105,7 @@ const layer = Layer.effect(
       return destination
     })
 
-    const sourceUnavailable = Effect.fn("SessionMove.sourceUnavailable")(function* (session: Session.Info) {
+    const sourceUnavailable = Effect.fn("SessionMove.sourceUnavailable")(function*(session: Session.Info) {
       if (yield* execution.isActive(session.id)) return false
       if (!(yield* fs.isDir(session.location.directory))) return true
       return yield* SessionRunner.Service.pipe(
@@ -110,13 +114,13 @@ const layer = Layer.effect(
         Effect.catchCause((cause) =>
           Cause.hasInterrupts(cause)
             ? Effect.failCause(Cause.fromReasons<never>(cause.reasons.filter(Cause.isInterruptReason)))
-            : Effect.succeed(true),
+            : Effect.succeed(true)
         ),
       )
     })
 
     return Service.of({
-      move: Effect.fn("SessionMove.move")(function* (input) {
+      move: Effect.fn("SessionMove.move")(function*(input) {
         const session = yield* get(input.sessionID)
         const destination = yield* resolveDestination(session, input)
         // Probe outside the inbox lock so cancellation remains available during initialization.
@@ -128,14 +132,14 @@ const layer = Layer.effect(
         })
         yield* SessionInbox.serialized(
           input.sessionID,
-          Effect.gen(function* () {
+          Effect.gen(function*() {
             const latest = yield* get(input.sessionID)
             // Only recover the placement we probed; active runners retain their step-boundary handoff.
             if (
-              unavailable &&
-              latest.location.directory === session.location.directory &&
-              latest.location.workspaceID === session.location.workspaceID &&
-              !(yield* execution.isActive(input.sessionID))
+              unavailable
+              && latest.location.directory === session.location.directory
+              && latest.location.workspaceID === session.location.workspaceID
+              && !(yield* execution.isActive(input.sessionID))
             ) {
               const cancellations = (yield* SessionInbox.moveIDs(database.db, input.sessionID)).map(
                 (item) => [SessionEvent.InboxCancelled, { sessionID: input.sessionID, inboxID: item.id }] as const,
@@ -179,24 +183,24 @@ export const node = makeGlobalNode({
 })
 
 module platform {
-// The platform code of move.vibe: host path arithmetic, which a .vibe file does not import (EK4402).
+  // The platform code of move.vibe: host path arithmetic, which a .vibe file does not import (EK4402).
 
-import nodePath from "path"
+  import nodePath from "path"
 
-/** @throws {never} */
-function join(...paths: string[]): string {
-  return nodePath.join(...paths)
-}
+  /** @throws {never} */
+  function join(...paths: string[]): string {
+    return nodePath.join(...paths)
+  }
 
-/** @throws {never} */
-function resolve(...paths: string[]): string {
-  return nodePath.resolve(...paths)
-}
+  /** @throws {never} */
+  function resolve(...paths: string[]): string {
+    return nodePath.resolve(...paths)
+  }
 
-/** @throws {never} */
-function relative(from: string, to: string): string {
-  return nodePath.relative(from, to)
-}
+  /** @throws {never} */
+  function relative(from: string, to: string): string {
+    return nodePath.relative(from, to)
+  }
 
-export const path = { join, resolve, relative }
+  export const path = { join, resolve, relative }
 }

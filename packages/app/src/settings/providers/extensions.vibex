@@ -149,8 +149,7 @@ export const SettingsExtensions: Component<{
                               class="mcp-status-action"
                               aria-label={language.t("dialog.mcp.error.viewLabel", { name: item.name })}
                               onClick={() =>
-                                dialog.show(() => <DialogMcp directory={location().directory} server={item.name} />)
-                              }
+                                dialog.show(() => <DialogMcp directory={location().directory} server={item.name} />)}
                             >
                               {language.t("dialog.mcp.error.view")}
                             </Button>

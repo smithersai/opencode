@@ -93,7 +93,7 @@ type Data = {
 
 const layer = Layer.effect(
   Service,
-  Effect.gen(function* () {
+  Effect.gen(function*() {
     const providers = yield* Provider.Service
     const bus = yield* Bus.Service
     const location = yield* Location.Service
@@ -132,7 +132,7 @@ const layer = Layer.effect(
           list: (providerID) => {
             const ids = providerID === undefined ? Array.from(data.models.keys()) : [providerID]
             return ids.flatMap((id) =>
-              Array.from(data.models.get(id)?.keys() ?? []).flatMap((modelID) => draft(id, modelID) ?? []),
+              Array.from(data.models.get(id)?.keys() ?? []).flatMap((modelID) => draft(id, modelID) ?? [])
             )
           },
           get: draft,
@@ -175,16 +175,16 @@ const layer = Layer.effect(
     yield* Effect.addFinalizer(() => State.shutdown(state.reload()))
     let cached:
       | {
-          data: Data
-          all: readonly Info[]
-          available: readonly Info[]
-          other: ReadonlyMap<Model.Type, readonly Info[]>
-          byProvider: ReadonlyMap<Provider.ID, ReadonlyMap<ID, Info>>
-        }
+        data: Data
+        all: readonly Info[]
+        available: readonly Info[]
+        other: ReadonlyMap<Model.Type, readonly Info[]>
+        byProvider: ReadonlyMap<Provider.ID, ReadonlyMap<ID, Info>>
+      }
       | undefined
     // An unedited model keeps its shared definition object across rebuilds, so its merged output is reusable.
     const merged = new WeakMap<Info, { provider: Provider.Info | undefined; model: Info }>()
-    const read = Effect.fn("Model.snapshot")(function* () {
+    const read = Effect.fn("Model.snapshot")(function*() {
       while (true) {
         const current = yield* providers.snapshot()
         if (input !== current) {
@@ -209,10 +209,9 @@ const layer = Layer.effect(
                     ...model,
                     ...(provider?.canonical === undefined ? {} : { canonical: provider.canonical }),
                     package: model.package ?? provider?.package,
-                    compatibility:
-                      provider?.compatibility === undefined
-                        ? model.compatibility
-                        : { ...provider.compatibility, ...model.compatibility },
+                    compatibility: provider?.compatibility === undefined
+                      ? model.compatibility
+                      : { ...provider.compatibility, ...model.compatibility },
                     settings: Provider.mergeOverlay(
                       Provider.modelSettings(provider?.settings),
                       Provider.modelSettings(model.settings),
@@ -227,11 +226,13 @@ const layer = Layer.effect(
             ]
           }),
         )
-        if (disableFree)
-          for (const providerID of [Provider.ID.opencode, Provider.ID.make("opencode-go")])
+        if (disableFree) {
+          for (const providerID of [Provider.ID.opencode, Provider.ID.make("opencode-go")]) {
             byProvider.get(providerID)?.forEach((model, id, models) => {
               if (!model.cost.some((cost) => cost.input > 0)) models.delete(id)
             })
+          }
+        }
         // Non-chat models (image, decision…) only show up when listed by type, so nothing that
         // picks or resolves a session model can reach them.
         const other = new Map<Model.Type, Info[]>()
@@ -240,7 +241,7 @@ const layer = Layer.effect(
             if ((model.type ?? "chat") === "chat") return
             models.delete(id)
             if (model.enabled) other.set(model.type!, [...(other.get(model.type!) ?? []), model])
-          }),
+          })
         )
         const all = Array.from(byProvider.values())
           .flatMap((models) => Array.from(models.values()))
@@ -259,12 +260,12 @@ const layer = Layer.effect(
           if (input === current) return
           input = current
           state.invalidate()
-        }),
+        })
       ),
     )
     const reload = () => prepare.pipe(Effect.andThen(state.reload()))
     let published: typeof cached
-    const notify: Effect.Effect<void> = Effect.gen(function* () {
+    const notify: Effect.Effect<void> = Effect.gen(function*() {
       const value = yield* read()
       if (value === published) return
       published = value
@@ -284,7 +285,7 @@ const layer = Layer.effect(
       transform: (update) => prepare.pipe(Effect.andThen(state.transform(update))),
       reload,
       get: Effect.fn("Model.get")((providerID, modelID) =>
-        read().pipe(Effect.map((value) => value.byProvider.get(providerID)?.get(modelID))),
+        read().pipe(Effect.map((value) => value.byProvider.get(providerID)?.get(modelID)))
       ),
       all: Effect.fn("Model.all")(() => read().pipe(Effect.map((value) => value.all))),
       available: Effect.fn("Model.available")((types?: readonly Model.Type[]) =>
@@ -292,26 +293,24 @@ const layer = Layer.effect(
           Effect.map((value) =>
             types === undefined || types.length === 0
               ? value.available
-              : [...new Set(types)].flatMap((type) =>
-                  type === "chat" ? value.available : (value.other.get(type) ?? []),
-                ),
+              : [...new Set(types)].flatMap((type) => type === "chat" ? value.available : (value.other.get(type) ?? []))
           ),
-        ),
+        )
       ),
-      default: Effect.fn("Model.default")(function* () {
+      default: Effect.fn("Model.default")(function*() {
         const value = yield* read()
         const requested = value.data.defaultModel
         const model = requested && value.byProvider.get(requested.providerID)?.get(requested.modelID)
         return model?.enabled ? model : value.available.find(supportsText)
       }),
-      small: Effect.fn("Model.small")(function* (providerID) {
+      small: Effect.fn("Model.small")(function*(providerID) {
         const value = yield* read()
         const models = value.available.filter(
           (model) =>
-            model.providerID === providerID &&
-            model.status === "active" &&
-            model.capabilities.input.some((item) => item.startsWith("text")) &&
-            model.capabilities.output.some((item) => item.startsWith("text")),
+            model.providerID === providerID
+            && model.status === "active"
+            && model.capabilities.input.some((item) => item.startsWith("text"))
+            && model.capabilities.output.some((item) => item.startsWith("text")),
         )
         return ["gpt-luna", "gemini-flash-lite", "gemini-flash", "claude-haiku"].flatMap(
           (family) => models.find((model) => model.family === family) ?? [],
@@ -343,8 +342,8 @@ function preferFree(models: Info[]) {
 
 export function supportsText(model: Pick<Info, "capabilities">) {
   return (
-    (model.capabilities.input.length === 0 || model.capabilities.input.some((item) => item.startsWith("text"))) &&
-    (model.capabilities.output.length === 0 || model.capabilities.output.some((item) => item.startsWith("text")))
+    (model.capabilities.input.length === 0 || model.capabilities.input.some((item) => item.startsWith("text")))
+    && (model.capabilities.output.length === 0 || model.capabilities.output.some((item) => item.startsWith("text")))
   )
 }
 
@@ -365,10 +364,10 @@ export function parse(input: string): { providerID: Provider.ID; modelID: ID } {
 export * as Model from "./model.js"
 
 module platform {
-// The platform code of model.vibe: the process environment, which a .vibe file does not read (EK4402).
+  // The platform code of model.vibe: the process environment, which a .vibe file does not read (EK4402).
 
-/** The value of a process environment variable. @throws {never} */
-export function env(name: string): string | undefined {
-  return process.env[name]
-}
+  /** The value of a process environment variable. @throws {never} */
+  export function env(name: string): string | undefined {
+    return process.env[name]
+  }
 }

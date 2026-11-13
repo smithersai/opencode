@@ -68,23 +68,29 @@ export const protocol = MediaProtocol.inline<ExtractionRequestFor, ExtractionRes
               result.answers[name],
             )
               |> Effect.map(%, (answer) => [name, answer] as const)
-              |> Effect.mapError(%, (cause) =>
-                output.invalid(`${route.name} returned an invalid answer for ${name}`, cause))
+              |> Effect.mapError(
+                %,
+                (cause) => output.invalid(`${route.name} returned an invalid answer for ${name}`, cause),
+              )
           })
           return new ExtractionResponse({
             answers: Object.fromEntries(answers),
-            usage: try Effect.orDie(Effect.try({ try: () => result.usage === undefined
-              ? undefined
-              : new Usage({
-                inputTokens: result.usage.input_tokens,
-                outputTokens: result.usage.output_tokens,
-                totalTokens: ProviderShared.totalTokens(
-                  result.usage.input_tokens,
-                  result.usage.output_tokens,
-                  undefined,
-                ),
-                providerMetadata: { [route.provider]: result.usage },
-              }), catch: (e) => e })),
+            usage: try Effect.orDie(Effect.try({
+              try: () =>
+                result.usage === undefined
+                  ? undefined
+                  : new Usage({
+                    inputTokens: result.usage.input_tokens,
+                    outputTokens: result.usage.output_tokens,
+                    totalTokens: ProviderShared.totalTokens(
+                      result.usage.input_tokens,
+                      result.usage.output_tokens,
+                      undefined,
+                    ),
+                    providerMetadata: { [route.provider]: result.usage },
+                  }),
+              catch: (e) => e,
+            })),
             providerMetadata: {
               [route.provider]: {
                 model: result.model,

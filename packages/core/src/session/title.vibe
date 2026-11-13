@@ -43,14 +43,14 @@ export const isUntitled = (session: SessionSchema.Info) =>
 
 export const layer = Layer.effect(
   Service,
-  Effect.gen(function* () {
+  Effect.gen(function*() {
     const bus = yield* Bus.Service
     const llm = yield* LLMClient.Service
     const context = yield* SessionContext.Service
     const store = yield* SessionStore.Service
     const db = (yield* Database.Service).db
 
-    const attempt = Effect.fn("SessionTitle.attempt")(function* (input: {
+    const attempt = Effect.fn("SessionTitle.attempt")(function*(input: {
       readonly session: SessionSchema.Info
       readonly agent: Agent.Info
       readonly text: string
@@ -62,11 +62,11 @@ export const layer = Layer.effect(
       const recordUsage = Effect.suspend(() =>
         usage
           ? bus.publish(SessionEvent.UsageRecorded, {
-              sessionID: input.session.id,
-              source: "title",
-              ...usage,
-            })
-          : Effect.void,
+            sessionID: input.session.id,
+            source: "title",
+            ...usage,
+          })
+          : Effect.void
       )
       const prepared = yield* context.request.title({
         session: input.session,
@@ -88,16 +88,17 @@ export const layer = Layer.effect(
               }).pipe(Effect.orDie)
               const previous = usage
               usage = previous
-                ? try Effect.try({ try: () => SessionUsage.add(previous, step), catch: (cause) => cause }).pipe(Effect.orDie)
+                ? try Effect.try({ try: () => SessionUsage.add(previous, step), catch: (cause) => cause }).pipe(
+                  Effect.orDie,
+                )
                 : step
             }
-          },
+          }
         ),
         Effect.catchTag("AI.Error", () =>
           Effect.sync(() => {
             failed = true
-          }),
-        ),
+          })),
         Effect.onInterrupt(() => recordUsage.pipe(Effect.asVoid)),
       )
       yield* recordUsage
@@ -109,39 +110,38 @@ export const layer = Layer.effect(
         .find((line) => line.length > 0)
     })
 
-    const generate = Effect.fn("SessionTitle.generate")(function* (sessionID: SessionSchema.ID) {
+    const generate = Effect.fn("SessionTitle.generate")(function*(sessionID: SessionSchema.ID) {
       const session = yield* store.get(sessionID)
       if (!session) return
       const firstUser = yield* SessionHistory.firstUserMessage(db, session.id)
       if (!firstUser) return
       const text = !isUntitled(session)
         ? yield* store.context(session.id).pipe(
-            Effect.map((messages) => {
-              const original = `Original request:\n${firstUser.text.slice(0, MAX_FIRST_MESSAGE_LENGTH)}`
-              const recent = messages
-                .flatMap((message) => {
-                  if (message.type === "user" && message.id !== firstUser.id) return [`User: ${message.text.trim()}`]
-                  if (message.type !== "assistant") return []
-                  const text = message.content
-                    .flatMap((part) => (part.type === "text" ? [part.text.trim()] : []))
-                    .filter(Boolean)
-                    .join("\n")
-                  return text ? [`Assistant: ${text}`] : []
-                })
-                .join("\n\n")
-              if (!recent) return conversationPrompt(original)
-              const prefix = `${original}\n\nRecent conversation:\n`
-              const budget = MAX_CONTEXT_LENGTH - conversationPrompt("").length - prefix.length
-              return conversationPrompt(`${prefix}${recent.slice(-budget)}`)
-            }),
-            Effect.orElseSucceed(() => messagePrompt(firstUser.text)),
-          )
+          Effect.map((messages) => {
+            const original = `Original request:\n${firstUser.text.slice(0, MAX_FIRST_MESSAGE_LENGTH)}`
+            const recent = messages
+              .flatMap((message) => {
+                if (message.type === "user" && message.id !== firstUser.id) return [`User: ${message.text.trim()}`]
+                if (message.type !== "assistant") return []
+                const text = message.content
+                  .flatMap((part) => (part.type === "text" ? [part.text.trim()] : []))
+                  .filter(Boolean)
+                  .join("\n")
+                return text ? [`Assistant: ${text}`] : []
+              })
+              .join("\n\n")
+            if (!recent) return conversationPrompt(original)
+            const prefix = `${original}\n\nRecent conversation:\n`
+            const budget = MAX_CONTEXT_LENGTH - conversationPrompt("").length - prefix.length
+            return conversationPrompt(`${prefix}${recent.slice(-budget)}`)
+          }),
+          Effect.orElseSucceed(() => messagePrompt(firstUser.text)),
+        )
         : messagePrompt(firstUser.text)
       const selection = yield* context.selectTitle(session)
       if (!selection) return
-      const title =
-        (yield* attempt({ session, agent: selection.agent, text, model: selection.selected })) ??
-        (selection.primary && !isDeepStrictEqual(selection.selected.ref, selection.primary.ref)
+      const title = (yield* attempt({ session, agent: selection.agent, text, model: selection.selected }))
+        ?? (selection.primary && !isDeepStrictEqual(selection.selected.ref, selection.primary.ref)
           ? yield* attempt({ session, agent: selection.agent, text, model: selection.primary })
           : undefined)
       if (!title) return
@@ -170,12 +170,12 @@ export const node = makeLocationNode({
 })
 
 module platform {
-// The platform code of title.vibe: Node's structural equality, which a .vibe file does not import (EK4402).
+  // The platform code of title.vibe: Node's structural equality, which a .vibe file does not import (EK4402).
 
-import util from "node:util"
+  import util from "node:util"
 
-/** @throws {never} */
-export function isDeepStrictEqual(left: unknown, right: unknown): boolean {
-  return util.isDeepStrictEqual(left, right)
-}
+  /** @throws {never} */
+  export function isDeepStrictEqual(left: unknown, right: unknown): boolean {
+    return util.isDeepStrictEqual(left, right)
+  }
 }

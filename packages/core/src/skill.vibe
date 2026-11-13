@@ -52,21 +52,20 @@ export const toModelOutput = (skill: Info, files: ReadonlyArray<string>) => {
   ].join("\n")
 }
 
-export const prepare = Effect.fn("Skill.prepare")(function* (fs: FSUtil.Interface, skill: Info) {
+export const prepare = Effect.fn("Skill.prepare")(function*(fs: FSUtil.Interface, skill: Info) {
   const directory = path.dirname(skill.path)
-  const files =
-    path.basename(skill.path) === "SKILL.md"
-      ? (yield* fs.scan("**/*", {
-          cwd: directory,
-          absolute: true,
-          include: "file",
-          dot: true,
-          ignore: FSUtil.ignoreGlobs,
-        }))
-          .filter((file) => path.basename(file) !== "SKILL.md")
-          .toSorted()
-          .slice(0, 10)
-      : []
+  const files = path.basename(skill.path) === "SKILL.md"
+    ? (yield* fs.scan("**/*", {
+      cwd: directory,
+      absolute: true,
+      include: "file",
+      dot: true,
+      ignore: FSUtil.ignoreGlobs,
+    }))
+      .filter((file) => path.basename(file) !== "SKILL.md")
+      .toSorted()
+      .slice(0, 10)
+    : []
   return {
     directory,
     output: toModelOutput(skill, files),
@@ -94,7 +93,7 @@ export class Service extends Context.Service<Service, Interface>()("@opencode/Sk
 
 const layer = Layer.effect(
   Service,
-  Effect.gen(function* () {
+  Effect.gen(function*() {
     const bus = yield* Bus.Service
 
     const state = State.create<Data, Editor>({
@@ -126,10 +125,10 @@ const layer = Layer.effect(
     return Service.of({
       transform: state.transform,
       reload: state.reload,
-      get: Effect.fn("Skill.get")(function* (id) {
+      get: Effect.fn("Skill.get")(function*(id) {
         return state.get().skills.get(id)
       }),
-      list: Effect.fn("Skill.list")(function* () {
+      list: Effect.fn("Skill.list")(function*() {
         return Array.from(state.get().skills.values())
       }),
     })
@@ -143,15 +142,15 @@ export const node = makeLocationNode({
 })
 
 module platform {
-// The platform code of skill.vibe: host path rules, which a .vibe file does not read (EK4402).
+  // The platform code of skill.vibe: host path rules, which a .vibe file does not read (EK4402).
 
-import nodePath from "path"
+  import nodePath from "path"
 
-/** Host path functions with Node's `path` names. */
-export const path = {
-  /** @throws {never} */
-  dirname: (target: string) => nodePath.dirname(target),
-  /** @throws {never} */
-  basename: (target: string) => nodePath.basename(target),
-}
+  /** Host path functions with Node's `path` names. */
+  export const path = {
+    /** @throws {never} */
+    dirname: (target: string) => nodePath.dirname(target),
+    /** @throws {never} */
+    basename: (target: string) => nodePath.basename(target),
+  }
 }

@@ -9,7 +9,9 @@ import {
 
 export type Interface = MediaClient.Interface<SpeechRequestFor, SpeechEvent, SpeechResponse>
 
-export service SpeechClientService: Interface { static readonly key = "@opencode/SpeechClient";}
+export service SpeechClientService: Interface {
+  static readonly key = "@opencode/SpeechClient"
+}
 export const Service = SpeechClientService
 export type Service = SpeechClientService
 

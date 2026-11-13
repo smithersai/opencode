@@ -1,8 +1,8 @@
 import { listenForSignal } from host
 import { currentPlatform } from host
-import { $platform$2 } from host;
-import { $platform$1 } from host;
-import { $platform } from host;
+import { $platform$2 } from host
+import { $platform$1 } from host
+import { $platform } from host
 export * as ApplicationLifecycle from "./index.vibe"
 
 import { app, BrowserWindow } from "electron"
@@ -13,7 +13,13 @@ import { emitIpcEvent } from "../ipc-events.vibe"
 import { DesktopLogging, scoped } from "../native/logging"
 import { DesktopStorage } from "../storage/index.vibe"
 import { safeWebContentsURL } from "../windows/state"
-import { getLastFocusedWindow, getWindowByID, mainWindows, setAppQuitting, setRelaunchHandler } from "../windows/index.vibe"
+import {
+  getLastFocusedWindow,
+  getWindowByID,
+  mainWindows,
+  setAppQuitting,
+  setRelaunchHandler,
+} from "../windows/index.vibe"
 import { marks } from "./marks"
 import { initializeFirstLaunchOnboarding } from "./onboarding.vibe"
 import { Shutdown } from "./shutdown.vibe"
@@ -27,7 +33,9 @@ export interface Interface {
   readonly restoreWindows: () => BrowserWindow[]
 }
 
-export service Service: Interface { static readonly key = "opencode/desktop/ApplicationLifecycle";}
+export service Service: Interface {
+  static readonly key = "opencode/desktop/ApplicationLifecycle"
+}
 
 const runtime = Layer.effect(
   Service,
@@ -47,7 +55,12 @@ const runtime = Layer.effect(
         duration: "10 seconds",
         orElse: () => Effect.logError("shutdown timed out, quitting anyway"),
       })
-      |> Effect.ensuring(%, effect { return (shutdownReady = true) })
+      |> Effect.ensuring(
+        %,
+        effect {
+          return (shutdownReady = true)
+        },
+      )
 
     const focusWindow = (win: BrowserWindow | null) => {
       if (!win) return
@@ -80,7 +93,8 @@ const runtime = Layer.effect(
       runFork(
         prepareToRestart
           |> Effect.ensuring(
-            %, Effect.sync(() => {
+            %,
+            Effect.sync(() => {
               app.relaunch()
               app.quit()
             }),
@@ -176,7 +190,7 @@ const runtime = Layer.effect(
         $platform$1("SIGINT", signal)
         $platform$2("SIGTERM", signal)
         resetRelaunchHandler()
-      }),
+      })
     )
 
     return Service.of({
@@ -209,7 +223,9 @@ export const layer = Layer.unwrap(
   effect {
     // Decide first-launch state before the storage layer creates drafts.sqlite, which would
     // otherwise read as evidence of an earlier launch on a fresh install.
-    try initializeFirstLaunchOnboarding(try Effect.orDie(Effect.try({ try: () => app.getPath("userData"), catch: (e) => e })))
+    try initializeFirstLaunchOnboarding(
+      try Effect.orDie(Effect.try({ try: () => app.getPath("userData"), catch: (e) => e })),
+    )
     marks.onboarding = Date.now()
 
     return runtime.pipe(Layer.provideMerge(platform))

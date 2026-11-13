@@ -69,7 +69,7 @@ export const Plugin = define({
     )
     try config.changes().pipe(
       Stream.filterEffect((update) =>
-        Effect.map(compatibility(), (roots) => isCompatibilitySource(roots, update.path)),
+        Effect.map(compatibility(), (roots) => isCompatibilitySource(roots, update.path))
       ),
       Stream.runForEach((update) => PubSub.publish(changes, update.path).pipe(Effect.asVoid)),
       Effect.forkScoped({ startImmediately: true }),
@@ -88,21 +88,21 @@ function isCompatibilitySource(
   file: string,
 ) {
   return (
-    sourceDirectories.some((name) => basename(file) === name) ||
-    [...roots.claude, ...roots.agents].some((root) => FSUtil.contains(root, file))
+    sourceDirectories.some((name) => basename(file) === name)
+    || [...roots.claude, ...roots.agents].some((root) => FSUtil.contains(root, file))
   )
 }
 
 module platform {
-import path from "path"
+  import path from "path"
 
-/** @throws {never} */
-export function joinPath(directory: string, name: string) {
-  return path.join(directory, name)
-}
+  /** @throws {never} */
+  export function joinPath(directory: string, name: string) {
+    return path.join(directory, name)
+  }
 
-/** @throws {never} */
-export function basename(file: string) {
-  return path.basename(file)
-}
+  /** @throws {never} */
+  export function basename(file: string) {
+    return path.basename(file)
+  }
 }

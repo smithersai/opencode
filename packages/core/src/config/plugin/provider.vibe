@@ -20,7 +20,8 @@ export const Plugin = define({
     const loaded = try ConfigEntryObserver.observe(
       config,
       ctx.event,
-      (try Effect.orDie(Effect.try({ try: () => ctx.integration.reload(), catch: (e) => e }))) |> Effect.andThen(%, try Effect.orDie(Effect.try({ try: () => ctx.provider.reload(), catch: (e) => e }))),
+      (try Effect.orDie(Effect.try({ try: () => ctx.integration.reload(), catch: (e) => e })))
+        |> Effect.andThen(%, try Effect.orDie(Effect.try({ try: () => ctx.provider.reload(), catch: (e) => e }))),
     )
     try ctx.integration.transform((integrations) => {
       for (const [id, provider] of configuredProviders(loaded.entries)) {

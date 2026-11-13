@@ -10,8 +10,8 @@ export const start = effect (input: { session: Session.Info; command: string }) 
   try withSpan(
     effect {
       const instances = try Instance.Service
-      const shell =
-        try (Plugin.awaitActivation |> Effect.andThen(%, Shell.Service) |> (try Effect.orDie(Effect.try({
+      const shell = try (Plugin.awaitActivation |> Effect.andThen(%, Shell.Service)
+        |> (try Effect.orDie(Effect.try({
           try: () => instances.provide(input.session),
           catch: (error) => error,
         })))(%))
@@ -25,10 +25,15 @@ export const start = effect (input: { session: Session.Info; command: string }) 
       return {
         info,
         result: shell.result(info),
-        output: do { const catchProgram = shell
-          .output(info.id, { limit: 1024 * 1024 }); effect { return catchProgram catch (e) => match (e) {
-          when { _tag: "Shell.NotFoundError" }: ShellResult.unavailable;
-        } } },
+        output: do {
+          const catchProgram = shell
+            .output(info.id, { limit: 1024 * 1024 })
+          effect {
+            return catchProgram catch (e) => match (e) {
+              when { _tag: "Shell.NotFoundError" }: ShellResult.unavailable;
+            }
+          }
+        },
       }
     },
     "SessionShell.start",

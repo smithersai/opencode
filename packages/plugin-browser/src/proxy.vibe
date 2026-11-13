@@ -106,13 +106,15 @@ export async function make(transport: Transport) {
           headers.connection = "Upgrade"
           headers.upgrade = "websocket"
           tunnel.write(
-            `${incoming.method} ${url.pathname}${url.search} HTTP/1.1\r\n${Object.entries(headers)
-              .flatMap(([key, value]) =>
-                value === undefined
-                  ? []
-                  : (Array.isArray(value) ? value : [value]).map((item) => `${key}: ${item}\r\n`),
-              )
-              .join("")}\r\n`,
+            `${incoming.method} ${url.pathname}${url.search} HTTP/1.1\r\n${
+              Object.entries(headers)
+                .flatMap(([key, value]) =>
+                  value === undefined
+                    ? []
+                    : (Array.isArray(value) ? value : [value]).map((item) => `${key}: ${item}\r\n`)
+                )
+                .join("")
+            }\r\n`,
           )
         }
         if (head.byteLength) tunnel.write(head)
@@ -319,13 +321,14 @@ module platform {
     override _write(chunk: Buffer | string, encoding: BufferEncoding, callback: (error?: Error | null) => void) {
       const data = typeof chunk === "string" ? Buffer.from(chunk, encoding) : chunk
       void (async () => {
-        for (let offset = 0; offset < data.byteLength; offset += Browser.TUNNEL_CHUNK_BYTES)
+        for (let offset = 0; offset < data.byteLength; offset += Browser.TUNNEL_CHUNK_BYTES) {
           await this.transport.write(
             this.id,
             data.subarray(offset, offset + Browser.TUNNEL_CHUNK_BYTES),
             false,
             this.abort.signal,
           )
+        }
       })().then(
         () => callback(),
         (error: unknown) => callback(asError(error)),

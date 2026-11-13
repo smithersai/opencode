@@ -15,7 +15,7 @@ export class Service extends Context.Service<Service, Interface>()("@opencode/In
 
 const layer = Layer.effect(
   Service,
-  Effect.gen(function* () {
+  Effect.gen(function*() {
     const global = yield* Global.Service
     const location = yield* Location.Service
     return Service.of({
@@ -45,11 +45,13 @@ const layer = Layer.effect(
                     `  Platform: ${platform()}`,
                     `  Prefer ${global.tmp} over generic system temporary directories such as /tmp; it is pre-created and approved for external access.`,
                     "</env>",
-                  ].join("\n"),
+                  ].join("\n")
                 ),
                 render: {
                   initial: (environment) =>
-                    ["Here is some useful information about the environment you are running in:", environment].join("\n"),
+                    ["Here is some useful information about the environment you are running in:", environment].join(
+                      "\n",
+                    ),
                   changed: (_previous, environment) =>
                     ["The environment you are running in is now:", environment].join("\n"),
                 },
@@ -64,10 +66,10 @@ const layer = Layer.effect(
 export const node = makeLocationNode({ service: Service, layer, deps: [Global.node, Location.node] })
 
 module host {
-// The platform code of builtins.vibe: the host platform name, which a .vibe file does not read (EK4402).
+  // The platform code of builtins.vibe: the host platform name, which a .vibe file does not read (EK4402).
 
-/** @throws {never} */
-export function platform(): NodeJS.Platform {
-  return process.platform
-}
+  /** @throws {never} */
+  export function platform(): NodeJS.Platform {
+    return process.platform
+  }
 }

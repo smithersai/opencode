@@ -6,7 +6,10 @@ import { definition } from "../tool/runtime.js"
 import { trusted } from "vibelang-runtime"
 
 // definition is plain TypeScript that throws only programmer errors.
-const toolDefinition_impl = (void trusted, definition), toolDefinition: typeof toolDefinition_impl = function (...args) { return toolDefinition_impl.apply(void 0, args) }
+const toolDefinition_impl = (void trusted, definition),
+  toolDefinition: typeof toolDefinition_impl = function(...args) {
+    return toolDefinition_impl.apply(void 0, args)
+  }
 
 // Repairs apply only when the input schema unambiguously supports them:
 // - Stringified root or nested object: '{"limit":"20"}' -> { limit: 20 }
@@ -30,7 +33,9 @@ export const Plugin = define({
       // looked up here. Its `{ code }` input is trivial; the tools it calls are repaired normally.
       if (event.tool === "execute") return
       const list2 = try ctx.tool.list()
-      const tool = try Effect.orDie(Effect.try({ try: () => list2.find((tool) => tool.id === event.tool), catch: (e) => e }))
+      const tool = try Effect.orDie(
+        Effect.try({ try: () => list2.find((tool) => tool.id === event.tool), catch: (e) => e }),
+      )
       if (!tool) return
       const schema = (try Effect.orDie(Effect.try({ try: () => toolDefinition(tool), catch: (e) => e }))).inputSchema
       if (schema.type !== "object") return

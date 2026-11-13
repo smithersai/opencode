@@ -41,12 +41,11 @@ const toError = (error: unknown) => (error instanceof Error ? error : new Error(
 // HTTP statuses and network error codes live on error properties and are lost once flattened to a message.
 const describe = (error: unknown) => {
   if (!(error instanceof Error)) return String(error)
-  const detail =
-    error instanceof SdkHttpError
-      ? `HTTP ${error.status}`
-      : !(error instanceof SdkError) && "code" in error && typeof error.code === "string"
-        ? error.code
-        : undefined
+  const detail = error instanceof SdkHttpError
+    ? `HTTP ${error.status}`
+    : !(error instanceof SdkError) && "code" in error && typeof error.code === "string"
+    ? error.code
+    : undefined
   return detail && !error.message.includes(detail) ? `${error.message} (${detail})` : error.message
 }
 
@@ -159,7 +158,7 @@ export interface Attached {
  * A stdio server is spawned through the location's `Environment`, so it runs wherever the location's
  * shell commands run rather than always on the host.
  */
-export const connect = Effect.fnUntraced(function* (
+export const connect = Effect.fnUntraced(function*(
   server: string,
   config: typeof ConfigMCP.Server.Type | Attached,
   directory: string,
@@ -170,8 +169,9 @@ export const connect = Effect.fnUntraced(function* (
 ) {
   // The SDK takes list-changed handlers at construction, but consumers register after connect. On a
   // modern connection the SDK opens the subscriptions/listen stream behind these itself.
-  const timeout: (typeof ConfigMCP.Server.Type)["timeout"] =
-    config.type === "attached" ? { execution: ATTACHED_EXECUTION_TIMEOUT } : config.timeout
+  const timeout: (typeof ConfigMCP.Server.Type)["timeout"] = config.type === "attached"
+    ? { execution: ATTACHED_EXECUTION_TIMEOUT }
+    : config.timeout
   // Attached clients run ordinary SDK servers over the initialize handshake.
   const protocol = config.type === "attached" ? "legacy" : config.protocol
   const changed = { tools: () => {}, prompts: () => {}, resources: () => {} }
@@ -197,12 +197,12 @@ export const connect = Effect.fnUntraced(function* (
         Schedule.while(({ input, now, duration }) =>
           !isTransient(input) || now + Duration.toMillis(duration) >= deadline
             ? Effect.succeed(false)
-            : Effect.logWarning(`retrying ${what}`, { server, error: describe(input) }).pipe(Effect.as(true)),
+            : Effect.logWarning(`retrying ${what}`, { server, error: describe(input) }).pipe(Effect.as(true))
         ),
       ),
     )
 
-  const initialize = Effect.fnUntraced(function* (transport: Transport) {
+  const initialize = Effect.fnUntraced(function*(transport: Transport) {
     // SDK callbacks run outside any fiber. They must run with this context so events they publish keep
     // the server's Location; clients drop unlocated `form.created` events and elicitations then hang.
     const context = yield* Effect.context()
@@ -230,11 +230,14 @@ export const connect = Effect.fnUntraced(function* (
     }
     client.setRequestHandler("roots/list", () => ({ roots: [{ uri: fileURL(directory) }] }))
     if (elicitation) {
-      client.setRequestHandler("elicitation/create", (request, ctx) =>
-        runPromise(elicitation.create({ server, params: request.params, signal: ctx.mcpReq.signal })),
+      client.setRequestHandler(
+        "elicitation/create",
+        (request, ctx) => runPromise(elicitation.create({ server, params: request.params, signal: ctx.mcpReq.signal })),
       )
-      client.setNotificationHandler("notifications/elicitation/complete", (notification) =>
-        runPromise(elicitation.complete({ server, elicitationID: notification.params.elicitationId })),
+      client.setNotificationHandler(
+        "notifications/elicitation/complete",
+        (notification) =>
+          runPromise(elicitation.complete({ server, elicitationID: notification.params.elicitationId })),
       )
     }
 
@@ -245,10 +248,10 @@ export const connect = Effect.fnUntraced(function* (
     const onmessage = transport.onmessage
     transport.onmessage = (message, extra) => {
       if (
-        isJSONRPCResultResponse(message) &&
-        Array.isArray(message.result.tools) &&
-        client.checkToolsList({ ...message.result, tools: [] }).ok
-      )
+        isJSONRPCResultResponse(message)
+        && Array.isArray(message.result.tools)
+        && client.checkToolsList({ ...message.result, tools: [] }).ok
+      ) {
         message.result.tools = message.result.tools.filter((tool: unknown) => {
           const outcome = client.checkToolsList({ ...message.result, tools: [tool] })
           if (outcome.ok) return true
@@ -261,6 +264,7 @@ export const connect = Effect.fnUntraced(function* (
           )
           return false
         })
+      }
       onmessage?.(message, extra)
     }
 
@@ -280,11 +284,10 @@ export const connect = Effect.fnUntraced(function* (
   }
   const failure = (error: unknown) => {
     if (!(error instanceof SdkHttpError) || session.transport?.sessionId === undefined) return new Error(explain(error))
-    const expired =
-      error.status === 404 ||
-      (error.status === 400 &&
-        typeof error.data.text === "string" &&
-        error.data.text.includes("Bad Request: Server not initialized"))
+    const expired = error.status === 404
+      || (error.status === 400
+        && typeof error.data.text === "string"
+        && error.data.text.includes("Bad Request: Server not initialized"))
     if (!expired) return new Error(explain(error))
     if (!session.reported) {
       session.reported = true
@@ -293,7 +296,7 @@ export const connect = Effect.fnUntraced(function* (
     return new SessionExpiredError({ server })
   }
 
-  const exit = yield* Effect.gen(function* () {
+  const exit = yield* Effect.gen(function*() {
     if (config.type === "attached") return yield* initialize(config.transport)
     if (config.type === "local") {
       const [command, ...args] = config.command
@@ -309,8 +312,9 @@ export const connect = Effect.fnUntraced(function* (
       })
       return yield* initialize(transport)
     }
-    if (!URL.canParse(config.url))
+    if (!URL.canParse(config.url)) {
       return yield* new ConnectError({ server, message: `Invalid MCP URL for "${server}"` })
+    }
     const { McpOAuth } = yield* Effect.promise(() => import("./oauth.js"))
     const fetch = yield* McpOAuth.loggedFetch({ server, directory })
     // Servers that bundle their own Code Mode (Cloudflare and others) expose raw tools when asked
@@ -318,7 +322,7 @@ export const connect = Effect.fnUntraced(function* (
     const url = new URL(config.url)
     const addedCodemode = config.codemode !== false && !url.searchParams.has("codemode") && !rejectsUnknownQuery(url)
     if (addedCodemode) url.searchParams.set("codemode", "false")
-    const open = Effect.fnUntraced(function* (url: URL) {
+    const open = Effect.fnUntraced(function*(url: URL) {
       session.transport = new StreamableHTTPClientTransport(url, {
         requestInit: config.headers ? { headers: config.headers } : undefined,
         authProvider,
@@ -333,8 +337,9 @@ export const connect = Effect.fnUntraced(function* (
       "MCP connect",
       open(url).pipe(
         Effect.catch((error) => {
-          if (!addedCodemode || !(error instanceof SdkHttpError) || (error.status !== 400 && error.status !== 404))
+          if (!addedCodemode || !(error instanceof SdkHttpError) || (error.status !== 400 && error.status !== 404)) {
             return Effect.fail(error)
+          }
           // Servers that reject unknown query params get one retry at the configured URL.
           return open(new URL(config.url))
         }),
@@ -345,25 +350,26 @@ export const connect = Effect.fnUntraced(function* (
   if (Exit.isSuccess(exit)) {
     const client = exit.value
     yield* Effect.addFinalizer(() =>
-      Effect.gen(function* () {
+      Effect.gen(function*() {
         // Close only aborts streams; the legacy session lives on until the server expires it unless
         // terminated explicitly. Terminate first: close aborts the signal the DELETE shares.
         const transport = session.transport
         // Termination failures are logged below; onerror would report them a second time.
         client.onerror = undefined
-        if (transport?.sessionId !== undefined && !session.reported)
+        if (transport?.sessionId !== undefined && !session.reported) {
           yield* Effect.tryPromise({ try: () => transport.terminateSession(), catch: toError }).pipe(
             Effect.timeoutOrElse({
               duration: TERMINATE_TIMEOUT,
               orElse: () => Effect.fail(new Error(`Timed out after ${TERMINATE_TIMEOUT}ms`)),
             }),
             Effect.tapError((error) =>
-              Effect.logWarning("failed to terminate MCP session", { server, error: error.message }),
+              Effect.logWarning("failed to terminate MCP session", { server, error: error.message })
             ),
             Effect.ignore,
           )
+        }
         yield* Effect.tryPromise(() => client.close()).pipe(Effect.ignore)
-      }),
+      })
     )
     const catalog = { timeout: timeout?.catalog ?? DEFAULT_CATALOG_TIMEOUT }
     const execution = timeout?.execution ?? DEFAULT_EXECUTION_TIMEOUT
@@ -391,40 +397,44 @@ export const connect = Effect.fnUntraced(function* (
       tools: () =>
         advertised("tools")
           ? list("list MCP tools", (signal) => client.listTools(undefined, { ...catalog, signal })).pipe(
-              Effect.map((r) => r.tools),
-            )
+            Effect.map((r) => r.tools),
+          )
           : Effect.succeed([]),
       prompts: () =>
         advertised("prompts")
           ? list("list MCP prompts", (signal) => client.listPrompts(undefined, { ...catalog, signal })).pipe(
-              Effect.map((r) => r.prompts),
-            )
+            Effect.map((r) => r.prompts),
+          )
           : Effect.succeed([]),
       resources: () =>
         advertised("resources")
           ? list("list MCP resources", (signal) => client.listResources(undefined, { ...catalog, signal })).pipe(
-              Effect.map((r) => r.resources),
-            )
+            Effect.map((r) => r.resources),
+          )
           : Effect.succeed([]),
       resourceTemplates: () =>
         advertised("resources")
-          ? list("list MCP resource templates", (signal) =>
-              client.listResourceTemplates(undefined, { ...catalog, signal }),
-            ).pipe(Effect.map((r) => r.resourceTemplates))
+          ? list(
+            "list MCP resource templates",
+            (signal) => client.listResourceTemplates(undefined, { ...catalog, signal }),
+          ).pipe(Effect.map((r) => r.resourceTemplates))
           : Effect.succeed([]),
       readResource: (input) =>
         Effect.try({ try: () => client.getServerCapabilities()?.resources, catch: (cause) => cause }).pipe(
           Effect.orDie,
           Effect.flatMap((resources) => {
             if (!resources) return Effect.succeed(undefined)
-            return request("read MCP resource", (signal) =>
-              client.readResource({ uri: input.uri }, { signal, timeout: execution }),
+            return request(
+              "read MCP resource",
+              (signal) => client.readResource({ uri: input.uri }, { signal, timeout: execution }),
             )
           }),
         ),
       prompt: (input) =>
-        request("get MCP prompt", (signal) =>
-          client.getPrompt({ name: input.name, arguments: input.args ?? {} }, { signal, timeout: execution }),
+        request(
+          "get MCP prompt",
+          (signal) =>
+            client.getPrompt({ name: input.name, arguments: input.args ?? {} }, { signal, timeout: execution }),
         ),
       callTool: (input) =>
         request("call MCP tool", (signal) =>
@@ -436,8 +446,7 @@ export const connect = Effect.fnUntraced(function* (
             },
             // Requesting progress keeps long calls alive under the SDK's timeout; execution is the hard wall.
             { signal, timeout: execution, onprogress: () => {} },
-          ),
-        ).pipe(Effect.map(toCallToolResult)),
+          )).pipe(Effect.map(toCallToolResult)),
       onClose: (callback) => {
         client.onclose = () => callback(lastError ? `Connection closed: ${lastError}` : "Connection closed")
       },
@@ -459,11 +468,14 @@ export const connect = Effect.fnUntraced(function* (
 
   const error = Cause.squash(exit.cause)
   if (error instanceof UnauthorizedError) return yield* new NeedsAuthError({ server, message: error.message })
-  if (error instanceof UnsupportedProtocolVersionError)
+  if (error instanceof UnsupportedProtocolVersionError) {
     return yield* new ConnectError({
       server,
-      message: `${error.message}; the server supports ${error.supported.join(", ")}. Set "protocol" for this server to one of those or to "legacy".`,
+      message: `${error.message}; the server supports ${
+        error.supported.join(", ")
+      }. Set "protocol" for this server to one of those or to "legacy".`,
     })
+  }
   return yield* new ConnectError({ server, message: explain(error) })
 })
 
@@ -491,14 +503,16 @@ function toCallToolResult(result: SdkCallToolResult): CallToolResult {
     structured: result.structuredContent,
     content: result.content.flatMap((part): CallToolContent[] => {
       if (part.type === "text") return [{ type: "text", text: part.text }]
-      if (part.type === "image" || part.type === "audio")
+      if (part.type === "image" || part.type === "audio") {
         return [{ type: "media", data: part.data, mimeType: part.mimeType }]
+      }
       if (part.type === "resource_link") return [{ type: "text", text: part.uri }]
       if (part.type === "resource") {
         const resource = part.resource
         if ("text" in resource && typeof resource.text === "string") return [{ type: "text", text: resource.text }]
-        if ("blob" in resource && typeof resource.blob === "string" && typeof resource.mimeType === "string")
+        if ("blob" in resource && typeof resource.blob === "string" && typeof resource.mimeType === "string") {
           return [{ type: "media", data: resource.blob, mimeType: resource.mimeType, uri: resource.uri }]
+        }
         return [{ type: "text", text: resource.uri }]
       }
       return []

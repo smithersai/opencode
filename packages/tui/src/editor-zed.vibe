@@ -58,10 +58,9 @@ export async function resolveZedSelection(dbPath: string, cwd = processCwd()): P
   if (byteRanges.length === 0) return { type: "unavailable" }
 
   const contents = queryZedEditorContents(dbPath, row)
-  const text =
-    contents.type === "contents" && contents.contents != null
-      ? contents.contents
-      : await readFileAsync(row.buffer_path, "utf8").catch(() => undefined)
+  const text = contents.type === "contents" && contents.contents != null
+    ? contents.contents
+    : await readFileAsync(row.buffer_path, "utf8").catch(() => undefined)
   if (text == null) return { type: "unavailable" }
 
   const ranges = byteRanges.map((range) => {
@@ -217,7 +216,7 @@ function utf8ByteOffsetToStringIndex(text: string, byteOffset: number) {
   if (byteOffset <= 0) return 0
 
   let bytes = 0
-  for (let index = 0; index < text.length; ) {
+  for (let index = 0; index < text.length;) {
     const codePoint = text.codePointAt(index)
     if (codePoint === undefined) return text.length
 

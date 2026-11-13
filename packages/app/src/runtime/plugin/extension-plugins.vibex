@@ -103,16 +103,17 @@ function OwnServerPlugins(props: { plugins: readonly PluginInfo[] }) {
     host
       .definitions()
       .flatMap((definition) =>
-        builtin(definition.id) && errorOf(definition.id, "builtin") !== undefined ? [definition.id] : [],
-      ),
+        builtin(definition.id) && errorOf(definition.id, "builtin") !== undefined ? [definition.id] : []
+      )
   )
 
   // The switch already shows whether a plugin runs; only the states it cannot show get a label.
   const status = (id: string, kind: "builtin" | "config") => {
     const value = host.state.status[id] ?? "loading"
 
-    if (value === "failed" || (value === "active" && itemOf(id, kind)?.error))
+    if (value === "failed" || (value === "active" && itemOf(id, kind)?.error)) {
       return language.t("settings.plugins.status.failed")
+    }
 
     if (value === "active" || value === "disabled") return undefined
 
@@ -123,11 +124,10 @@ function OwnServerPlugins(props: { plugins: readonly PluginInfo[] }) {
     void work?.catch((cause: unknown) =>
       showToast({
         variant: "error",
-        title:
-          Predicate.hasProperty(cause, "code") && cause.code === "notFound"
-            ? language.t("settings.plugins.error.notFound")
-            : language.t("common.requestFailed"),
-      }),
+        title: Predicate.hasProperty(cause, "code") && cause.code === "notFound"
+          ? language.t("settings.plugins.error.notFound")
+          : language.t("common.requestFailed"),
+      })
     )
 
   const toggle = (id: string, next: boolean) => run(next ? bridge?.manager.enable(id) : bridge?.manager.disable(id))

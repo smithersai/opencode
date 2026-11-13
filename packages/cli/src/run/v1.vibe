@@ -65,7 +65,7 @@ export function runV1Bridge(input: V1RunCommandInput) {
 
   return Effect.runPromise(
     Effect.scoped(
-      Effect.gen(function* () {
+      Effect.gen(function*() {
         const endpoint = attached
           ? yield* Effect.orDie(Effect.try({ try: () => explicitEndpoint(input), catch: (e) => e }))
           : yield* Standalone.start({ command: input.standaloneCommand })
@@ -77,7 +77,7 @@ export function runV1Bridge(input: V1RunCommandInput) {
             variant: input.variant,
             attached,
             compatibility: "v1",
-          }),
+          })
         )
       }),
     ),

@@ -19,7 +19,9 @@ export type HttpMiddleware = (
   handler: HttpHandler,
 ) => HttpClientResponse.HttpClientResponse!Error
 
-export service RequestExecutorService: Interface { static readonly key = "@opencode/AI/RequestExecutor";}
+export service RequestExecutorService: Interface {
+  static readonly key = "@opencode/AI/RequestExecutor"
+}
 export const Service = RequestExecutorService
 export type Service = RequestExecutorService
 

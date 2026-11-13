@@ -18,12 +18,11 @@ export const makeMemoryDriver = (): MemoryDriver => {
   const key = (value: string) => posix.resolve("/", value)
   const info = (node: Node): FileInfo => ({
     type: node.type,
-    size:
-      node.type === "file"
-        ? node.bytes.length
-        : node.type === "symlink"
-          ? new TextEncoder().encode(node.target).length
-          : 0,
+    size: node.type === "file"
+      ? node.bytes.length
+      : node.type === "symlink"
+      ? new TextEncoder().encode(node.target).length
+      : 0,
     mtimeMs: node.mtimeMs,
   })
   const resolveKey = (value: string, followFinal: boolean, seen = new Set<string>()): string | undefined => {
@@ -68,7 +67,7 @@ export const makeMemoryDriver = (): MemoryDriver => {
         return node ? Effect.succeed(info(node)) : Effect.fail(new NotFound({ path: value }))
       }),
     read: (value, range) =>
-      Effect.gen(function* () {
+      Effect.gen(function*() {
         const original = lookup(value)
         if (!original) return yield* new NotFound({ path: value })
         if (original.type === "directory") return yield* new WrongKind({ path: value, actual: "directory" })
@@ -93,7 +92,7 @@ export const makeMemoryDriver = (): MemoryDriver => {
         (cause) => failed(value, cause),
       ),
     list: (value) =>
-      Effect.gen(function* () {
+      Effect.gen(function*() {
         const target = resolveKey(value, true) ?? key(value)
         const node = nodes.get(target)
         if (!node) return yield* new NotFound({ path: value })
@@ -111,17 +110,16 @@ export const makeMemoryDriver = (): MemoryDriver => {
         }
       }),
     move: (from, to) =>
-      Effect.gen(function* () {
+      Effect.gen(function*() {
         const source = resolveKey(from, false) ?? key(from)
         const node = nodes.get(source)
         if (!node) return yield* new NotFound({ path: from })
         yield* Effect.mapError(
           effect {
             const requested = resolveKey(to, false) ?? key(to)
-            const destination =
-              nodes.get(requested)?.type === "directory"
-                ? posix.join(requested, posix.basename(source))
-                : requested
+            const destination = nodes.get(requested)?.type === "directory"
+              ? posix.join(requested, posix.basename(source))
+              : requested
             if (node.type === "directory" && destination.startsWith(`${source}/`)) {
               throw new Error(`Cannot move a directory into itself: ${from}`)
             }
@@ -152,7 +150,7 @@ export const makeMemoryDriver = (): MemoryDriver => {
           cause: failed(description, new Error("The memory driver cannot spawn processes")),
         }),
       )
-    }),
+    })
   )
 
   return {

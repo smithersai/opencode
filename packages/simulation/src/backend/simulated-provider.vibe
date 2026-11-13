@@ -153,34 +153,35 @@ class ToolControllerError extends Schema.TaggedError<ToolControllerError>()("Sim
 export const layerDrive = (options: { readonly endpoint: string; readonly version: string }) =>
   Layer.effect(
     Service,
-    Effect.gen(function* () {
+    Effect.gen(function*() {
       const state = yield* Ref.make<State>({ counter: 0, pending: new Map() })
       const opened = yield* PubSub.unbounded<ProviderInvocation>()
       const lock = yield* Semaphore.make(1)
 
       const close = (invocation: PendingInvocation) =>
-        Effect.gen(function* () {
+        Effect.gen(function*() {
           yield* Queue.shutdown(invocation.responses)
           yield* lock.withPermit(
-            Ref.update(state, (current) =>
-              current.pending.get(invocation.id) === invocation ? remove(current, invocation.id) : current,
+            Ref.update(
+              state,
+              (current) => current.pending.get(invocation.id) === invocation ? remove(current, invocation.id) : current,
             ),
           )
         })
 
       yield* Effect.addFinalizer(() =>
-        Effect.gen(function* () {
+        Effect.gen(function*() {
           const current = yield* Ref.get(state)
           yield* Effect.forEach(current.pending.values(), (invocation) => Queue.shutdown(invocation.responses), {
             discard: true,
           })
           yield* PubSub.shutdown(opened)
-        }),
+        })
       )
 
       const open = (request: ProviderRequest) =>
         lock.withPermit(
-          Effect.gen(function* () {
+          Effect.gen(function*() {
             const current = yield* Ref.get(state)
             const id = `inv_${current.counter + 1}`
             const responses = yield* Queue.bounded<ProviderResponseEvent, ProviderDisconnectedError | Cause.Done>(256)
@@ -195,7 +196,7 @@ export const layerDrive = (options: { readonly endpoint: string; readonly versio
         )
 
       const requireInvocation = (id: string) =>
-        Effect.gen(function* () {
+        Effect.gen(function*() {
           const current = yield* Ref.get(state)
           const invocation = current.pending.get(id)
           if (invocation) return invocation
@@ -216,7 +217,7 @@ export const layerDrive = (options: { readonly endpoint: string; readonly versio
       const driver: Driver = {
         requests: Stream.unwrap(
           lock.withPermit(
-            Effect.gen(function* () {
+            Effect.gen(function*() {
               const subscription = yield* PubSub.subscribe(opened)
               const current = yield* Ref.get(state)
               const pending = Array.from(current.pending.values(), ({ id, url, body }) => ({ id, url, body }))
@@ -225,14 +226,14 @@ export const layerDrive = (options: { readonly endpoint: string; readonly versio
           ),
         ),
         push: (id, items) =>
-          Effect.gen(function* () {
+          Effect.gen(function*() {
             const invocation = yield* lock.withPermit(requireInvocation(id))
             yield* Queue.offerAll(invocation.responses, items)
           }),
         finish: (id, reason) =>
-          Effect.gen(function* () {
+          Effect.gen(function*() {
             const invocation = yield* lock.withPermit(
-              Effect.gen(function* () {
+              Effect.gen(function*() {
                 const invocation = yield* requireInvocation(id)
                 const current = yield* Ref.get(state)
                 yield* Ref.set(state, remove(current, id))
@@ -243,9 +244,9 @@ export const layerDrive = (options: { readonly endpoint: string; readonly versio
             yield* Queue.end(invocation.responses)
           }),
         disconnect: (id) =>
-          Effect.gen(function* () {
+          Effect.gen(function*() {
             const invocation = yield* lock.withPermit(
-              Effect.gen(function* () {
+              Effect.gen(function*() {
                 const invocation = yield* requireInvocation(id)
                 const current = yield* Ref.get(state)
                 yield* Ref.set(state, remove(current, id))
@@ -289,7 +290,7 @@ export const layerDrive = (options: { readonly endpoint: string; readonly versio
           Stream.unwrap(
             Effect.acquireRelease(open(request), close).pipe(
               Effect.map((invocation) =>
-                Stream.fromQueue(invocation.responses).pipe(Stream.takeUntil((event) => event.type === "finish")),
+                Stream.fromQueue(invocation.responses).pipe(Stream.takeUntil((event) => event.type === "finish"))
               ),
             ),
           ),
@@ -319,18 +320,19 @@ function handle(
       )
     case "llm.attach":
       return controllerLock.withPermit(
-        Effect.gen(function* () {
-          if (socket.data.closed)
+        Effect.gen(function*() {
+          if (socket.data.closed) {
             return yield* Effect.fail(
               new ControllerDisconnectedError({ message: "Drive controller disconnected before attachment" }),
             )
+          }
           const previous = yield* Ref.get(activeController)
           if (previous) yield* Fiber.interrupt(previous)
           const attachment = yield* FiberSet.run(
             fibers,
             driver.requests.pipe(
               Stream.runForEach((invocation) =>
-                socket.send(JSON.stringify({ jsonrpc: "2.0", method: "llm.request", params: invocation })),
+                socket.send(JSON.stringify({ jsonrpc: "2.0", method: "llm.request", params: invocation }))
               ),
             ),
           )
@@ -364,7 +366,7 @@ function handle(
   }
 }
 
-const makeToolDriver = Effect.fn("SimulatedProvider.makeToolDriver")(function* () {
+const makeToolDriver = Effect.fn("SimulatedProvider.makeToolDriver")(function*() {
   const completedRetention = 256
   const plugins = yield* SdkPlugins.Service
   const state = yield* Ref.make<ToolState>({
@@ -404,14 +406,14 @@ const makeToolDriver = Effect.fn("SimulatedProvider.makeToolDriver")(function* (
   ) => socket.send(JSON.stringify({ jsonrpc: "2.0", method, params }))
 
   const requireController = (socket: ControlSocket) =>
-    Effect.gen(function* () {
+    Effect.gen(function*() {
       const current = yield* Ref.get(state)
       if (current.controller?.socket === socket) return current
       return yield* Effect.fail(new ToolControllerError({ message: "Drive tool controller is not attached" }))
     })
 
   const requireInvocation = (socket: ControlSocket, id: string) =>
-    Effect.gen(function* () {
+    Effect.gen(function*() {
       const current = yield* requireController(socket)
       const invocation = current.pending.get(id)
       if (invocation) return { current, invocation }
@@ -424,17 +426,18 @@ const makeToolDriver = Effect.fn("SimulatedProvider.makeToolDriver")(function* (
     })
 
   const cancel = (id: string) =>
-    Effect.gen(function* () {
+    Effect.gen(function*() {
       const invocation = yield* lock.withPermit(Ref.get(state).pipe(Effect.map((current) => current.pending.get(id))))
       if (!invocation) return
       yield* invocation.operations.withPermit(
         lock.withPermit(
-          Effect.gen(function* () {
+          Effect.gen(function*() {
             const current = yield* Ref.get(state)
             if (current.pending.get(id) !== invocation) return
             yield* Ref.set(state, remove(current, id))
-            if (current.controller && !current.controller.socket.data.closed)
+            if (current.controller && !current.controller.socket.data.closed) {
               yield* notify(current.controller.socket, "tool.cancel", { id, reason: "interrupted" })
+            }
           }),
         ),
       )
@@ -446,7 +449,7 @@ const makeToolDriver = Effect.fn("SimulatedProvider.makeToolDriver")(function* (
     input: unknown,
     context: Tool.Context,
   ): Effect.Effect<Tool.Result, Tool.Error> =>
-    Effect.gen(function* () {
+    Effect.gen(function*() {
       const encoded = yield* Schema.decodeUnknownEffect(Schema.Json)(input).pipe(
         Effect.mapError((error) => new Tool.Error({ message: `Simulated tool input is not JSON: ${error.message}` })),
       )
@@ -454,12 +457,13 @@ const makeToolDriver = Effect.fn("SimulatedProvider.makeToolDriver")(function* (
         attachmentLock
           .withPermit(
             lock.withPermit(
-              Effect.gen(function* () {
+              Effect.gen(function*() {
                 const current = yield* Ref.get(state)
-                if (current.generation !== registrationGeneration)
+                if (current.generation !== registrationGeneration) {
                   yield* Effect.fail(
                     new Tool.Error({ message: `Simulated tool registration is no longer active: ${name}` }),
                   )
+                }
                 const id = `tool_${current.counter + 1}`
                 const completion = yield* Deferred.make<ToolCompletion>()
                 const notification: SimulationProtocol.Backend.ToolInvocation = {
@@ -491,8 +495,9 @@ const makeToolDriver = Effect.fn("SimulatedProvider.makeToolDriver")(function* (
                   activeOverlays: current.activeOverlays,
                   reconciliation: current.reconciliation,
                 })
-                if (current.controller && !current.controller.socket.data.closed)
+                if (current.controller && !current.controller.socket.data.closed) {
                   yield* notify(current.controller.socket, "tool.invocation", notification)
+                }
                 return pending
               }),
             ),
@@ -503,35 +508,37 @@ const makeToolDriver = Effect.fn("SimulatedProvider.makeToolDriver")(function* (
                 Effect.onInterrupt(() => cancel(pending.id)),
                 Effect.ensuring(
                   lock.withPermit(
-                    Ref.update(state, (current) =>
-                      current.pending.get(pending.id) === pending ? remove(current, pending.id) : current,
+                    Ref.update(
+                      state,
+                      (current) => current.pending.get(pending.id) === pending ? remove(current, pending.id) : current,
                     ),
                   ),
                 ),
-              ),
+              )
             ),
-          ),
+          )
       )
       // The simulation wire protocol keeps its historical field names; map to the
       // canonical output at this boundary.
-      if (invocation.type === "success")
+      if (invocation.type === "success") {
         return {
           output: invocation.output.structured,
           ...(invocation.output.content.length === 0
             ? {}
             : {
-                content: invocation.output.content.map((part) =>
-                  part.type === "text"
-                    ? part
-                    : {
-                        type: "file" as const,
-                        uri: `data:${part.mime};base64,${part.data}`,
-                        mime: part.mime,
-                        ...(part.name === undefined ? {} : { name: part.name }),
-                      },
-                ),
-              }),
+              content: invocation.output.content.map((part) =>
+                part.type === "text"
+                  ? part
+                  : {
+                    type: "file" as const,
+                    uri: `data:${part.mime};base64,${part.data}`,
+                    mime: part.mime,
+                    ...(part.name === undefined ? {} : { name: part.name }),
+                  }
+              ),
+            }),
         }
+      }
       return yield* new Tool.Error({ message: invocation.message })
     })
 
@@ -539,7 +546,7 @@ const makeToolDriver = Effect.fn("SimulatedProvider.makeToolDriver")(function* (
     Plugin.define({
       id: "opencode.simulation.tools",
       effect: (ctx) =>
-        Effect.gen(function* () {
+        Effect.gen(function*() {
           const scope = yield* Scope.Scope
           const token = {}
           const registrationLock = Semaphore.makeUnsafe(1)
@@ -549,18 +556,17 @@ const makeToolDriver = Effect.fn("SimulatedProvider.makeToolDriver")(function* (
             nextRegistrations: ReadonlyArray<SimulationProtocol.Backend.ToolRegistration>,
           ) =>
             registrationLock.withPermit(
-              Effect.gen(function* () {
+              Effect.gen(function*() {
                 const nextScope = yield* Scope.fork(scope)
                 const applied = yield* Effect.exit(
                   ctx.tool
                     .transform((draft) => {
-                      for (const registration of nextRegistrations)
+                      for (const registration of nextRegistrations) {
                         draft.add({
                           name: registration.name,
-                          options:
-                            registration.permission === undefined
-                              ? registration.options
-                              : { ...registration.options, permission: registration.permission },
+                          options: registration.permission === undefined
+                            ? registration.options
+                            : { ...registration.options, permission: registration.permission },
                           description: registration.description,
                           input: registration.inputSchema,
                           output: registration.outputSchema ?? {},
@@ -572,6 +578,7 @@ const makeToolDriver = Effect.fn("SimulatedProvider.makeToolDriver")(function* (
                               context,
                             ),
                         })
+                      }
                     })
                     .pipe(Scope.provide(nextScope)),
                 )
@@ -587,7 +594,7 @@ const makeToolDriver = Effect.fn("SimulatedProvider.makeToolDriver")(function* (
 
           const acknowledge = (generation: number, result: Exit.Exit<void, unknown>) =>
             lock.withPermit(
-              Effect.gen(function* () {
+              Effect.gen(function*() {
                 const current = yield* Ref.get(state)
                 const reconciliation = current.reconciliation.get(token)
                 if (reconciliation?.generation !== generation) return
@@ -596,7 +603,7 @@ const makeToolDriver = Effect.fn("SimulatedProvider.makeToolDriver")(function* (
             )
 
           const initialized = yield* lock.withPermit(
-            Effect.gen(function* () {
+            Effect.gen(function*() {
               const subscription = yield* PubSub.subscribe(registrationUpdates)
               const current = yield* Ref.get(state)
               const activeOverlays = new Set(current.activeOverlays).add(token)
@@ -606,7 +613,7 @@ const makeToolDriver = Effect.fn("SimulatedProvider.makeToolDriver")(function* (
           )
           yield* Effect.addFinalizer(() =>
             lock.withPermit(
-              Effect.gen(function* () {
+              Effect.gen(function*() {
                 const current = yield* Ref.get(state)
                 const activeOverlays = new Set(current.activeOverlays)
                 activeOverlays.delete(token)
@@ -616,15 +623,15 @@ const makeToolDriver = Effect.fn("SimulatedProvider.makeToolDriver")(function* (
                 yield* Ref.set(state, { ...current, activeOverlays, reconciliation })
                 if (pending) yield* Deferred.succeed(pending.result, Exit.void)
               }),
-            ),
+            )
           )
           yield* reconcile(initialized.generation, initialized.registrations)
           yield* Stream.fromEffectRepeat(PubSub.take(initialized.subscription)).pipe(
             Stream.runForEach((update) =>
-              Effect.gen(function* () {
+              Effect.gen(function*() {
                 const result = yield* Effect.exit(reconcile(update.generation, update.registrations))
                 yield* acknowledge(update.generation, result)
-              }),
+              })
             ),
             Effect.forkScoped({ startImmediately: true }),
           )
@@ -637,17 +644,18 @@ const makeToolDriver = Effect.fn("SimulatedProvider.makeToolDriver")(function* (
     registrations: ReadonlyArray<SimulationProtocol.Backend.ToolRegistration>,
     targetGeneration?: number,
   ) =>
-    Effect.gen(function* () {
+    Effect.gen(function*() {
       const reconciliation = yield* lock.withPermit(
-        Effect.gen(function* () {
+        Effect.gen(function*() {
           const current = yield* Ref.get(state)
           const generation = targetGeneration ?? current.generation + 1
           const reconciliation = new Map<object, ToolReconciliation>()
-          for (const token of current.activeOverlays)
+          for (const token of current.activeOverlays) {
             reconciliation.set(token, {
               generation,
               result: Deferred.makeUnsafe<Exit.Exit<void, unknown>>(),
             })
+          }
           yield* Ref.set(state, {
             counter: current.counter,
             generation,
@@ -663,58 +671,61 @@ const makeToolDriver = Effect.fn("SimulatedProvider.makeToolDriver")(function* (
           return { generation, previous: current, reconciliation }
         }),
       )
-      const results = yield* Effect.forEach(reconciliation.reconciliation.values(), (item) =>
-        Deferred.await(item.result),
+      const results = yield* Effect.forEach(
+        reconciliation.reconciliation.values(),
+        (item) => Deferred.await(item.result),
       )
       const failure = results.find(Exit.isFailure)
       yield* lock.withPermit(
         Ref.update(state, (current) =>
           current.generation === reconciliation.generation
             ? {
-                ...current,
-                ...(failure === undefined ? { appliedGeneration: reconciliation.generation } : {}),
-                reconciliation: new Map(),
-              }
-            : current,
-        ),
+              ...current,
+              ...(failure === undefined ? { appliedGeneration: reconciliation.generation } : {}),
+              reconciliation: new Map(),
+            }
+            : current),
       )
       return { failure, previous: reconciliation.previous }
     })
 
   const attach: ToolDriver["attach"] = (socket, registrations) =>
     attachmentLock.withPermit(
-      Effect.gen(function* () {
-        if (socket.data.closed)
+      Effect.gen(function*() {
+        if (socket.data.closed) {
           return yield* Effect.fail(
             new ToolControllerError({ message: "Drive tool controller disconnected before attachment" }),
           )
+        }
         const current = yield* Ref.get(state)
-        if (current.controller && current.controller.socket !== socket && !current.controller.socket.data.closed)
+        if (current.controller && current.controller.socket !== socket && !current.controller.socket.data.closed) {
           return yield* Effect.fail(
             new ToolControllerError({ message: "Another Drive tool controller is already attached" }),
           )
+        }
         const controller: ToolController = { socket }
         const replay = current.controller?.socket !== socket
-        const sameRegistrations =
-          current.appliedGeneration === current.generation &&
-          fingerprintJson(current.registrations) === fingerprintJson(registrations)
-        if (replay && current.pending.size > 0 && !sameRegistrations)
+        const sameRegistrations = current.appliedGeneration === current.generation
+          && fingerprintJson(current.registrations) === fingerprintJson(registrations)
+        if (replay && current.pending.size > 0 && !sameRegistrations) {
           return yield* Effect.fail(
             new ToolControllerError({
               message: "A reconnecting Drive tool controller must settle pending invocations before replacing tools",
             }),
           )
+        }
         if (sameRegistrations) {
           yield* lock.withPermit(
-            Effect.gen(function* () {
+            Effect.gen(function*() {
               const current = yield* Ref.get(state)
               yield* Ref.set(state, { ...current, controller })
-              if (replay)
+              if (replay) {
                 yield* Effect.forEach(
                   current.pending.values(),
                   (invocation) => notify(socket, "tool.invocation", invocation.notification),
                   { discard: true },
                 )
+              }
             }),
           )
           return { attached: true as const }
@@ -729,14 +740,16 @@ const makeToolDriver = Effect.fn("SimulatedProvider.makeToolDriver")(function* (
           return yield* Effect.fail(
             new ToolControllerError({
               message: rolledBack.failure
-                ? `Failed to apply and restore simulated tools: ${Cause.pretty(reconciled.failure.cause)}; ${Cause.pretty(rolledBack.failure.cause)}`
+                ? `Failed to apply and restore simulated tools: ${Cause.pretty(reconciled.failure.cause)}; ${
+                  Cause.pretty(rolledBack.failure.cause)
+                }`
                 : `Failed to apply simulated tools: ${Cause.pretty(reconciled.failure.cause)}`,
             }),
           )
         }
-        if (replay)
+        if (replay) {
           yield* lock.withPermit(
-            Effect.gen(function* () {
+            Effect.gen(function*() {
               const current = yield* Ref.get(state)
               if (current.controller?.socket !== socket) return
               yield* Effect.forEach(
@@ -746,39 +759,43 @@ const makeToolDriver = Effect.fn("SimulatedProvider.makeToolDriver")(function* (
               )
             }),
           )
+        }
         return { attached: true as const }
       }),
     )
 
   const update: ToolDriver["update"] = (socket, params) =>
-    Effect.gen(function* () {
+    Effect.gen(function*() {
       const { invocation } = yield* lock.withPermit(requireInvocation(socket, params.id))
       yield* invocation.operations.withPermit(
-        Effect.gen(function* () {
+        Effect.gen(function*() {
           const current = yield* lock.withPermit(Ref.get(state))
-          if (current.pending.get(params.id) !== invocation)
+          if (current.pending.get(params.id) !== invocation) {
             yield* Effect.fail(
               new ToolInvocationNotFoundError({
                 id: params.id,
                 message: `Simulated tool invocation not found or already finished: ${params.id}`,
               }),
             )
+          }
           const fingerprint = fingerprintJson(params.update)
           const applied = invocation.update
           if (applied?.sequence === params.sequence && applied.fingerprint === fingerprint) return
-          if (applied?.sequence === params.sequence)
+          if (applied?.sequence === params.sequence) {
             yield* Effect.fail(
               new ToolControllerError({
                 message: `Simulated tool update sequence ${params.sequence} was reused with different progress`,
               }),
             )
+          }
           const expected = applied === undefined ? 0 : applied.sequence + 1
-          if (params.sequence !== expected)
+          if (params.sequence !== expected) {
             yield* Effect.fail(
               new ToolControllerError({
                 message: `Expected simulated tool update sequence ${expected}, received ${params.sequence}`,
               }),
             )
+          }
           yield* invocation.progress(params.update)
           invocation.update = { sequence: params.sequence, fingerprint }
         }),
@@ -786,7 +803,7 @@ const makeToolDriver = Effect.fn("SimulatedProvider.makeToolDriver")(function* (
     })
 
   const settle = (socket: ControlSocket, id: string, completion: ToolCompletion) =>
-    Effect.gen(function* () {
+    Effect.gen(function*() {
       const current = yield* lock.withPermit(requireController(socket))
       const fingerprint = fingerprintJson(completion)
       const invocation = current.pending.get(id)
@@ -803,7 +820,7 @@ const makeToolDriver = Effect.fn("SimulatedProvider.makeToolDriver")(function* (
       yield* invocation.operations.withPermit(
         Effect.uninterruptible(
           lock.withPermit(
-            Effect.gen(function* () {
+            Effect.gen(function*() {
               const current = yield* Ref.get(state)
               if (current.pending.get(id) !== invocation) {
                 if (current.completed.get(id) === fingerprint) return
@@ -832,24 +849,24 @@ const makeToolDriver = Effect.fn("SimulatedProvider.makeToolDriver")(function* (
             current.controller?.socket !== socket
               ? current
               : {
-                  counter: current.counter,
-                  generation: current.generation,
-                  appliedGeneration: current.appliedGeneration,
-                  registrations: current.registrations,
-                  pending: current.pending,
-                  completed: current.completed,
-                  activeOverlays: current.activeOverlays,
-                  reconciliation: current.reconciliation,
-                },
+                counter: current.counter,
+                generation: current.generation,
+                appliedGeneration: current.appliedGeneration,
+                registrations: current.registrations,
+                pending: current.pending,
+                completed: current.completed,
+                activeOverlays: current.activeOverlays,
+                reconciliation: current.reconciliation,
+              },
         ),
       ),
     )
 
   const shutdown = attachmentLock.withPermit(
-    Effect.gen(function* () {
+    Effect.gen(function*() {
       yield* reconcileRegistrations(undefined, [])
       const current = yield* lock.withPermit(
-        Effect.gen(function* () {
+        Effect.gen(function*() {
           const current = yield* Ref.get(state)
           yield* Ref.set(state, {
             counter: current.counter,
@@ -906,7 +923,7 @@ function releaseController(
   socket: ControlSocket,
 ) {
   return controllerLock.withPermit(
-    Effect.gen(function* () {
+    Effect.gen(function*() {
       const attachment = socket.data.attachment
       if (!attachment) return
       yield* Fiber.interrupt(attachment)

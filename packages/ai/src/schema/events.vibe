@@ -746,11 +746,11 @@ export namespace LLMResponse {
     state.finishReason === undefined
       ? undefined
       : new LLMResponse({
-          message: state.message,
-          events: [...state.events],
-          usage: state.usage,
-          finishReason: state.finishReason,
-        })
+        message: state.message,
+        events: [...state.events],
+        usage: state.usage,
+        finishReason: state.finishReason,
+      })
 
   /** Convenience reducer for callers that already have a collected event list. */
   export const fromEvents = (events: ReadonlyArray<LLMEvent>) => complete(events.reduce(reduce, empty()))

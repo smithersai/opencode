@@ -74,7 +74,7 @@ export const make = effect function(input: {
       )
     }),
     Effect.catchCause((cause) =>
-      Cause.hasInterruptsOnly(cause) ? Effect.void : Effect.logWarning("ACP selection event stream failed", cause),
+      Cause.hasInterruptsOnly(cause) ? Effect.void : Effect.logWarning("ACP selection event stream failed", cause)
     ),
     Effect.ensuring(Deferred.succeed(connected, undefined)),
     Effect.forkScoped,
@@ -109,11 +109,12 @@ export const make = effect function(input: {
             const config = mcpConfig(server)
             if (try equal(registered.get(server.name), config)) return
             registered.set(server.name, config)
-            return try input.client.mcp.add({ server: server.name, location: { directory: attached.cwd }, config }).pipe(
-              Effect.catch(ACPClient.classify),
-              Effect.onError(() => Effect.sync(() => registered.delete(server.name))),
-              Effect.uninterruptible,
-            )
+            return try input.client.mcp.add({ server: server.name, location: { directory: attached.cwd }, config })
+              .pipe(
+                Effect.catch(ACPClient.classify),
+                Effect.onError(() => Effect.sync(() => registered.delete(server.name))),
+                Effect.uninterruptible,
+              )
           },
         { concurrency: "unbounded", discard: true },
       )

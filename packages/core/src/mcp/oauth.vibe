@@ -55,14 +55,14 @@ const send: FetchLike = (url, init) => {
 }
 
 export const loggedFetch = (fields: { readonly server: string; readonly directory?: string }) =>
-  Effect.gen(function* () {
+  Effect.gen(function*() {
     const run = Effect.runPromiseWith(yield* Effect.context())
     const request: FetchLike = (url, init) => {
       const grant = init?.body instanceof URLSearchParams ? init.body.get("grant_type") : undefined
       const operation = grant === "refresh_token" ? "refresh" : grant === "authorization_code" ? "exchange" : undefined
       const started = Date.now()
       return run(
-        Effect.gen(function* () {
+        Effect.gen(function*() {
           if (operation) yield* Effect.logInfo("mcp oauth request started")
           const response = yield* Effect.tryPromise({ try: () => send(url, init), catch: (error) => error })
           const result = { status: response.status, durationMs: Date.now() - started }
@@ -92,7 +92,7 @@ export const loggedFetch = (fields: { readonly server: string; readonly director
                 Effect.logWarning("mcp http request failed", {
                   errors,
                   durationMs: Date.now() - started,
-                }),
+                })
               ),
             )
           }),
@@ -174,8 +174,9 @@ export const provider = (options: Options): OAuthClientProvider => {
     // authorization servers require one, so fall back to the configured URL.
     validateResourceURL: async (_serverUrl, resource) => {
       if (!resource) return identity
-      if (!checkResourceAllowed({ requestedResource: identity, configuredResource: resource }))
+      if (!checkResourceAllowed({ requestedResource: identity, configuredResource: resource })) {
         throw new Error(`Protected resource ${resource} does not cover ${identity}`)
+      }
       const canonical = new URL(resource)
       // The transport dials the configured URL with extra query parameters and some servers echo
       // that back as the resource. Query is transport detail, not identity: the token stays bound
@@ -205,8 +206,11 @@ export const provider = (options: Options): OAuthClientProvider => {
     saveTokens: (tokens) => options.store.saveTokens(tokens),
     redirectToAuthorization: async (url) => {
       if (!redirect) throw refuse("user authorization")
-      if (url.protocol !== "http:" && url.protocol !== "https:")
-        throw new Error(`MCP server "${options.config.url}" returned a ${url.protocol} authorization URL; only http and https are supported`)
+      if (url.protocol !== "http:" && url.protocol !== "https:") {
+        throw new Error(
+          `MCP server "${options.config.url}" returned a ${url.protocol} authorization URL; only http and https are supported`,
+        )
+      }
       return redirect.open(url)
     },
     ...(options.invalidate ? { invalidateCredentials: options.invalidate } : {}),
@@ -276,7 +280,7 @@ export const toTokens = (credential: Credential.OAuth): StoredOAuthTokens => {
   }
 }
 
-export const connectProvider = Effect.fnUntraced(function* (input: {
+export const connectProvider = Effect.fnUntraced(function*(input: {
   readonly config: typeof ConfigMCP.Remote.Type
   readonly integrationID: Integration.ID
 }) {
@@ -340,7 +344,7 @@ export const authorize = (input: {
   readonly integrationID: Integration.ID
   readonly methodID: Integration.MethodID
 }) =>
-  Effect.gen(function* () {
+  Effect.gen(function*() {
     const fields = { server: input.name, methodID: input.methodID, oauthAttemptID: randomUUID() }
     const context = yield* Effect.context()
     const run = Effect.runPromiseWith(context)
@@ -392,9 +396,12 @@ export const authorize = (input: {
       if (!value) return fail("Missing authorization code", "missing_code")
       // The page waits for the token exchange so the browser never reports success for a rejected code.
       if (
-        !Effect.runSync(Deferred.succeed(code, { code: value, iss: url.searchParams.get("iss") ?? undefined, response }))
-      )
+        !Effect.runSync(
+          Deferred.succeed(code, { code: value, iss: url.searchParams.get("iss") ?? undefined, response }),
+        )
+      ) {
         response.writeHead(409).end("OAuth callback already received")
+      }
     })
 
     // callback_port, else the port pinned by redirect_uri, else ephemeral; a mismatch strands the browser.
@@ -429,7 +436,7 @@ export const authorize = (input: {
           params: { protocolVersion: LATEST_PROTOCOL_VERSION, capabilities: {}, clientInfo: { name: "opencode" } },
         }),
         signal,
-      }),
+      })
     ).pipe(
       Effect.map((response) => extractWWWAuthenticateParams(response)),
       Effect.timeout("5 seconds"),
@@ -440,15 +447,14 @@ export const authorize = (input: {
     // lists the loopback redirect; a configured client_id always wins.
     const discovery = yield* Effect.tryPromise({
       try: async () =>
-        (await configuredDiscovery({ config: input.config, fetchFn })) ??
-        discoverOAuthServerInfo(input.config.url, { resourceMetadataUrl, fetchFn }),
+        (await configuredDiscovery({ config: input.config, fetchFn }))
+          ?? discoverOAuthServerInfo(input.config.url, { resourceMetadataUrl, fetchFn }),
       catch: (error) => (error instanceof Error ? error : new Error(String(error))),
     })
-    const cimd =
-      !oauth?.client_id &&
-      !oauth?.redirect_uri &&
-      discovery.authorizationServerMetadata?.client_id_metadata_document_supported === true &&
-      (discovery.authorizationServerMetadata.token_endpoint_auth_methods_supported?.includes("none") ?? false)
+    const cimd = !oauth?.client_id
+      && !oauth?.redirect_uri
+      && discovery.authorizationServerMetadata?.client_id_metadata_document_supported === true
+      && (discovery.authorizationServerMetadata.token_endpoint_auth_methods_supported?.includes("none") ?? false)
     yield* Effect.logInfo("mcp oauth client registration selected", {
       ...fields,
       registration: oauth?.client_id ? "static" : cimd ? "cimd" : "dcr",
@@ -470,7 +476,7 @@ export const authorize = (input: {
       },
     })
 
-    const finalize = Effect.gen(function* () {
+    const finalize = Effect.gen(function*() {
       const tokens = yield* Effect.promise(() => store.tokens())
       if (!tokens) return yield* Effect.fail(new Error(`MCP server "${input.name}" did not return OAuth tokens`))
       const client = yield* Effect.promise(() => store.clientInformation())
@@ -487,8 +493,9 @@ export const authorize = (input: {
       catch: (error) => (error instanceof Error ? error : new Error(String(error))),
     })
 
-    if (!authorizationUrl)
+    if (!authorizationUrl) {
       return yield* Effect.fail(new Error(`MCP server "${input.name}" did not provide an authorization URL`))
+    }
 
     const completed = yield* Deferred.make<Credential.OAuth, Error>()
     yield* Deferred.await(code).pipe(
@@ -501,7 +508,7 @@ export const authorize = (input: {
                 error
                   ? OauthCallbackPage.error(error, { provider: input.name })
                   : OauthCallbackPage.success({ provider: input.name }),
-              ),
+              )
           )
         return Effect.tryPromise({
           try: () =>
@@ -549,8 +556,8 @@ export const authorize = (input: {
             server: input.name,
             methodID: input.methodID,
             errors,
-          }),
+          })
         ),
-      ),
+      )
     ),
   )

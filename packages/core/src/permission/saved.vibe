@@ -46,7 +46,9 @@ export interface Interface {
   readonly remove: (id: ID) => void!!
 }
 
-export service Service: Interface { static readonly key = "@opencode/PermissionSaved";}
+export service Service: Interface {
+  static readonly key = "@opencode/PermissionSaved"
+}
 
 const layer = Layer.effect(
   Service,
@@ -76,17 +78,25 @@ const layer = Layer.effect(
                 .insert(PermissionTable),
             catch: (error) => error,
           }))
-          const values2 = try Effect.orDie(Effect.try({ try: () => orDie2
-            .values(
-              input.resources.map((resource) => ({
-                id: ID.create(),
-                project_id: input.projectID,
-                action: input.action,
-                resource,
-              })),
-            ), catch: (e) => e }))
-          try ((try Effect.orDie(Effect.try({ try: () => values2
-            .onConflictDoNothing(), catch: (e) => e })))
+          const values2 = try Effect.orDie(Effect.try({
+            try: () =>
+              orDie2
+                .values(
+                  input.resources.map((resource) => ({
+                    id: ID.create(),
+                    project_id: input.projectID,
+                    action: input.action,
+                    resource,
+                  })),
+                ),
+            catch: (e) => e,
+          }))
+          try ((try Effect.orDie(Effect.try({
+            try: () =>
+              values2
+                .onConflictDoNothing(),
+            catch: (e) => e,
+          })))
             .run() |> Effect.orDie(%))
         },
         "PermissionSaved.add",
@@ -118,10 +128,11 @@ const layer = Layer.effect(
             catch: (error) => error,
           })))
             .get()
-            |> Effect.catchIf(%, isUniqueViolation, () => new ConflictError({ id: input.id, action, resource }))) catch effect (error) => match (error) {
-            when { _tag: "EffectDrizzleQueryError" }: try Effect.die(error);
-            default: throw error;
-          }
+            |> Effect.catchIf(%, isUniqueViolation, () => new ConflictError({ id: input.id, action, resource })))
+            catch effect (error) => match (error) {
+              when { _tag: "EffectDrizzleQueryError" }: try Effect.die(error);
+              default: throw error;
+            }
           if (!updated) throw new NotFoundError({ id: input.id })
           return info(updated)
         },

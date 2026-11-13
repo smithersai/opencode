@@ -77,10 +77,11 @@ const makeWithTransaction =
   <A, E, R>(effect: A!E!R): A!(E | SqlError)!R =>
     Effect.withFiber((fiber) => {
       const services = fiber.context
-      if (Context.getOption(services, WorkerdTransaction)._tag === "Some")
+      if (Context.getOption(services, WorkerdTransaction)._tag === "Some") {
         return Effect.fail(
           transactionError("Nested transactions are not supported by Cloudflare Durable Object SQLite storage"),
         )
+      }
       const effectWithTxn = Effect.provideContext(
         effect,
         Context.add(services, WorkerdTransaction, [connection, 0] as const),
@@ -110,7 +111,7 @@ const makeWithTransaction =
                     reason: classifySqliteError(cause, { message: "Failed transaction", operation: "transaction" }),
                   }),
                 ),
-              ),
+              )
             )
           return Effect.suspend(() => {
             interrupted = true
@@ -157,8 +158,9 @@ const make = (options: Config) =>
     const runValues = (query: string, params: ReadonlyArray<unknown> = []) =>
       Effect.try({
         try: () =>
-          Array.from(native.sql.exec(query, ...params).raw(), (row) =>
-            row.map((value) => (value instanceof ArrayBuffer ? new Uint8Array(value) : value)),
+          Array.from(
+            native.sql.exec(query, ...params).raw(),
+            (row) => row.map((value) => (value instanceof ArrayBuffer ? new Uint8Array(value) : value)),
           ),
         catch: (cause) =>
           new SqlError({
@@ -211,11 +213,11 @@ const nativeLayer = (config: Config) =>
   config.storage
     ? Layer.succeed(Sqlite.Native, config.storage)
     : Layer.effect(
-        Sqlite.Native,
-        Effect.die(
-          "workerd sqlite cannot open a database from a path; use Database.layerFromClient.pipe(Layer.provide(sqliteLayer({ storage })))",
-        ),
-      )
+      Sqlite.Native,
+      Effect.die(
+        "workerd sqlite cannot open a database from a path; use Database.layerFromClient.pipe(Layer.provide(sqliteLayer({ storage })))",
+      ),
+    )
 
 const clientLayer = (config: Config) => Layer.effect(SqlClient.SqlClient, make(config))
 

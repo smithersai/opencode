@@ -23,7 +23,7 @@ export type Info = typeof Info.Type
 // Read-only lookup: registration file plus health check and version gate.
 // Never spawns; escalation to ensure() is the caller's policy.
 /** Discover a healthy, compatible local service without starting one. */
-export const discover = Effect.fn("service.discover")(function* (options: DiscoverOptions = {}) {
+export const discover = Effect.fn("service.discover")(function*(options: DiscoverOptions = {}) {
   const found = (yield* registered(options.file)).service
   if (found?.state !== "ready") return undefined
   if (!found.compatible) return undefined
@@ -32,7 +32,7 @@ export const discover = Effect.fn("service.discover")(function* (options: Discov
 })
 
 /** Recognize an authenticated compatible service bound to an expected URL, including while it starts or fails. */
-export const incumbent = Effect.fn("service.incumbent")(function* (
+export const incumbent = Effect.fn("service.incumbent")(function*(
   options: DiscoverOptions & { readonly url: string },
 ) {
   const info = yield* read(options.file)
@@ -47,7 +47,7 @@ export const incumbent = Effect.fn("service.incumbent")(function* (
 // version-mismatched one, and otherwise spawns small contenders until a server
 // becomes discoverable. A contender is never killed merely for slow startup.
 /** Ensure a healthy, compatible local service is running. */
-export const ensure = Effect.fn("service.ensure")(function* (options: EnsureOptions = {}) {
+export const ensure = Effect.fn("service.ensure")(function*(options: EnsureOptions = {}) {
   const timing = ensureTiming(options)
   const pool = contenderPool(timing)
   let timeouts: { readonly info: Info; readonly count: number } | undefined
@@ -58,7 +58,7 @@ export const ensure = Effect.fn("service.ensure")(function* (options: EnsureOpti
       announced = true
       options.onStart?.(reason, previousVersion)
     })
-  const spawnContender = Effect.gen(function* () {
+  const spawnContender = Effect.gen(function*() {
     const [command, ...args] = options.command ?? ["opencode", "serve", "--service"]
     if (command === undefined) return yield* Effect.fail(new Error("Missing service command"))
     const env = yield* Effect.tryPromise(() => PtyHandoff.environment(options.file ?? fallback(), options.env))
@@ -69,7 +69,7 @@ export const ensure = Effect.fn("service.ensure")(function* (options: EnsureOpti
       catch: (cause) => new Error("Failed to start server", { cause }),
     })
   })
-  const found = yield* Effect.gen(function* () {
+  const found = yield* Effect.gen(function*() {
     const registration = yield* registered(options.file, timing.requestTimeout)
     const info = registration.info
     const service = registration.service
@@ -98,8 +98,9 @@ export const ensure = Effect.fn("service.ensure")(function* (options: EnsureOpti
       }
       if (decision._tag === "replace") {
         yield* announce("version-mismatch", service.version)
-        if (service.state !== "ready")
+        if (service.state !== "ready") {
           yield* Effect.logWarning("Background service is not ready; replacement cannot preserve persistent terminals")
+        }
         yield* stop({ file: options.file, pty: decision.pty }).pipe(Effect.ignore)
         pool.evict(service.info.pid)
       }
@@ -122,19 +123,20 @@ export const ensure = Effect.fn("service.ensure")(function* (options: EnsureOpti
     }),
     Effect.ensuring(Effect.sync(() => pool.releaseAll())),
   )
-  if (Option.isNone(found))
+  if (Option.isNone(found)) {
     return yield* Effect.fail(pool.failure() ?? new Error("Timed out waiting for the background service to start"))
+  }
   return found.value.endpoint
 })
 
 /** Stop the registered local service. */
-export const stop = Effect.fn("service.stop")(function* (options: StopOptions = {}) {
+export const stop = Effect.fn("service.stop")(function*(options: StopOptions = {}) {
   const info = yield* read(options.file)
   // Terminal handoff is best-effort; it must never keep the old service running.
   yield* Effect.tryPromise(() =>
     options.pty === "handoff" && info !== undefined
       ? PtyHandoff.prepare(options.file ?? fallback(), info, defaultEnsureTiming.requestTimeout)
-      : PtyHandoff.clear(options.file ?? fallback()),
+      : PtyHandoff.clear(options.file ?? fallback())
   ).pipe(Effect.catch((cause) => Effect.logWarning("Failed to prepare persistent terminals for replacement", cause)))
   if (info !== undefined) yield* terminate(info, options, ensureTiming(options))
 })
@@ -151,14 +153,14 @@ export const Info = Schema.Struct({
 const decode = Schema.decodeUnknownEffect(Schema.fromJsonString(Info))
 // A missing or corrupt file means no valid info; callers treat both
 // the same (the registering server self-evicts, clients rediscover).
-const read = Effect.fnUntraced(function* (file?: string) {
+const read = Effect.fnUntraced(function*(file?: string) {
   const fs = yield* FileSystem.FileSystem
   const text = yield* fs.readFileString(file ?? fallback()).pipe(Effect.option)
   if (Option.isNone(text)) return undefined
   return yield* decode(text.value).pipe(Effect.option, Effect.map(Option.getOrUndefined))
 })
 
-const registered = Effect.fnUntraced(function* (file?: string, timeout?: number) {
+const registered = Effect.fnUntraced(function*(file?: string, timeout?: number) {
   const info = yield* read(file)
   if (info === undefined) return { info: undefined, service: undefined, timedOut: false }
   return { info, ...(yield* Effect.promise(() => probeResult(info, timeout))) }
@@ -172,7 +174,7 @@ const poll = (timing: EnsureTiming) =>
 const signal = (pid: number, name: NodeJS.Signals) =>
   Effect.try({ try: () => kill(pid, name), catch: (cause) => cause }).pipe(Effect.ignore)
 
-const stopped = Effect.fnUntraced(function* (pid: number) {
+const stopped = Effect.fnUntraced(function*(pid: number) {
   const running = yield* Effect.try({ try: () => kill(pid, 0), catch: () => false }).pipe(
     Effect.orElseSucceed(() => false),
   )
@@ -180,7 +182,7 @@ const stopped = Effect.fnUntraced(function* (pid: number) {
   return yield* Effect.fail(new Error(`Server process ${pid} is still running`))
 })
 
-const terminate = Effect.fnUntraced(function* (info: Info, options: { readonly file?: string }, timing: EnsureTiming) {
+const terminate = Effect.fnUntraced(function*(info: Info, options: { readonly file?: string }, timing: EnsureTiming) {
   const current = yield* read(options.file)
   if (current === undefined || !same(current, info)) return
   yield* signal(info.pid, "SIGTERM")

@@ -34,14 +34,19 @@ export const executeProgram = <R>(
       let returned: { value: DataValue; runner: Runner<R> } | undefined
       let runner: Runner<R> | undefined
 
-      const base = Effect.gen(function* () {
+      const base = Effect.gen(function*() {
         const program = parseProgram(code)
         const services = yield* Effect.context<R>()
         const ctx = new Interpreter<R>({ tools, services, builtins, logs, globals })
         runner = ctx.runner
         const outcome = yield* runner.run(ctx.main(program))
         if (!outcome.ok) {
-          return { ok: false, error: normalizeError(outcome.error), ...logged(), toolCalls: tools.calls } satisfies Result
+          return {
+            ok: false,
+            error: normalizeError(outcome.error),
+            ...logged(),
+            toolCalls: tools.calls,
+          } satisfies Result
         }
         const result = (outcome.value as DataValue | undefined) ?? null
         returned = { value: result, runner }
@@ -57,59 +62,59 @@ export const executeProgram = <R>(
         } satisfies Result
       }).pipe(Effect.ensuring(Effect.suspend(() => runner?.interrupt() ?? Effect.void)))
       const timeoutMs = limits.timeoutMs
-      const operation =
-        timeoutMs === undefined
-          ? base
-          : base.pipe(
-              Effect.timeoutOrElse({
-                duration: timeoutMs,
-                orElse: () =>
-                  Effect.sync(() => {
-                    if (returned === undefined) {
-                      return {
-                        ok: false,
-                        error: { kind: "TimeoutExceeded", message: `Execution timed out after ${timeoutMs}ms.` },
-                        ...logged(),
-                        toolCalls: tools.calls,
-                      } satisfies Result
-                    }
-                    // Keep the timeout warning first so truncation preserves it.
-                    return {
-                      ok: true,
-                      value: returned.value,
-                      warnings: [
-                        {
-                          kind: "TimeoutExceeded",
-                          message: `The program returned, but background work was still running at the ${timeoutMs}ms timeout and was interrupted. Await all started promises.`,
-                        },
-                        ...returned.runner.diagnostics(),
-                      ],
-                      ...logged(),
-                      toolCalls: tools.calls,
-                    } satisfies Result
-                  }),
+      const operation = timeoutMs === undefined
+        ? base
+        : base.pipe(
+          Effect.timeoutOrElse({
+            duration: timeoutMs,
+            orElse: () =>
+              Effect.sync(() => {
+                if (returned === undefined) {
+                  return {
+                    ok: false,
+                    error: { kind: "TimeoutExceeded", message: `Execution timed out after ${timeoutMs}ms.` },
+                    ...logged(),
+                    toolCalls: tools.calls,
+                  } satisfies Result
+                }
+                // Keep the timeout warning first so truncation preserves it.
+                return {
+                  ok: true,
+                  value: returned.value,
+                  warnings: [
+                    {
+                      kind: "TimeoutExceeded",
+                      message:
+                        `The program returned, but background work was still running at the ${timeoutMs}ms timeout and was interrupted. Await all started promises.`,
+                    },
+                    ...returned.runner.diagnostics(),
+                  ],
+                  ...logged(),
+                  toolCalls: tools.calls,
+                } satisfies Result
               }),
-            )
+          }),
+        )
 
       return operation.pipe(
         Effect.catchCause((cause) =>
           Cause.hasInterruptsOnly(cause)
             ? Effect.interrupt
             : Effect.try({ try: () => normalizeError(Cause.squash(cause)), catch: (defect) => defect }).pipe(
-                Effect.orDie,
-                Effect.map(
-                  (error) =>
-                    ({
-                      ok: false,
-                      error,
-                      ...logged(),
-                      toolCalls: tools.calls,
-                    }) satisfies Result,
-                ),
+              Effect.orDie,
+              Effect.map(
+                (error) =>
+                  ({
+                    ok: false,
+                    error,
+                    ...logged(),
+                    toolCalls: tools.calls,
+                  }) satisfies Result,
               ),
+            )
         ),
         Effect.map((result) =>
-          limits.maxOutputBytes === undefined ? result : boundOutput(result, limits.maxOutputBytes),
+          limits.maxOutputBytes === undefined ? result : boundOutput(result, limits.maxOutputBytes)
         ),
       )
     }),
@@ -147,7 +152,9 @@ const boundOutput = (result: Result, maxOutputBytes: number): Result => {
     const bytes = utf8ByteLength(serialized)
     if (bytes > maxOutputBytes) {
       truncated = true
-      value = `${utf8Truncate(serialized, maxOutputBytes)} [result truncated: ${bytes} bytes exceeds the ${maxOutputBytes}-byte output limit; return a smaller value]`
+      value = `${
+        utf8Truncate(serialized, maxOutputBytes)
+      } [result truncated: ${bytes} bytes exceeds the ${maxOutputBytes}-byte output limit; return a smaller value]`
       valueBytes = maxOutputBytes
     } else {
       value = result.value
@@ -192,12 +199,12 @@ const boundOutput = (result: Result, maxOutputBytes: number): Result => {
   const logsPart = kept.length > 0 ? { logs: kept } : {}
   return result.ok
     ? {
-        ok: true,
-        value,
-        ...warningsPart,
-        ...logsPart,
-        truncated: true,
-        toolCalls: result.toolCalls,
-      }
+      ok: true,
+      value,
+      ...warningsPart,
+      ...logsPart,
+      truncated: true,
+      toolCalls: result.toolCalls,
+    }
     : { ok: false, error: result.error, ...logsPart, truncated: true, toolCalls: result.toolCalls }
 }

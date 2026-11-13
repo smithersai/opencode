@@ -15,14 +15,14 @@ import { ManagedPolicy } from "../managed-policy.js"
 import { Watcher } from "../filesystem/watcher.js"
 import { fileURLToPath, isAbsolute, pathToFileURL, readFile, stat, watchTarget } from platform
 
-export const make = Effect.fn("PluginModule.make")(function* () {
+export const make = Effect.fn("PluginModule.make")(function*() {
   const config = yield* Config.Service
   const watcher = yield* Watcher.Service
   const scope = yield* Effect.scope
   const runPromise = yield* FiberSet.makeRuntimePromise()
   const changes = yield* PubSub.unbounded<void>()
   const watched = new Set<string>()
-  const watch = Effect.fn("PluginModule.watch")(function* (file: string) {
+  const watch = Effect.fn("PluginModule.watch")(function*(file: string) {
     if (watched.has(file)) return
     watched.add(file)
     const ready = yield* Deferred.make<void>()
@@ -44,18 +44,20 @@ export const make = Effect.fn("PluginModule.make")(function* () {
       operation: Extract<ConfigPluginSource.Operation, { type: "add" }>,
       options?: { readonly install?: boolean },
     ) =>
-      Effect.gen(function* () {
+      Effect.gen(function*() {
         const version = operation.target.lastIndexOf("@")
-        const target =
-          isAbsolute(operation.target) || version <= 0 ? operation.target : operation.target.slice(0, version)
+        const target = isAbsolute(operation.target) || version <= 0
+          ? operation.target
+          : operation.target.slice(0, version)
         if (
           ManagedPolicy.decision(
             ManagedPolicy.statements(yield* config.entries()),
             "integration.use",
             `plugin:${target}`,
           ) === "deny"
-        )
+        ) {
           return { blocked: true as const }
+        }
         return yield* load(operation, sources, watch, options)
       }),
     changes: () => Stream.fromPubSub(changes),
@@ -84,7 +86,7 @@ export class LoadError extends Schema.TaggedError<LoadError>()("PluginModule.Loa
   cause: Schema.optional(Schema.Defect()),
 }) {}
 
-const load = Effect.fn("PluginModule.load")(function* (
+const load = Effect.fn("PluginModule.load")(function*(
   operation: Extract<ConfigPluginSource.Operation, { type: "add" }>,
   sources: ReturnType<typeof createPluginSources>,
   watch: (file: string) => Effect.Effect<void>,
@@ -95,14 +97,13 @@ const load = Effect.fn("PluginModule.load")(function* (
   const installed = local
     ? undefined
     : options?.install === false
-      ? yield* npm.resolve(operation.target)
-      : yield* npm.add(operation.target)
+    ? yield* npm.resolve(operation.target)
+    : yield* npm.add(operation.target)
   // Legacy auto-discovery still admits standalone server sources. Configured
   // local plugins always arrive here as directories.
-  const entrypoints: Host.Entrypoints =
-    local && (yield* Effect.promise(() => stat(operation.target))).isFile()
-      ? { server: pathToFileURL(operation.target) }
-      : yield* Effect.sync(() => Host.resolve(installed ?? { directory: operation.target }))
+  const entrypoints: Host.Entrypoints = local && (yield* Effect.promise(() => stat(operation.target))).isFile()
+    ? { server: pathToFileURL(operation.target) }
+    : yield* Effect.sync(() => Host.resolve(installed ?? { directory: operation.target }))
   const entrypoint = entrypoints.server
   // A TUI-only package is not the server's to list; the TUI loads it from its own config.
   const found = entrypoint || entrypoints.gui
@@ -132,10 +133,10 @@ const load = Effect.fn("PluginModule.load")(function* (
   // The GUI receives the same options as the server entry; they cross to the app, so they must be JSON.
   const guiOptions = entrypoints.gui
     ? yield* Schema.decodeUnknownEffect(GuiOptions)(operation.options).pipe(
-        Effect.mapError(
-          (cause) => new LoadError({ message: "Plugin options must be JSON to reach its ./gui-experimental", cause }),
-        ),
-      )
+      Effect.mapError(
+        (cause) => new LoadError({ message: "Plugin options must be JSON to reach its ./gui-experimental", cause }),
+      ),
+    )
     : {}
   return {
     id: plugin.id,
@@ -153,21 +154,21 @@ const load = Effect.fn("PluginModule.load")(function* (
     source: local
       ? { type: "local" as const, path: operation.target }
       : {
-          type: "package" as const,
-          target: operation.target,
-          ...(installed?.version ? { version: installed.version } : {}),
-        },
+        type: "package" as const,
+        target: operation.target,
+        ...(installed?.version ? { version: installed.version } : {}),
+      },
     effect: (host) => plugin.effect({ ...host, options: operation.options }),
   } satisfies Generation
 })
 
-const loadServer = Effect.fn("PluginModule.loadServer")(function* (
+const loadServer = Effect.fn("PluginModule.loadServer")(function*(
   entrypoint: string,
   sources: ReturnType<typeof createPluginSources> | undefined,
   revision: string | undefined,
 ) {
   const loaded = yield* Effect.promise(() =>
-    sources ? sources.read(entrypoint) : Host.load(entrypoint).then((module) => ({ module, version: revision })),
+    sources ? sources.read(entrypoint) : Host.load(entrypoint).then((module) => ({ module, version: revision }))
   )
   const value = (yield* Schema.decodeUnknownEffect(Module)(loaded.module).pipe(
     Effect.mapError(
@@ -182,52 +183,52 @@ const loadServer = Effect.fn("PluginModule.loadServer")(function* (
 })
 
 module platform {
-// The platform code of module.vibe: host paths, file URLs and file system reads, which a .vibe file does not import
-// (EK4402).
+  // The platform code of module.vibe: host paths, file URLs and file system reads, which a .vibe file does not import
+  // (EK4402).
 
-import fs from "node:fs/promises"
-import path from "path"
-import url from "url"
-import type { Watcher } from "../filesystem/watcher.js"
+  import fs from "node:fs/promises"
+  import path from "path"
+  import url from "url"
+  import type { Watcher } from "../filesystem/watcher.js"
 
-/** @throws {never} */
-export function isAbsolute(target: string): boolean {
-  return path.isAbsolute(target)
-}
+  /** @throws {never} */
+  export function isAbsolute(target: string): boolean {
+    return path.isAbsolute(target)
+  }
 
-/** The `file:` URL of a host path. @throws {never} */
-export function pathToFileURL(target: string): string {
-  return url.pathToFileURL(target).href
-}
+  /** The `file:` URL of a host path. @throws {never} */
+  export function pathToFileURL(target: string): string {
+    return url.pathToFileURL(target).href
+  }
 
-/**
- * The host path of a `file:` URL.
- * @throws {TypeError} when the URL is not a valid `file:` URL.
- */
-export function fileURLToPath(target: string): string {
-  return url.fileURLToPath(target)
-}
+  /**
+   * The host path of a `file:` URL.
+   * @throws {TypeError} when the URL is not a valid `file:` URL.
+   */
+  export function fileURLToPath(target: string): string {
+    return url.fileURLToPath(target)
+  }
 
-/** A failed stat rejects. @throws {never} */
-export function stat(target: string) {
-  return fs.stat(target)
-}
+  /** A failed stat rejects. @throws {never} */
+  export function stat(target: string) {
+    return fs.stat(target)
+  }
 
-/** A failed read rejects. @throws {never} */
-export function readFile(target: string) {
-  return fs.readFile(target)
-}
+  /** A failed read rejects. @throws {never} */
+  export function readFile(target: string) {
+    return fs.readFile(target)
+  }
 
-// A missing dependency may have missing parents too. Watch the nearest existing
-// ancestor recursively so creating the rest of the path can trigger recovery.
-/** @throws {never} */
-export function watchTarget(file: string): Promise<Watcher.WatchInput> {
-  return fs.stat(file).then(
-    (info) => ({ path: file, type: info.isDirectory() ? "directory" : "file" }),
-    (cause) => {
-      if (path.dirname(file) === file) throw cause
-      return watchTarget(path.dirname(file))
-    },
-  )
-}
+  // A missing dependency may have missing parents too. Watch the nearest existing
+  // ancestor recursively so creating the rest of the path can trigger recovery.
+  /** @throws {never} */
+  export function watchTarget(file: string): Promise<Watcher.WatchInput> {
+    return fs.stat(file).then(
+      (info) => ({ path: file, type: info.isDirectory() ? "directory" : "file" }),
+      (cause) => {
+        if (path.dirname(file) === file) throw cause
+        return watchTarget(path.dirname(file))
+      },
+    )
+  }
 }

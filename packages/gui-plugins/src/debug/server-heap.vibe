@@ -94,10 +94,10 @@ module platform {
 
   function unsupported(error: Error) {
     return (
-      error instanceof ClientError &&
-      error.reason === "UnexpectedStatus" &&
-      Predicate.hasProperty(error.cause, "status") &&
-      error.cause.status === 404
+      error instanceof ClientError
+      && error.reason === "UnexpectedStatus"
+      && Predicate.hasProperty(error.cause, "status")
+      && error.cause.status === 404
     )
   }
 }

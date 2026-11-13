@@ -35,8 +35,9 @@ const taskDescription = (message: SessionMessageInfo, sessionID: string): string
   const tool = message.content.findLast((item) => {
     if (item.type !== "tool" || (item.name !== "task" && item.name !== "subagent")) return false
 
-    const metadata =
-      item.state.status === "running" || item.state.status === "completed" ? item.state.metadata : undefined
+    const metadata = item.state.status === "running" || item.state.status === "completed"
+      ? item.state.metadata
+      : undefined
 
     return metadata?.sessionId === sessionID || metadata?.sessionID === sessionID
   })
@@ -84,7 +85,7 @@ export function createTimelineController(input: { session: TimelineSessionSource
       visibleMessages(),
       getSessionMessageHandoff(input.session.identity.sessionKey()),
       input.session.data.info(),
-    ),
+    )
   )
 
   // Inputs that wait behind the active turn. A starting steer opens the next turn instead, so the turn before it
@@ -98,12 +99,12 @@ export function createTimelineController(input: { session: TimelineSessionSource
       data.session.pending
         .list(id)
         .flatMap((item) =>
-          (item.type === "user" &&
-            item.delivery === "steer" &&
-            data.session.pending.status(id, item.id) !== "starting") ||
-          item.type === "synthetic"
+          (item.type === "user"
+              && item.delivery === "steer"
+              && data.session.pending.status(id, item.id) !== "starting")
+            || item.type === "synthetic"
             ? [item.id]
-            : [],
+            : []
         ),
     )
   })
@@ -166,8 +167,8 @@ export function createTimelineController(input: { session: TimelineSessionSource
     timelineDetail().thinking.placement === "hidden"
       ? "hidden"
       : timelineDetail().thinking.details === "expanded"
-        ? "full"
-        : "compact"
+      ? "full"
+      : "compact"
 
   const shellToolPartsExpanded = () => timelineDetail().shell.details === "expanded"
   const editToolPartsExpanded = () => timelineDetail().edit.details === "expanded"

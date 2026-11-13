@@ -34,7 +34,7 @@ class DeclaredError extends Error {
 
 const layer = Layer.effect(
   Service,
-  Effect.gen(function* () {
+  Effect.gen(function*() {
     const bus = yield* Bus.Service
     const location = yield* Location.Service
     const ref = Location.Ref.make({ directory: location.directory, workspaceID: location.workspaceID })
@@ -66,7 +66,7 @@ const layer = Layer.effect(
       return events
     }
 
-    const register = Effect.fn("Rpc.register")(function* <const D extends Rpc.Definition>(
+    const register = Effect.fn("Rpc.register")(function*<const D extends Rpc.Definition>(
       definition: D,
       handlers: RpcHandlers<NoInfer<D>>,
     ) {
@@ -88,7 +88,7 @@ const layer = Layer.effect(
       return {
         dispose,
         events: {
-          emit: Effect.fn("Rpc.emit")(function* (...args: Rpc.EventInput<D>) {
+          emit: Effect.fn("Rpc.emit")(function*(...args: Rpc.EventInput<D>) {
             const registered = events.get(args[0])
             if (!registered) return yield* Effect.fail(new Error(`Unknown RPC event: ${definition.id}.${args[0]}`))
             const event = registered.event
@@ -105,13 +105,15 @@ const layer = Layer.effect(
       }
     })
 
-    const call = Effect.fn("Rpc.call")(function* (rpcID: string, name: string, input: unknown) {
-      if (yield* Deferred.isDone(closed))
+    const call = Effect.fn("Rpc.call")(function*(rpcID: string, name: string, input: unknown) {
+      if (yield* Deferred.isDone(closed)) {
         return yield* Effect.fail(failure("rpc.unavailable", `RPC is unavailable: ${rpcID}`))
+      }
       const entry = registrations.get(rpcID)?.at(-1)
       if (!entry) return yield* Effect.fail(failure("rpc.unavailable", `RPC is unavailable: ${rpcID}`))
-      if (!Object.hasOwn(entry.definition.methods, name) || !Object.hasOwn(entry.handlers, name))
+      if (!Object.hasOwn(entry.definition.methods, name) || !Object.hasOwn(entry.handlers, name)) {
         return yield* Effect.fail(failure("rpc.method_not_found", `Unknown RPC method: ${rpcID}.${name}`))
+      }
       const method = entry.definition.methods[name]
       const handler = entry.handlers[name]
       const parsed = yield* parse(method.input, input).pipe(
@@ -132,7 +134,7 @@ const layer = Layer.effect(
         Effect.catchDefect((defect) =>
           Effect.logError("rpc handler failed", { rpc: rpcID, method: name, defect }).pipe(
             Effect.andThen(Effect.fail(failure("rpc.internal", "RPC call failed"))),
-          ),
+          )
         ),
         // A long-lived RPC must release its location when the routing cache invalidates it.
         Effect.raceFirst(
@@ -207,10 +209,11 @@ export function eventDefinition(type: `rpc.${string}`): Event.Definition {
 function parse(schema: Tool.ValueSchema, value: unknown): Effect.Effect<unknown, unknown> {
   if (Schema.isSchema(schema)) return Schema.decodeUnknownEffect(schema)(value)
   if (isStandardSchema(schema)) {
-    return Effect.gen(function* () {
+    return Effect.gen(function*() {
       const parsed = yield* Effect.try({ try: () => schema["~standard"].validate(value), catch: (cause) => cause })
-      const result =
-        parsed instanceof Promise ? yield* Effect.tryPromise({ try: () => parsed, catch: (cause) => cause }) : parsed
+      const result = parsed instanceof Promise
+        ? yield* Effect.tryPromise({ try: () => parsed, catch: (cause) => cause })
+        : parsed
       if (result.issues) return yield* Effect.fail(new Error(result.issues.map((issue) => issue.message).join("\n")))
       return result.value
     })
@@ -271,7 +274,7 @@ function read(schema: Tool.ValueSchema, value: unknown): Effect.Effect<unknown, 
   return Schema.isSchema(schema) ? Schema.decodeUnknownEffect(schema)(value) : Effect.succeed(value)
 }
 
-const logicalEvent = Effect.fn("Rpc.logicalEvent")(function* <
+const logicalEvent = Effect.fn("Rpc.logicalEvent")(function*<
   D extends Rpc.Definition,
   Name extends keyof D["events"] & string,
 >(

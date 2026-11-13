@@ -81,24 +81,28 @@ export class TranscriptionRequest extends Schema.Class<TranscriptionRequest>("Tr
   declare protected readonly _TranscriptionRequest: void
 }
 
-export type TranscriptionRequestFor<Options extends TranscriptionOptions = TranscriptionOptions> = Omit<
-  TranscriptionRequest,
-  "model" | "providerOptions"
-> & {
-  readonly model: TranscriptionModel<Options>
-  readonly providerOptions?: Options
-}
+export type TranscriptionRequestFor<Options extends TranscriptionOptions = TranscriptionOptions> =
+  & Omit<
+    TranscriptionRequest,
+    "model" | "providerOptions"
+  >
+  & {
+    readonly model: TranscriptionModel<Options>
+    readonly providerOptions?: Options
+  }
 
 export type TranscriptionModelOptions<Model> = Model extends TranscriptionModel<infer Options> ? Options : never
 
-export type TranscriptionRequestInput<Model extends TranscriptionModel = TranscriptionModel> = Omit<
-  ConstructorParameters<typeof TranscriptionRequest>[0],
-  "model" | "providerOptions" | "http"
-> & {
-  readonly model: Model
-  readonly providerOptions?: NoInfer<TranscriptionModelOptions<Model>>
-  readonly http?: HttpOptions.Input
-}
+export type TranscriptionRequestInput<Model extends TranscriptionModel = TranscriptionModel> =
+  & Omit<
+    ConstructorParameters<typeof TranscriptionRequest>[0],
+    "model" | "providerOptions" | "http"
+  >
+  & {
+    readonly model: Model
+    readonly providerOptions?: NoInfer<TranscriptionModelOptions<Model>>
+    readonly http?: HttpOptions.Input
+  }
 
 // ---------------------------------------------------------------------------
 // Response and events

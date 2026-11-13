@@ -14,15 +14,15 @@ import { dirname, fileURL, isAbsolute, joinPath, localPath, resolve } from platf
 
 export type Operation =
   | {
-      readonly type: "add"
-      readonly target: string
-      readonly options: Record<string, unknown>
-      readonly mtime?: number
-    }
+    readonly type: "add"
+    readonly target: string
+    readonly options: Record<string, unknown>
+    readonly mtime?: number
+  }
   | {
-      readonly type: "remove"
-      readonly target: string
-    }
+    readonly type: "remove"
+    readonly target: string
+  }
 
 export interface Interface {
   readonly operations: () => Effect.Effect<readonly Operation[], never, Scope.Scope>
@@ -33,7 +33,7 @@ export class Service extends Context.Service<Service, Interface>()("@opencode/Co
 
 export const layer = Layer.effect(
   Service,
-  Effect.gen(function* () {
+  Effect.gen(function*() {
     const config = yield* Config.Service
     const watcher = yield* Watcher.Service
     const fs = yield* FSUtil.Service
@@ -46,7 +46,7 @@ export const layer = Layer.effect(
     // Watches start on first sighting and are never torn down individually:
     // a stale watch after a config edit costs one deduped fs handle and a
     // no-op activation, and every watch dies with this layer's scope.
-    const watchConfiguredSources = Effect.fn("ConfigPluginSource.watchConfiguredSources")(function* (
+    const watchConfiguredSources = Effect.fn("ConfigPluginSource.watchConfiguredSources")(function*(
       entries: readonly Entry[],
       operations: readonly Operation[],
     ) {
@@ -63,7 +63,7 @@ export const layer = Layer.effect(
         yield* updates.pipe(
           Stream.runForEach(() => PubSub.publish(configuredChanges, undefined)),
           Effect.catchCause((cause) =>
-            Effect.logError("configured plugin watch failed", { target: operation.target, cause }),
+            Effect.logError("configured plugin watch failed", { target: operation.target, cause })
           ),
           Effect.forkScoped({ startImmediately: true }),
         )
@@ -71,7 +71,7 @@ export const layer = Layer.effect(
     })
 
     return Service.of({
-      operations: Effect.fn("ConfigPluginSource.operations")(function* () {
+      operations: Effect.fn("ConfigPluginSource.operations")(function*() {
         const entries = yield* config.entries()
         const operations = yield* scan(fs, location, entries)
         yield* watchConfiguredSources(entries, operations)
@@ -81,7 +81,7 @@ export const layer = Layer.effect(
         Stream.merge(
           config.changes().pipe(
             Stream.filterEffect((update) =>
-              Effect.map(config.entries(), (entries) => isPluginSource(entries, update.path)),
+              Effect.map(config.entries(), (entries) => isPluginSource(entries, update.path))
             ),
             Stream.map(() => undefined),
           ),
@@ -119,7 +119,7 @@ effect function parse(input: ConfigPlugin.Plugin): Operation!! {
   return { type: "remove", target: input.slice(1) }
 }
 
-const scan = Effect.fn("ConfigPluginSource.scan")(function* (
+const scan = Effect.fn("ConfigPluginSource.scan")(function*(
   fs: FSUtil.Interface,
   location: Location.Interface,
   entries: readonly Entry[],
@@ -144,29 +144,27 @@ const scan = Effect.fn("ConfigPluginSource.scan")(function* (
                 const target = operation.target.startsWith("file://")
                   ? localPath(operation.target)
                   : operation.target.startsWith("./") || operation.target.startsWith("../")
-                    ? resolve(directory, operation.target)
-                    : operation.target
+                  ? resolve(directory, operation.target)
+                  : operation.target
                 return { ...operation, target }
               },
               catch: (cause) => cause,
-            }).pipe(Effect.orDie),
-          ),
+            }).pipe(Effect.orDie))
         ),
       ),
   ).pipe(Effect.map((items) => items.flat()))
   const resolved = yield* Effect.forEach(configured, (operation) =>
-    Effect.gen(function* () {
+    Effect.gen(function*() {
       if (operation.type === "remove" || !isAbsolute(operation.target)) return Option.some(operation)
       if (yield* fs.isFile(operation.target)) {
         yield* Effect.logWarning("configured plugin path must be a directory", { target: operation.target })
         return Option.none<Operation>()
       }
       return Option.some<Operation>(operation)
-    }),
-  ).pipe(Effect.map((operations) => operations.flatMap(Option.toArray)))
+    })).pipe(Effect.map((operations) => operations.flatMap(Option.toArray)))
   // Explicit config is applied last so it can remove auto-discovered packages.
   return yield* Effect.forEach([...discovered, ...resolved], (operation) =>
-    Effect.gen(function* () {
+    Effect.gen(function*() {
       if (operation.type === "remove" || !isAbsolute(operation.target)) return [operation]
       if (!(yield* fs.existsSafe(operation.target))) return [operation]
       const directory = yield* fs.isDir(operation.target)
@@ -201,49 +199,48 @@ const scan = Effect.fn("ConfigPluginSource.scan")(function* (
           ),
       )
       return [{ ...operation, mtime: Math.max(...times) }]
-    }),
-  ).pipe(Effect.map((operations) => operations.flat()))
+    })).pipe(Effect.map((operations) => operations.flat()))
 })
 
 function isPluginSource(entries: readonly Entry[], file: string) {
   return entries.some(
     (entry) =>
-      entry.type === "directory" &&
-      PluginSourceDirectory.names.some((directory) => FSUtil.contains(joinPath(entry.path, directory), file)),
+      entry.type === "directory"
+      && PluginSourceDirectory.names.some((directory) => FSUtil.contains(joinPath(entry.path, directory), file)),
   )
 }
 
 module platform {
-import path from "path"
-import { fileURLToPath, pathToFileURL } from "url"
+  import path from "path"
+  import { fileURLToPath, pathToFileURL } from "url"
 
-/** @throws {never} */
-export function joinPath(directory: string, name: string) {
-  return path.join(directory, name)
-}
+  /** @throws {never} */
+  export function joinPath(directory: string, name: string) {
+    return path.join(directory, name)
+  }
 
-/** @throws {never} */
-export function dirname(target: string) {
-  return path.dirname(target)
-}
+  /** @throws {never} */
+  export function dirname(target: string) {
+    return path.dirname(target)
+  }
 
-/** @throws {never} */
-export function isAbsolute(target: string) {
-  return path.isAbsolute(target)
-}
+  /** @throws {never} */
+  export function isAbsolute(target: string) {
+    return path.isAbsolute(target)
+  }
 
-/** Resolves against the process working directory, which may be unavailable. */
-export function resolve(directory: string, target: string) {
-  return path.resolve(directory, target)
-}
+  /** Resolves against the process working directory, which may be unavailable. */
+  export function resolve(directory: string, target: string) {
+    return path.resolve(directory, target)
+  }
 
-/** Converts a `file:` URL to a path. @throws {TypeError} when the URL is not a valid file URL for this platform. */
-export function localPath(url: string) {
-  return fileURLToPath(url)
-}
+  /** Converts a `file:` URL to a path. @throws {TypeError} when the URL is not a valid file URL for this platform. */
+  export function localPath(url: string) {
+    return fileURLToPath(url)
+  }
 
-/** Resolves relative paths against the process working directory, which may be unavailable. */
-export function fileURL(target: string) {
-  return pathToFileURL(target).href
-}
+  /** Resolves relative paths against the process working directory, which may be unavailable. */
+  export function fileURL(target: string) {
+    return pathToFileURL(target).href
+  }
 }

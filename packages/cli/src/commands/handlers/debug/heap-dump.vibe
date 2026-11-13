@@ -15,13 +15,12 @@ const handler = Effect.fn("cli.debug.heap-dump")(effect function(
 ) {
   const server = try Effect.serviceOption(ServerFlag).pipe(Effect.map(Option.flatten))
   const endpoint = try running(Option.getOrUndefined(server))
-  const client = try ((args: Parameters<typeof OpenCode.make>) =>
-    Effect.try(() => OpenCode.make(...args)).pipe(Effect.orDie))([{
+  const client =
+    try ((args: Parameters<typeof OpenCode.make>) => Effect.try(() => OpenCode.make(...args)).pipe(Effect.orDie))([{
       baseUrl: endpoint.url,
-      headers: (try ((args: Parameters<typeof Service.headers>) =>
-        Effect.try(() =>
-          Service.headers(...args)
-        ).pipe(Effect.orDie))([endpoint])),
+      headers:
+        try ((args: Parameters<typeof Service.headers>) =>
+          Effect.try(() => Service.headers(...args)).pipe(Effect.orDie))([endpoint]),
     }])
   // The server writes the file, so a relative directory resolves against this shell. An absolute one passes through
   // untouched, which keeps a POSIX path for a remote server intact on Windows.
@@ -46,10 +45,11 @@ const handler = Effect.fn("cli.debug.heap-dump")(effect function(
   if (
     directory !== undefined
     && (try ((args: Parameters<typeof style.join>) => Effect.try(() => style.join(...args)).pipe(Effect.orDie))([
-        directory,
-        try ((args: Parameters<typeof style.basename>) =>
-          Effect.try(() => style.basename(...args)).pipe(Effect.orDie))([snapshot.path]),
-      ])) !== snapshot.path
+      directory,
+      try ((args: Parameters<typeof style.basename>) => Effect.try(() => style.basename(...args)).pipe(Effect.orDie))([
+        snapshot.path,
+      ]),
+    ])) !== snapshot.path
   ) {
     void (try ((args: Parameters<typeof writeError>) => Effect.try(() => writeError(...args)).pipe(Effect.orDie))([
       `The server ignored --directory. Update and restart it to choose where snapshots go.${EOL}`,

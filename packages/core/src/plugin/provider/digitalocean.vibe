@@ -46,7 +46,7 @@ const oauth = {
     label: "Login with DigitalOcean",
   },
   authorize: () =>
-    Effect.gen(function* () {
+    Effect.gen(function*() {
       const state = randomBase64Url()
       const token = yield* Deferred.make<{ access: string; expiresIn: number }, Error>()
       // Lazy so runtimes without a loopback listener (workerd) never evaluate node:http.
@@ -98,7 +98,7 @@ const oauth = {
           state,
         })}`,
         instructions: "Complete authorization in your browser. This window will close automatically.",
-        callback: Effect.gen(function* () {
+        callback: Effect.gen(function*() {
           const payload = yield* Deferred.await(token)
           return Credential.OAuth.make({
             type: "oauth",
@@ -112,72 +112,74 @@ const oauth = {
     }),
 } satisfies IntegrationOAuthMethodRegistration
 
-export const DigitalOceanPlugin = define({
-  id: "opencode.provider.digitalocean",
-  effect: Effect.fn(function* (ctx) {
-    const bus = yield* Bus.Service
-    const http = HttpClient.filterStatusOk(yield* HttpClient.HttpClient)
-    const loading = Semaphore.makeUnsafe(1)
-    const loaded: { access?: string; routers: (typeof RoutersResponse.Type)["model_routers"] } = { routers: [] }
+export const DigitalOceanPlugin = define(
+  {
+    id: "opencode.provider.digitalocean",
+    effect: Effect.fn(function*(ctx) {
+      const bus = yield* Bus.Service
+      const http = HttpClient.filterStatusOk(yield* HttpClient.HttpClient)
+      const loading = Semaphore.makeUnsafe(1)
+      const loaded: { access?: string; routers: (typeof RoutersResponse.Type)["model_routers"] } = { routers: [] }
 
-    const load = Effect.fn("DigitalOceanPlugin.load")(function* () {
-      const connection = yield* ctx.integration.connection.active(integrationID)
-      const credential = connection
-        ? yield* ctx.integration.connection.resolve(connection).pipe(Effect.orElseSucceed(() => undefined))
-        : undefined
-      if (credential?.type !== "oauth" || credential.methodID !== methodID) {
-        loaded.access = undefined
-        loaded.routers = []
-        return
-      }
-      if (loaded.access !== credential.access) {
-        loaded.access = credential.access
-        loaded.routers = []
-      }
-      if (credential.expires !== 0 && credential.expires <= (yield* Clock.currentTimeMillis)) return
-      const result = yield* http
-        .execute(
-          HttpClientRequest.get(routersEndpoint).pipe(
-            HttpClientRequest.bearerToken(credential.access),
-            HttpClientRequest.acceptJson,
-            HttpClientRequest.setHeader("User-Agent", App.useragent(ctx.app)),
-          ),
-        )
-        .pipe(
-          Effect.flatMap(HttpClientResponse.schemaBodyJson(RoutersResponse)),
-          Effect.timeout("10 seconds"),
-          Effect.catch((cause) =>
-            Effect.logWarning("failed to sync DigitalOcean routers", { cause }).pipe(Effect.as(undefined)),
-          ),
-        )
-      if (result) loaded.routers = result.model_routers
-    })
+      const load = Effect.fn("DigitalOceanPlugin.load")(function*() {
+        const connection = yield* ctx.integration.connection.active(integrationID)
+        const credential = connection
+          ? yield* ctx.integration.connection.resolve(connection).pipe(Effect.orElseSucceed(() => undefined))
+          : undefined
+        if (credential?.type !== "oauth" || credential.methodID !== methodID) {
+          loaded.access = undefined
+          loaded.routers = []
+          return
+        }
+        if (loaded.access !== credential.access) {
+          loaded.access = credential.access
+          loaded.routers = []
+        }
+        if (credential.expires !== 0 && credential.expires <= (yield* Clock.currentTimeMillis)) return
+        const result = yield* http
+          .execute(
+            HttpClientRequest.get(routersEndpoint).pipe(
+              HttpClientRequest.bearerToken(credential.access),
+              HttpClientRequest.acceptJson,
+              HttpClientRequest.setHeader("User-Agent", App.useragent(ctx.app)),
+            ),
+          )
+          .pipe(
+            Effect.flatMap(HttpClientResponse.schemaBodyJson(RoutersResponse)),
+            Effect.timeout("10 seconds"),
+            Effect.catch((cause) =>
+              Effect.logWarning("failed to sync DigitalOcean routers", { cause }).pipe(Effect.as(undefined))
+            ),
+          )
+        if (result) loaded.routers = result.model_routers
+      })
 
-    yield* ctx.integration.transform((draft) => {
-      draft.method.update(oauth)
-    })
-    yield* ctx.provider.transform((evt) => {
-      if (!evt.get(providerID)) return
-      for (const router of loaded.routers) {
-        const id = `router:${router.name}`
-        if (evt.get(providerID)?.models.has(Model.ID.make(id))) continue
-        evt.models.update(providerID, id, (draft) => {
-          draft.name = router.name
-          draft.family = Model.Family.make("digitalocean-inference-routers")
-          draft.capabilities = { tools: true, input: ["text"], output: ["text"] }
-          draft.limit = { context: 128_000, output: 8_192 }
-        })
-      }
-    })
-    const refresh = () => loading.withPermit(load().pipe(Effect.andThen(ctx.provider.reload())))
-    yield* bus.subscribe(Credential.Event.Switched).pipe(
-      Stream.filter((event) => event.data.integrationID === integrationID),
-      Stream.runForEach(refresh),
-      Effect.forkScoped({ startImmediately: true }),
-    )
-    yield* refresh().pipe(Effect.forkScoped)
-  }),
-} satisfies PluginInternal.InternalPlugin)
+      yield* ctx.integration.transform((draft) => {
+        draft.method.update(oauth)
+      })
+      yield* ctx.provider.transform((evt) => {
+        if (!evt.get(providerID)) return
+        for (const router of loaded.routers) {
+          const id = `router:${router.name}`
+          if (evt.get(providerID)?.models.has(Model.ID.make(id))) continue
+          evt.models.update(providerID, id, (draft) => {
+            draft.name = router.name
+            draft.family = Model.Family.make("digitalocean-inference-routers")
+            draft.capabilities = { tools: true, input: ["text"], output: ["text"] }
+            draft.limit = { context: 128_000, output: 8_192 }
+          })
+        }
+      })
+      const refresh = () => loading.withPermit(load().pipe(Effect.andThen(ctx.provider.reload())))
+      yield* bus.subscribe(Credential.Event.Switched).pipe(
+        Stream.filter((event) => event.data.integrationID === integrationID),
+        Stream.runForEach(refresh),
+        Effect.forkScoped({ startImmediately: true }),
+      )
+      yield* refresh().pipe(Effect.forkScoped)
+    }),
+  } satisfies PluginInternal.InternalPlugin,
+)
 
 function listen(server: Server) {
   return Effect.callback<number, Error>((resume) => {
@@ -191,29 +193,29 @@ function listen(server: Server) {
     Effect.mapError((cause) =>
       "code" in cause && cause.code === "EADDRINUSE"
         ? new Error(
-            `DigitalOcean login needs local port ${callbackPort}, but it is already in use. Stop the process using that port and try again.`,
-          )
-        : cause,
+          `DigitalOcean login needs local port ${callbackPort}, but it is already in use. Stop the process using that port and try again.`,
+        )
+        : cause
     ),
   )
 }
 
 module platform {
-// The platform code of digitalocean.vibe: host randomness, Buffer encoding and the lazy node:http import, which a
-// .vibe file does not use directly (EK4402).
+  // The platform code of digitalocean.vibe: host randomness, Buffer encoding and the lazy node:http import, which a
+  // .vibe file does not use directly (EK4402).
 
-/** 32 random bytes as base64url. @throws {never} */
-export function randomBase64Url(): string {
-  return Buffer.from(crypto.getRandomValues(new Uint8Array(32))).toString("base64url")
-}
+  /** 32 random bytes as base64url. @throws {never} */
+  export function randomBase64Url(): string {
+    return Buffer.from(crypto.getRandomValues(new Uint8Array(32))).toString("base64url")
+  }
 
-/** Loads node:http only when called, so runtimes without a loopback listener never evaluate it. @throws {never} */
-export function importHttp(): Promise<typeof import("node:http")> {
-  return import("node:http")
-}
+  /** Loads node:http only when called, so runtimes without a loopback listener never evaluate it. @throws {never} */
+  export function importHttp(): Promise<typeof import("node:http")> {
+    return import("node:http")
+  }
 
-/** @throws {never} */
-export function concatText(chunks: Buffer[]): string {
-  return Buffer.concat(chunks).toString("utf8")
-}
+  /** @throws {never} */
+  export function concatText(chunks: Buffer[]): string {
+    return Buffer.concat(chunks).toString("utf8")
+  }
 }

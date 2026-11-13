@@ -43,7 +43,7 @@ export interface Options {
  * The process is acquired in the calling scope: closing the scope kills it (the spawner kills the
  * whole process group, so descendants go too) regardless of whether the transport was closed.
  */
-export const make = Effect.fnUntraced(function* (options: Options) {
+export const make = Effect.fnUntraced(function*(options: Options) {
   const environment = yield* Environment.Service
   const scope = yield* Effect.scope
   // Outgoing frames are queued rather than written to `handle.stdin` directly: the sink closes the
@@ -56,32 +56,31 @@ export const make = Effect.fnUntraced(function* (options: Options) {
   let trailingBytes = 0
   let stderr = ""
 
-  const stop = Effect.fnUntraced(function* (handle: ChildProcessHandle) {
+  const stop = Effect.fnUntraced(function*(handle: ChildProcessHandle) {
     // Exit completion can precede descendant cleanup after the capture deadline.
     yield* Effect.timeoutOption(handle.exitCode, CLOSE_GRACE).pipe(Effect.ignore)
     const terminated = yield* Effect.timeoutOption(handle.kill({ killSignal: "SIGTERM" }), FORCE_KILL_AFTER)
     if (terminated._tag === "None") yield* handle.kill({ killSignal: "SIGKILL" })
   }, Effect.ignore())
 
-  const close = () =>
-    (closing ??= Effect.runPromise(
-      Effect.gen(function* () {
-        state.phase = "closed"
-        Queue.endUnsafe(outgoing)
-        if (startup) yield* Effect.promise(() => startup!.catch(() => undefined))
-        const handle = state.handle
-        if (!handle) return
-        state.handle = undefined
-        yield* stop(handle)
-      }).pipe(Effect.ensuring(Queue.shutdown(outgoing)), Effect.ensuring(Effect.sync(() => buffer.clear()))),
-    ))
+  const close = () => (closing ??= Effect.runPromise(
+    Effect.gen(function*() {
+      state.phase = "closed"
+      Queue.endUnsafe(outgoing)
+      if (startup) yield* Effect.promise(() => startup!.catch(() => undefined))
+      const handle = state.handle
+      if (!handle) return
+      state.handle = undefined
+      yield* stop(handle)
+    }).pipe(Effect.ensuring(Queue.shutdown(outgoing)), Effect.ensuring(Effect.sync(() => buffer.clear()))),
+  ))
 
   const transport: Transport = {
     start: () => {
       if (state.phase !== "ready") return Promise.reject(new Error("Stdio transport already started"))
       state.phase = "starting"
       startup = Effect.runPromise(
-        Effect.gen(function* () {
+        Effect.gen(function*() {
           const handle = yield* environment.spawner.spawn(
             ChildProcess.make(options.command, [...options.args], {
               cwd: options.cwd,
@@ -108,15 +107,15 @@ export const make = Effect.fnUntraced(function* (options: Options) {
       state.phase !== "open"
         ? Promise.reject(new Error("Not connected"))
         : Effect.runPromise(
-            Queue.offer(outgoing, serializeMessage(message)).pipe(
-              Effect.flatMap((offered) => (offered ? Effect.void : Effect.fail(new Error("Not connected")))),
-            ),
+          Queue.offer(outgoing, serializeMessage(message)).pipe(
+            Effect.flatMap((offered) => (offered ? Effect.void : Effect.fail(new Error("Not connected")))),
           ),
+        ),
     close,
   }
 
   const deliver = (chunk: Uint8Array) =>
-    Effect.gen(function* () {
+    Effect.gen(function*() {
       for (const byte of chunk) {
         trailingBytes = byte === 10 ? 0 : trailingBytes + 1
         if (trailingBytes > MAX_FRAME_BYTES) return yield* Effect.fail(new Error("MCP stdio frame exceeded 16 MiB"))
@@ -133,7 +132,7 @@ export const make = Effect.fnUntraced(function* (options: Options) {
             Effect.sync(() => {
               transport.onerror?.(error)
               return undefined
-            }),
+            })
           ),
         )
         if (message === undefined) continue
@@ -143,7 +142,7 @@ export const make = Effect.fnUntraced(function* (options: Options) {
     })
 
   const startOutput = (handle: ChildProcessHandle) =>
-    Effect.gen(function* () {
+    Effect.gen(function*() {
       // Drain stderr into the debug log so chatty servers cannot stall on a full pipe.
       const drain = yield* Effect.forkScoped(
         handle.stderr.pipe(
@@ -152,7 +151,7 @@ export const make = Effect.fnUntraced(function* (options: Options) {
           Stream.runForEach((output) =>
             output.trim() === ""
               ? Effect.void
-              : Effect.logDebug("mcp server stderr", { server: options.server, output }),
+              : Effect.logDebug("mcp server stderr", { server: options.server, output })
           ),
           Effect.ignore,
         ),
@@ -164,12 +163,12 @@ export const make = Effect.fnUntraced(function* (options: Options) {
             Effect.sync(() => {
               const error = Cause.squash(cause)
               transport.onerror?.(error instanceof Error ? error : new Error(String(error)))
-            }),
+            })
           ),
           Effect.ignore,
           // stdout ending means the server is gone.
           Effect.ensuring(
-            Effect.gen(function* () {
+            Effect.gen(function*() {
               const unexpected = state.phase !== "closed"
               if (unexpected) {
                 // stdout can end before the final stderr output has been read.

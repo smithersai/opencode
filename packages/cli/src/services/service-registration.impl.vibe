@@ -18,7 +18,7 @@ const infoJson = Schema.fromJsonString(Service.Info)
 const encodeInfo = Schema.encodeEffect(infoJson)
 const decodeInfo = Schema.decodeUnknownEffect(infoJson)
 
-export const register = Effect.fnUntraced(function* (options: {
+export const register = Effect.fnUntraced(function*(options: {
   readonly address: NetAddress.SocketAddress
   readonly password: string
   readonly id: string
@@ -38,11 +38,11 @@ export const register = Effect.fnUntraced(function* (options: {
   const encoded = yield* encodeInfo(info)
   const current = fs.readFileString(options.file).pipe(Effect.flatMap(decodeInfo))
   const owns = (found: Info) =>
-    found.id === info.id &&
-    found.version === info.version &&
-    found.url === info.url &&
-    found.pid === info.pid &&
-    found.password === info.password
+    found.id === info.id
+    && found.version === info.version
+    && found.url === info.url
+    && found.pid === info.pid
+    && found.password === info.password
   yield* fs
     .writeFileString(temp, encoded, { mode: 0o600 })
     .pipe(
@@ -58,20 +58,20 @@ export const register = Effect.fnUntraced(function* (options: {
         serviceID: options.id,
         servicePID: processId(),
         registration: options.file,
-      }).pipe(Effect.andThen(Effect.failCause(cause))),
+      }).pipe(Effect.andThen(Effect.failCause(cause)))
     ),
     Effect.tap((found) =>
       owns(found)
         ? Effect.void
         : Effect.logWarning("managed service registration replaced; shutting down", {
-            serviceID: options.id,
-            servicePID: processId(),
-            registration: options.file,
-            observedServiceID: found.id,
-            observedServicePID: found.pid,
-            observedVersion: found.version,
-            observedURL: found.url,
-          }),
+          serviceID: options.id,
+          servicePID: processId(),
+          registration: options.file,
+          observedServiceID: found.id,
+          observedServicePID: found.pid,
+          observedVersion: found.version,
+          observedURL: found.url,
+        })
     ),
     Effect.filterOrFail(owns),
     Effect.repeat(Schedule.spaced("5 seconds")),

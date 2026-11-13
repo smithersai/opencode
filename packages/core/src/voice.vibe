@@ -48,7 +48,9 @@ export interface Interface {
   readonly session: (input: SessionInput) => RealtimeTransport!Error
 }
 
-export service Service: Interface { static readonly key = "@opencode/Voice";}
+export service Service: Interface {
+  static readonly key = "@opencode/Voice"
+}
 
 export const layer = Layer.effect(
   Service,
@@ -60,8 +62,10 @@ export const layer = Layer.effect(
     const findConnection = (provider: string, methods: readonly string[] = ["key"]) =>
       integrations
         .get(Integration.ID.make(provider))
-      |> Effect.map(%, (info) =>
-        info?.connections.find((item) => item.type === "env" || methods.includes(item.method)))
+      |> Effect.map(
+        %,
+        (info) => info?.connections.find((item) => item.type === "env" || methods.includes(item.method)),
+      )
 
     // Where an engine's sessions start: its provider with the server's key or, for GPT-Live without an OpenAI key,
     // OpenCode's hosted GPT-Live with the server's OpenCode Console connection, whose sign-in works as well as a key.

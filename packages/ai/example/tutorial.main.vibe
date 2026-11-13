@@ -73,7 +73,7 @@ const request = LLM.request({
 
 // 3. `generate` sends the request and collects the event stream into one
 // response object. `response.text` is the collected text output.
-const generateOnce = Effect.gen(function* () {
+const generateOnce = Effect.gen(function*() {
   const response = yield* LLM.generate(request)
 
   log("\n== generate ==")
@@ -87,11 +87,12 @@ const streamText = LLM.stream(request).pipe(
   Stream.tap((event) =>
     Effect.sync(() => {
       if (event.type === "text-delta") write(`\ntext: ${event.text}`)
-      if (event.type === "finish")
+      if (event.type === "finish") {
         write(
           `\nfinish: ${event.reason.normalized}${event.reason.raw ? ` (${event.reason.raw})` : ""}\n`,
         )
-    }),
+      }
+    })
   ),
   Stream.runDrain,
 )
@@ -108,7 +109,7 @@ const tools = {
   }),
 }
 
-const streamWithTools = Effect.gen(function* () {
+const streamWithTools = Effect.gen(function*() {
   const request = LLM.request({
     model,
     prompt: "Use get_weather for San Francisco, then answer in one sentence.",
@@ -145,7 +146,7 @@ const WeatherReport = Schema.Struct({
   highFahrenheit: Schema.Number,
 })
 
-const generateStructuredObject = Effect.gen(function* () {
+const generateStructuredObject = Effect.gen(function*() {
   const response = yield* LLM.generateObject({
     model,
     system: "Return only structured weather data.",
@@ -240,10 +241,10 @@ const fakeExecutor = RequestExecutor.middleware((request) =>
       request,
       eventStream("data: hello\n\ndata: from fake-echo\n\n"),
     ),
-  ),
+  )
 )
 
-const generateFake = Effect.gen(function* () {
+const generateFake = Effect.gen(function*() {
   const response = yield* LLM.generate({ model: FakeEcho.configure().model("echo-1"), prompt: "Say hello." })
   log("\n== fake provider ==")
   log("generated text:", response.text)
@@ -252,7 +253,7 @@ const generateFake = Effect.gen(function* () {
 // 8. Image generation uses the same facade and the same request/generate shape.
 // `response.image` is a `Media.Asset`: bytes decode lazily and are cached, and
 // `Media.write` persists them through the Effect `FileSystem`.
-const generateImage = Effect.gen(function* () {
+const generateImage = Effect.gen(function*() {
   const response = yield* Image.generate({
     model: openai.image("gpt-image-1-mini"),
     prompt: "A flat black circle centered on a plain white background.",
@@ -286,8 +287,9 @@ const examples: Record<string, Effect.Effect<void, unknown, AIClient.Services>> 
 
 async function main() {
   const name = argument() ?? "tools"
-  if (!Object.hasOwn(examples, name))
+  if (!Object.hasOwn(examples, name)) {
     throw new Error(`Unknown example ${name}; pick one of ${Object.keys(examples).join(", ")}`)
+  }
 
   return Effect.runPromise(
     examples[name].pipe(Effect.provide(name === "fake" ? AIClient.layerWith(fakeExecutor) : AIClient.layer)),

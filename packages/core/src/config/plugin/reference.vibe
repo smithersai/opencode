@@ -30,20 +30,20 @@ export const Plugin = define({
             name,
             local(entry)
               ? Reference.LocalSource.make({
-                  type: "local",
-                  path: AbsolutePath.make(
-                    localPath(directory, global.home, typeof entry === "string" ? entry : entry.path),
-                  ),
-                  ...(description === undefined ? {} : { description }),
-                  ...(hidden === undefined ? {} : { hidden }),
-                })
+                type: "local",
+                path: AbsolutePath.make(
+                  localPath(directory, global.home, typeof entry === "string" ? entry : entry.path),
+                ),
+                ...(description === undefined ? {} : { description }),
+                ...(hidden === undefined ? {} : { hidden }),
+              })
               : Reference.GitSource.make({
-                  type: "git",
-                  repository: typeof entry === "string" ? entry : entry.repository,
-                  ...(entry.branch === undefined ? {} : { branch: entry.branch }),
-                  ...(description === undefined ? {} : { description }),
-                  ...(hidden === undefined ? {} : { hidden }),
-                }),
+                type: "git",
+                repository: typeof entry === "string" ? entry : entry.repository,
+                ...(entry.branch === undefined ? {} : { branch: entry.branch }),
+                ...(description === undefined ? {} : { description }),
+                ...(hidden === undefined ? {} : { hidden }),
+              }),
           )
         }
       }
@@ -62,15 +62,15 @@ function local(entry: ConfigReference.Entry): entry is string | ConfigReference.
 }
 
 module platform {
-import path from "path"
+  import path from "path"
 
-/** @throws {never} */
-export function dirname(filepath: string) {
-  return path.dirname(filepath)
-}
+  /** @throws {never} */
+  export function dirname(filepath: string) {
+    return path.dirname(filepath)
+  }
 
-export function localPath(directory: string, home: string, value: string) {
-  if (value.startsWith("~/")) return path.join(home, value.slice(2))
-  return path.isAbsolute(value) ? value : path.resolve(directory, value)
-}
+  export function localPath(directory: string, home: string, value: string) {
+    if (value.startsWith("~/")) return path.join(home, value.slice(2))
+    return path.isAbsolute(value) ? value : path.resolve(directory, value)
+  }
 }

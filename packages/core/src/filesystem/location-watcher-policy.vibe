@@ -19,7 +19,9 @@ export interface Interface extends State.Transformable<Editor> {
   ) => State.Registration!never!Scope.Scope
 }
 
-export service Service: Interface { static readonly key = "@opencode/LocationWatcherPolicy";}
+export service Service: Interface {
+  static readonly key = "@opencode/LocationWatcherPolicy"
+}
 
 const layer = Layer.effect(
   Service,

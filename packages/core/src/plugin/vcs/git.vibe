@@ -47,7 +47,9 @@ export const Plugin = define({
         name: "Git",
         init: (input) =>
           effect {
-            const executable = try Effect.try({ try: () => gitExecutable(), catch: (cause) => cause }).pipe(Effect.orDie)
+            const executable = try Effect.try({ try: () => gitExecutable(), catch: (cause) => cause }).pipe(
+              Effect.orDie,
+            )
             const result = try processes.run(
               ChildProcess.make(executable, ["init"], { cwd: input.worktree, stdin: "ignore" }),
             )
@@ -104,9 +106,8 @@ function make(proc: AppProcess.Interface, input: { directory: string; worktree: 
         list.toSorted((a, b) => a.file.localeCompare(b.file)),
         (item) =>
           effect {
-            const stat =
-              map.get(item.file) ??
-              (item.status === "added"
+            const stat = map.get(item.file)
+              ?? (item.status === "added"
                 ? (untracked.stats.get(item.file) ?? (try git.statUntracked(ctx.worktree, item.file)))
                 : undefined)
             return {
@@ -216,23 +217,26 @@ const numstat = (text: string) =>
 
 function makeGit(proc: AppProcess.Interface, env?: Record<string, string>) {
   const run = (args: string[], opts: { cwd: string; maxOutputBytes?: number }) =>
-    Effect.orElseSucceed(effect {
-      const executable = try Effect.try({ try: () => gitExecutable(), catch: (cause) => cause }).pipe(Effect.orDie)
-      const result = try proc.run(
-        ChildProcess.make(executable, [...cfg, ...args], {
-          cwd: opts.cwd,
-          env,
-          extendEnv: true,
-          stdin: "ignore",
-        }),
-        { maxOutputBytes: opts.maxOutputBytes },
-      )
-      return {
-        exitCode: result.exitCode,
-        text: () => result.stdout.toString("utf8"),
-        truncated: result.stdoutTruncated || result.stderrTruncated,
-      }
-    }, () => ({ exitCode: 1, text: () => "", truncated: false }))
+    Effect.orElseSucceed(
+      effect {
+        const executable = try Effect.try({ try: () => gitExecutable(), catch: (cause) => cause }).pipe(Effect.orDie)
+        const result = try proc.run(
+          ChildProcess.make(executable, [...cfg, ...args], {
+            cwd: opts.cwd,
+            env,
+            extendEnv: true,
+            stdin: "ignore",
+          }),
+          { maxOutputBytes: opts.maxOutputBytes },
+        )
+        return {
+          exitCode: result.exitCode,
+          text: () => result.stdout.toString("utf8"),
+          truncated: result.stdoutTruncated || result.stderrTruncated,
+        }
+      },
+      () => ({ exitCode: 1, text: () => "", truncated: false }),
+    )
 
   const text = effect (args: string[], opts: { cwd: string }) => {
     return (try run(args, opts)).text()
@@ -346,10 +350,10 @@ function makeGit(proc: AppProcess.Interface, env?: Record<string, string>) {
     if (creation && origin) {
       const candidate = try namedRef(cwd, origin)
       if (
-        candidate &&
-        candidate.name !== current &&
-        (try ancestor(cwd, creation.commit, "HEAD")) &&
-        (try ancestor(cwd, creation.commit, candidate.ref))
+        candidate
+        && candidate.name !== current
+        && (try ancestor(cwd, creation.commit, "HEAD"))
+        && (try ancestor(cwd, creation.commit, candidate.ref))
       ) {
         return { ...candidate, source: "reflog" } satisfies Base
       }
@@ -578,9 +582,9 @@ const untrackedBatch = effect (
             git.worktreeStats(ctx.worktree),
             patches
               ? git.worktreePatch(ctx.worktree, {
-                  context: patches.context ?? PATCH_CONTEXT_LINES,
-                  maxOutputBytes: MAX_TOTAL_PATCH_BYTES,
-                })
+                context: patches.context ?? PATCH_CONTEXT_LINES,
+                maxOutputBytes: MAX_TOTAL_PATCH_BYTES,
+              })
               : Effect.succeed({ text: "", truncated: false } satisfies Patch),
           ],
           { concurrency: 2 },
@@ -622,10 +626,11 @@ const statusItems = effect (ctx: Ctx, untracked: Untracked = "files") => {
   const list = try ctx.git.status(ctx.directory)
   const prefix = relativePosixPath(ctx.worktree, ctx.directory)
   if (
-    !prefix ||
-    !list.some((item) => item.code === "??" && item.file.endsWith("/") && `${prefix}/`.startsWith(item.file))
-  )
+    !prefix
+    || !list.some((item) => item.code === "??" && item.file.endsWith("/") && `${prefix}/`.startsWith(item.file))
+  ) {
     return { list, more: undefined }
+  }
 
   const names = try Effect.promise(() => sortedEntries(ctx.directory))
   // Ignored entries do not list, so check entries a batch at a time until the listing fills, the folder runs out, or
@@ -634,10 +639,10 @@ const statusItems = effect (ctx: Ctx, untracked: Untracked = "files") => {
   const started = Date.now()
   let checked = 0
   while (
-    checked < names.length &&
-    entries.length < MAX_FOLDER_ENTRIES &&
-    checked < MAX_FOLDER_SCAN &&
-    Date.now() - started < MAX_FOLDER_SCAN_MS
+    checked < names.length
+    && entries.length < MAX_FOLDER_ENTRIES
+    && checked < MAX_FOLDER_SCAN
+    && Date.now() - started < MAX_FOLDER_SCAN_MS
   ) {
     const batch = names.slice(checked, checked + MAX_FOLDER_ENTRIES)
     checked += batch.length
@@ -678,7 +683,8 @@ const batchPatches = effect (ctx: Ctx, ref: string, list: Item[], options?: GitD
   })
 
   return {
-    patches: try Effect.try({ try: () => chunksByFile(result, (index) => list[index]?.file), catch: (cause) => cause }).pipe(Effect.orDie),
+    patches: try Effect.try({ try: () => chunksByFile(result, (index) => list[index]?.file), catch: (cause) => cause })
+      .pipe(Effect.orDie),
     capped: result.truncated,
   }
 }
@@ -689,17 +695,16 @@ const nativePatch = effect (
   item: Item,
   options?: GitDiffOptions,
 ) => {
-  const result =
-    item.code === "??" || !ref
-      ? try ctx.git.patchUntracked(ctx.worktree, item.file, {
-          context: options?.context ?? PATCH_CONTEXT_LINES,
-          maxOutputBytes: MAX_PATCH_BYTES,
-        })
-      : try ctx.git.patch(ctx.worktree, ref, item.file, {
-          target: options?.target,
-          context: options?.context ?? PATCH_CONTEXT_LINES,
-          maxOutputBytes: MAX_PATCH_BYTES,
-        })
+  const result = item.code === "??" || !ref
+    ? try ctx.git.patchUntracked(ctx.worktree, item.file, {
+      context: options?.context ?? PATCH_CONTEXT_LINES,
+      maxOutputBytes: MAX_PATCH_BYTES,
+    })
+    : try ctx.git.patch(ctx.worktree, ref, item.file, {
+      target: options?.target,
+      context: options?.context ?? PATCH_CONTEXT_LINES,
+      maxOutputBytes: MAX_PATCH_BYTES,
+    })
   if (!result.truncated && result.text) return result.text
 
   return try Effect.try({ try: () => emptyPatch(item.file), catch: (cause) => cause }).pipe(Effect.orDie)
@@ -723,7 +728,9 @@ const patchForItem = effect (
 
   const batched = batch.patches.get(item.file)
   if (batched !== undefined) return batched
-  if (item.code !== "??" && batch.capped) return try Effect.try({ try: () => emptyPatch(item.file), catch: (cause) => cause }).pipe(Effect.orDie)
+  if (item.code !== "??" && batch.capped) {
+    return try Effect.try({ try: () => emptyPatch(item.file), catch: (cause) => cause }).pipe(Effect.orDie)
+  }
   const prefetched = item.code === "??" || !ref ? untracked.get(item.file) : undefined
   if (prefetched !== undefined) return prefetched
   return try nativePatch(ctx, ref, item, options)
@@ -751,9 +758,8 @@ const files = effect (
   let capped = false
 
   for (const item of list.toSorted((a, b) => a.file.localeCompare(b.file))) {
-    const stat =
-      map.get(item.file) ??
-      (!options?.target && item.status === "added"
+    const stat = map.get(item.file)
+      ?? (!options?.target && item.status === "added"
         ? (untracked.stats.get(item.file) ?? (try ctx.git.statUntracked(ctx.worktree, item.file)))
         : undefined)
     const patch = try patchForItem(ctx, ref, item, batch, untracked.patches, capped, options)
@@ -809,54 +815,56 @@ const track = effect (ctx: Ctx, ref: string | undefined, options?: DiffOptions) 
 }
 
 module platform {
-// The platform code of git.vibe: host files, temporary paths and byte lengths, which a .vibe file does not read (EK4402).
+  // The platform code of git.vibe: host files, temporary paths and byte lengths, which a .vibe file does not read (EK4402).
 
-import { randomUUID } from "crypto"
-import fs from "fs/promises"
-import os from "os"
-import path from "path"
+  import { randomUUID } from "crypto"
+  import fs from "fs/promises"
+  import os from "os"
+  import path from "path"
 
-/**
- * The untracked files a throwaway index can batch: regular files no larger than `maxBytes`.
- * Directories (nested repositories) and symlinks diff differently through an index.
- */
-export function batchableFiles(worktree: string, files: readonly string[], maxBytes: number): Promise<string[]> {
-  return Promise.all(
-    files.map(async (file) => {
-      if (file.endsWith("/")) return
-      const stat = await fs.lstat(path.join(worktree, file)).catch(() => undefined)
-      if (!stat?.isFile()) return
-      // A file this large could crowd every other file out of the batch's output budget.
-      if (stat.size > maxBytes) return
-      return file
-    }),
-  ).then((list) => list.filter((file) => file !== undefined))
-}
+  /**
+   * The untracked files a throwaway index can batch: regular files no larger than `maxBytes`.
+   * Directories (nested repositories) and symlinks diff differently through an index.
+   */
+  export function batchableFiles(worktree: string, files: readonly string[], maxBytes: number): Promise<string[]> {
+    return Promise.all(
+      files.map(async (file) => {
+        if (file.endsWith("/")) return
+        const stat = await fs.lstat(path.join(worktree, file)).catch(() => undefined)
+        if (!stat?.isFile()) return
+        // A file this large could crowd every other file out of the batch's output budget.
+        if (stat.size > maxBytes) return
+        return file
+      }),
+    ).then((list) => list.filter((file) => file !== undefined))
+  }
 
-/** Writes the NUL-separated pathspec list for a throwaway index and returns the path prefix of its files. */
-export async function writeBatchList(files: readonly string[]): Promise<string> {
-  const base = path.join(os.tmpdir(), `opencode-untracked-${randomUUID()}`)
-  await fs.writeFile(`${base}.list`, files.map((file) => `${file}\0`).join(""))
-  return base
-}
+  /** Writes the NUL-separated pathspec list for a throwaway index and returns the path prefix of its files. */
+  export async function writeBatchList(files: readonly string[]): Promise<string> {
+    const base = path.join(os.tmpdir(), `opencode-untracked-${randomUUID()}`)
+    await fs.writeFile(`${base}.list`, files.map((file) => `${file}\0`).join(""))
+    return base
+  }
 
-/** Removes the pathspec list and throwaway index written under `base`. */
-export function removeBatchFiles(base: string): Promise<void[]> {
-  return Promise.all([`${base}.list`, `${base}.index`, `${base}.index.lock`].map((file) => fs.rm(file, { force: true })))
-}
+  /** Removes the pathspec list and throwaway index written under `base`. */
+  export function removeBatchFiles(base: string): Promise<void[]> {
+    return Promise.all(
+      [`${base}.list`, `${base}.index`, `${base}.index.lock`].map((file) => fs.rm(file, { force: true })),
+    )
+  }
 
-/** The sorted entry names of a directory. */
-export function sortedEntries(directory: string): Promise<string[]> {
-  return fs.readdir(directory).then((items) => items.toSorted())
-}
+  /** The sorted entry names of a directory. */
+  export function sortedEntries(directory: string): Promise<string[]> {
+    return fs.readdir(directory).then((items) => items.toSorted())
+  }
 
-/** The path of `to` relative to `from`, with `/` separators. @throws {never} */
-export function relativePosixPath(from: string, to: string): string {
-  return path.relative(from, to).split(path.sep).join("/")
-}
+  /** The path of `to` relative to `from`, with `/` separators. @throws {never} */
+  export function relativePosixPath(from: string, to: string): string {
+    return path.relative(from, to).split(path.sep).join("/")
+  }
 
-/** UTF-8 byte length of a string. @throws {never} */
-export function byteLength(text: string): number {
-  return Buffer.byteLength(text)
-}
+  /** UTF-8 byte length of a string. @throws {never} */
+  export function byteLength(text: string): number {
+    return Buffer.byteLength(text)
+  }
 }

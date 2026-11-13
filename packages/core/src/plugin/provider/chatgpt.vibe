@@ -102,7 +102,7 @@ const signIn = (app: App.Info, savedClientID: () => string | undefined, storage:
       label: "Sign in with ChatGPT",
     },
     authorize: () =>
-      Effect.gen(function* () {
+      Effect.gen(function*() {
         const storedHostID = yield* storage.get("chatgpt-agent-host-id")
         const hostID = typeof storedHostID === "string" ? storedHostID : `urn:uuid:${randomUUID()}`
         if (typeof storedHostID !== "string") yield* storage.set("chatgpt-agent-host-id", hostID)
@@ -144,8 +144,9 @@ const signIn = (app: App.Info, savedClientID: () => string | undefined, storage:
                 response,
               }),
             )
-          )
+          ) {
             response.writeHead(409).end("OAuth callback already received")
+          }
         })
         const port = yield* listen(server)
         yield* Effect.addFinalizer(() => Effect.sync(() => server.close()))
@@ -154,7 +155,7 @@ const signIn = (app: App.Info, savedClientID: () => string | undefined, storage:
           mode: "auto" as const,
           url: authorizeURL(redirect, pkce, state, nonce, savedID, hostID),
           instructions: "Complete authorization in your browser. This window will close automatically.",
-          callback: Effect.gen(function* () {
+          callback: Effect.gen(function*() {
             const result = yield* Deferred.await(received)
             const respond = (error?: string) =>
               Effect.sync(() =>
@@ -164,24 +165,27 @@ const signIn = (app: App.Info, savedClientID: () => string | undefined, storage:
                     error
                       ? OauthCallbackPage.error(error, { provider: "ChatGPT" })
                       : OauthCallbackPage.success({ provider: "ChatGPT" }),
-                  ),
+                  )
               )
-            return yield* Effect.gen(function* () {
+            return yield* Effect.gen(function*() {
               // Reauthorization callbacks may omit the client ID; reuse the one this attempt started with.
-              if (savedID && result.clientID && result.clientID !== savedID)
+              if (savedID && result.clientID && result.clientID !== savedID) {
                 return yield* Effect.fail(
                   new Error("ChatGPT returned a different client than this connection. Connect again."),
                 )
+              }
               const clientID = savedID ?? result.clientID
-              if (!clientID)
+              if (!clientID) {
                 return yield* Effect.fail(new Error("ChatGPT sign-in did not return a client ID. Connect again."))
+              }
               const tokens = yield* exchange(result.code, clientID, redirect, pkce, app)
-              if (!tokens.scope?.split(" ").includes(tokenSharingScope))
+              if (!tokens.scope?.split(" ").includes(tokenSharingScope)) {
                 return yield* Effect.fail(
                   new Error(
                     "ChatGPT sign-in finished without token sharing. Sign in again and allow token sharing, or connect OpenAI with an API key.",
                   ),
                 )
+              }
               if (!tokens.id_token) return yield* Effect.fail(new Error("ChatGPT sign-in did not return an ID token."))
               yield* verifyIDToken(tokens.id_token, clientID, nonce)
               return credential(tokens, clientID)
@@ -209,167 +213,171 @@ function listen(server: Server) {
   })
 }
 
-export const ChatGPTPlugin = define({
-  id: "opencode.provider.chatgpt",
-  effect: Effect.fn(function* (ctx) {
-    const bus = yield* Bus.Service
-    const credentials = yield* Credential.Service
-    const loading = Semaphore.makeUnsafe(1)
-    let chatgpt: Credential.OAuth | undefined
-    // let available: ReadonlyArray<RemoteModel> | undefined
-    let source: Effect.Success<ReturnType<typeof ctx.integration.connection.active>>
+export const ChatGPTPlugin = define(
+  {
+    id: "opencode.provider.chatgpt",
+    effect: Effect.fn(function*(ctx) {
+      const bus = yield* Bus.Service
+      const credentials = yield* Credential.Service
+      const loading = Semaphore.makeUnsafe(1)
+      let chatgpt: Credential.OAuth | undefined
+      // let available: ReadonlyArray<RemoteModel> | undefined
+      let source: Effect.Success<ReturnType<typeof ctx.integration.connection.active>>
 
-    const load = Effect.fn("ChatGPTPlugin.load")(function* () {
-      // const previous = IntegrationConnection.key(source)
-      const connection = yield* ctx.integration.connection.active(integrationID)
-      const credential = connection
-        ? yield* ctx.integration.connection.resolve(connection).pipe(Effect.orElseSucceed(() => undefined))
-        : undefined
-      chatgpt = credential?.type === "oauth" && credential.methodID === methodID ? credential : undefined
-      source = chatgpt ? connection : undefined
-      // if (previous !== IntegrationConnection.key(source)) {
-      //   const metadata = Option.getOrUndefined(decodeMetadata(chatgpt?.metadata))
-      //   const stored = metadata ? yield* ctx.storage.get(modelCacheKey(metadata.clientID)) : undefined
-      //   available = Option.getOrUndefined(decodeCachedModels(stored))
-      // }
-    })
+      const load = Effect.fn("ChatGPTPlugin.load")(function*() {
+        // const previous = IntegrationConnection.key(source)
+        const connection = yield* ctx.integration.connection.active(integrationID)
+        const credential = connection
+          ? yield* ctx.integration.connection.resolve(connection).pipe(Effect.orElseSucceed(() => undefined))
+          : undefined
+        chatgpt = credential?.type === "oauth" && credential.methodID === methodID ? credential : undefined
+        source = chatgpt ? connection : undefined
+        // if (previous !== IntegrationConnection.key(source)) {
+        //   const metadata = Option.getOrUndefined(decodeMetadata(chatgpt?.metadata))
+        //   const stored = metadata ? yield* ctx.storage.get(modelCacheKey(metadata.clientID)) : undefined
+        //   available = Option.getOrUndefined(decodeCachedModels(stored))
+        // }
+      })
 
-    yield* ctx.integration.transform((editor) => {
-      editor.method.update(
-        signIn(ctx.app, () => Option.getOrUndefined(decodeMetadata(chatgpt?.metadata))?.clientID, ctx.storage),
+      yield* ctx.integration.transform((editor) => {
+        editor.method.update(
+          signIn(ctx.app, () => Option.getOrUndefined(decodeMetadata(chatgpt?.metadata))?.clientID, ctx.storage),
+        )
+      })
+      yield* Effect.forEach(
+        yield* credentials.list(Integration.ID.make("openai")),
+        (entry) => {
+          const value = entry.value
+          if (value.type !== "oauth" || value.methodID !== Integration.MethodID.make("chatgpt-browser")) {
+            return Effect.void
+          }
+          const metadata = Option.getOrUndefined(decodeMetadata(value.metadata))
+          if (!metadata) return Effect.void
+          return Effect.gen(function*() {
+            const saved = yield* ctx.storage.get(modelCacheKey(metadata.clientID))
+            if (!Option.isSome(decodeCachedModels(saved)) && metadata.models) {
+              yield* ctx.storage.set(modelCacheKey(metadata.clientID), metadata.models)
+            }
+            const { models: _, ...rest } = value.metadata ?? {}
+            yield* credentials.update(entry.id, {
+              value: Credential.OAuth.make({ ...value, methodID, metadata: rest }),
+            })
+          })
+        },
+        { discard: true },
       )
-    })
-    yield* Effect.forEach(
-      yield* credentials.list(Integration.ID.make("openai")),
-      (entry) => {
-        const value = entry.value
-        if (value.type !== "oauth" || value.methodID !== Integration.MethodID.make("chatgpt-browser"))
-          return Effect.void
-        const metadata = Option.getOrUndefined(decodeMetadata(value.metadata))
-        if (!metadata) return Effect.void
-        return Effect.gen(function* () {
-          const saved = yield* ctx.storage.get(modelCacheKey(metadata.clientID))
-          if (!Option.isSome(decodeCachedModels(saved)) && metadata.models)
-            yield* ctx.storage.set(modelCacheKey(metadata.clientID), metadata.models)
-          const { models: _, ...rest } = value.metadata ?? {}
-          yield* credentials.update(entry.id, {
-            value: Credential.OAuth.make({ ...value, methodID, metadata: rest }),
+      yield* load()
+      yield* ctx.session.hook(
+        "retry",
+        (event) =>
+          Effect.sync(() => {
+            if (!chatgpt || !nonRetryableSharingCodes.some((code) => event.error.response?.body.includes(code))) return
+            event.decision = { retry: false }
+          }),
+        { providerID },
+      )
+      yield* ctx.session.hook(
+        "model.request",
+        (evt) =>
+          Effect.gen(function*() {
+            if (!chatgpt) return
+            const session = yield* ctx.session
+              .get({ sessionID: evt.sessionID })
+              .pipe(Effect.orElseSucceed(() => undefined))
+            // Mirror the Codex client's session headers: ChatGPT derives prompt-cache affinity from session-id.
+            evt.headers["session-id"] = session ? SessionAffinity.get(session) : evt.sessionID
+            evt.headers["thread-id"] = evt.sessionID
+            evt.headers["x-client-request-id"] = evt.sessionID
+          }),
+        { providerID },
+      )
+      // Config applies after provider plugins, so read it here: a custom baseURL may not decode zstd.
+      const configured = yield* configuredSettings(providerID)
+      yield* ctx.provider.transform((providers) => {
+        const item = providers.get(providerID)
+        if (!item) return
+        if (!chatgpt || !source) return
+        providers.update(providerID, (provider) => {
+          provider.settings = Provider.mergeOverlay(provider.settings, {
+            baseURL: resource,
+            transport: "http",
+            compaction: { type: "summary" },
+            // ChatGPT sign-in rejects uncompressed bodies over ~1 MiB and decodes zstd.
+            ...(configured?.baseURL === undefined ? { encoding: provider.settings?.encoding ?? "zstd" } : {}),
           })
         })
-      },
-      { discard: true },
-    )
-    yield* load()
-    yield* ctx.session.hook(
-      "retry",
-      (event) =>
-        Effect.sync(() => {
-          if (!chatgpt || !nonRetryableSharingCodes.some((code) => event.error.response?.body.includes(code))) return
-          event.decision = { retry: false }
-        }),
-      { providerID },
-    )
-    yield* ctx.session.hook(
-      "model.request",
-      (evt) =>
-        Effect.gen(function* () {
-          if (!chatgpt) return
-          const session = yield* ctx.session
-            .get({ sessionID: evt.sessionID })
-            .pipe(Effect.orElseSucceed(() => undefined))
-          // Mirror the Codex client's session headers: ChatGPT derives prompt-cache affinity from session-id.
-          evt.headers["session-id"] = session ? SessionAffinity.get(session) : evt.sessionID
-          evt.headers["thread-id"] = evt.sessionID
-          evt.headers["x-client-request-id"] = evt.sessionID
-        }),
-      { providerID },
-    )
-    // Config applies after provider plugins, so read it here: a custom baseURL may not decode zstd.
-    const configured = yield* configuredSettings(providerID)
-    yield* ctx.provider.transform((providers) => {
-      const item = providers.get(providerID)
-      if (!item) return
-      if (!chatgpt || !source) return
-      providers.update(providerID, (provider) => {
-        provider.settings = Provider.mergeOverlay(provider.settings, {
-          baseURL: resource,
-          transport: "http",
-          compaction: { type: "summary" },
-          // ChatGPT sign-in rejects uncompressed bodies over ~1 MiB and decodes zstd.
-          ...(configured?.baseURL === undefined ? { encoding: provider.settings?.encoding ?? "zstd" } : {}),
+        const updated = providers.get(providerID)
+        if (!updated) return
+        providers.add({
+          info: updated.provider,
+          // models: available
+          //   ? deriveModels(available, Array.from(item.models.values()))
+          //   : Array.from(item.models.values()).filter((model) => fallbackModels.has(model.id)),
+          models: Array.from(item.models.values()).filter((model) => fallbackModels.has(model.id)),
+          sourceConnection: source,
         })
       })
-      const updated = providers.get(providerID)
-      if (!updated) return
-      providers.add({
-        info: updated.provider,
-        // models: available
-        //   ? deriveModels(available, Array.from(item.models.values()))
-        //   : Array.from(item.models.values()).filter((model) => fallbackModels.has(model.id)),
-        models: Array.from(item.models.values()).filter((model) => fallbackModels.has(model.id)),
-        sourceConnection: source,
+      yield* ctx.model.transform((models) => {
+        for (const model of models.list(providerID)) {
+          models.update(model.providerID, model.id, (draft) => {
+            if (!chatgpt) return
+            draft.compatibility = { ...draft.compatibility, supportsEffortUpdates: false }
+            // Token sharing does not support native /responses/compact.
+            draft.settings = { ...draft.settings, compaction: { type: "summary" } }
+            if (Schema.is(Schema.Struct({ mode: Schema.Literal("pro") }))(draft.body?.reasoning)) {
+              draft.enabled = false
+              return
+            }
+            // if (available && !available.some((remote) => remote.slug === (draft.modelID ?? draft.id))) {
+            //   draft.enabled = false
+            //   return
+            // }
+            draft.cost = []
+          })
+        }
       })
-    })
-    yield* ctx.model.transform((models) => {
-      for (const model of models.list(providerID)) {
-        models.update(model.providerID, model.id, (draft) => {
-          if (!chatgpt) return
-          draft.compatibility = { ...draft.compatibility, supportsEffortUpdates: false }
-          // Token sharing does not support native /responses/compact.
-          draft.settings = { ...draft.settings, compaction: { type: "summary" } }
-          if (Schema.is(Schema.Struct({ mode: Schema.Literal("pro") }))(draft.body?.reasoning)) {
-            draft.enabled = false
-            return
-          }
-          // if (available && !available.some((remote) => remote.slug === (draft.modelID ?? draft.id))) {
-          //   draft.enabled = false
-          //   return
-          // }
-          draft.cost = []
-        })
-      }
-    })
-    // const refreshModels = Effect.fn("ChatGPTPlugin.refreshModels")(function* () {
-    //   const connection = source
-    //   const credential =
-    //     connection?.type === "credential"
-    //       ? (yield* credentials.get(Credential.ID.make(connection.id)))?.value
-    //       : undefined
-    //   if (credential?.type !== "oauth" || credential.methodID !== methodID || credential.expires <= Date.now() + 60_000)
-    //     return
-    //   const metadata = Option.getOrUndefined(decodeMetadata(credential.metadata))
-    //   if (!metadata) return
-    //   const models = yield* fetchModels(credential.access, ctx.app).pipe(
-    //     Effect.timeout(15_000),
-    //     Effect.catch(() => Effect.logWarning("failed to refresh ChatGPT models").pipe(Effect.as(undefined))),
-    //   )
-    //   if (!models) return
-    //   yield* loading.withPermit(
-    //     Effect.gen(function* () {
-    //       if (
-    //         IntegrationConnection.key(connection) !== IntegrationConnection.key(source) ||
-    //         IntegrationConnection.key(connection) !==
-    //           IntegrationConnection.key(yield* ctx.integration.connection.active(integrationID))
-    //       )
-    //         return
-    //       if (JSON.stringify(models) === JSON.stringify(available)) return
-    //       yield* ctx.storage.set(modelCacheKey(metadata.clientID), models)
-    //       available = models
-    //       yield* ctx.provider.reload()
-    //     }),
-    //   )
-    // })
-    const reload = () => loading.withPermit(load().pipe(Effect.andThen(ctx.provider.reload())))
-    // .pipe(Effect.andThen(refreshModels().pipe(Effect.forkScoped, Effect.asVoid)))
-    yield* bus.subscribe(Credential.Event.Switched).pipe(
-      Stream.filter((event) => event.data.integrationID === integrationID),
-      Stream.runForEach(reload),
-      Effect.forkScoped({ startImmediately: true }),
-    )
-    // yield* refreshModels().pipe(Effect.forkScoped)
-    // yield* Effect.sleep(Duration.minutes(15)).pipe(Effect.andThen(refreshModels), Effect.forever, Effect.forkScoped)
-  }),
-} satisfies PluginInternal.InternalPlugin)
+      // const refreshModels = Effect.fn("ChatGPTPlugin.refreshModels")(function* () {
+      //   const connection = source
+      //   const credential =
+      //     connection?.type === "credential"
+      //       ? (yield* credentials.get(Credential.ID.make(connection.id)))?.value
+      //       : undefined
+      //   if (credential?.type !== "oauth" || credential.methodID !== methodID || credential.expires <= Date.now() + 60_000)
+      //     return
+      //   const metadata = Option.getOrUndefined(decodeMetadata(credential.metadata))
+      //   if (!metadata) return
+      //   const models = yield* fetchModels(credential.access, ctx.app).pipe(
+      //     Effect.timeout(15_000),
+      //     Effect.catch(() => Effect.logWarning("failed to refresh ChatGPT models").pipe(Effect.as(undefined))),
+      //   )
+      //   if (!models) return
+      //   yield* loading.withPermit(
+      //     Effect.gen(function* () {
+      //       if (
+      //         IntegrationConnection.key(connection) !== IntegrationConnection.key(source) ||
+      //         IntegrationConnection.key(connection) !==
+      //           IntegrationConnection.key(yield* ctx.integration.connection.active(integrationID))
+      //       )
+      //         return
+      //       if (JSON.stringify(models) === JSON.stringify(available)) return
+      //       yield* ctx.storage.set(modelCacheKey(metadata.clientID), models)
+      //       available = models
+      //       yield* ctx.provider.reload()
+      //     }),
+      //   )
+      // })
+      const reload = () => loading.withPermit(load().pipe(Effect.andThen(ctx.provider.reload())))
+      // .pipe(Effect.andThen(refreshModels().pipe(Effect.forkScoped, Effect.asVoid)))
+      yield* bus.subscribe(Credential.Event.Switched).pipe(
+        Stream.filter((event) => event.data.integrationID === integrationID),
+        Stream.runForEach(reload),
+        Effect.forkScoped({ startImmediately: true }),
+      )
+      // yield* refreshModels().pipe(Effect.forkScoped)
+      // yield* Effect.sleep(Duration.minutes(15)).pipe(Effect.andThen(refreshModels), Effect.forever, Effect.forkScoped)
+    }),
+  } satisfies PluginInternal.InternalPlugin,
+)
 
 function headers(app: App.Info) {
   return { "Content-Type": "application/x-www-form-urlencoded", "User-Agent": App.useragent(app) }
@@ -391,10 +399,11 @@ function exchange(code: string, clientID: string, redirect: string, pkce: Pkce, 
 }
 
 function refresh(value: Credential.OAuth, app: App.Info) {
-  return Effect.gen(function* () {
+  return Effect.gen(function*() {
     const metadata = Option.getOrUndefined(decodeMetadata(value.metadata))
-    if (!metadata)
+    if (!metadata) {
       return yield* Effect.fail(new Error("This ChatGPT connection has no registered client ID. Connect again."))
+    }
     const tokens = yield* request<TokenResponse>(tokenURL, {
       method: "POST",
       headers: headers(app),
@@ -410,7 +419,7 @@ function refresh(value: Credential.OAuth, app: App.Info) {
 }
 
 export function fetchModels(token: string, app: App.Info, baseURL = resource) {
-  return Effect.gen(function* () {
+  return Effect.gen(function*() {
     const http = HttpClient.filterStatusOk(yield* HttpClient.HttpClient)
     const response = yield* http.execute(
       HttpClientRequest.get(`${baseURL}/models`).pipe(
@@ -543,31 +552,31 @@ function authorizeURL(
 }
 
 module platform {
-// The platform code of chatgpt.vibe: host randomness, digests, Buffer encoding and the lazy node:http import, which
-// a .vibe file does not use directly (EK4402).
+  // The platform code of chatgpt.vibe: host randomness, digests, Buffer encoding and the lazy node:http import, which
+  // a .vibe file does not use directly (EK4402).
 
-/** `size` random bytes; sizes stay far below the 65536-byte getRandomValues limit. @throws {never} */
-export function randomBytes(size: number): Uint8Array<ArrayBuffer> {
-  return crypto.getRandomValues(new Uint8Array(size))
-}
+  /** `size` random bytes; sizes stay far below the 65536-byte getRandomValues limit. @throws {never} */
+  export function randomBytes(size: number): Uint8Array<ArrayBuffer> {
+    return crypto.getRandomValues(new Uint8Array(size))
+  }
 
-/** The SHA-256 digest of `text`. A digest failure rejects. @throws {never} */
-export async function sha256(text: string): Promise<ArrayBuffer> {
-  return crypto.subtle.digest("SHA-256", new TextEncoder().encode(text))
-}
+  /** The SHA-256 digest of `text`. A digest failure rejects. @throws {never} */
+  export async function sha256(text: string): Promise<ArrayBuffer> {
+    return crypto.subtle.digest("SHA-256", new TextEncoder().encode(text))
+  }
 
-/** @throws {never} */
-export function base64UrlEncode(buffer: ArrayBuffer) {
-  return Buffer.from(buffer).toString("base64url")
-}
+  /** @throws {never} */
+  export function base64UrlEncode(buffer: ArrayBuffer) {
+    return Buffer.from(buffer).toString("base64url")
+  }
 
-/** Loads node:http only when called, so runtimes without a loopback listener never evaluate it. @throws {never} */
-export function importHttp(): Promise<typeof import("node:http")> {
-  return import("node:http")
-}
+  /** Loads node:http only when called, so runtimes without a loopback listener never evaluate it. @throws {never} */
+  export function importHttp(): Promise<typeof import("node:http")> {
+    return import("node:http")
+  }
 
-/** @throws {never} */
-export function randomUUID(): string {
-  return crypto.randomUUID()
-}
+  /** @throws {never} */
+  export function randomUUID(): string {
+    return crypto.randomUUID()
+  }
 }

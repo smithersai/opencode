@@ -88,7 +88,7 @@ export interface Interface {
 
 export class Service extends Context.Service<Service, Interface>()("@opencode/Shell") {}
 
-export const cleanup = Effect.fn("Shell.cleanup")(function* () {
+export const cleanup = Effect.fn("Shell.cleanup")(function*() {
   const fs = yield* FSUtil.Service
   const global = yield* Global.Service
   const directory = path.join(global.data, DIRECTORY)
@@ -104,8 +104,8 @@ export const cleanup = Effect.fn("Shell.cleanup")(function* () {
           entries.flatMap((entry) =>
             entry.type === "file" && /^sh_[0-9a-f]{12}.*\.out$/.test(entry.name)
               ? [path.join(directory, project.name, entry.name)]
-              : [],
-          ),
+              : []
+          )
         ),
         Effect.orElseSucceed(() => []),
       ),
@@ -127,7 +127,7 @@ const cleanupNode = makeGlobalNode({
 const layer = () =>
   Layer.effect(
     Service,
-    Effect.gen(function* () {
+    Effect.gen(function*() {
       const bus = yield* Bus.Service
       const location = yield* Location.Service
       const global = yield* Global.Service
@@ -147,7 +147,7 @@ const layer = () =>
       yield* Effect.promise(() => mkdir(outputDir, { recursive: true }))
 
       yield* Effect.addFinalizer(() =>
-        Effect.gen(function* () {
+        Effect.gen(function*() {
           for (const command of commands.values()) {
             if (command.timeoutFiber) yield* Fiber.interrupt(command.timeoutFiber)
             // Teardown interrupts pending commands; it is not a terminal command failure.
@@ -155,16 +155,16 @@ const layer = () =>
           }
           commands.clear()
           exitOrder.length = 0
-        }),
+        })
       )
 
-      const require = Effect.fnUntraced(function* (id: Shell.ID) {
+      const require = Effect.fnUntraced(function*(id: Shell.ID) {
         const command = commands.get(id)
         if (!command) return yield* new NotFoundError({ id })
         return command
       })
 
-      const removeCommand = Effect.fnUntraced(function* (id: Shell.ID) {
+      const removeCommand = Effect.fnUntraced(function*(id: Shell.ID) {
         const command = commands.get(id)
         const index = exitOrder.indexOf(id)
         if (index !== -1) exitOrder.splice(index, 1)
@@ -179,33 +179,33 @@ const layer = () =>
         yield* bus.publish(Shell.Event.Deleted, { id })
       })
 
-      const remove = Effect.fn("Shell.remove")(function* (id: Shell.ID) {
+      const remove = Effect.fn("Shell.remove")(function*(id: Shell.ID) {
         yield* require(id)
         yield* removeCommand(id)
       })
 
-      const list = Effect.fn("Shell.list")(function* () {
+      const list = Effect.fn("Shell.list")(function*() {
         return Array.from(commands.values())
           .filter((command) => command.info.status === "running")
           .map((command) => command.info)
       })
 
-      const get = Effect.fn("Shell.get")(function* (id: Shell.ID) {
+      const get = Effect.fn("Shell.get")(function*(id: Shell.ID) {
         return (yield* require(id)).info
       })
 
-      const wait = Effect.fn("Shell.wait")(function* (id: Shell.ID) {
+      const wait = Effect.fn("Shell.wait")(function*(id: Shell.ID) {
         return yield* Deferred.await((yield* require(id)).done)
       })
 
-      const timeout = Effect.fn("Shell.timeout")(function* (id: Shell.ID, duration: number) {
+      const timeout = Effect.fn("Shell.timeout")(function*(id: Shell.ID, duration: number) {
         const command = yield* require(id)
         if (command.info.status !== "running" || !command.timeout) return command.info
         yield* command.timeout(duration)
         return command.info
       })
 
-      const output = Effect.fnUntraced(function* (id: Shell.ID, input?: Shell.OutputInput) {
+      const output = Effect.fnUntraced(function*(id: Shell.ID, input?: Shell.OutputInput) {
         const command = yield* require(id)
         const cursor = input?.cursor ?? 0
         const limit = input?.limit ?? 65536
@@ -235,13 +235,19 @@ const layer = () =>
         }
       })
 
-      const result = Effect.fn("Shell.result")(function* (started: Shell.Info) {
+      const result = Effect.fn("Shell.result")(function*(started: Shell.Info) {
         const info = yield* wait(started.id).pipe(
-          Effect.catchTag("Shell.NotFoundError", () =>
-            Effect.succeed({ ...started, status: "killed" as const, time: { ...started.time, completed: Date.now() } }),
+          Effect.catchTag(
+            "Shell.NotFoundError",
+            () =>
+              Effect.succeed({
+                ...started,
+                status: "killed" as const,
+                time: { ...started.time, completed: Date.now() },
+              }),
           ),
         )
-        const capture = yield* Effect.gen(function* () {
+        const capture = yield* Effect.gen(function*() {
           const limits = Config.latest(yield* config.entries(), "tool_output")
           const maxLines = limits?.max_lines ?? ToolOutput.MAX_LINES
           const maxBytes = limits?.max_bytes ?? ToolOutput.MAX_BYTES
@@ -261,15 +267,14 @@ const layer = () =>
         return { info, capture }
       })
 
-      const create = Effect.fn("Shell.create")(function* <E = never, R = never>(
+      const create = Effect.fn("Shell.create")(function*<E = never, R = never>(
         input: CreateInput,
         before?: (input: ShellCreateBefore) => Effect.Effect<void, E, R>,
       ) {
         const sessionID = input.metadata?.sessionID
-        const baseEnv =
-          location.workspaceID !== undefined
-            ? undefined
-            : ((Schema.is(SessionSchema.ID)(sessionID) ? yield* environments.get(sessionID) : undefined) ?? hostEnv())
+        const baseEnv = location.workspaceID !== undefined
+          ? undefined
+          : ((Schema.is(SessionSchema.ID)(sessionID) ? yield* environments.get(sessionID) : undefined) ?? hostEnv())
         const invocation: ShellCreateBefore = {
           command: input.command,
           cwd: input.cwd ?? location.directory,
@@ -305,7 +310,7 @@ const layer = () =>
         const ready = Deferred.makeUnsafe<Active, AppProcess.AppProcessError>()
         runFork(
           Effect.scoped(
-            Effect.gen(function* () {
+            Effect.gen(function*() {
               const handle = yield* environment.spawner
                 .spawn(
                   ChildProcess.make(invocation.shell, args, {
@@ -338,13 +343,14 @@ const layer = () =>
                     stream.write(chunk)
                     command.size += chunk.length
                     // Count while streaming so truncation notices never rescan the output file.
-                    for (let index = chunk.indexOf(10); index !== -1; index = chunk.indexOf(10, index + 1))
+                    for (let index = chunk.indexOf(10); index !== -1; index = chunk.indexOf(10, index + 1)) {
                       command.newlines++
-                  }),
+                    }
+                  })
                 ),
               )
               runFork(
-                Effect.gen(function* () {
+                Effect.gen(function*() {
                   yield* pump.pipe(Effect.catch(() => Effect.void))
                   yield* Effect.promise(
                     () =>
@@ -369,7 +375,7 @@ const layer = () =>
                 Effect.suspend(() => Deferred.succeed(ended, { ...outcome, completed: Date.now() }))
 
               command.timeout = (duration) =>
-                Effect.gen(function* () {
+                Effect.gen(function*() {
                   if (Deferred.isDoneUnsafe(ended)) return
                   if (command.timeoutFiber) yield* Fiber.interrupt(command.timeoutFiber)
                   command.timeoutFiber = undefined
@@ -379,7 +385,7 @@ const layer = () =>
                       // A recorded timeout must always kill. The kill runs detached, so interrupting this
                       // timer (retime, remove, teardown) neither cancels it nor waits for the process to die.
                       Effect.andThen(
-                        Effect.gen(function* () {
+                        Effect.gen(function*() {
                           if (!(yield* end({ status: "timeout" }))) return
                           runFork(
                             handle.kill({ forceKillAfter: Duration.seconds(3) }).pipe(Effect.catch(() => Effect.void)),
@@ -394,15 +400,16 @@ const layer = () =>
 
               // The process exits even after a timeout kill, so this fiber always publishes the outcome.
               runFork(
-                Effect.gen(function* () {
+                Effect.gen(function*() {
                   yield* handle.exitCode.pipe(
                     Effect.flatMap((code) => end({ status: "exited", exit: code })),
                     Effect.catch((error) =>
                       end({
                         status: "exited",
-                        signal:
-                          error.cause instanceof CrossSpawnSpawner.KilledBySignal ? error.cause.signal : undefined,
-                      }),
+                        signal: error.cause instanceof CrossSpawnSpawner.KilledBySignal
+                          ? error.cause.signal
+                          : undefined,
+                      })
                     ),
                   )
                   const outcome = yield* Deferred.await(ended)
@@ -473,43 +480,43 @@ export const node = makeLocationNode({
 })
 
 module platform {
-// The platform code of shell.vibe: host paths, files, bytes, the environment and the platform, which a .vibe file does not read (EK4402).
+  // The platform code of shell.vibe: host paths, files, bytes, the environment and the platform, which a .vibe file does not read (EK4402).
 
-import nodePath from "path"
+  import nodePath from "path"
 
-/** Host path functions with Node's `path` names. */
-export const path = {
-  /** @throws {never} */
-  join: (...segments: string[]) => nodePath.join(...segments),
-}
+  /** Host path functions with Node's `path` names. */
+  export const path = {
+    /** @throws {never} */
+    join: (...segments: string[]) => nodePath.join(...segments),
+  }
 
-/** Loads Node's promise file API. The import may reject. */
-export function fsPromises(): Promise<typeof import("fs/promises")> {
-  return import("fs/promises")
-}
+  /** Loads Node's promise file API. The import may reject. */
+  export function fsPromises(): Promise<typeof import("fs/promises")> {
+    return import("fs/promises")
+  }
 
-/** Loads Node's stream file API. The import may reject. */
-export function fs(): Promise<typeof import("fs")> {
-  return import("fs")
-}
+  /** Loads Node's stream file API. The import may reject. */
+  export function fs(): Promise<typeof import("fs")> {
+    return import("fs")
+  }
 
-/** A zero-filled buffer of `length` bytes. The allocation may throw. */
-export function allocBuffer(length: number) {
-  return Buffer.alloc(length)
-}
+  /** A zero-filled buffer of `length` bytes. The allocation may throw. */
+  export function allocBuffer(length: number) {
+    return Buffer.alloc(length)
+  }
 
-/** The bytes of a stream chunk. @throws {never} */
-export function bufferFrom(chunk: string | Buffer) {
-  return Buffer.from(chunk)
-}
+  /** The bytes of a stream chunk. @throws {never} */
+  export function bufferFrom(chunk: string | Buffer) {
+    return Buffer.from(chunk)
+  }
 
-/** The environment of the host process. @throws {never} */
-export function hostEnv() {
-  return process.env
-}
+  /** The environment of the host process. @throws {never} */
+  export function hostEnv() {
+    return process.env
+  }
 
-/** Reports whether the host runs Windows. @throws {never} */
-export function isWindows() {
-  return process.platform === "win32"
-}
+  /** Reports whether the host runs Windows. @throws {never} */
+  export function isWindows() {
+    return process.platform === "win32"
+  }
 }

@@ -117,12 +117,12 @@ export type Role = "controller" | "observer"
 export type StreamEvent =
   | { readonly type: "output"; readonly start: number; readonly end: number; readonly data: Uint8Array }
   | {
-      readonly type: "resized"
-      readonly cols: number
-      readonly rows: number
-      readonly generation: number
-      readonly checkpoint: Uint8Array
-    }
+    readonly type: "resized"
+    readonly cols: number
+    readonly rows: number
+    readonly generation: number
+    readonly checkpoint: Uint8Array
+  }
   | { readonly type: "exited"; readonly exitCode?: number; readonly finalOffset: number }
   | { readonly type: "controller_changed"; readonly attachmentID?: string; readonly generation: number }
   | { readonly type: "title_changed"; readonly title: string }
@@ -167,7 +167,7 @@ export interface DaemonTransport {
   ) => Effect.Effect<DaemonAttachment, DaemonError>
 }
 
-export const makeDaemonTransport = Effect.fn("PersistentPty.makeDaemonTransport")(function* (
+export const makeDaemonTransport = Effect.fn("PersistentPty.makeDaemonTransport")(function*(
   root: string,
   initialID: string,
   binary: () => Promise<string> = defaultBinary,
@@ -183,7 +183,7 @@ export const makeDaemonTransport = Effect.fn("PersistentPty.makeDaemonTransport"
     Effect.sync(() => {
       closed = true
       owner?.socket.destroy()
-    }),
+    })
   )
 
   const claim = (current: Registration, ticket?: string) =>
@@ -210,7 +210,7 @@ export const makeDaemonTransport = Effect.fn("PersistentPty.makeDaemonTransport"
       }),
     )
 
-  const discover = Effect.fn("PersistentPty.daemon.discover")(function* (directory = joinPath(root, id)) {
+  const discover = Effect.fn("PersistentPty.daemon.discover")(function*(directory = joinPath(root, id)) {
     const value = yield* Effect.tryPromise({
       try: () => readRegistration(directory),
       catch: (cause) => failure("connect", cause),
@@ -218,7 +218,7 @@ export const makeDaemonTransport = Effect.fn("PersistentPty.makeDaemonTransport"
     const decoded = yield* Schema.decodeUnknownEffect(Schema.fromJsonString(Registration))(value).pipe(
       Effect.mapError((cause) => failure("protocol", cause)),
     )
-    if (decoded.protocol !== ProtocolVersion)
+    if (decoded.protocol !== ProtocolVersion) {
       return yield* Effect.fail(
         new DaemonError({
           kind: "protocol",
@@ -226,24 +226,26 @@ export const makeDaemonTransport = Effect.fn("PersistentPty.makeDaemonTransport"
           pid: decoded.pid,
         }),
       )
+    }
     const response = yield* oneShot(decoded, { op: "ping" })
     if (
-      response.type !== "pong" ||
-      response.instance_id !== decoded.instance_id ||
-      response.pid !== decoded.pid ||
-      response.protocol !== ProtocolVersion
-    )
+      response.type !== "pong"
+      || response.instance_id !== decoded.instance_id
+      || response.pid !== decoded.pid
+      || response.protocol !== ProtocolVersion
+    ) {
       return yield* Effect.fail(new DaemonError({ kind: "protocol", message: "opencode-pty registration mismatch" }))
+    }
     return decoded
   })
 
-  const spawnDaemon = Effect.fn("PersistentPty.daemon.spawn")(function* () {
+  const spawnDaemon = Effect.fn("PersistentPty.daemon.spawn")(function*() {
     const executable = yield* Effect.tryPromise({ try: binary, catch: (cause) => failure("spawn", cause) })
     const child = yield* Effect.tryPromise({
       try: () => spawnDetached(executable, ["daemon", "--runtime-dir", root, "--name", id]),
       catch: (cause) => failure("spawn", cause),
     })
-    return yield* Effect.gen(function* () {
+    return yield* Effect.gen(function*() {
       const deadline = Date.now() + 5_000
       let last: DaemonError | undefined
       while (Date.now() < deadline && child.exitCode === null && child.signalCode === null) {
@@ -267,7 +269,7 @@ export const makeDaemonTransport = Effect.fn("PersistentPty.makeDaemonTransport"
       Effect.onError(() =>
         Effect.sync(() => {
           child.kill("SIGTERM")
-        }),
+        })
       ),
     )
   })
@@ -276,11 +278,11 @@ export const makeDaemonTransport = Effect.fn("PersistentPty.makeDaemonTransport"
   const start = () =>
     spawnDaemon().pipe(
       Effect.catch((error) =>
-        Effect.gen(function* () {
+        Effect.gen(function*() {
           yield* Effect.logWarning("Starting opencode-pty in a fresh runtime directory", { cause: error.message })
           abandon()
           return yield* spawnDaemon()
-        }),
+        })
       ),
     )
 
@@ -291,11 +293,11 @@ export const makeDaemonTransport = Effect.fn("PersistentPty.makeDaemonTransport"
     id = randomUUID()
   }
 
-  const connect = Effect.fn("PersistentPty.daemon.connect")(function* (shouldStart: boolean) {
+  const connect = Effect.fn("PersistentPty.daemon.connect")(function*(shouldStart: boolean) {
     if (closed) return yield* Effect.fail(new DaemonError({ kind: "connect", message: "PTY owner scope is closed" }))
     if (registration) return registration
     return yield* startup.withPermit(
-      Effect.gen(function* () {
+      Effect.gen(function*() {
         if (registration) return registration
         const found = yield* discover().pipe(
           Effect.catch((error) => {
@@ -310,7 +312,7 @@ export const makeDaemonTransport = Effect.fn("PersistentPty.makeDaemonTransport"
     )
   })
 
-  const attempt = Effect.fn("PersistentPty.daemon.request-attempt")(function* (value: object, shouldStart: boolean) {
+  const attempt = Effect.fn("PersistentPty.daemon.request-attempt")(function*(value: object, shouldStart: boolean) {
     const current = yield* connect(shouldStart)
     return yield* oneShot(current, value).pipe(
       Effect.catch((error) => {
@@ -320,7 +322,7 @@ export const makeDaemonTransport = Effect.fn("PersistentPty.makeDaemonTransport"
     )
   })
 
-  const request = Effect.fn("PersistentPty.daemon.request")(function* (value: object, shouldStart = false) {
+  const request = Effect.fn("PersistentPty.daemon.request")(function*(value: object, shouldStart = false) {
     return yield* attempt(value, shouldStart).pipe(
       Effect.catch((error) => {
         if (error.kind === "registration") return attempt(value, shouldStart)
@@ -337,7 +339,7 @@ export const makeDaemonTransport = Effect.fn("PersistentPty.makeDaemonTransport"
       Effect.catch((error) => (error.kind === "connect" ? Effect.succeed(undefined) : Effect.fail(error))),
     )
 
-  const shutdown = Effect.gen(function* () {
+  const shutdown = Effect.gen(function*() {
     const response = yield* requestIfRunning({ op: "shutdown" })
     registration = undefined
     if (!response) return undefined
@@ -354,7 +356,7 @@ export const makeDaemonTransport = Effect.fn("PersistentPty.makeDaemonTransport"
   })
 
   const handoff = startup.withPermit(
-    Effect.gen(function* () {
+    Effect.gen(function*() {
       const current = owner
       const registered = registration
       if (!current || !registered) return null
@@ -368,8 +370,9 @@ export const makeDaemonTransport = Effect.fn("PersistentPty.makeDaemonTransport"
             Effect.fail(new DaemonError({ kind: "response", message: "PTY handoff preparation timed out" })),
         }),
       )
-      if (response.type !== "handoff")
+      if (response.type !== "handoff") {
         return yield* Effect.fail(new DaemonError({ kind: "protocol", message: "Expected PTY handoff ticket" }))
+      }
       return {
         directory: joinPath(root, id),
         instanceID: registered.instance_id,
@@ -379,11 +382,11 @@ export const makeDaemonTransport = Effect.fn("PersistentPty.makeDaemonTransport"
     }),
   )
 
-  const subscribe = Effect.fn("PersistentPty.daemon.subscribe")(function* (
+  const subscribe = Effect.fn("PersistentPty.daemon.subscribe")(function*(
     terminalID: number,
     input: Parameters<DaemonTransport["subscribe"]>[1],
   ) {
-    const attempt = Effect.gen(function* () {
+    const attempt = Effect.gen(function*() {
       const current = yield* connect(false)
       return yield* Effect.tryPromise({
         try: () => subscribePromise(current, terminalID, input),
@@ -402,14 +405,16 @@ export const makeDaemonTransport = Effect.fn("PersistentPty.makeDaemonTransport"
   // best-effort: any failure abandons the old daemon so the restart itself always succeeds.
   if (inherited) {
     let found: Registration | undefined
-    yield* Effect.gen(function* () {
-      if (inherited.expiresAt <= Date.now())
+    yield* Effect.gen(function*() {
+      if (inherited.expiresAt <= Date.now()) {
         return yield* Effect.fail(new DaemonError({ kind: "registration", message: "PTY restart handoff expired" }))
+      }
       // Older releases put the daemon directory outside the root; its directory name is still the ID.
       id = basename(inherited.directory)
       found = yield* discover(inherited.directory)
-      if (found.instance_id !== inherited.instanceID)
+      if (found.instance_id !== inherited.instanceID) {
         return yield* Effect.fail(new DaemonError({ kind: "registration", message: "PTY restart daemon changed" }))
+      }
       const moved = yield* Effect.try({
         try: () => resolvePath(inherited.directory) !== resolvePath(root, id),
         catch: (cause) => cause,
@@ -418,14 +423,14 @@ export const makeDaemonTransport = Effect.fn("PersistentPty.makeDaemonTransport"
       yield* claim(found, inherited.ticket)
     }).pipe(
       Effect.catchCause((cause) =>
-        Effect.gen(function* () {
+        Effect.gen(function*() {
           if (Cause.hasInterruptsOnly(cause)) return yield* Effect.failCause(cause)
           yield* Effect.logWarning("Discarding PTY restart handoff; persistent terminals will start fresh", {
             cause: Cause.pretty(cause),
           })
           if (found) yield* oneShot(found, { op: "shutdown" }).pipe(Effect.ignore)
           abandon()
-        }),
+        })
       ),
     )
   }
@@ -435,14 +440,14 @@ export const makeDaemonTransport = Effect.fn("PersistentPty.makeDaemonTransport"
 
 // Older releases kept registrations in purgeable temp directories. Renaming keeps the lock file's
 // inode, so the still-running daemon keeps holding its lock in the new location.
-const migrate = Effect.fn("PersistentPty.daemon.migrate")(function* (directory: string, target: string) {
+const migrate = Effect.fn("PersistentPty.daemon.migrate")(function*(directory: string, target: string) {
   yield* Effect.tryPromise({
     try: () => moveRegistration(directory, target),
     catch: (cause) => failure("registration", cause),
   })
 })
 
-const oneShot = Effect.fn("PersistentPty.daemon.oneShot")(function* (registration: Registration, request: object) {
+const oneShot = Effect.fn("PersistentPty.daemon.oneShot")(function*(registration: Registration, request: object) {
   const payload = yield* Effect.try({
     try: () => encode({ token: registration.token, request }),
     catch: (cause) => failure("protocol", cause),
@@ -454,7 +459,7 @@ const oneShot = Effect.fn("PersistentPty.daemon.oneShot")(function* (registratio
       catch: (cause) => failure("connect", cause),
     }),
     (socket) =>
-      Effect.gen(function* () {
+      Effect.gen(function*() {
         yield* Effect.try({
           try: () => {
             dispatched = true
@@ -481,13 +486,14 @@ const oneShot = Effect.fn("PersistentPty.daemon.oneShot")(function* (registratio
           try: () => decode(first),
           catch: (cause) => failure("protocol", cause),
         })
-        if (response.type === "error")
+        if (response.type === "error") {
           return yield* Effect.fail(
             new DaemonError({
               kind: response.message === "authentication failed" ? "registration" : "protocol",
               message: response.message,
             }),
           )
+        }
         return response
       }),
     (socket) => Effect.sync(() => socket.destroy()),
@@ -510,258 +516,262 @@ function failure(kind: DaemonError["kind"], cause: unknown) {
 }
 
 module platform {
-import { spawn } from "node:child_process"
-import { mkdir, readFile, rename } from "node:fs/promises"
-import net from "node:net"
-import path from "node:path"
-import { Schema } from "effect"
-import { DaemonError, WireResponse, type DaemonAttachment, type DaemonTransport } from "./daemon.js"
+  import { spawn } from "node:child_process"
+  import { mkdir, readFile, rename } from "node:fs/promises"
+  import net from "node:net"
+  import path from "node:path"
+  import { Schema } from "effect"
+  import { DaemonError, WireResponse, type DaemonAttachment, type DaemonTransport } from "./daemon.js"
 
-const MaxFrameBytes = 8 * 1024 * 1024
+  const MaxFrameBytes = 8 * 1024 * 1024
 
-type Registration = {
-  readonly instance_id: string
-  readonly socket: string
-  readonly token: string
-}
+  type Registration = {
+    readonly instance_id: string
+    readonly socket: string
+    readonly token: string
+  }
 
-/** Reads the daemon binary from `OPENCODE_PTY_BIN`, falling back to `opencode-pty` on `PATH`. @throws {never} */
-export function defaultBinary() {
-  return Promise.resolve(process.env.OPENCODE_PTY_BIN || "opencode-pty")
-}
+  /** Reads the daemon binary from `OPENCODE_PTY_BIN`, falling back to `opencode-pty` on `PATH`. @throws {never} */
+  export function defaultBinary() {
+    return Promise.resolve(process.env.OPENCODE_PTY_BIN || "opencode-pty")
+  }
 
-/** @throws {never} */
-export function randomUUID() {
-  return crypto.randomUUID()
-}
+  /** @throws {never} */
+  export function randomUUID() {
+    return crypto.randomUUID()
+  }
 
-/** @throws {never} */
-export function joinPath(...segments: string[]) {
-  return path.join(...segments)
-}
+  /** @throws {never} */
+  export function joinPath(...segments: string[]) {
+    return path.join(...segments)
+  }
 
-/** @throws {never} */
-export function basename(target: string) {
-  return path.basename(target)
-}
+  /** @throws {never} */
+  export function basename(target: string) {
+    return path.basename(target)
+  }
 
-/** Resolves against the process working directory, which may be unavailable. @throws {Error} */
-export function resolvePath(...segments: string[]) {
-  return path.resolve(...segments)
-}
+  /** Resolves against the process working directory, which may be unavailable. @throws {Error} */
+  export function resolvePath(...segments: string[]) {
+    return path.resolve(...segments)
+  }
 
-/** Reads the daemon registration file in a runtime directory. @throws {never} */
-export function readRegistration(directory: string) {
-  return readFile(path.join(directory, "service.json"), "utf8")
-}
+  /** Reads the daemon registration file in a runtime directory. @throws {never} */
+  export function readRegistration(directory: string) {
+    return readFile(path.join(directory, "service.json"), "utf8")
+  }
 
-/** Moves a daemon registration and its lock into a new runtime directory. @throws {never} */
-export async function moveRegistration(directory: string, target: string) {
-  await mkdir(target, { recursive: true, mode: 0o700 })
-  await rename(path.join(directory, "service.lock"), path.join(target, "service.lock"))
-  await rename(path.join(directory, "service.json"), path.join(target, "service.json"))
-}
+  /** Moves a daemon registration and its lock into a new runtime directory. @throws {never} */
+  export async function moveRegistration(directory: string, target: string) {
+    await mkdir(target, { recursive: true, mode: 0o700 })
+    await rename(path.join(directory, "service.lock"), path.join(target, "service.lock"))
+    await rename(path.join(directory, "service.json"), path.join(target, "service.json"))
+  }
 
-/** Starts a detached daemon process; resolves once it spawned. @throws {never} */
-export function spawnDetached(executable: string, args: string[]) {
-  return new Promise<ReturnType<typeof spawn>>((resolve, reject) => {
-    const child = spawn(executable, args, { detached: true, windowsHide: true, stdio: "ignore" })
-    child.once("spawn", () => {
-      child.unref()
-      resolve(child)
+  /** Starts a detached daemon process; resolves once it spawned. @throws {never} */
+  export function spawnDetached(executable: string, args: string[]) {
+    return new Promise<ReturnType<typeof spawn>>((resolve, reject) => {
+      const child = spawn(executable, args, { detached: true, windowsHide: true, stdio: "ignore" })
+      child.once("spawn", () => {
+        child.unref()
+        resolve(child)
+      })
+      child.once("error", reject)
     })
-    child.once("error", reject)
-  })
-}
+  }
 
-/** Connects to a daemon socket; resolves once connected. @throws {never} */
-export function connectSocket(socketPath: string, signal: AbortSignal) {
-  return new Promise<net.Socket>((resolve, reject) => {
-    const socket = net.createConnection({ path: socketPath, signal })
-    socket.once("connect", () => resolve(socket))
-    socket.once("error", reject)
-  })
-}
+  /** Connects to a daemon socket; resolves once connected. @throws {never} */
+  export function connectSocket(socketPath: string, signal: AbortSignal) {
+    return new Promise<net.Socket>((resolve, reject) => {
+      const socket = net.createConnection({ path: socketPath, signal })
+      socket.once("connect", () => resolve(socket))
+      socket.once("error", reject)
+    })
+  }
 
-/** @throws {never} */
-export async function openOwner(registration: Registration, ticket: string | undefined, signal: AbortSignal) {
-  const socket = net.createConnection({ path: registration.socket })
-  const frames = decoder(socket)
-  const abort = () => socket.destroy()
-  signal.addEventListener("abort", abort, { once: true })
-  const exchange = async (request: object, signal: AbortSignal) => {
-    if (signal.aborted) throw new Error("PTY ownership request interrupted")
+  /** @throws {never} */
+  export async function openOwner(registration: Registration, ticket: string | undefined, signal: AbortSignal) {
+    const socket = net.createConnection({ path: registration.socket })
+    const frames = decoder(socket)
+    const abort = () => socket.destroy()
     signal.addEventListener("abort", abort, { once: true })
+    const exchange = async (request: object, signal: AbortSignal) => {
+      if (signal.aborted) throw new Error("PTY ownership request interrupted")
+      signal.addEventListener("abort", abort, { once: true })
+      try {
+        socket.write(encode({ token: registration.token, request }))
+        const frame = await frames.next()
+        if (frame.done) throw new Error("PTY daemon closed its ownership connection")
+        const response = decode(frame.value)
+        if (response.type === "error") throw new Error(response.message)
+        return response
+      } finally {
+        signal.removeEventListener("abort", abort)
+      }
+    }
     try {
-      socket.write(encode({ token: registration.token, request }))
-      const frame = await frames.next()
-      if (frame.done) throw new Error("PTY daemon closed its ownership connection")
-      const response = decode(frame.value)
-      if (response.type === "error") throw new Error(response.message)
-      return response
+      await new Promise<void>((resolve, reject) => {
+        socket.once("connect", resolve)
+        socket.once("error", reject)
+        socket.once("close", () => reject(new Error("PTY ownership connection closed")))
+      })
+      const response = await exchange({ op: "own", instance_id: registration.instance_id, ticket }, signal)
+      if (response.type !== "owned") throw new Error("PTY daemon does not support server ownership")
+      socket.unref()
+      return { socket, exchange }
+    } catch (error) {
+      socket.destroy()
+      throw error
     } finally {
       signal.removeEventListener("abort", abort)
     }
   }
-  try {
-    await new Promise<void>((resolve, reject) => {
-      socket.once("connect", resolve)
-      socket.once("error", reject)
-      socket.once("close", () => reject(new Error("PTY ownership connection closed")))
-    })
-    const response = await exchange({ op: "own", instance_id: registration.instance_id, ticket }, signal)
-    if (response.type !== "owned") throw new Error("PTY daemon does not support server ownership")
-    socket.unref()
-    return { socket, exchange }
-  } catch (error) {
-    socket.destroy()
-    throw error
-  } finally {
-    signal.removeEventListener("abort", abort)
-  }
-}
 
-/** @throws {never} */
-export async function subscribePromise(
-  registration: Registration,
-  id: number,
-  input: Parameters<DaemonTransport["subscribe"]>[1],
-): Promise<DaemonAttachment> {
-  const socket = net.createConnection(registration.socket)
-  const frames = decoder(socket)
-  try {
-    await new Promise<void>((resolve, reject) => {
-      socket.once("connect", resolve)
-      socket.once("error", reject)
-    })
-    socket.write(
-      encode({
-        token: registration.token,
-        request: {
-          op: "subscribe",
-          id,
-          offset: input.cursor,
-          attachment_id: input.attachmentID,
-          role: input.role,
-          takeover: input.takeover ?? false,
-        },
-      }),
-    )
-    const initial = await frames.next()
-    if (initial.done) throw new Error("opencode-pty closed before attachment")
-    const response = decode(initial.value)
-    if (response.type === "error")
-      throw new DaemonError({
-        kind: response.message === "authentication failed" ? "registration" : "protocol",
-        message: response.message,
+  /** @throws {never} */
+  export async function subscribePromise(
+    registration: Registration,
+    id: number,
+    input: Parameters<DaemonTransport["subscribe"]>[1],
+  ): Promise<DaemonAttachment> {
+    const socket = net.createConnection(registration.socket)
+    const frames = decoder(socket)
+    try {
+      await new Promise<void>((resolve, reject) => {
+        socket.once("connect", resolve)
+        socket.once("error", reject)
       })
-    if (response.type !== "attached") throw new Error(`unexpected opencode-pty response: ${response.type}`)
-    let detached = false
-    const pump = async () => {
-      try {
-        for await (const frame of frames) {
-          if (frame[0] === 0) {
-            if (frame.length < 17) throw new Error("invalid opencode-pty output frame")
-            input.onEvent({
-              type: "output",
-              start: Number(frame.readBigUInt64BE(1)),
-              end: Number(frame.readBigUInt64BE(9)),
-              data: frame.subarray(17),
-            })
-            continue
+      socket.write(
+        encode({
+          token: registration.token,
+          request: {
+            op: "subscribe",
+            id,
+            offset: input.cursor,
+            attachment_id: input.attachmentID,
+            role: input.role,
+            takeover: input.takeover ?? false,
+          },
+        }),
+      )
+      const initial = await frames.next()
+      if (initial.done) throw new Error("opencode-pty closed before attachment")
+      const response = decode(initial.value)
+      if (response.type === "error") {
+        throw new DaemonError({
+          kind: response.message === "authentication failed" ? "registration" : "protocol",
+          message: response.message,
+        })
+      }
+      if (response.type !== "attached") throw new Error(`unexpected opencode-pty response: ${response.type}`)
+      let detached = false
+      const pump = async () => {
+        try {
+          for await (const frame of frames) {
+            if (frame[0] === 0) {
+              if (frame.length < 17) throw new Error("invalid opencode-pty output frame")
+              input.onEvent({
+                type: "output",
+                start: Number(frame.readBigUInt64BE(1)),
+                end: Number(frame.readBigUInt64BE(9)),
+                data: frame.subarray(17),
+              })
+              continue
+            }
+            const event = decode(frame)
+            if (event.type === "resized") {
+              input.onEvent({
+                type: "resized",
+                cols: event.cols,
+                rows: event.rows,
+                generation: event.generation,
+                checkpoint: Buffer.from(event.checkpoint_base64, "base64"),
+              })
+            }
+            if (event.type === "controller_changed") {
+              input.onEvent({
+                type: "controller_changed",
+                attachmentID: event.attachment_id ?? undefined,
+                generation: event.generation,
+              })
+            }
+            if (event.type === "title_changed") input.onEvent({ type: "title_changed", title: event.title })
+            if (event.type === "foreground_process_changed") {
+              input.onEvent({ type: "foreground_process_changed", process: event.process })
+            }
+            if (event.type === "exited") {
+              input.onEvent({
+                type: "exited",
+                exitCode: event.exit_code ?? undefined,
+                finalOffset: event.final_offset,
+              })
+              return
+            }
           }
-          const event = decode(frame)
-          if (event.type === "resized")
-            input.onEvent({
-              type: "resized",
-              cols: event.cols,
-              rows: event.rows,
-              generation: event.generation,
-              checkpoint: Buffer.from(event.checkpoint_base64, "base64"),
-            })
-          if (event.type === "controller_changed")
-            input.onEvent({
-              type: "controller_changed",
-              attachmentID: event.attachment_id ?? undefined,
-              generation: event.generation,
-            })
-          if (event.type === "title_changed") input.onEvent({ type: "title_changed", title: event.title })
-          if (event.type === "foreground_process_changed")
-            input.onEvent({ type: "foreground_process_changed", process: event.process })
-          if (event.type === "exited") {
-            input.onEvent({
-              type: "exited",
-              exitCode: event.exit_code ?? undefined,
-              finalOffset: event.final_offset,
-            })
-            return
-          }
+        } finally {
+          if (!detached) input.onEnd()
         }
-      } finally {
-        if (!detached) input.onEnd()
+      }
+      let activated = false
+      return {
+        terminal: response.terminal,
+        role: response.role,
+        generation: response.generation,
+        replay: {
+          requestedOffset: response.requested_offset,
+          availableOffset: response.available_offset,
+          endOffset: response.end_offset,
+          truncated: response.truncated,
+          data: Buffer.from(response.replay_base64, "base64"),
+        },
+        activate() {
+          if (activated || detached) return
+          activated = true
+          void pump().catch(() => {})
+        },
+        detach() {
+          if (detached) return
+          detached = true
+          socket.destroy()
+        },
+      }
+    } catch (error) {
+      socket.destroy()
+      throw error
+    }
+  }
+
+  /** Frames a JSON message. @throws {Error} when the frame exceeds the protocol limit. */
+  export function encode(value: unknown) {
+    const payload = Buffer.from(JSON.stringify(value))
+    if (payload.length > MaxFrameBytes) throw new Error("opencode-pty frame too large")
+    const output = Buffer.allocUnsafe(payload.length + 4)
+    output.writeUInt32BE(payload.length)
+    payload.copy(output, 4)
+    return output
+  }
+
+  /** @throws {never} */
+  export async function* decoder(socket: net.Socket) {
+    let pending = Buffer.alloc(0)
+    for await (const value of socket) {
+      const chunk = Buffer.isBuffer(value) ? value : Buffer.from(value)
+      pending = pending.length === 0 ? chunk : Buffer.concat([pending, chunk])
+      while (pending.length >= 4) {
+        const length = pending.readUInt32BE(0)
+        if (length > MaxFrameBytes) throw new Error("opencode-pty frame too large")
+        if (pending.length < length + 4) break
+        yield pending.subarray(4, length + 4)
+        pending = pending.subarray(length + 4)
       }
     }
-    let activated = false
-    return {
-      terminal: response.terminal,
-      role: response.role,
-      generation: response.generation,
-      replay: {
-        requestedOffset: response.requested_offset,
-        availableOffset: response.available_offset,
-        endOffset: response.end_offset,
-        truncated: response.truncated,
-        data: Buffer.from(response.replay_base64, "base64"),
-      },
-      activate() {
-        if (activated || detached) return
-        activated = true
-        void pump().catch(() => {})
-      },
-      detach() {
-        if (detached) return
-        detached = true
-        socket.destroy()
-      },
-    }
-  } catch (error) {
-    socket.destroy()
-    throw error
+    if (pending.length !== 0) throw new Error("opencode-pty truncated frame")
   }
-}
 
-/** Frames a JSON message. @throws {Error} when the frame exceeds the protocol limit. */
-export function encode(value: unknown) {
-  const payload = Buffer.from(JSON.stringify(value))
-  if (payload.length > MaxFrameBytes) throw new Error("opencode-pty frame too large")
-  const output = Buffer.allocUnsafe(payload.length + 4)
-  output.writeUInt32BE(payload.length)
-  payload.copy(output, 4)
-  return output
-}
+  let decodeWireResponse: ((input: unknown) => WireResponse) | undefined
 
-/** @throws {never} */
-export async function* decoder(socket: net.Socket) {
-  let pending = Buffer.alloc(0)
-  for await (const value of socket) {
-    const chunk = Buffer.isBuffer(value) ? value : Buffer.from(value)
-    pending = pending.length === 0 ? chunk : Buffer.concat([pending, chunk])
-    while (pending.length >= 4) {
-      const length = pending.readUInt32BE(0)
-      if (length > MaxFrameBytes) throw new Error("opencode-pty frame too large")
-      if (pending.length < length + 4) break
-      yield pending.subarray(4, length + 4)
-      pending = pending.subarray(length + 4)
-    }
+  /** Decodes one JSON frame. @throws {Error} when the frame is not a valid daemon response. */
+  export function decode(payload: Uint8Array) {
+    decodeWireResponse ??= Schema.decodeUnknownSync(Schema.fromJsonString(WireResponse))
+    return decodeWireResponse(Buffer.from(payload).toString("utf8"))
   }
-  if (pending.length !== 0) throw new Error("opencode-pty truncated frame")
-}
-
-let decodeWireResponse: ((input: unknown) => WireResponse) | undefined
-
-/** Decodes one JSON frame. @throws {Error} when the frame is not a valid daemon response. */
-export function decode(payload: Uint8Array) {
-  decodeWireResponse ??= Schema.decodeUnknownSync(Schema.fromJsonString(WireResponse))
-  return decodeWireResponse(Buffer.from(payload).toString("utf8"))
-}
 }

@@ -97,7 +97,9 @@ export schema ScoreAnswer {
   readonly name: string
   readonly type: "score"
   readonly score: number
-  readonly probabilities: ReadonlyArray<{ readonly value: Schema.Int; readonly label: string; readonly probability: Probability }>
+  readonly probabilities: ReadonlyArray<
+    { readonly value: Schema.Int; readonly label: string; readonly probability: Probability }
+  >
   readonly confidence: Probability
 }
 

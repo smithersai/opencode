@@ -159,6 +159,8 @@ export type EventPayload<D extends Definition, Name extends keyof D["events"] & 
 }[Name]
 
 module $throw$ts {
-export function raise(value: unknown): never { throw value }
+  export function raise(value: unknown): never {
+    throw value
+  }
 }
 import { raise as $raise } from $throw$ts

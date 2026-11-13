@@ -77,7 +77,9 @@ export const imageOutput = effect (
     if (asset === undefined) throw invalid(`${label} has an invalid data URL`)
     return asset
   }
-  if (url) return try Effect.orDie(Effect.try({ try: () => Media.url(url, { ...options, mediaType }), catch: (e) => e }))
+  if (url) {
+    return try Effect.orDie(Effect.try({ try: () => Media.url(url, { ...options, mediaType }), catch: (e) => e }))
+  }
   throw invalid(`${label} has neither image data nor a URL`)
 }
 

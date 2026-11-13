@@ -59,7 +59,7 @@ export class Service extends Context.Service<Service, Interface>()("opencode/des
 
 export const layer = Layer.effect(
   Service,
-  Effect.gen(function* () {
+  Effect.gen(function*() {
     const storage = yield* DesktopStorage.Service
     const shutdown = yield* Shutdown.Service
     const lifecycle = yield* ApplicationLifecycle.Service
@@ -111,11 +111,12 @@ export const layer = Layer.effect(
     }
 
     const stop = Effect.promise(async () => {
-      if (current.loading)
+      if (current.loading) {
         await current.loading.then(
           (loaded) => loaded.dispose(),
           () => undefined,
         )
+      }
     })
 
     const remove = yield* shutdown.add(stop)

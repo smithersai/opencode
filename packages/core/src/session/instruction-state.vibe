@@ -19,7 +19,7 @@ export interface Observation extends Instructions.Admission {
   readonly current: Instructions.Values
 }
 
-export const observe = Effect.fn("InstructionState.observe")(function* (
+export const observe = Effect.fn("InstructionState.observe")(function*(
   db: DatabaseService,
   instructions: Instructions.List,
   sessionID: SessionSchema.ID,
@@ -36,7 +36,7 @@ export const observe = Effect.fn("InstructionState.observe")(function* (
   }
 })
 
-export const commit = Effect.fn("InstructionState.commit")(function* (
+export const commit = Effect.fn("InstructionState.commit")(function*(
   db: DatabaseService,
   bus: Bus.Interface,
   instructions: Instructions.List,
@@ -61,7 +61,7 @@ export const commit = Effect.fn("InstructionState.commit")(function* (
   )
 })
 
-const renderUpdateText = Effect.fnUntraced(function* (
+const renderUpdateText = Effect.fnUntraced(function*(
   db: DatabaseService,
   instructions: Instructions.List,
   observation: Observation,
@@ -84,7 +84,7 @@ const renderUpdateText = Effect.fnUntraced(function* (
   }).pipe(Effect.orDie)
 })
 
-export const prepare = Effect.fn("InstructionState.prepare")(function* (
+export const prepare = Effect.fn("InstructionState.prepare")(function*(
   db: DatabaseService,
   bus: Bus.Interface,
   instructions: Instructions.List,
@@ -93,7 +93,7 @@ export const prepare = Effect.fn("InstructionState.prepare")(function* (
   yield* commit(db, bus, instructions, yield* observe(db, instructions, sessionID))
 })
 
-export const apply = Effect.fn("InstructionState.apply")(function* (
+export const apply = Effect.fn("InstructionState.apply")(function*(
   db: DatabaseService,
   sessionID: SessionSchema.ID,
   seq: number,
@@ -123,7 +123,7 @@ export const apply = Effect.fn("InstructionState.apply")(function* (
     .pipe(Effect.orDie)
 })
 
-export const initialize = Effect.fn("InstructionState.initialize")(function* (
+export const initialize = Effect.fn("InstructionState.initialize")(function*(
   db: DatabaseService,
   sessionID: SessionSchema.ID,
   seq: number,
@@ -143,7 +143,7 @@ export const initialize = Effect.fn("InstructionState.initialize")(function* (
     .pipe(Effect.orDie)
 })
 
-export const advanceEpoch = Effect.fn("InstructionState.advanceEpoch")(function* (
+export const advanceEpoch = Effect.fn("InstructionState.advanceEpoch")(function*(
   db: DatabaseService,
   sessionID: SessionSchema.ID,
   epochStart: number,
@@ -164,7 +164,7 @@ export const advanceEpoch = Effect.fn("InstructionState.advanceEpoch")(function*
  * Clears the fold only when a committed revert removed an update or the epoch start. Otherwise the
  * fold still matches the surviving history, and keeping its baseline keeps the prompt cache.
  */
-export const rewind = Effect.fn("InstructionState.rewind")(function* (
+export const rewind = Effect.fn("InstructionState.rewind")(function*(
   db: DatabaseService,
   sessionID: SessionSchema.ID,
   boundary: number,
@@ -177,7 +177,7 @@ export const rewind = Effect.fn("InstructionState.rewind")(function* (
 })
 
 /** Renders the epoch baseline shown at the start of every model request. */
-export const initial = Effect.fn("InstructionState.initial")(function* (
+export const initial = Effect.fn("InstructionState.initial")(function*(
   db: DatabaseService,
   sessionID: SessionSchema.ID,
   instructions: Instructions.List,
@@ -192,14 +192,14 @@ export const initial = Effect.fn("InstructionState.initial")(function* (
 })
 
 /** The current instruction values, used to seed a fork's baseline. */
-export const current = Effect.fn("InstructionState.current")(function* (
+export const current = Effect.fn("InstructionState.current")(function*(
   db: DatabaseService,
   sessionID: SessionSchema.ID,
 ) {
   return (yield* find(db, sessionID))?.current_values
 })
 
-export const preview = Effect.fn("InstructionState.preview")(function* (
+export const preview = Effect.fn("InstructionState.preview")(function*(
   db: DatabaseService,
   sessionID: SessionSchema.ID,
   instructions: Instructions.List,
@@ -231,7 +231,7 @@ export const preview = Effect.fn("InstructionState.preview")(function* (
   }).pipe(Effect.orDie)
 })
 
-const observeAgainst = Effect.fnUntraced(function* (observed: Instructions.ReadResult, previous?: Instructions.Values) {
+const observeAgainst = Effect.fnUntraced(function*(observed: Instructions.ReadResult, previous?: Instructions.Values) {
   const admission = yield* Instructions.diff(observed, previous)
   return {
     current: Instructions.applyHashDelta(previous ?? {}, admission.delta),
@@ -239,7 +239,7 @@ const observeAgainst = Effect.fnUntraced(function* (observed: Instructions.ReadR
   }
 })
 
-const find = Effect.fnUntraced(function* (db: DatabaseService, sessionID: SessionSchema.ID) {
+const find = Effect.fnUntraced(function*(db: DatabaseService, sessionID: SessionSchema.ID) {
   return yield* db
     .select()
     .from(InstructionStateTable)
@@ -248,16 +248,17 @@ const find = Effect.fnUntraced(function* (db: DatabaseService, sessionID: Sessio
     .pipe(Effect.orDie)
 })
 
-const insertBlobs = Effect.fnUntraced(function* (db: DatabaseService, blobs: Readonly<Record<string, Schema.Json>>) {
+const insertBlobs = Effect.fnUntraced(function*(db: DatabaseService, blobs: Readonly<Record<string, Schema.Json>>) {
   const rows = Object.entries(blobs).map(([hash, value]) => ({ hash: Instructions.Hash.make(hash), value }))
   if (rows.length === 0) return
   yield* db.insert(InstructionBlobTable).values(rows).onConflictDoNothing().run().pipe(Effect.orDie)
 })
 
-const loadBlobs = Effect.fnUntraced(function* (db: DatabaseService, values: ReadonlyArray<Instructions.Hash>) {
+const loadBlobs = Effect.fnUntraced(function*(db: DatabaseService, values: ReadonlyArray<Instructions.Hash>) {
   const hashes = [...new Set(values)]
-  const batches = Array.from({ length: Math.ceil(hashes.length / 500) }, (_, index) =>
-    hashes.slice(index * 500, (index + 1) * 500),
+  const batches = Array.from(
+    { length: Math.ceil(hashes.length / 500) },
+    (_, index) => hashes.slice(index * 500, (index + 1) * 500),
   )
   const rows = (yield* Effect.forEach(
     batches,
@@ -279,37 +280,37 @@ const loadBlobs = Effect.fnUntraced(function* (db: DatabaseService, values: Read
 })
 
 module platform {
-// The throwing code of instruction-state.vibe: blob lookups that throw for a missing blob, which synchronous
-// VibeLang code does not do (EK0401).
+  // The throwing code of instruction-state.vibe: blob lookups that throw for a missing blob, which synchronous
+  // VibeLang code does not do (EK0401).
 
-import { Option, type Schema } from "effect"
-import type { Instructions } from "../instructions/index.js"
+  import { Option, type Schema } from "effect"
+  import type { Instructions } from "../instructions/index.js"
 
-/** @throws {Error} when a hash has no blob. */
-export function dereference(
-  values: Instructions.Values,
-  blobs: ReadonlyMap<Instructions.Hash, Schema.Json>,
-): Readonly<Record<string, Schema.Json>> {
-  return Object.fromEntries(Object.entries(values).map(([key, hash]) => [key, requireBlob(blobs, hash)]))
-}
+  /** @throws {Error} when a hash has no blob. */
+  export function dereference(
+    values: Instructions.Values,
+    blobs: ReadonlyMap<Instructions.Hash, Schema.Json>,
+  ): Readonly<Record<string, Schema.Json>> {
+    return Object.fromEntries(Object.entries(values).map(([key, hash]) => [key, requireBlob(blobs, hash)]))
+  }
 
-/** @throws {Error} when a hash has no blob. */
-export function dereferenceDelta(
-  delta: Instructions.Delta,
-  blobs: ReadonlyMap<Instructions.Hash, Schema.Json>,
-): Readonly<Record<string, Option.Option<Schema.Json>>> {
-  return Object.fromEntries(
-    Object.entries(delta).map(([key, hash]) => [
-      key,
-      hash === "removed" ? Option.none() : Option.some(requireBlob(blobs, hash)),
-    ]),
-  )
-}
+  /** @throws {Error} when a hash has no blob. */
+  export function dereferenceDelta(
+    delta: Instructions.Delta,
+    blobs: ReadonlyMap<Instructions.Hash, Schema.Json>,
+  ): Readonly<Record<string, Option.Option<Schema.Json>>> {
+    return Object.fromEntries(
+      Object.entries(delta).map(([key, hash]) => [
+        key,
+        hash === "removed" ? Option.none() : Option.some(requireBlob(blobs, hash)),
+      ]),
+    )
+  }
 
-/** @throws {Error} when `hash` has no blob. */
-export function requireBlob(blobs: ReadonlyMap<Instructions.Hash, Schema.Json>, hash: Instructions.Hash) {
-  const value = blobs.get(hash)
-  if (value === undefined) throw new Error(`Instruction blob not found: ${hash}`)
-  return value
-}
+  /** @throws {Error} when `hash` has no blob. */
+  export function requireBlob(blobs: ReadonlyMap<Instructions.Hash, Schema.Json>, hash: Instructions.Hash) {
+    const value = blobs.get(hash)
+    if (value === undefined) throw new Error(`Instruction blob not found: ${hash}`)
+    return value
+  }
 }

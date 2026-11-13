@@ -34,10 +34,15 @@ export const dispatch = (tools: Tools, call: ToolCallPart): DispatchResult!! => 
     return Effect.succeed(result(call, { type: "error", value: `Tool has no execute handler: ${name}` }))
   }
 
-  return do { const catchProgram = (decodeAndExecute(tool, call)
-    |> Effect.map(%, (value) => result(call, value))); effect { return catchProgram catch (failure) => match (failure) {
-    when { _tag: "Tool.Error" }: result(call, { type: "error", value: failure.message }, failure.error);
-  } } }
+  return do {
+    const catchProgram = decodeAndExecute(tool, call)
+      |> Effect.map(%, (value) => result(call, value))
+    effect {
+      return catchProgram catch (failure) => match (failure) {
+        when { _tag: "Tool.Error" }: result(call, { type: "error", value: failure.message }, failure.error);
+      }
+    }
+  }
 }
 
 const decodeAndExecute = (tool: AnyTool, call: ToolCallPart): ToolSettlement!ToolFailure =>

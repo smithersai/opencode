@@ -18,7 +18,7 @@ export class Service extends Context.Service<Service, Interface>()("@opencode/Lo
 
 const layer = Layer.effect(
   Service,
-  Effect.gen(function* () {
+  Effect.gen(function*() {
     const location = yield* Location.Service
     const watcher = yield* Watcher.Service
     const bus = yield* Bus.Service
@@ -31,7 +31,7 @@ const layer = Layer.effect(
         event: update.type === "create" ? "add" : update.type === "update" ? "change" : "unlink",
       })
     const target = yield* Effect.cached(
-      Effect.gen(function* () {
+      Effect.gen(function*() {
         if (location.vcs?.type === "git") {
           const resolved = (yield* git.repo.discover(location.directory))?.gitDirectory
           const vcs = resolved ? yield* fs.realPath(resolved).pipe(Effect.orElseSucceed(() => resolved)) : undefined
@@ -45,7 +45,7 @@ const layer = Layer.effect(
       }).pipe(
         Effect.withSpan("LocationWatcher.target", { attributes: { directory: location.directory } }),
         Effect.catchCause((cause) =>
-          Effect.logError("failed to resolve location watcher target", { cause }).pipe(Effect.as(undefined)),
+          Effect.logError("failed to resolve location watcher target", { cause }).pipe(Effect.as(undefined))
         ),
       ),
     )
@@ -54,7 +54,7 @@ const layer = Layer.effect(
     let active: { path: string; scope: Scope.Closeable } | undefined
     const reconcile = () =>
       lock.withPermit(
-        Effect.gen(function* () {
+        Effect.gen(function*() {
           if (stopped) return
           const resolved = yield* target
           const ignore = policy.current()
@@ -65,7 +65,7 @@ const layer = Layer.effect(
           if (!next) return
           const scope = yield* Scope.make()
           active = { path: next, scope }
-          yield* Effect.gen(function* () {
+          yield* Effect.gen(function*() {
             const updates = yield* watcher.subscribe({ path: next, type: "file" })
             yield* Stream.runForEach(updates, publish)
           }).pipe(
@@ -79,15 +79,15 @@ const layer = Layer.effect(
       )
     yield* Effect.addFinalizer(() =>
       lock.withPermit(
-        Effect.gen(function* () {
+        Effect.gen(function*() {
           stopped = true
           if (active) yield* Scope.close(active.scope, Exit.void)
           active = undefined
         }),
-      ),
+      )
     )
     yield* policy.observe(reconcile)
-    yield* Effect.gen(function* () {
+    yield* Effect.gen(function*() {
       yield* Plugin.awaitActivation
       yield* reconcile()
     }).pipe(
@@ -108,12 +108,12 @@ export const node = makeLocationNode({
 })
 
 module platform {
-// The platform code of location-watcher.vibe: host path joining, which a .vibe file does not read (EK4402).
+  // The platform code of location-watcher.vibe: host path joining, which a .vibe file does not read (EK4402).
 
-import path from "path"
+  import path from "path"
 
-/** @throws {never} */
-export function join(...parts: string[]): string {
-  return path.join(...parts)
-}
+  /** @throws {never} */
+  export function join(...parts: string[]): string {
+    return path.join(...parts)
+  }
 }

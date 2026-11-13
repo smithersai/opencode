@@ -24,8 +24,9 @@ module platform {
           (info) => info.isFile(),
           () => false,
         )
-      )
+      ) {
         return candidate
+      }
     }
     return candidates[0]
   }
@@ -50,7 +51,7 @@ import { Runtime } from "../../../framework/runtime.ts"
 
 export default Runtime.handler(
   Commands.commands.mcp.commands.add,
-  Effect.fn("cli.mcp.add")(function* (input) {
+  Effect.fn("cli.mcp.add")(function*(input) {
     const url = Option.getOrUndefined(input.url)
     const headers = Option.getOrUndefined(input.header)
     const environment = Option.getOrUndefined(input.env)
@@ -60,8 +61,9 @@ export default Runtime.handler(
     const command = dash === -1 ? [...input.command] : argv().slice(dash + 1)
 
     const hasCommand = command.length > 0
-    if (url && hasCommand)
+    if (url && hasCommand) {
       return yield* Effect.fail(new Error("Provide either --url <url> or a command after --, not both"))
+    }
     if (!url && !hasCommand) return yield* Effect.fail(new Error("Provide either --url <url> or a command after --"))
     if (url && !URL.canParse(url)) return yield* Effect.fail(new Error(`Invalid URL: ${url}`))
     if (url && environment) return yield* Effect.fail(new Error("--env is only valid for local MCP servers"))

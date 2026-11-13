@@ -59,19 +59,20 @@ module platform {
   }
 
   export function stageUpdate(options: { readonly differential: boolean }) {
-    if (process.platform !== "darwin")
+    if (process.platform !== "darwin") {
       return Effect.tryPromise({
         try: () => {
           // Only the NSIS cache goes stale: macOS refreshes its cached zip with every download and AppImage reads the
           // blockmap embedded in the running file. An emulated x64 install updates to the ARM64 installer, which cannot
           // be patched from the cached x64 one.
-          updateClient.disableDifferentialDownload =
-            process.platform === "win32" && (!options.differential || app.runningUnderARM64Translation)
+          updateClient.disableDifferentialDownload = process.platform === "win32"
+            && (!options.differential || app.runningUnderARM64Translation)
 
           return updateClient.downloadUpdate()
         },
         catch: (error) => error,
       }).pipe(Effect.flatMap(unpackInstaller))
+    }
 
     return Effect.callback<void, Error>((resume) => {
       const cleanup = () => {
@@ -105,17 +106,16 @@ module platform {
 
     if (process.platform !== "win32" || !app.isPackaged || !installer) return Effect.void
 
-    return Effect.tryPromise(() =>
-      execFileAsync(installer, ["--stage"], { windowsHide: true, timeout: unpackTimeout }),
-    ).pipe(
-      Effect.andThen(Effect.logInfo("update unpacked before restart", { installer })),
-      Effect.catch((error) =>
-        Effect.logWarning("update not unpacked before restart", {
-          installer,
-          message: error.cause instanceof Error ? error.cause.message : String(error.cause),
-        }),
-      ),
-    )
+    return Effect.tryPromise(() => execFileAsync(installer, ["--stage"], { windowsHide: true, timeout: unpackTimeout }))
+      .pipe(
+        Effect.andThen(Effect.logInfo("update unpacked before restart", { installer })),
+        Effect.catch((error) =>
+          Effect.logWarning("update not unpacked before restart", {
+            installer,
+            message: error.cause instanceof Error ? error.cause.message : String(error.cause),
+          })
+        ),
+      )
   }
 
   export const installAndRestart = Effect.callback<void, Error>((resume) => {
@@ -157,7 +157,7 @@ module platform {
 
 import { checkForUpdate, configure, installAndRestart, stageUpdate } from platform
 
-export const make = Effect.fn("Updater.platform")(function* (channel: string) {
+export const make = Effect.fn("Updater.platform")(function*(channel: string) {
   const userAgent = `opencode/${channel === "prod" ? "latest" : channel}/${app.getVersion()}/desktop`
   const runFork = Effect.runForkWith(yield* Effect.context())
   const configured = configure(userAgent, runFork)

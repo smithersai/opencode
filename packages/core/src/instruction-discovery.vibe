@@ -55,7 +55,7 @@ export class Service extends Context.Service<Service, Interface>()("@opencode/In
 export const layer = (options?: Options) =>
   Layer.effect(
     Service,
-    Effect.gen(function* () {
+    Effect.gen(function*() {
       const bus = yield* Bus.Service
       const state = State.create<Data, Editor>({
         name: "instruction-discovery",
@@ -89,7 +89,7 @@ export const layer = (options?: Options) =>
           },
         })
 
-      const list = Effect.fn("InstructionDiscovery.list")(function* () {
+      const list = Effect.fn("InstructionDiscovery.list")(function*() {
         const current = state.get()
         if (!current.available) return Instructions.unavailable
         return Array.from(current.files.values())
@@ -101,7 +101,7 @@ export const layer = (options?: Options) =>
         transform: state.transform,
         reload: state.reload,
         list,
-        load: Effect.fn("InstructionDiscovery.load")(function* () {
+        load: Effect.fn("InstructionDiscovery.load")(function*() {
           const files = yield* list()
           if (!Array.isArray(files)) return source(files)
           return source(files.length === 0 ? Instructions.removed : files)

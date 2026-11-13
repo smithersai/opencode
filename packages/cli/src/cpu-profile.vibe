@@ -50,7 +50,7 @@ import { Global } from "@opencode/util/global"
 import { Effect, FileSystem, Queue } from "effect"
 import { addSignalListener, path, pid, platform, removeSignalListener, Session, writeProfile } from host
 
-export const listen = Effect.gen(function* () {
+export const listen = Effect.gen(function*() {
   const global = yield* Global.Service
   if (platform() === "win32") return
   const signals = yield* Queue.dropping<void>(1)
@@ -62,7 +62,7 @@ export const listen = Effect.gen(function* () {
     }),
     (handler) => Effect.sync(() => removeSignalListener("SIGPROF", handler)),
   )
-  yield* Effect.gen(function* () {
+  yield* Effect.gen(function*() {
     yield* Queue.take(signals)
     const file = path.join(
       global.log,
@@ -78,7 +78,7 @@ export const listen = Effect.gen(function* () {
 function run<A, E, R>(file: string, effect: Effect.Effect<A, E, R>) {
   const target = path.resolve(file)
   return Effect.acquireUseRelease(
-    Effect.gen(function* () {
+    Effect.gen(function*() {
       const fs = yield* FileSystem.FileSystem
       yield* fs.makeDirectory(path.dirname(target), { recursive: true })
       const session = new Session()

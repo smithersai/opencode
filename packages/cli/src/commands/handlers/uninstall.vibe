@@ -50,7 +50,7 @@ import { environmentValue, executablePath, path, platform } from host
 
 export default Runtime.handler(
   Commands.commands.uninstall,
-  Effect.fn("cli.uninstall")(function* (input) {
+  Effect.fn("cli.uninstall")(function*(input) {
     intro("Uninstall OpenCode")
     const fs = yield* FileSystem.FileSystem
     const global = yield* Global.Service
@@ -69,7 +69,7 @@ export default Runtime.handler(
     log.message("The following global files will be removed (shared by OpenCode versions and channels):")
     if (yield* fs.exists(global.cache)) log.info(`  Cache: ${global.cache}`)
     services.forEach((name) =>
-      log.info(`  Stop background service and persistent terminals: ${path.join(global.state, name)}`),
+      log.info(`  Stop background service and persistent terminals: ${path.join(global.state, name)}`)
     )
     shell.forEach((file) => log.info(`  Shell PATH: ${file}`))
     if (removal) log.info(`  Package: ${removal.command.join(" ")}`)
@@ -84,7 +84,7 @@ export default Runtime.handler(
     if (!input.force) {
       yield* requireInteractive("Use --force to uninstall without an interactive terminal, or --dry-run to preview.")
       const accepted = yield* prompt(() =>
-        confirm({ message: "Are you sure you want to uninstall?", initialValue: false }),
+        confirm({ message: "Are you sure you want to uninstall?", initialValue: false })
       )
       if (!accepted) {
         outro("Cancelled")
@@ -96,15 +96,14 @@ export default Runtime.handler(
     if (services.length) {
       progress.start("Stopping background services...")
       yield* Effect.forEach(services, (name) =>
-        Effect.gen(function* () {
+        Effect.gen(function*() {
           const options = { file: path.join(global.state, name) }
           yield* ServerConnection.shutdownPersistentPty(options).pipe(Effect.ignore)
           yield* Service.stop(options)
-        }),
-      ).pipe(
-        Effect.tap(() => Effect.sync(() => progress.stop("Background services stopped"))),
-        Effect.tapCause(() => Effect.sync(() => progress.stop("Failed to stop background services", 1))),
-      )
+        })).pipe(
+          Effect.tap(() => Effect.sync(() => progress.stop("Background services stopped"))),
+          Effect.tapCause(() => Effect.sync(() => progress.stop("Failed to stop background services", 1))),
+        )
     }
 
     // Links that keep an older OpenCode replaceable may still run; move them so the cache can go.
@@ -123,15 +122,14 @@ export default Runtime.handler(
         Effect.sync(() => {
           progress.stop("Failed to remove Cache", 1)
           errors.push(`Cache: ${errorMessage(error)}`)
-        }),
+        })
       ),
     )
     yield* Effect.forEach(shell, (file) =>
       fs.readFileString(file).pipe(
         Effect.flatMap((content) => fs.writeFileString(file, cleanShellConfig(content))),
         Effect.catch((error) => Effect.sync(() => errors.push(`Shell config ${file}: ${errorMessage(error)}`))),
-      ),
-    )
+      ))
     if (removal) {
       progress.start(`Running ${removal.command.join(" ")}...`)
       yield* removal.run.pipe(
@@ -141,7 +139,7 @@ export default Runtime.handler(
             progress.stop("Package manager uninstall failed", 1)
             errors.push(errorMessage(error))
             log.warn(`Run manually: ${removal.command.join(" ")}`)
-          }),
+          })
         ),
       )
     }
@@ -154,7 +152,7 @@ export default Runtime.handler(
   }, handlePromptErrors),
 )
 
-const shellConfigs = Effect.fnUntraced(function* (home: string) {
+const shellConfigs = Effect.fnUntraced(function*(home: string) {
   const fs = yield* FileSystem.FileSystem
   const bin = path.dirname(executablePath())
   // V1 and V2 curl installs share a PATH entry; retain it while another binary uses it.
@@ -184,8 +182,7 @@ const shellConfigs = Effect.fnUntraced(function* (home: string) {
     fs.readFileString(file).pipe(
       Effect.map((content) => cleanShellConfig(content) !== content),
       Effect.orElseSucceed(() => false),
-    ),
-  )
+    ))
 })
 
 function cleanShellConfig(content: string) {

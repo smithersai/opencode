@@ -9,7 +9,9 @@ import {
 
 export type Interface = MediaClient.Interface<VideoRequestFor, VideoEvent, VideoResponse>
 
-export service VideoClientService: Interface { static readonly key = "@opencode/VideoClient";}
+export service VideoClientService: Interface {
+  static readonly key = "@opencode/VideoClient"
+}
 export const Service = VideoClientService
 export type Service = VideoClientService
 

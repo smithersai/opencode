@@ -97,8 +97,10 @@ export const layer = Layer.effect(
               throw new NotFoundError({ command: input.name, message: `Command not found: ${input.name}` })
             }
             return (definition.execute(input.invocation)
-              |> Effect.tapError(%, (error) =>
-                Effect.logError("command execution failed", { command: input.name, error }))) catch effect (error) => {
+              |> Effect.tapError(
+                %,
+                (error) => Effect.logError("command execution failed", { command: input.name, error }),
+              )) catch effect (error) => {
                 throw new ExecutionError({ command: input.name, message: errorMessage(error) })
               }
           })(),

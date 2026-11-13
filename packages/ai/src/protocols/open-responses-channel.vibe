@@ -42,9 +42,10 @@ export interface Prepared {
 }
 
 const message = (body: unknown) =>
-  Effect.gen(function* () {
-    if (!ProviderShared.isRecord(body))
+  Effect.gen(function*() {
+    if (!ProviderShared.isRecord(body)) {
       return yield* ProviderShared.invalidRequest("Open Responses WebSocket body must be a JSON object")
+    }
     const { stream: _stream, stream_options: _streamOptions, background: _background, ...request } = body
     const decoded = yield* decodeMessage({ ...request, type: "response.create" })
     return { request: decoded, message: encodeMessage(decoded) }
@@ -53,17 +54,18 @@ const message = (body: unknown) =>
 const driver = (options: Options, body: string): OpenResponsesContinuation.BaseDriver => {
   let responseID: string | undefined
   let terminal = false
-  const observeEvent = Effect.fnUntraced(function* (
+  const observeEvent = Effect.fnUntraced(function*(
     _create: ChannelCreate,
     frame: string,
     event: OpenResponses.Event,
   ): Effect.fn.Return<ChannelObservation, AIError> {
-    if (terminal)
+    if (terminal) {
       return yield* ProviderShared.eventError(
         options.id,
         `${options.name} emitted ${event.type} after a terminal event`,
         frame,
       )
+    }
     if (event.type === "error") {
       terminal = true
       return {
@@ -73,12 +75,13 @@ const driver = (options: Options, body: string): OpenResponsesContinuation.BaseD
     }
     if (event.type === "response.failed") {
       terminal = true
-      if (responseID && event.response?.id && event.response.id !== responseID)
+      if (responseID && event.response?.id && event.response.id !== responseID) {
         return yield* ProviderShared.eventError(
           options.id,
           `${options.name} response ID changed during execution`,
           frame,
         )
+      }
       return {
         type: "provider-failure",
         error: OpenResponses.providerFailure(event, `${options.name} response failed`, frame),
@@ -86,35 +89,39 @@ const driver = (options: Options, body: string): OpenResponsesContinuation.BaseD
     }
     if (event.type === "response.created") {
       const created = event.response?.id
-      if (responseID)
+      if (responseID) {
         return yield* ProviderShared.eventError(
           options.id,
           `${options.name} emitted duplicate response.created`,
           frame,
         )
-      if (!created)
+      }
+      if (!created) {
         return yield* ProviderShared.eventError(
           options.id,
           `${options.name} response.created is missing response.id`,
           frame,
         )
+      }
       responseID = created
       return { type: "frame", frame }
     }
     // Keepalives and provider notifications carry no response state and may precede response.created.
     if (!event.type.startsWith("response.")) return { type: "frame", frame }
-    if (!responseID)
+    if (!responseID) {
       return yield* ProviderShared.eventError(
         options.id,
         `${options.name} emitted ${event.type} before response.created`,
         frame,
       )
-    if (event.response?.id && event.response.id !== responseID)
+    }
+    if (event.response?.id && event.response.id !== responseID) {
       return yield* ProviderShared.eventError(
         options.id,
         `${options.name} response ID changed during execution`,
         frame,
       )
+    }
     if (event.type === "response.completed") {
       terminal = true
       return { type: "completed", frame }
@@ -136,7 +143,7 @@ const driver = (options: Options, body: string): OpenResponsesContinuation.BaseD
     observe: (create, frame) =>
       OpenResponses.decodeChannelEvent(frame).pipe(
         Effect.mapError((cause) =>
-          ProviderShared.eventError(options.id, `Invalid ${options.name} WebSocket event`, frame, cause),
+          ProviderShared.eventError(options.id, `Invalid ${options.name} WebSocket event`, frame, cause)
         ),
         Effect.flatMap((event) => observeEvent(create, frame, event)),
       ),
@@ -148,33 +155,33 @@ export const transport = <Body>(options: Options): Transport<Body, Prepared, str
   return {
     id: http.id,
     prepare: (input) =>
-      Effect.gen(function* () {
+      Effect.gen(function*() {
         const parts = yield* HttpTransport.jsonRequestParts(input)
         const headers = Headers.remove(options.headers?.(parts.headers) ?? parts.headers, "content-length")
-        const channel =
-          input.webSocket && (options.enabled?.(parts.url) ?? true)
-            ? yield* Effect.gen(function* () {
-                const create = yield* message(parts.jsonBody)
-                const base = driver(options, create.message)
-                return {
-                  url: yield* WebSocketTransport.toWebSocketUrl(options.url?.(parts.url) ?? parts.url),
-                  headers,
-                  rotateAfterMs: options.rotateAfterMs,
-                  driver: OpenResponsesContinuation.driver({
-                    id: options.id,
-                    name: options.name,
-                    request: create.request,
-                    message: create.message,
-                    base,
-                    continuation: options.continuation,
-                  }),
-                }
-              })
-            : undefined
-        if (input.webSocket && !channel)
+        const channel = input.webSocket && (options.enabled?.(parts.url) ?? true)
+          ? yield* Effect.gen(function*() {
+            const create = yield* message(parts.jsonBody)
+            const base = driver(options, create.message)
+            return {
+              url: yield* WebSocketTransport.toWebSocketUrl(options.url?.(parts.url) ?? parts.url),
+              headers,
+              rotateAfterMs: options.rotateAfterMs,
+              driver: OpenResponsesContinuation.driver({
+                id: options.id,
+                name: options.name,
+                request: create.request,
+                message: create.message,
+                base,
+                continuation: options.continuation,
+              }),
+            }
+          })
+          : undefined
+        if (input.webSocket && !channel) {
           yield* Effect.logWarning(`${options.name} does not offer WebSocket for this endpoint; using HTTP`, {
             url: parts.url,
           })
+        }
         return {
           http: {
             request: ProviderShared.jsonPost({
@@ -190,7 +197,7 @@ export const transport = <Body>(options: Options): Transport<Body, Prepared, str
         }
       }),
     execute: (prepared, request, runtime, executeOptions) =>
-      Effect.gen(function* () {
+      Effect.gen(function*() {
         if (!executeOptions?.webSocket || !prepared.channel) return yield* http.execute(prepared.http, request, runtime)
         let fallbackHttp: HttpContext | undefined
         const exchange: WebSocketChannelExchange = {

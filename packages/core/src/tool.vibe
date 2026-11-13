@@ -63,7 +63,9 @@ export interface Snapshot {
   }) => NormalizedResult!Tool.Error
 }
 
-export service Service: Interface { static readonly key = "@opencode/Tool";}
+export service Service: Interface {
+  static readonly key = "@opencode/Tool"
+}
 
 const layer = Layer.effect(
   Service,
@@ -78,20 +80,40 @@ const layer = Layer.effect(
         const base64 = /^data:[^,]*;base64,(.*)$/s.exec(item.uri)?.[1]
         if (base64 === undefined) return Effect.succeed(item)
         const resource = item.name ?? `${item.mime} tool output`
-        return do { const catchProgram = (do { const catchProgram2 = (do { const catchProgram3 = (image.normalize(resource, { uri: resource, content: base64, encoding: "base64", mime: item.mime })
-          |> Effect.map(%, (result) => ({
-            ...item,
-            uri: `data:${result.mime};base64,${result.content}`,
-            mime: result.mime,
-          }))); effect { return catchProgram3 catch effect (e) => match (e) {
-          when { _tag: "Image.ResizerUnavailableError" }: item;
-          default: throw e;
-        } } }); effect { return catchProgram2 catch effect (e) => match (e) {
-          when { _tag: "Image.DecodeError" }: "decode" as const;
-          default: throw e;
-        } } }); effect { return catchProgram catch (e) => match (e) {
-          when { _tag: "Image.SizeError" }: "size" as const;
-        } } }
+        return do {
+          const catchProgram = do {
+            const catchProgram2 = do {
+              const catchProgram3 = image.normalize(resource, {
+                uri: resource,
+                content: base64,
+                encoding: "base64",
+                mime: item.mime,
+              })
+                |> Effect.map(%, (result) => ({
+                  ...item,
+                  uri: `data:${result.mime};base64,${result.content}`,
+                  mime: result.mime,
+                }))
+              effect {
+                return catchProgram3 catch effect (e) => match (e) {
+                  when { _tag: "Image.ResizerUnavailableError" }: item;
+                  default: throw e;
+                }
+              }
+            }
+            effect {
+              return catchProgram2 catch effect (e) => match (e) {
+                when { _tag: "Image.DecodeError" }: "decode" as const;
+                default: throw e;
+              }
+            }
+          }
+          effect {
+            return catchProgram catch (e) => match (e) {
+              when { _tag: "Image.SizeError" }: "size" as const;
+            }
+          }
+        }
       })
       const note = (reason: "decode" | "size", text: string) => {
         const count = normalized.filter((item) => item === reason).length
@@ -125,7 +147,7 @@ const layer = Layer.effect(
         effect {
           const execution = (execute(tool, input, context)
             |> Effect.map(%, (value) => ({ value }))) catch (failure) => match (failure) {
-              when { _tag: "Tool.Error" }: ({ failure });
+              when { _tag: "Tool.Error" }: { failure };
             }
           const base = {
             tool: name,

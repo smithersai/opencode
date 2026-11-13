@@ -197,8 +197,9 @@ const lowerToolEntry = effect (tool: ToolEntry) => {
     type: "namespace" as const,
     name: tool.name,
     description: tool.description ?? `Tools in the ${tool.name} namespace.`,
-    tools: try Effect.forEach(try Effect.orDie(Effect.try({ try: () => ProviderShared.flattenTools(tool.tools), catch: (e) => e })), (leaf) =>
-      OpenResponses.lowerTool(NAME, leaf),
+    tools: try Effect.forEach(
+      try Effect.orDie(Effect.try({ try: () => ProviderShared.flattenTools(tool.tools), catch: (e) => e })),
+      (leaf) => OpenResponses.lowerTool(NAME, leaf),
     ),
   }
 }
@@ -216,64 +217,88 @@ const lowerToolChoice = (toolChoice: NonNullable<LLMRequest["toolChoice"]>, tool
         : { type: "function" as const, name },
   })
 
-const fromRequest = effect (request: LLMRequest) => try withSpan(effect {
-  const management = try (try Effect.orDie(Effect.try({ try: () => ProviderShared.validateWith(
-    Schema.decodeUnknownEffect(Schema.UndefinedOr(ContextManagement)),
-  ), catch: (e) => e })))(request.providerOptions?.contextManagement)
-  const options = OpenResponsesOptions.resolve(request)
-  const reasoning = Schema.decodeUnknownSync(ReasoningOptions)(request.providerOptions ?? {})
-  const updates = try Effect.orDie(Effect.try({ try: () => resolveEffortUpdates(request, options.reasoningEffort), catch: (e) => e }))
-  const generation = try Effect.orDie(Effect.try({ try: () => OpenResponses.lowerGeneration(request, { ...options, reasoningEffort: updates.effort }), catch: (e) => e }))
-  return {
-    ...(try OpenResponses.lowerConversation(updates.request, adapter)),
-    ...generation,
-    ...try Effect.orDie(Effect.try({ try: () => Cache.openAIRequestTTL(requestTTL(request)), catch: (e) => e })),
-    ...(generation.reasoning || reasoning.reasoningMode || reasoning.reasoningContext
-      ? {
-          reasoning: {
-            ...generation.reasoning,
-            mode: reasoning.reasoningMode,
-            context: reasoning.reasoningContext,
-          },
-        }
-      : {}),
-    context_management: management?.map((edit) => ({ type: edit.type, compact_threshold: edit.compactThreshold })),
-    tools: request.tools.length === 0 ? undefined : try lowerTools(request),
-    tool_choice:
-      request.tools.length === 0
-        ? undefined
-        : ((try Effect.orDie(Effect.try({ try: () => OpenResponses.allowedToolChoice(request, options), catch: (e) => e }))) ??
-          (request.toolChoice ? try lowerToolChoice(request.toolChoice, request.tools) : undefined)),
-  }
-}, "OpenAIResponses.fromRequest")
+const fromRequest = effect (request: LLMRequest) =>
+  try withSpan(
+    effect {
+      const management = try (try Effect.orDie(Effect.try({
+        try: () =>
+          ProviderShared.validateWith(
+            Schema.decodeUnknownEffect(Schema.UndefinedOr(ContextManagement)),
+          ),
+        catch: (e) => e,
+      })))(request.providerOptions?.contextManagement)
+      const options = OpenResponsesOptions.resolve(request)
+      const reasoning = Schema.decodeUnknownSync(ReasoningOptions)(request.providerOptions ?? {})
+      const updates = try Effect.orDie(
+        Effect.try({ try: () => resolveEffortUpdates(request, options.reasoningEffort), catch: (e) => e }),
+      )
+      const generation = try Effect.orDie(
+        Effect.try({
+          try: () => OpenResponses.lowerGeneration(request, { ...options, reasoningEffort: updates.effort }),
+          catch: (e) => e,
+        }),
+      )
+      return {
+        ...(try OpenResponses.lowerConversation(updates.request, adapter)),
+        ...generation,
+        ...try Effect.orDie(Effect.try({ try: () => Cache.openAIRequestTTL(requestTTL(request)), catch: (e) => e })),
+        ...(generation.reasoning || reasoning.reasoningMode || reasoning.reasoningContext
+          ? {
+            reasoning: {
+              ...generation.reasoning,
+              mode: reasoning.reasoningMode,
+              context: reasoning.reasoningContext,
+            },
+          }
+          : {}),
+        context_management: management?.map((edit) => ({ type: edit.type, compact_threshold: edit.compactThreshold })),
+        tools: request.tools.length === 0 ? undefined : try lowerTools(request),
+        tool_choice: request.tools.length === 0
+          ? undefined
+          : ((try Effect.orDie(
+            Effect.try({ try: () => OpenResponses.allowedToolChoice(request, options), catch: (e) => e }),
+          ))
+            ?? (request.toolChoice ? try lowerToolChoice(request.toolChoice, request.tools) : undefined)),
+      }
+    },
+    "OpenAIResponses.fromRequest",
+  )
 
 const checkpointBody = {
   schema: CheckpointBody,
-  from: effect (request: LLMRequest) => try withSpan(effect {
-    const overlay = request.http?.body
-    // Complete history is required for stateless replay and SSE recovery. Raw input overrides bypass that contract.
-    if (
-      overlay?.input !== undefined ||
-      overlay?.previous_response_id !== undefined ||
-      overlay?.conversation !== undefined
-    )
-      throw ProviderShared.invalidRequest(
-        "Trigger compaction requires complete canonical history, not an input or continuation override",
-      )
-    if (overlay?.stream !== undefined && overlay.stream !== true)
-      throw ProviderShared.invalidRequest("Trigger compaction requires a streamed response")
-    const native = try fromRequest(request)
-    return {
-      ...native,
-      input: [...native.input, { type: "compaction_trigger" as const }],
-    }
-  }, "OpenAIResponses.checkpointBody"),
+  from: effect (request: LLMRequest) =>
+    try withSpan(
+      effect {
+        const overlay = request.http?.body
+        // Complete history is required for stateless replay and SSE recovery. Raw input overrides bypass that contract.
+        if (
+          overlay?.input !== undefined
+          || overlay?.previous_response_id !== undefined
+          || overlay?.conversation !== undefined
+        ) {
+          throw ProviderShared.invalidRequest(
+            "Trigger compaction requires complete canonical history, not an input or continuation override",
+          )
+        }
+        if (overlay?.stream !== undefined && overlay.stream !== true) {
+          throw ProviderShared.invalidRequest("Trigger compaction requires a streamed response")
+        }
+        const native = try fromRequest(request)
+        return {
+          ...native,
+          input: [...native.input, { type: "compaction_trigger" as const }],
+        }
+      },
+      "OpenAIResponses.checkpointBody",
+    ),
 }
 
 const hostedToolResult = effect (item: ResponsesHostedTools.Item) => {
   const isError = item.error !== undefined && item.error !== null
   if (item.type === "image_generation_call" && item.result) {
-    Effect.fromResult(Base64.decode(item.result)) catch effect (cause) => { throw ProviderShared.eventError(ADAPTER, "OpenAI Responses returned invalid image base64", undefined, cause) }
+    Effect.fromResult(Base64.decode(item.result)) catch effect (cause) => {
+      throw ProviderShared.eventError(ADAPTER, "OpenAI Responses returned invalid image base64", undefined, cause)
+    }
     const format = item.output_format ?? "png"
     return {
       type: "content" as const,
@@ -315,8 +340,11 @@ const step = effect (state: OpenResponses.ParserState, input: OpenResponses.Even
       catch: (e) => e,
     }))
   }
-  if (event.type === "response.output_item.done" && event.item && ResponsesHostedTools.isItem(event.item, HOSTED_TOOLS))
+  if (
+    event.type === "response.output_item.done" && event.item && ResponsesHostedTools.isItem(event.item, HOSTED_TOOLS)
+  ) {
     return try ResponsesHostedTools.onDone(state, event.item, HOSTED_TOOLS)
+  }
   return try OpenResponses.step(state, event)
 }
 

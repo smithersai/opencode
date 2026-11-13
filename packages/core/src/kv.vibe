@@ -30,7 +30,9 @@ export interface Interface {
   readonly scan: (options: ScanOptions) => ScanResult!!
 }
 
-export service Service: Interface { static readonly key = "@opencode/KV";}
+export service Service: Interface {
+  static readonly key = "@opencode/KV"
+}
 
 const layer = Layer.effect(
   Service,
@@ -61,10 +63,18 @@ const layer = Layer.effect(
                   .insert(KVTable),
               catch: (error) => error,
             }))
-            const values2 = try Effect.orDie(Effect.try({ try: () => orDie2
-              .values({ key, value }), catch: (e) => e }))
-            try ((try Effect.orDie(Effect.try({ try: () => values2
-              .onConflictDoUpdate({ target: KVTable.key, set: { value, time_updated: Date.now() } }), catch: (e) => e })))
+            const values2 = try Effect.orDie(Effect.try({
+              try: () =>
+                orDie2
+                  .values({ key, value }),
+              catch: (e) => e,
+            }))
+            try ((try Effect.orDie(Effect.try({
+              try: () =>
+                values2
+                  .onConflictDoUpdate({ target: KVTable.key, set: { value, time_updated: Date.now() } }),
+              catch: (e) => e,
+            })))
               .run() |> Effect.orDie(%))
           },
           "KV.set",

@@ -26,17 +26,16 @@ const gatewayIdField = Form.StringField.make({
 
 export const CloudflareAIGatewayPlugin = define({
   id: "opencode.provider.cloudflare.ai.gateway",
-  effect: Effect.fn(function* (ctx) {
+  effect: Effect.fn(function*(ctx) {
     const accountId = environmentValue("CLOUDFLARE_ACCOUNT_ID")
     const gatewayId = environmentValue("CLOUDFLARE_GATEWAY_ID")
     const configured = yield* configuredSettings(providerID)
-    const fields =
-      typeof configured?.baseURL === "string"
-        ? []
-        : [
-            ...(accountId || typeof configured?.accountId === "string" ? [] : [accountIdField]),
-            ...(gatewayId || typeof configured?.gatewayId === "string" ? [] : [gatewayIdField]),
-          ]
+    const fields = typeof configured?.baseURL === "string"
+      ? []
+      : [
+        ...(accountId || typeof configured?.accountId === "string" ? [] : [accountIdField]),
+        ...(gatewayId || typeof configured?.gatewayId === "string" ? [] : [gatewayIdField]),
+      ]
     yield* ctx.integration.transform((editor) => {
       editor.method.update({
         integrationID: providerID,
@@ -63,10 +62,10 @@ export const CloudflareAIGatewayPlugin = define({
 })
 
 module platform {
-// The platform code of cloudflare-ai-gateway.vibe: environment variable reads, which a .vibe file does not do (EK4402).
+  // The platform code of cloudflare-ai-gateway.vibe: environment variable reads, which a .vibe file does not do (EK4402).
 
-/** @throws {never} */
-export function environmentValue(key: string): string | undefined {
-  return process.env[key]
-}
+  /** @throws {never} */
+  export function environmentValue(key: string): string | undefined {
+    return process.env[key]
+  }
 }

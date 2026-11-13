@@ -20,10 +20,10 @@ const decodeCommand = Schema.decodeUnknownOption(ConfigCommand.Info)
 
 export const Plugin = define({
   id: "opencode.config.command",
-  effect: Effect.fn(function* (ctx) {
+  effect: Effect.fn(function*(ctx) {
     const config = yield* Config.Service
     const fs = yield* FSUtil.Service
-    const loadEntry = Effect.fnUntraced(function* (entry: Entry) {
+    const loadEntry = Effect.fnUntraced(function*(entry: Entry) {
       if (entry.type === "document") return [{ commands: entry.info.commands }]
       if (entry.type !== "directory") return []
       const commands = yield* loadDirectory(fs, entry.path)
@@ -35,7 +35,7 @@ export const Plugin = define({
     const sessions = yield* Session.Service
     const agents = yield* Agent.Service
     const subagents = yield* SubagentJob.Service
-    const load = Effect.fn("ConfigCommandPlugin.load")(function* () {
+    const load = Effect.fn("ConfigCommandPlugin.load")(function*() {
       return yield* Effect.forEach(yield* config.entries(), loadEntry).pipe(Effect.map((documents) => documents.flat()))
     })
     const loaded = { documents: [] as { commands: Info["commands"] }[] }
@@ -73,17 +73,16 @@ export const Plugin = define({
             name,
             description: command.description,
             execute: (input) =>
-              Effect.gen(function* () {
+              Effect.gen(function*() {
                 const agent = command.agent === undefined ? undefined : Agent.ID.make(command.agent)
                 const commandAgent = agent === undefined ? undefined : (yield* ctx.agent.get({ agentID: agent })).data
-                const model =
-                  command.model === undefined
-                    ? commandAgent?.model
-                    : {
-                        id: command.model.model,
-                        providerID: command.model.providerID,
-                        ...(command.model.variant === undefined ? {} : { variant: command.model.variant }),
-                      }
+                const model = command.model === undefined
+                  ? commandAgent?.model
+                  : {
+                    id: command.model.model,
+                    providerID: command.model.providerID,
+                    ...(command.model.variant === undefined ? {} : { variant: command.model.variant }),
+                  }
                 const text = yield* evaluateTemplate(command.template, input.prompt.text, {
                   location,
                   processes,
@@ -142,13 +141,13 @@ const sourceDirectories = ["command", "commands"] as const
 function isCommandSource(entries: Entry[], file: string) {
   return entries.some(
     (entry) =>
-      entry.type === "directory" &&
-      sourceDirectories.some((name) => FSUtil.contains(joinPath(entry.path, name), file)),
+      entry.type === "directory"
+      && sourceDirectories.some((name) => FSUtil.contains(joinPath(entry.path, name), file)),
   )
 }
 
 function loadDirectory(fs: FSUtil.Interface, directory: string) {
-  return Effect.gen(function* () {
+  return Effect.gen(function*() {
     const files = yield* fs
       .scan("{command,commands}/**/*.md", { cwd: directory, absolute: true, dot: true, symlink: true })
       .pipe(Effect.orElseSucceed(() => [] as string[]))
@@ -156,12 +155,11 @@ function loadDirectory(fs: FSUtil.Interface, directory: string) {
       fs.readFileStringSafe(filepath).pipe(
         Effect.map((content) => (content === undefined ? undefined : decode(directory, filepath, content))),
         Effect.orElseSucceed(() => undefined),
-      ),
-    ).pipe(
-      Effect.map((commands) =>
-        commands.filter((command): command is { name: string; info: ConfigCommand.Info } => command !== undefined),
-      ),
-    )
+      )).pipe(
+        Effect.map((commands) =>
+          commands.filter((command): command is { name: string; info: ConfigCommand.Info } => command !== undefined)
+        ),
+      )
   })
 }
 
@@ -188,7 +186,7 @@ function evaluateTemplate(
     readonly shell: ShellSelect.Interface
   },
 ) {
-  return Effect.gen(function* () {
+  return Effect.gen(function*() {
     const args = parseArguments(input)
     const placeholders = template.match(placeholderRegex) ?? []
     const last = Math.max(0, ...placeholders.map((item) => Number(item.slice(1))))
@@ -200,10 +198,9 @@ function evaluateTemplate(
       if (position === last) return args.slice(argIndex).join(" ")
       return args[argIndex]
     })
-    const text =
-      placeholders.length === 0 && !template.includes("$ARGUMENTS") && input.trim()
-        ? `${withArguments}\n\n${input}`.trim()
-        : withArguments.trim()
+    const text = placeholders.length === 0 && !template.includes("$ARGUMENTS") && input.trim()
+      ? `${withArguments}\n\n${input}`.trim()
+      : withArguments.trim()
     const matches = Array.from(text.matchAll(shellRegex))
     if (matches.length === 0) return text
     const shell = yield* services.shell.resolve({ priority: "config" })
@@ -220,7 +217,7 @@ function evaluateTemplate(
                 stdin: "ignore",
               }),
               { combineOutput: true },
-            ),
+            )
           ),
           Effect.map(outputText),
           Effect.mapError(
@@ -246,20 +243,20 @@ const quoteTrimRegex = /^["']|["']$/g
 const shellRegex = /!`([^`]+)`/g
 
 module platform {
-import path from "path"
+  import path from "path"
 
-/** @throws {never} */
-export function joinPath(directory: string, name: string) {
-  return path.join(directory, name)
-}
+  /** @throws {never} */
+  export function joinPath(directory: string, name: string) {
+    return path.join(directory, name)
+  }
 
-/** Resolves relative paths against the process working directory, which may be unavailable. */
-export function relative(from: string, to: string) {
-  return path.relative(from, to)
-}
+  /** Resolves relative paths against the process working directory, which may be unavailable. */
+  export function relative(from: string, to: string) {
+    return path.relative(from, to)
+  }
 
-/** Decodes combined process output, or stdout then stderr, as UTF-8. @throws {never} */
-export function outputText(result: { readonly output?: Buffer; readonly stdout: Buffer; readonly stderr: Buffer }) {
-  return (result.output ?? Buffer.concat([result.stdout, result.stderr])).toString("utf8")
-}
+  /** Decodes combined process output, or stdout then stderr, as UTF-8. @throws {never} */
+  export function outputText(result: { readonly output?: Buffer; readonly stdout: Buffer; readonly stderr: Buffer }) {
+    return (result.output ?? Buffer.concat([result.stdout, result.stderr])).toString("utf8")
+  }
 }

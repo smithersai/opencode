@@ -5,7 +5,8 @@ module platform {
 
   export const makeTextDecoder = () => new TextDecoder()
 
-  export const decodeText = (decoder: TextDecoder, ...args: Parameters<TextDecoder["decode"]>) => decoder.decode(...args)
+  export const decodeText = (decoder: TextDecoder, ...args: Parameters<TextDecoder["decode"]>) =>
+    decoder.decode(...args)
 }
 
 import { argumentVector, environmentValue } from platform
@@ -30,29 +31,32 @@ export const askpass = effect {
   const writer = try socket.writer
   void try writer.write(
     JSON.stringify({
-      token: (try ((args: Parameters<typeof environmentValue>) =>
-        Effect.try(() =>
-          environmentValue(...args)
-        ).pipe(Effect.orDie))(["OPENCODE_SSH_ASKPASS_TOKEN"])),
-      text: (try ((args: Parameters<typeof argumentVector>) =>
-        Effect.try(() => argumentVector(...args)).pipe(Effect.orDie))([])).slice(2).join(" "),
-      confirm: (try ((args: Parameters<typeof environmentValue>) =>
-        Effect.try(() =>
-          environmentValue(...args)
-        ).pipe(Effect.orDie))(["SSH_ASKPASS_PROMPT"])) === "confirm",
+      token:
+        try ((args: Parameters<typeof environmentValue>) =>
+          Effect.try(() => environmentValue(...args)).pipe(Effect.orDie))(["OPENCODE_SSH_ASKPASS_TOKEN"]),
+      text:
+        (try ((args: Parameters<typeof argumentVector>) =>
+          Effect.try(() => argumentVector(...args)).pipe(Effect.orDie))([])).slice(2).join(" "),
+      confirm:
+        (try ((args: Parameters<typeof environmentValue>) =>
+          Effect.try(() => environmentValue(...args)).pipe(Effect.orDie))(["SSH_ASKPASS_PROMPT"])) === "confirm",
     }) + "\n",
   )
   // One streaming decoder, so a character split across reads decodes intact.
-  const decoder = try ((args: Parameters<typeof makeTextDecoder>) =>
-    Effect.try(() => makeTextDecoder(...args)).pipe(Effect.orDie))([])
+  const decoder =
+    try ((args: Parameters<typeof makeTextDecoder>) => Effect.try(() => makeTextDecoder(...args)).pipe(Effect.orDie))(
+      [],
+    )
   const response = { text: "" }
   try effect {
     while (true) {
       for (const chunk of try pull) {
-        response.text += try ((args: Parameters<typeof decodeText>) =>
-          Effect.try(() =>
-            decodeText(...args)
-          ).pipe(Effect.orDie))([decoder, chunk, { stream: true }])
+        response.text +=
+          try ((args: Parameters<typeof decodeText>) => Effect.try(() => decodeText(...args)).pipe(Effect.orDie))([
+            decoder,
+            chunk,
+            { stream: true },
+          ])
       }
     }
   }.pipe(Effect.catchReason("SocketError", "SocketCloseError", () => Effect.void))

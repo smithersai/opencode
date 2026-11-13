@@ -21,7 +21,9 @@ export interface Interface {
   readonly all: () => readonly Generation[]
 }
 
-export service Service: Interface { static readonly key = "@opencode/InstancePlugins";}
+export service Service: Interface {
+  static readonly key = "@opencode/InstancePlugins"
+}
 
 export const node = makeLocationNode({
   service: Service,

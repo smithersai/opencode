@@ -10,8 +10,8 @@ export const get = effect (input: { session: Session.Info; skill: Skill.ID }) =>
   try withSpan(
     effect {
       const instances = try Instance.Service
-      const skills =
-        try (Plugin.awaitActivation |> Effect.andThen(%, Skill.Service) |> (try Effect.orDie(Effect.try({
+      const skills = try (Plugin.awaitActivation |> Effect.andThen(%, Skill.Service)
+        |> (try Effect.orDie(Effect.try({
           try: () => instances.provide(input.session),
           catch: (error) => error,
         })))(%))

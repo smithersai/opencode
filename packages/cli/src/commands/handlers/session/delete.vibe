@@ -22,13 +22,12 @@ const handler = Effect.fn("cli.session.delete")(effect function(
   input: Runtime.Input<typeof Commands.commands.session.commands.delete>,
 ) {
   const server = try ServerConnection.resolve()
-  const client = try ((args: Parameters<typeof OpenCode.make>) =>
-    Effect.try(() => OpenCode.make(...args)).pipe(Effect.orDie))([{
+  const client =
+    try ((args: Parameters<typeof OpenCode.make>) => Effect.try(() => OpenCode.make(...args)).pipe(Effect.orDie))([{
       baseUrl: server.endpoint.url,
-      headers: (try ((args: Parameters<typeof Service.headers>) =>
-        Effect.try(() =>
-          Service.headers(...args)
-        ).pipe(Effect.orDie))([server.endpoint])),
+      headers:
+        try ((args: Parameters<typeof Service.headers>) =>
+          Effect.try(() => Service.headers(...args)).pipe(Effect.orDie))([server.endpoint]),
     }])
   try Effect.tryPromise({
     try: (signal) => client.session.remove({ sessionID: input.sessionID }, { signal }),

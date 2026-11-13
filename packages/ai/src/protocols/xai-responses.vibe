@@ -54,26 +54,33 @@ const adapter = {
   restoreHostedToolItem: (item: unknown) => (Schema.is(XAIResponsesHostedToolItem)(item) ? item : undefined),
 } satisfies OpenResponses.ProviderAdapter
 
-const fromRequest = effect (request: LLMRequest) => try withSpan(effect {
-  if (request.providerOptions?.contextManagement !== undefined)
-    throw ProviderShared.unsupportedOperation({
-      operation: "in-band-compaction",
-      provider: request.model.provider,
-      route: request.model.route.id,
-      message:
-        "xAI requires explicit compaction through LLMClient.compact; automatic context management is not supported",
-    })
-  const options = try (try Effect.orDie(Effect.try({ try: () => ProviderShared.validateWith(Schema.decodeUnknownEffect(Options)), catch: (e) => e })))(request.providerOptions ?? {})
-  const body = try OpenResponses.fromRequestWithAdapter(request, adapter)
-  // xAI Responses does not support penalties (they are ignored), but does support top_k.
-  return {
-    ...body,
-    presence_penalty: undefined,
-    frequency_penalty: undefined,
-    top_k: request.generation?.topK,
-    min_p: options.minP,
-  }
-}, "XAIResponses.fromRequest")
+const fromRequest = effect (request: LLMRequest) =>
+  try withSpan(
+    effect {
+      if (request.providerOptions?.contextManagement !== undefined) {
+        throw ProviderShared.unsupportedOperation({
+          operation: "in-band-compaction",
+          provider: request.model.provider,
+          route: request.model.route.id,
+          message:
+            "xAI requires explicit compaction through LLMClient.compact; automatic context management is not supported",
+        })
+      }
+      const options = try (try Effect.orDie(
+        Effect.try({ try: () => ProviderShared.validateWith(Schema.decodeUnknownEffect(Options)), catch: (e) => e }),
+      ))(request.providerOptions ?? {})
+      const body = try OpenResponses.fromRequestWithAdapter(request, adapter)
+      // xAI Responses does not support penalties (they are ignored), but does support top_k.
+      return {
+        ...body,
+        presence_penalty: undefined,
+        frequency_penalty: undefined,
+        top_k: request.generation?.topK,
+        min_p: options.minP,
+      }
+    },
+    "XAIResponses.fromRequest",
+  )
 
 const HOSTED_TOOLS = {
   web_search_call: { name: "web_search", input: (item) => item.action ?? {} },
@@ -94,8 +101,11 @@ const HOSTED_TOOLS = {
 // handled by the baseline); only its hosted tool vocabulary differs.
 const step = effect (state: OpenResponses.ParserState, input: OpenResponses.Event) => {
   const event = try Effect.orDie(Effect.try({ try: () => OpenResponses.normalize(state, input), catch: (e) => e }))
-  if (event.type === "response.output_item.done" && event.item && ResponsesHostedTools.isItem(event.item, HOSTED_TOOLS))
+  if (
+    event.type === "response.output_item.done" && event.item && ResponsesHostedTools.isItem(event.item, HOSTED_TOOLS)
+  ) {
     return try ResponsesHostedTools.onDone(state, event.item, HOSTED_TOOLS)
+  }
   return try OpenResponses.step(state, event)
 }
 
@@ -113,8 +123,13 @@ export const protocol = Protocol.make({
   },
 })
 
-export const compact = ResponsesCompaction.make(adapter, effect (request) =>
-  try OpenResponses.lowerTools(try Effect.orDie(Effect.try({ try: () => ProviderShared.flattenTools(request.tools), catch: (e) => e })), adapter),
+export const compact = ResponsesCompaction.make(
+  adapter,
+  effect (request) =>
+    try OpenResponses.lowerTools(
+      try Effect.orDie(Effect.try({ try: () => ProviderShared.flattenTools(request.tools), catch: (e) => e })),
+      adapter,
+    ),
 )
 
 export * as XAIResponses from "./xai-responses.js"

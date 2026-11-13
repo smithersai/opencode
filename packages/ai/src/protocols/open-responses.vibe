@@ -445,9 +445,10 @@ interface ReasoningStreamItem {
 // =============================================================================
 // Request Lowering
 // =============================================================================
-export const lowerTool = Effect.fnUntraced(function* (protocolName: string, tool: ToolDefinition) {
-  if (tool.native !== undefined)
+export const lowerTool = Effect.fnUntraced(function*(protocolName: string, tool: ToolDefinition) {
+  if (tool.native !== undefined) {
     return yield* ProviderShared.invalidRequest(`${protocolName} does not support provider-native tool ${tool.name}`)
+  }
   return {
     type: "function" as const,
     name: tool.name,
@@ -514,7 +515,7 @@ const lowerReasoning = (part: ReasoningPart, providerMetadataKey: string): OpenR
 const decodeImageDetail = ProviderShared.validateWith(Schema.decodeUnknownEffect(OpenResponsesInputImage.fields.detail))
 const decodeMessageMetadata = ProviderShared.validateWith(Schema.decodeUnknownEffect(MessageMetadata))
 
-const lowerMedia = Effect.fnUntraced(function* (part: MediaPart, request: LLMRequest, adapter: ProviderAdapter) {
+const lowerMedia = Effect.fnUntraced(function*(part: MediaPart, request: LLMRequest, adapter: ProviderAdapter) {
   const media = part.media.inline()
   const providerMedia = adapter.lowerMedia?.({ part, media, request })
   if (providerMedia) return providerMedia
@@ -539,7 +540,7 @@ const lowerMedia = Effect.fnUntraced(function* (part: MediaPart, request: LLMReq
   }
 })
 
-const lowerUserContent = Effect.fnUntraced(function* (
+const lowerUserContent = Effect.fnUntraced(function*(
   part: LLMRequest["messages"][number]["content"][number],
   request: LLMRequest,
   adapter: ProviderAdapter,
@@ -551,7 +552,7 @@ const lowerUserContent = Effect.fnUntraced(function* (
 
 // Tool results may carry structured text, images, and files. Keep media as provider-native
 // content instead of JSON-stringifying base64 into a prompt string.
-const lowerToolResultContentItem = Effect.fnUntraced(function* (
+const lowerToolResultContentItem = Effect.fnUntraced(function*(
   item: Content,
   request: LLMRequest,
   adapter: ProviderAdapter,
@@ -560,7 +561,7 @@ const lowerToolResultContentItem = Effect.fnUntraced(function* (
   return yield* lowerMedia(ProviderShared.toolFileMedia(item), request, adapter)
 })
 
-const lowerToolResultOutput = Effect.fnUntraced(function* (
+const lowerToolResultOutput = Effect.fnUntraced(function*(
   part: ToolResultPart,
   request: LLMRequest,
   adapter: ProviderAdapter,
@@ -575,7 +576,7 @@ const lowerToolResultOutput = Effect.fnUntraced(function* (
 
 const DEFAULT_EFFORT = "medium"
 
-const lowerMessages = Effect.fnUntraced(function* (
+const lowerMessages = Effect.fnUntraced(function*(
   request: LLMRequest,
   adapter: ProviderAdapter,
 ) {
@@ -604,8 +605,9 @@ const lowerMessages = Effect.fnUntraced(function* (
 
     if (message.role === "user") {
       const content = yield* Effect.forEach(message.content, (part) => lowerUserContent(part, request, adapter))
-      if (content.length > 0)
+      if (content.length > 0) {
         input.push({ type: "message", role: "user", content, id: metadata?.itemId, status: metadata?.status })
+      }
       continue
     }
 
@@ -643,10 +645,11 @@ const lowerMessages = Effect.fnUntraced(function* (
       for (const part of message.content) {
         if (part.type === "compaction") {
           flushText()
-          if (part.provider !== request.model.provider || part.encrypted === undefined)
+          if (part.provider !== request.model.provider || part.encrypted === undefined) {
             return yield* ProviderShared.invalidRequest(
               "Compaction state must be replayed to its originating provider and API",
             )
+          }
           input.push({ type: "compaction", id: part.id, encrypted_content: part.encrypted })
           continue
         }
@@ -661,8 +664,9 @@ const lowerMessages = Effect.fnUntraced(function* (
           const existing = reasoning.id === undefined ? undefined : reasoningItems[reasoning.id]
           if (existing) {
             existing.summary.push(...reasoning.summary)
-            if (typeof reasoning.encrypted_content === "string")
+            if (typeof reasoning.encrypted_content === "string") {
               existing.encrypted_content = reasoning.encrypted_content
+            }
             continue
           }
           if (reasoning.id !== undefined) reasoningItems[reasoning.id] = reasoning
@@ -678,12 +682,11 @@ const lowerMessages = Effect.fnUntraced(function* (
         if (part.type === "tool-result" && part.providerExecuted === true) {
           flushText()
           const id = itemID(part.providerMetadata, providerMetadataKey)
-          const hosted =
-            part.result.type !== "json"
-              ? undefined
-              : Schema.is(HostedToolItem)(part.result.value)
-                ? part.result.value
-                : adapter.restoreHostedToolItem?.(part.result.value)
+          const hosted = part.result.type !== "json"
+            ? undefined
+            : Schema.is(HostedToolItem)(part.result.value)
+            ? part.result.value
+            : adapter.restoreHostedToolItem?.(part.result.value)
           if (id !== undefined && hosted?.id === id) {
             if (!hostedToolItems.has(id)) {
               input.push(hosted)
@@ -691,10 +694,9 @@ const lowerMessages = Effect.fnUntraced(function* (
             }
             continue
           }
-          const content: ReadonlyArray<Content> =
-            part.result.type === "content"
-              ? part.result.value
-              : [{ type: "text", text: ProviderShared.toolResultText(part) }]
+          const content: ReadonlyArray<Content> = part.result.type === "content"
+            ? part.result.value
+            : [{ type: "text", text: ProviderShared.toolResultText(part) }]
           input.push({
             type: "message",
             role: "user",
@@ -725,8 +727,9 @@ const lowerMessages = Effect.fnUntraced(function* (
     }
 
     for (const part of message.content) {
-      if (!ProviderShared.supportsContent(part, ["tool-result"]))
+      if (!ProviderShared.supportsContent(part, ["tool-result"])) {
         return yield* ProviderShared.unsupportedContent(adapter.name, "tool", ["tool-result"])
+      }
       input.push({
         type: "function_call_output",
         call_id: part.id,
@@ -738,7 +741,7 @@ const lowerMessages = Effect.fnUntraced(function* (
   return input
 })
 
-export const lowerConversation = Effect.fnUntraced(function* (
+export const lowerConversation = Effect.fnUntraced(function*(
   request: LLMRequest,
   adapter: ProviderAdapter,
 ) {
@@ -798,7 +801,7 @@ export const allowedToolChoice = (request: LLMRequest, options = OpenResponsesOp
   }
 }
 
-export const fromRequestWithAdapter = Effect.fn("OpenResponses.fromRequestWithAdapter")(function* (
+export const fromRequestWithAdapter = Effect.fn("OpenResponses.fromRequestWithAdapter")(function*(
   request: LLMRequest,
   adapter: ProviderAdapter,
 ) {
@@ -808,9 +811,8 @@ export const fromRequestWithAdapter = Effect.fn("OpenResponses.fromRequestWithAd
     ...(yield* lowerConversation(projected.request, adapter)),
     ...lowerGeneration(request, options),
     tools: projected.tools.length === 0 ? undefined : yield* lowerTools(projected.tools, adapter),
-    tool_choice:
-      allowedToolChoice(request, options) ??
-      (request.toolChoice ? yield* lowerToolChoice(adapter.name, request.toolChoice) : undefined),
+    tool_choice: allowedToolChoice(request, options)
+      ?? (request.toolChoice ? yield* lowerToolChoice(adapter.name, request.toolChoice) : undefined),
   }
 })
 
@@ -921,10 +923,9 @@ const resolveItem = (
   index: number | undefined,
 ): OutputItem => ({
   ...item,
-  id:
-    item.id ??
-    (index === undefined ? undefined : state.outputItems[index]) ??
-    `${ITEM_ID_PREFIX[item.type] ?? "item"}_${randomUUID().replaceAll("-", "")}`,
+  id: item.id
+    ?? (index === undefined ? undefined : state.outputItems[index])
+    ?? `${ITEM_ID_PREFIX[item.type] ?? "item"}_${randomUUID().replaceAll("-", "")}`,
 })
 
 // Registered output slots are authoritative for `item_id` routing, and items
@@ -963,7 +964,7 @@ const startReasoningSummaryPart = (state: ParserState, itemID: string, index: nu
           summaryParts: {
             ...Object.fromEntries(
               Object.entries(item.summaryParts).map((entry) =>
-                entry[1] === "concluded" ? entry : [entry[0], "concluded" as const],
+                entry[1] === "concluded" ? entry : [entry[0], "concluded" as const]
               ),
             ),
             [index]: "active",
@@ -1127,7 +1128,7 @@ const onReasoningSummaryPartDone = (state: ParserState, event: Event): StepResul
   ]
 }
 
-const onFunctionCallArgumentsDelta = Effect.fnUntraced(function* (
+const onFunctionCallArgumentsDelta = Effect.fnUntraced(function*(
   state: ParserState,
   event: Event,
 ) {
@@ -1135,13 +1136,15 @@ const onFunctionCallArgumentsDelta = Effect.fnUntraced(function* (
   const tool = state.tools[event.item_id]
   if (!tool) return [state, NO_EVENTS] satisfies StepResult
   const final = event.type === "response.function_call_arguments.done" ? event.arguments : undefined
-  if (event.type === "response.function_call_arguments.done" && final === undefined)
+  if (event.type === "response.function_call_arguments.done" && final === undefined) {
     return [state, NO_EVENTS] satisfies StepResult
-  if (final !== undefined && !final.startsWith(tool.input))
+  }
+  if (final !== undefined && !final.startsWith(tool.input)) {
     return [
       { ...state, tools: ToolStream.start(state.tools, event.item_id, { ...tool, input: final }) },
       NO_EVENTS,
     ] satisfies StepResult
+  }
   const delta = final === undefined ? event.delta : final.slice(tool.input.length)
   if (!delta) return [state, NO_EVENTS] satisfies StepResult
   const result = ToolStream.appendExisting(
@@ -1158,15 +1161,16 @@ const onFunctionCallArgumentsDelta = Effect.fnUntraced(function* (
   return [{ ...state, lifecycle, tools: result.tools }, events] satisfies StepResult
 })
 
-const onOutputItemDone = Effect.fnUntraced(function* (
+const onOutputItemDone = Effect.fnUntraced(function*(
   state: ParserState,
   item: NormalizedEvent["item"],
 ) {
   if (!item) return [state, NO_EVENTS] satisfies StepResult
 
   if (item.type === "compaction") {
-    if (typeof item.encrypted_content !== "string")
+    if (typeof item.encrypted_content !== "string") {
       return yield* ProviderShared.eventError(state.id, "Compaction output is missing its encrypted content")
+    }
     if (state.completedCompactions.has(item.id)) return [state, NO_EVENTS] satisfies StepResult
     const events: LLMEvent[] = []
     const lifecycle = Lifecycle.stepStart(state.lifecycle, events)
@@ -1215,39 +1219,36 @@ const onOutputItemDone = Effect.fnUntraced(function* (
     const tools = registered
       ? state.tools
       : ToolStream.start(state.tools, item.id, {
+        id: item.call_id,
+        name: item.name,
+        namespace: item.namespace,
+        providerMetadata: metadata,
+      })
+    const result = item.arguments === undefined
+      ? yield* ToolStream.finish(state.id, tools, item.id)
+      : yield* ToolStream.finishWithInput(state.id, tools, item.id, item.arguments)
+    const events: LLMEvent[] = []
+    const finished = result.events ?? []
+    // A done-only call never streamed a start event, so open its lifecycle here.
+    const resultEvents = registered || finished.length === 0
+      ? finished
+      : [
+        LLMEvent.toolInputStart({
           id: item.call_id,
           name: item.name,
           namespace: item.namespace,
           providerMetadata: metadata,
-        })
-    const result =
-      item.arguments === undefined
-        ? yield* ToolStream.finish(state.id, tools, item.id)
-        : yield* ToolStream.finishWithInput(state.id, tools, item.id, item.arguments)
-    const events: LLMEvent[] = []
-    const finished = result.events ?? []
-    // A done-only call never streamed a start event, so open its lifecycle here.
-    const resultEvents =
-      registered || finished.length === 0
-        ? finished
-        : [
-            LLMEvent.toolInputStart({
-              id: item.call_id,
-              name: item.name,
-              namespace: item.namespace,
-              providerMetadata: metadata,
-            }),
-            ...finished,
-          ]
+        }),
+        ...finished,
+      ]
     const lifecycle = resultEvents.length ? Lifecycle.stepStart(state.lifecycle, events) : state.lifecycle
     events.push(...resultEvents)
     return [
       {
         ...state,
         lifecycle,
-        hasFunctionCall:
-          resultEvents.some((event) => LLMEvent.is.toolCall(event) || LLMEvent.is.toolInputError(event)) ||
-          state.hasFunctionCall,
+        hasFunctionCall: resultEvents.some((event) => LLMEvent.is.toolCall(event) || LLMEvent.is.toolInputError(event))
+          || state.hasFunctionCall,
         tools: result.tools,
       },
       events,
@@ -1294,20 +1295,21 @@ const onOutputItemDone = Effect.fnUntraced(function* (
   return [state, NO_EVENTS] satisfies StepResult
 })
 
-const onResponseFinish = Effect.fnUntraced(function* (state: ParserState, event: Event) {
+const onResponseFinish = Effect.fnUntraced(function*(state: ParserState, event: Event) {
   let current = state
   const events: LLMEvent[] = []
   if (event.type === "response.completed") {
     // An output item's array position is its output index.
     for (const item of (event.response?.output ?? []).map((item, index) => resolveItem(state, item, index))) {
       // Terminal recovery cannot insert a checkpoint before already-emitted content.
-      if (item.type === "compaction" && state.lifecycle.stepStarted && !state.completedCompactions.has(item.id))
+      if (item.type === "compaction" && state.lifecycle.stepStarted && !state.completedCompactions.has(item.id)) {
         return yield* ProviderShared.eventError(
           state.id,
           "Cannot recover a compaction checkpoint after output has been emitted",
         )
-      const recoverable =
-        item.type === "compaction" || (item.type === "function_call" && current.tools[item.id] !== undefined)
+      }
+      const recoverable = item.type === "compaction"
+        || (item.type === "function_call" && current.tools[item.id] !== undefined)
       if (!recoverable) continue
       const [next, emitted] = yield* onOutputItemDone(current, item)
       current = next
@@ -1318,9 +1320,8 @@ const onResponseFinish = Effect.fnUntraced(function* (state: ParserState, event:
     current = {
       ...current,
       tools: pending.tools,
-      hasFunctionCall:
-        current.hasFunctionCall ||
-        pending.events.some((event) => LLMEvent.is.toolCall(event) || LLMEvent.is.toolInputError(event)),
+      hasFunctionCall: current.hasFunctionCall
+        || pending.events.some((event) => LLMEvent.is.toolCall(event) || LLMEvent.is.toolInputError(event)),
     }
     events.push(...pending.events)
   }
@@ -1330,13 +1331,12 @@ const onResponseFinish = Effect.fnUntraced(function* (state: ParserState, event:
       raw: event.response?.incomplete_details?.reason,
     },
     usage: mapUsage(event.response?.usage, current.providerMetadataKey),
-    providerMetadata:
-      event.response?.id || event.response?.service_tier
-        ? providerMetadata(current, {
-            responseId: event.response.id,
-            serviceTier: event.response.service_tier,
-          })
-        : undefined,
+    providerMetadata: event.response?.id || event.response?.service_tier
+      ? providerMetadata(current, {
+        responseId: event.response.id,
+        serviceTier: event.response.service_tier,
+      })
+      : undefined,
   })
   return [{ ...current, lifecycle }, events] satisfies StepResult
 })
@@ -1357,20 +1357,18 @@ export const providerFailure = (event: Event, fallback: string, body = ProviderS
   const detail = errorDetail(event)
   const summary = detail.message && detail.code ? `${detail.code}: ${detail.message}` : (detail.message ?? detail.code)
   const message = summary ?? (body === "{}" ? fallback : body)
-  const status =
-    typeof event.status === "number"
-      ? event.status
-      : typeof event.status_code === "number"
-        ? event.status_code
-        : undefined
-  const reason =
-    event.type === "error" &&
-    event.error === undefined &&
-    event.response === undefined &&
-    summary === undefined &&
-    status === undefined
-      ? new ProviderInternalError({ message, body })
-      : classifyProviderFailure({ message, status, rawBody: body })
+  const status = typeof event.status === "number"
+    ? event.status
+    : typeof event.status_code === "number"
+    ? event.status_code
+    : undefined
+  const reason = event.type === "error"
+      && event.error === undefined
+      && event.response === undefined
+      && summary === undefined
+      && status === undefined
+    ? new ProviderInternalError({ message, body })
+    : classifyProviderFailure({ message, status, rawBody: body })
   return new AIError({ reason })
 }
 
@@ -1387,8 +1385,9 @@ export const step = (state: ParserState, event: NormalizedEvent) => {
   }
   if (event.type === "response.refusal.delta" || event.type === "response.refusal.done") {
     const value = event.type === "response.refusal.delta" ? event.delta : event.refusal
-    if (event.item_id === undefined || typeof value !== "string")
+    if (event.item_id === undefined || typeof value !== "string") {
       return ProviderShared.eventError(state.id, `${event.type} is malformed`)
+    }
     return Effect.succeed(
       event.type === "response.refusal.delta"
         ? onOutputTextDelta(state, event, event.item_id)
@@ -1400,28 +1399,31 @@ export const step = (state: ParserState, event: NormalizedEvent) => {
     return Effect.succeed(onReasoningDelta(state, event, event.item_id))
   }
   if (
-    event.type === "response.reasoning.done" ||
-    event.type === "response.reasoning_summary_text.done" ||
-    event.type === "response.reasoning_text.done"
+    event.type === "response.reasoning.done"
+    || event.type === "response.reasoning_summary_text.done"
+    || event.type === "response.reasoning_text.done"
   ) {
     if (event.item_id === undefined) return ProviderShared.eventError(state.id, `${event.type} is missing item_id`)
     return Effect.succeed(onReasoningDone(state, event, event.item_id))
   }
-  if (event.type === "response.reasoning_summary_part.added")
+  if (event.type === "response.reasoning_summary_part.added") {
     return event.item_id !== undefined
       ? Effect.succeed(onReasoningSummaryPartAdded(state, event))
       : ProviderShared.eventError(state.id, `${event.type} is missing item_id`)
-  if (event.type === "response.reasoning_summary_part.done")
+  }
+  if (event.type === "response.reasoning_summary_part.done") {
     return event.item_id !== undefined
       ? Effect.succeed(onReasoningSummaryPartDone(state, event))
       : ProviderShared.eventError(state.id, `${event.type} is missing item_id`)
+  }
   if (event.type === "response.output_item.added") {
     if (
-      event.item?.type === "reasoning" &&
-      state.reasoningItems[event.item.id] === undefined &&
-      state.lifecycle.reasoning.size > 0
-    )
+      event.item?.type === "reasoning"
+      && state.reasoningItems[event.item.id] === undefined
+      && state.lifecycle.reasoning.size > 0
+    ) {
       return ProviderShared.eventError(state.id, `${event.type} started reasoning before the previous item ended`)
+    }
     return Effect.succeed(
       onOutputItemAdded(
         event.output_index !== undefined && event.item
@@ -1431,10 +1433,13 @@ export const step = (state: ParserState, event: NormalizedEvent) => {
       ),
     )
   }
-  if (event.type === "response.function_call_arguments.delta" || event.type === "response.function_call_arguments.done")
+  if (
+    event.type === "response.function_call_arguments.delta" || event.type === "response.function_call_arguments.done"
+  ) {
     return event.item_id !== undefined
       ? onFunctionCallArgumentsDelta(state, event)
       : ProviderShared.eventError(state.id, `${event.type} is missing item_id`)
+  }
   if (event.type === "response.output_item.done") return onOutputItemDone(state, event.item)
   if (event.type === "response.completed" || event.type === "response.incomplete") return onResponseFinish(state, event)
   if (event.type === "response.failed") return providerFailure(event, `${state.name} response failed`)

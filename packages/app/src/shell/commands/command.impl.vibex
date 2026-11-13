@@ -350,9 +350,8 @@ function displayKeybindParts(kb: Keybind, t?: (key: KeyLabel) => string) {
   const key = kb.key.toLowerCase()
   const label = named.get(key)
 
-  const displayKey =
-    keys.get(key) ??
-    (label ? keyText(label, t) : key.length === 1 ? key.toUpperCase() : key.charAt(0).toUpperCase() + key.slice(1))
+  const displayKey = keys.get(key)
+    ?? (label ? keyText(label, t) : key.length === 1 ? key.toUpperCase() : key.charAt(0).toUpperCase() + key.slice(1))
 
   parts.push(displayKey)
 
@@ -453,7 +452,7 @@ export const { use: useCommand, provider: CommandProvider } = createSimpleContex
               slash: opt.slash,
             }),
           )
-        }),
+        })
       )
     })
 
@@ -579,8 +578,8 @@ export const { use: useCommand, provider: CommandProvider } = createSimpleContex
       const base = actionId(id)
 
       return (
-        options().find((x) => actionId(x.id) === base)?.keybind ??
-        bind(base, catalog[base]?.keybind, catalog[base]?.follows)
+        options().find((x) => actionId(x.id) === base)?.keybind
+          ?? bind(base, catalog[base]?.keybind, catalog[base]?.follows)
       )
     }
 

@@ -35,7 +35,7 @@ const decodeLocation = Schema.decodeUnknownSync(Schema.fromJsonString(Location.R
  * Snapshot trees live in the repository of the Location that captured them, so a
  * range spanning a location switch is rejected rather than diffed wrongly.
  */
-export const turn = Effect.fn("SessionDiff.turn")(function* (
+export const turn = Effect.fn("SessionDiff.turn")(function*(
   db: Database.Interface["db"],
   locations: Context.Service.Shape<typeof LocationServiceMap.Service>,
   input: {
@@ -68,7 +68,7 @@ export const turn = Effect.fn("SessionDiff.turn")(function* (
     }
   const users = yield* boundaries("user")
   const markers = yield* boundaries("idle")
-  const resolve = Effect.fn(function* (field: "from" | "to", id: SessionMessage.ID) {
+  const resolve = Effect.fn(function*(field: "from" | "to", id: SessionMessage.ID) {
     const row = yield* db
       .select({ id: SessionMessageTable.id, type: SessionMessageTable.type, seq: SessionMessageTable.seq })
       .from(SessionMessageTable)
@@ -76,24 +76,26 @@ export const turn = Effect.fn("SessionDiff.turn")(function* (
       .get()
       .pipe(Effect.orDie)
     if (!row) return yield* new MessageNotFoundError({ sessionID, messageID: id })
-    if (row.type !== "user")
+    if (row.type !== "user") {
       return yield* new TurnRangeError({ sessionID, field, message: `Message ${id} is not a user message` })
+    }
     return row
   })
   const anchor = input.from
     ? yield* resolve("from", input.from)
     : yield* db
-        .select({ id: SessionMessageTable.id, seq: SessionMessageTable.seq })
-        .from(SessionMessageTable)
-        .where(and(eq(SessionMessageTable.session_id, sessionID), eq(SessionMessageTable.type, "user")))
-        .orderBy(desc(SessionMessageTable.seq))
-        .limit(1)
-        .get()
-        .pipe(Effect.orDie)
+      .select({ id: SessionMessageTable.id, seq: SessionMessageTable.seq })
+      .from(SessionMessageTable)
+      .where(and(eq(SessionMessageTable.session_id, sessionID), eq(SessionMessageTable.type, "user")))
+      .orderBy(desc(SessionMessageTable.seq))
+      .limit(1)
+      .get()
+      .pipe(Effect.orDie)
   if (!anchor) return []
   const last = input.to ? yield* resolve("to", input.to) : anchor
-  if (last.seq < anchor.seq)
+  if (last.seq < anchor.seq) {
     return yield* new TurnRangeError({ sessionID, field: "to", message: `Message ${last.id} precedes ${anchor.id}` })
+  }
   // Without any marker, history predates idle markers and a prompt's turn ends at the next prompt.
   const legacy = markers.length === 0
   // The turn opens with the first prompt after the previous idle marker; the anchor itself is the latest candidate.
@@ -134,13 +136,14 @@ export const turn = Effect.fn("SessionDiff.turn")(function* (
     .orderBy(asc(SessionMessageTable.seq))
     .all()
     .pipe(Effect.orDie)
-  if (switches.some((row) => row.seq > first.seq && row.seq < final.seq))
+  if (switches.some((row) => row.seq > first.seq && row.seq < final.seq)) {
     return yield* new TurnRangeError({ sessionID, field: "to", message: "Turn range spans a location change" })
+  }
   const before = switches.findLast((row) => row.seq < first.seq)?.location
   const after = switches.find((row) => row.seq > first.seq)?.previous
   const location = before ? decodeLocation(before) : after ? decodeLocation(after) : input.session.location
   const recorded = steps.findLast((step) => step.end)?.end
-  return yield* Effect.gen(function* () {
+  return yield* Effect.gen(function*() {
     const snapshot = yield* Snapshot.Service
     const running = input.active && final.completed === null
     const to = running ? ((yield* snapshot.capture()) ?? recorded) : recorded

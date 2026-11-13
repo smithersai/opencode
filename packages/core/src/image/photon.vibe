@@ -88,10 +88,10 @@ export function makeWith(spawn: Effect.Effect<Worker, WorkerUnavailableError>, i
               if (Exit.isFailure(exit)) return discard(worker)
               // Unref'd so an idle worker never holds the process open.
               idle = startIdleTimer(() => discard(worker), idleMillis)
-            }),
+            })
           ),
         )
-      },
+      }
     ).pipe(permit.withPermits(1))
   const inProcess = (content: PhotonNormalize.Content, limits: Readonly<Limits>) =>
     Effect.tryPromise({
@@ -110,14 +110,14 @@ export function makeWith(spawn: Effect.Effect<Worker, WorkerUnavailableError>, i
     if (!PhotonNormalize.available) throw new ResizerUnavailableError()
     const result = useWorker
       ? try inWorker(content, limits).pipe(
-          Effect.catchTag("Image.Photon.WorkerUnavailableError", (error) => {
-            if (!useWorker) return inProcess(content, limits)
-            useWorker = false
-            return Effect.logWarning("photon worker unavailable, resizing images on the main thread", {
-              cause: error.cause,
-            }).pipe(Effect.andThen(inProcess(content, limits)))
-          }),
-        )
+        Effect.catchTag("Image.Photon.WorkerUnavailableError", (error) => {
+          if (!useWorker) return inProcess(content, limits)
+          useWorker = false
+          return Effect.logWarning("photon worker unavailable, resizing images on the main thread", {
+            cause: error.cause,
+          }).pipe(Effect.andThen(inProcess(content, limits)))
+        }),
+      )
       : try inProcess(content, limits)
     switch (result._tag) {
       case "Unchanged":

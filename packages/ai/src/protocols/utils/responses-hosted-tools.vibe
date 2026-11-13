@@ -35,9 +35,13 @@ export const onDone: (
 ) => OpenResponses.StepResult!AIError = effect (state, item, tools) => {
   const tool = tools[item.type]
   if (!tool) return [state, []] satisfies OpenResponses.StepResult
-  const providerMetadata = try Effect.orDie(Effect.try({ try: () => OpenResponses.providerMetadata(state, { itemId: item.id }), catch: (e) => e }))
+  const providerMetadata = try Effect.orDie(
+    Effect.try({ try: () => OpenResponses.providerMetadata(state, { itemId: item.id }), catch: (e) => e }),
+  )
   const events: LLMEvent[] = []
-  const lifecycle = try Effect.orDie(Effect.try({ try: () => Lifecycle.stepStart(state.lifecycle, events), catch: (e) => e }))
+  const lifecycle = try Effect.orDie(
+    Effect.try({ try: () => Lifecycle.stepStart(state.lifecycle, events), catch: (e) => e }),
+  )
   const result: Parameters<typeof LLMEvent.toolResult>[0] = {
     id: item.id,
     name: tool.name,
@@ -50,13 +54,16 @@ export const onDone: (
     providerMetadata,
   }
   events.push(
-    try Effect.orDie(Effect.try({ try: () => LLMEvent.toolCall({
-      id: item.id,
-      name: tool.name,
-      input: tool.input(item),
-      providerExecuted: true,
-      providerMetadata,
-    }), catch: (e) => e })),
+    try Effect.orDie(Effect.try({
+      try: () => LLMEvent.toolCall({
+        id: item.id,
+        name: tool.name,
+        input: tool.input(item),
+        providerExecuted: true,
+        providerMetadata,
+      }),
+      catch: (e) => e,
+    })),
     try Effect.orDie(Effect.try({ try: () => LLMEvent.toolResult(result), catch: (e) => e })),
   )
   return [{ ...state, lifecycle }, events] satisfies OpenResponses.StepResult

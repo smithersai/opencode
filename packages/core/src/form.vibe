@@ -103,7 +103,7 @@ interface Entry {
 
 export const layer = Layer.effect(
   Service,
-  Effect.gen(function* () {
+  Effect.gen(function*() {
     const bus = yield* Bus.Service
     let closed = false
     const forms = yield* Cache.makeWith<ID, Entry>(
@@ -118,12 +118,12 @@ export const layer = Layer.effect(
     const requireEntry = Effect.fn("Form.requireEntry")((id: ID) =>
       Cache.getSuccess(forms, id).pipe(
         Effect.flatMap((entry) => Effect.fromOption(entry, () => new NotFoundError({ id }))),
-      ),
+      )
     )
 
     const create = Effect.fn("Form.create")((input: CreateInput) =>
       Effect.uninterruptible(
-        Effect.gen(function* () {
+        Effect.gen(function*() {
           const id = input.id ?? ID.create()
           const existing = yield* Cache.getSuccess(forms, id)
           if (Option.isSome(existing)) return yield* new AlreadyExistsError({ id })
@@ -146,26 +146,26 @@ export const layer = Layer.effect(
           if (closed) yield* cancel(id).pipe(Effect.orDie)
           return form
         }),
-      ),
+      )
     )
 
     const ask = Effect.fn("Form.ask")((input: CreateInput) =>
       Effect.uninterruptibleMask((restore) =>
-        Effect.gen(function* () {
+        Effect.gen(function*() {
           const form = yield* create(input)
           const entry = yield* requireEntry(form.id).pipe(Effect.orDie)
           return yield* restore(Deferred.await(entry.deferred)).pipe(
             Effect.onInterrupt(() => Effect.ignore(cancel(form.id))),
           )
-        }),
-      ),
+        })
+      )
     )
 
-    const get = Effect.fn("Form.get")(function* (id: ID) {
+    const get = Effect.fn("Form.get")(function*(id: ID) {
       return (yield* requireEntry(id)).form
     })
 
-    const list = Effect.fn("Form.list")(function* (input?: ListInput) {
+    const list = Effect.fn("Form.list")(function*(input?: ListInput) {
       const entries = yield* Cache.values(forms)
       return Array.from(entries)
         .filter((entry) => entry.state.status === "pending")
@@ -173,13 +173,13 @@ export const layer = Layer.effect(
         .map((entry) => entry.form)
     })
 
-    const state = Effect.fn("Form.state")(function* (id: ID) {
+    const state = Effect.fn("Form.state")(function*(id: ID) {
       return (yield* requireEntry(id)).state
     })
 
     const reply = Effect.fn("Form.reply")((input: ReplyInput) =>
       Effect.uninterruptible(
-        Effect.gen(function* () {
+        Effect.gen(function*() {
           const entry = yield* requireEntry(input.id)
           if (entry.state.status !== "pending") return yield* new AlreadySettledError({ id: input.id })
           const invalid = validateAnswer(entry.form.fields, input.answer)
@@ -193,12 +193,12 @@ export const layer = Layer.effect(
           yield* Cache.set(forms, input.id, { ...entry, state: next })
           yield* Deferred.succeed(entry.deferred, next)
         }),
-      ),
+      )
     )
 
     const cancel = Effect.fn("Form.cancel")((id: ID, options?: CancelOptions) =>
       Effect.uninterruptible(
-        Effect.gen(function* () {
+        Effect.gen(function*() {
           const entry = yield* requireEntry(id)
           if (entry.state.status !== "pending") return yield* new AlreadySettledError({ id })
           const next: TerminalState = {
@@ -209,7 +209,7 @@ export const layer = Layer.effect(
           yield* Cache.set(forms, id, { ...entry, state: next })
           yield* Deferred.succeed(entry.deferred, next)
         }),
-      ),
+      )
     )
 
     const close = Effect.sync(() => {
@@ -221,7 +221,7 @@ export const layer = Layer.effect(
           Array.from(entries).filter((entry) => entry.state.status === "pending"),
           (entry) => cancel(entry.form.id).pipe(Effect.ignore),
           { discard: true },
-        ),
+        )
       ),
     )
     yield* Effect.addFinalizer(() => close)
@@ -321,8 +321,9 @@ function validateField(field: InputField, value: Form.Value): string | undefined
         return `Form field has invalid pattern: ${field.key}`
       }
     }
-    if (field.format === "email" && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value))
+    if (field.format === "email" && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
       return `Expected email for form field: ${field.key}`
+    }
     if (field.format === "uri" && !URL.canParse(value)) return `Expected URI for form field: ${field.key}`
     if (field.format === "date" && !isDate(value)) return `Expected date for form field: ${field.key}`
     if (field.format === "date-time" && !isDateTime(value)) return `Expected date-time for form field: ${field.key}`
@@ -345,10 +346,12 @@ function validateField(field: InputField, value: Form.Value): string | undefined
   if (field.type === "multiselect") {
     if (!isStringArray(value)) return `Expected string array for form field: ${field.key}`
     if (field.required && value.length === 0) return `Missing required form field: ${field.key}`
-    if (field.minItems !== undefined && value.length < field.minItems)
+    if (field.minItems !== undefined && value.length < field.minItems) {
       return `Too few selections for form field: ${field.key}`
-    if (field.maxItems !== undefined && value.length > field.maxItems)
+    }
+    if (field.maxItems !== undefined && value.length > field.maxItems) {
       return `Too many selections for form field: ${field.key}`
+    }
     if (!field.custom && value.some((item) => !field.options.some((option) => option.value === item))) {
       return `Invalid option for form field: ${field.key}`
     }

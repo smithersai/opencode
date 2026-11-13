@@ -36,7 +36,7 @@ export function useProviders(directory: Accessor<string | undefined>) {
       if (!ref) await data.location.syncInfo()
       const resolved = ref ?? data.location.default()
       await syncWhileBooting(() =>
-        Promise.all([data.location.provider.sync(resolved), data.location.model.sync(resolved)]),
+        Promise.all([data.location.provider.sync(resolved), data.location.model.sync(resolved)])
       )
     })().catch(() => undefined)
   })
@@ -108,8 +108,8 @@ export function useProviders(directory: Accessor<string | undefined>) {
         ...Iterable.filter(
           providers().all,
           ([id]) =>
-            connected.has(id) &&
-            (id !== "opencode" || Object.values(providers().all.get(id)?.models ?? {}).some((m) => m.cost?.input)),
+            connected.has(id)
+            && (id !== "opencode" || Object.values(providers().all.get(id)?.models ?? {}).some((m) => m.cost?.input)),
         ),
       ]
 

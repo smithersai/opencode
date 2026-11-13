@@ -19,7 +19,7 @@ interface BoundaryInput {
   readonly messageID: SessionMessage.ID
 }
 
-export const stage = Effect.fn("SessionRevert.stage")(function* (input: {
+export const stage = Effect.fn("SessionRevert.stage")(function*(input: {
   session: SessionSchema.Info
   messageID: SessionMessage.ID
   files?: boolean
@@ -28,7 +28,7 @@ export const stage = Effect.fn("SessionRevert.stage")(function* (input: {
   const database = yield* Database.Service
   const bus = yield* Bus.Service
 
-  return yield* Effect.gen(function* () {
+  return yield* Effect.gen(function*() {
     const snapshot = yield* Snapshot.Service
     const original = input.session.revert?.snapshot ?? (yield* snapshot.capture())
     const next = yield* plan(database.db, { sessionID: input.session.id, messageID: input.messageID })
@@ -36,7 +36,7 @@ export const stage = Effect.fn("SessionRevert.stage")(function* (input: {
     if (original) {
       for (const file of input.session.revert?.files ?? []) restore.set(RelativePath.make(file.file), original)
     }
-    if (input.files !== false) for (const [file, tree] of next) restore.set(file, tree)
+    if (input.files !== false) { for (const [file, tree] of next) restore.set(file, tree) }
     if (restore.size) yield* snapshot.restore({ files: restore })
     const paths = input.files === false ? [] : Array.from(next.keys())
     const files = original
@@ -55,24 +55,25 @@ export const stage = Effect.fn("SessionRevert.stage")(function* (input: {
   }).pipe(instances.provide(input.session))
 })
 
-export const clear = Effect.fn("SessionRevert.clear")(function* (session: SessionSchema.Info) {
+export const clear = Effect.fn("SessionRevert.clear")(function*(session: SessionSchema.Info) {
   const instances = yield* Instance.Service
   const bus = yield* Bus.Service
-  yield* Effect.gen(function* () {
+  yield* Effect.gen(function*() {
     const snapshot = yield* Snapshot.Service
     if (!session.revert) return
     const original = session.revert.snapshot
-    if (original)
+    if (original) {
       yield* snapshot.restore({
         files: new Map((session.revert.files ?? []).map((file) => [RelativePath.make(file.file), original])),
       })
+    }
     yield* bus.publish(SessionEvent.RevertEvent.Cleared, {
       sessionID: session.id,
     })
   }).pipe(instances.provide(session))
 })
 
-export const commit = Effect.fn("SessionRevert.commit")(function* (bus: Bus.Interface, session: SessionSchema.Info) {
+export const commit = Effect.fn("SessionRevert.commit")(function*(bus: Bus.Interface, session: SessionSchema.Info) {
   if (!session.revert) return
   yield* bus.publish(SessionEvent.RevertEvent.Committed, {
     sessionID: session.id,
@@ -80,7 +81,7 @@ export const commit = Effect.fn("SessionRevert.commit")(function* (bus: Bus.Inte
   })
 })
 
-const plan = Effect.fn("SessionRevert.plan")(function* (db: Database.Interface["db"], input: BoundaryInput) {
+const plan = Effect.fn("SessionRevert.plan")(function*(db: Database.Interface["db"], input: BoundaryInput) {
   const boundary = yield* db
     .select({ seq: SessionMessageTable.seq })
     .from(SessionMessageTable)
@@ -105,8 +106,9 @@ const plan = Effect.fn("SessionRevert.plan")(function* (db: Database.Interface["
   for (const row of rows) {
     const message = SessionHistory.decodeMessageRowSync(row)
     if (message.type !== "assistant" || !message.snapshot?.start) continue
-    for (const file of message.snapshot.files ?? [])
+    for (const file of message.snapshot.files ?? []) {
       if (!files.has(file)) files.set(file, message.snapshot.start)
+    }
   }
   return files
 })

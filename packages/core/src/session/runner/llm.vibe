@@ -39,7 +39,7 @@ const CONTINUE_AFTER_OUTPUT_LIMIT =
 
 const layer = Layer.effect(
   Service,
-  Effect.gen(function* () {
+  Effect.gen(function*() {
     const bus = yield* Bus.Service
     const lifecycle = yield* LocationLifecycle.Service
     const store = yield* SessionStore.Service
@@ -53,7 +53,7 @@ const layer = Layer.effect(
     // Title generation starts once input is visible and must not delay model execution.
     const titles = yield* FiberMap.make<SessionSchema.ID, void, never>()
 
-    const drain = Effect.fn("SessionRunner.drain")(function* (input: Parameters<Interface["drain"]>[0]) {
+    const drain = Effect.fn("SessionRunner.drain")(function*(input: Parameters<Interface["drain"]>[0]) {
       const sessionID = input.sessionID
       let force = input.force
       let continuing = input.continuation !== undefined
@@ -72,7 +72,7 @@ const layer = Layer.effect(
 
       const advanceToStep = Effect.fn("SessionRunner.advanceToStep")(() =>
         Effect.uninterruptibleMask((restore) =>
-          Effect.gen(function* () {
+          Effect.gen(function*() {
             while (true) {
               if (lifecycle.isClosed()) {
                 yield* restore(modelTransport.close(sessionID))
@@ -81,20 +81,21 @@ const layer = Layer.effect(
               // Location entry and idle boundaries allow queued controls, not necessarily queued prompts.
               const pending = yield* SessionInbox.serialized(
                 sessionID,
-                Effect.gen(function* () {
+                Effect.gen(function*() {
                   const next = yield* SessionInbox.nextPromotable(
                     db,
                     sessionID,
                     entering || !continuing ? "input" : "steer",
                   )
-                  if (next?.type === "compaction")
+                  if (next?.type === "compaction") {
                     yield* bus.publishAll([
                       [SessionEvent.InboxDelivered, { sessionID, inboxID: next.id }],
                       [SessionEvent.Compaction.Started, { sessionID, reason: "manual", inputID: next.id }],
                     ])
-                  if (next?.type === "move")
+                  }
+                  if (next?.type === "move") {
                     yield* restore(
-                      Effect.gen(function* () {
+                      Effect.gen(function*() {
                         yield* modelTransport.close(sessionID)
                         yield* bus.publishAll([
                           [SessionEvent.InboxDelivered, { sessionID, inboxID: next.id }],
@@ -102,6 +103,7 @@ const layer = Layer.effect(
                         ])
                       }),
                     )
+                  }
                   return next
                 }),
               )
@@ -109,11 +111,12 @@ const layer = Layer.effect(
                 entering = true
                 step = 1
               }
-              if (pending?.type === "move")
+              if (pending?.type === "move") {
                 return DrainResult.Moved({ continuation: continuing ? { step } : undefined })
+              }
               if (pending?.type === "compaction") {
                 const compacted = yield* restore(
-                  Effect.gen(function* () {
+                  Effect.gen(function*() {
                     yield* plugins.awaitActivation
                     const selected = yield* context.select(sessionID)
                     const model = yield* context.resolveModel(selected.session)
@@ -144,7 +147,7 @@ const layer = Layer.effect(
                           inputID: pending.id,
                           error: sessionError,
                         })
-                      },
+                      }
                     ),
                   ),
                 ).pipe(Effect.exit)
@@ -162,10 +165,11 @@ const layer = Layer.effect(
                 force = false
                 continue
               }
-              if (!force && !continuing && (!pending || (pending.delivery === "queue" && promotable === "steer")))
+              if (!force && !continuing && (!pending || (pending.delivery === "queue" && promotable === "steer"))) {
                 return DrainResult.Complete()
+              }
               const ready = yield* restore(
-                Effect.gen(function* () {
+                Effect.gen(function*() {
                   const selected = yield* prepareContext(sessionID)
                   const promoted = yield* SessionInbox.promote(
                     db,
@@ -175,18 +179,19 @@ const layer = Layer.effect(
                   )
                   // A control admitted during context preparation owns this boundary.
                   if (promoted === undefined) return undefined
-                  if (promoted > 0 && !selected.session.parentID && SessionTitle.isUntitled(selected.session))
+                  if (promoted > 0 && !selected.session.parentID && SessionTitle.isUntitled(selected.session)) {
                     yield* FiberMap.run(titles, sessionID, title.generate(sessionID), {
                       onlyIfMissing: true,
                     })
+                  }
                   if (promoted > 0) step = 1
                   return { _tag: "Ready" as const, context: yield* context.load(selected) }
                 }),
               )
               if (ready) return ready
             }
-          }),
-        ),
+          })
+        )
       )
 
       while (true) {
@@ -199,7 +204,7 @@ const layer = Layer.effect(
       }
     })
 
-    const prepareContext = Effect.fn("SessionRunner.prepareContext")(function* (sessionID: SessionSchema.ID) {
+    const prepareContext = Effect.fn("SessionRunner.prepareContext")(function*(sessionID: SessionSchema.ID) {
       // Plugins can reload mid-turn; each step and retry must read the settled agents, models and skills.
       yield* plugins.awaitActivation
       const selected = yield* context.select(sessionID)
@@ -209,7 +214,7 @@ const layer = Layer.effect(
     })
 
     /** Owns logical Step policy; each attempt owns its streaming, tools, and durable settlement. */
-    const runStep = Effect.fn("SessionRunner.runStep")(function* (first: SessionContext.Loaded, step: number) {
+    const runStep = Effect.fn("SessionRunner.runStep")(function*(first: SessionContext.Loaded, step: number) {
       const sessionID = first.session.id
       let assistantMessageID = SessionMessage.ID.create()
       const retry = yield* SessionRunnerRetry.make(bus, sessionID)
@@ -286,18 +291,19 @@ const layer = Layer.effect(
           recoverOverflow: Effect.suspend(() =>
             recoverOverflow
               ? compaction
-                  .compact({ reason: "overflow", context: loaded, estimate })
-                  .pipe(Effect.map((result) => result.status === "completed"))
-              : Effect.succeed(false),
+                .compact({ reason: "overflow", context: loaded, estimate })
+                .pipe(Effect.map((result) => result.status === "completed"))
+              : Effect.succeed(false)
           ),
         })
         const completed = yield* SessionStep.Outcome.$match(outcome, {
-          Completed: Effect.fnUntraced(function* (outcome) {
+          Completed: Effect.fnUntraced(function*(outcome) {
             // The Session is about to go idle, which leaves the background summary time to finish.
-            if (!outcome.needsContinuation)
+            if (!outcome.needsContinuation) {
               yield* compaction.precompute(
                 store.context(sessionID).pipe(Effect.map((messages) => ({ ...loaded, messages }))),
               )
+            }
             return outcome.needsContinuation
           }),
           Retry: (outcome) =>
@@ -306,7 +312,7 @@ const layer = Layer.effect(
               error: outcome.error,
               assistantMessageID,
             }),
-          Continue: Effect.fnUntraced(function* (outcome) {
+          Continue: Effect.fnUntraced(function*(outcome) {
             yield* retry.wait({
               decision: outcome.decision,
               error: outcome.error,
@@ -315,7 +321,7 @@ const layer = Layer.effect(
             yield* bus.publish(SessionEvent.Synthetic, { sessionID, text: CONTINUE_AFTER_INCOMPLETE_STREAM })
             assistantMessageID = SessionMessage.ID.create()
           }),
-          OutputLimit: Effect.fn("SessionRunner.continueOutputLimit")(function* (outcome) {
+          OutputLimit: Effect.fn("SessionRunner.continueOutputLimit")(function*(outcome) {
             // The current response is included. User input or any other finish breaks the streak.
             const recent = yield* db
               .select({
@@ -333,24 +339,25 @@ const layer = Layer.effect(
               .limit(3)
               .all()
               .pipe(Effect.orDie)
-            const exhausted =
-              recent.length === 3 && recent.every((row) => row.type === "assistant" && row.finish === "length")
-            if (exhausted)
+            const exhausted = recent.length === 3
+              && recent.every((row) => row.type === "assistant" && row.finish === "length")
+            if (exhausted) {
               return yield* new StepFailedError({
                 error: {
                   type: "output-limit",
                   message: "Response still truncated after two output token limit continuations",
                 },
               })
+            }
             if (outcome.needsContinuation) return true
             yield* bus.publish(SessionEvent.Synthetic, { sessionID, text: CONTINUE_AFTER_OUTPUT_LIMIT })
             assistantMessageID = SessionMessage.ID.create()
           }),
-          Compacted: Effect.fnUntraced(function* () {
+          Compacted: Effect.fnUntraced(function*() {
             recoverOverflow = false
             assistantMessageID = SessionMessage.ID.create()
           }),
-          RecoverFull: Effect.fnUntraced(function* () {
+          RecoverFull: Effect.fnUntraced(function*() {
             recoverContinuation = false
           }),
         })
@@ -358,7 +365,7 @@ const layer = Layer.effect(
       }
     })
 
-    const settleStaleCompactions = Effect.fn("SessionRunner.settleStaleCompactions")(function* (
+    const settleStaleCompactions = Effect.fn("SessionRunner.settleStaleCompactions")(function*(
       sessionID: SessionSchema.ID,
     ) {
       // A process death skips compaction finalizers. Include orphans behind a
@@ -388,7 +395,7 @@ const layer = Layer.effect(
       }
     })
 
-    const settleStaleToolCalls = Effect.fn("SessionRunner.settleStaleToolCalls")(function* (
+    const settleStaleToolCalls = Effect.fn("SessionRunner.settleStaleToolCalls")(function*(
       sessionID: SessionSchema.ID,
     ) {
       for (const message of yield* store.context(sessionID)) {
@@ -396,8 +403,9 @@ const layer = Layer.effect(
         for (const tool of message.content) {
           if (tool.type !== "tool" || (tool.state.status !== "streaming" && tool.state.status !== "running")) continue
           const metadata = tool.state.status === "running" ? tool.state.metadata : undefined
-          const childID =
-            tool.name === "subagent" && typeof metadata?.sessionID === "string" ? metadata.sessionID : undefined
+          const childID = tool.name === "subagent" && typeof metadata?.sessionID === "string"
+            ? metadata.sessionID
+            : undefined
           yield* bus.publish(SessionEvent.Tool.Failed, {
             sessionID,
             assistantMessageID: message.id,

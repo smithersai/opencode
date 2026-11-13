@@ -22,7 +22,8 @@ export const cleanStages = effect (
 
           if (stat?.type !== "Directory") return
           fs
-            .remove(target, { recursive: true, force: true }) catch effect (error) => try Effect.logError("failed to clean staged v2 CLI", { path: target, error })
+            .remove(target, { recursive: true, force: true }) catch effect (error) =>
+              try Effect.logError("failed to clean staged v2 CLI", { path: target, error })
         },
         { concurrency: "unbounded" },
       )

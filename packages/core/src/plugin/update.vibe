@@ -20,7 +20,9 @@ export interface Interface {
   readonly changes: () => Stream.Stream<Change>
 }
 
-export service Service: Interface { static readonly key = "@opencode/PluginUpdate";}
+export service Service: Interface {
+  static readonly key = "@opencode/PluginUpdate"
+}
 
 const layer = Layer.effect(
   Service,
@@ -32,7 +34,9 @@ const layer = Layer.effect(
 
     return Service.of({
       check: (target, options) =>
-        withKeyedLock(locks, target,
+        withKeyedLock(
+          locks,
+          target,
           effect {
             const checkedAt = try Clock.currentTimeMillis
             const current = status.get(target)
@@ -50,7 +54,9 @@ const layer = Layer.effect(
         ),
       // Serialize per target so a concurrent update cannot clear the in-progress flag of another still running.
       update: (target) =>
-        withKeyedLock(locks, target,
+        withKeyedLock(
+          locks,
+          target,
           effect {
             const outdated = status.get(target)?.outdated ?? false
             try PubSub.publish(changes, { target, outdated, updating: true })

@@ -38,7 +38,7 @@ export interface BootOptions {
  * Object leaves the same durable signature as a killed process — replays orphaned turns on the
  * next boot, and the sweep is a no-op when nothing is suspended.
  */
-export const make = Effect.fn("ServerFetch.make")(function* (options: ServerOptions = {}, boot: BootOptions = {}) {
+export const make = Effect.fn("ServerFetch.make")(function*(options: ServerOptions = {}, boot: BootOptions = {}) {
   const context = yield* Layer.build(
     createRoutes(options, () => [], boot.overrides ?? []).pipe(Layer.provide(HttpServer.layerServices)),
   )

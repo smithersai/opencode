@@ -34,8 +34,9 @@ type InvokeTag = Exclude<keyof DesktopRpcClient, "DesktopEvents">
 
 type InvokeArgs<Tag extends InvokeTag> = Parameters<DesktopRpcClient[Tag]>
 
-type InvokeResult<Tag extends InvokeTag> =
-  ReturnType<DesktopRpcClient[Tag]> extends Effect.Effect<infer Value, unknown> ? Value : never
+type InvokeResult<Tag extends InvokeTag> = ReturnType<DesktopRpcClient[Tag]> extends Effect.Effect<infer Value, unknown>
+  ? Value
+  : never
 
 type EventValue<Tag extends EventTag> = Extract<DesktopEvent, { readonly _tag: Tag }>
 
@@ -75,7 +76,8 @@ const port = new Promise<MessagePort>((resolve) => {
 
 // Let queued work (storage flushes) hand its messages to the port before it closes.
 onPageHide(
-  () => void Promise.allSettled([...beforeDispose].map((callback) => callback())).then(() => port.then((p) => p.close())),
+  () =>
+    void Promise.allSettled([...beforeDispose].map((callback) => callback())).then(() => port.then((p) => p.close())),
 )
 
 void request("DesktopEvents", null, (values) => {
@@ -146,12 +148,10 @@ function request(
 
     signal?.addEventListener("abort", abort, { once: true })
 
-    const settle =
-      <Value>(callback: (value: Value) => void) =>
-      (value: Value) => {
-        signal?.removeEventListener("abort", abort)
-        callback(value)
-      }
+    const settle = <Value>(callback: (value: Value) => void) => (value: Value) => {
+      signal?.removeEventListener("abort", abort)
+      callback(value)
+    }
 
     pending.set(id, { resolve: settle(resolve), reject: settle(reject), chunk })
 

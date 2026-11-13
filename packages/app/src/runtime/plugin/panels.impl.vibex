@@ -147,7 +147,7 @@ export function createRegion(input: {
           provider: item.value,
         }),
       )
-    }),
+    })
   )
 
   const byKey = createMemo(() => new Map(entries().map((entry) => [entry.key, entry])))
@@ -246,13 +246,14 @@ export function createRegion(input: {
     on(active, (key, _, restored: boolean = true) => {
       const entry = key ? byKey().get(key) : undefined
 
-      if (entry)
+      if (entry) {
         entry.provider.focus?.(
           panelInput(input.view, input.screen, {
             tab: entry.tab,
             restored,
           }),
         )
+      }
 
       return false
     }),
@@ -295,7 +296,7 @@ export function createRegion(input: {
         stored().flatMap((key) =>
           key.startsWith(`${plugin}:`) && sessionTabPane(input.tabs().tabs(), key) === pane
             ? [key.slice(plugin.length + 1)]
-            : [],
+            : []
         ),
       lead: () => !!drawn().find((entry) => !entry.tab.pinned)?.tab.first,
     }
@@ -411,10 +412,9 @@ export function createRegion(input: {
         return
       }
 
-      returnFocus =
-        isHTMLElement(focused) && (focused.isContentEditable || /^(INPUT|TEXTAREA)$/.test(focused.tagName))
-          ? focused
-          : undefined
+      returnFocus = isHTMLElement(focused) && (focused.isContentEditable || /^(INPUT|TEXTAREA)$/.test(focused.tagName))
+        ? focused
+        : undefined
       side.toggle()
       const key = active()
       const entry = key ? byKey().get(key) : undefined
@@ -438,12 +438,13 @@ export function createRegion(input: {
         if (last) input.onEmptied?.()
       })
 
-      if (entry)
+      if (entry) {
         entry.provider.close?.(
           panelInput(input.view, input.screen, {
             tab: entry.tab,
           }),
         )
+      }
     },
     /**
      * The session's closed files that are not open again, newest first, as "Recently closed" lists them. ⌘⇧T still
@@ -483,7 +484,7 @@ export function RegionContent(props: {
   frame: Omit<PanelFrame, "visible" | "open"> & { shown: Accessor<boolean> }
 }) {
   const groups = createMemo(() =>
-    Array.from(new Set(props.pane.entries().flatMap((entry) => (entry.tab.group ? [groupKey(entry)] : [])))),
+    Array.from(new Set(props.pane.entries().flatMap((entry) => (entry.tab.group ? [groupKey(entry)] : []))))
   )
 
   const single = createMemo(() => {
@@ -539,8 +540,7 @@ export function RegionContent(props: {
                               return member()!.tab
                             },
                           }),
-                        )
-                      }
+                        )}
                     </Contribution>
                   </PanelContext.Provider>
                 </div>
@@ -575,8 +575,7 @@ export function RegionContent(props: {
                               return entry()!.tab
                             },
                           }),
-                        )
-                      }
+                        )}
                     </Contribution>
                   </PanelContext.Provider>
                 </div>
@@ -635,8 +634,7 @@ export function MobilePanel(props: {
                 return props.entry.tab
               },
             }),
-          )
-        }
+          )}
       </Contribution>
     </PanelContext.Provider>
   )

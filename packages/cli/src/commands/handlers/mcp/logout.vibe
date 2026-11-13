@@ -22,13 +22,12 @@ export default Runtime.handler(
   Commands.commands.mcp.commands.logout,
   Effect.fn("cli.mcp.logout")(effect function(input) {
     const { endpoint } = try ServerConnection.resolve()
-    const client = try ((args: Parameters<typeof OpenCode.make>) =>
-      Effect.try(() => OpenCode.make(...args)).pipe(Effect.orDie))([{
+    const client =
+      try ((args: Parameters<typeof OpenCode.make>) => Effect.try(() => OpenCode.make(...args)).pipe(Effect.orDie))([{
         baseUrl: endpoint.url,
-        headers: (try ((args: Parameters<typeof Service.headers>) =>
-          Effect.try(() =>
-            Service.headers(...args)
-          ).pipe(Effect.orDie))([endpoint])),
+        headers:
+          try ((args: Parameters<typeof Service.headers>) =>
+            Effect.try(() => Service.headers(...args)).pipe(Effect.orDie))([endpoint]),
       }])
 
     const integration = try resolveIntegration(client, input.name, location)

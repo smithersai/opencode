@@ -68,7 +68,7 @@ const device = (app: App.Info) =>
                 callback: poll(value, app).pipe(Effect.flatMap((tokens) => credential(deviceMethodID, tokens))),
               }
             }),
-          ),
+          )
         ),
       ),
     refresh: (value) => refresh(deviceMethodID, value, app),
@@ -76,7 +76,7 @@ const device = (app: App.Info) =>
 
 export const XAIPlugin = define({
   id: "opencode.provider.xai",
-  effect: Effect.fn(function* (ctx) {
+  effect: Effect.fn(function*(ctx) {
     const credentials = yield* Credential.Service
     yield* Effect.forEach(
       yield* credentials.list(Integration.ID.make("xai")),
@@ -124,11 +124,11 @@ function refresh(methodID: Integration.MethodID, value: Credential.OAuth, app: A
 }
 
 function poll(device: typeof Device.Type, app: App.Info): Effect.Effect<Token, unknown> {
-  return Effect.gen(function* () {
+  return Effect.gen(function*() {
     const started = yield* Clock.currentTimeMillis
     const expires = started + positiveSeconds(device.expires_in, 300) * 1000
     const loop = (interval: number): Effect.Effect<Token, unknown> =>
-      Effect.gen(function* () {
+      Effect.gen(function*() {
         if ((yield* Clock.currentTimeMillis) >= expires) {
           return yield* Effect.fail(new Error("xAI device authorization timed out"))
         }
@@ -174,7 +174,7 @@ function request<S extends Schema.Decoder<unknown>>(url: string, init: RequestIn
       if (response.ok) return decode(response, schema)
       return Effect.promise(() => response.text()).pipe(
         Effect.flatMap((detail) =>
-          Effect.fail(new Error(`xAI request failed (${response.status})${detail ? `: ${detail}` : ""}`)),
+          Effect.fail(new Error(`xAI request failed (${response.status})${detail ? `: ${detail}` : ""}`))
         ),
       )
     }),
@@ -237,10 +237,10 @@ function positiveSeconds(value: unknown, fallback: number) {
 }
 
 module platform {
-// The platform code of xai.vibe: host Buffer decoding, which a .vibe file does not use directly (EK4402).
+  // The platform code of xai.vibe: host Buffer decoding, which a .vibe file does not use directly (EK4402).
 
-/** @throws {never} */
-export function decodeBase64Url(payload: string): string {
-  return Buffer.from(payload, "base64url").toString()
-}
+  /** @throws {never} */
+  export function decodeBase64Url(payload: string): string {
+    return Buffer.from(payload, "base64url").toString()
+  }
 }

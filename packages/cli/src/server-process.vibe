@@ -1,0 +1,306 @@
+module platform {
+  import { randomBytes, randomUUID } from "node:crypto"
+  import { Effect } from "effect"
+
+  /** @throws {never} */
+  export function environmentValue(key: string) {
+    return process.env[key]
+  }
+
+  /** @throws {never} */
+  export function deleteEnvironment(key: string) {
+    delete process.env[key]
+  }
+
+  export function assignEnvironment(values: object | undefined) {
+    Object.assign(process.env, values)
+  }
+
+  /** @throws {never} */
+  export function currentPlatform() {
+    return process.platform
+  }
+
+  export function changeDirectory(directory: string) {
+    process.chdir(directory)
+  }
+
+  export function randomPassword() {
+    return randomBytes(32).toString("base64url")
+  }
+
+  export function randomID() {
+    return randomUUID()
+  }
+
+  export function waitForStdinClose() {
+    return Effect.callback<void>((resume) => {
+      const close = () => resume(Effect.void)
+      process.stdin.once("end", close)
+      process.stdin.once("close", close)
+      process.stdin.resume()
+      if (process.stdin.readableEnded || process.stdin.destroyed) close()
+      return Effect.sync(() => {
+        process.stdin.off("end", close)
+        process.stdin.off("close", close)
+        process.stdin.pause()
+      })
+    })
+  }
+}
+
+export * as ServerProcess from "./server-process"
+
+import { NodeServices } from "@effect/platform-node"
+import { Service } from "@opencode/client/effect/service"
+import { LayerNode } from "@opencode/util/effect/layer-node"
+import { Global } from "@opencode/util/global"
+import { OPENCODE_ARTIFACT, OPENCODE_CHANNEL, OPENCODE_VERSION } from "./version.ts"
+import { AppProcess } from "@opencode/util/process"
+import { Effect, Option, Redacted, Schema } from "effect"
+import { PersistentPty } from "@opencode/schema/persistent-pty"
+import { HttpServer } from "effect/http"
+import { NetAddress } from "effect/net"
+import { Env } from "./env.ts"
+import { PortOwner } from "./services/port-owner"
+import { ServiceConfig } from "./services/service-config"
+import { RetainedImage } from "./services/retained-image"
+import { ServiceRegistration } from "./services/service-registration.ts"
+import { RemoteTunnel } from "./services/remote-tunnel.ts"
+import { WebUi } from "./services/web-ui"
+import { databasePath } from "./database-path"
+import {
+  assignEnvironment,
+  changeDirectory,
+  currentPlatform,
+  deleteEnvironment,
+  environmentValue,
+  randomID,
+  randomPassword,
+  waitForStdinClose,
+} from platform
+
+export type Mode = "default" | "service" | "stdio"
+
+export type Options = {
+  readonly mode: Mode
+  readonly hostname?: string
+  readonly port?: number
+  readonly cors?: readonly string[]
+}
+
+// The process effect lives until server shutdown; tracing it would parent every request to one process-lifetime trace.
+export const run = effect function(options: Options) {
+  const program = processEffect(options)
+  const layer = try Effect.try({
+    try: () =>
+      LayerNode.compile(LayerNode.group([Global.node, AppProcess.node]), {
+        replacements: [
+          Global.node.replace(
+            Global.layerWith(
+              environmentValue("OPENCODE_CONFIG_DIR") ? { config: environmentValue("OPENCODE_CONFIG_DIR") } : {},
+            ),
+          ),
+        ],
+      }),
+    catch: (cause) => cause,
+  }).pipe(Effect.orDie)
+  return try program.pipe(Effect.provide(layer), Effect.provide(NodeServices.layer))
+}
+
+const processEffect = effect function(options: Options) {
+  const inherited = environmentValue("OPENCODE_PTY_HANDOFF")
+  deleteEnvironment("OPENCODE_PTY_HANDOFF")
+  const handoff = inherited === undefined
+    ? undefined
+    : try Schema.decodeUnknownEffect(Schema.fromJsonString(PersistentPty.Handoff))(inherited).pipe(
+      Effect.catch(() =>
+        Effect.logWarning("Ignoring invalid PTY restart handoff; persistent terminals will start fresh").pipe(
+          Effect.as(undefined),
+        )
+      ),
+    )
+  const global = try Global.Service
+  // A sandbox may deny $HOME; the service then keeps the cwd it was launched from.
+  if (options.mode === "service") {
+    try Effect.try(() => changeDirectory(global.home)).pipe(
+      Effect.catch((cause) => Effect.logWarning("failed to change service directory to home", { cause })),
+    )
+  }
+  return try Effect.scoped(
+    effect {
+      const foreground = options.mode === "default"
+      const serviceOptions = options.mode === "service" ? try ServiceConfig.options() : undefined
+      const config = options.mode === "service" ? try ServiceConfig.read() : {}
+      const hostname = options.hostname ?? config.hostname ?? "127.0.0.1"
+      const port = options.port ?? config.port ?? (options.mode === "service"
+        ? (try Effect.try({ try: () => ServiceConfig.defaultPort(), catch: (cause) => cause }).pipe(Effect.orDie))
+        : undefined)
+      const findIncumbent = serviceOptions !== undefined && port !== undefined
+        ? Service.incumbent({ ...serviceOptions, url: serviceURL(hostname, port) })
+        : undefined
+      if (findIncumbent !== undefined && (try findIncumbent) !== undefined) return
+      // Desktop can launch the service directly without injecting its saved environment.
+      try Effect.try({ try: () => assignEnvironment(ServiceConfig.processEnv(config.env)), catch: (cause) => cause })
+        .pipe(
+          Effect.orDie,
+        )
+      // Keep a package-manager or curl install replaceable while the service runs; Desktop updates its own copy.
+      if (
+        options.mode === "service"
+        && currentPlatform() === "win32"
+        && (try Effect.try({ try: () => RetainedImage.installed(global.home), catch: (cause) => cause }).pipe(
+          Effect.orDie,
+        ))
+      ) {
+        try RetainedImage.retain(global.cache, "service")
+      }
+      const { start } = try Effect.promise(() => import("@opencode/server/process"))
+      const environmentPassword = try Env.password
+      // Keep the lease credential out of the environment inherited by tools.
+      if (options.mode === "stdio") {
+        deleteEnvironment("OPENCODE_PASSWORD")
+        deleteEnvironment("OPENCODE_SERVER_PASSWORD")
+      }
+      const generated = Effect.try({ try: () => randomPassword(), catch: (cause) => cause }).pipe(Effect.orDie)
+      const password = options.mode === "service"
+        ? config.password || (try generated)
+        : environmentPassword
+        ? Redacted.value(environmentPassword)
+        : (try generated)
+      if (!password) return try Effect.fail(new Error("Missing server password"))
+      const instanceID = try Effect.try({ try: () => randomID(), catch: (cause) => cause }).pipe(Effect.orDie)
+      const transform = try WebUi.handler()
+      const remote = { urls: [] as ReadonlyArray<string> }
+      const launch = start(
+        {
+          app: {
+            name: environmentValue("OPENCODE_CLIENT") ?? OPENCODE_ARTIFACT,
+            version: OPENCODE_VERSION,
+            channel: OPENCODE_CHANNEL,
+          },
+          hostname,
+          port,
+          cors: options.cors ?? config.cors,
+          password,
+          pty: { handoff },
+          simulation: truthy(environmentValue("OPENCODE_SIMULATE")),
+          database: {
+            path: try Effect.try({ try: () => databasePath(global.data), catch: (cause) => cause }).pipe(Effect.orDie),
+          },
+          models: {
+            url: environmentValue("OPENCODE_MODELS_URL"),
+            file: environmentValue("OPENCODE_MODELS_PATH"),
+            fetch: !truthy(environmentValue("OPENCODE_DISABLE_MODELS_FETCH")),
+          },
+          config: {
+            directory: environmentValue("OPENCODE_CONFIG_DIR"),
+            project: !truthy(
+              environmentValue("OPENCODE_CONFIG_PROJECT_DISABLE")
+                ?? environmentValue("OPENCODE_DISABLE_PROJECT_CONFIG"),
+            ),
+            // .claude is only read for skills, so both flags gate the same roots.
+            claude: !(
+              truthy(environmentValue("OPENCODE_DISABLE_CLAUDE_CODE"))
+              || truthy(environmentValue("OPENCODE_DISABLE_CLAUDE_CODE_SKILLS"))
+            ),
+            file: environmentValue("OPENCODE_CONFIG"),
+            content: environmentValue("OPENCODE_CONFIG_CONTENT"),
+          },
+          windows: {
+            gitbash: environmentValue("OPENCODE_GIT_BASH_PATH"),
+          },
+          fs: {
+            filewatcher: !truthy(
+              environmentValue("OPENCODE_FILEWATCHER_DISABLE") ?? environmentValue("OPENCODE_DISABLE_FILEWATCHER"),
+            ),
+            fff: environmentValue("OPENCODE_DISABLE_FFF") === undefined
+              ? currentPlatform() !== "win32"
+              : !truthy(environmentValue("OPENCODE_DISABLE_FFF")),
+          },
+        },
+        serviceOptions === undefined
+          ? undefined
+          : {
+            onListen: (address, shutdown) =>
+              effect {
+                if (!config.password) try ServiceConfig.password(password)
+                return try ServiceRegistration.register({
+                  address,
+                  password,
+                  id: instanceID,
+                  file: serviceOptions.file,
+                  shutdown,
+                })
+              },
+          },
+        transform,
+        () => remote.urls,
+      )
+      const server = try launch.pipe(
+        Effect.catch((error) => {
+          if (findIncumbent === undefined || !addressInUse(error)) return Effect.fail(error)
+          return effect {
+            const deadline = Date.now() + 15_000
+            while (Date.now() < deadline) {
+              const found = try findIncumbent.pipe(Effect.timeoutOption(deadline - Date.now()))
+              if (Option.isSome(found) && found.value !== undefined) return
+              try Effect.sleep("100 millis")
+              if (Date.now() >= deadline) break
+              // Failed binds close their scope; a successful bind may take longer than this window to boot.
+              const server = try launch.pipe(Effect.catchIf(addressInUse, () => Effect.void))
+              if (server !== undefined) return server
+            }
+            const owner = port === undefined ? undefined : try PortOwner.describe(port, hostname)
+            return try Effect.fail(
+              new Error(
+                `Managed service port ${port} on ${hostname} is already in use by ${owner ?? "another process"}. `
+                  + "Configure another port with `opencode service set port <port>` and start the service again.",
+                { cause: error },
+              ),
+            )
+          }
+        }),
+      )
+      if (server === undefined) return
+      if (serviceOptions !== undefined && config.remote !== undefined && NetAddress.isInetAddress(server.address)) {
+        const bound = NetAddress.formatIp(server.address.address)
+        // A wildcard bind also listens on loopback, which is all the tunnel needs to reach.
+        const target = bound === "0.0.0.0" || bound === "::"
+          ? `127.0.0.1:${server.address.port}`
+          : NetAddress.formatInet(server.address)
+        try Effect.forkScoped(
+          RemoteTunnel.run({
+            route: config.remote.route,
+            target,
+            onURL: (url) => {
+              remote.urls = url === undefined ? [] : [url]
+            },
+          }),
+        )
+      }
+      const url = HttpServer.formatAddress(server.address)
+      try Console.log(options.mode === "stdio" ? JSON.stringify({ url }) : `server listening on ${url}`)
+      if (foreground && !environmentPassword) try Console.log(`server password ${password}`)
+      return try (options.mode === "service"
+        ? server.shutdown
+        : options.mode === "stdio"
+        ? waitForStdinClose()
+        : Effect.never)
+    }.pipe(Effect.annotateLogs({ role: "server" })),
+  )
+}
+
+function serviceURL(hostname: string, port: number) {
+  return `http://${hostname.includes(":") ? `[${hostname}]` : hostname}:${port}`
+}
+
+function truthy(value?: string) {
+  return value === "1" || value?.toLowerCase() === "true"
+}
+
+function addressInUse(error: unknown): boolean {
+  if (typeof error !== "object" || error === null) return false
+  if ("code" in error && error.code === "EADDRINUSE") return true
+  return "cause" in error && addressInUse(error.cause)
+}

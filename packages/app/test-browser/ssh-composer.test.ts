@@ -1,7 +1,7 @@
 import { expect, test } from "bun:test"
 import { createRoot } from "solid-js"
 import { createStore } from "solid-js/store"
-import { createComposerEditor } from "../src/composer/editor/interaction"
+import { createComposerEditor } from "../src/composer/editor/interaction.vibe"
 import type { ComposerPersistedState } from "../src/composer/types"
 
 test("a disconnected composer preserves text and ignores submissions until reconnect", () => {

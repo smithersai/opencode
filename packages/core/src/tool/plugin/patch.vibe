@@ -1,0 +1,400 @@
+export * as PatchTool from "./patch.js"
+
+import type { Context } from "@opencode/plugin/effect/plugin"
+import type { SessionHooks } from "@opencode/plugin/effect/session"
+import { ToolFailure } from "@opencode/ai/effect"
+import { FileDiff } from "@opencode/schema/file-diff"
+import { Effect, Schema } from "effect"
+import { Bom } from "@opencode/util/bom"
+import { Environment } from "../../environment/index.js"
+import { Formatter } from "../../formatter.js"
+import { FileMutation } from "../../file-mutation.js"
+import { Location } from "../../location.js"
+import { FileAccess } from "../../file-access.js"
+import { Patch } from "@opencode/util/patch"
+import { Permission } from "../../permission.js"
+import DESCRIPTION from "../patch.txt"
+import { fileDiff } from "./file-diff.js"
+
+export const name = "patch"
+
+export const Input = Schema.Struct({
+  patchText: Schema.String.annotate({
+    description: "The full patch text describing add, update, and delete operations",
+  }),
+})
+
+export const Applied = Schema.Struct({
+  type: Schema.Literals(["add", "update", "delete"]),
+  resource: Schema.String,
+  target: Schema.String,
+})
+
+export schema Output {
+  readonly applied: ReadonlyArray<Applied>
+  readonly files: ReadonlyArray<FileDiff.Info>
+}
+
+export const toModelContent = (output: Output) =>
+  [
+    "Success. Updated the following files:",
+    ...output.applied.map(
+      (item) => `${item.type === "add" ? "A" : item.type === "delete" ? "D" : "M"} ${item.resource}`,
+    ),
+  ].join("\n")
+
+type Prepared =
+  | (Extract<Patch.Hunk, { readonly type: "add" }> & {
+    readonly target: FileAccess.Target
+    readonly content: string
+    readonly before: string
+    readonly after: string
+  })
+  | (Extract<Patch.Hunk, { readonly type: "delete" }> & {
+    readonly target: FileAccess.Target
+    readonly before: string
+    readonly after: string
+  })
+  | (Extract<Patch.Hunk, { readonly type: "update" }> & {
+    readonly target: FileAccess.Target
+    readonly content: string
+    readonly before: string
+    readonly after: string
+    readonly moveTarget?: FileAccess.Target
+  })
+
+export const Plugin = {
+  id: "opencode.tool.patch",
+  effect: effect (ctx: Context) =>
+    try withSpan(
+      effect {
+        const environment = try Environment.Service
+        const access = try FileAccess.Service
+        const fileMutation = try FileMutation.Service
+        const formatter = try Formatter.Service
+        const location = try Location.Service
+        const permission = try Permission.Service
+
+        try (ctx.tool
+          .transform((editor) =>
+            editor.add({
+              name,
+              options: { codemode: false, permission: "edit" },
+              description: DESCRIPTION,
+              input: Input,
+              output: Output,
+              execute: (input, context) => {
+                const applied: Array<typeof Applied.Type> = []
+                const parsed = Patch.parse(input.patchText)
+                const lockTargets = Result.isSuccess(parsed)
+                  ? parsed.success.flatMap((hunk) => [
+                    FileAccess.resolvePath(location.directory, hunk.path),
+                    ...(hunk.type === "update" && hunk.movePath
+                      ? [FileAccess.resolvePath(location.directory, hunk.movePath)]
+                      : []),
+                  ])
+                  : []
+                const fail = (operation: string, error: unknown) => {
+                  const completed = applied.map((item) => item.resource).join(", ")
+                  return new ToolFailure({
+                    message: `${operation}: ${errorMessage(error)}${
+                      completed ? `. Completed before failure: ${completed}` : ""
+                    }`,
+                  })
+                }
+                return (effect {
+                  const source = {
+                    type: "tool" as const,
+                    messageID: context.messageID,
+                    id: context.id,
+                  }
+                  if (!input.patchText) throw new ToolFailure({ message: "patchText is required" })
+                  const hunks = Effect.fromResult(parsed) catch effect (error) => {
+                    throw new ToolFailure({ message: `patch verification failed: ${error.message}` })
+                  }
+                  if (hunks.length === 0) {
+                    throw new ToolFailure({ message: "patch rejected: empty patch" })
+                  }
+                  const prepared: Prepared[] = []
+                  const updates = new Map<string, string | null>()
+                  const resolveTarget = effect (value: string) => {
+                    const target = try access.resolve({ path: value, kind: "file" })
+                    if (!target.externalDirectory) return target
+                    try access.authorizeExternal([target], context, {
+                      filepath: target.absolute,
+                      parentDir: target.externalDirectory.directory,
+                    })
+                    return target
+                  }
+                  for (const hunk of hunks) {
+                    ;(effect {
+                      const target = try resolveTarget(hunk.path)
+                      if (hunk.type === "add") {
+                        const content = hunk.contents.endsWith("\n") || hunk.contents === ""
+                          ? hunk.contents
+                          : `${hunk.contents}\n`
+                        prepared.push({
+                          ...hunk,
+                          target,
+                          content,
+                          before: "",
+                          after: (try Effect.orDie(Effect.try({
+                            try: () => Bom.split(content),
+                            catch: (e) => e,
+                          }))).text,
+                        })
+                        updates.set(target.absolute, content)
+                        return
+                      }
+                      if (hunk.type === "delete") {
+                        const previous = updates.get(target.absolute)
+                        if (previous === null) {
+                          throw new ToolFailure({
+                            message:
+                              `patch verification failed: Failed to delete ${target.resource}: file does not exist`,
+                          })
+                        }
+                        const before = previous !== undefined
+                          ? (try Effect.orDie(Effect.try({ try: () => Bom.split(previous), catch: (e) => e }))).text
+                          : (FileMutation.readText(environment.files, target.absolute) catch effect (error) => {
+                            throw new ToolFailure({
+                              message: `patch verification failed: Failed to delete ${target.resource}: ${
+                                errorMessage(error)
+                              }`,
+                            })
+                          }).text
+                        prepared.push({ ...hunk, target, before, after: "" })
+                        updates.set(target.absolute, null)
+                        return
+                      }
+                      const previous = updates.get(target.absolute)
+                      if (previous === null) {
+                        throw new ToolFailure({
+                          message:
+                            `patch verification failed: Failed to read file to update ${target.absolute}: file does not exist`,
+                        })
+                      }
+                      const original = previous
+                        ?? (try effect {
+                          const content = FileMutation.readText(environment.files, target.absolute) catch effect (error) => {
+                              throw new ToolFailure({
+                                message:
+                                  `patch verification failed: Failed to read file to update ${target.absolute}: ${
+                                    errorMessage(error)
+                                  }`,
+                              })
+                            }
+                          return try Effect.orDie(
+                            Effect.try({ try: () => Bom.join(content.text, content.bom), catch: (e) => e }),
+                          )
+                        })
+                      const before = (try Effect.orDie(Effect.try({
+                        try: () => Bom.split(original),
+                        catch: (e) => e,
+                      }))).text
+                      const update = try Effect.try({
+                        try: () => Patch.derive(hunk.path, hunk.chunks, original),
+                        catch: (error) =>
+                          new ToolFailure({ message: `patch verification failed: ${errorMessage(error)}` }),
+                      })
+                      const move = hunk.movePath ? try resolveTarget(hunk.movePath) : undefined
+                      const moveTarget = move && move.absolute !== target.absolute ? move : undefined
+                      const next = try Effect.orDie(
+                        Effect.try({ try: () => Patch.joinBom(update.content, update.bom), catch: (e) => e }),
+                      )
+                      prepared.push({
+                        ...hunk,
+                        target,
+                        content: next,
+                        before,
+                        after: update.content,
+                        moveTarget,
+                      })
+                      if (moveTarget) {
+                        updates.set(target.absolute, null)
+                        updates.set(moveTarget.absolute, next)
+                      } else {
+                        updates.set(target.absolute, next)
+                      }
+                    }) catch effect (error) => {
+                      throw error instanceof ToolFailure
+                        ? error
+                        : new ToolFailure({ message: `Unable to prepare patch at ${hunk.path}`, error })
+                    }
+                  }
+
+                  const patchFiles = prepared.map((change) => patchFile(change))
+                  const targets = prepared.flatMap((change) => [
+                    change.target,
+                    ...(change.type === "update" && change.moveTarget ? [change.moveTarget] : []),
+                  ])
+                  try permission.assert({
+                    action: "edit",
+                    resources: [...new Set(targets.map((target) => target.resource))],
+                    save: ["*"],
+                    metadata: {
+                      filepath: targets.map((target) => target.resource).join(", "),
+                      diff: patchFiles.map((file) => `${file.patch}\n`).join(""),
+                      files: patchFiles,
+                    },
+                    sessionID: context.sessionID,
+                    agent: context.agent,
+                    source,
+                  })
+
+                  try Effect.forEach(
+                    prepared,
+                    effect (change) => {
+                      if (change.type === "delete") {
+                        environment.files
+                          .remove(change.target.absolute) catch effect (error) => {
+                            throw fail(`Failed to delete ${change.target.resource}`, error)
+                          }
+                        applied.push({
+                          type: change.type,
+                          resource: change.target.resource,
+                          target: change.target.absolute,
+                        })
+                        return
+                      }
+                      if (change.type === "update" && change.moveTarget) {
+                        const moveTarget = change.moveTarget
+                        environment.files
+                          .write(moveTarget.absolute, new TextEncoder().encode(change.content)) catch effect (error) => {
+                            throw fail(`Failed to write ${moveTarget.resource}`, error)
+                          }
+                        environment.files
+                          .remove(change.target.absolute) catch effect (error) => {
+                            throw fail(
+                              `Wrote ${moveTarget.resource} but failed to remove ${change.target.resource}`,
+                              error,
+                            )
+                          }
+                        applied.push({
+                          type: change.type,
+                          resource: change.moveTarget.resource,
+                          target: change.moveTarget.absolute,
+                        })
+                        return
+                      }
+                      environment.files
+                        .write(change.target.absolute, new TextEncoder().encode(change.content)) catch effect (error) => {
+                          throw fail(`Failed to write ${change.target.resource}`, error)
+                        }
+                      applied.push({
+                        type: change.type,
+                        resource: change.target.resource,
+                        target: change.target.absolute,
+                      })
+                    },
+                    { discard: true },
+                  )
+                  const formatted = new Map<string, string>()
+                  try Effect.forEach(
+                    [...updates.entries()].flatMap(([target, value]) => (value === null ? [] : [target])),
+                    effect (target) => {
+                      const current = FileMutation.readText(environment.files, target) catch effect (error) => {
+                        throw fail(`Failed to read ${target}`, error)
+                      }
+                      formatted.set(
+                        target,
+                        (try formatter.file(target))
+                          ? (FileMutation.syncTextBom(environment.files, target, current.bom) catch effect (error) => {
+                            throw fail(`Failed to sync ${target}`, error)
+                          })
+                          : current.text,
+                      )
+                    },
+                    { discard: true },
+                  )
+                  const files = prepared.map((change) => {
+                    if (change.type === "delete") return patchFile(change)
+                    const target = change.type === "update" && change.moveTarget ? change.moveTarget : change.target
+                    return patchFile(change, formatted.get(target.absolute))
+                  })
+                  return { applied, files }
+                }).pipe(
+                  fileMutation.withLock(lockTargets),
+                  Effect.map((output) => ({
+                    output,
+                    content: toModelContent(output),
+                    metadata: { files: output.files },
+                  })),
+                  Effect.mapError((error) =>
+                    error instanceof ToolFailure ? error : new ToolFailure({ message: "Unable to apply patch", error })
+                  ),
+                )
+              },
+            })
+          ) |> Effect.orDie(%))
+
+        const hook = effect (event: SessionHooks["context"]) => {
+          const usePatch = event.model.id.includes("gpt-") && !event.model.id.includes("oss")
+            && !event.model.id.includes("gpt-4")
+          if (usePatch) {
+            delete event.tools.edit
+            delete event.tools.write
+            return
+          }
+          delete event.tools.patch
+        }
+        try ctx.session.hook("context", hook)
+        try ctx.session.hook("compaction", hook)
+        try ctx.session.hook("generate", hook)
+      },
+      "PatchTool.Plugin",
+    ),
+}
+
+function errorMessage(error: unknown) {
+  if (error instanceof Environment.NotFound) return "file does not exist"
+  if (error instanceof Environment.WrongKind) {
+    return error.actual === "directory" ? "path is a directory" : `path is ${error.actual}`
+  }
+  if (error instanceof Environment.Failed) return errorMessage(error.cause)
+  return error instanceof Error ? error.message : String(error)
+}
+
+function patchFile(change: Prepared, after = change.after): typeof FileDiff.Info.Type {
+  const target = (change.type === "update" ? change.moveTarget : undefined)?.resource ?? change.target.resource
+  const diff = fileDiff(
+    change.target.absolute,
+    change.before,
+    after,
+    change.type === "add" ? "added" : change.type === "delete" ? "deleted" : "modified",
+  )
+  return {
+    ...diff,
+    file: target,
+    patch: trimDiff(diff.patch),
+  }
+}
+
+function trimDiff(diff: string) {
+  const lines = diff.split("\n")
+  const content = lines.filter(
+    (line) =>
+      (line.startsWith("+") || line.startsWith("-") || line.startsWith(" "))
+      && !line.startsWith("---")
+      && !line.startsWith("+++"),
+  )
+  if (content.length === 0) return diff
+  const indent = content.reduce((result, line) => {
+    const value = line.slice(1)
+    if (value.trim().length === 0) return result
+    return Math.min(result, value.match(/^(\s*)/)?.[1].length ?? result)
+  }, Infinity)
+  if (indent === Infinity || indent === 0) return diff
+  return lines
+    .map((line) => {
+      if (
+        (line.startsWith("+") || line.startsWith("-") || line.startsWith(" "))
+        && !line.startsWith("---")
+        && !line.startsWith("+++")
+      ) {
+        return line[0] + line.slice(1 + indent)
+      }
+      return line
+    })
+    .join("\n")
+}

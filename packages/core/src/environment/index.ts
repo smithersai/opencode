@@ -1,6 +1,6 @@
 export * as Environment from "./index.js"
 
-export { type Driver } from "./driver.js"
+export { type Driver } from "./driver.vibe"
 export {
   type DirEntry,
   exists,
@@ -18,7 +18,7 @@ export { makeLocalDriver } from "./local.js"
 export { makeMemoryDriver, type MemoryDriver } from "./memory.js"
 export { type Interface, node, Service } from "./environment.js"
 
-import type { Driver } from "./driver.js"
+import type { Driver } from "./driver.vibe"
 import { execDefaults } from "./exec-defaults.js"
 import type { Files } from "./files.js"
 

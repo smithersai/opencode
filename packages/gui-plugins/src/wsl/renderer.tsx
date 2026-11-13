@@ -3,7 +3,7 @@ import { lazy, onCleanup, Suspense } from "solid-js"
 import { createStore } from "solid-js/store"
 import { MenuItem, Server, Style, type ServerEntry, type ServerState, type Plugin } from "@opencode/plugin/gui"
 import { onIdle } from "@opencode/plugin/gui/builtin"
-import { Wsl, type WslServerItem } from "./contract"
+import { Wsl, type WslServerItem } from "./contract.vibe"
 import type definition from "./index"
 
 const loadDialog = () => import("./dialog")

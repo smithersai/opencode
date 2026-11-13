@@ -1,0 +1,62 @@
+import { hostname, pid } from "./server.platform"
+import { Duration, Effect } from "effect"
+import { HttpServerRequest, HttpServerResponse } from "effect/http"
+import { HttpApiBuilder } from "effect/http-api"
+import { PersistentPty } from "@opencode/core/persistent-pty"
+import { UnauthorizedError } from "@opencode/protocol/errors"
+import { Api } from "../api"
+import { ServerAuth } from "../auth"
+import { ServerInfo } from "../server-info"
+import { ServerPairing } from "../pairing"
+
+export const ServerHandler = HttpApiBuilder.group(Api, "server.server", (handlers) =>
+  effect {
+    const pairing = try ServerPairing.Service
+    const auth = try ServerAuth.Config
+
+    return handlers
+      .handle("server.info", () =>
+        effect {
+          const info = try ServerInfo.Service
+          return {
+            version: info.app.version ?? "unknown",
+            pid: (try pid) ?? 0,
+            hostname: (try hostname) || undefined,
+            urls: try Effect.try(() => info.urls()).pipe(Effect.orDie),
+            paths: info.paths,
+            capabilities: { persistentPty: PersistentPty.available },
+          }
+        })
+      .handle("server.pair", () => pairing.issue())
+      .handle(
+        "server.connect",
+        Effect.fn(effect function(ctx) {
+          const request = try HttpServerRequest.HttpServerRequest
+          // Browser navigations ask for HTML; everything else is an API client that wants the token.
+          const browser = request.headers.accept?.includes("text/html") === true
+          const token = (try pairing.consume(ctx.params.code))
+            ? (try Effect.try(() => ServerAuth.issueSession(auth)).pipe(Effect.orDie))
+            : undefined
+          if (token === undefined) {
+            if (!browser) return try new UnauthorizedError({ message: "Pairing link expired or already used" })
+            return HttpServerResponse.text(
+              "This pairing link expired or was already used. Run `opencode pair` to get a new one.",
+              { status: 401 },
+            )
+          }
+          if (!browser) return { token }
+          return HttpServerResponse.redirect("/").pipe(
+            HttpServerResponse.setCookieUnsafe(
+              try Effect.try(() => ServerAuth.sessionCookieName(request.headers.host)).pipe(Effect.orDie),
+              token,
+              {
+                path: "/",
+                httpOnly: true,
+                sameSite: "lax",
+                maxAge: Duration.seconds(ServerAuth.SESSION_TTL_SECONDS),
+              },
+            ),
+          )
+        }),
+      )
+  })

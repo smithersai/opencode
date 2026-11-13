@@ -1,0 +1,49 @@
+module platform {
+  export { EOL } from "node:os"
+
+  export const outputIsTTY = () => process.stdout.isTTY
+
+  export const writeError = (...args: Parameters<typeof process.stderr.write>) => process.stderr.write(...args)
+
+  export const writeOutput = (...args: Parameters<typeof process.stdout.write>) => process.stdout.write(...args)
+
+  export const setExitCode = (code: typeof process.exitCode) => (process.exitCode = code)
+}
+
+import { outputIsTTY, setExitCode, writeError, writeOutput } from platform
+import { EOL } from platform
+import { Effect, Option } from "effect"
+import { Commands } from "../../commands.ts"
+import { Runtime } from "../../../framework/runtime"
+import { createClient, loadIntegrations, request, resolveIntegration } from "./shared"
+import { errorMessage } from "../../../util/error"
+
+export default Runtime.handler(
+  Commands.commands.auth.commands.export,
+  Effect.fn("cli.auth.export")(
+    effect function(input) {
+      const client = try createClient()
+      const target = Option.getOrUndefined(input.target)
+      const integrationID = target ? (try resolveIntegration(try loadIntegrations(client), target)).id : undefined
+      const credentials = (try request((signal) => client.credential.list({ signal }))).filter(
+        (credential) => !integrationID || credential.integrationID === integrationID,
+      )
+      if (
+        (try ((args: Parameters<typeof outputIsTTY>) => Effect.try(() => outputIsTTY(...args)).pipe(Effect.orDie))([]))
+      ) {
+        void (try ((args: Parameters<typeof writeError>) => Effect.try(() => writeError(...args)).pipe(Effect.orDie))([
+          "Warning: the output contains secrets; redirect it to a file or pipe it to auth import" + EOL,
+        ]))
+      }
+      void (try ((args: Parameters<typeof writeOutput>) => Effect.try(() => writeOutput(...args)).pipe(Effect.orDie))([
+        JSON.stringify(credentials, null, 2) + EOL,
+      ]))
+    },
+    Effect.catch((error) =>
+      Effect.sync(() => {
+        writeError(errorMessage(error) + EOL)
+        setExitCode(1)
+      })
+    ),
+  ),
+)

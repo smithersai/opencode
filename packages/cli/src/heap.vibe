@@ -1,0 +1,46 @@
+module host {
+  // The platform code of heap.vibe: the host platform and process signal listeners (EK4402).
+
+  /** @throws {never} */
+  export function platform() {
+    return process.platform
+  }
+
+  export function addSignalListener(signal: NodeJS.Signals, listener: NodeJS.SignalsListener) {
+    return process.on(signal, listener)
+  }
+
+  export function removeSignalListener(signal: NodeJS.Signals, listener: NodeJS.SignalsListener) {
+    return process.off(signal, listener)
+  }
+}
+
+import { Global } from "@opencode/util/global"
+import { HeapSnapshot } from "@opencode/util/heap-snapshot"
+import { Effect, Queue } from "effect"
+import { addSignalListener, platform, removeSignalListener } from host
+
+export const listen = Effect.gen(function*() {
+  const global = yield* Global.Service
+  if (platform() === "win32") return
+  const signals = yield* Queue.dropping<void>(1)
+  yield* Effect.acquireRelease(
+    Effect.sync(() => {
+      const handler = () => Queue.offerUnsafe(signals, undefined)
+      addSignalListener("SIGUSR1", handler)
+      return handler
+    }),
+    (handler) => Effect.sync(() => removeSignalListener("SIGUSR1", handler)),
+  )
+  yield* Queue.take(signals).pipe(
+    Effect.andThen(
+      HeapSnapshot.write(global.log).pipe(
+        Effect.catchCause((cause) => Effect.logError("failed to write heap snapshot", { cause })),
+      ),
+    ),
+    Effect.forever,
+    Effect.forkScoped({ startImmediately: true }),
+  )
+})
+
+export * as Heap from "./heap"

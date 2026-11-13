@@ -2,7 +2,7 @@ import { expect, sourceURL, story } from "../../stories/playwright/story"
 
 const modules = {
   fixture: sourceURL(new URL("./plugin-host.fixture.tsx", import.meta.url)),
-  debug: sourceURL(new URL("../../gui-plugins/src/debug/index.ts", import.meta.url)),
+  debug: sourceURL(new URL("../../gui-plugins/src/debug/index.vibe", import.meta.url)),
   renderer: sourceURL(new URL("../../gui-plugins/src/debug/renderer.tsx", import.meta.url)),
 }
 

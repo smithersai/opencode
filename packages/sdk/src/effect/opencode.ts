@@ -7,9 +7,9 @@ import { Context, Effect, Layer } from "effect"
 import type { Config, Scope } from "effect"
 import { FetchHttpClient, HttpClient } from "effect/http"
 import { EmbeddedHost } from "../internal/host"
-import type { SdkInstances } from "../internal/instances"
+import type { SdkInstances } from "../internal/instances.vibe"
 
-export type { LogEntry, LogLevel, LogOptions, LogWriter } from "../logging"
+export type { LogEntry, LogLevel, LogOptions, LogWriter } from "../logging.vibe"
 
 export type CreateOptions<R = never> = EmbeddedHost.CreateOptions<R>
 export type EmbedOptions = EmbeddedHost.EmbedOptions

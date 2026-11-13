@@ -5,20 +5,28 @@
   "private": true,
   "type": "module",
   "exports": {
-    ".": "./src/index.ts"
+    ".": {
+      "types": "./src/index.d.vibe.ts",
+      "vibelang-source": "./src/index.vibe",
+      "default": "./.vibelang/js/src/index.js"
+    }
   },
   "scripts": {
     "test": "bun test --timeout 5000 --only-failures",
     "typecheck": "bun check --no-script",
-    "typecheck:tsc": "tsc --noEmit"
+    "typecheck:tsc": "vibelang --noEmit"
   },
   "dependencies": {
     "effect": "catalog:",
-    "prettier": "3.6.2"
+    "prettier": "3.6.2",
+    "vibelang-runtime": "file:../../.vibelang-toolchain/0.0.14-pre.d955d06c6696/tarballs/vibelang-runtime-0.0.14-pre.d955d06c6696.tgz"
   },
   "devDependencies": {
     "@tsconfig/bun": "catalog:",
     "@types/bun": "catalog:",
-    "@typescript/native": "catalog:"
+    "@typescript/native": "catalog:",
+    "vibelang": "file:../../.vibelang-toolchain/0.0.14-pre.d955d06c6696/tarballs/vibelang-0.0.14-pre.d955d06c6696.tgz",
+    "vibelang-vite": "file:../../.vibelang-toolchain/0.0.14-pre.d955d06c6696/tarballs/vibelang-vite-0.0.14-pre.d955d06c6696.tgz",
+    "fast-check": "catalog:"
   }
 }

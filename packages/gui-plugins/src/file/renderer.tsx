@@ -34,7 +34,7 @@ import {
 import { artifactKind } from "@opencode/util/artifact"
 import { resolveArtifactPath } from "./artifact"
 import { FileContext, type FileShared } from "./context"
-import type { OpenApp } from "./apps"
+import type { OpenApp } from "./apps.vibe"
 import {
   FileTree,
   OpenInApp,

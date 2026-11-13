@@ -28,7 +28,7 @@ import {
 import type { useNewSessionLocationDialog } from "@/new-session/location/dialog"
 import { useLanguage } from "@/runtime/i18n/language"
 import { useWorkspaceLocation } from "@/workspaces/location"
-import { useProviders } from "@/providers/catalog/providers"
+import { useProviders } from "../providers/catalog/providers.ts"
 import { NEW_SESSION_CONTENT_WIDTH } from "@/new-session/layout"
 import { Persist, persisted } from "@/runtime/persistence/storage"
 import { Persistence } from "@/runtime/persistence/schema"

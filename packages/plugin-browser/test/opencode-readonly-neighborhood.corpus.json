@@ -1,0 +1,29 @@
+{
+  "contract": "Schema.Struct defaults preserve readonly decoded fields, including nested, optional and private codecs.",
+  "rows": [
+    {
+      "source": "src/rpc.vibe",
+      "codec": "entry",
+      "writes": ["classes[0]!.name", "classes[0]!.count", "classes[0]!.bytes"],
+      "type": "Extract<(typeof Operations)[number], { name: \"heap.summary\" }>[\"output\"][\"Type\"]"
+    },
+    {
+      "source": "src/rpc.vibe",
+      "codec": "node",
+      "writes": ["nodes[0]!.id", "nodes[0]!.name", "nodes[0]!.type", "nodes[0]!.selfBytes", "nodes[0]!.edgeCount"],
+      "type": "Extract<(typeof Operations)[number], { name: \"heap.query\" }>[\"output\"][\"Type\"]"
+    },
+    {
+      "source": "src/rpc.vibe",
+      "codec": "Target",
+      "writes": ["resources", "key"],
+      "type": "typeof Target.Type"
+    },
+    {
+      "source": "src/rpc.vibe",
+      "codec": "TunnelRead",
+      "writes": ["data", "eof"],
+      "type": "typeof TunnelRead.Type"
+    }
+  ]
+}

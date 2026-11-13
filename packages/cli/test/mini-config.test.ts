@@ -5,9 +5,9 @@ import { expect, mock, test } from "bun:test"
 import { mkdir, rm } from "node:fs/promises"
 import path from "node:path"
 import { Config } from "../src/config"
-import { Server } from "../src/commands/commands"
+import { Server } from "../src/commands/commands.ts"
 import type { MiniCommandInput } from "../src/mini"
-import { OPENCODE_VERSION } from "../src/version"
+import { OPENCODE_VERSION } from "../src/version.ts"
 
 test("mini handler passes resolved CLI keybinds to the runtime", async () => {
   const root = await Bun.$`mktemp -d`.text().then((value) => value.trim())
@@ -31,7 +31,7 @@ test("mini handler passes resolved CLI keybinds to the runtime", async () => {
       return Promise.resolve()
     },
   }))
-  const handler = (await import("../src/commands/handlers/mini")).default
+  const handler = (await import("../src/commands/handlers/mini.ts")).default
   const server = Bun.serve({
     port: 0,
     fetch: () => Response.json({ version: OPENCODE_VERSION, pid: process.pid, urls: [] }),

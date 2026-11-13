@@ -1,6 +1,6 @@
 <!--
   Built-in skill. Name and description are registered in code at
-  packages/core/src/plugin/skill.ts. The body below becomes the skill's
+  packages/core/src/plugin/skill.vibe. The body below becomes the skill's
   content.
 -->
 

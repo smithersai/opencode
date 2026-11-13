@@ -1,7 +1,7 @@
 import { expect, test } from "bun:test"
 import { Effect } from "effect"
 import type { FormFields } from "@opencode/client"
-import { answerForm } from "../src/commands/handlers/auth/form"
+import { answerForm } from "../src/commands/handlers/auth/form.vibe"
 
 test("resolves hidden defaults without an interactive terminal", async () => {
   const fields = [

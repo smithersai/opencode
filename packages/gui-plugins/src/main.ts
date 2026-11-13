@@ -1,14 +1,14 @@
 import { compose } from "@opencode/plugin/gui/host"
 import context from "./context"
-import btw from "./btw"
-import debug from "./debug"
+import btw from "./btw/index.vibe"
+import debug from "./debug/index.vibe"
 import terminal from "./terminal"
 import file from "./file"
-import review from "./review"
+import review from "./review/index.vibe"
 import details from "./details"
 import browser from "./browser"
 import pairing from "./pairing"
-import updater from "./updater"
+import updater from "./updater/index.vibe"
 import ssh from "./ssh"
 import wsl from "./wsl"
 import microsoftOffice from "./microsoft-office"
@@ -18,16 +18,16 @@ import sources from "./sources"
 export const builtins = compose({
   context,
   btw,
-  debug: { ...debug, mainEntry: () => import("./debug/main") },
+  debug: { ...debug, mainEntry: () => import("./debug/main.vibe") },
   terminal,
   file,
   review,
   details,
   browser: { ...browser, mainEntry: () => import("./browser/main") },
-  pairing: { ...pairing, mainEntry: () => import("./pairing/main") },
-  updater: { ...updater, mainEntry: () => import("./updater/main") },
-  ssh: { ...ssh, mainEntry: () => import("./ssh/main") },
-  wsl: { ...wsl, mainEntry: () => import("./wsl/main") },
+  pairing: { ...pairing, mainEntry: () => import("./pairing/main.vibe") },
+  updater: { ...updater, mainEntry: () => import("./updater/main.vibe") },
+  ssh: { ...ssh, mainEntry: () => import("./ssh/main.vibe") },
+  wsl: { ...wsl, mainEntry: () => import("./wsl/main.vibe") },
   "microsoft-office": microsoftOffice,
   sources,
 })

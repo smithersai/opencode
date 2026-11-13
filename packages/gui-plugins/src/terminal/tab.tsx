@@ -6,7 +6,7 @@ import { Tabs } from "@opencode/ui/tabs"
 import { Menu } from "@opencode/ui/menu"
 import { usePlugin } from "@opencode/plugin/gui"
 import type { TerminalWorkspace } from "./model"
-import type { LocalPTY } from "./state"
+import type { LocalPTY } from "./state.vibe"
 import { terminalTabLabel } from "./title"
 import { focusTerminalById } from "./focus"
 

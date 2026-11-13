@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test"
 import type { SessionMessageAssistantTool } from "@opencode/client/promise"
-import { currentToolError, currentToolInput, currentToolMetadata, currentToolOutput } from "./current-tool-state"
+import { currentToolError, currentToolInput, currentToolMetadata, currentToolOutput } from "./current-tool-state.vibe"
 
 const time = { created: 1 }
 

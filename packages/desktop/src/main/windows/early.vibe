@@ -1,0 +1,130 @@
+import { createWindowID, moduleDirectory, joinPath } from platform
+import { currentPlatform, resourcesDirectory } from platform
+import { app, BrowserWindow, screen, shell } from "electron"
+import { resolveExternalURL } from "../files/external-url"
+import { windowArguments } from "./bootstrap.vibe"
+import { WINDOW_IDS_KEY } from "../storage/keys"
+import { getStore } from "../storage/store"
+import { platformFrame, storedBackgroundColor, storedZoomLevel, tone } from "./defaults.vibe"
+import { registerRendererProtocol } from "./protocol"
+import { loadWindow } from "./scheme"
+import { allowRendererPermissions, wireNavigationPolicy, wireRendererHeaders } from "./security"
+import {
+  manageWindowState,
+  readWindowState,
+  resolveWindowState,
+  windowStateFile,
+  type WindowState,
+} from "./window-state"
+
+export type EarlyWindow = {
+  id: string
+  win: BrowserWindow
+  state: WindowState
+  shownAt: number
+  // Navigation policy is wired before the layers exist; the adopter swaps in the logged version.
+  openExternal: (url: string) => void
+}
+
+let pending: EarlyWindow | undefined
+
+const displays = {
+  all: () => screen.getAllDisplays().map((display) => display.bounds),
+  primary: () => screen.getPrimaryDisplay().bounds,
+  matching: (bounds: Electron.Rectangle) => screen.getDisplayMatching(bounds).bounds,
+}
+
+// Creates and shows the first restored window the moment Electron is ready, before the rest of the
+// main process has loaded. The frame options mirror windowAppearance(); the persisted background
+// colour stands in for the theme until the renderer applies it, so the window is on screen while the
+// bundle, the layers and the renderer boot. restoreWindows() adopts it through takeEarlyWindow().
+export function createEarlyWindow() {
+  const ids = getStore().get(WINDOW_IDS_KEY)
+  const id = Array.isArray(ids) && Predicate.isString(ids[0]) ? ids[0] : createWindowID()
+  const root = moduleDirectory(import.meta.url)
+  const file = joinPath(app.getPath("userData"), windowStateFile(id))
+  const state = resolveWindowState(readWindowState(file), { width: 1280, height: 800 }, displays)
+  const zoom = storedZoomLevel()
+  const icons = app.isPackaged ? joinPath(resourcesDirectory(), "icons") : joinPath(root, "../../resources/icons")
+
+  const win = new BrowserWindow({
+    x: state.x,
+    y: state.y,
+    width: state.width,
+    height: state.height,
+    show: true,
+    autoHideMenuBar: true,
+    title: "OpenCode",
+    icon: joinPath(icons, `icon.${currentPlatform() === "win32" ? "ico" : "png"}`),
+    backgroundColor: storedBackgroundColor(),
+    ...platformFrame(tone(), zoom),
+    webPreferences: {
+      preload: joinPath(root, "../preload/index.cjs"),
+      contextIsolation: true,
+      nodeIntegration: false,
+      sandbox: true,
+      // The renderer boots in this window, so it starts at the saved zoom instead of jumping to it later.
+      zoomFactor: zoom,
+      additionalArguments: windowArguments(id),
+    },
+  })
+
+  manageWindowState(win, file, state, displays)
+  // Closing the only window before the rest of the app has adopted it is a quit.
+  win.once("closed", () => {
+    if (pending?.win !== win) return
+    pending = undefined
+    app.quit()
+  })
+
+  const record: EarlyWindow = {
+    id,
+    win,
+    state,
+    shownAt: Date.now(),
+    openExternal: (url) => {
+      const target = resolveExternalURL(url)
+
+      if (target) void shell.openExternal(target)
+    },
+  }
+
+  pending = record
+  // The renderer boots while the main bundle and layers load, instead of after them. Everything the
+  // page needs before its first request is wired here; the IPC port arrives once the layers are up.
+  registerRendererProtocol(joinPath(root, "../renderer"))
+  allowRendererPermissions(win)
+  wireNavigationPolicy(win, (url) => record.openExternal(url))
+  wireRendererHeaders(win)
+  loadWindow(win, "index.html")
+}
+
+export function takeEarlyWindow() {
+  const taken = pending
+  pending = undefined
+
+  return taken
+}
+
+module platform {
+  import { randomUUID } from "node:crypto"
+  import path from "node:path"
+  import { fileURLToPath } from "node:url"
+
+  export function currentPlatform() {
+    return process.platform
+  }
+  export function resourcesDirectory() {
+    return process.resourcesPath
+  }
+
+  export function createWindowID() {
+    return randomUUID()
+  }
+  export function moduleDirectory(url: string) {
+    return path.dirname(fileURLToPath(url))
+  }
+  export function joinPath(...parts: string[]) {
+    return path.join(...parts)
+  }
+}

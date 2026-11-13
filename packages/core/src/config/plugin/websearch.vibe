@@ -1,0 +1,22 @@
+export * as ConfigWebSearchPlugin from "./websearch.js"
+
+import { define } from "@opencode/plugin/effect/plugin"
+import { Config } from "../../config.js"
+import { ConfigEntryObserver } from "./entry-observer.js"
+
+export const Plugin = define({
+  id: "opencode.config.websearch",
+  effect: effect (ctx) => {
+    const config = try Config.Service
+    const loaded = try ConfigEntryObserver.observe(
+      config,
+      ctx.event,
+      try Effect.orDie(Effect.try({ try: () => ctx.websearch.reload(), catch: (e) => e })),
+    )
+    try ctx.websearch.transform((websearch) => {
+      const selection = Config.latest(loaded.entries, "websearch")
+      if (selection === false) websearch.default.set(false)
+      if (selection) websearch.default.set(selection.provider)
+    })
+  },
+})

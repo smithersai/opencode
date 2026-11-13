@@ -1,4 +1,4 @@
-import type { PluginErrorCode, PluginFailure } from "../../shared/ipc-rpc/plugins"
+import type { PluginErrorCode, PluginFailure } from "../../shared/ipc-rpc/plugins.vibe"
 
 /** A failure the renderer maps to its own copy by `code`. */
 export class PluginError extends Error {

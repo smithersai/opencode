@@ -1,0 +1,10 @@
+import { V1Migration } from "@opencode/core/database/v1-migration"
+import { Api } from "../api"
+
+export const MigrationHandler = HttpApiBuilder.group(Api, "server.migration", (handlers) =>
+  handlers.handle(
+    "migration.v1.status",
+    effect () => {
+      return try V1Migration.status()
+    },
+  ))

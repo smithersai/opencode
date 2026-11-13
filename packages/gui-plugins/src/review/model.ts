@@ -17,7 +17,7 @@ import {
   type SessionScreen,
   type SetupContext,
 } from "@opencode/plugin/gui"
-import type Review from "./index"
+import type Review from "./index.vibe"
 import {
   expandReviewFolders,
   filterRenderableDiff,
@@ -28,7 +28,7 @@ import {
   reviewDiffNeedsLoad,
   reviewFolderDirectory,
   reviewRootDirectory,
-} from "./kinds"
+} from "./kinds.vibe"
 
 export type ChangeMode = "git" | "branch" | "turn"
 

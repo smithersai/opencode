@@ -1,6 +1,6 @@
 import { nativeImage } from "electron"
-import { MAX_ICON_URL } from "./ipc"
-import type { BrowserNetwork } from "./network"
+import { MAX_ICON_URL } from "./ipc.vibe"
+import type { BrowserNetwork } from "./network.vibe"
 
 type Fetched = { mime: string; data: Buffer }
 

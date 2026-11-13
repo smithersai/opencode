@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test"
-import { commentContextItem, readPromptPresentation } from "./comment-note"
+import { commentContextItem, readPromptPresentation } from "./comment-note.vibe"
 import { createMemoryComposerState } from "./state"
 
 const durable = {

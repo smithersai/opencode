@@ -1,7 +1,7 @@
 import { describe, expect, test } from "bun:test"
 import { isContextOverflow, isContextOverflowFailure, isRetryable } from "../src/effect.js"
 import { AIError, HttpContext } from "../src/schema/index.js"
-import { classifyProviderFailure, providerErrorMessage } from "../src/provider-error.js"
+import { classifyProviderFailure, providerErrorMessage } from "../src/provider-error.vibe"
 
 describe("provider error classification", () => {
   test("classifies provider token limit messages as context overflow", () => {

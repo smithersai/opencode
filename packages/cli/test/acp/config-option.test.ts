@@ -3,7 +3,7 @@ import { Agent } from "@opencode/schema/agent"
 import { Model } from "@opencode/schema/model"
 import { Provider } from "@opencode/schema/provider"
 import type { Catalog } from "../../src/acp/catalog"
-import { configOptions, parseModelSelection } from "../../src/acp/config-option"
+import { configOptions, parseModelSelection } from "../../src/acp/config-option.vibe"
 
 const model = (providerID: string, id: string, name: string, variants: string[] = []) => ({
   ...Model.Info.default(Provider.ID.make(providerID), Model.ID.make(id)),

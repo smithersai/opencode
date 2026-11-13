@@ -36,7 +36,7 @@ type Scroll = { to: ScrollToPage | undefined }
 type Lazy<T> = { value: T | undefined }
 
 /**
- * A read-only, paginated Word document. Its engine runs in a worker of its own (`document.worker.ts`), which opens the
+ * A read-only, paginated Word document. Its engine runs in a worker of its own (`document.worker.vibe`), which opens the
  * file, lays it out, builds and paints its pages and computes their text; the window only shows the bitmaps and the text
  * layer, so no engine work holds it. The worker loads only the Yrs engine: the parse and layout engines and the
  * collaboration code stay unloaded, and embedded fonts give way to the bundled metric-compatible faces. The first pages
@@ -52,7 +52,7 @@ export default function OfficeDocument(props: FileViewerProps) {
     () => props.bytes,
     (bytes) => {
       const controller = new AbortController()
-      const worker = new Worker(new URL("./document.worker.ts", import.meta.url), { type: "module" })
+      const worker = new Worker(new URL("./document.worker.vibe", import.meta.url), { type: "module" })
       const client = createWorkerClient<WordMethods>(worker)
 
       const fail = () => {

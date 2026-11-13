@@ -5,7 +5,7 @@ import { Effect, FileSystem } from "effect"
 import fs from "node:fs/promises"
 import os from "node:os"
 import path from "node:path"
-import { remoteConsent, type RemoteConsentPrompt } from "../src/commands/handlers/pair"
+import { remoteConsent, type RemoteConsentPrompt } from "../src/commands/handlers/pair.vibe"
 import { ServiceConfig } from "../src/services/service-config"
 import { isolatedEnv } from "./fixture/environment"
 

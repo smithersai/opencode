@@ -4,7 +4,7 @@ import { Command, SettingsPage, TitlebarItem, type SetupContext, type Plugin } f
 import { onIdle } from "@opencode/plugin/gui/builtin"
 import { Updater } from "@opencode/plugin/gui/updater"
 import { updaterAction } from "./action"
-import type definition from "./index"
+import type definition from "./index.vibe"
 
 const setup: Plugin.Setup<typeof definition> = (ctx) => {
   whatsNew(ctx)

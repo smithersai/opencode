@@ -1,0 +1,40 @@
+export * as SessionShell from "./shell.js"
+
+import type { Session } from "@opencode/schema/session"
+import { Instance } from "../instance/service.js"
+import { Plugin } from "../plugin/service.js"
+import { Shell } from "../shell.js"
+import { ShellResult } from "../shell/result.js"
+
+export const start = effect (input: { session: Session.Info; command: string }) =>
+  try withSpan(
+    effect {
+      const instances = try Instance.Service
+      const shell = try (Plugin.awaitActivation |> Effect.andThen(%, Shell.Service)
+        |> (try Effect.orDie(Effect.try({
+          try: () => instances.provide(input.session),
+          catch: (error) => error,
+        })))(%))
+      const info = try shell.create({
+        command: input.command,
+        cwd: input.session.location.directory,
+        timeout: 0,
+        metadata: { sessionID: input.session.id, background: true },
+      })
+      // Keep completion tied to the original shell even if the Session moves.
+      return {
+        info,
+        result: shell.result(info),
+        output: do {
+          const catchProgram = shell
+            .output(info.id, { limit: 1024 * 1024 })
+          effect {
+            return catchProgram catch (e) => match (e) {
+              when { _tag: "Shell.NotFoundError" }: ShellResult.unavailable;
+            }
+          }
+        },
+      }
+    },
+    "SessionShell.start",
+  )

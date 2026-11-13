@@ -2,7 +2,7 @@ import { Effect, Schema } from "effect"
 import { LLM, LLMRequest, ToolRuntime, toDefinitions } from "../src/effect.js"
 import * as OpenAIChat from "../src/protocols/openai-chat.js"
 import { Auth } from "../src/route.js"
-import { Tool } from "../src/tool.js"
+import { Tool } from "../src/tool.vibe"
 
 const request = LLM.request({
   model: OpenAIChat.route.with({ auth: Auth.bearer("fixture") }).model({ id: "gpt-4o-mini" }),

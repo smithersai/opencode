@@ -1,0 +1,20 @@
+export * as ConfigSnapshotPlugin from "./snapshot.js"
+
+import { define } from "@opencode/plugin/effect/plugin"
+import { Config } from "../../config.js"
+import { Snapshot } from "../../snapshot.js"
+import { ConfigEntryObserver } from "./entry-observer.js"
+
+export const Plugin = define({
+  id: "opencode.config.snapshot",
+  effect: effect (ctx) => {
+    const config = try Config.Service
+    const snapshot = try Snapshot.Service
+    const loaded = try ConfigEntryObserver.observe(config, ctx.event, snapshot.reload())
+    try snapshot.transform((editor) => {
+      const configured = Config.latest(loaded.entries, "snapshots")
+      if (configured === undefined) return
+      editor.configure(configured)
+    })
+  },
+})

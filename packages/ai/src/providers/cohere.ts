@@ -1,8 +1,8 @@
-import { CohereChat } from "../protocols/cohere-chat.js"
+import { CohereChat } from "../protocols/cohere-chat.vibe"
 import { OpenAIChat } from "../protocols/openai-chat.js"
 import { Route, type RouteDefaultsInput } from "../route/client.js"
 import { Endpoint } from "../route/endpoint.js"
-import { AuthOptions, type ProviderAuthOption } from "../route/auth-options.js"
+import { AuthOptions, type ProviderAuthOption } from "../route/auth-options.vibe"
 import { ProviderID, type ModelID, type OpenString } from "../schema/index.js"
 import type { ProviderPackage } from "../provider-package.js"
 

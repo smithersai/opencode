@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test"
 import type { SessionNotification } from "@agentclientprotocol/sdk"
-import { ACPElicitation } from "../../src/acp/elicitation"
+import { ACPElicitation } from "../../src/acp/elicitation.vibe"
 import {
   childCreated,
   delivered,

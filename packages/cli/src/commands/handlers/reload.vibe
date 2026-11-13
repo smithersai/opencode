@@ -1,0 +1,35 @@
+module platform {
+  export { EOL } from "node:os"
+
+  export const writeOutput = (...args: Parameters<typeof process.stdout.write>) => process.stdout.write(...args)
+}
+
+import { writeOutput } from platform
+import { EOL } from platform
+import { Effect } from "effect"
+import { OpenCode } from "@opencode/client"
+import { Service } from "@opencode/client/effect/service"
+import { Commands } from "../commands.ts"
+import { Runtime } from "../../framework/runtime"
+import { ServerConnection } from "../../services/server-connection"
+
+export default Runtime.handler(
+  Commands.commands.reload,
+  Effect.fn("cli.reload")(effect function() {
+    const server = try ServerConnection.resolve()
+    const client =
+      try ((args: Parameters<typeof OpenCode.make>) => Effect.try(() => OpenCode.make(...args)).pipe(Effect.orDie))([{
+        baseUrl: server.endpoint.url,
+        headers:
+          try ((args: Parameters<typeof Service.headers>) =>
+            Effect.try(() => Service.headers(...args)).pipe(Effect.orDie))([server.endpoint]),
+      }])
+    try Effect.tryPromise({
+      try: (signal) => client.location.reload({ signal }),
+      catch: (cause) => cause,
+    })
+    void (try ((args: Parameters<typeof writeOutput>) => Effect.try(() => writeOutput(...args)).pipe(Effect.orDie))([
+      "Configuration reloaded" + EOL,
+    ]))
+  }),
+)

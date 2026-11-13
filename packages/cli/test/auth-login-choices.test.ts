@@ -1,6 +1,6 @@
 import { expect, test } from "bun:test"
 import type { IntegrationInfo } from "@opencode/client"
-import { loginChoices } from "../src/commands/handlers/auth/login"
+import { loginChoices } from "../src/commands/handlers/auth/login.vibe"
 
 const integration = (value: Partial<IntegrationInfo> & Pick<IntegrationInfo, "id" | "name">): IntegrationInfo => ({
   methods: [{ type: "key" }],

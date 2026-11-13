@@ -10,9 +10,17 @@
     "./message": "./src/message/current-message.tsx",
     "./timeline/projection": "./src/timeline/projection.ts",
     "./timeline/detail": "./src/timeline/detail.ts",
-    "./timeline/row": "./src/timeline/session-timeline-row.tsx",
+    "./timeline/row": {
+      "types": "./src/timeline/session-timeline-row.d.vibex.ts",
+      "vibelang-source": "./src/timeline/session-timeline-row.vibex",
+      "default": "./.vibelang/js/src/timeline/session-timeline-row.jsx"
+    },
     "./timeline": "./src/timeline/session-timeline.tsx",
-    "./basic-tool": "./src/components/basic-tool.tsx",
+    "./basic-tool": {
+      "types": "./src/components/basic-tool.d.vibex.ts",
+      "vibelang-source": "./src/components/basic-tool.vibex",
+      "default": "./.vibelang/js/src/components/basic-tool.jsx"
+    },
     "./dock-prompt": "./src/components/dock-prompt.tsx",
     "./file": "./src/components/file.tsx",
     "./file-media": "./src/components/file-media.tsx",
@@ -22,7 +30,11 @@
     "./markdown": "./src/components/markdown.tsx",
     "./message-part": "./src/components/message-part.tsx",
     "./message-nav": "./src/components/message-nav.tsx",
-    "./session-review": "./src/components/session-review.tsx",
+    "./session-review": {
+      "types": "./src/components/session-review.d.vibex.ts",
+      "vibelang-source": "./src/components/session-review.vibex",
+      "default": "./.vibelang/js/src/components/session-review.jsx"
+    },
     "./session-retry": "./src/components/session-retry.tsx",
     "./tool-count-label": "./src/components/tool-count-label.tsx",
     "./tool-count-summary": "./src/components/tool-count-summary.tsx",
@@ -39,7 +51,11 @@
     "./pierre/*": "./src/pierre/*.ts",
     "./context": "./src/context/index.ts",
     "./context/*": "./src/context/*.tsx",
-    "./sources": "./src/sources/sources.ts",
+    "./sources": {
+      "types": "./src/sources/sources.d.vibe.ts",
+      "vibelang-source": "./src/sources/sources.vibe",
+      "default": "./.vibelang/js/src/sources/sources.js"
+    },
     "./sources/experiment": "./src/sources/experiment.ts",
     "./sources/panel": "./src/sources/sources-panel.tsx",
     "./sources/title": "./src/sources/sources-title.tsx",
@@ -50,10 +66,10 @@
   },
   "scripts": {
     "typecheck": "bun check --no-script -b",
-    "typecheck:tsc": "tsc -b",
+    "typecheck:tsc": "vibelang -b",
     "test": "bun test src --only-failures",
-    "test:components": "playwright test --config playwright.components.config.ts",
-    "test:components:ui": "playwright test --config playwright.components.config.ts --ui"
+    "test:components": "NODE_OPTIONS=\"${NODE_OPTIONS:+$NODE_OPTIONS }--import=vibelang/register\" playwright test --config playwright.components.config.ts",
+    "test:components:ui": "NODE_OPTIONS=\"${NODE_OPTIONS:+$NODE_OPTIONS }--import=vibelang/register\" playwright test --config playwright.components.config.ts --ui"
   },
   "devDependencies": {
     "@happy-dom/global-registrator": "20.0.11",
@@ -62,7 +78,10 @@
     "@types/bun": "catalog:",
     "@typescript/native": "catalog:",
     "vite": "catalog:",
-    "vite-plugin-solid": "catalog:"
+    "vite-plugin-solid": "catalog:",
+    "vibelang": "file:../../.vibelang-toolchain/0.0.14-pre.d955d06c6696/tarballs/vibelang-0.0.14-pre.d955d06c6696.tgz",
+    "vibelang-vite": "file:../../.vibelang-toolchain/0.0.14-pre.d955d06c6696/tarballs/vibelang-vite-0.0.14-pre.d955d06c6696.tgz",
+    "fast-check": "catalog:"
   },
   "dependencies": {
     "@kitlangton/solid-motion": "0.2.2",
@@ -81,6 +100,7 @@
     "dompurify": "3.4.17",
     "marked": "catalog:",
     "pele": "1.7.0",
-    "solid-js": "catalog:"
+    "solid-js": "catalog:",
+    "vibelang-runtime": "file:../../.vibelang-toolchain/0.0.14-pre.d955d06c6696/tarballs/vibelang-runtime-0.0.14-pre.d955d06c6696.tgz"
   }
 }

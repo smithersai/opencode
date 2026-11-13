@@ -1,0 +1,9 @@
+import type { Effect, Schema } from "effect"
+import type { StorageScanOptions, StorageScanResult } from "../storage.js"
+
+export interface StorageDomain {
+  readonly get: (key: string) => (Schema.Json | undefined)!!
+  readonly set: (key: string, value: Schema.Json) => void!!
+  readonly remove: (key: string) => void!!
+  readonly scan: (options: StorageScanOptions) => StorageScanResult!!
+}

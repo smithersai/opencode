@@ -4,7 +4,7 @@ import { Icon } from "@opencode/ui/icon"
 import { showToast, toaster } from "@opencode/ui/toast"
 import type { DialogHandle, IpcClient, SetupContext } from "@opencode/plugin/gui"
 import type { Updater } from "@opencode/plugin/gui/updater"
-import type definition from "./index"
+import type definition from "./index.vibe"
 
 type Client = IpcClient<typeof Updater.spec>
 

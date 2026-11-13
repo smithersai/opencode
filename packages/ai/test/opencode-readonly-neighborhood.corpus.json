@@ -1,0 +1,17 @@
+{
+  "contract": "Schema.Struct defaults preserve readonly decoded fields, including nested, optional and private codecs.",
+  "rows": [
+    {
+      "source": "src/protocols/openai-transcription.vibe",
+      "codec": "Segment",
+      "writes": ["segments![0]!.text", "segments![0]!.start", "segments![0]!.end", "segments![0]!.speaker"],
+      "type": "typeof Transcript.Type"
+    },
+    {
+      "source": "src/protocols/utils/open-responses-options.vibe",
+      "codec": "AllowedTools",
+      "writes": ["toolNames", "mode"],
+      "type": "typeof AllowedTools.Type"
+    }
+  ]
+}

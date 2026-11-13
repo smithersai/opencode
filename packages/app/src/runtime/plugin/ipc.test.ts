@@ -2,7 +2,7 @@ import { expect, test } from "bun:test"
 import { Ipc } from "@opencode/plugin/gui"
 import { Schema } from "effect"
 import type { Bridge, BridgeMessage } from "@opencode/plugin/gui/host"
-import { createIpcClients } from "./ipc"
+import { createIpcClients } from "./ipc.vibe"
 
 const token: Ipc = { kind: "ipc", id: "fixture", spec: { id: "fixture", methods: {} } }
 

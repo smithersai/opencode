@@ -1,5 +1,5 @@
 import { expect, test } from "bun:test"
-import { isAllowedCorsOrigin, isAllowedRequestOrigin } from "../src/cors"
+import { isAllowedCorsOrigin, isAllowedRequestOrigin } from "../src/cors.vibe"
 
 test("custom origins extend the defaults without allowing other origins", () => {
   const options = { cors: ["http://192.168.1.10:3001", "https://example.com"] }

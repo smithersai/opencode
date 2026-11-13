@@ -1,7 +1,7 @@
 import { describe, expect, test } from "bun:test"
 import { Schema } from "effect"
-import { Credential } from "../src/credential.js"
-import { CredentialLegacy } from "../src/credential-legacy.js"
+import { Credential } from "../src/credential.vibe"
+import { CredentialLegacy } from "../src/credential-legacy.vibe"
 
 const decode = Schema.decodeUnknownSync(CredentialLegacy.Value)
 const legacy = {

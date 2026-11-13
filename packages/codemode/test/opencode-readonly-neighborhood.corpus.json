@@ -1,0 +1,17 @@
+{
+  "contract": "Schema.Struct defaults preserve readonly decoded fields, including nested, optional and private codecs.",
+  "rows": [
+    {
+      "source": "src/codemode.vibe",
+      "codec": "Input",
+      "writes": ["code"],
+      "type": "typeof Input.Type"
+    },
+    {
+      "source": "src/codemode.vibe",
+      "codec": "ToolCallSchema",
+      "writes": ["toolCalls[0]!.name"],
+      "type": "typeof Success.Type"
+    }
+  ]
+}

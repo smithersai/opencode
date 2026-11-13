@@ -1,0 +1,490 @@
+export * as Npm from "./npm.js"
+
+import { Clock, Effect, Schema, Context, Layer, Option, FileSystem } from "effect"
+import { Host } from "./npm.platform.js"
+import { FSUtil } from "./fs-util.js"
+import { Global } from "./global.js"
+import { EffectFlock } from "./effect-flock.js"
+import { makeGlobalNode } from "./effect/app-node.js"
+import { filesystem } from "#vibelang/emitted/src/effect/app-node-platform"
+import { NpmConfig } from "./npm-config.js"
+
+export class InstallFailedError extends Schema.TaggedError<InstallFailedError>()("NpmInstallFailedError", {
+  add: Schema.Array(Schema.String).pipe(Schema.optional),
+  dir: Schema.String,
+  cause: Schema.optional(Schema.Defect()),
+}) {}
+
+export interface Package {
+  readonly directory: string
+  readonly name: string
+  readonly version?: string
+  readonly revision?: string
+}
+
+export interface Interface {
+  readonly add: (pkg: string) => Effect.Effect<Package, InstallFailedError | EffectFlock.LockError>
+  readonly resolve: (pkg: string) => Effect.Effect<Package>
+  readonly check: (pkg: string) => Effect.Effect<boolean, InstallFailedError>
+  readonly update: (pkg: string) => Effect.Effect<Package, InstallFailedError | EffectFlock.LockError>
+  readonly which: (pkg: string, bin?: string) => Effect.Effect<string | undefined>
+}
+
+export class Service extends Context.Service<Service, Interface>()("@opencode/Npm") {}
+
+const illegal = Host.platform() === "win32" ? new Set(["<", ">", ":", '"', "|", "?", "*"]) : undefined
+
+export function sanitize(pkg: string) {
+  if (!illegal) return pkg
+  return Array.from(pkg, (char) => (illegal.has(char) || char.charCodeAt(0) < 32 ? "_" : char)).join("")
+}
+
+export async function isRegistryPackage(pkg: string) {
+  return (await parse(pkg))?.type === "registry"
+}
+
+export async function isInstallablePackage(pkg: string) {
+  return (await parse(pkg)) !== undefined
+}
+
+export async function cacheKey(pkg: string) {
+  return key(pkg, await parse(pkg))
+}
+
+type Target =
+  | { readonly type: "registry"; readonly name: string; readonly spec: string; readonly mutable: boolean }
+  | { readonly type: "git"; readonly name?: string; readonly slug: string; readonly mutable: boolean }
+
+async function parse(pkg: string): Promise<Target | undefined> {
+  const { default: npa } = await import("npm-package-arg")
+  try {
+    const result = npa(pkg)
+    if (result.type === "git") {
+      return {
+        type: "git",
+        ...(result.name ? { name: result.name } : {}),
+        slug: gitSlug(pkg),
+        mutable: !isCommit(result.gitCommittish),
+      }
+    }
+    if (!result.name || !["version", "range", "tag"].includes(result.type)) return
+    return {
+      type: "registry",
+      name: result.name,
+      spec: result.raw === result.name ? "latest" : result.rawSpec,
+      mutable: result.type !== "version",
+    }
+  } catch {
+    return
+  }
+}
+
+function key(pkg: string, target: Target | undefined) {
+  if (target?.type === "git") return `git-${target.slug}-${Host.sha256Hex(pkg).slice(0, 12)}`
+  if (target?.type === "registry") return sanitize(`${target.name}@${target.spec}`)
+  return sanitize(pkg)
+}
+
+function gitSlug(pkg: string) {
+  const target = (() => {
+    try {
+      return decodeURIComponent(pkg.split("#")[0])
+    } catch {
+      return pkg.split("#")[0]
+    }
+  })()
+  return (
+    target
+      .replace(/\.git$/i, "")
+      .split(/[/:\\]/)
+      .at(-1)
+      ?.replace(/[^a-zA-Z0-9._-]+/g, "-")
+      .replace(/^-+|-+$/g, "") || "repository"
+  )
+}
+
+interface ArboristNode {
+  name: string
+  path: string
+  realpath: string
+  isLink: boolean
+}
+
+interface ArboristTree {
+  edgesOut: Map<string, { to?: ArboristNode }>
+  inventory: { values(): IterableIterator<ArboristNode> }
+}
+
+const PackageJson = Schema.Struct({
+  dependencies: Schema.optional(Schema.Record(Schema.String, Schema.String)),
+  version: Schema.optional(Schema.String),
+})
+
+const PackageLock = Schema.Struct({
+  packages: Schema.optional(Schema.Record(Schema.String, Schema.Struct({ resolved: Schema.optional(Schema.String) }))),
+})
+
+const retention = 7 * 24 * 60 * 60 * 1_000
+const stagingRetention = 60 * 60 * 1_000
+
+const layer = Layer.effect(
+  Service,
+  effect {
+    const afs = try FSUtil.Service
+    const global = try Global.Service
+    const fs = try FileSystem.FileSystem
+    const flock = try EffectFlock.Service
+    const directory = (pkg: string, target: Target | undefined) => Host.join(global.cache, "npm", key(pkg, target))
+    const generations = effect (dir: string) => {
+      return try fs.readDirectory(dir).pipe(
+        Effect.orElseSucceed(() => [] as string[]),
+        Effect.map((entries) =>
+          entries
+            .filter((entry) => /^\d+$/.test(entry))
+            .toSorted((a, b) => Number(a) - Number(b))
+        ),
+      )
+    }
+    const current = effect (dir: string) => {
+      const latest = (try generations(dir)).at(-1)
+      return latest ? Host.join(dir, latest) : undefined
+    }
+    const mkdir = (dir: string) =>
+      fs.makeDirectory(dir, { recursive: true }).pipe(
+        Effect.mapError((cause) => new InstallFailedError({ dir, cause })),
+      )
+    const remove = (target: string, dir: string) =>
+      fs.remove(target, { recursive: true, force: true }).pipe(
+        Effect.mapError((cause) => new InstallFailedError({ dir, cause })),
+      )
+    const rename = (from: string, to: string, dir: string) =>
+      fs.rename(from, to).pipe(Effect.mapError((cause) => new InstallFailedError({ dir, cause })))
+    const installedName = effect (pkg: string, dir: string, target?: Target) => {
+      if (target?.name) return target.name
+      const manifest = try afs
+        .readJson(Host.join(dir, "package.json"))
+        .pipe(Effect.flatMap(Schema.decodeUnknownEffect(PackageJson)), Effect.option)
+      if (Option.isSome(manifest)) {
+        const name = Object.keys(manifest.value.dependencies ?? {})[0]
+        if (name) return name
+      }
+      return pkg
+    }
+    const installedRevision = effect (root: string, name: string, target: Target) => {
+      const dir = Host.join(root, "node_modules", name)
+      if (target.type === "registry") {
+        const manifest = try afs
+          .readJson(Host.join(dir, "package.json"))
+          .pipe(Effect.flatMap(Schema.decodeUnknownEffect(PackageJson)), Effect.option)
+        return Option.isSome(manifest) ? manifest.value.version : undefined
+      }
+      for (
+        const file of [Host.join(root, "package-lock.json"), Host.join(root, "node_modules", ".package-lock.json")]
+      ) {
+        const lock = try afs
+          .readJson(file)
+          .pipe(Effect.flatMap(Schema.decodeUnknownEffect(PackageLock)), Effect.option)
+        const revision = gitRevision(
+          Option.isSome(lock) ? lock.value.packages?.[`node_modules/${name}`]?.resolved : undefined,
+        )
+        if (revision) return revision
+      }
+    }
+    const metadata = effect (root: string, name: string, dir: string, target: Target | undefined) => {
+      const manifest = try afs
+        .readJson(Host.join(dir, "package.json"))
+        .pipe(Effect.flatMap(Schema.decodeUnknownEffect(PackageJson)), Effect.option)
+      const manifestVersion = Option.isSome(manifest) ? manifest.value.version : undefined
+      const revision = target ? (try installedRevision(root, name, target)) ?? manifestVersion : undefined
+      const version = target?.type === "git" ? revision : manifestVersion
+      return {
+        directory: dir,
+        name,
+        ...(version ? { version } : {}),
+        ...(revision ? { revision } : {}),
+      }
+    }
+    const reify = (input: { dir: string; config?: string; add?: string[]; update?: boolean }) =>
+      withSpan(
+        effect {
+          const { Arborist } = try promise(() => import("@npmcli/arborist"))
+          const add = input.add ?? []
+          const options = {
+            ...(try NpmConfig.load(input.config ?? input.dir)),
+            ...(input.update ? { preferOnline: true, noGitRevCache: true } : {}),
+            // Audit reports are unused here, but Arborist waits for them before completing an install.
+            audit: false,
+            windowsHide: true,
+          }
+          const arborist = try Effect.try({
+            try: () =>
+              new Arborist({
+                ...options,
+                path: input.dir,
+                binLinks: true,
+                progress: false,
+                savePrefix: "",
+                ignoreScripts: true,
+              }),
+            catch: (cause) => cause,
+          }).pipe(Effect.orDie)
+          return try (Effect.tryPromise({
+            try: () =>
+              arborist.reify({
+                ...options,
+                add,
+                update: input.update,
+                save: true,
+                saveType: "prod",
+              }),
+            catch: (cause) =>
+              new InstallFailedError({
+                cause,
+                add,
+                dir: input.dir,
+              }),
+          }) as Effect.Effect<ArboristTree, InstallFailedError>)
+        },
+        "Npm.reify",
+        {
+          attributes: input,
+        },
+      )
+
+    const install = effect (pkg: string, target: Target | undefined, dir: string, update: boolean) => {
+      try flock.acquire(`npm-install:${dir}`)
+      const active = try current(dir)
+      const name = try installedName(pkg, active ?? dir, target)
+      if (active && !update && (try afs.existsSafe(Host.join(active, "node_modules", name)))) {
+        return try metadata(active, name, Host.join(active, "node_modules", name), target)
+      }
+
+      try mkdir(dir)
+      const startedAt = try Clock.currentTimeMillis
+      // Arborist keys lockfile entries relative to the root's real path. When the cache
+      // directory is reached through a symlink (macOS `/var` → `/private/var`, a linked
+      // XDG cache), the keys become `../../…` paths that installedRevision never finds,
+      // so Git checks report "not installed" and updates go undetected. Stage under the
+      // resolved directory so the root path and real path agree.
+      const root = try fs.realPath(dir).pipe(Effect.mapError((cause) => new InstallFailedError({ dir, cause })))
+      const uuid = try Effect.try({ try: () => Host.randomUUID(), catch: (cause) => cause }).pipe(Effect.orDie)
+      const staging = Host.join(root, `.staging-${startedAt}-${uuid}`)
+      const staged = try onError(
+        effect {
+          const tree = try reify({ dir: staging, config: dir, add: [pkg], update })
+          const installed = tree.edgesOut.values().next().value?.to
+          const installedNameValue = installed?.name ?? (try installedName(pkg, staging, target))
+          const result = try metadata(
+            staging,
+            installedNameValue,
+            installed?.path ?? Host.join(staging, "node_modules", installedNameValue),
+            target,
+          )
+          if (!installed && !(try afs.isDir(result.directory))) {
+            throw new InstallFailedError({ add: [pkg], dir: staging })
+          }
+          const links = Host.platform() === "win32"
+            ? Array.from(tree.inventory.values()).filter(
+              (node) => node.isLink && FSUtil.contains(staging, node.path) && FSUtil.contains(staging, node.realpath),
+            )
+            : []
+          return { result, links }
+        },
+        () => remove(staging, dir).pipe(Effect.ignore),
+      )
+
+      if (active) {
+        const activeEntry = try metadata(active, name, Host.join(active, "node_modules", name), target)
+        if (activeEntry.revision && activeEntry.revision === staged.result.revision) {
+          try remove(staging, dir)
+          return activeEntry
+        }
+      }
+
+      const completedAt = try Clock.currentTimeMillis
+      const newest = Number((try generations(dir)).at(-1) ?? 0)
+      const generation = Host.join(dir, String(Math.max(completedAt, newest + 1)))
+      // Windows junctions use absolute targets, so rebase internal links before publishing the generation.
+      if (staged.links.length > 0) {
+        const files = try promise(() => Host.filePromises())
+        try Effect.forEach(
+          staged.links,
+          (link) =>
+            Effect.tryPromise({
+              try: () => Host.relink(files, link.path, Host.join(generation, Host.relative(staging, link.realpath))),
+              catch: (cause) => new InstallFailedError({ dir, cause }),
+            }),
+          { discard: true },
+        ).pipe(Effect.onError(() => remove(staging, dir).pipe(Effect.ignore)))
+      }
+      try rename(staging, generation, dir)
+      return { ...staged.result, directory: Host.join(generation, "node_modules", staged.result.name) }
+    }
+
+    const collect = effect (dir: string) => {
+      const now = try Clock.currentTimeMillis
+      const completed = try generations(dir)
+      const keep = new Set(completed.slice(-2))
+      const entries = try fs.readDirectory(dir).pipe(Effect.orElseSucceed(() => [] as string[]))
+      try Effect.forEach(
+        entries,
+        (name) => {
+          const timestamp = /^\d+$/.test(name)
+            ? Number(name)
+            : Number(name.match(/^\.staging-(\d+)-/)?.[1] ?? Number.NaN)
+          const maximumAge = name.startsWith(".staging-") ? stagingRetention : retention
+          if (!Number.isFinite(timestamp) || keep.has(name) || now - timestamp <= maximumAge) return Effect.void
+          return remove(Host.join(dir, name), dir).pipe(
+            Effect.catchCause((cause) =>
+              Effect.logWarning("failed to remove stale npm generation", { dir, name, cause })
+            ),
+          )
+        },
+        { concurrency: "unbounded", discard: true },
+      )
+    }
+
+    const add = fn("Npm.add")(effect (pkg: string) => {
+      const target = try promise(() => parse(pkg))
+      const dir = directory(pkg, target)
+      return try install(pkg, target, dir, false)
+    }, Effect.scoped)
+
+    const resolve = fn("Npm.resolve")(effect (pkg: string) => {
+      const target = try promise(() => parse(pkg))
+      const root = directory(pkg, target)
+      const generation = try current(root)
+      const name = try installedName(pkg, generation ?? root, target)
+      const dir = Host.join(generation ?? root, "node_modules", name)
+      if (!(try afs.existsSafe(dir))) return { directory: dir, name }
+      return try metadata(generation ?? root, name, dir, target)
+    })
+
+    const check = fn("Npm.check")(effect (pkg: string) => {
+      const target = try promise(() => parse(pkg))
+      const root = directory(pkg, target)
+      if (!target) {
+        throw new InstallFailedError({
+          dir: root,
+          cause: new Error("Package checks only support registry and Git package specs"),
+        })
+      }
+      if (!target.mutable) return false
+      const generation = try current(root)
+      const name = try installedName(pkg, generation ?? root, target)
+      const installed = generation ? try installedRevision(generation, name, target) : undefined
+      if (!installed) {
+        throw new InstallFailedError({ dir: root, cause: new Error(`Package is not installed: ${pkg}`) })
+      }
+      const { manifest, resolve } = try promise(() => import("pacote"))
+      const options = {
+        ...(try NpmConfig.load(root)),
+        preferOnline: true,
+        noGitRevCache: true,
+        ignoreScripts: true,
+        // Pacote spawns Git directly rather than through AppProcess.
+        windowsHide: true,
+      }
+      const available = try Effect.tryPromise({
+        try: async () =>
+          target.type === "git" ? gitRevision(await resolve(pkg, options)) : (await manifest(pkg, options)).version,
+        catch: (cause) => new InstallFailedError({ dir: root, cause }),
+      })
+      if (!available) {
+        throw new InstallFailedError({ dir: root, cause: new Error(`Package revision not found: ${pkg}`) })
+      }
+      return installed !== available
+    })
+
+    const update = fn("Npm.update")(effect (pkg: string) => {
+      const target = try promise(() => parse(pkg))
+      const dir = directory(pkg, target)
+      if (!target) {
+        throw new InstallFailedError({
+          dir,
+          cause: new Error("Package updates only support registry and Git package specs"),
+        })
+      }
+      if (!target.mutable) return try add(pkg)
+      const installed = try install(pkg, target, dir, true)
+      try collect(dir)
+      return installed
+    }, Effect.scoped)
+
+    const which = fn("Npm.which")(effect (pkg: string, bin?: string) => {
+      const target = try promise(() => parse(pkg))
+      const root = directory(pkg, target)
+
+      const pick = effect (dir: string) => {
+        const binDir = Host.join(dir, "node_modules", ".bin")
+        const files = try fs.readDirectory(binDir).pipe(Effect.orElseSucceed(() => [] as string[]))
+
+        if (files.length === 0) return Option.none<string>()
+        // Caller picked a specific bin (e.g. pyright exposes both `pyright` and
+        // `pyright-langserver`); trust the hint if the package provides it.
+        if (bin) return files.includes(bin) ? Option.some(Host.join(binDir, bin)) : Option.none<string>()
+        if (files.length === 1) return Option.some(Host.join(binDir, files[0]))
+
+        const packageName = target?.name ?? pkg
+        const pkgJson = try afs.readJson(Host.join(dir, "node_modules", packageName, "package.json")).pipe(
+          Effect.option,
+        )
+
+        if (Option.isSome(pkgJson)) {
+          const parsed = pkgJson.value as { bin?: string | Record<string, string> }
+          if (parsed?.bin) {
+            const unscoped = packageName.startsWith("@") ? packageName.split("/")[1] : packageName
+            const parsedBin = parsed.bin
+            if (typeof parsedBin === "string") return Option.some(Host.join(binDir, unscoped))
+            const keys = Object.keys(parsedBin)
+            const selected = parsedBin[unscoped] ? unscoped : keys[0]
+            return selected ? Option.some(Host.join(binDir, selected)) : Option.none<string>()
+          }
+        }
+
+        return Option.some(Host.join(binDir, files[0]))
+      }
+
+      return Option.getOrUndefined(
+        try Effect.orElseSucceed(
+          scoped(
+            effect {
+              const generation = try current(root)
+              const selected = generation ? try pick(generation) : Option.none<string>()
+              if (Option.isSome(selected)) return selected
+
+              try add(pkg)
+
+              const installed = try current(root)
+              if (!installed) return Option.none<string>()
+              return try pick(installed)
+            },
+          ),
+          () => Option.none<string>(),
+        ),
+      )
+    })
+
+    return Service.of({
+      add,
+      resolve,
+      check,
+      update,
+      which,
+    })
+  },
+)
+
+export const node = makeGlobalNode({
+  service: Service,
+  layer: layer,
+  deps: [FSUtil.node, Global.node, filesystem, EffectFlock.node],
+})
+
+function gitRevision(resolved: string | undefined) {
+  return resolved?.match(/#([a-f0-9]{40}|[a-f0-9]{64})(?=::|$)/i)?.[1]
+}
+
+function isCommit(value: string | null | undefined) {
+  return /^(?:[a-f0-9]{40}|[a-f0-9]{64})$/i.test(value ?? "")
+}

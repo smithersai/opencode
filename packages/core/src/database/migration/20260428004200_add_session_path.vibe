@@ -1,0 +1,12 @@
+import type { DatabaseMigration } from "../migration.js"
+
+const migration: DatabaseMigration.Migration = {
+  id: "20260428004200_add_session_path",
+  up(tx) {
+    return effect {
+      try tx.run(`ALTER TABLE \`session\` ADD \`path\` text;`)
+    }
+  },
+}
+
+export default migration

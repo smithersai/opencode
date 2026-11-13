@@ -16,19 +16,39 @@
     "dist"
   ],
   "exports": {
-    "./backend": "./src/backend/index.ts",
+    "./backend": {
+      "types": "./src/backend/index.d.vibe.ts",
+      "vibelang-source": "./src/backend/index.vibe",
+      "default": "./.vibelang/js/src/backend/index.js"
+    },
     "./backend/*": "./src/backend/*.ts",
     "./frontend": "./src/frontend/simulation.ts",
     "./frontend/*": "./src/frontend/*.ts",
     "./protocol": "./src/protocol/index.ts",
-    "./recording": "./src/recording.ts"
+    "./recording": "./src/recording.ts",
+    "./backend/openai": {
+      "types": "./src/backend/openai.d.vibe.ts",
+      "vibelang-source": "./src/backend/openai.vibe",
+      "default": "./.vibelang/js/src/backend/openai.js"
+    },
+    "./backend/simulated-provider": {
+      "types": "./src/backend/simulated-provider.d.vibe.ts",
+      "vibelang-source": "./src/backend/simulated-provider.vibe",
+      "default": "./.vibelang/js/src/backend/simulated-provider.js"
+    },
+    "./frontend/renderer": {
+      "types": "./src/frontend/renderer.d.vibe.ts",
+      "vibelang-source": "./src/frontend/renderer.vibe",
+      "default": "./.vibelang/js/src/frontend/renderer.js"
+    },
+    "./frontend/simulation.impl.vibe.platform": null
   },
   "scripts": {
     "build": "bun run script/build.ts",
     "pack": "bun run script/pack.ts",
     "test": "bun test --timeout 30000 --only-failures",
     "typecheck": "bun check --no-script -b",
-    "typecheck:tsc": "tsc -b"
+    "typecheck:tsc": "vibelang -b"
   },
   "dependencies": {
     "@opencode/core": "workspace:*",
@@ -38,12 +58,15 @@
     "@opencode/util": "workspace:*",
     "@opentui/core": "catalog:",
     "effect": "catalog:",
-    "ws": "8.21.0"
+    "ws": "8.21.0",
+    "vibelang-runtime": "file:../../.vibelang-toolchain/0.0.14-pre.d955d06c6696/tarballs/vibelang-runtime-0.0.14-pre.d955d06c6696.tgz"
   },
   "devDependencies": {
     "@tsconfig/bun": "catalog:",
     "@types/bun": "catalog:",
     "@types/ws": "8.18.1",
-    "@typescript/native": "catalog:"
+    "@typescript/native": "catalog:",
+    "vibelang": "file:../../.vibelang-toolchain/0.0.14-pre.d955d06c6696/tarballs/vibelang-0.0.14-pre.d955d06c6696.tgz",
+    "fast-check": "catalog:"
   }
 }

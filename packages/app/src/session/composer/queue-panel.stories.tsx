@@ -1,5 +1,5 @@
 import { SessionQueuePanel } from "./queue-panel"
-import type { SessionQueueView } from "./queue"
+import type { SessionQueueView } from "./queue.vibe"
 
 const prompts = [
   "Compare the Alpha and Beta fixtures",

@@ -167,7 +167,7 @@
       "files": [
         "packages/codemode/src/interpreter/runner.ts",
         "packages/codemode/src/interpreter/execute.ts",
-        "packages/codemode/src/interpreter/extensions.ts"
+        "packages/codemode/src/interpreter/extensions.vibe"
       ],
       "rules": {
         "no-restricted-imports": "off"
@@ -175,6 +175,8 @@
     }
   ],
   "ignorePatterns": [
+    "**/*.d.vibe.ts",
+    "**/.vibelang/js/**",
     "**/node_modules",
     "**/dist",
     "**/.build",

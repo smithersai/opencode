@@ -1,6 +1,6 @@
 import { LLM } from "../../src/effect.js"
 import { GoogleVertexInteractions } from "../../src/providers.js"
-import { Auth } from "../../src/route/auth.js"
+import { Auth } from "../../src/route/auth.vibe"
 import { model } from "../../src/providers/google-vertex/interactions.js"
 
 const selected = GoogleVertexInteractions.configure({ project: "project" }).model("gemini-3.8-flash")

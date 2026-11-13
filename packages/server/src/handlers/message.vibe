@@ -1,0 +1,67 @@
+import { cursor } from "./message.platform"
+import { SessionMessage } from "@opencode/core/session/message"
+import { Session } from "@opencode/core/session"
+import { Effect, Option } from "effect"
+import { HttpServerResponse } from "effect/http"
+import { HttpApiBuilder } from "effect/http-api"
+import { Api } from "../api"
+import { wantsMediaRefs } from "#vibelang/emitted/src/media-uri"
+import { InvalidCursorError } from "@opencode/protocol/errors"
+import { SessionMediaMessagesResponse } from "@opencode/protocol/groups/message"
+import { failedMessageDecode, missingSession } from "./session-error"
+
+const DefaultMessagesLimit = 50
+
+export const MessageHandler = HttpApiBuilder.group(Api, "server.message", (handlers) =>
+  effect {
+    const session = try Session.Service
+
+    return handlers.handle(
+      "session.messages",
+      Effect.fn(effect function(ctx) {
+        if (ctx.query.cursor && ctx.query.order !== undefined) {
+          return try new InvalidCursorError({ message: "Cursor cannot be combined with order" })
+        }
+        const encodedCursor = ctx.query.cursor
+        const decoded = encodedCursor
+          ? (Option.getOrUndefined(try Effect.try(() => cursor.decode(encodedCursor)).pipe(Effect.orDie))
+            ?? (try new InvalidCursorError({ message: "Invalid cursor" })))
+          : undefined
+        const order = decoded?.order ?? ctx.query.order ?? "desc"
+        const input = {
+          sessionID: ctx.params.sessionID,
+          limit: ctx.query.limit ?? DefaultMessagesLimit,
+          order,
+          type: ctx.query.type,
+          cursor: decoded ? { id: decoded.id, direction: decoded.direction } : undefined,
+        }
+        const page = <Message extends { readonly id: SessionMessage.ID }>(messages: ReadonlyArray<Message>) => {
+          const first = messages[0]
+          const last = messages.at(-1)
+          return {
+            data: messages,
+            cursor: {
+              previous: first ? cursor.encode(first, order, "previous") : undefined,
+              next: last ? cursor.encode(last, order, "next") : undefined,
+            },
+          }
+        }
+        if (wantsMediaRefs(ctx.request)) {
+          const messages = try session
+            .messagesWithRefs(input)
+            .pipe(
+              Effect.catchTag("Session.NotFoundError", missingSession),
+              Effect.catchTag("Session.MessageDecodeError", failedMessageDecode),
+            )
+          return try HttpServerResponse.schemaJson(SessionMediaMessagesResponse)(page(messages)).pipe(Effect.orDie)
+        }
+        const messages = try session
+          .messages(input)
+          .pipe(
+            Effect.catchTag("Session.NotFoundError", missingSession),
+            Effect.catchTag("Session.MessageDecodeError", failedMessageDecode),
+          )
+        return page(messages)
+      }),
+    )
+  })

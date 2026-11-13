@@ -1,9 +1,9 @@
-import { Auth } from "../route/auth.js"
-import { type AtLeastOne, type ProviderAuthOption } from "../route/auth-options.js"
+import { Auth } from "../route/auth.vibe"
+import { type AtLeastOne, type ProviderAuthOption } from "../route/auth-options.vibe"
 import type { Route, RouteDefaultsInput, CompactionOperations } from "../route/client.js"
 import { Endpoint } from "../route/endpoint.js"
 import type { ProviderPackage } from "../provider-package.js"
-import { MediaRoute } from "../route/media.js"
+import { MediaRoute } from "../route/media.vibe"
 import {
   HttpOptions,
   ProviderConfigurationError,
@@ -12,9 +12,9 @@ import {
   type ModelID,
   type ProviderOptions,
 } from "../schema/index.js"
-import { OpenAIImages } from "../protocols/openai-images.js"
+import { OpenAIImages } from "../protocols/openai-images.vibe"
 import * as OpenAIChat from "../protocols/openai-chat.js"
-import * as OpenAIResponses from "../protocols/openai-responses.js"
+import * as OpenAIResponses from "../protocols/openai-responses.vibe"
 import { withOpenAIOptions, type OpenAIProviderOptionsInput } from "./openai-options.js"
 
 export const id = ProviderID.make("azure")

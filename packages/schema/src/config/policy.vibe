@@ -1,0 +1,9 @@
+export * as ConfigPolicy from "./policy.js"
+
+export schema Effect = "allow" | "deny"
+
+export schema Info {
+  readonly action: "provider.use" | "tool.use" | "integration.use"
+  readonly resource: string
+  readonly effect: Effect
+}

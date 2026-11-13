@@ -1,0 +1,63 @@
+export * as Bom from "./bom.js"
+
+import type { FSUtil } from "./fs-util.js"
+
+const code = 0xfeff
+const value = String.fromCharCode(code)
+
+export function split(text: string) {
+  const stripped = text.replace(/^\uFEFF+/, "")
+  return { bom: stripped.length !== text.length, text: stripped }
+}
+
+export function join(text: string, bom: boolean) {
+  const stripped = split(text).text
+  return bom ? value + stripped : stripped
+}
+
+export function has(content: Uint8Array) {
+  return content[0] === 0xef && content[1] === 0xbb && content[2] === 0xbf
+}
+
+export function decodeBytes(content: Uint8Array) {
+  return split(decode(content))
+}
+
+export function syncBytes(content: Uint8Array, bom: boolean) {
+  const decoded = decode(content)
+  const current = split(decoded)
+  const canonical = bom ? value + current.text : current.text
+  return { text: current.text, bytes: decoded === canonical ? undefined : new TextEncoder().encode(canonical) }
+}
+
+export const readFile = effect (fs: FSUtil.Interface, filepath: string) =>
+  try withSpan(
+    effect {
+      return decodeBytes(try fs.readFile(filepath))
+    },
+    "Bom.readFile",
+  )
+
+export const syncFile = effect (fs: FSUtil.Interface, filepath: string, bom: boolean) =>
+  try withSpan(
+    effect {
+      const synced = syncBytes(try fs.readFile(filepath), bom)
+      if (synced.bytes) try fs.writeWithDirs(filepath, synced.bytes)
+      return synced.text
+    },
+    "Bom.syncFile",
+  )
+
+function decode(content: Uint8Array) {
+  return $invoke(new TextDecoder("utf-8", { ignoreBOM: true }), () => content)
+}
+
+module $call$ts {
+  export function $invoke<T extends { "decode": Function }>(
+    target: T,
+    arg0: () => Parameters<Extract<T["decode"], (...args: any[]) => any>>[0],
+  ): ReturnType<Extract<T["decode"], (...args: any[]) => any>> {
+    return target["decode"](arg0())
+  }
+}
+import { $invoke } from $call$ts

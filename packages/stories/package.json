@@ -19,6 +19,8 @@
     "solid-js": "catalog:",
     "typescript": "catalog:",
     "vite": "7.3.6",
-    "vite-plugin-solid": "2.11.12"
+    "vite-plugin-solid": "2.11.12",
+    "vibelang": "file:../../.vibelang-toolchain/0.0.14-pre.d955d06c6696/tarballs/vibelang-0.0.14-pre.d955d06c6696.tgz",
+    "vibelang-vite": "file:../../.vibelang-toolchain/0.0.14-pre.d955d06c6696/tarballs/vibelang-vite-0.0.14-pre.d955d06c6696.tgz"
   }
 }

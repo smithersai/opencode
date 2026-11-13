@@ -1,0 +1,42 @@
+import { FileRpcs } from "../../shared/ipc-rpc.vibe"
+import { DesktopFiles, openExternalURL, openLocalFileURL } from "../files/index.vibe"
+import { IpcPortHandoff } from "../ipc-transport.vibe"
+import { sender } from "./context"
+
+export const fileHandlers = FileRpcs.toLayer(
+  effect {
+    const files = try DesktopFiles.Service
+    const handoff = try IpcPortHandoff
+
+    return FileRpcs.of({
+      FilesOpenDirectoryPicker: ({ options }) => files.openDirectoryPicker(options),
+      FilesOpenFilePicker: effect ({ options }, context) => {
+        const contents = try Effect.orDie(Effect.try({ try: () => sender(handoff, context), catch: (error) => error }))
+        return try (files
+          .openFilePicker(
+            contents.id,
+            options ? { ...options, extensions: options.extensions && [...options.extensions] } : undefined,
+          ) |> Effect.orDie(%))
+      },
+      FilesReadPickedFile: effect ({ token, path }, context) => {
+        const contents = try Effect.orDie(Effect.try({ try: () => sender(handoff, context), catch: (error) => error }))
+        return try (files
+          .readPickedFile(contents.id, token, path)
+          |> Effect.map(%, (buffer) => new Uint8Array(buffer)) |> Effect.orDie(%))
+      },
+      FilesReleasePickedFiles: ({ token }, context) =>
+        Effect.sync(() => files.releasePickedFiles(sender(handoff, context).id, token)),
+      FilesSaveFile: ({ options, content }) => files.saveFile(options, content) |> Effect.orDie(%),
+      FilesOpenExternal: ({ url }) => openExternalURL(url) |> Effect.asVoid(%),
+      FilesOpenBrowser: ({ url }) => (/^https?:/i.test(url) ? openExternalURL(url) : Effect.succeed(false)),
+      FilesOpenLocalFile: ({ url }) => openLocalFileURL(url),
+      FilesOpenPath: ({ path, application }) =>
+        files.openPath(path, application)
+        |> Effect.map(%, (result) => result ?? null)
+        |> Effect.orDie(%),
+      FilesRevealPath: ({ path }) => files.revealPath(path),
+      FilesReadClipboardImage: () => files.readClipboardImage(),
+      FilesWriteClipboardText: ({ text }) => files.writeClipboardText(text),
+    })
+  },
+)

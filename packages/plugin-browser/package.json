@@ -14,29 +14,45 @@
     "access": "public"
   },
   "files": [
-    "dist"
+    "dist",
+    ".vibelang/js"
   ],
   "exports": {
-    ".": "./src/index.ts",
-    "./rpc": "./src/rpc.ts",
-    "./proxy": "./src/proxy.ts"
+    ".": {
+      "types": "./src/index.d.vibe.ts",
+      "vibelang-source": "./src/index.vibe",
+      "default": "./.vibelang/js/src/index.js"
+    },
+    "./rpc": {
+      "types": "./src/rpc.d.vibe.ts",
+      "vibelang-source": "./src/rpc.vibe",
+      "default": "./.vibelang/js/src/rpc.js"
+    },
+    "./proxy": {
+      "types": "./src/proxy.d.vibe.ts",
+      "vibelang-source": "./src/proxy.vibe",
+      "default": "./.vibelang/js/src/proxy.js"
+    }
   },
   "scripts": {
-    "build": "tsc -p tsconfig.build.json",
+    "build": "vibelang -p tsconfig.build.json",
     "pack": "bun run script/pack.ts",
     "typecheck": "bun check --no-script -p tsconfig.test.json",
-    "typecheck:tsc": "tsc --noEmit -p tsconfig.test.json",
+    "typecheck:tsc": "vibelang --noEmit -p tsconfig.test.json",
     "test": "bun test"
   },
   "dependencies": {
     "@opencode/plugin": "workspace:*",
     "@opencode/schema": "workspace:*",
-    "effect": "catalog:"
+    "effect": "catalog:",
+    "vibelang-runtime": "file:../../.vibelang-toolchain/0.0.14-pre.d955d06c6696/tarballs/vibelang-runtime-0.0.14-pre.d955d06c6696.tgz"
   },
   "devDependencies": {
     "@tsconfig/bun": "catalog:",
     "@types/bun": "catalog:",
     "@typescript/native": "catalog:",
-    "typescript": "catalog:"
+    "typescript": "catalog:",
+    "vibelang": "file:../../.vibelang-toolchain/0.0.14-pre.d955d06c6696/tarballs/vibelang-0.0.14-pre.d955d06c6696.tgz",
+    "fast-check": "catalog:"
   }
 }

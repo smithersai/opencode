@@ -10,7 +10,7 @@ import {
   type VideoOptions,
   type VideoRequestFor,
 } from "../src/effect.js"
-import type { Service } from "../src/video-client.js"
+import type { Service } from "../src/video-client.vibe"
 import { Anthropic, Fal, Google, OpenAI, Runway, XAI } from "../src/providers.js"
 
 type Requirements<T> = T extends Effect.Effect<infer _A, infer _E, infer R> ? R : never

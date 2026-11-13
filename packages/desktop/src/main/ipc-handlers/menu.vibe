@@ -1,0 +1,23 @@
+import { BrowserWindow } from "electron"
+import { MenuRpcs } from "../../shared/ipc-rpc.vibe"
+import { IpcPortHandoff } from "../ipc-transport.vibe"
+import { ApplicationLifecycle } from "../lifecycle/index.vibe"
+import { runDesktopMenuAction } from "../native/menu-actions.ts"
+import { sender } from "./context.ts"
+
+export const menuHandlers = MenuRpcs.toLayer(
+  effect {
+    const handoff = try IpcPortHandoff
+    const lifecycle = try ApplicationLifecycle.Service
+
+    return MenuRpcs.of({
+      MenuRunAction: ({ action }, context) =>
+        Effect.sync(() =>
+          runDesktopMenuAction(BrowserWindow.fromWebContents(sender(handoff, context)), action, {
+            createWindow: lifecycle.createWindow,
+            relaunch: lifecycle.relaunch,
+          })
+        ),
+    })
+  },
+)

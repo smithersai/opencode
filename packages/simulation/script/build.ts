@@ -7,9 +7,10 @@ import { fileURLToPath } from "node:url"
 process.chdir(fileURLToPath(new URL("..", import.meta.url)))
 
 await rm("dist", { recursive: true, force: true })
-await $`bun tsc -p tsconfig.build.json`
+await $`bun vibelang -p tsconfig.build.json`
+// Declaration sidecars beside VibeLang sources are not modules.
 const files = await Array.fromAsync(new Bun.Glob("**/*.ts").scan({ cwd: "src" })).then((items) =>
-  items.map((item) => `src/${item}`),
+  items.filter((item) => !/\.d\.(?:vibex?\.)?ts$/.test(item)).map((item) => `src/${item}`),
 )
 const transpiler = new Bun.Transpiler({ loader: "ts", target: "bun" })
 await Promise.all(
@@ -20,3 +21,14 @@ await Promise.all(
     ),
   ),
 )
+// VibeLang modules ship the runtime JavaScript the package commits under .vibelang/js.
+const modules = await Array.fromAsync(new Bun.Glob("**/*.vibe").scan({ cwd: "src" }))
+await Promise.all(
+  modules.map((module) => {
+    const output = module.replace(/\.vibe$/, ".js")
+    return Bun.write(`dist/${output}`, Bun.file(`.vibelang/js/src/${output}`))
+  }),
+)
+// A module body (`module platform { }`) runs from its own file beside the module that imports it.
+const bodies = await Array.fromAsync(new Bun.Glob("**/*.vibe.*.js").scan({ cwd: ".vibelang/js/src" }))
+await Promise.all(bodies.map((body) => Bun.write(`dist/${body}`, Bun.file(`.vibelang/js/src/${body}`))))

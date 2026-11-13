@@ -1,0 +1,14 @@
+import type { DatabaseMigration } from "../migration.js"
+
+const migration: DatabaseMigration.Migration = {
+  id: "20260622142730_simplify_session_context_epoch",
+  up(tx) {
+    return effect {
+      try tx.run(`ALTER TABLE \`session_context_epoch\` DROP COLUMN \`agent\`;`)
+      try tx.run(`ALTER TABLE \`session_context_epoch\` DROP COLUMN \`replacement_seq\`;`)
+      try tx.run(`ALTER TABLE \`session_context_epoch\` DROP COLUMN \`revision\`;`)
+    }
+  },
+}
+
+export default migration

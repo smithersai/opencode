@@ -3,7 +3,7 @@ import { createServer, type Socket } from "node:net"
 import { request } from "node:http"
 import { once } from "node:events"
 import { Effect, Fiber } from "effect"
-import { Browser } from "../src/rpc.js"
+import { Browser } from "../src/rpc.vibe"
 import { BrowserTunnel } from "../src/tunnel.js"
 import { BrowserProxy } from "../src/proxy.js"
 

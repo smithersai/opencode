@@ -1,12 +1,16 @@
 import { describe, expect, test } from "bun:test"
 import type { BunPlugin } from "bun"
 import { join } from "path"
+import vibelang from "vibelang-unplugin/bun"
 
 // Pins the #sqlite subpath-import condition gate: bundling database.ts for a
 // non-Bun runtime must never reach the static `import "bun:sqlite"` in
 // sqlite.bun.ts, which crashes workerd (and any other non-Bun bundle) at
 // module load. Bare imports are externalized so only core-relative modules —
-// including the #sqlite resolution under test — end up in the bundle.
+// including the #sqlite resolution under test — end up in the bundle. It bundles
+// with the VibeLang plugin, as script/build.ts does, so a `./x.js` specifier
+// resolves to a converted `x.vibe`. Without a cached compile, the first bundle
+// compiles the whole core project first, which takes seconds, not milliseconds.
 const externalizeBare: BunPlugin = {
   name: "externalize-bare",
   setup(build) {
@@ -21,7 +25,7 @@ const bundle = async (conditions: Array<string>) => {
     entrypoints: [join(import.meta.dir, "../src/database/database.ts")],
     target: "browser",
     conditions,
-    plugins: [externalizeBare],
+    plugins: [externalizeBare, vibelang()],
     throw: false,
   })
   expect(result.logs).toEqual([])
@@ -39,11 +43,11 @@ describe.skipIf(process.platform === "win32")("sqlite bundle conditions", () => 
     expect(output).not.toContain("bun:sqlite")
     expect(output).not.toContain("node:sqlite")
     expect(output).toContain("SqliteWorkerd")
-  })
+  }, 60000)
 
   test("default conditions fall back to node:sqlite, not bun:sqlite", async () => {
     const output = await bundle([])
     expect(output).not.toContain("bun:sqlite")
     expect(output).toContain("SqliteNode")
-  })
+  }, 60000)
 })

@@ -1,0 +1,24 @@
+module platform {
+  export { EOL } from "node:os"
+
+  export const writeOutput = (...args: Parameters<typeof process.stdout.write>) => process.stdout.write(...args)
+}
+
+import { writeOutput } from platform
+import { EOL } from platform
+import { Effect } from "effect"
+import { Service } from "@opencode/client/effect/service"
+import { Commands } from "../../commands.ts"
+import { Runtime } from "../../../framework/runtime"
+import { ServiceConfig } from "../../../services/service-config"
+
+export default Runtime.handler(
+  Commands.commands.service.commands.status,
+  Effect.fn("cli.service.status")(effect function() {
+    const options = try ServiceConfig.options()
+    const found = try Service.discover({ ...options, version: undefined })
+    void (try ((args: Parameters<typeof writeOutput>) => Effect.try(() => writeOutput(...args)).pipe(Effect.orDie))([
+      (found?.url ?? "stopped") + EOL,
+    ]))
+  }),
+)

@@ -24,8 +24,8 @@ import {
 } from "solid-js"
 import { createStore } from "solid-js/store"
 import { createKeyed, useDrawer, usePlugin, type MountedSession } from "@opencode/plugin/gui"
-import { globalConfigDirectory, serviceConfigFile } from "./config-file"
-import { configuredLsps } from "./configured-lsp"
+import { globalConfigDirectory, serviceConfigFile } from "./config-file.vibe"
+import { configuredLsps } from "./configured-lsp.vibe"
 import { builtinContext } from "@opencode/plugin/gui/builtin"
 
 const services = [

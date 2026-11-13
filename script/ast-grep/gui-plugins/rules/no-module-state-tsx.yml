@@ -29,3 +29,5 @@ rule:
             kind: export_statement
             inside:
               kind: program
+ignores:
+  - "**/*.d.vibe.ts"

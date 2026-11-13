@@ -1,7 +1,7 @@
 export * as ConfigLSP from "./lsp.js"
 
 import { Schema } from "effect"
-import { optional } from "../schema.js"
+import { optional } from "../schema.vibe"
 
 export const Disabled = Schema.Struct({
   disabled: Schema.Literal(true),

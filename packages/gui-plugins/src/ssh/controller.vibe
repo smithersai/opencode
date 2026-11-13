@@ -1,0 +1,390 @@
+import * as Host from "./controller.host.platform.ts"
+import { NodeSocketServer } from "@effect/platform-node"
+import type { SshConfig, SshHttp, SshItem, SshState } from "./contract.vibe"
+import { createAskpass } from "./askpass"
+import { bootstrap } from "./bootstrap"
+import { parseTarget, quote, runSsh, sshArgs, sshExecutable, tunnelArgs, SshFailure } from "./command"
+
+type Connection = {
+  owner?: number
+  before?: SshItem
+  ready: Deferred.Deferred<SshHttp | null>
+  respond?: (id: string, value: string) => void!!
+}
+
+type Attempt = Connection & { fiber: Fiber.Fiber<void> }
+
+export const createSshController = effect (input: { version: string; development?: boolean; binary: string; command?: readonly string[]; configs: readonly SshConfig[]; save: (configs: readonly SshConfig[]) => void!SshFailure; }) => try withSpan(effect {
+  const fs = try FileSystem.FileSystem
+  const path = try Path.Path
+  const spawner = try ChildProcessSpawner.ChildProcessSpawner
+  const httpClient = try HttpClient.HttpClient
+  const parent = try Scope.Scope
+  const lifetime = try Scope.fork(parent)
+  const changed = try PubSub.unbounded<void>()
+  try Scope.addFinalizer(lifetime, PubSub.shutdown(changed))
+
+  const items = new Map<string, SshItem>(
+    input.configs.map((config) => [config.id, { config, saved: true, stage: "disconnected", detail: "" }]),
+  )
+
+  const configs = new Map(input.configs.map((config) => [config.id, config]))
+  const attempts = new Map<string, Attempt>()
+  const paused = new Set(items.keys())
+  const failures = new Map<string, number>()
+  const lifecycle = { closed: false }
+  const emit = PubSub.publish(changed, undefined) |> Effect.asVoid(%)
+
+  const state = (owner?: number): Pick<SshState, "servers">!! =>
+    Effect.sync(() => ({
+      servers: [...items.values()].map((item) => ({
+        ...item,
+        prompt: attempts.get(item.config.id)?.owner === owner ? item.prompt : undefined,
+        authenticatingElsewhere:
+          item.stage === "authentication" &&
+          attempts.get(item.config.id)?.owner !== undefined &&
+          attempts.get(item.config.id)?.owner !== owner,
+      })),
+    }))
+
+  const update = effect (id: string, value: Partial<{ config: { id: string; target: string; name: string; }; saved: boolean; destination?: string | undefined; stage: "authentication" | "checking" | "connecting" | "disconnected" | "downloading" | "failed" | "incompatible" | "ready" | "starting" | "uploading"; http?: { url: string; password: string; } | undefined; prompt?: { readonly id: string; readonly text: string; readonly confirm: boolean; } | undefined; authenticatingElsewhere?: boolean | undefined; detail: string; error?: "connection" | "host-key" | "input" | "install" | "platform" | "service" | "ssh-missing" | "unpublished" | "version" | undefined; }>) => {
+    const item = items.get(id)
+
+    if (!item) return
+    items.set(id, { ...item, ...value })
+    try emit
+  }
+
+  // A saved server's item takes its current saved config along with the change.
+  const withSavedConfig = (id: string, value: Partial<SshItem>): Partial<SshItem> => {
+    const config = configs.get(id)
+
+    return config ? { ...value, config } : value
+  }
+
+  const run = (options: Parameters<typeof runSsh>[0]) =>
+    runSsh(options) |> Effect.provideService(%, ChildProcessSpawner.ChildProcessSpawner, spawner)
+
+  const connect = effect (config: { id: string; target: string; name: string; }, connection: Connection, replace = false) => try withSpan(effect {
+    const target = try Effect.try({ try: () => parseTarget(config.target), catch: SshFailure.from })
+    const directory = try fs.makeTempDirectoryScoped({ prefix: "oc-ssh-" })
+    const control = path.join(directory, "s")
+
+    const helper =
+      input.command && input.command.length > 1 && Host.currentPlatform() !== "win32"
+        ? path.join(directory, "askpass")
+        : input.binary
+
+    if (helper !== input.binary)
+      try fs.writeFileString(helper, `#!/bin/sh\nexec ${input.command?.map(quote).join(" ")} "$@"\n`, {
+        mode: 0o700,
+      })
+
+    if (Host.currentPlatform() !== "win32") {
+      target.args.unshift("-o", "ControlMaster=auto", "-o", "ControlPersist=60", "-o", `ControlPath=${control}`)
+      // Close only our local SSH master. The remote OpenCode service owns its
+      // own lifetime and must survive disconnect, failure, and app shutdown.
+      try Effect.addFinalizer(() =>
+        run({ args: ["-o", `ControlPath=${control}`, "-O", "exit", target.host], timeout: 2000 }) |> Effect.ignore(%),
+      )
+    }
+
+    const authentication = try Deferred.make<void>()
+
+    const askpass = try createAskpass({
+      binary: helper,
+      prompt: effect (prompt) => {
+        if (connection.owner === undefined) {
+          paused.add(config.id)
+          try update(config.id, { stage: "authentication" })
+          try Deferred.succeed(authentication, undefined)
+
+          return
+        }
+
+        try update(config.id, { stage: "authentication", prompt })
+      },
+      clear: (id) =>
+        items.get(config.id)?.prompt?.id === id
+          ? update(config.id, { prompt: undefined, stage: "connecting" })
+          : Effect.void,
+    })
+
+    connection.respond = askpass.respond
+
+    try (effect {
+      const resolved = try (run({ args: [...(try Effect.orDie(Effect.try({ try: () => sshArgs(target), catch: (error) => error }))), "-G", target.host], timeout: 10_000 })
+        |> Effect.orElseSucceed(%, () => ""))
+
+      const fields = new Map(
+        resolved.split(/\r?\n/).map((line) => {
+          const separator = line.indexOf(" ")
+
+          return [line.slice(0, separator), line.slice(separator + 1)] as const
+        }),
+      )
+
+      if (fields.has("hostname"))
+        try update(config.id, {
+          destination: `${fields.get("user") ?? ""}@${fields.get("hostname")}:${fields.get("port") ?? "22"}`,
+        })
+
+      const remote = try (bootstrap({
+        target,
+        version: input.version,
+        development: input.development,
+        env: askpass.env,
+        replace,
+        stage: (stage) => update(config.id, { stage, prompt: undefined }),
+      })
+        |> Effect.provideService(%, ChildProcessSpawner.ChildProcessSpawner, spawner)
+        |> Effect.provideService(%, HttpClient.HttpClient, httpClient))
+
+      const port = try freePort
+      const http = { url: `http://127.0.0.1:${port}`, password: remote.password }
+
+      const tunnel = try spawner.spawn(
+        ChildProcess.make((try Effect.orDie(Effect.try({ try: () => sshExecutable(), catch: (error) => error }))), (try Effect.orDie(Effect.try({ try: () => tunnelArgs(target, port, remote), catch: (error) => error }))), {
+          env: askpass.env,
+          extendEnv: true,
+          windowsHide: true,
+          stdin: "pipe",
+          stdout: "ignore",
+          killSignal: "SIGTERM",
+          forceKillAfter: "2 seconds",
+        }),
+      )
+
+      const detail = try Ref.make("")
+
+      const stderr = try (tunnel.stderr
+        |> Stream.decodeText()(%)
+        |> Stream.runForEach(%, (text) => Ref.update(detail, (tail) => (tail + text).slice(-8192)))
+        |> Effect.forkScoped(%))
+
+      const closed = effect {
+        const exitCode = try tunnel.exitCode
+        try Fiber.join(stderr)
+
+        throw new SshFailure("connection", (try Ref.get(detail)) || JSON.stringify({ exitCode }))
+      }
+
+      try (waitReady(http, () => items.get(config.id)?.stage === "authentication")
+        |> Effect.provideService(%, HttpClient.HttpClient, httpClient)
+        |> Effect.catch(%, () =>
+          Ref.get(detail) |> Effect.flatMap(%, (detail) => Effect.fail(new SshFailure("service", detail))),
+        )
+        |> Effect.raceFirst(%, closed))
+      const saved = new Map(configs).set(config.id, config)
+      try input.save([...saved.values()])
+      configs.set(config.id, config)
+      failures.delete(config.id)
+      try update(config.id, { http, stage: "ready", saved: true, detail: "", prompt: undefined, error: undefined })
+      try Deferred.succeed(connection.ready, http)
+      try closed
+    }
+      |> Effect.raceFirst(%, askpass.closed)
+      |> Effect.raceFirst(%, Deferred.await(authentication) |> Effect.andThen(%, Effect.interrupt)))
+  } |> Effect.scoped(%), "Ssh.connect")
+
+  const start = effect (request: { id: string; target: string; name: string; replace?: boolean | undefined; background?: boolean | undefined; }, owner?: number | undefined) => try withSpan(effect {
+    const id = request.id
+
+    if (lifecycle.closed || !/^[a-zA-Z0-9-]{1,80}$/.test(id)) return
+    const previous = attempts.get(id)
+
+    // A second window must not replace an interactive attempt while its owner
+    // is connecting or answering a challenge.
+    if (previous?.owner !== undefined && previous.owner !== owner && items.get(id)?.stage !== "ready") return
+    const config = { id, target: request.target.trim(), name: request.name.trim() }
+
+    const connection: Connection = {
+      owner,
+      before: items.get(id),
+      ready: try Deferred.make<SshHttp | null>(),
+    }
+
+    const admitted = try Deferred.make<void>()
+
+    const fiber = try (effect {
+      try Deferred.await(admitted)
+
+      if (previous) try Fiber.interrupt(previous.fiber)
+      try connect(config, connection, request.replace)
+    }
+      |> Effect.catchCause(
+        %, effect (cause) => {
+          if (Cause.hasInterruptsOnly(cause) || paused.has(id) || attempts.get(id)?.ready !== connection.ready) return
+          const failure = SshFailure.from(Cause.squash(cause))
+          failures.set(id, (failures.get(id) ?? 0) + 1)
+
+          const code = /REMOTE HOST IDENTIFICATION HAS CHANGED|Host key verification failed/.test(failure.message)
+            ? "host-key"
+            : /spawn .*ENOENT/.test(failure.message)
+              ? "ssh-missing"
+              : failure.code
+
+          if (
+            ["version", "input", "unpublished", "platform", "host-key", "ssh-missing"].includes(code) ||
+            /Permission denied/.test(failure.message) ||
+            (failures.get(id) ?? 0) >= 5
+          )
+            paused.add(id)
+          try update(
+            id,
+            withSavedConfig(id, {
+              stage: code === "version" ? "incompatible" : "failed",
+              error: code,
+              detail: failure.message,
+              prompt: undefined,
+            }),
+          )
+        },
+      )
+      |> Effect.ensuring(
+        %, effect {
+          try Deferred.succeed(connection.ready, null)
+
+          if (attempts.get(id)?.ready !== connection.ready) return
+          attempts.delete(id)
+          try update(id, { prompt: undefined })
+        },
+      )
+      |> Effect.forkIn(%, lifetime, { uninterruptible: false }))
+
+    attempts.set(id, Object.assign(connection, { fiber }))
+    items.set(id, {
+      config,
+      saved: items.get(id)?.saved ?? false,
+      http: items.get(id)?.http,
+      stage: "connecting",
+      detail: "",
+    })
+    paused.delete(id)
+
+    if (!request.background) failures.delete(id)
+    try emit
+    try Deferred.succeed(admitted, undefined)
+  } |> Effect.uninterruptible(%), "Ssh.start")
+
+  const disconnect = effect (id: string) => try withSpan(effect {
+    paused.add(id)
+    const attempt = attempts.get(id)
+    try update(id, withSavedConfig(id, { stage: "disconnected", prompt: undefined }))
+
+    if (attempt) try Fiber.interrupt(attempt.fiber)
+  }, "Ssh.disconnect")
+
+  const cancel = effect (id: string, owner: number) => try withSpan(effect {
+    const attempt = attempts.get(id)
+
+    if (!attempt || attempt.owner !== owner) return
+    paused.add(id)
+    // Restore before interrupting: askpass cleanup must not transition the
+    // cancelled attempt back to connecting or expose an expired prompt.
+    const before = attempt.before
+    try update(id, {
+      ...before,
+      stage:
+        before?.stage === "authentication" || before?.stage === "failed" || before?.stage === "incompatible"
+          ? before.stage
+          : "disconnected",
+      prompt: undefined,
+      error: before?.error,
+      detail: before?.detail ?? "",
+    })
+    try Fiber.interrupt(attempt.fiber)
+  }, "Ssh.cancel")
+
+  const close = effect {
+    if (lifecycle.closed) return
+    lifecycle.closed = true
+    try Effect.forEach([...attempts.keys()], disconnect, { concurrency: "unbounded", discard: true })
+    try Scope.close(lifetime, Exit.void)
+  }
+
+  try Effect.addFinalizer(() => close)
+
+  return {
+    state,
+    changes: (owner?: number) => Stream.fromPubSub(changed).pipe(Stream.mapEffect(() => state(owner))),
+    start,
+    resolve: effect (id: string): ({ url: string; password: string; } | null)!never!never => try withSpan((effect (): ({ url: string; password: string; } | null)!never!never => {
+      const item = items.get(id)
+
+      if (lifecycle.closed || !item || paused.has(id)) return null
+
+      if (item.stage === "ready" && item.http) {
+        const healthy = try (checkHealth(item.http) |> Effect.provideService(%, HttpClient.HttpClient, httpClient))
+
+        if (lifecycle.closed || paused.has(id)) return null
+
+        // Another window may already have replaced this tunnel during the probe.
+        if (items.get(id) === item) {
+          if (healthy) return item.http
+          try start({ ...item.config, background: true })
+        }
+      }
+
+      if (!attempts.has(id) && items.has(id)) try start({ ...item.config, background: true })
+      const attempt = attempts.get(id)
+
+      return attempt ? try Deferred.await(attempt.ready) : null
+    })(), "Ssh.resolve"),
+    respond: effect (id: string, prompt: string, value: string, owner: number): void!! => try withSpan((effect (): void!! => {
+      const attempt = attempts.get(id)
+
+      if (attempt?.owner === owner && attempt.respond) try attempt.respond(prompt, value)
+    })(), "Ssh.respond"),
+    disconnect,
+    cancel,
+    forget: effect (id: string): void!SshFailure => try withSpan((effect (): void!SshFailure => {
+      try disconnect(id)
+      items.delete(id)
+      configs.delete(id)
+      try input.save([...configs.values()])
+      try emit
+    })(), "Ssh.forget"),
+    detach: effect (owner: number): void!! => try withSpan((effect (): void!! => {
+      try Effect.forEach(
+        [...attempts].filter(([id, attempt]) => attempt.owner === owner && items.get(id)?.stage !== "ready"),
+        ([id]) => cancel(id, owner),
+        { concurrency: "unbounded", discard: true },
+      )
+    })(), "Ssh.detach"),
+    close,
+  }
+}, "Ssh.controller")
+
+const freePort = effect {
+  const server = try NodeSocketServer.make({ host: "127.0.0.1", port: 0 })
+
+  if (Predicate.isTagged(server.address, "UnixPathAddress")) throw new SshFailure("connection")
+
+  return server.address.port
+} |> Effect.scoped(%)
+
+const waitReady = Effect.fn("Ssh.waitReady")(function* (http: SshHttp, authenticating: () => boolean) {
+  const clock = { deadline: (yield* Clock.currentTimeMillis) + 30_000 }
+  yield* Effect.gen(function* () {
+    const now = yield* Clock.currentTimeMillis
+
+    if (authenticating()) clock.deadline = now + 30_000
+
+    if (now >= clock.deadline) return yield* Effect.fail(new SshFailure("service"))
+
+    return yield* checkHealth(http)
+  }).pipe(Effect.repeat({ until: (ready) => ready, schedule: Schedule.spaced(100) }))
+})
+
+const checkHealth = effect (http: { url: string; password: string; }) => try withSpan(effect {
+  const client = try HttpClient.HttpClient
+
+  return try (client
+    .get(`${http.url}/api/info`, {
+      headers: { authorization: `Basic ${(try Effect.orDie(Effect.try({ try: () => Host.basicPassword(http.password), catch: (error) => error })))}` },
+    })
+      |> Effect.timeout(%, 2000)
+      |> Effect.map(%, (response) => response.status >= 200 && response.status < 300)
+      |> Effect.orElseSucceed(%, () => false))
+}, "Ssh.checkHealth")

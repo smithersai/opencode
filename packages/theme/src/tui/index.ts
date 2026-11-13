@@ -26,7 +26,7 @@ export {
   type StatefulColorDefinition,
   type TextDefinition,
   type ThemeTokensDefinition,
-} from "./schema.js"
+} from "./schema.vibe"
 
 export type {
   ActionStates,
@@ -44,6 +44,6 @@ export type {
 export { rgbToOklch } from "./color.js"
 export { expandTheme } from "./expand.js"
 export { migrateV1 } from "./v1-migrate.js"
-export { parseThemeDocument, resolveTheme, resolveThemeDocument, themeDecodeError } from "./resolve.js"
+export { parseThemeDocument, resolveTheme, resolveThemeDocument, themeDecodeError } from "./resolve.vibe"
 export { selectTheme, selectThemeMode, supportsThemeMode, themeModes } from "./select.js"
 export { generateSyntax } from "./syntax.js"

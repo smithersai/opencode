@@ -1,0 +1,52 @@
+[
+  {
+    "module": "os",
+    "member": "EOL",
+    "call": false
+  },
+  {
+    "module": "node:os",
+    "member": "EOL",
+    "call": false
+  },
+  {
+    "module": "node:util",
+    "member": "stripVTControlCharacters",
+    "call": true
+  },
+  {
+    "module": "node:path",
+    "member": "isAbsolute",
+    "call": true
+  },
+  {
+    "module": "node:path",
+    "member": "join",
+    "call": true
+  },
+  {
+    "module": "node:path",
+    "member": "resolve",
+    "call": true
+  },
+  {
+    "module": "node:util",
+    "member": "isDeepStrictEqual",
+    "call": true
+  },
+  {
+    "module": "node:fs/promises",
+    "member": "access",
+    "call": true
+  },
+  {
+    "module": "node:fs/promises",
+    "member": "constants",
+    "call": false
+  },
+  {
+    "module": "node:url",
+    "member": "fileURLToPath",
+    "call": true
+  }
+]

@@ -1,0 +1,23 @@
+{
+  "contract": "Schema.Struct defaults preserve readonly decoded fields, including nested, optional and private codecs.",
+  "rows": [
+    {
+      "source": "src/codemode/catalog.vibe",
+      "codec": "Listing",
+      "writes": ["namespaces[0]!.entries[0]!.path", "namespaces[0]!.entries[0]!.line"],
+      "type": "typeof Summary.Type"
+    },
+    {
+      "source": "src/codemode/catalog.vibe",
+      "codec": "Summary",
+      "writes": ["total", "shown", "namespaces"],
+      "type": "typeof Summary.Type"
+    },
+    {
+      "source": "src/filesystem/file-watch.vibe",
+      "codec": "Options",
+      "writes": ["enabled"],
+      "type": "typeof Options.Type"
+    }
+  ]
+}

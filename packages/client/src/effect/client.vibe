@@ -1,0 +1,84 @@
+export * as OpenCode from "./client.js"
+
+import { Cause, Context, Effect, Stream } from "effect"
+import { HttpClient, HttpClientRequest } from "effect/http"
+import { SharedEvents } from "../shared-events.js"
+import { ClientError, OpenCode } from "./generated/index.js"
+import type { EventSubscribeInput } from "./api.js"
+import { RpcClientRuntime } from "./rpc.js"
+import type { RpcCallOptions } from "../promise/rpc.js"
+import { fetchHeaders } from platform
+
+type EventType = NonNullable<EventSubscribeInput["types"]>[number]
+
+const CurrentHeaders = Context.Reference<RpcCallOptions["headers"]>("@opencode/client/effect/rpc/headers", {
+  defaultValue: () => undefined,
+})
+
+export const make = Effect.fn("OpenCode.make")(effect function(options?: { readonly baseUrl?: URL | string }) {
+  const httpClient = try HttpClient.HttpClient
+  const raw = try OpenCode.make(options).pipe(
+    Effect.provideService(
+      HttpClient.HttpClient,
+      HttpClient.mapRequestEffect(httpClient, (request) =>
+        Effect.flatMap(CurrentHeaders, (headers) =>
+          headers
+            // Invalid headers stay the defect the Fetch constructor raised.
+            ? Effect.orDie(
+              Effect.try({
+                try: () => HttpClientRequest.setHeaders(request, fetchHeaders(headers)),
+                catch: (cause) => cause,
+              }),
+            )
+            : Effect.succeed(request))),
+    ),
+  )
+  const context = try Effect.context()
+  const native = raw.event.subscribe()
+  // Async iterators throw a squashed cause; retain the native typed failures and defects intact.
+  class EventFailure {
+    constructor(readonly cause: Cause.Cause<Stream.Error<typeof native>>) {}
+  }
+  // A throw from the native event hub stays the defect it was before conversion.
+  const shared = try Effect.orDie(
+    Effect.try({
+      try: () =>
+        SharedEvents.make((signal) =>
+          Stream.toAsyncIterableWith(
+            native.pipe(
+              Stream.interruptWhen(RpcClientRuntime.aborted(signal)),
+              Stream.catchCause((cause) => Stream.fail(new EventFailure(cause))),
+            ),
+            context,
+          )
+        ),
+      catch: (cause) => cause,
+    }),
+  )
+  const subscribe = <Type extends EventType = EventType>(input?: { readonly types?: ReadonlyArray<Type> }) =>
+    Stream.unwrap(
+      Effect.orDie(Effect.try({ try: () => shared.subscribe({ types: input?.types }), catch: (cause) => cause })).pipe(
+        Effect.map((events) => Stream.fromAsyncIterable(events, (error) => error)),
+      ),
+    ).pipe(
+      Stream.catch((error) =>
+        Stream.failCause(error instanceof EventFailure ? error.cause : Cause.fail(new ClientError({ cause: error })))
+      ),
+    )
+  return {
+    ...raw,
+    event: { ...raw.event, subscribe },
+    rpc: Object.assign(
+      RpcClientRuntime.make(
+        (input, options) => raw.rpc.call(input).pipe(Effect.provideService(CurrentHeaders, options?.headers)),
+        subscribe,
+      ),
+      raw.rpc,
+    ),
+  }
+})
+
+module platform {
+  /** Copies RPC call headers into Fetch headers. @throws {TypeError} when a header name or value is invalid. */
+  export const fetchHeaders = (headers: HeadersInit) => new Headers(headers)
+}

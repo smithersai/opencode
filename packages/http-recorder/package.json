@@ -29,12 +29,16 @@
   "scripts": {
     "test": "bun test --timeout 30000 --only-failures",
     "typecheck": "bun check --no-script && bun check --no-script -p test/tsconfig.json",
-    "typecheck:tsc": "tsc --noEmit && tsc -p test/tsconfig.json --noEmit",
+    "typecheck:tsc": "vibelang --noEmit && vibelang -p test/tsconfig.json --noEmit",
     "build": "bun ./script/build.ts",
     "verify:package": "bun ./script/verify-package.ts"
   },
   "exports": {
-    ".": "./src/index.ts"
+    ".": {
+      "types": "./src/index.ts",
+      "vibelang-source": "./src/index.ts",
+      "default": "./.vibelang/js/src/index.js"
+    }
   },
   "sideEffects": false,
   "files": [
@@ -50,10 +54,14 @@
     "@typescript/native": "catalog:",
     "@effect/platform-node": "catalog:",
     "effect": "catalog:",
-    "typescript": "catalog:"
+    "fast-check": "catalog:",
+    "typescript": "catalog:",
+    "vibelang": "file:../../.vibelang-toolchain/0.0.14-pre.d955d06c6696/tarballs/vibelang-0.0.14-pre.d955d06c6696.tgz",
+    "vibelang-unplugin": "file:../../.vibelang-toolchain/0.0.14-pre.d955d06c6696/tarballs/vibelang-unplugin-0.0.14-pre.d955d06c6696.tgz"
   },
   "dependencies": {
-    "@effect/platform-node-shared": "catalog:"
+    "@effect/platform-node-shared": "catalog:",
+    "vibelang-runtime": "file:../../.vibelang-toolchain/0.0.14-pre.d955d06c6696/tarballs/vibelang-runtime-0.0.14-pre.d955d06c6696.tgz"
   },
   "peerDependencies": {
     "effect": "catalog:"

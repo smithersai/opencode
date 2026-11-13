@@ -6,7 +6,7 @@ import { useDialog } from "@opencode/ui/context/dialog"
 import { createMemo, createSignal, on, onCleanup, onMount, Show } from "solid-js"
 import { createStore } from "solid-js/store"
 import { createKeyed, usePlugin } from "@opencode/plugin/gui"
-import type { SshConfig, SshItem } from "./contract"
+import type { SshConfig, SshItem } from "./contract.vibe"
 import { isSshConnecting, sshName } from "./name"
 import type { SshController } from "./state"
 

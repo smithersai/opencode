@@ -1,0 +1,195 @@
+import { Pty } from "@opencode/core/pty"
+import { PtyProtocol } from "@opencode/core/pty/protocol"
+import { PtyTicket } from "@opencode/core/pty/ticket"
+import { Location } from "@opencode/core/location"
+import { LocationServiceMap } from "@opencode/core/location-service-map"
+import { HttpServerRequest, HttpServerResponse } from "effect/http"
+import { HttpApiBuilder, HttpApiSchema } from "effect/http-api"
+import { Socket } from "effect/socket"
+import { Api } from "../api"
+import { CorsConfig, isAllowedRequestOrigin } from "../cors.vibe"
+import { ForbiddenError, PtyNotFoundError } from "@opencode/protocol/errors"
+import {
+  PTY_CONNECT_TICKET_QUERY,
+  PTY_CONNECT_TOKEN_HEADER,
+  PTY_CONNECT_TOKEN_HEADER_VALUE,
+} from "@opencode/protocol/groups/pty"
+import { locationErrors, requestRef, response } from "../location"
+import { type Outbound, runPtySocket } from "./pty-socket.vibe"
+
+const notFound = (ptyID: Pty.ID) => new PtyNotFoundError({ ptyID, message: `PTY session not found: ${ptyID}` })
+
+export const PtyHandler = HttpApiBuilder.group(Api, "server.pty", (handlers) =>
+  effect {
+    const locations = try LocationServiceMap.Service
+    const tickets = try PtyTicket.Service
+    const cors = try CorsConfig
+
+    return handlers
+      .handle(
+        "pty.list",
+        effect () => {
+          const pty = try Pty.Service
+          return try response(pty.list())
+        },
+      )
+      .handle(
+        "pty.create",
+        effect (ctx) => {
+          const pty = try Pty.Service
+          const location = try Location.Service
+          return try response(
+            pty.create({
+              ...ctx.payload,
+              cwd: ctx.payload.cwd || location.directory,
+            }),
+          )
+        },
+      )
+      .handle(
+        "pty.get",
+        effect (ctx) => {
+          const pty = try Pty.Service
+          return try response(
+            pty.get(ctx.params.ptyID).pipe(catchTag("Pty.NotFoundError", () => notFound(ctx.params.ptyID))),
+          )
+        },
+      )
+      .handle(
+        "pty.update",
+        effect (ctx) => {
+          const pty = try Pty.Service
+          return try response(
+            pty
+              .update(ctx.params.ptyID, ctx.payload)
+              .pipe(catchTag("Pty.NotFoundError", () => notFound(ctx.params.ptyID))),
+          )
+        },
+      )
+      .handle(
+        "pty.remove",
+        effect (ctx) => {
+          const pty = try Pty.Service
+          try pty
+            .remove(ctx.params.ptyID)
+            .pipe(catchTag("Pty.NotFoundError", () => notFound(ctx.params.ptyID)))
+          return try Effect.try({ try: () => HttpApiSchema.NoContent.make(), catch: (cause) => cause }).pipe(orDie)
+        },
+      )
+      .handle(
+        "pty.connectToken",
+        effect (ctx) => {
+          const request = try HttpServerRequest.HttpServerRequest
+          // The custom header forces a CORS preflight, so cross-origin browser pages cannot
+          // mint tickets without passing the server's origin policy.
+          if (
+            request.headers[PTY_CONNECT_TOKEN_HEADER] !== PTY_CONNECT_TOKEN_HEADER_VALUE
+            || !isAllowedRequestOrigin(request.headers.origin, request.headers.host, cors)
+          ) {
+            throw new ForbiddenError({ message: "Invalid PTY connect token request" })
+          }
+          const pty = try Pty.Service
+          const location = try Location.Service
+          try pty.get(ctx.params.ptyID).pipe(catchTag("Pty.NotFoundError", () => notFound(ctx.params.ptyID)))
+          return try response(
+            tickets.issue({
+              ptyID: ctx.params.ptyID,
+              directory: location.directory,
+              workspaceID: location.workspaceID,
+            }),
+          )
+        },
+      )
+      .handleRaw(
+        "pty.connect",
+        fn("PtyHandler.connect")(effect (ctx) => {
+          if (!isAllowedRequestOrigin(ctx.request.headers.origin, ctx.request.headers.host, cors)) {
+            return HttpServerResponse.empty({ status: 403 })
+          }
+
+          const ref = try Effect.try({
+            try: () => LocationServiceMap.canonical(requestRef(ctx.request)),
+            catch: (cause) => cause,
+          }).pipe(orDie)
+          const url = new URL(ctx.request.url, "http://localhost")
+          const ticket = url.searchParams.get(PTY_CONNECT_TICKET_QUERY)
+          if (
+            ticket
+            && !(try tickets.consume({
+              ticket,
+              ptyID: ctx.params.ptyID,
+              directory: ref.directory,
+              workspaceID: ref.workspaceID,
+            }))
+          ) {
+            return HttpServerResponse.empty({ status: 403 })
+          }
+
+          return try (effect {
+            const pty = try Pty.Service
+            const exists = try pty.get(ctx.params.ptyID).pipe(
+              as(true),
+              catchTag("Pty.NotFoundError", () => succeed(false)),
+            )
+            if (!exists) return HttpServerResponse.empty({ status: 404 })
+            const parsedCursor = url.searchParams.get("cursor")
+            const cursorNumber = parsedCursor === null ? undefined : Number(parsedCursor)
+            const cursor = cursorNumber !== undefined && Number.isSafeInteger(cursorNumber) && cursorNumber >= -1
+              ? cursorNumber
+              : undefined
+
+            const socket = try orDie(ctx.request.upgrade)
+            // TODO: Integrate graceful-shutdown socket tracking before clients migrate to this route.
+            const outbox = try Queue.unbounded<Outbound>()
+            const attachment = try pty
+              .attach(ctx.params.ptyID, {
+                cursor,
+                onData: (chunk) => Queue.offerUnsafe(outbox, chunk),
+                onEnd: () => Queue.offerUnsafe(outbox, new Socket.CloseEvent(1000)),
+              })
+              .pipe(
+                catchTags({
+                  "Pty.NotFoundError": () =>
+                    sync(() => {
+                      Queue.offerUnsafe(outbox, new Socket.CloseEvent(4404, "session not found"))
+                    }),
+                  "Pty.ExitedError": () =>
+                    sync(() => {
+                      Queue.offerUnsafe(outbox, new Socket.CloseEvent(4404, "session exited"))
+                    }),
+                }),
+              )
+            if (attachment) {
+              for (
+                const chunk of try Effect.try({
+                  try: () => PtyProtocol.chunks(attachment.replay),
+                  catch: (cause) => cause,
+                }).pipe(orDie)
+              ) {
+                Queue.offerUnsafe(outbox, chunk)
+              }
+              Queue.offerUnsafe(
+                outbox,
+                try Effect.try({ try: () => PtyProtocol.metaFrame(attachment.cursor), catch: (cause) => cause }).pipe(
+                  orDie,
+                ),
+              )
+              try Effect.try({ try: () => attachment.activate(), catch: (cause) => cause }).pipe(orDie)
+            }
+
+            try runPtySocket({
+              socket,
+              outbox,
+              onMessage: (message) =>
+                sync(() => {
+                  if (!attachment) return
+                  const decoded = PtyProtocol.decodeInput(message)
+                  if (decoded !== undefined) attachment.write(decoded)
+                }),
+              detach: () => attachment?.detach(),
+            })
+            return HttpServerResponse.empty()
+          }).pipe(Effect.provide(locations.get(ref)), locationErrors)
+        }),
+      )
+  })

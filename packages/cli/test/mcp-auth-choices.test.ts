@@ -1,7 +1,7 @@
 import { expect, test } from "bun:test"
 import path from "node:path"
 import type { IntegrationInfo, McpServer } from "@opencode/client"
-import { mcpAuthChoices } from "../src/commands/handlers/mcp/auth"
+import { mcpAuthChoices } from "../src/commands/handlers/mcp/auth.vibe"
 
 const server = (
   name: string,

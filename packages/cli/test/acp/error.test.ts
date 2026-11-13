@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test"
-import { ACPError } from "../../src/acp/error"
+import { ACPError } from "../../src/acp/error.vibe"
 import { delivered, rpcError, startSession, textDelta, type Wire } from "./wire-fixture"
 
 describe("acp errors", () => {

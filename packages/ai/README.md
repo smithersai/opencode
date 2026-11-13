@@ -1569,3 +1569,13 @@ This package is built on Effect. Public methods in `@opencode/ai/effect` return 
 - `AGENTS.md` — architecture, route construction, contributor guide
 - `example/tutorial.ts` — runnable end-to-end walkthrough (`bun example/tutorial.ts <example>`)
 - `test/provider/*.test.ts` — fixture-first protocol tests; `*.recorded.test.ts` files cover live cassettes
+
+## Development scripts
+
+Run `bun run test test/recording-script.test.ts` from this directory to check the example and recording setup programs, including gateway URL options.
+
+Run `bun run setup:recording-env --check` to inspect provider credential status without changing the local env file. The recording setup script has its own declared compiler project, checked by `bun run typecheck:tsc`.
+
+`DecisionTextPart` and `DecisionMediaPart` are codec values. Read their decoded types through `typeof DecisionTextPart.Type` and `typeof DecisionMediaPart.Type`; these exports do not declare same-named types.
+
+Decoded codec fields retain the `readonly` contract of their `Schema.Struct` definitions, including nested and optional fields. Consumer assignment checks cover these contracts alongside the runtime tests.

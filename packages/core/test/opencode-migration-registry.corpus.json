@@ -1,0 +1,13 @@
+{
+  "sources": [
+    {
+      "name": "20260101000000_first",
+      "extension": ".vibe"
+    },
+    {
+      "name": "20260102000000_second",
+      "extension": ".ts"
+    }
+  ],
+  "ignored": ["20260101000000_first.d.vibe.ts", "20260102000000_second.platform.ts", "notes.sql"]
+}

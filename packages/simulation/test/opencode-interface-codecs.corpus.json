@@ -1,0 +1,21 @@
+{
+  "contract": "Named codec interfaces remain visible in inferred consumer declarations.",
+  "network": {
+    "time": 0,
+    "method": "GET",
+    "url": "https://example.invalid/fixture",
+    "matched": true
+  },
+  "element": {
+    "id": "element",
+    "num": 0,
+    "x": -1,
+    "y": 2,
+    "width": 80,
+    "height": 24,
+    "focusable": true,
+    "focused": false,
+    "clickable": true,
+    "editor": false
+  }
+}

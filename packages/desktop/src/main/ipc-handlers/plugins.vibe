@@ -1,0 +1,63 @@
+import { BrowserWindow } from "electron"
+import { PluginRpcs } from "../../shared/ipc-rpc.vibe"
+import { pluginFailure } from "../plugin/error"
+import type { PluginHost } from "../plugin/host"
+import { Plugins } from "../plugin"
+import { IpcPortHandoff } from "../ipc-transport.vibe"
+import { isRendererUrl } from "../windows/scheme"
+import { sender, type RpcContext } from "./context"
+
+export const pluginHandlers = PluginRpcs.toLayer(
+  effect {
+    const handoff = try IpcPortHandoff
+    const plugins = try Plugins.Service
+
+    // Ipcs scope state and events by the calling app window.
+    const caller = (context: RpcContext) => {
+      const contents = sender(handoff, context)
+      const win = BrowserWindow.fromWebContents(contents)
+
+      if (!win || win.isDestroyed() || win.webContents !== contents || !isRendererUrl(contents.getURL())) {
+        $raise(new Error("plugin.caller.invalid"))
+      }
+
+      return win.id
+    }
+
+    const failPlugin = effect (error: unknown) => {
+      throw try Effect.orDie(Effect.try({ try: () => pluginFailure(error), catch: (cause) => cause }))
+    }
+
+    // The manager enables, disables and reloads plugins.
+    const manage = effect <A>(run: (host: PluginHost) => A | Promise<A>) => {
+      return Effect.tryPromise(() => plugins.host().then(run)) catch effect (error) => try failPlugin(error.cause)
+    }
+
+    return PluginRpcs.of({
+      PluginCall: effect (request, context) => {
+        return Effect.tryPromise((signal) =>
+          plugins.host().then((host) => host.call(request, { window: caller(context), signal }))
+        ) catch effect (error) => try failPlugin(error.cause)
+      },
+      PluginSubscribe: ({ ipc }, context) => Effect.sync(() => plugins.subscribe(ipc, caller(context))),
+      PluginEmbed: ({ id, layout }, context) => Effect.sync(() => plugins.loaded()?.embed(caller(context), id, layout)),
+      PluginCapture: ({ id }, context) =>
+        Effect.promise(async () => (await plugins.loaded()?.capture(caller(context), id)) ?? null),
+      PluginMenubarItem: ({ id }, context) => Effect.sync(() => plugins.loaded()?.runMenubarItem(caller(context), id)),
+      PluginMenubarItems: () => Effect.sync(() => plugins.loaded()?.listMenubarItems() ?? []),
+      PluginConfigure: ({ servers }, context) => Effect.sync(() => plugins.configure(caller(context), servers)),
+      PluginGuis: () => Effect.promise(() => plugins.host().then((host) => host.pluginGuis())),
+      PluginList: () => Effect.promise(() => plugins.host().then((host) => host.list())),
+      PluginEnable: ({ id }) => manage((host) => host.enable(id)),
+      PluginDisable: ({ id }) => manage((host) => host.disable(id)),
+      PluginReload: ({ id }) => manage((host) => host.reload(id)),
+    })
+  },
+)
+
+module $throw$ts {
+  export function raise(value: unknown): never {
+    throw value
+  }
+}
+import { raise as $raise } from $throw$ts

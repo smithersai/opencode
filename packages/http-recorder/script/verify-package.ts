@@ -2,10 +2,10 @@
 import { mkdtemp, rm, writeFile } from "node:fs/promises"
 import { tmpdir } from "node:os"
 import path from "node:path"
-import { withPackedArchive } from "./pack.js"
+import { withPackedArchive } from "./pack.ts"
 
-const run = async (command: ReadonlyArray<string>, cwd: string) => {
-  const process = Bun.spawn(command, { cwd, env: globalThis.process.env, stdout: "inherit", stderr: "inherit" })
+export const run = async (command: ReadonlyArray<string>, cwd: string) => {
+  const process = Bun.spawn([...command], { cwd, env: globalThis.process.env, stdout: "inherit", stderr: "inherit" })
   const exitCode = await process.exited
   if (exitCode !== 0) throw new Error(`${command.join(" ")} exited with code ${exitCode}`)
 }
@@ -93,8 +93,8 @@ if (JSON.stringify(namespace) !== JSON.stringify(["hasCassetteSync", "layer", "l
         "--package-lock=false",
         archive,
         "typescript@5.8.2",
-        "effect@4.0.0-beta.83",
-        "@effect/platform-node@4.0.0-beta.83",
+        "effect@4.1.1",
+        "@effect/platform-node@4.1.1",
       ],
       directory,
     )

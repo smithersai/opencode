@@ -1,0 +1,23 @@
+export * as SessionSkill from "./skill.js"
+
+import type { Session } from "@opencode/schema/session"
+import { Instance } from "../instance/service.js"
+import { Plugin } from "../plugin/service.js"
+import { Skill } from "../skill.js"
+import { SkillNotFoundError } from "./error.js"
+
+export const get = effect (input: { session: Session.Info; skill: Skill.ID }) =>
+  try withSpan(
+    effect {
+      const instances = try Instance.Service
+      const skills = try (Plugin.awaitActivation |> Effect.andThen(%, Skill.Service)
+        |> (try Effect.orDie(Effect.try({
+          try: () => instances.provide(input.session),
+          catch: (error) => error,
+        })))(%))
+      const skill = try skills.get(input.skill)
+      if (!skill) throw new SkillNotFoundError({ skill: input.skill })
+      return skill
+    },
+    "SessionSkill.get",
+  )

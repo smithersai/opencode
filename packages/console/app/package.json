@@ -33,7 +33,9 @@
     "@typescript/native": "catalog:",
     "@webgpu/types": "0.1.54",
     "typescript": "catalog:",
-    "wrangler": "4.50.0"
+    "wrangler": "4.50.0",
+    "vibelang": "file:../../../.vibelang-toolchain/0.0.14-pre.d955d06c6696/tarballs/vibelang-0.0.14-pre.d955d06c6696.tgz",
+    "vibelang-vite": "file:../../../.vibelang-toolchain/0.0.14-pre.d955d06c6696/tarballs/vibelang-vite-0.0.14-pre.d955d06c6696.tgz"
   },
   "engines": {
     "node": ">=22"

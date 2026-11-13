@@ -1,0 +1,35 @@
+module platform {
+  import { Effect } from "effect"
+  export { EOL } from "node:os"
+
+  export const directory = Effect.sync(() => process.cwd())
+  export const write = (value: string) =>
+    Effect.sync(() => {
+      process.stdout.write(value)
+    })
+}
+
+import { EOL, directory, write } from platform
+import { Effect } from "effect"
+import { OpenCode } from "@opencode/client"
+import { Commands } from "../../commands.ts"
+import { Runtime } from "../../../framework/runtime"
+import { Service } from "@opencode/client/effect/service"
+import { ServerConnection } from "../../../services/server-connection"
+
+export default Runtime.handler(
+  Commands.commands.debug.commands.agents,
+  Effect.fn("cli.debug.agents")(effect function() {
+    const currentDirectory = try directory
+    const { endpoint } = try ServerConnection.resolve()
+    const client = try Effect.try(() => OpenCode.make({ baseUrl: endpoint.url, headers: Service.headers(endpoint) }))
+    const response = try Effect.promise(() => client.agent.list({ location: { directory: currentDirectory } }))
+    try write(
+      JSON.stringify(
+        response.data.toSorted((a, b) => a.id.localeCompare(b.id)),
+        null,
+        2,
+      ) + EOL,
+    )
+  }),
+)

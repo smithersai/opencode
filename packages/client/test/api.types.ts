@@ -1,5 +1,5 @@
 import { Effect } from "effect"
-import { OpenCode as EffectOpenCode, type AppApi as EffectApi } from "../src/effect"
+import { OpenCode as EffectOpenCode, type AppApi as EffectApi } from "../src/effect/index.vibe"
 import type { Session } from "@opencode/schema/session"
 import type { DiscoverOptions } from "../src/service"
 

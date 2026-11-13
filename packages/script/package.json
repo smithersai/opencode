@@ -7,11 +7,13 @@
     "test": "bun test"
   },
   "dependencies": {
-    "semver": "^7.6.3"
+    "semver": "^7.6.3",
+    "typescript": "catalog:"
   },
   "devDependencies": {
     "@types/bun": "catalog:",
-    "@types/semver": "^7.5.8"
+    "@types/semver": "^7.5.8",
+    "fast-check": "catalog:"
   },
   "exports": {
     ".": "./src/index.ts",

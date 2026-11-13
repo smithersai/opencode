@@ -1,0 +1,139 @@
+export * as Agent from "./agent.js"
+
+import { makeLocationNode } from "@opencode/util/effect/app-node"
+import { Array, Effect, Types } from "effect"
+import { Agent } from "@opencode/schema/agent"
+import { Bus } from "./bus.js"
+import { State } from "./state.js"
+
+export schema ID = Agent.ID
+export const Name = Agent.Name
+export type Name = Agent.Name
+export const defaultID = ID.make("build")
+
+export const Color = Agent.Color
+
+export const Info = Agent.Info
+export type Info = Agent.Info
+
+export { Event } from "@opencode/schema/agent"
+
+export interface Selection {
+  readonly id: ID
+  readonly info: Info | undefined
+}
+
+type Data = {
+  agents: Map<ID, Types.DeepMutable<Info>>
+  default?: ID
+}
+
+export type Editor = {
+  list: () => readonly Types.DeepMutable<Info>[]
+  get: (id: ID) => Types.DeepMutable<Info> | undefined
+  default: (id: ID | undefined) => void
+  update: (id: ID, fn: (agent: Types.DeepMutable<Info>) => void) => void
+  remove: (id: ID) => void
+}
+
+export interface Interface extends State.Transformable<Editor> {
+  readonly get: (id: ID) => (Info | undefined)!!
+  readonly resolve: (id?: ID | string) => (Info | undefined)!!
+  readonly select: (id?: ID) => Selection!!
+  readonly list: () => Info[]!!
+}
+
+export service Service: Interface {
+  static readonly key = "@opencode/Agent"
+}
+
+const layer = Layer.effect(
+  Service,
+  effect {
+    const bus = try Bus.Service
+    const selectable = (agent: Info | undefined) =>
+      agent && agent.mode !== "subagent" && !agent.hidden ? agent : undefined
+    const selectedDefault = (data: Data) => {
+      const configured = data.default ? selectable(data.agents.get(data.default)) : undefined
+      if (configured) return configured
+      const build = selectable(data.agents.get(defaultID))
+      if (build) return build
+      for (const agent of data.agents.values()) {
+        const fallback = selectable(agent)
+        if (fallback) return fallback
+      }
+    }
+    const list = (data: Data) => {
+      const agents = Array.fromIterable(data.agents.values())
+      const selected = selectedDefault(data)
+      if (!selected) return agents
+      return [selected, ...agents.filter((agent) => agent.id !== selected.id)]
+    }
+    const state = try Effect.orDie(Effect.try({
+      try: () =>
+        State.create<Data, Editor>({
+          name: "agent",
+          initial: () => ({ agents: new Map() }),
+          editor: (editor) => ({
+            list: () => Array.fromIterable(editor.agents.values()),
+            get: (id) => editor.agents.get(id),
+            default: (id) => {
+              editor.default = id
+            },
+            update: (id, fn) => {
+              const current = editor.agents.get(id) ?? (Info.default(id) as Types.DeepMutable<Info>)
+              if (!editor.agents.has(id)) editor.agents.set(id, current)
+              fn(current)
+              current.id = id
+            },
+            remove: (id) => {
+              editor.agents.delete(id)
+            },
+          }),
+          notify: State.changes(list, () => bus.publish(Agent.Event.Updated, {}) |> Effect.asVoid(%)),
+        }),
+      catch: (e) => e,
+    }))
+
+    return Service.of({
+      transform: state.transform,
+      reload: state.reload,
+      get: effect (id): any!! =>
+        try withSpan(
+          (effect (): any!! => {
+            return (try Effect.orDie(Effect.try({ try: () => state.get(), catch: (e) => e }))).agents.get(id)
+          })(),
+          "Agent.get",
+        ),
+      resolve: effect (id) => {
+        if (id !== undefined) {
+          return (try Effect.orDie(Effect.try({ try: () => state.get(), catch: (e) => e }))).agents.get(ID.make(id))
+        }
+        return selectedDefault(try Effect.orDie(Effect.try({ try: () => state.get(), catch: (e) => e })))
+      },
+      select: effect (id): Selection!! =>
+        try withSpan(
+          (effect (): Selection!! => {
+            if (id !== undefined) {
+              return {
+                id,
+                info: (try Effect.orDie(Effect.try({ try: () => state.get(), catch: (e) => e }))).agents.get(id),
+              }
+            }
+            const info = selectedDefault(try Effect.orDie(Effect.try({ try: () => state.get(), catch: (e) => e })))
+            return { id: info?.id ?? defaultID, info }
+          })(),
+          "Agent.select",
+        ),
+      list: effect (): Agent.Info[]!! =>
+        try withSpan(
+          (effect (): Agent.Info[]!! => {
+            return list(try Effect.orDie(Effect.try({ try: () => state.get(), catch: (e) => e })))
+          })(),
+          "Agent.list",
+        ),
+    })
+  },
+)
+
+export const node = makeLocationNode({ service: Service, layer, deps: [Bus.node] })

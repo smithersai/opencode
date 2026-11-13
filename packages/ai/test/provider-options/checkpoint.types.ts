@@ -18,7 +18,7 @@ import {
 } from "../../src/providers.js"
 import type { WebSocketChannelExecutor } from "../../src/route.js"
 import type { RoutePatch } from "../../src/route/client.js"
-import type { OpenAIResponsesBody } from "../../src/protocols/openai-responses.js"
+import type { OpenAIResponsesBody } from "../../src/protocols/openai-responses.vibe"
 import type { Prepared } from "../../src/protocols/open-responses-channel.js"
 
 declare const webSocket: WebSocketChannelExecutor

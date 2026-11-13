@@ -1,0 +1,24 @@
+module platform {
+  import { Effect } from "effect"
+  export { EOL } from "node:os"
+
+  export const write = (value: string) =>
+    Effect.sync(() => {
+      process.stdout.write(value)
+    })
+}
+
+import { EOL, write } from platform
+import { Effect, Option } from "effect"
+import { Commands } from "../../commands.ts"
+import { Runtime } from "../../../framework/runtime"
+import { ServiceConfig } from "../../../services/service-config"
+
+export default Runtime.handler(
+  Commands.commands.service.commands.get,
+  Effect.fn("cli.service.get")(effect function(input) {
+    try write(
+      (try ServiceConfig.get(Option.getOrUndefined(input.key), Option.getOrUndefined(input.name))) + EOL,
+    )
+  }),
+)

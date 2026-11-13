@@ -1,0 +1,49 @@
+import { Effect, Stream } from "effect"
+import { HttpClientResponse } from "effect/http"
+import { allocateBody } from platform
+
+export const collectBoundedResponseBody = (
+  response: HttpClientResponse.HttpClientResponse,
+  maximumBytes: number,
+  tooLarge: () => Error,
+) =>
+  effect {
+    const contentLength = response.headers["content-length"]
+    const parsedSize = contentLength ? Number.parseInt(contentLength, 10) : undefined
+    const declaredSize = parsedSize !== undefined && Number.isSafeInteger(parsedSize) && parsedSize >= 0
+      ? parsedSize
+      : undefined
+    if (declaredSize !== undefined && declaredSize > maximumBytes) throw tooLarge()
+    let body = try Effect.try({
+      try: () => allocateBody(Math.min(maximumBytes, declaredSize || 64 * 1024)),
+      catch: (cause) => cause,
+    }).pipe(Effect.orDie)
+    let size = 0
+    try Stream.runForEach(response.stream, effect (chunk) => {
+      if (chunk.byteLength === 0) return
+      if (size + chunk.byteLength > maximumBytes) throw tooLarge()
+      if (size + chunk.byteLength > body.byteLength) {
+        const grown = try Effect.try({
+          try: () => allocateBody(Math.min(maximumBytes, Math.max(size + chunk.byteLength, body.byteLength * 2))),
+          catch: (cause) => cause,
+        }).pipe(Effect.orDie)
+        body.copy(grown, 0, 0, size)
+        body = grown
+      }
+      body.set(chunk, size)
+      size += chunk.byteLength
+    })
+    return body.subarray(0, size)
+  }
+
+module platform {
+  // The platform code of http-body.vibe: host Buffer allocation, which a .vibe file does not use directly (EK4402).
+
+  /**
+   * Allocates an uninitialized response buffer; Node rejects sizes beyond its buffer limit.
+   * @throws {RangeError}
+   */
+  export function allocateBody(size: number) {
+    return Buffer.allocUnsafe(size)
+  }
+}

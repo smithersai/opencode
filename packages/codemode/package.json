@@ -14,25 +14,34 @@
     "access": "public"
   },
   "files": [
-    "dist"
+    "dist",
+    ".vibelang/js"
   ],
   "exports": {
-    ".": "./src/index.ts"
+    ".": {
+      "types": "./src/index.ts",
+      "vibelang-source": "./src/index.ts",
+      "default": "./.vibelang/js/src/index.js"
+    }
   },
   "scripts": {
     "build": "bun run script/build.ts",
     "pack": "bun run script/pack.ts",
     "typecheck": "bun check --no-script",
-    "typecheck:tsc": "tsc --noEmit",
+    "typecheck:tsc": "vibelang --noEmit",
     "test": "bun test"
   },
   "dependencies": {
     "acorn": "8.15.0",
-    "effect": "catalog:"
+    "effect": "catalog:",
+    "vibelang-runtime": "file:../../.vibelang-toolchain/0.0.14-pre.d955d06c6696/tarballs/vibelang-runtime-0.0.14-pre.d955d06c6696.tgz"
   },
   "devDependencies": {
     "@tsconfig/bun": "catalog:",
     "@types/bun": "catalog:",
-    "@typescript/native": "catalog:"
+    "@typescript/native": "catalog:",
+    "fast-check": "catalog:",
+    "vibelang": "file:../../.vibelang-toolchain/0.0.14-pre.d955d06c6696/tarballs/vibelang-0.0.14-pre.d955d06c6696.tgz",
+    "typescript": "catalog:"
   }
 }

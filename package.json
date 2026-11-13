@@ -17,24 +17,27 @@
     "dev:stats": "bun sst shell --stage=production -- bun run --cwd packages/stats/app dev",
     "dev:www": "bun run --cwd services/www dev",
     "bench:devex": "bun run --cwd packages/app test:bench:devex",
-    "lint": "oxlint && ast-grep scan -c script/ast-grep/gui-plugins/sgconfig.yml && bun script/sdk-docs.ts",
+    "lint": "bun run sidecars && bun run lint:source",
     "lint:changed": "bun script/lint-changed.ts",
     "lint:effect-patterns": "ast-grep scan -c script/ast-grep/sgconfig.yml packages/util/src packages/core/src packages/server/src packages/protocol/src packages/cli/src",
     "lint:effect-simplifications": "ast-grep scan -c script/ast-grep/effect-simplifications/sgconfig.yml --off=unused-suppression packages",
     "test:lint-rules": "ast-grep test -c script/ast-grep/sgconfig.yml",
     "test:effect-simplification-rules": "ast-grep test -c script/ast-grep/effect-simplifications/sgconfig.yml",
-    "typecheck": "bun turbo typecheck --concurrency=3",
-    "typecheck:tsc": "bun turbo typecheck:tsc --concurrency=3",
-    "check": "bun run lint && bun run typecheck",
+    "typecheck": "bun run sidecars && bun run typecheck:source",
+    "typecheck:tsc": "bun run sidecars && bun turbo typecheck:tsc --concurrency=3",
+    "check": "bun run sidecars && bun run lint:source && bun run typecheck:source",
     "typecheck:profile": "bun script/profile-typecheck.ts",
     "typecheck:profile:packages": "bun script/profile-typecheck-packages.ts",
     "pack": "bun run script/pack.ts",
     "upgrade-opentui": "bun run script/upgrade-opentui.ts",
-    "postinstall": "bun run --cwd packages/core fix-node-pty",
+    "postinstall": "(bun run --cwd packages/core fix-node-pty) && (cd script/ast-grep/effect-simplifications && node ../../../node_modules/vibelang/bin/vibelang-ast-grep .vibelang/vibelang-parser) && (cd script/ast-grep/gui-plugins && node ../../../node_modules/vibelang/bin/vibelang-ast-grep .vibelang/vibelang-parser) && (cd script/ast-grep && node ../../node_modules/vibelang/bin/vibelang-ast-grep .vibelang/vibelang-parser)",
     "prepare": "husky",
     "random": "echo 'Random script'",
     "sso": "aws sso login --sso-session=opencode --no-browser",
-    "test": "echo 'do not run tests from root' && exit 1"
+    "test": "echo 'do not run tests from root' && exit 1",
+    "sidecars": "bun run script/vibelang-sidecars.ts && bun run script/vibelang-runtime.ts",
+    "lint:source": "(oxlint --no-error-on-unmatched-pattern && ast-grep scan -c script/ast-grep/gui-plugins/sgconfig.yml && bun script/sdk-docs.ts) && eslint --config .vibelang/eslint.config.mjs \"**/*.{vibe,vibex}\" --no-error-on-unmatched-pattern",
+    "typecheck:source": "bun turbo typecheck --concurrency=3"
   },
   "workspaces": {
     "packages": [
@@ -45,10 +48,10 @@
       "packages/stats/*"
     ],
     "catalog": {
-      "@effect/opentelemetry": "4.0.1",
-      "@effect/platform-node": "4.0.1",
-      "@effect/platform-node-shared": "4.0.1",
-      "@effect/sql-sqlite-bun": "4.0.1",
+      "@effect/opentelemetry": "4.1.1",
+      "@effect/platform-node": "4.1.1",
+      "@effect/platform-node-shared": "4.1.1",
+      "@effect/sql-sqlite-bun": "4.1.1",
       "@npmcli/arborist": "9.4.0",
       "@types/bun": "1.4.3",
       "@types/cross-spawn": "6.0.6",
@@ -77,7 +80,7 @@
       "dompurify": "3.4.17",
       "drizzle-kit": "1.0.0-rc.5-ab785fc",
       "drizzle-orm": "1.0.0-rc.5-169397b",
-      "effect": "4.0.1",
+      "effect": "4.1.1",
       "fast-check": "4.9.0",
       "cross-spawn": "7.0.6",
       "hono": "4.10.7",
@@ -124,7 +127,10 @@
     "prettier": "3.6.2",
     "semver": "^7.6.0",
     "sst": "catalog:",
-    "turbo": "2.10.2"
+    "turbo": "2.10.2",
+    "vibelang": "file:.vibelang-toolchain/0.0.14-pre.d955d06c6696/tarballs/vibelang-0.0.14-pre.d955d06c6696.tgz",
+    "eslint": "^9.39.5",
+    "typescript-eslint": "^8.69.0"
   },
   "dependencies": {
     "@opencode/plugin": "workspace:*",
@@ -138,7 +144,10 @@
   "license": "MIT",
   "prettier": {
     "semi": false,
-    "printWidth": 120
+    "printWidth": 120,
+    "plugins": [
+      "vibelang/prettier"
+    ]
   },
   "trustedDependencies": [
     "esbuild",
@@ -156,7 +165,17 @@
     "bun-types": "1.4.4",
     "effect": "catalog:",
     "open": "11.0.4",
-    "solid-js": "catalog:"
+    "solid-js": "catalog:",
+    "@smthrs/cli-win32-arm64": "file:.vibelang-toolchain/0.0.14-pre.d955d06c6696/tarballs/smthrs-cli-win32-arm64-0.0.14-pre.d955d06c6696.tgz",
+    "@smthrs/cli-win32-x64": "file:.vibelang-toolchain/0.0.14-pre.d955d06c6696/tarballs/smthrs-cli-win32-x64-0.0.14-pre.d955d06c6696.tgz",
+    "vibelang": "file:.vibelang-toolchain/0.0.14-pre.d955d06c6696/tarballs/vibelang-0.0.14-pre.d955d06c6696.tgz",
+    "vibelang-darwin-arm64": "file:.vibelang-toolchain/0.0.14-pre.d955d06c6696/tarballs/vibelang-darwin-arm64-0.0.14-pre.d955d06c6696.tgz",
+    "vibelang-darwin-x64": "file:.vibelang-toolchain/0.0.14-pre.d955d06c6696/tarballs/vibelang-darwin-x64-0.0.14-pre.d955d06c6696.tgz",
+    "vibelang-linux-arm64": "file:.vibelang-toolchain/0.0.14-pre.d955d06c6696/tarballs/vibelang-linux-arm64-0.0.14-pre.d955d06c6696.tgz",
+    "vibelang-linux-x64": "file:.vibelang-toolchain/0.0.14-pre.d955d06c6696/tarballs/vibelang-linux-x64-0.0.14-pre.d955d06c6696.tgz",
+    "vibelang-runtime": "file:.vibelang-toolchain/0.0.14-pre.d955d06c6696/tarballs/vibelang-runtime-0.0.14-pre.d955d06c6696.tgz",
+    "vibelang-unplugin": "file:.vibelang-toolchain/0.0.14-pre.d955d06c6696/tarballs/vibelang-unplugin-0.0.14-pre.d955d06c6696.tgz",
+    "vibelang-vite": "file:.vibelang-toolchain/0.0.14-pre.d955d06c6696/tarballs/vibelang-vite-0.0.14-pre.d955d06c6696.tgz"
   },
   "patchedDependencies": {
     "@ai-sdk/openai-compatible@2.0.41": "patches/@ai-sdk%2Fopenai-compatible@2.0.41.patch",

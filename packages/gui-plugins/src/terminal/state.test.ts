@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test"
 import { Schema } from "effect"
-import { TerminalState } from "./state"
+import { TerminalState } from "./state.vibe"
 
 const decodeTerminalState = Schema.decodeUnknownSync(TerminalState)
 

@@ -1,0 +1,7 @@
+[
+  "import type { ShellSelect } from \"#vibelang/emitted/src/shell/select\"; export type Read = ShellSelect",
+  "export { ShellSelect } from \"#vibelang/emitted/src/shell/select\"",
+  "export type Read = import(\"#vibelang/emitted/src/shell/select\").ShellSelect",
+  "import Read = require(\"#vibelang/emitted/src/shell/select\")",
+  "declare module \"#vibelang/emitted/src/shell/select\" { export type Read = number }"
+]

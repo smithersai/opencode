@@ -1,4 +1,4 @@
-import { serverAddress } from "./pairing"
+import { serverAddress } from "./pairing.vibe"
 
 export function isMixedContent(page: string, address: string) {
   if (new URL(page).protocol !== "https:") return false

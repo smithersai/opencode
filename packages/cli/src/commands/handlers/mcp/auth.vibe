@@ -1,0 +1,143 @@
+module platform {
+  export const currentDirectory = () => process.cwd()
+
+  export const inputIsTTY = () => process.stdin.isTTY
+
+  export const outputIsTTY = () => process.stdout.isTTY
+}
+
+import { currentDirectory, inputIsTTY, outputIsTTY } from platform
+import { confirm, intro, log, outro } from "@clack/prompts"
+import { Effect, Option } from "effect"
+import { OpenCode, type IntegrationInfo, type IntegrationOAuthMethod, type McpServer } from "@opencode/client"
+import { Commands } from "../../commands.ts"
+import { Runtime } from "../../../framework/runtime"
+import { Service } from "@opencode/client/effect/service"
+import { ServerConnection } from "../../../services/server-connection"
+import { selectIntegration, type IntegrationChoice } from "../../../ui/integration-picker"
+import { handlePromptErrors, prompt, requireInteractive } from "../../../ui/prompt"
+import { answerForm } from "../auth/form"
+import { oauthLogin } from "../auth/login"
+import { loadIntegrations, request } from "../auth/shared"
+
+const location = { directory: currentDirectory() }
+
+export default Runtime.handler(
+  Commands.commands.mcp.commands.auth,
+  Effect.fn("cli.mcp.auth")((input) => authenticate(Option.getOrUndefined(input.name)).pipe(handlePromptErrors)),
+)
+
+const authenticate = Effect.fn("cli.mcp.auth.run")(effect function(name?: string) {
+  if (!name) try requireInteractive("Pass an MCP server name when running without an interactive terminal")
+  void (try ((args: Parameters<typeof intro>) => Effect.try(() => intro(...args)).pipe(Effect.orDie))([
+    "Authenticate an MCP server",
+  ]))
+  const { endpoint } = try ServerConnection.resolve()
+  const client =
+    try ((args: Parameters<typeof OpenCode.make>) => Effect.try(() => OpenCode.make(...args)).pipe(Effect.orDie))([{
+      baseUrl: endpoint.url,
+      headers:
+        try ((args: Parameters<typeof Service.headers>) =>
+          Effect.try(() => Service.headers(...args)).pipe(Effect.orDie))([endpoint]),
+    }])
+  const integrations = try loadIntegrations(client)
+  const servers = try request((signal) => client.mcp.list({ location }, { signal }))
+  const choices = mcpAuthChoices(servers.data, integrations)
+  if (!name && choices.length === 0) {
+    void (try ((args: Parameters<typeof log.warn>) => Effect.try(() => log.warn(...args)).pipe(Effect.orDie))([
+      "No OAuth-capable MCP servers configured",
+    ]))
+    void (try ((args: Parameters<typeof log.info>) => Effect.try(() => log.info(...args)).pipe(Effect.orDie))([
+      `Remote MCP servers support OAuth by default. Add one with \`opencode mcp add\` or in opencode.json:\n${exampleConfig}`,
+    ]))
+    void (try ((args: Parameters<typeof outro>) => Effect.try(() => outro(...args)).pipe(Effect.orDie))(["Done"]))
+    return
+  }
+
+  const server = name ? servers.data.find((item) => item.name === name) : undefined
+  if (name && !server) return try Effect.fail(new Error(`MCP server not found: ${name}`))
+  const integrationID = server
+    ? server.integrationID
+    : try prompt<string>(() => selectIntegration(choices, "MCP server"))
+  const integration = integrations.find((item) => item.id === integrationID)
+  const method = integration?.methods.find(
+    (candidate): candidate is IntegrationOAuthMethod => candidate.type === "oauth",
+  )
+  if (!integration || !method) {
+    return try Effect.fail(new Error(`MCP server "${name}" is not an OAuth-capable remote server`))
+  }
+
+  if (integration.connections.length > 0) {
+    const status = servers.data.find((item) => item.integrationID === integration.id)?.status.status
+    if (status === "needs_auth") {
+      void (try ((args: Parameters<typeof log.warn>) => Effect.try(() => log.warn(...args)).pipe(Effect.orDie))([
+        `${integration.name} has expired credentials. Re-authenticating...`,
+      ]))
+    }
+    if (
+      status !== "needs_auth"
+      && (try ((args: Parameters<typeof inputIsTTY>) => Effect.try(() => inputIsTTY(...args)).pipe(Effect.orDie))([]))
+      && (try ((args: Parameters<typeof outputIsTTY>) => Effect.try(() => outputIsTTY(...args)).pipe(Effect.orDie))(
+        [],
+      ))
+    ) {
+      const again = try prompt<boolean>(() =>
+        confirm({ message: `${integration.name} already has valid credentials. Re-authenticate?` })
+      )
+      if (!again) {
+        void (try ((args: Parameters<typeof outro>) => Effect.try(() => outro(...args)).pipe(Effect.orDie))([
+          "Cancelled",
+        ]))
+        return
+      }
+    }
+  }
+
+  // Re-authenticating replaces the previous sign-in rather than adding an account. The new credential
+  // keeps the active one's label, and the old ones are only removed once it is stored, so a failed
+  // attempt keeps them.
+  const previous = integration.connections.filter((connection) => connection.type === "credential")
+  try oauthLogin(client, integration, method, try answerForm(method.form), previous[0]?.label)
+  try Effect.forEach(
+    previous,
+    (connection) => request((signal) => client.credential.remove({ credentialID: connection.id }, { signal })),
+    { discard: true },
+  )
+  void (try ((args: Parameters<typeof outro>) => Effect.try(() => outro(...args)).pipe(Effect.orDie))(["Done"]))
+})
+
+const exampleConfig = `
+  "mcp": {
+    "servers": {
+      "my-server": {
+        "type": "remote",
+        "url": "https://example.com/mcp"
+      }
+    }
+  }`
+
+// Choices carry the server-owned integration ID so provider integrations with colliding names never match.
+export function mcpAuthChoices(servers: McpServer[], integrations: IntegrationInfo[]): IntegrationChoice[] {
+  const byID = new Map(integrations.map((integration) => [integration.id, integration]))
+  return servers
+    .flatMap((server) => {
+      const integration = server.integrationID ? byID.get(server.integrationID) : undefined
+      if (!integration?.methods.some((method) => method.type === "oauth")) return []
+      return [
+        {
+          value: integration.id,
+          label: server.name,
+          category: "MCP" as const,
+          connected: integration.connections.length > 0,
+          hint: statusHint(server.status),
+        },
+      ]
+    })
+    .toSorted((a, b) => a.label.localeCompare(b.label) || a.value.localeCompare(b.value))
+}
+
+function statusHint(status: McpServer["status"]) {
+  if (status.status === "needs_auth") return "needs authentication"
+  if (status.status === "failed" || status.status === "disabled") return status.status
+  return undefined
+}

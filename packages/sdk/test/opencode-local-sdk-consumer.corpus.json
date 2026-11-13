@@ -1,0 +1,5 @@
+{
+  "dependency": "opencode-local-runtime-fixture",
+  "pattern": "an isolated SDK consumer installs an archive with a transitive file dependency relative to the source package",
+  "source": "packages/sdk/script/verify-package.ts"
+}

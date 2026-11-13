@@ -1,4 +1,4 @@
-export { Extraction, ExtractionModel, ExtractionRequest, ExtractionResponse } from "./experimental/extraction.js"
+export { Extraction, ExtractionModel, ExtractionRequest, ExtractionResponse } from "./experimental/extraction.vibe"
 export type {
   ExtractionAnswerFor,
   ExtractionAnswersFor,
@@ -10,12 +10,12 @@ export type {
   ExtractionRequestInput,
   ExtractionResponseFor,
   ExtractionRoute,
-} from "./experimental/extraction.js"
-export { Realtime } from "./experimental/realtime.js"
+} from "./experimental/extraction.vibe"
+export { Realtime } from "./experimental/realtime.vibe"
 export type {
   RealtimeConnectInput,
   RealtimeSession,
   RealtimeTransport,
   RealtimeTransportInput,
   RealtimeTransportType,
-} from "./experimental/realtime.js"
+} from "./experimental/realtime.vibe"

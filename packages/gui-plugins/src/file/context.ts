@@ -2,7 +2,7 @@ import { createContext, useContext, type Accessor } from "solid-js"
 import type { Browser } from "@opencode/plugin/gui/browser"
 import type { Changes } from "@opencode/plugin/gui/review"
 import type { LineRange, Live, MountedSession, OpenOptions } from "@opencode/plugin/gui"
-import type { OpenApp } from "./apps"
+import type { OpenApp } from "./apps.vibe"
 
 /** An open-in-app request in flight: the app it opens, or undefined while none is. */
 export interface OpenRequest {

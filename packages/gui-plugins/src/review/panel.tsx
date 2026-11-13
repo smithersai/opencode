@@ -22,7 +22,7 @@ import type {
 } from "@opencode/session-ui/session-review"
 import { usePlugin, usePanel, type MountedSession, type PanelSidebar, type SessionScreen } from "@opencode/plugin/gui"
 import { FileTree, OpenInApp } from "@opencode/plugin/gui/file"
-import type Review from "./index"
+import type Review from "./index.vibe"
 import {
   applyFileListKeyDown,
   filterReviewFiles,
@@ -31,7 +31,7 @@ import {
   reviewDiffNeedsLoad,
   sortReviewPaths,
   type RenderDiff,
-} from "./kinds"
+} from "./kinds.vibe"
 import type { ReviewModel } from "./model"
 import { ReviewPanelEmpty, ReviewTitle } from "./parts"
 

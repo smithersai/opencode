@@ -14,7 +14,7 @@ import { Vcs } from "@opencode/core/vcs"
 import { CrossSpawnSpawner } from "@opencode/util/cross-spawn-spawner"
 import type { LayerNode } from "@opencode/util/effect/layer-node"
 import { ServerFetch } from "./fetch"
-import type { ServerOptions } from "./options"
+import type { ServerOptions } from "./options.vibe"
 
 /**
  * The workerd runtime profile: boots opencode core and server inside a

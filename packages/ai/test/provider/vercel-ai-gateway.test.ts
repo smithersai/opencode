@@ -1,12 +1,12 @@
 import { expect } from "bun:test"
 import { ConfigProvider, Effect } from "effect"
 import { LLM, LLMClient, LLMEvent, Message, CacheHint } from "../../src/effect.js"
-import { VercelAIGateway } from "../../src/providers/vercel-ai-gateway.js"
+import { VercelAIGateway } from "../../src/providers/vercel-ai-gateway.vibe"
 import { compileRequest } from "../../src/route/client.js"
 import { it } from "../lib/effect.js"
 import { dynamicResponse } from "../lib/http.js"
 import { sseEvents } from "../lib/sse.js"
-import { isRetryable } from "../../src/provider-error.js"
+import { isRetryable } from "../../src/provider-error.vibe"
 
 it.effect("Gateway defaults preserve full model IDs and select the requested families", () =>
   Effect.gen(function* () {

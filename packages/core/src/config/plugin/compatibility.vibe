@@ -1,0 +1,108 @@
+export * as ConfigCompatibilityPlugin from "./compatibility.js"
+
+import { define } from "@opencode/plugin/effect/plugin"
+import { FSUtil } from "@opencode/util/fs-util"
+import { Effect, FiberMap, PubSub, Semaphore, Stream } from "effect"
+import { Config } from "../../config.js"
+import { Watcher } from "../../filesystem/watcher.js"
+import { Skill } from "../../skill.js"
+import { SkillFile } from "./skill-file.js"
+import { SkillScan } from "./skill-scan.js"
+import { basename, joinPath } from platform
+
+export const Plugin = define({
+  id: "opencode.config.compatibility",
+  effect: Effect.fn(effect (ctx) => {
+    const config = try Config.Service
+    const fs = try FSUtil.Service
+    const watcher = try Watcher.Service
+    const watches = try FiberMap.make<string>()
+    const changes = try PubSub.sliding<string>(1)
+    const lock = Semaphore.makeUnsafe(1)
+    const skills: Skill.Info[] = []
+    const compatibility = () =>
+      config.compatibility ? config.compatibility() : Effect.succeed({ claude: [], agents: [] })
+
+    const watch = Effect.fn("ConfigCompatibilityPlugin.watch")(effect (
+      target: string,
+      type: "file" | "directory",
+    ) => {
+      const updates = try watcher.subscribe(
+        type === "directory" ? { path: target, type, ignore: SkillScan.ignore } : { path: target, type },
+      )
+      try FiberMap.run(
+        watches,
+        `${type}:${target}`,
+        updates.pipe(Stream.runForEach((update) => PubSub.publish(changes, update.path).pipe(Effect.asVoid))),
+        { onlyIfMissing: true, startImmediately: true },
+      )
+    })
+
+    const refresh = Effect.fn("ConfigCompatibilityPlugin.refresh")(
+      effect () => {
+        try FiberMap.clear(watches)
+        const roots = try compatibility()
+        const directories = [...roots.claude, ...roots.agents].map((root) => joinPath(root, "skills"))
+        const loaded = new Map<Skill.ID, Skill.Info>()
+        for (const directory of directories) {
+          const resolved = try fs.realPath(directory).pipe(Effect.orElseSucceed(() => undefined))
+          if (!resolved) continue
+          try watch(resolved, "directory")
+          for (const filepath of try SkillScan.scan(resolved)) {
+            const content = try fs.readFileStringSafe(filepath).pipe(Effect.orElseSucceed(() => undefined))
+            if (!content) continue
+            const parsed = SkillFile.parse(resolved, filepath, content)
+            if (parsed._tag === "Parsed") loaded.set(parsed.skill.id, parsed.skill)
+          }
+        }
+        skills.splice(0, skills.length, ...loaded.values())
+      },
+      (self) => lock.withPermit(self),
+    )
+
+    const reload = refresh().pipe(Effect.andThen(ctx.skill.reload()))
+    const updates = try PubSub.subscribe(changes)
+    try Stream.fromSubscription(updates).pipe(
+      Stream.debounce("100 millis"),
+      Stream.runForEach(() => reload),
+      Effect.forkScoped({ startImmediately: true }),
+    )
+    try config.changes().pipe(
+      Stream.filterEffect((update) =>
+        Effect.map(compatibility(), (roots) => isCompatibilitySource(roots, update.path))
+      ),
+      Stream.runForEach((update) => PubSub.publish(changes, update.path).pipe(Effect.asVoid)),
+      Effect.forkScoped({ startImmediately: true }),
+    )
+    try refresh()
+    try ctx.skill.transform((editor) => {
+      for (const skill of skills) editor.add(skill)
+    })
+  }),
+})
+
+const sourceDirectories = [".claude", ".agents"] as const
+
+function isCompatibilitySource(
+  roots: { readonly claude: readonly string[]; readonly agents: readonly string[] },
+  file: string,
+) {
+  return (
+    sourceDirectories.some((name) => basename(file) === name)
+    || [...roots.claude, ...roots.agents].some((root) => FSUtil.contains(root, file))
+  )
+}
+
+module platform {
+  import path from "path"
+
+  /** @throws {never} */
+  export function joinPath(directory: string, name: string) {
+    return path.join(directory, name)
+  }
+
+  /** @throws {never} */
+  export function basename(file: string) {
+    return path.basename(file)
+  }
+}

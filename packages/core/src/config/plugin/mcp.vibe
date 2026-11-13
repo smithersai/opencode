@@ -1,0 +1,60 @@
+export * as ConfigMcpPlugin from "./mcp.js"
+
+import { define } from "@opencode/plugin/effect/plugin"
+import { Document, type Entry } from "@opencode/schema/config"
+import type { ServerConfig } from "@opencode/schema/mcp"
+import { Effect, Stream } from "effect"
+import { Config } from "../../config.js"
+import { Mcp } from "../../mcp/index.js"
+
+export const Plugin = define({
+  id: "opencode.config.mcp",
+  effect: effect (ctx) => {
+    try register(
+      try Effect.orDie(Effect.try({ try: () => ctx.event.subscribe({ types: ["config.updated"] }), catch: (e) => e })),
+    )
+  },
+})
+
+export const register = effect (
+  events: Stream.Stream<{ readonly type: string }, unknown, never>,
+) =>
+  try withSpan(
+    effect {
+      const config = try Config.Service
+      const mcp = try Mcp.Service
+      const loaded = { entries: [] as Entry[] }
+
+      try (events
+        |> Stream.filter(%, (event) => event.type === "config.updated")
+        |> Stream.runForEach(%, () =>
+          config.entries()
+          |> Effect.tap(%, effect (entries) => (loaded.entries = entries))
+          |> Effect.andThen(%, mcp.reload())
+          |> Effect.catchCause(%, (cause) => Effect.logError("failed to reload MCP config", { cause })))
+        |> Effect.ignore(%)
+        |> Effect.forkScoped({ startImmediately: true })(%))
+
+      // Subscribe before the initial load so updates racing it trigger a rebuild.
+      loaded.entries = try config.entries()
+      try mcp.transform((editor) => {
+        const documents = loaded.entries.filter((entry): entry is Document => entry.type === "document")
+        // Global timeout defaults merge in config order; each server can override them.
+        const timeout = Object.assign(
+          {},
+          ...documents.flatMap((entry) => (entry.info.mcp?.timeout ? [entry.info.mcp.timeout] : [])),
+        )
+        const servers = new Map<string, ServerConfig>()
+        for (const document of documents) {
+          for (const [name, server] of Object.entries(document.info.mcp?.servers ?? {})) {
+            servers.set(name, server)
+          }
+        }
+        for (const [name, server] of servers) {
+          if (editor.get(name)) continue
+          editor.set(name, { ...server, timeout: { ...timeout, ...server.timeout } })
+        }
+      })
+    },
+    "ConfigMCPPlugin.register",
+  )

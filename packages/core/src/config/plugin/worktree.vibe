@@ -1,0 +1,40 @@
+export * as ConfigWorktreePlugin from "./worktree.js"
+
+import { define } from "@opencode/plugin/effect/plugin"
+import { Effect } from "effect"
+import { Config } from "../../config.js"
+import { Global } from "@opencode/util/global"
+import { Location } from "../../location.js"
+import { AbsolutePath } from "../../schema.js"
+import { WorktreeStrategies } from "../../worktree/strategies.js"
+import { ConfigEntryObserver } from "#vibelang/emitted/src/config/plugin/entry-observer"
+import { worktreeDirectory } from platform
+
+export const Plugin = define({
+  id: "opencode.config.worktree",
+  effect: Effect.fn(effect (ctx) => {
+    const config = try Config.Service
+    const location = try Location.Service
+    const global = try Global.Service
+    const worktrees = try WorktreeStrategies.Service
+    const loaded = try ConfigEntryObserver.observe(config, ctx.event, worktrees.reload())
+    try worktrees.transform((editor) => {
+      for (const entry of loaded.entries) {
+        if (entry.type !== "document" || !entry.info.worktree) continue
+        const directory = entry.info.worktree.directory
+        editor.configure({
+          directory: AbsolutePath.make(worktreeDirectory(global.home, location.project.canonical, directory)),
+        })
+      }
+    })
+  }),
+})
+
+module platform {
+  import path from "path"
+
+  /** Expands a configured worktree directory against the home and project directories. */
+  export function worktreeDirectory(home: string, project: string, directory: string) {
+    return directory.startsWith("~/") ? path.join(home, directory.slice(2)) : path.resolve(project, directory)
+  }
+}

@@ -1,0 +1,194 @@
+[
+  {
+    "entrypoint": "./gui/main",
+    "source": "./src/gui/main.vibe",
+    "types": "./src/gui/main.d.vibe.ts",
+    "output": "./.vibelang/js/src/gui/main.js"
+  },
+  {
+    "entrypoint": "./effect/agent",
+    "source": "./src/effect/agent.vibe",
+    "types": "./src/effect/agent.d.vibe.ts",
+    "output": "./.vibelang/js/src/effect/agent.js"
+  },
+  {
+    "entrypoint": "./effect/command",
+    "source": "./src/effect/command.vibe",
+    "types": "./src/effect/command.d.vibe.ts",
+    "output": "./.vibelang/js/src/effect/command.js"
+  },
+  {
+    "entrypoint": "./effect/event",
+    "source": "./src/effect/event.vibe",
+    "types": "./src/effect/event.d.vibe.ts",
+    "output": "./.vibelang/js/src/effect/event.js"
+  },
+  {
+    "entrypoint": "./effect/integration",
+    "source": "./src/effect/integration.vibe",
+    "types": "./src/effect/integration.d.vibe.ts",
+    "output": "./.vibelang/js/src/effect/integration.js"
+  },
+  {
+    "entrypoint": "./effect/mcp",
+    "source": "./src/effect/mcp.vibe",
+    "types": "./src/effect/mcp.d.vibe.ts",
+    "output": "./.vibelang/js/src/effect/mcp.js"
+  },
+  {
+    "entrypoint": "./effect/model",
+    "source": "./src/effect/model.vibe",
+    "types": "./src/effect/model.d.vibe.ts",
+    "output": "./.vibelang/js/src/effect/model.js"
+  },
+  {
+    "entrypoint": "./effect/permission",
+    "source": "./src/effect/permission.vibe",
+    "types": "./src/effect/permission.d.vibe.ts",
+    "output": "./.vibelang/js/src/effect/permission.js"
+  },
+  {
+    "entrypoint": "./effect/plugin",
+    "source": "./src/effect/plugin.vibe",
+    "types": "./src/effect/plugin.d.vibe.ts",
+    "output": "./.vibelang/js/src/effect/plugin.js"
+  },
+  {
+    "entrypoint": "./effect/provider",
+    "source": "./src/effect/provider.vibe",
+    "types": "./src/effect/provider.d.vibe.ts",
+    "output": "./.vibelang/js/src/effect/provider.js"
+  },
+  {
+    "entrypoint": "./effect/reference",
+    "source": "./src/effect/reference.vibe",
+    "types": "./src/effect/reference.d.vibe.ts",
+    "output": "./.vibelang/js/src/effect/reference.js"
+  },
+  {
+    "entrypoint": "./effect/registration",
+    "source": "./src/effect/registration.vibe",
+    "types": "./src/effect/registration.d.vibe.ts",
+    "output": "./.vibelang/js/src/effect/registration.js"
+  },
+  {
+    "entrypoint": "./effect/rpc",
+    "source": "./src/effect/rpc.vibe",
+    "types": "./src/effect/rpc.d.vibe.ts",
+    "output": "./.vibelang/js/src/effect/rpc.js"
+  },
+  {
+    "entrypoint": "./effect/session",
+    "source": "./src/effect/session.vibe",
+    "types": "./src/effect/session.d.vibe.ts",
+    "output": "./.vibelang/js/src/effect/session.js"
+  },
+  {
+    "entrypoint": "./effect/skill",
+    "source": "./src/effect/skill.vibe",
+    "types": "./src/effect/skill.d.vibe.ts",
+    "output": "./.vibelang/js/src/effect/skill.js"
+  },
+  {
+    "entrypoint": "./effect/storage",
+    "source": "./src/effect/storage.vibe",
+    "types": "./src/effect/storage.d.vibe.ts",
+    "output": "./.vibelang/js/src/effect/storage.js"
+  },
+  {
+    "entrypoint": "./effect/tool",
+    "source": "./src/effect/tool.vibe",
+    "types": "./src/effect/tool.d.vibe.ts",
+    "output": "./.vibelang/js/src/effect/tool.js"
+  },
+  {
+    "entrypoint": "./effect/vcs",
+    "source": "./src/effect/vcs.vibe",
+    "types": "./src/effect/vcs.d.vibe.ts",
+    "output": "./.vibelang/js/src/effect/vcs.js"
+  },
+  {
+    "entrypoint": "./effect/websearch",
+    "source": "./src/effect/websearch.vibe",
+    "types": "./src/effect/websearch.d.vibe.ts",
+    "output": "./.vibelang/js/src/effect/websearch.js"
+  },
+  {
+    "entrypoint": "./effect/worktree",
+    "source": "./src/effect/worktree.vibe",
+    "types": "./src/effect/worktree.d.vibe.ts",
+    "output": "./.vibelang/js/src/effect/worktree.js"
+  },
+  {
+    "entrypoint": "./gui/host-apis",
+    "source": "./src/gui/host-apis.vibe",
+    "types": "./src/gui/host-apis.d.vibe.ts",
+    "output": "./.vibelang/js/src/gui/host-apis.js"
+  },
+  {
+    "entrypoint": "./gui/plugin.typecheck",
+    "source": "./src/gui/plugin.typecheck.vibe",
+    "types": "./src/gui/plugin.typecheck.d.vibe.ts",
+    "output": "./.vibelang/js/src/gui/plugin.typecheck.js"
+  },
+  {
+    "entrypoint": "./permission",
+    "source": "./src/permission.vibe",
+    "types": "./src/permission.d.vibe.ts",
+    "output": "./.vibelang/js/src/permission.js"
+  },
+  {
+    "entrypoint": "./promise/agent",
+    "source": "./src/promise/agent.vibe",
+    "types": "./src/promise/agent.d.vibe.ts",
+    "output": "./.vibelang/js/src/promise/agent.js"
+  },
+  {
+    "entrypoint": "./promise/mcp",
+    "source": "./src/promise/mcp.vibe",
+    "types": "./src/promise/mcp.d.vibe.ts",
+    "output": "./.vibelang/js/src/promise/mcp.js"
+  },
+  {
+    "entrypoint": "./promise/model",
+    "source": "./src/promise/model.vibe",
+    "types": "./src/promise/model.d.vibe.ts",
+    "output": "./.vibelang/js/src/promise/model.js"
+  },
+  {
+    "entrypoint": "./promise/provider",
+    "source": "./src/promise/provider.vibe",
+    "types": "./src/promise/provider.d.vibe.ts",
+    "output": "./.vibelang/js/src/promise/provider.js"
+  },
+  {
+    "entrypoint": "./promise/session",
+    "source": "./src/promise/session.vibe",
+    "types": "./src/promise/session.d.vibe.ts",
+    "output": "./.vibelang/js/src/promise/session.js"
+  },
+  {
+    "entrypoint": "./promise/skill",
+    "source": "./src/promise/skill.vibe",
+    "types": "./src/promise/skill.d.vibe.ts",
+    "output": "./.vibelang/js/src/promise/skill.js"
+  },
+  {
+    "entrypoint": "./promise/storage",
+    "source": "./src/promise/storage.vibe",
+    "types": "./src/promise/storage.d.vibe.ts",
+    "output": "./.vibelang/js/src/promise/storage.js"
+  },
+  {
+    "entrypoint": "./promise/tool",
+    "source": "./src/promise/tool.vibe",
+    "types": "./src/promise/tool.d.vibe.ts",
+    "output": "./.vibelang/js/src/promise/tool.js"
+  },
+  {
+    "entrypoint": "./storage",
+    "source": "./src/storage.vibe",
+    "types": "./src/storage.d.vibe.ts",
+    "output": "./.vibelang/js/src/storage.js"
+  }
+]

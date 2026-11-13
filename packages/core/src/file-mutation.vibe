@@ -1,0 +1,151 @@
+export * as FileMutation from "./file-mutation.js"
+
+import { makeLocationNode } from "@opencode/util/effect/app-node"
+import { KeyedMutex } from "./effect/keyed-mutex.js"
+import { withKeyedLock } from "./effect/keyed-mutex.native.ts"
+import { FSUtil } from "@opencode/util/fs-util"
+import { Bom } from "@opencode/util/bom"
+import { Environment } from "./environment/index.js"
+import type { Files } from "./environment/index.js"
+import type { FileAccess } from "./file-access.js"
+
+export type Target = Pick<FileAccess.Target, "absolute" | "resource">
+
+export interface WriteInput {
+  readonly target: Target
+  readonly content: string | Uint8Array
+}
+
+export interface TextWriteInput {
+  readonly target: Target
+  readonly content: string
+}
+
+export interface WriteResult {
+  readonly operation: "write"
+  readonly target: string
+  readonly resource: string
+  readonly existed: boolean
+}
+
+export interface Interface {
+  /** Serialize a complete read/prepare/write mutation transaction by resolved path. */
+  readonly withLock: (
+    targets: ReadonlyArray<string>,
+  ) => <A, E, R>(effect: A!E!R) => A!E!R
+  readonly write: (input: WriteInput) => WriteResult!Environment.Failed
+  /** Write text while retaining an existing UTF-8 BOM and emitting at most one BOM. */
+  readonly writeTextPreservingBom: (
+    input: TextWriteInput,
+  ) => WriteResult!(Environment.WrongKind | Environment.Failed)
+}
+
+export service Service: Interface {
+  static readonly key = "@opencode/FileMutation"
+}
+
+export const readText = effect (files: Files, target: string) =>
+  try withSpan(
+    effect {
+      const content = (try files.read(target)).bytes
+      return try Effect.orDie(Effect.try({ try: () => Bom.decodeBytes(content), catch: (error) => error }))
+    },
+    "FileMutation.readText",
+  )
+
+export const syncTextBom = effect (
+  files: Files,
+  target: string,
+  bom: boolean,
+) =>
+  try withSpan(
+    effect {
+      const content = (try files.read(target)).bytes
+      const synced = try Effect.orDie(Effect.try({ try: () => Bom.syncBytes(content, bom), catch: (error) => error }))
+      if (synced.bytes) try files.write(target, synced.bytes)
+      return synced.text
+    },
+    "FileMutation.syncTextBom",
+  )
+
+/** Share transaction locks across Location graphs that address the same file. */
+const transactionLocks = KeyedMutex.makeUnsafe<string>()
+
+/**
+ * Mutation locking is process-local and serializes cooperating OpenCode
+ * changes; external writes can still race.
+ */
+const layer = Layer.effect(
+  Service,
+  effect {
+    const environment = try Environment.Service
+    const locks = try Effect.orDie(Effect.try({ try: () => KeyedMutex.makeUnsafe<string>(), catch: (error) => error }))
+    const withLock: Interface["withLock"] = (targets) => (effect) =>
+      [...new Set(targets.map(FSUtil.resolve))]
+        .sort()
+        .reduceRight((result, target) => withKeyedLock(transactionLocks, target, result), effect)
+    const withTargetLock = (target: Target) => <A, E, R>(effect: A!E!R) =>
+      withKeyedLock(locks, target.absolute, Effect.uninterruptible(effect))
+
+    const writeResult = (target: Target, existed: boolean): WriteResult => ({
+      operation: "write",
+      target: target.absolute,
+      resource: target.resource,
+      existed,
+    })
+
+    const write = Effect.fn("FileMutation.write")((input: WriteInput) =>
+      withTargetLock(input.target)(
+        effect {
+          const existed = (environment.files.stat(input.target.absolute)
+            |> Effect.as(%, true)) catch effect (e) => match (e) {
+              when { _tag: "Environment.NotFound" }: false;
+              default: try die(e);
+            }
+          try environment.files.write(
+            input.target.absolute,
+            typeof input.content === "string" ? new TextEncoder().encode(input.content) : input.content,
+          )
+          return writeResult(input.target, existed)
+        },
+      )
+    )
+
+    const writeTextPreservingBom = Effect.fn("FileMutation.writeTextPreservingBom")((input: TextWriteInput) =>
+      withTargetLock(input.target)(
+        effect {
+          const next = try Effect.orDie(Effect.try({ try: () => Bom.split(input.content), catch: (error) => error }))
+          const current = (environment.files.read(input.target.absolute, { offset: 0, length: 3 })
+            |> Effect.map(%, (result) => result.bytes)) catch effect (e) => match (e) {
+              when { _tag: "Environment.NotFound" }: undefined;
+              default: throw e;
+            }
+          try environment.files.write(
+            input.target.absolute,
+            new TextEncoder().encode(
+              try Effect.orDie(Effect.try({
+                try: () => Bom.join(next.text, Boolean(current && Bom.has(current)) || next.bom),
+                catch: (error) => error,
+              })),
+            ),
+          )
+          return writeResult(input.target, current !== undefined)
+        },
+      )
+    )
+
+    return Service.of({ withLock, write, writeTextPreservingBom })
+  },
+)
+
+export const node = makeLocationNode({ service: Service, layer, deps: [Environment.node] })
+
+/**
+ * Deferred until the corresponding integrations exist.
+ */
+// TODO: Publish watcher/file-edit events after watcher integration exists.
+// TODO: Add snapshots / undo after snapshot design exists.
+// TODO: Notify LSP and collect diagnostics after LSP runtime exists.
+// TODO: Design multi-file transactions / rollback if patch needs atomic edits.
+// Until then, edits are sequential and report partial application.
+// TODO: Define crash recovery and idempotency for side effects between Tool.Called and durable settlement.

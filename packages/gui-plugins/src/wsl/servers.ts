@@ -7,7 +7,7 @@ import type {
   WslServerItem,
   WslServerRuntime,
   WslServersState,
-} from "./contract"
+} from "./contract.vibe"
 import type { WslCliBuild, WslRuntime } from "./runtime"
 
 type RunningSidecar = {

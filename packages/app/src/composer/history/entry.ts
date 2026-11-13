@@ -1,9 +1,9 @@
 import type { Prompt } from "@/composer/state"
 import type { SelectedLineRange } from "@/workspaces/files/model"
 import { clonePrompt, isAttachment } from "../prompt-parts"
-import type { PromptHistoryComment, PromptHistoryEntry } from "../schema"
+import type { PromptHistoryComment, PromptHistoryEntry } from "../schema.vibe"
 
-export type { PromptHistoryComment, PromptHistoryEntry } from "../schema"
+export type { PromptHistoryComment, PromptHistoryEntry } from "../schema.vibe"
 
 const MAX_HISTORY = 100
 

@@ -1,0 +1,4 @@
+{
+  "arguments": [[], [""], ["with spaces", "double\"quote", "single'quote"], ["--flag", "*.json", "$(literal)", "世界"]],
+  "failureExitCode": 7
+}

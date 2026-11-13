@@ -9,7 +9,7 @@ import { createMemo, For, Show } from "solid-js"
 import { createStore } from "solid-js/store"
 import { showToast } from "@opencode/ui/toast"
 import { usePlugin, type Context, type IpcClient } from "@opencode/plugin/gui"
-import type { Wsl, WslServersState } from "./contract"
+import type { Wsl, WslServersState } from "./contract.vibe"
 import { useWslAddServerProbes } from "./probes"
 import { addServerViewModel, type AddServerText } from "./model"
 

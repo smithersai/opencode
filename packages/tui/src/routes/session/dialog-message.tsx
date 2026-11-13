@@ -7,7 +7,7 @@ import { useClient } from "../../context/client"
 import { errorMessage } from "../../util/error"
 import { DialogFork } from "./dialog-fork"
 import type { PromptInfo } from "../../prompt/history"
-import { projectedPromptInput } from "../../prompt/codec"
+import { projectedPromptInput } from "#vibelang/emitted/src/prompt/codec"
 import { useNewDesigns } from "../../config"
 
 export function DialogMessage(props: {

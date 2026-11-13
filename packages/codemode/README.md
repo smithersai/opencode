@@ -196,3 +196,5 @@ Invalid limit configuration throws `RangeError`. Warnings receive a separate bud
 Truncation does not fail execution; an oversized value becomes a string with an in-band marker. Timeouts interrupt
 tool calls and busy loops, while a result returned before cleanup times out remains successful with a
 `TimeoutExceeded` warning. Tool-call concurrency is unrestricted. Boundary data is limited to 32 nested levels.
+
+Decoded codec fields retain the `readonly` contract of their `Schema.Struct` definitions, including nested and optional fields. Consumer assignment checks cover these contracts alongside the runtime tests.

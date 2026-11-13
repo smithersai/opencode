@@ -28,7 +28,7 @@ import { TestLLM } from "../../ai/src/testing"
 import { tempGlobalLayer } from "../../core/test/fixture/global"
 import { tmpdirScoped } from "../../core/test/fixture/tmpdir"
 import { it } from "../../core/test/lib/effect"
-import { createEmbeddedRoutes } from "../src/routes"
+import { createEmbeddedRoutes } from "../src/routes.ts"
 
 it.live(
   "isolates same-directory Session tools, hooks, commands, and HTTP requests through one selector",

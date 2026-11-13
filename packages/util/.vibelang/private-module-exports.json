@@ -1,0 +1,13 @@
+{
+  "version": 1,
+  "entries": [
+    {
+      "field": "exports",
+      "key": "./bom.vibe.$call$ts"
+    },
+    {
+      "field": "exports",
+      "key": "./patch.vibe.$throw$ts"
+    }
+  ]
+}

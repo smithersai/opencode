@@ -1,7 +1,7 @@
 import { describe, expect, test } from "bun:test"
 import { Effect, Schema, Stream } from "effect"
 import * as OpenAIChat from "../src/protocols/openai-chat.js"
-import * as OpenAIResponses from "../src/protocols/openai-responses.js"
+import * as OpenAIResponses from "../src/protocols/openai-responses.vibe"
 import {
   AIError,
   AIErrorReason,
@@ -30,7 +30,7 @@ import {
   Usage,
 } from "../src/schema/index.js"
 import { ProviderShared } from "../src/protocols/shared.js"
-import { Framing } from "../src/route/framing.js"
+import { Framing } from "../src/route/framing.vibe"
 import { it } from "./lib/effect.js"
 
 const model = new LanguageModel({

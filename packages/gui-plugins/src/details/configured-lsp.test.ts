@@ -1,5 +1,5 @@
 import { expect, test } from "bun:test"
-import { configuredLsps } from "./configured-lsp"
+import { configuredLsps } from "./configured-lsp.vibe"
 
 test("lists configured LSP names with project overrides and no inferred built-ins", () => {
   expect(

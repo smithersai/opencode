@@ -14,7 +14,7 @@ import type { Platform } from "@/runtime/platform/platform"
 import { flushPersisted } from "@/runtime/persistence/persist"
 import { Persist, persisted, removePersisted } from "@/runtime/persistence/storage"
 import { createLocatedWrites } from "@/runtime/plugin/located"
-import { createSessionStore, globalStoreTarget, persistedHandle, whenLoaded } from "@/runtime/plugin/stores"
+import { createSessionStore, globalStoreTarget, persistedHandle, whenLoaded } from "../src/runtime/plugin/stores.vibe"
 
 const pending = { status: "pending" } as const
 

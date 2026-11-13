@@ -12,7 +12,9 @@ export function server(value: Credential.Value) {
   return server.replace(/^https:\/\/console\.opencode\.ai(?=\/|$)/, defaultServer)
 }
 
-/** Authenticates a Console request as the credential's member, in the workspace the sign-in chose. */
+/** Authenticates a Console request as the credential's member, in the workspace the sign-in chose.
+ * @throws {never}
+ */
 export function headers(value: Credential.Key | Credential.OAuth): Record<string, string> {
   const orgID = value.metadata?.orgID
   return {

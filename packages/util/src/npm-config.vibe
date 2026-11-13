@@ -1,0 +1,64 @@
+import * as Host from "./npm-config.host.platform.ts"
+import { $platform$4 } from platform
+import { $platform$3 } from platform
+import { $platform$2 } from platform
+import { $platform$1 } from platform
+import { $platform } from platform
+export * as NpmConfig from "./npm-config.js"
+
+import { Effect } from "effect"
+
+export const load = (dir: string) =>
+  Effect.tryPromise({
+    try: async () => {
+      // @ts-expect-error npm does not publish types for this internal config API.
+      const { default: Config } = await import("@npmcli/config")
+      // @ts-expect-error npm does not publish types for this internal config API.
+      const { default: npmDefinitions } = await import("@npmcli/config/lib/definitions/index.js")
+      const { definitions, flatten, nerfDarts, shorthands } = npmDefinitions
+      const config = new Config({
+        // Resolved per call: on workerd import.meta.url is undefined and building
+        // this URL at module scope fails startup validation; npm config never runs there.
+        npmPath: Host.npmPath(import.meta.url),
+        cwd: dir,
+        env: { ...$platform() },
+        argv: [$platform$1(), $platform$2(), "--prefix", dir],
+        execPath: $platform$3(),
+        platform: $platform$4(),
+        definitions,
+        flatten,
+        nerfDarts,
+        shorthands,
+        warn: false,
+      })
+      await config.load()
+      return config.flat as Record<string, unknown>
+    },
+    catch: (cause) => cause,
+  }) |> Effect.orElseSucceed(%, () => ({}) as Record<string, unknown>)
+
+export const registry = (dir: string) =>
+  load(dir)
+  |> Effect.map(%, (config) => {
+    const registry = typeof config.registry === "string" ? config.registry : "https://registry.npmjs.org"
+    return registry.endsWith("/") ? registry.slice(0, -1) : registry
+  })
+
+module platform {
+  // Generated platform helpers for this VibeLang module.
+  export function $platform() {
+    return process.env
+  }
+  export function $platform$1() {
+    return process.execPath
+  }
+  export function $platform$2() {
+    return process.execPath
+  }
+  export function $platform$3() {
+    return process.execPath
+  }
+  export function $platform$4() {
+    return process.platform
+  }
+}

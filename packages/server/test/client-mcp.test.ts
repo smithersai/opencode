@@ -13,7 +13,7 @@ import path from "node:path"
 import { tmpdirScoped } from "../../core/test/fixture/tmpdir"
 import { it } from "../../core/test/lib/effect"
 import { ServerProcess } from "../src/process"
-import { createRoutes } from "../src/routes"
+import { createRoutes } from "../src/routes.ts"
 
 // The DOM lib hides Bun's WebSocket constructor overload that accepts upgrade request headers.
 declare const WebSocket: {

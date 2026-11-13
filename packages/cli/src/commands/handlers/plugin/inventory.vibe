@@ -1,0 +1,123 @@
+module platform {
+  export { EOL } from "node:os"
+
+  export const currentDirectory = () => process.cwd()
+}
+
+import { currentDirectory } from platform
+import { EOL } from platform
+import { Cause, Effect, Exit } from "effect"
+import { OpenCode } from "@opencode/client"
+import { Service } from "@opencode/client/effect/service"
+import { Npm } from "@opencode/util/npm"
+import { Config } from "../../../config"
+import { ServerConnection } from "../../../services/server-connection"
+
+export interface Item {
+  readonly runtime: "Server" | "TUI"
+  readonly target: string
+  readonly name: string
+  readonly version?: string
+  readonly outdated: boolean
+  readonly error?: string
+}
+
+export const inspect = Effect.fn("cli.plugin.inspect")(effect function(selected?: string) {
+  const { endpoint } = try ServerConnection.resolve()
+  const client =
+    try ((args: Parameters<typeof OpenCode.make>) => Effect.try(() => OpenCode.make(...args)).pipe(Effect.orDie))([{
+      baseUrl: endpoint.url,
+      headers:
+        try ((args: Parameters<typeof Service.headers>) =>
+          Effect.try(() => Service.headers(...args)).pipe(Effect.orDie))([endpoint]),
+    }])
+  const location = {
+    directory:
+      try ((args: Parameters<typeof currentDirectory>) =>
+        Effect.try(() => currentDirectory(...args)).pipe(Effect.orDie))([]),
+  }
+  const listed = try Effect.promise(() => client.plugin.list({ location }))
+  const serverTargets = new Set(
+    listed.data.flatMap((plugin) => (plugin.source.type === "package" ? [plugin.source.target] : [])),
+  )
+  const server = selected === undefined || serverTargets.has(selected)
+    ? try Effect.promise(() => client.plugin.check({ location, ...(selected ? { target: selected } : {}) }))
+    : listed
+  const serverItems = server.data.flatMap((plugin): Item[] => {
+    if (plugin.source.type !== "package") return []
+    if (selected !== undefined && plugin.source.target !== selected) return []
+    return [
+      {
+        runtime: "Server",
+        target: plugin.source.target,
+        name: plugin.id ?? plugin.source.target,
+        ...(plugin.source.version ? { version: displayVersion(plugin.source.version) } : {}),
+        outdated: plugin.source.outdated === true,
+        ...(plugin.state.status === "failed" ? { error: plugin.state.error } : {}),
+      },
+    ]
+  })
+
+  const config = try Config.Service
+  const info = try config.get()
+  const configured = [
+    ...new Set(
+      (info.plugins ?? []).flatMap((entry) => {
+        const target = typeof entry === "string" ? entry : entry.package
+        if (target.startsWith("-") || target === "*" || target.endsWith(".*") || target.startsWith("opencode.")) {
+          return []
+        }
+        return [target]
+      }),
+    ),
+  ]
+  const tuiTargets = try Effect.promise(async () => {
+    const installable = await Promise.all(configured.map((target) => Npm.isInstallablePackage(target)))
+    return configured.filter((target, index) => installable[index] && (selected === undefined || target === selected))
+  })
+  const npm = try Npm.Service
+  const tuiItems = try Effect.forEach(
+    tuiTargets,
+    (target) =>
+      effect {
+        const installed = try npm.resolve(target)
+        const outdated = try npm.check(target).pipe(Effect.exit)
+        return {
+          runtime: "TUI" as const,
+          target,
+          name: target,
+          ...(installed.version ? { version: displayVersion(installed.version) } : {}),
+          outdated: Exit.isSuccess(outdated) && outdated.value,
+          ...(Exit.isFailure(outdated) ? { error: Cause.pretty(outdated.cause) } : {}),
+        }
+      },
+    { concurrency: "unbounded" },
+  )
+  const items = [...serverItems, ...tuiItems]
+  if (selected !== undefined && !items.length) {
+    return try Effect.fail(new Error(`Plugin is not configured: ${selected}`))
+  }
+  return { client, location, items }
+})
+
+export function displayVersion(version: string) {
+  return /^(?:[a-f0-9]{40}|[a-f0-9]{64})$/i.test(version) ? version.slice(0, 7) : version
+}
+
+export function format(items: readonly Item[]) {
+  return ["Server", "TUI"]
+    .flatMap((runtime) => {
+      const rows = items.filter((item) => item.runtime === runtime)
+      if (!rows.length) return []
+      return [
+        runtime,
+        ...rows.map(
+          (item) =>
+            `  ${item.name}${item.version ? ` ${item.version}` : ""} (${
+              item.error ? "check failed" : item.outdated ? "update available" : "current"
+            })`,
+        ),
+      ]
+    })
+    .join(EOL)
+}

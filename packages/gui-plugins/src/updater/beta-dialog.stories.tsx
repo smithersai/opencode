@@ -5,7 +5,7 @@ import { createSignal, onMount, Show } from "solid-js"
 import { SettingsPanel } from "../../../stories/mocks/gui-plugins/settings-page"
 import { DialogBetaNotes } from "./beta-dialog"
 import { BetaNotesView } from "./beta-page"
-import { sliceBetaNotes, type EmbeddedNotes } from "./beta-notes"
+import { sliceBetaNotes, type EmbeddedNotes } from "./beta-notes.vibe"
 
 type Author = { name: string; login?: string; avatar?: string }
 

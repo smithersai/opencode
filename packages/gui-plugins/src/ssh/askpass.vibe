@@ -1,0 +1,91 @@
+import * as Host from "./askpass.host.platform.ts"
+import { NodeSocketServer } from "@effect/platform-node"
+import { SshFailure } from "./command"
+
+const Request = Schema.fromJsonString(
+  Schema.Struct({ token: Schema.String, text: Schema.String, confirm: Schema.Boolean }),
+)
+
+export const createAskpass = effect (input: { binary: string; prompt: (prompt: { id: string; text: string; confirm: boolean; }) => void!!; clear: (id: string) => void!!; }) => try withSpan(effect {
+  const token = try Host.randomID
+  const pending = new Map<string, Deferred.Deferred<string>>()
+  const prompts = try Semaphore.make(1)
+  const server = NodeSocketServer.make({ host: "127.0.0.1", port: 0 }) catch effect (e) => { throw SshFailure.from(e) }
+
+  if (Predicate.isTagged(server.address, "UnixPathAddress")) throw new SshFailure("connection")
+
+  const serving = try (server
+    .run((socket) =>
+      effect {
+        const request = try Deferred.make<string, SshFailure>()
+
+        // A helper sends one newline-terminated request. Oversized input, later data, or a close fails it.
+        const reader = try (effect {
+          const pull = try Socket.readerBytes(socket)
+          // One streaming decoder, so a character split across reads decodes intact.
+          const decoder = new TextDecoder()
+          let buffer = ""
+
+          while (!buffer.includes("\n")) {
+            for (const chunk of try pull) buffer += (try Effect.orDie(Effect.try({ try: () => $invoke(decoder,() => (chunk), () => ({ stream: true })), catch: (e) => e })))
+
+            if (buffer.length > 16_384) throw new SshFailure("connection")
+          }
+
+          try Deferred.succeed(request, buffer.trim())
+          try pull
+
+          throw new SshFailure("connection")
+        } |> Effect.ensuring(%, Deferred.fail(request, new SshFailure("connection"))) |> Effect.forkScoped(%))
+
+        const message = try (Deferred.await(request) |> Effect.flatMap(%, Schema.decodeUnknownEffect(Request)))
+
+        if (message.token !== token) return
+
+        // One scoped waiter per helper invocation. Disconnecting a helper or closing
+        // the connection interrupts that waiter and advances the prompt semaphore.
+        try (prompts
+          .withPermit(
+            effect {
+              const id = try Host.randomID
+              const response = try Deferred.make<string>()
+              try Effect.acquireRelease(
+                effect { return pending.set(id, response) },
+                () => effect { return pending.delete(id) } |> Effect.andThen(%, input.clear(id)),
+              )
+              try input.prompt({ id, text: message.text, confirm: message.confirm })
+              const value = try Deferred.await(response)
+              const writer = try socket.writer
+              try writer.write(JSON.stringify({ value }))
+            } |> Effect.scoped(%),
+          )|> Effect.raceFirst(%, Fiber.join(reader)))
+      }
+        |> Effect.scoped(%)
+        |> Effect.timeout(%, "5 minutes")
+        // Helper cancellation, invalid credentials, and socket closure are local to
+        // this request. Never log authentication payloads as error causes.
+        |> Effect.ignore(%),
+    )|> Effect.mapError(%, SshFailure.from) |> Effect.forkScoped({ startImmediately: true })(%))
+
+  return {
+    env: {
+      SSH_ASKPASS: input.binary,
+      SSH_ASKPASS_REQUIRE: "force",
+      DISPLAY: Host.display() || "opencode",
+      OPENCODE_SSH_ASKPASS_PORT: String(server.address.port),
+      OPENCODE_SSH_ASKPASS_TOKEN: token,
+    },
+    closed: Fiber.join(serving),
+    respond: effect (id: string, value: string): void!! => try withSpan((effect (): void!! => {
+      const response = pending.get(id)
+
+      if (response) try Deferred.succeed(response, value)
+    })(), "Ssh.askpass.respond"),
+  }
+}, "Ssh.askpass")
+
+module $call$ts {
+export function invoke<T extends {"decode":Function}>(target:T,arg0:()=>Parameters<Extract<T["decode"],(...args:any[])=>any>>[0],arg1:()=>Parameters<Extract<T["decode"],(...args:any[])=>any>>[1]):ReturnType<Extract<T["decode"],(...args:any[])=>any>> { return target["decode"](arg0(),arg1()) }
+}
+
+import { invoke as $invoke } from $call$ts

@@ -1,5 +1,5 @@
 import fuzzysort from "fuzzysort"
-import type { WslInstalledDistro, WslOnlineDistro, WslOpencodeCheck, WslServersState } from "./contract"
+import type { WslInstalledDistro, WslOnlineDistro, WslOpencodeCheck, WslServersState } from "./contract.vibe"
 
 export type AddServerText = {
   key: string

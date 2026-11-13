@@ -9,7 +9,7 @@ import {
   type PromptHistoryStoredEntry,
 } from "./entry"
 import { clonePrompt } from "../prompt-parts"
-import { PromptHistoryState } from "../schema"
+import { PromptHistoryState } from "../schema.vibe"
 
 export type ComposerHistoryStore = {
   entries: (mode: "normal" | "shell") => PromptHistoryStoredEntry[]

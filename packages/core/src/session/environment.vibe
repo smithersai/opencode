@@ -1,0 +1,32 @@
+export * as SessionEnvironment from "./environment.js"
+
+import { makeGlobalNode } from "@opencode/util/effect/app-node"
+import { SessionSchema } from "./schema.js"
+
+export type Variables = Readonly<Record<string, string>>
+
+export interface Interface {
+  readonly get: (sessionID: SessionSchema.ID) => (Variables | undefined)!!
+  readonly set: (sessionID: SessionSchema.ID, variables: Variables) => void!!
+  readonly clear: (sessionID: SessionSchema.ID) => void!!
+}
+
+export service Service: Interface {
+  static readonly key = "@opencode/SessionEnvironment"
+}
+
+const layer = Layer.sync(Service, () => {
+  const environments = new Map<SessionSchema.ID, Variables>()
+
+  return Service.of({
+    get: effect (sessionID) => environments.get(sessionID),
+    set: effect (sessionID, variables) => {
+      environments.set(sessionID, { ...variables })
+    },
+    clear: effect (sessionID) => {
+      environments.delete(sessionID)
+    },
+  })
+})
+
+export const node = makeGlobalNode({ service: Service, layer, deps: [] })

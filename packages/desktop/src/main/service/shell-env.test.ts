@@ -2,7 +2,7 @@ import { describe, expect, test } from "bun:test"
 import { NodePath } from "@effect/platform-node"
 import { Effect } from "effect"
 
-import { isNushell, parseShellEnv, resolveUserShell } from "./shell-env"
+import { isNushell, parseShellEnv, resolveUserShell } from "./shell-env.vibe"
 
 describe("shell env", () => {
   test("parseShellEnv reads null-delimited pairs and ignores invalid entries", () => {

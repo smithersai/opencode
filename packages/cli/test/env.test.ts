@@ -1,5 +1,5 @@
 import { expect, test } from "bun:test"
-import { Env } from "../src/env"
+import { Env } from "../src/env.ts"
 
 test("session environment omits server credentials", () => {
   const previousPassword = process.env.OPENCODE_PASSWORD

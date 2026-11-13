@@ -1,6 +1,6 @@
 import { builtinCatalog } from "@opencode/plugin/gui/builtin"
 import { Plugin, Store } from "@opencode/plugin/gui"
-import { OpenAppPreferences } from "./apps"
+import { OpenAppPreferences } from "./apps.vibe"
 import en from "./i18n/en"
 
 export default Plugin.define({

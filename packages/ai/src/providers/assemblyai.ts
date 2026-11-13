@@ -1,10 +1,10 @@
-import { Auth } from "../route/auth.js"
-import type { ProviderAuthOption } from "../route/auth-options.js"
-import { MediaRoute } from "../route/media.js"
+import { Auth } from "../route/auth.vibe"
+import type { ProviderAuthOption } from "../route/auth-options.vibe"
+import { MediaRoute } from "../route/media.vibe"
 import { type HttpOptions, ProviderID, type ModelID } from "../schema/index.js"
-import { AssemblyAITranscription } from "../protocols/assemblyai-transcription.js"
+import { AssemblyAITranscription } from "../protocols/assemblyai-transcription.vibe"
 
-export type { AssemblyAITranscriptionOptions } from "../protocols/assemblyai-transcription.js"
+export type { AssemblyAITranscriptionOptions } from "../protocols/assemblyai-transcription.vibe"
 
 export const id = ProviderID.make("assemblyai")
 

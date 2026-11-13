@@ -17,7 +17,7 @@
 - Fonts follow the Fonts section of `packages/app/AGENTS.md`: use the UI, code and terminal font roles from the design system. Never add font files, `@font-face` rules or literal font families here.
 - Loading indicators follow the Loading Indicators section of `packages/app/AGENTS.md`: the dot-matrix `Spinner` is only for AI activity; every other loading state uses `Loader`.
 - Renderer process should only reach the main process through `window.electron` (exposed by `src/preload`) and the MessagePort RPC client in `src/renderer/api.ts`.
-- Main process should define IPC handlers in `src/main/ipc-handlers/*` and compose them in `src/main/ipc.ts`.
+- Main process should define IPC handlers in `src/main/ipc-handlers/*` and compose them in `src/main/ipc.vibe`.
 - Avoid FS operations where possible. For any desktop persistence prefer sqlite in most cases, as performance and EPERM and many other things, especially on windows can be quite painful. Using anything other than sqlite should come with strong reasons.
 - NEVER hardcode user-visible English strings in production code. ALWAYS use an i18n key for native menus, picker titles, dialogs, buttons, accessible labels, and displayed errors.
 - When migrating existing copy to i18n, preserve the English text byte-for-byte unless the task explicitly requests a copy change.

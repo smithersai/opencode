@@ -8,7 +8,7 @@
   "scripts": {
     "test": "bun test --timeout 30000 --only-failures",
     "typecheck": "bun check --no-script -b",
-    "typecheck:tsc": "tsc -b"
+    "typecheck:tsc": "vibelang -b"
   },
   "exports": {
     ".": "./src/index.tsx",
@@ -46,6 +46,11 @@
       "bun": "./src/plugin/runtime-plugin-support.bun.ts",
       "node": "./src/plugin/runtime-plugin-support.node.ts",
       "default": "./src/plugin/runtime-plugin-support.node.ts"
+    },
+    "#vibelang/emitted/src/prompt/codec": {
+      "types": "./src/prompt/codec.d.vibe.ts",
+      "vibelang-source": "./src/prompt/codec.vibe",
+      "default": "./.vibelang/js/src/prompt/codec.js"
     }
   },
   "dependencies": {
@@ -69,11 +74,13 @@
     "remeda": "catalog:",
     "solid-js": "catalog:",
     "string-width": "catalog:",
-    "strip-ansi": "7.1.2"
+    "strip-ansi": "7.1.2",
+    "vibelang-runtime": "file:../../.vibelang-toolchain/0.0.14-pre.d955d06c6696/tarballs/vibelang-runtime-0.0.14-pre.d955d06c6696.tgz"
   },
   "devDependencies": {
     "@tsconfig/bun": "catalog:",
     "@types/bun": "catalog:",
-    "@typescript/native": "catalog:"
+    "@typescript/native": "catalog:",
+    "vibelang": "file:../../.vibelang-toolchain/0.0.14-pre.d955d06c6696/tarballs/vibelang-0.0.14-pre.d955d06c6696.tgz"
   }
 }

@@ -1,6 +1,7 @@
 #!/usr/bin/env bun
 
 import { $ } from "bun"
+import { isolatedDependency } from "./local-dependencies"
 import { mkdtemp, rm } from "node:fs/promises"
 import { tmpdir } from "node:os"
 import { join } from "node:path"
@@ -47,13 +48,13 @@ try {
       pkg.dependencies = Object.fromEntries(
         Object.entries(pkg.dependencies).map(([dependency, version]) => {
           const local = archives.get(dependency)
-          return [dependency, local ? `file:${local}` : version]
+          return [dependency, local ? `file:${local}` : isolatedDependency(directory, version)]
         }),
       )
     }
     if (pkg.exports) {
       pkg.exports = Object.fromEntries(
-        Object.entries(pkg.exports).map(([key, value]) => {
+        Object.entries((Object.fromEntries(Object.entries(pkg.exports).map(([key, target]: [string, unknown]) => [key, target !== null && typeof target === "object" && "vibelang-source" in target && typeof target["vibelang-source"] === "string" ? target["vibelang-source"] : target !== null && typeof target === "object" && "default" in target && typeof target.default === "string" && target.default.endsWith(".vibe") && "types" in target && target.types === target.default.slice(0, -5) + ".d.vibe.ts" ? target.default : target])) as typeof pkg.exports)).map(([key, value]) => {
           if (typeof value !== "string") return [key, value]
           return [key, { import: output(name, value), types: output(name, value, true) }]
         }),
@@ -64,7 +65,7 @@ try {
         Object.entries(pkg.imports).map(([key, conditions]) => [
           key,
           Object.fromEntries(
-            Object.entries(conditions).map(([condition, value]) => [
+            Object.entries((Object.fromEntries(Object.entries(conditions).map(([key, target]: [string, unknown]) => [key, target !== null && typeof target === "object" && "vibelang-source" in target && typeof target["vibelang-source"] === "string" ? target["vibelang-source"] : target !== null && typeof target === "object" && "default" in target && typeof target.default === "string" && target.default.endsWith(".vibe") && "types" in target && target.types === target.default.slice(0, -5) + ".d.vibe.ts" ? target.default : target])) as typeof conditions)).map(([condition, value]) => [
               condition,
               output(name, value, condition === "types"),
             ]),
@@ -240,5 +241,5 @@ for (const module of modules) {
 
 function output(name: string, value: string, types = false) {
   const root = name === "core" && types ? "./dist/types/" : "./dist/"
-  return value.replace("./src/", root).replace(/\.ts$/, types ? ".d.ts" : ".js")
+  return value.replace("./src/", root).replace(/\.(?:ts|vibe)$/, types ? ".d.ts" : ".js")
 }

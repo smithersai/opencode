@@ -6,8 +6,8 @@ import { Agent } from "@opencode/schema/agent"
 import { Session } from "@opencode/schema/session"
 import { SessionMessage } from "@opencode/schema/session-message"
 import type { Info } from "@opencode/schema/tool"
-import { Tool } from "../src/tool"
-import { definition, execute } from "../src/tool/runtime"
+import { Tool } from "../src/tool.vibe"
+import { definition, execute } from "../src/tool/runtime.vibe"
 
 const context = {
   sessionID: Session.ID.make("ses_tool_schema"),

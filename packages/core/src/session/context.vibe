@@ -1,0 +1,232 @@
+export * as SessionContext from "./context.js"
+
+import { Model } from "../model.js"
+import { Permission } from "../permission.js"
+import { Context, Effect, Layer } from "effect"
+import { Agent } from "../agent.js"
+import { CodeModeInstructions } from "../codemode/instructions.js"
+import { Database } from "../database/database.js"
+import { makeLocationNode } from "@opencode/util/effect/app-node"
+import { InstructionDiscovery } from "../instruction-discovery.js"
+import { Instructions } from "../instructions/index.js"
+import { InstructionBuiltIns } from "../instructions/builtins.js"
+import { Location } from "../location.js"
+import { McpInstructions } from "../mcp/instructions.js"
+import { McpTool } from "../tool/mcp.js"
+import { ReferenceInstructions } from "../reference/instructions.js"
+import { SkillInstructions } from "../skill/instructions.js"
+import { Tool } from "../tool.js"
+import { AgentNotFoundError } from "./error.js"
+import { SessionHistory } from "./history.js"
+import { InstructionEntry } from "./instruction-entry.js"
+import { SessionMessage } from "./message.js"
+import { SessionModelRequest } from "./model-request.js"
+import { SessionRunnerModel } from "./runner/model.js"
+import { SessionSchema } from "./schema.js"
+import { SessionStore } from "./store.js"
+
+export interface Selection {
+  readonly session: SessionSchema.Info
+  readonly agent: Agent.Selection & { readonly info: Agent.Info }
+  readonly instructions: Instructions.List
+  readonly tools: Tool.Snapshot
+}
+
+export interface Loaded {
+  readonly session: SessionSchema.Info
+  readonly agent: Agent.Selection & { readonly info: Agent.Info }
+  readonly model: SessionRunnerModel.Resolved
+  readonly initial: string
+  readonly messages: ReadonlyArray<SessionMessage.Info>
+  readonly tools: Tool.Snapshot
+}
+
+/**
+ * Resolves model-request state in two phases: `select` fixes the Session,
+ * agent, instruction sources, and tool snapshot; `load` adds the model and
+ * active history for that selection. Auxiliary operations resolve only the
+ * capabilities they need; request preparation stays separate from selection.
+ */
+export interface Interface {
+  /** Selects the Session, agent, instructions, and tools used by subsequent work. */
+  readonly select: (sessionID: SessionSchema.ID) => Effect.Effect<Selection, AgentNotFoundError>
+  /** Resolves the model and active history for that selection. */
+  readonly load: (selection: Selection) => Effect.Effect<Loaded, SessionRunnerModel.Error>
+  readonly resolveModel: (
+    session: SessionSchema.Info,
+  ) => Effect.Effect<SessionRunnerModel.Resolved, SessionRunnerModel.Error>
+  /** Selects auxiliary title capabilities without instruction or tool preflight. */
+  readonly selectTitle: (session: SessionSchema.Info) => Effect.Effect<
+    | {
+      readonly agent: Agent.Info
+      readonly primary: SessionRunnerModel.Resolved | undefined
+      readonly selected: SessionRunnerModel.Resolved
+    }
+    | undefined
+  >
+  readonly request: SessionModelRequest.Interface
+}
+
+/** Location-scoped model-context loader for durable Session Steps. */
+export class Service extends Context.Service<Service, Interface>()("@opencode/SessionContext") {}
+
+const layer = Layer.effect(
+  Service,
+  effect {
+    const agents = try Agent.Service
+    const builtins = try InstructionBuiltIns.Service
+    const model = try Model.Service
+    const db = (try Database.Service).db
+    const discovery = try InstructionDiscovery.Service
+    const entries = try InstructionEntry.Service
+    const location = try Location.Service
+    const mcpInstructions = try McpInstructions.Service
+    const mcpTools = try McpTool.Service
+    const models = try SessionRunnerModel.Service
+    const request = try SessionModelRequest.Service
+    const referenceInstructions = try ReferenceInstructions.Service
+    const skillInstructions = try SkillInstructions.Service
+    const store = try SessionStore.Service
+    const registry = try Tool.Service
+
+    const resolveModel = (session: SessionSchema.Info) => models.resolve(session, model.available)
+
+    const selectTitle = fn("SessionContext.selectTitle")(effect (session: SessionSchema.Info) => {
+      const agent = try agents.get(Agent.ID.make("title"))
+      if (!agent) return
+      const primary = try resolveModel(session).pipe(orElseSucceed(() => undefined))
+      const candidate = try (effect {
+        if (agent.model) {
+          const info = try model.get(agent.model.providerID, agent.model.id)
+          return info && { info, variant: agent.model.variant ?? minimalVariant(info) }
+        }
+        if (!primary) return
+        const small = try model.small(primary.ref.providerID)
+        if (small) return { info: small, variant: minimalVariant(small) }
+        // Without a lower variant, the primary model at its selected variant is already the fallback.
+        const info = try model.get(primary.ref.providerID, primary.ref.id)
+        const variant = info && lowerVariant(info, primary.ref.variant)
+        return variant && { info, variant }
+      })
+      const preferred = candidate
+        && (try resolveModel({
+          ...session,
+          model: Model.Ref.make({
+            providerID: candidate.info.providerID,
+            id: candidate.info.id,
+            ...(candidate.variant ? { variant: candidate.variant } : {}),
+          }),
+        }).pipe(orElseSucceed(() => undefined)))
+      const selected = preferred ?? primary
+      if (!selected) return
+      return { agent, primary, selected }
+    })
+
+    const select = fn("SessionContext.select")(effect (sessionID: SessionSchema.ID) => {
+      const session = try store.get(sessionID)
+      if (!session) return try die(new Error(`Session not found: ${sessionID}`))
+      if (session.location.directory !== location.directory || session.location.workspaceID !== location.workspaceID) {
+        return try Effect.interrupt
+      }
+
+      try mcpTools.flush
+      const agent = try agents.select(session.agent)
+      const info = agent.info
+      if (!info) throw new AgentNotFoundError({ sessionID: session.id, agent: session.agent ?? agent.id })
+      // Session permissions narrow discovery the same way they narrow the tool snapshot.
+      const permissions = try Effect.try({
+        try: () => Permission.merge(info.permissions, session.permissions ?? []),
+        catch: (cause) => cause,
+      }).pipe(orDie)
+      const loaded = try all(
+        {
+          tools: registry.snapshot(permissions),
+          builtins: builtins.load(),
+          discovery: discovery.load(),
+          skills: skillInstructions.load(permissions),
+          references: referenceInstructions.load(),
+          mcp: mcpInstructions.load(permissions),
+          entries: entries.load(sessionID),
+        },
+        { concurrency: "unbounded" },
+      )
+      return {
+        session,
+        agent: { ...agent, info },
+        // Ordered from most to least shared across sessions so the baseline stays a reusable
+        // prompt-cache prefix: user-level catalog and guidance, then project instructions, then
+        // the date and environment, which vary by day and directory.
+        instructions: try Effect.try({
+          try: () => Instructions.combine([
+            CodeModeInstructions.make(loaded.tools.codeModeCatalog),
+            loaded.mcp,
+            loaded.references,
+            loaded.skills,
+            loaded.discovery,
+            loaded.builtins,
+            loaded.entries,
+          ]),
+          catch: (cause) => cause,
+        }).pipe(orDie),
+        tools: loaded.tools,
+      }
+    })
+
+    const load = fn("SessionContext.load")(effect (selection: Selection) => {
+      const model = try resolveModel(selection.session)
+      const history = try SessionHistory.entriesForRunner(
+        db,
+        selection.session.id,
+        selection.instructions,
+        model.ref,
+      )
+      return {
+        session: selection.session,
+        agent: selection.agent,
+        model,
+        initial: history.initial,
+        messages: history.entries.map((entry) => entry.message),
+        tools: selection.tools,
+      }
+    })
+
+    return Service.of({ select, load, resolveModel, selectTitle, request })
+  },
+)
+
+/** Variant IDs that minimize reasoning output, in preference order. */
+const MINIMAL_REASONING_VARIANTS = ["none", "minimal", "low"].map((id) => Model.VariantID.make(id))
+
+const minimalVariant = (info: Model.Info) =>
+  MINIMAL_REASONING_VARIANTS.find((id) => info.variants.some((item) => item.id === id))
+
+/**
+ * `none` and `minimal` always reduce reasoning. `low` can enable reasoning on a model whose default
+ * does not reason, so it is only used when it ranks below the variant the session selected.
+ */
+const lowerVariant = (info: Model.Info, selected: Model.VariantID | undefined) => {
+  const rank = (id: Model.VariantID | undefined) => info.variants.findIndex((item) => item.id === id)
+  return MINIMAL_REASONING_VARIANTS.find((id) => rank(id) !== -1 && (id !== "low" || rank(id) < rank(selected)))
+}
+
+export const node = makeLocationNode({
+  service: Service,
+  layer,
+  deps: [
+    Agent.node,
+    Model.node,
+    Database.node,
+    InstructionBuiltIns.node,
+    InstructionDiscovery.node,
+    InstructionEntry.node,
+    Location.node,
+    McpInstructions.node,
+    McpTool.node,
+    ReferenceInstructions.node,
+    SessionRunnerModel.node,
+    SessionModelRequest.node,
+    SessionStore.node,
+    SkillInstructions.node,
+    Tool.node,
+  ],
+})

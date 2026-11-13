@@ -1,0 +1,170 @@
+#!/usr/bin/env node
+// Copied to .vibelang/oxlint.mjs by VibeLang migration setup. Upstream Oxlint owns TS/JS;
+// ESLint's VibeLang parser runs the repository's JS plugins and the rules it carries on
+// source ASTs; vibelang/oxlint runs Oxlint's other native rules on the projected TypeScript.
+// --vibe-native runs only that last pass: a package script's lint command appends it.
+import { spawnSync } from "node:child_process"
+import { readFileSync, statSync } from "node:fs"
+import { createRequire } from "node:module"
+import { dirname, resolve, relative } from "node:path"
+import { fileURLToPath } from "node:url"
+
+const root = resolve(dirname(fileURLToPath(import.meta.url)), "..")
+const require = createRequire(resolve(process.cwd(), "package.json"))
+const nativeOnly = process.argv.includes("--vibe-native")
+const args = process.argv.slice(2).filter(arg => arg !== "--vibe-native")
+const native = [], paths = [], projected = []
+const valueFlags = new Set(["-c", "--config", "--tsconfig", "-A", "--allow", "-W", "--warn", "-D", "--deny", "--ignore-path", "--ignore-pattern", "-f", "--format", "--max-warnings", "--threads", "--report-unused-disable-directives-severity"])
+let suppliedPaths = 0
+let format = "default", config, maxWarnings = Infinity
+const levels = []
+for (let i = 0; i < args.length; i++) {
+  const arg = args[i]
+  const flag = arg.split("=")[0]
+  if (valueFlags.has(flag)) {
+    const value = arg.includes("=") ? arg.slice(arg.indexOf("=") + 1) : args[++i]
+    if (value === undefined) throw new Error(flag + " needs a value")
+    native.push(flag, value)
+    if (flag === "--config" || flag === "-c") config = resolve(value)
+    if (flag === "--format" || flag === "-f") format = value
+    if (flag === "--max-warnings") maxWarnings = Number(value)
+    if (["-A", "--allow", "-W", "--warn", "-D", "--deny"].includes(flag)) levels.push([value, /allow|^-A$/.test(flag) ? "off" : /warn|^-W$/.test(flag) ? "warn" : "error"])
+    if (["-A", "--allow", "-W", "--warn", "-D", "--deny", "--ignore-pattern", "--threads"].includes(flag)) projected.push(flag, value)
+    if (flag === "--ignore-path" || flag === "--tsconfig") projected.push(flag, resolve(value))
+  } else if (arg.startsWith("-")) {
+    native.push(arg)
+    if (/^--(?:type-aware|no-ignore|disable-nested-config|(?:disable-)?[\w-]+-plugin)$/.test(arg)) projected.push(arg)
+    if (arg === "--deny-warnings") maxWarnings = 0
+  } else { suppliedPaths++; if (!/\.d\.vibex?\.ts$/.test(arg)) paths.push(arg) }
+}
+if (!native.includes("--threads")) native.push("--threads", "8")
+
+// Informational commands belong to the installed CLI and do not inspect lint inputs.
+const usage = native.some(arg => ["--help", "-h", "--version", "-V"].includes(arg))
+const projectedConfig = nativeOnly && native.includes("--print-config") && !usage && !native.includes("--init")
+function invokeNative(selectedPaths) {
+  const pkg = require.resolve("oxlint/package.json")
+  const bin = resolve(dirname(pkg), JSON.parse(readFileSync(pkg, "utf8")).bin.oxlint)
+  const run = spawnSync(process.execPath, [bin, ...native, ...selectedPaths], { encoding: "utf8" })
+  if (run.error) throw run.error
+  return run
+}
+if (!projectedConfig && (usage || native.some(arg => ["--print-config", "--init"].includes(arg)))) {
+  const run = invokeNative([])
+  if (run.stdout) process.stdout.write(run.stdout)
+  if (run.stderr) process.stderr.write(run.stderr)
+  process.exit(run.status ?? 1)
+}
+
+// Empty globs remain valid for a mixed-tool pass; a named source is an input
+// the caller expects to exist, including in a native-only invocation.
+const missing = projectedConfig ? [] : paths.filter(path => /\.vibex?$/.test(path) && !/[*?{\[]/.test(path) && !statSync(path, { throwIfNoEntry: false }))
+if (missing.length) {
+  if (format === "json") process.stdout.write(JSON.stringify({
+    diagnostics: missing.map(filename => ({ code: "vibelang(file-not-found)", severity: "error", message: "File not found: " + filename, filename, labels: [] })),
+    number_of_files: 0, number_of_rules: 0, threads_count: 8
+  }) + "\n")
+  else for (const path of missing) process.stderr.write("vibelang-oxlint: file not found: " + path + "\n")
+  process.exit(2)
+}
+
+
+
+const vibe = path => /\.vibex?$/.test(path)
+const directory = path => statSync(path, { throwIfNoEntry: false })?.isDirectory()
+const vibeGlob = path => path.replace(/\.\{([^}]+)\}/g, (all, parts) => {
+  const extensions = [...new Set(parts.split(",").map(ext => ext === "tsx" ? "vibex" : /^[cm]?ts$/.test(ext) ? "vibe" : ext))]
+  return extensions.length === 1 ? "." + extensions[0] : ".{" + extensions.join(",") + "}"
+}).replace(/\.tsx$/, ".vibex").replace(/\.[cm]?ts$/, ".vibe")
+const vibePaths = projectedConfig ? [process.cwd()] : suppliedPaths ? paths.flatMap(path => vibe(path) || directory(path) ? [resolve(path)] : /[*?{]/.test(path) ? [resolve(vibeGlob(path))] : []) : [process.cwd()]
+const nativePaths = paths.filter(path => !vibe(path))
+if (!projectedConfig && vibePaths.length && (!suppliedPaths || nativePaths.some(path => directory(path) || /[*?{]/.test(path))) && !native.includes("--no-error-on-unmatched-pattern")) native.push("--no-error-on-unmatched-pattern")
+let output = { diagnostics: [], number_of_files: 0, number_of_rules: 0, threads_count: 8 }
+let nativeStatus = 0
+if (!nativeOnly && (!suppliedPaths || nativePaths.length)) {
+  const run = invokeNative(nativePaths)
+  if (run.stderr) process.stderr.write(run.stderr)
+  nativeStatus = run.status ?? 1
+  if (format === "json") {
+    try { output = JSON.parse(run.stdout) } catch {
+      process.stderr.write(run.stdout)
+      process.exit(nativeStatus || 1)
+    }
+  } else process.stdout.write(run.stdout)
+}
+
+if (vibePaths.length) {
+  // The config is regenerated by setup, and reads current rule severities on
+  // every invocation. A --config path is relative to the invoking package.
+  // The configuration may import .vibe modules, and so may the JS plugins the
+  // tool it runs for the resolved rules loads.
+  await import("vibelang/register")
+  if (!/--import(?:=|\s+)vibelang\/register/.test(process.env.NODE_OPTIONS ?? "")) process.env.NODE_OPTIONS = `${process.env.NODE_OPTIONS ?? ""} --import=vibelang/register`.trim()
+  const { configFor, oxlintRuleName, writtenConfigs } = await import("./eslint.config.mjs")
+  const configs = await configFor(config, true)
+  const rules = {}
+  // A rule this pass carries takes the level here; any other reaches the native pass below.
+  for (const [name, level] of levels) {
+    const key = name.replace(/^eslint\//, "").replace(/^typescript\//, "@typescript-eslint/")
+    if (configs.some(config => Object.hasOwn(config.rules ?? {}, key))) rules[key] = level
+  }
+  if (!nativeOnly) {
+  const { ESLint } = await import("eslint")
+  const fix = native.includes("--fix") && !native.some(arg => ["--help", "-h", "--version", "-V", "--print-config", "--init"].includes(arg))
+  const eslint = new ESLint({ cwd: root, fix, overrideConfigFile: true, overrideConfig: [...configs, { files: ["**/*.{vibe,vibex}"], rules }], errorOnUnmatchedPattern: false, warnIgnored: false })
+  const results = await eslint.lintFiles(vibePaths)
+  if (fix) await ESLint.outputFixes(results)
+  if (format === "json") {
+    output.diagnostics ??= []
+    for (const result of results) {
+      const source = readFileSync(result.filePath, "utf8")
+      const lines = source.split("\n")
+      for (const message of result.messages) {
+        const offset = Buffer.byteLength(lines.slice(0, message.line - 1).join("\n") + (message.line > 1 ? "\n" : "") + (lines[message.line - 1] ?? "").slice(0, message.column - 1))
+        const parts = oxlintRuleName(message.ruleId ?? "vibelang/parse").split("/")
+        const name = parts.pop()
+        const plugin = parts.join("/") || "eslint"
+        output.diagnostics.push({
+          message: message.message, code: plugin + "(" + name + ")",
+          severity: message.severity === 2 ? "error" : "warning",
+          filename: relative(process.cwd(), result.filePath),
+          labels: [{ span: { offset, length: 1, line: message.line, column: message.column } }],
+          causes: [], related: []
+        })
+      }
+    }
+    output.number_of_files += results.length
+  } else {
+    const formatter = await eslint.loadFormatter("stylish")
+    process.stdout.write(formatter.format(results))
+  }
+  const errors = results.reduce((sum, result) => sum + result.errorCount, 0)
+  const warnings = results.reduce((sum, result) => sum + result.warningCount, 0)
+  // Oxlint JSON is also consumed by runners that count warnings themselves.
+  if (errors || warnings > maxWarnings) nativeStatus ||= 1
+  }
+  // One implementation per rule: what ESLint carries stays there, in every override too.
+  const elsewhere = new Set(configs.flatMap(config => Object.entries(config.rules ?? {}).filter(([, setting]) => ![0, "off"].includes([setting].flat()[0])).map(([name]) => oxlintRuleName(name))))
+  const { lintProjected, formatUnix, printProjectedConfig } = await import("vibelang/oxlint")
+  const { written, base } = writtenConfigs.get(config ?? null)
+  if (projectedConfig) {
+    process.stdout.write(printProjectedConfig({ config: written, base, elsewhere }))
+    process.exit(0)
+  }
+  const { output: projection } = await lintProjected({ config: written, base, paths: vibePaths, elsewhere, forward: config ? [...projected, "--disable-nested-config"] : projected })
+  if (format === "json") {
+    output.diagnostics ??= []
+    output.diagnostics.push(...projection.diagnostics)
+    if (nativeOnly) output.number_of_files += projection.number_of_files
+    output.number_of_rules += projection.number_of_rules
+  } else {
+    process.stdout.write(formatUnix(native.includes("--quiet") ? projection.diagnostics.filter(diagnostic => diagnostic.severity === "error") : projection.diagnostics))
+    const count = projection.diagnostics.filter(diagnostic => diagnostic.severity !== "error").length
+    if (count < projection.diagnostics.length || count > maxWarnings) nativeStatus ||= 1
+  }
+}
+if (format === "json") {
+  process.stdout.write(JSON.stringify(output) + "\n")
+  if (output.diagnostics.some(diagnostic => diagnostic.severity === "error") || output.diagnostics.filter(diagnostic => diagnostic.severity === "warning").length > maxWarnings) nativeStatus ||= 1
+}
+process.exitCode = nativeStatus

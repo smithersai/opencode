@@ -1,0 +1,233 @@
+export * as SkillDiscovery from "./discovery.js"
+
+import { Effect, Layer, Schedule, Schema } from "effect"
+import { HttpClient, HttpClientRequest, HttpClientResponse } from "effect/http"
+import { FSUtil } from "@opencode/util/fs-util"
+import { Global } from "@opencode/util/global"
+import { makeGlobalNode } from "@opencode/util/effect/app-node"
+import { httpClient } from "@opencode/util/effect/app-node-platform"
+import { AbsolutePath } from "../schema.js"
+import { Hash } from "@opencode/util/hash"
+import { isAbsoluteOnAnyPlatform, joinPath, randomToken, resolvePath } from platform
+
+const skillConcurrency = 4
+const fileConcurrency = 8
+
+function isSafeSegment(value: string) {
+  return (
+    value.length > 0
+    && value !== "."
+    && value !== ".."
+    && !value.includes("/")
+    && !value.includes("\\")
+    && !value.includes("\0")
+  )
+}
+
+function isSafeRelativePath(value: string) {
+  const segments = value.split("/")
+  return (
+    value.length > 0
+    && !value.includes("\\")
+    && !value.includes("\0")
+    && !value.includes("?")
+    && !value.includes("#")
+    && !URL.canParse(value)
+    && !isAbsoluteOnAnyPlatform(value)
+    && segments.every((segment) => {
+      try {
+        return isSafeSegment(decodeURIComponent(segment))
+      } catch {
+        return false
+      }
+    })
+  )
+}
+
+class IndexSkill extends Schema.Class<IndexSkill>("SkillDiscovery.IndexSkill")({
+  name: Schema.String,
+  version: Schema.optional(Schema.String),
+  files: Schema.Array(Schema.String),
+}) {}
+
+class Index extends Schema.Class<Index>("SkillDiscovery.Index")({
+  skills: Schema.Array(IndexSkill),
+}) {}
+
+export interface Interface {
+  readonly pull: (url: string) => Effect.Effect<AbsolutePath[]>
+}
+
+export service Service: Interface {
+  static readonly key = "@opencode/SkillDiscovery"
+}
+
+const layer = Layer.effect(
+  Service,
+  effect {
+    const fs = try FSUtil.Service
+    const global = try Global.Service
+    const http = (try HttpClient.HttpClient).pipe(
+      HttpClient.retryTransient({
+        retryOn: "errors-and-responses",
+        times: 2,
+        schedule: Schedule.exponential(200).pipe(Schedule.jittered),
+      }),
+      HttpClient.filterStatusOk,
+    )
+
+    const download = Effect.fn("SkillDiscovery.download")(effect (url: string, destination: string) => {
+      if (try fs.exists(destination).pipe(Effect.orDie)) return true
+      return try HttpClientRequest.get(url).pipe(
+        http.execute,
+        Effect.flatMap((response) => response.arrayBuffer),
+        Effect.flatMap((body) => fs.writeWithDirs(destination, new Uint8Array(body))),
+        Effect.as(true),
+        Effect.catch((error) =>
+          Effect.logError("failed to download skill file", { url, error }).pipe(Effect.as(false))
+        ),
+      )
+    })
+
+    return Service.of({
+      pull: Effect.fn("SkillDiscovery.pull")(effect (url) => {
+        const base = url.endsWith("/") ? url : `${url}/`
+        const source = new URL(base)
+        const index = new URL("index.json", source).href
+        const data = try HttpClientRequest.get(index).pipe(
+          HttpClientRequest.acceptJson,
+          http.execute,
+          Effect.flatMap(HttpClientResponse.schemaBodyJson(Index)),
+          Effect.catch((error) =>
+            Effect.logError("failed to fetch skill index", { url: index, error }).pipe(Effect.as(undefined))
+          ),
+        )
+        if (!data) return []
+
+        const hash = try Effect.try({ try: () => Hash.fast(base), catch: (cause) => cause }).pipe(Effect.orDie)
+        const sourceRoot = resolvePath(global.cache, "skills", hash)
+        return try Effect.forEach(
+          data.skills.flatMap((skill) => {
+            if (!isSafeSegment(skill.name)) {
+              return []
+            }
+            if (!skill.files.includes("SKILL.md") && !skill.files.includes(`${skill.name}.md`)) {
+              return []
+            }
+
+            const root = resolvePath(sourceRoot, skill.name)
+            if (!FSUtil.contains(sourceRoot, root) || root === sourceRoot) {
+              return []
+            }
+
+            const skillUrl = new URL(`${encodeURIComponent(skill.name)}/`, source)
+            const versionFile = joinPath(root, ".opencode-version")
+            const files = skill.files.map((file) => {
+              if (!isSafeRelativePath(file)) return undefined
+              let resource: URL
+              try {
+                resource = new URL(file, skillUrl)
+              } catch {
+                return undefined
+              }
+              if (resource.origin !== source.origin) return undefined
+
+              const destination = resolvePath(root, file)
+              if (!FSUtil.contains(root, destination) || destination === root) return undefined
+              return {
+                url: resource.href,
+                destination,
+                file,
+              }
+            })
+            if (
+              !files.every((file): file is { url: string; destination: string; file: string } => file !== undefined)
+            ) {
+              return []
+            }
+            return [{ skill, root, versionFile, files }]
+          }),
+          ({ skill, root, versionFile, files }) =>
+            effect {
+              const version = skill.version
+              const current = version === undefined
+                ? undefined
+                : try fs.readFileStringSafe(versionFile).pipe(Effect.orElseSucceed(() => undefined))
+              if (version === undefined || current === version) {
+                try Effect.forEach(files, (file) => download(file.url, file.destination), {
+                  concurrency: fileConcurrency,
+                  discard: true,
+                })
+              } else {
+                const token = randomToken()
+                const staging = `${root}.tmp-${token}`
+                const backup = `${root}.old-${token}`
+                try (effect {
+                  const downloaded = try Effect.forEach(
+                    files,
+                    (file) => download(file.url, resolvePath(staging, file.file)),
+                    { concurrency: fileConcurrency },
+                  )
+                  if (!downloaded.every(Boolean)) return
+                  const exists = (try fs.exists(joinPath(staging, "SKILL.md")).pipe(Effect.orDie))
+                    || (try fs.exists(joinPath(staging, `${skill.name}.md`)).pipe(Effect.orDie))
+                  if (!exists) return
+                  try fs.writeFileString(joinPath(staging, ".opencode-version"), version)
+                  try Effect.uninterruptible(
+                    effect {
+                      const cached = try fs.exists(root).pipe(Effect.orDie)
+                      if (cached) try fs.rename(root, backup)
+                      try fs.rename(staging, root).pipe(
+                        Effect.catch((error) =>
+                          effect {
+                            if (cached) try fs.rename(backup, root).pipe(Effect.ignore)
+                            return try Effect.fail(error)
+                          }
+                        ),
+                      )
+                      if (cached) try fs.remove(backup, { recursive: true, force: true }).pipe(Effect.ignore)
+                    },
+                  )
+                }).pipe(
+                  Effect.catch((error) => Effect.logError("failed to refresh skill", { skill: skill.name, error })),
+                  Effect.ensuring(fs.remove(staging, { recursive: true, force: true }).pipe(Effect.ignore)),
+                )
+              }
+              const exists = (try fs.exists(joinPath(root, "SKILL.md")).pipe(Effect.orDie))
+                || (try fs.exists(joinPath(root, `${skill.name}.md`)).pipe(Effect.orDie))
+              return exists ? [AbsolutePath.make(root)] : []
+            },
+          { concurrency: skillConcurrency },
+        ).pipe(Effect.map((directories) => directories.flat()))
+      }),
+    })
+  },
+)
+
+export const node = makeGlobalNode({ service: Service, layer, deps: [httpClient, FSUtil.node, Global.node] })
+
+module platform {
+  // The platform code of discovery.vibe: host paths and random tokens, which a .vibe file does not read (EK4402).
+
+  import path from "path"
+
+  /** Whether a path is absolute under POSIX or Windows rules. @throws {never} */
+  export function isAbsoluteOnAnyPlatform(value: string): boolean {
+    return path.posix.isAbsolute(value) || path.win32.isAbsolute(value)
+  }
+
+  /** @throws {never} */
+  export function resolvePath(...parts: string[]): string {
+    return path.resolve(...parts)
+  }
+
+  /** @throws {never} */
+  export function joinPath(...parts: string[]): string {
+    return path.join(...parts)
+  }
+
+  /** A fresh random token for staging directory names. @throws {never} */
+  export function randomToken(): string {
+    return crypto.randomUUID()
+  }
+}

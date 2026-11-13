@@ -11,7 +11,7 @@ import {
   type ImageAttachmentPart,
   type FileAttachmentPart,
   type LineComment,
-} from "./schema"
+} from "./schema.vibe"
 
 const text: TextPart = { type: "text", content: "hello", start: 0, end: 5 }
 

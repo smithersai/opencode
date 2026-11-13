@@ -1,0 +1,129 @@
+import { Instance } from "@opencode/core/instance/service"
+import { Location } from "@opencode/core/location"
+import { Permission } from "@opencode/core/permission"
+import { PermissionSaved } from "@opencode/core/permission/saved"
+import { Session } from "@opencode/core/session"
+import { Effect } from "effect"
+import { HttpApiBuilder, HttpApiSchema } from "effect/http-api"
+import { Api } from "../api"
+import { ConflictError, PermissionNotFoundError, PermissionSavedNotFoundError } from "@opencode/protocol/errors"
+import { locationErrors, response, sessionInfo } from "../location"
+import { missingSession } from "./session-error"
+
+function missingRequest(id: Permission.ID) {
+  return new PermissionNotFoundError({ requestID: id, message: `Permission request not found: ${id}` })
+}
+
+export const PermissionHandler = HttpApiBuilder.group(Api, "server.permission", (handlers) =>
+  effect {
+    const instances = try Instance.Service
+    const sessions = try Session.Service
+    const requireOwnedRequest = effect function(
+      sessionID: Permission.Request["sessionID"],
+      requestID: Permission.ID,
+    ) {
+      const permission = try Permission.Service
+      const request = try permission.get(requestID)
+      if (!request || request.sessionID !== sessionID) return try missingRequest(requestID)
+      return { permission, request }
+    }
+
+    return handlers
+      .handle(
+        "permission.request.list",
+        Effect.fn(effect function() {
+          const permission = try Permission.Service
+          return try response(permission.list())
+        }),
+      )
+      .handle(
+        "session.permission.create",
+        Effect.fn(effect function(ctx) {
+          const permission = try Permission.Service
+          return {
+            data: try permission
+              .ask({
+                id: ctx.payload.id,
+                sessionID: ctx.params.sessionID,
+                action: ctx.payload.action,
+                resources: ctx.payload.resources,
+                save: ctx.payload.save,
+                metadata: ctx.payload.metadata,
+                source: ctx.payload.source,
+                agent: ctx.payload.agent,
+              })
+              .pipe(Effect.catchTag("Session.NotFoundError", missingSession)),
+          }
+        }),
+      )
+      .handle(
+        "session.permission.list",
+        Effect.fn(effect function(ctx) {
+          const session = try sessionInfo(sessions, ctx.params.sessionID)
+          const requests = try Permission.Service.use((permission) => permission.forSession(ctx.params.sessionID))
+            .pipe(instances.provide(session), locationErrors)
+          return { data: requests }
+        }),
+      )
+      .handle(
+        "session.permission.get",
+        Effect.fn(effect function(ctx) {
+          const owned = try requireOwnedRequest(ctx.params.sessionID, ctx.params.requestID)
+          return { data: owned.request }
+        }),
+      )
+      .handle(
+        "session.permission.reply",
+        Effect.fn(effect function(ctx) {
+          const owned = try requireOwnedRequest(ctx.params.sessionID, ctx.params.requestID)
+          try owned.permission
+            .reply({ requestID: ctx.params.requestID, reply: ctx.payload.decision, message: ctx.payload.message })
+            .pipe(Effect.catchTag("Permission.NotFoundError", () => missingRequest(ctx.params.requestID)))
+          return HttpApiSchema.NoContent.make()
+        }),
+      )
+      .handle(
+        "permission.saved.list",
+        Effect.fn(effect function(ctx) {
+          const location = try Location.Service
+          const saved = try PermissionSaved.Service
+          return {
+            data: try saved.list({
+              projectID: ctx.query.projectID ?? location.project.id,
+            }),
+          }
+        }),
+      )
+      .handle(
+        "permission.saved.update",
+        Effect.fn(effect function(ctx) {
+          const saved = try PermissionSaved.Service
+          return {
+            data: try saved
+              .update({ id: ctx.params.id, action: ctx.payload.action, resource: ctx.payload.resource })
+              .pipe(
+                Effect.catchTags({
+                  "PermissionSaved.NotFoundError": (error) =>
+                    new PermissionSavedNotFoundError({
+                      id: error.id,
+                      message: `Saved permission not found: ${error.id}`,
+                    }),
+                  "PermissionSaved.ConflictError": (error) =>
+                    new ConflictError({
+                      resource: error.id,
+                      message: `A saved permission already allows ${error.action} for ${error.resource}`,
+                    }),
+                }),
+              ),
+          }
+        }),
+      )
+      .handle(
+        "permission.saved.remove",
+        Effect.fn(effect function(ctx) {
+          const saved = try PermissionSaved.Service
+          try saved.remove(ctx.params.id)
+          return HttpApiSchema.NoContent.make()
+        }),
+      )
+  })

@@ -3,7 +3,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/solid-query"
 import type { JSX } from "solid-js"
 import { usePlugin, type IpcClient } from "../../../plugin/src/gui/index"
 import { PluginContext } from "../../../plugin/src/gui/internal"
-import type { Pairing } from "../../../gui-plugins/src/pairing/contract"
+import type { Pairing } from "../../../gui-plugins/src/pairing/contract.vibe"
 import type { PairingServer } from "../../../gui-plugins/src/pairing/page"
 // The pairing page renders inside the app's settings page, which brings these styles.
 import "@/settings/settings.css"

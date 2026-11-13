@@ -1,0 +1,25 @@
+export * as FileRetention from "./file-retention.js"
+
+import { FSUtil } from "@opencode/util/fs-util"
+
+export const cleanup = effect (
+  fs: FSUtil.Interface,
+  files: ReadonlyArray<string>,
+  retention: Duration.Input,
+) =>
+  try withSpan(
+    effect {
+      const cutoff = Date.now() - Duration.toMillis(retention)
+      try Effect.forEach(
+        files,
+        effect (file) => {
+          const info = fs.stat(file) catch () => undefined
+          const mtime = info && Option.getOrUndefined(info.mtime)
+          if (!mtime || mtime.getTime() >= cutoff) return
+          try (fs.remove(file) |> Effect.ignore(%))
+        },
+        { concurrency: 8, discard: true },
+      )
+    },
+    "FileRetention.cleanup",
+  )

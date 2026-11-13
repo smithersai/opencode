@@ -4,11 +4,13 @@ import tailwindcss from "@tailwindcss/vite"
 import { fileURLToPath } from "node:url"
 import { execFileSync } from "node:child_process"
 import path from "node:path"
+import vibelang from "vibelang-vite"
 
 export default defineConfig({
   root: fileURLToPath(new URL(".", import.meta.url)),
   publicDir: fileURLToPath(new URL("../../../public", import.meta.url)),
   plugins: [
+    vibelang(),
     solid(),
     tailwindcss(),
     {

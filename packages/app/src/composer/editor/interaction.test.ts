@@ -1,5 +1,5 @@
 import { expect, test } from "bun:test"
-import { shouldHandlePasteAsAttachment } from "./interaction"
+import { shouldHandlePasteAsAttachment } from "./interaction.vibe"
 
 test("handles clipboard files, and native images only when the clipboard has no text", () => {
   expect(shouldHandlePasteAsAttachment(clipboard(), false)).toBe(false)

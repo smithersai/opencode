@@ -1,7 +1,7 @@
 import type { ProviderPackage } from "../provider-package.js"
 import { AnthropicMessages } from "../protocols/anthropic-messages.js"
-import { Auth } from "../route/auth.js"
-import type { ProviderAuthOption } from "../route/auth-options.js"
+import { Auth } from "../route/auth.vibe"
+import type { ProviderAuthOption } from "../route/auth-options.vibe"
 import type { RouteDefaultsInput } from "../route/client.js"
 import { ProviderConfigurationError, ProviderID, type ModelID } from "../schema/index.js"
 

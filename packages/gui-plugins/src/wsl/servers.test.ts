@@ -1,6 +1,6 @@
 import { expect, test } from "bun:test"
 import { spawn, type ChildProcess } from "node:child_process"
-import type { WslServerConfig } from "./contract"
+import type { WslServerConfig } from "./contract.vibe"
 import type { WslRuntime } from "./runtime"
 import { createWslServersController } from "./servers"
 

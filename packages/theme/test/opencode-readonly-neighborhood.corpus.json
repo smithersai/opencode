@@ -1,0 +1,78 @@
+{
+  "contract": "Schema.Struct defaults preserve readonly decoded fields, including nested, optional and private codecs.",
+  "rows": [
+    {
+      "source": "src/tui/schema.vibe",
+      "codec": "ActionColorDefinition",
+      "writes": ["text!.action!.primary", "text!.action!.secondary", "text!.action!.destructive"],
+      "type": "typeof ThemeTokensDefinition.Type"
+    },
+    {
+      "source": "src/tui/schema.vibe",
+      "codec": "TextFeedbackDefinition",
+      "writes": ["text!.feedback!.error!.base", "text!.feedback!.error!.muted"],
+      "type": "typeof ThemeTokensDefinition.Type"
+    },
+    {
+      "source": "src/tui/schema.vibe",
+      "codec": "BackgroundFeedbackDefinition",
+      "writes": ["background!.feedback!.error!.base"],
+      "type": "typeof ThemeTokensDefinition.Type"
+    },
+    {
+      "source": "src/tui/schema.vibe",
+      "codec": "CompleteStatefulColorDefinition",
+      "writes": [
+        "text.formfield.base",
+        "text.formfield.$hovered",
+        "text.formfield.$focused",
+        "text.formfield.$pressed",
+        "text.formfield.$selected",
+        "text.formfield.$disabled"
+      ],
+      "type": "typeof BaseThemeDefinition.Type"
+    },
+    {
+      "source": "src/tui/schema.vibe",
+      "codec": "CompleteActionColorDefinition",
+      "writes": ["text.action.primary", "text.action.secondary", "text.action.destructive"],
+      "type": "typeof BaseThemeDefinition.Type"
+    },
+    {
+      "source": "src/tui/schema.vibe",
+      "codec": "CompleteTextFeedbackDefinition",
+      "writes": ["text.feedback.error.base", "text.feedback.error.muted"],
+      "type": "typeof BaseThemeDefinition.Type"
+    },
+    {
+      "source": "src/tui/schema.vibe",
+      "codec": "CompleteBackgroundFeedbackDefinition",
+      "writes": ["background.feedback.error.base"],
+      "type": "typeof BaseThemeDefinition.Type"
+    },
+    {
+      "source": "src/tui/schema.vibe",
+      "codec": "CompleteThemeTokensDefinition",
+      "writes": [
+        "text",
+        "text.base",
+        "text.muted",
+        "text.faint",
+        "text.action",
+        "text.feedback",
+        "text.feedback.error",
+        "background",
+        "background.raised.base",
+        "background.feedback.info",
+        "border.base",
+        "scrollbar.base",
+        "diff.text.added",
+        "diff.background.removed",
+        "diff.lineNumber.background.added",
+        "syntax",
+        "markdown"
+      ],
+      "type": "typeof BaseThemeDefinition.Type"
+    }
+  ]
+}

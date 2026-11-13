@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test"
 import type { Prompt } from "@opencode/schema"
-import { projectedPromptInput } from "../../src/prompt/codec"
+import { projectedPromptInput } from "../../src/prompt/codec.vibe"
 
 describe("prompt codec", () => {
   test("converts projected URI and inline attachments without mutation", () => {

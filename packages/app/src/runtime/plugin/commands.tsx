@@ -2,7 +2,7 @@ import { createMemo } from "solid-js"
 import { BuiltinCommand } from "@opencode/plugin/gui/builtin"
 import { useCommand, type CommandSource } from "@/shell/commands/command"
 import { useSettings } from "@/settings/model"
-import { migrateKeybinds } from "@/settings/keybinds/migration"
+import { migrateKeybinds } from "../../settings/keybinds/migration.vibe"
 import { usePluginHost, type Item } from "./host"
 
 /** Publishes plugin commands as `${plugin}.${id}` in the host command registry. */

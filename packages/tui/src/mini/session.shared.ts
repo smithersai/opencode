@@ -1,5 +1,5 @@
 import type { SessionMessageInfo, SessionMessageUser } from "@opencode/client/promise"
-import { projectedPromptInput } from "../prompt/codec"
+import { projectedPromptInput } from "#vibelang/emitted/src/prompt/codec"
 import { requestOptions } from "./catalog.shared"
 import { promptCopy, promptSame } from "./prompt.shared"
 import type { RunInput, RunPrompt } from "./types"

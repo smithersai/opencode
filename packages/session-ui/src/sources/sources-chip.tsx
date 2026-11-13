@@ -4,7 +4,7 @@ import { frameLoop, prefersReducedMotion, Spring } from "@opencode/ui/motion"
 import { createMemo, For, onCleanup, onMount, Show } from "solid-js"
 import { sourcesFade, type SiteIconMode } from "./experiment"
 import { SiteIcon } from "./site-icon"
-import type { TurnSources } from "./sources"
+import type { TurnSources } from "./sources.vibe"
 import "./sources.css"
 
 /**

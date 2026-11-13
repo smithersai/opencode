@@ -6,7 +6,7 @@ import { Context, Effect, FileSystem, Layer, Schema } from "effect"
 import type { PlatformError } from "effect/PlatformError"
 import { Glob } from "./glob.js"
 import { makeGlobalNode } from "./effect/app-node.js"
-import { filesystem } from "./effect/app-node-platform.js"
+import { filesystem } from "#vibelang/emitted/src/effect/app-node-platform"
 import { sameDirectory } from "./path.js"
 
 export namespace FSUtil {
@@ -36,7 +36,8 @@ export namespace FSUtil {
     readonly type?: "file" | "directory"
   }
 
-  export interface Interface extends FileSystem.FileSystem {
+  // Effect 4.1 added FileSystem.readDirectoryEntries with its own entry type; this service keeps its lowercase DirEntry.
+  export interface Interface extends Omit<FileSystem.FileSystem, "readDirectoryEntries"> {
     readonly isDir: (path: string) => Effect.Effect<boolean>
     readonly isFile: (path: string) => Effect.Effect<boolean>
     readonly existsSafe: (path: string) => Effect.Effect<boolean>

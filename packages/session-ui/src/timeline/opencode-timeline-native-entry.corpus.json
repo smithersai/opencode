@@ -1,0 +1,11 @@
+{
+  "headings": [
+    { "text": "## Looking at the tool result", "expected": "Looking at the tool result" },
+    { "text": "### Earlier\r\n\r\n## Final heading", "expected": "Final heading" },
+    { "text": "ordinary text", "expected": null }
+  ],
+  "errors": [
+    { "text": "{\"error\":{\"type\":\"ProviderError\",\"message\":\"retry later\"}}", "expected": "ProviderError: retry later" },
+    { "text": "plain failure", "expected": "plain failure" }
+  ]
+}

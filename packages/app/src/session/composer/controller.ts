@@ -6,7 +6,7 @@ import { promptLength } from "@/composer/prompt-parts"
 import { createComposerModel } from "@/composer/model"
 import { useSettings } from "@/settings/model"
 import { createActiveComposerAdapter } from "./adapter"
-import { createSessionQueue } from "./queue"
+import { createSessionQueue } from "./queue.vibe"
 import { createSessionComposerRegionController } from "./session-composer-region-controller"
 
 export function createSessionComposerController(input: {

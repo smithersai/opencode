@@ -3,7 +3,7 @@ import type { ReferenceInfo } from "@opencode/client/promise"
 import type { CommandInfo, McpResource, McpServer } from "@opencode/client/promise"
 import type { Accessor } from "solid-js"
 import type { SetStoreFunction, Store } from "solid-js/store"
-import { ProjectState } from "../persistence"
+import { ProjectState } from "../persistence.vibe"
 
 export type ProjectMeta = NonNullable<typeof ProjectState.Type.value>
 

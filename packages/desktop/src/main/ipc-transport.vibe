@@ -1,0 +1,130 @@
+import type { MessagePortMain, WebContents } from "electron"
+import { Layer } from "effect"
+import { RpcServer } from "effect/rpc"
+import { bindIpcEvents } from "./ipc-events.vibe"
+
+type PortBinding = {
+  readonly id: number
+  readonly sender: WebContents
+  readonly port: MessagePortMain
+  readonly onMessage: (event: Electron.MessageEvent) => void
+  readonly onClose: () => void
+  readonly unbindEvents: void!!
+}
+
+type Handoff = {
+  readonly bind: (sender: WebContents, port: MessagePortMain) => void
+  readonly sender: (clientId: number) => WebContents | undefined
+}
+
+export service IpcPortHandoff: Handoff {
+  static readonly key = "opencode/desktop/IpcPortHandoff"
+}
+
+// Messages cross the port by structured clone, like Effect's worker protocol: no serialization
+// layer, so binary payloads stay binary and nothing is packed into a shared buffer. Electron's
+// MessagePortMain can only transfer ports, so byte payloads are cloned in both directions.
+export const IpcServerProtocolLive = Layer.unwrap(
+  effect {
+    const handoffs = try Queue.unbounded<readonly [WebContents, MessagePortMain]>()
+    const bindings = new Map<number, PortBinding>()
+    const senderBindings = new Map<number, number>()
+
+    const protocol = Layer.effect(
+      RpcServer.Protocol,
+      RpcServer.Protocol.make(
+        effect (writeRequest) => {
+          const disconnects = try Queue.unbounded<number>()
+          const inbound = try Queue.unbounded<readonly [number, RpcMessage.FromClientEncoded]>()
+          const runFork = Effect.runForkWith(try Effect.context())
+          let nextClientId = 0
+
+          const disconnect = effect (id: number) => {
+            const binding = bindings.get(id)
+
+            if (!binding) return
+            bindings.delete(id)
+
+            if (senderBindings.get(binding.sender.id) === id) senderBindings.delete(binding.sender.id)
+            try Effect.orDie(
+              Effect.try({ try: () => binding.port.off("message", binding.onMessage), catch: (e) => e }),
+            )
+            try Effect.orDie(Effect.try({ try: () => binding.port.off("close", binding.onClose), catch: (e) => e }))
+            try Effect.orDie(
+              Effect.try({ try: () => binding.sender.off("destroyed", binding.onClose), catch: (e) => e }),
+            )
+            try binding.unbindEvents
+            try Effect.orDie(Effect.try({ try: () => binding.port.close(), catch: (e) => e }))
+            Queue.offerUnsafe(disconnects, id)
+          }
+
+          const bind = effect (sender: Electron.WebContents, port: Electron.MessagePortMain) => {
+            const previous = senderBindings.get(sender.id)
+
+            if (previous !== undefined) try disconnect(previous)
+
+            if (try Effect.orDie(Effect.try({ try: () => sender.isDestroyed(), catch: (e) => e }))) {
+              try Effect.orDie(Effect.try({ try: () => port.close(), catch: (e) => e }))
+
+              return
+            }
+
+            const id = nextClientId++
+
+            const onMessage = (event: Electron.MessageEvent) => {
+              // SAFETY: the other end of this port is the renderer's ipc-client, which posts only RPC client
+              // messages; the RPC server decodes each request's payload with that RPC's schema.
+              Queue.offerUnsafe(inbound, [id, event.data as RpcMessage.FromClientEncoded] as const)
+            }
+
+            const onClose = () => runFork(disconnect(id))
+            const unbindEvents = try bindIpcEvents(sender.id)
+            const binding = { id, sender, port, onMessage, onClose, unbindEvents }
+            bindings.set(id, binding)
+            senderBindings.set(sender.id, id)
+            try Effect.orDie(Effect.try({ try: () => port.on("message", onMessage), catch: (e) => e }))
+            try Effect.orDie(Effect.try({ try: () => port.on("close", onClose), catch: (e) => e }))
+            try Effect.orDie(Effect.try({ try: () => sender.once("destroyed", onClose), catch: (e) => e }))
+            try Effect.orDie(Effect.try({ try: () => port.start(), catch: (e) => e }))
+          }
+
+          try (Stream.fromQueue(handoffs)
+            |> Stream.runForEach(%, ([sender, port]) => bind(sender, port))
+            |> Effect.forkScoped(%))
+          try (Stream.fromQueue(inbound)
+            |> Stream.runForEach(%, ([id, message]) => (bindings.has(id) ? writeRequest(id, message) : Effect.void))
+            |> Effect.forkScoped(%))
+          try Effect.addFinalizer(() => Effect.forEach([...bindings.keys()], disconnect, { discard: true }))
+
+          return {
+            codecFor: Schema.toCodecJson,
+            disconnects,
+            send: (clientId, response) =>
+              Effect.sync(() => {
+                bindings.get(clientId)?.port.postMessage(response)
+              }),
+            end: disconnect,
+            clientIds: effect {
+              return new Set(bindings.keys())
+            },
+            initialMessage: Effect.succeed(Option.none()),
+            supportsAck: true,
+            supportsTransferables: false,
+            supportsSpanPropagation: false,
+            supportsNotifications: true,
+          }
+        },
+      ),
+    )
+
+    return Layer.merge(
+      protocol,
+      Layer.succeed(IpcPortHandoff)({
+        bind: (sender, port) => {
+          Queue.offerUnsafe(handoffs, [sender, port])
+        },
+        sender: (clientId) => bindings.get(clientId)?.sender,
+      }),
+    )
+  },
+)

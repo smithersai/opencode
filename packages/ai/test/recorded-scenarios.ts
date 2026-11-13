@@ -16,7 +16,7 @@ import {
   type LanguageModel,
 } from "../src/effect.js"
 import { LLMClient } from "../src/route.js"
-import { Tool } from "../src/tool.js"
+import { Tool } from "../src/tool.vibe"
 
 export const weatherToolName = "get_weather"
 

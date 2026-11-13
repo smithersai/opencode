@@ -2,6 +2,293 @@
 
 Release notes for OpenCode V2, newest first.
 
+## Unreleased
+
+### Changed
+
+- Source and changed-file lint include JSX VibeLang modules and ignore their generated declaration companions.
+
+- The interpreter and package boundary helpers use VibeLang module bodies while preserving their public declarations and native entry paths.
+
+- The server namespace bundle check uses the CLI production plugins while retaining its import variants and identity assertions.
+
+- Database path columns now use VibeLang, and migration commands run Drizzle under Bun so the package loader can load their schema dependencies.
+
+- Use direct flag and standalone function imports in the converted CLI server connection.
+
+- The CLI environment, version, service configuration, server connection, remote tunnel and standalone server modules now use VibeLang with their host access in module bodies; their `.ts` files re-export the VibeLang modules for the importers that name them.
+
+- The CLI configuration, its schema and its migration from the earlier TUI configuration now use VibeLang; `config.ts` and `schema.ts` re-export the VibeLang modules for the importers and the schema script that name them.
+
+- The CLI command definitions, command runtime and spec, and the run and Mini command handlers now use VibeLang; their `.ts` files re-export the VibeLang modules for the importers and the import boundary test that name them.
+
+- The dev TUI runner is now a plain VibeLang module that the dev launcher imports directly, without a .ts re-export.
+
+- The database migration runner and the drizzle database query builder now use VibeLang while preserving their declarations.
+
+- The SQLite condition test now bundles with the VibeLang plugin, as the core package build does.
+
+- The plugin host contract and browser tool helpers now use VibeLang module bodies with equivalent public declarations.
+
+- The HTTP Recorder package consumer check installs the supported Effect version instead of an obsolete prerelease.
+
+- HTTP Recorder's published declarations retain their original import spellings.
+
+- The CLI session list and uninstall handlers, the CPU and heap profiles and the port owner lookup now keep their native host access in module bodies of their VibeLang files instead of platform siblings.
+
+- The CLI ACP permissions and sessions, server process, shutdown deadline, SSH askpass and web UI service now keep their native host access in module bodies of their VibeLang files instead of platform siblings.
+
+- The CLI MCP, plugin, service and session command handlers now keep their native process and stream access in module bodies of their VibeLang files instead of platform siblings.
+
+- The CLI ACP, default, models, reload and stats handlers and the auth and debug commands now keep their native process and stream access in module bodies of their VibeLang files instead of platform siblings.
+
+- The desktop main process settings store now uses VibeLang while preserving its declarations, its `store.ts` import path and native file and Electron access.
+
+- The desktop attachment picker, app and window IPC handlers, native logging, background service, main plugin host, plugin loader and plugin service, and the renderer plugin bridge now use VibeLang while preserving their declarations and native Electron, file and process access.
+
+- The HttpApi client generator now uses VibeLang while preserving its declarations and its synchronous generation errors.
+
+- Plugin entrypoint resolution and the plugin GUI host contract now use VibeLang while preserving their declarations, native file access and the synchronous plugin bundle checks.
+
+- The HTTP recorder cassette store now uses VibeLang while preserving its declarations, native file access and the synchronous cassette name checks; an invalid name passed to the file cassette service still dies with the same error.
+
+- The app composer editor and model, plugin IPC and stores, server pairing, prompt queue, message timeline, timeline virtualizer and error page modules keep their DOM, timer, console, fetch and location access in module bodies of their VibeLang files instead of separate platform files.
+
+- The plugin GUI memory log, memory record, server heap snapshot, SSH state, updater news and WSL sidecar modules keep their Electron, file, path, process, fetch and timer access in module bodies of their VibeLang files instead of separate platform files.
+
+- The desktop file opener, application lifecycle and environment, CLI installer, shell environment, window and renderer IPC client modules keep their process, child process, environment, path, timer and window access in module bodies of their VibeLang files instead of separate platform files.
+
+- The server authentication, pairing, process, location and server information modules and the debug, persistent terminal and session error handlers keep their crypto, Buffer, HTTP server, network interface, path and working directory access in module bodies of their VibeLang files instead of separate platform files.
+
+- The code mode interpreter and its JSON value conversions now use VibeLang while preserving their declarations, with the throwing evaluator and value walk in TypeScript module bodies.
+
+- The stats home data queries now use VibeLang while preserving their declarations, with the PlanetScale query cache and database URL lookup in a native platform module.
+
+- The CLI entry and the V1 run bridge now use VibeLang: src/index.ts stays the entry and only loads src/index.main.vibe, and native process access is preserved.
+
+- The CLI app archive, ACP connection and prompt content, prompts and service registration now use VibeLang while keeping the module names their importers read and preserving native stream, buffer and process access.
+
+- The CLI api, MCP add, plugin add and remove, and session import handlers now use VibeLang while preserving native process, file and network access.
+
+- The core file watcher, built-in instructions and Google Vertex provider keep their path, environment and platform access in module bodies of their VibeLang files instead of separate platform files.
+
+- The core persistent terminal daemon, terminal, shell, skill, snapshot, version control and worktree modules keep their process, socket, file, path and environment access in module bodies of their VibeLang files instead of separate platform files.
+
+- The core AI SDK adapter, model catalogs, model resolution, file access, filesystem, formatter, instance, ripgrep and well-known config modules keep their fetch, timer, environment, path and Buffer access in module bodies of their VibeLang files instead of separate platform files.
+
+- The core session modules keep their path, file URL, Buffer, hashing, Response and blob lookup code in module bodies of their VibeLang files instead of separate platform files.
+
+- The core plugin loader, plugin supervisor, version control plugins and the built-in tools keep their path, file, Buffer and random identifier access in module bodies of their VibeLang files instead of separate platform files.
+
+- The core provider plugins keep their environment, randomness, digest, Buffer, fetch and node:http access in module bodies of their VibeLang files instead of separate platform files.
+
+- The core configuration loader, configuration variables and config plugin sources keep their path, URL and environment access in module bodies of their VibeLang files instead of separate platform files.
+
+- The TUI attention alerts and the stats R2 SQL client now keep their host access inside their VibeLang files instead of separate platform files.
+
+- The HTTP recorder, the client RPC transport and service helpers, and the code mode extension bridge and OpenAPI runtime now keep their host access inside their VibeLang files instead of separate platform files.
+
+- The session UI basic tool, session review and tool renderer now keep their browser access inside their VibeLang files instead of separate platform files.
+
+- The browser plugin connection, files, proxy and tunnel, and the plugin SDK built-in idle-callback helpers now keep their host access inside their VibeLang files instead of separate platform files.
+
+- The simulation OpenAI backend, simulated provider, renderer and manifest now keep their host access inside their VibeLang files instead of separate platform files.
+
+- The AI package entry, the Anthropic, Gemini and OpenResponses protocols, Bedrock authentication, media input and the recording setup script now keep their host access inside their VibeLang files instead of separate platform files.
+
+- The util global paths, process output, npm install and config, file lock, heap snapshot and OTLP helpers now keep their host access inside their VibeLang files instead of separate platform files.
+
+- The app provider connection dialog now uses VibeLang, with clipboard, form, selector escaping and timer access in a native module body.
+
+- The plugin host component test fixture now uses VibeLang, with DOM and frame timing access and its throwing fake storage in native module bodies.
+
+- The app command registry, settings model, plugin side panels and session timeline controller now use VibeLang, with DOM and navigator access in native module bodies and the development build flag in a native file.
+
+- The app draft store, provider catalog and new session composer adapter now use VibeLang, with the draft store browser storage, blob, timer and fetch access in a native module body.
+
+- The AI tutorial, the HTTP recorder package check and the config schema script now use VibeLang behind their existing .ts entry points, and the config schema script also runs from packages without a VibeLang preload.
+
+- The CLI schema and service smoke scripts and the dev TUI runner now use VibeLang behind their existing .ts entry points.
+
+- The core benchmark, migration and models snapshot scripts now use VibeLang behind their existing .ts entry points, with host access in platform modules.
+
+- The Session service and the app node builder now use VibeLang while preserving their declarations, native path access and the TypeScript path that tests and benchmark scripts import.
+
+- The session timeline row renderer now uses VibeLang while preserving its declarations and its row checks.
+
+- The SSH command and bootstrap helpers and the desktop updater platform now use VibeLang while preserving their declarations, their thrown input and version errors, and native process and Electron access.
+
+- The desktop browser page and pane now use VibeLang while preserving their declarations and native Electron, process and crypto access.
+
+- The CLI updater and retained image service and the TUI Zed editor selection now use VibeLang while preserving native process, file and environment access.
+
+- The CLI import boundary tests now bundle with the VibeLang plugin, as the CLI package build does.
+
+- Git, projects, integrations, workspaces, the bus, credentials, forms, the MCP client, OAuth and stdio transport, environment drivers and project icons now use VibeLang while preserving their declarations and native host access.
+
+- The MCP import boundary test now bundles with the VibeLang plugin, as the core package build does.
+
+- The CLI heap and CPU profiles, shutdown deadline, and the uninstall, ACP, auth import, plugin list and session list and export handlers now use VibeLang while preserving native process, file and environment access.
+
+- The plugin GUI core contract now uses VibeLang while preserving its declarations.
+
+- The desktop renderer IPC client now uses VibeLang while preserving its declarations and native window access, and still loads without the Effect runtime.
+
+- Code mode program execution now uses VibeLang while preserving its declarations and its defects for failing built-in setup and error normalization.
+
+- The browser plugin proxy, connection and tunnel now use VibeLang while preserving their declarations and native HTTP, socket and crypto access.
+
+- The plugin SDK promise adapter and built-in plugin helpers now use VibeLang while preserving their declarations and native idle-callback access.
+
+- The HTTP recorder, secret scan and replay state now use VibeLang while preserving their declarations.
+
+- The simulation backend, Drive manifest and headless renderer now use VibeLang while preserving their declarations.
+
+- The CLI web UI and app asset services and the port owner lookup now use VibeLang while preserving their behavior and native host access.
+
+- Server auth, pairing, process, location and request handlers now use VibeLang while preserving their declarations and native host access.
+
+- The session timeline virtualizer, the Extensions plugin list and generated project icons in the app now use VibeLang, with DOM access in a native platform file.
+
+- The composer model in the app now uses VibeLang, with browser access in a platform sibling.
+
+- Extension settings, the error page and the voice composer in the app now use VibeLang, with browser access in platform siblings.
+
+- The session message timeline and the elicitation dock in the app now use VibeLang, with browser access in platform siblings.
+
+- The core AI SDK bridge now uses VibeLang while preserving its declarations, with fetch, timers, streams and request context in a native platform file.
+
+- Core model, model resolver, provider, PTY and ripgrep services now use VibeLang while preserving their declarations, with environment, platform, module resolution and buffer access in native platform files.
+
+- Core config, well-known config, filesystem, formatter, tool output, job, web search and instruction discovery services now use VibeLang while preserving their declarations, with path, environment and deep-equality access in native platform files.
+
+- Core models.dev, plugin, RPC and shell services now use VibeLang while preserving their declarations, with command line, file and buffer access in native platform files.
+
+- Core instance, file access, permission, skill and reference services now use VibeLang while preserving their declarations and native path access.
+
+- Core VCS, snapshot and repository cache services now use VibeLang while preserving their declarations, with path and byte access in native platform files.
+
+- Shell command parsing, Copilot and Modal model catalogs, built-in and skill instructions and worktree strategies now use VibeLang while preserving their declarations and native host access.
+
+- File and location watchers now use VibeLang while preserving their declarations and native filesystem access.
+
+- Global paths and OTLP observability setup in the util package now use VibeLang while preserving their declarations and native host access.
+
+- The SDK embedded host now uses VibeLang while preserving its declarations.
+
+- The client local service lifecycle now uses VibeLang while preserving its declarations, with process signals in a native platform file.
+
+- The AI package entry, its image, speech, transcription, video and testing modules, the Anthropic Messages, OpenAI Chat, Open Responses, Gemini and Google Interactions protocols and Bedrock auth now use VibeLang while preserving their declarations, with file, Buffer, crypto and environment access in native platform files.
+
+- Config variable substitution and the command and plugin source loaders now use VibeLang, with path and URL access in native platform files.
+
+- The persistent PTY daemon transport and service now use VibeLang, with sockets, process spawning and buffers in native platform files.
+
+- Session runner steps, model requests and transport, prompts, context, titles, instructions and generation now use VibeLang while preserving their declarations, with file URL, response and buffer access in native platform files.
+
+- Session storage, projection, inbox, blobs, history, instruction state, moves, transfers, reverts and diffs now use VibeLang while preserving their declarations, with path, hashing and buffer access in native platform files.
+
+- The webfetch, subagent and MCP tools, file reading and bounded HTTP body collection now use VibeLang, with Buffer and path access in native platform files and text decoding run inside Effect.
+
+- Plugin module loading, the plugin supervisor and plugin source directory discovery now use VibeLang, with path and file system access in native platform files.
+
+- The Amazon Bedrock, Azure, ChatGPT, Cloudflare, Databricks, DigitalOcean, GitHub Copilot, GitLab, Google Vertex, Modal, OpenAI, OpenCode Console, Poe, SAP AI Core, Snowflake Cortex and xAI provider plugins now use VibeLang, with environment, crypto, Buffer and node:http access in native platform files.
+
+- The terminal view, updater dialogs, update state machine and log context, and SSH connection state in the GUI plugins now use VibeLang while keeping browser timers, observers and build-time release notes in native siblings.
+
+- The session tool renderer, session review and basic tool components now use VibeLang while keeping their package entry points and browser frame and selection access.
+
+- Worktree management and session statistics now use VibeLang while preserving their declarations and native path access.
+
+- Lock, npm install and process helpers in the util package now use VibeLang while preserving their declarations.
+
+- The Durable Object SQLite adapter now uses VibeLang with unchanged transaction and blob behavior.
+
+- Core VCS, provider, skill, planning and warming plugins, skill discovery, PTY tickets and Photon image resizing now use VibeLang while keeping their package entry points and host behavior.
+
+- Config plugins and the read, grep and glob tools now use VibeLang, with path and buffer access in native platform files.
+
+- The CLI server process and ACP session registry now use VibeLang while keeping host access and throwing host calls native.
+
+- Bedrock event-stream framing, the client RPC runtime and the Effect client now use VibeLang while preserving their declarations.
+
+- Recording credential setup now uses VibeLang while keeping status checks read-only.
+
+- PTY handlers now use VibeLang while preserving replay and native callback failures.
+
+- Timeline projection now uses VibeLang behind its existing package entry point.
+
+- Desktop window appearance now uses VibeLang while preserving platform behavior.
+
+- OpenAPI generation now uses VibeLang while preserving generated output.
+
+- Client generation now uses VibeLang while preserving generated sources.
+
+- Database migration implementations now use VibeLang while preserving their existing declarations.
+
+- ACP helper implementations now use VibeLang while preserving their protocol behavior.
+
+- Server handler implementations now use VibeLang while preserving the existing native declaration boundaries.
+
+- Command helpers and additional handlers now use VibeLang while preserving existing command behavior.
+
+### Bugs fixed
+
+- Migrated modules could change import paths in published TypeScript declarations; converted sources now retain their original runtime import spellings.
+
+- CLI bundling could reject the prompt history export after migration; prompt history now retains its native source until JSX module loading supports it.
+
+- Generated native helpers could leak through published exports and declaration files; release archives now keep their runtime files internal and exclude their private declarations.
+
+- A migration adapter could become reachable through Core exports; its runtime stays internal and its private declaration is excluded from release output.
+
+- Native command bridges could introduce aliased imports that failed lint; they now use unaliased imports with the same exports.
+
+- A fresh source checkout could time out starting a service while compiling migrated modules; normal setup now prepares runtime projects before commands and tests.
+
+- Internal Server helpers could be imported through generated export routes; those helper subpaths now stay private.
+
+- Debug bar component previews could load the retired TypeScript entry; their source links now load the native module.
+
+- Native SQLite implementation helpers could be reached through the package wildcard; those helper subpaths now stay private.
+
+- SDK package verification could lose relative local dependencies when installing its isolated consumer; it now resolves those archives from their source package.
+
+- The SDK in-memory client bundle could fail because newly generated native helpers were missing from the runtime output; the prepared module graph now includes those files.
+
+- Packed Server modules could fail to load in Node because relative imports omitted file extensions; regenerated runtime modules now name their files explicitly.
+
+- Migration-generated helper imports could fail the repository style checks; named imports now preserve the same helper behavior.
+
+- Embedded servers could fail to load after migration; route construction now preserves its original native validation and callback behavior.
+- Migrated file updates could change the mutex declarations; locking now retains its original types and lazy behavior.
+
+- Simulation codec interfaces could expand into anonymous fields in consumer declarations; their original interface names are now retained.
+
+- Migrated codec fields could become writable in provider options, browser RPC, CodeMode and theme types; their original `readonly` contracts are now preserved.
+
+- Decision input parts and media response codecs gained extra type exports during migration; they now keep their original value-only APIs and optional field behavior.
+
+- Development and test CLIs could ignore supplied version and channel metadata; runtime definitions now preserve those values and release highlights.
+
+- Generated Promise event streams could narrow opaque metadata to JSON values; they now preserve the declared data codec and its wire transformations.
+
+- Some migrated policy and session contracts became mutable; their fields now retain their original readonly types.
+
+- The LSP disabled codec exposed an extra type name after migration; it now preserves its original value-only API.
+
+- Declaration generation could fail on standalone VibeLang fixtures excluded from a project; it now checks the files the project actually compiles.
+- Package archives could expose workspace-only helpers through wildcard exports; those paths are now private while ordinary imports remain available.
+- TypeScript checks now generate the declarations needed to read VibeLang modules instead of relying on committed generated copies.
+- Package typechecks could reject the shared pack helper; its declaration guard now resolves correctly in `NodeNext` projects.
+- Debug stories could fail while loading their registry; the original source URL now resolves again.
+- Package archives could expose internal compiler routes in their declarations; packing now rejects those unresolved routes before creating an archive.
+- Browser tests could fail while importing VibeLang helpers; test collection now loads those helpers correctly.
+- SDK bundles could read migrated plugin sources as assets; plugin exports now provide emitted JavaScript to ordinary bundlers.
+- Fresh checkout typechecks could reject a valid server command; its generated declaration now retains the checked service requirements.
+- AI examples and recording setup failed standalone checks; their native scripts now check successfully with supported gateway URL options.
+- Package verification rejected readonly command arguments; it now accepts them without changing their contents.
+
 ## v2.2.0 — 2026-10-27
 
 ### Highlights
@@ -476,15 +763,15 @@ Version 2.1 makes intentional changes to public SDK, HTTP message/event, and plu
 
 Provider-owned replay data previously used different names on different surfaces. Read and write `native` instead; a tool's execution `state` and UI `metadata` are separate and are not renamed.
 
-| Surface | Before | After |
-| --- | --- | --- |
-| Text and reasoning parts | `state` | `native` |
-| Assistant and compaction messages | `providerState` | `native` |
-| Text/reasoning lifecycle events and `session.tool.called` | `state` | `native` |
-| `session.step.ended`, `session.step.failed`, and `session.compaction.ended` | `providerState` | `native` |
-| `session.tool.success` and `session.tool.failed` | `resultState` | `native` |
-| Exported replay-data schema | `SessionMessage.ProviderState` | `SessionMessage.Native` |
-| Plugin compaction hook result | `SessionCompactionResult.providerState` | `SessionCompactionResult.native` |
+| Surface                                                                     | Before                                  | After                            |
+| --------------------------------------------------------------------------- | --------------------------------------- | -------------------------------- |
+| Text and reasoning parts                                                    | `state`                                 | `native`                         |
+| Assistant and compaction messages                                           | `providerState`                         | `native`                         |
+| Text/reasoning lifecycle events and `session.tool.called`                   | `state`                                 | `native`                         |
+| `session.step.ended`, `session.step.failed`, and `session.compaction.ended` | `providerState`                         | `native`                         |
+| `session.tool.success` and `session.tool.failed`                            | `resultState`                           | `native`                         |
+| Exported replay-data schema                                                 | `SessionMessage.ProviderState`          | `SessionMessage.Native`          |
+| Plugin compaction hook result                                               | `SessionCompactionResult.providerState` | `SessionCompactionResult.native` |
 
 #### Tool call and result data share `tool.native`
 

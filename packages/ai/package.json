@@ -5,140 +5,629 @@
   "type": "module",
   "license": "MIT",
   "scripts": {
-    "setup:recording-env": "bun run script/setup-recording-env.ts",
+    "setup:recording-env": "VIBELANG_PROJECT=tsconfig.scripts.json bun run script/setup-recording-env.vibe",
     "test": "bun test --timeout 30000 --only-failures",
     "typecheck": "bun check --no-script && bun check --no-script -p tsconfig.types.json",
-    "typecheck:tsc": "tsc --noEmit && tsc --noEmit -p tsconfig.types.json",
-    "build": "tsc -p tsconfig.build.json",
+    "typecheck:tsc": "vibelang --noEmit && vibelang --noEmit -p tsconfig.types.json && vibelang -p tsconfig.scripts.json",
+    "build": "vibelang -p tsconfig.build.json",
     "pack": "bun run script/pack.ts"
   },
   "files": [
-    "dist"
+    "dist",
+    ".vibelang/js"
   ],
   "exports": {
-    ".": "./src/index.ts",
-    "./effect": "./src/effect.ts",
-    "./testing": "./src/testing.ts",
-    "./experimental": "./src/experimental.ts",
-    "./route": "./src/route.ts",
-    "./providers": "./src/providers.ts",
-    "./providers/alibaba": "./src/providers/alibaba.ts",
-    "./providers/alibaba/chat": "./src/providers/alibaba/chat.ts",
-    "./providers/alibaba/images": "./src/providers/alibaba/images.ts",
-    "./providers/alibaba/messages": "./src/providers/alibaba/messages.ts",
-    "./providers/alibaba/responses": "./src/providers/alibaba/responses.ts",
-    "./providers/amazon-bedrock": "./src/providers/amazon-bedrock.ts",
-    "./providers/amazon-bedrock/mantle": "./src/providers/amazon-bedrock/mantle.ts",
-    "./providers/amazon-bedrock/mantle/chat": "./src/providers/amazon-bedrock/mantle/chat.ts",
-    "./providers/amazon-bedrock/mantle/messages": "./src/providers/amazon-bedrock/mantle/messages.ts",
-    "./providers/amazon-bedrock/mantle/responses": "./src/providers/amazon-bedrock/mantle/responses.ts",
-    "./providers/anthropic": "./src/providers/anthropic.ts",
-    "./providers/anthropic-compatible": "./src/providers/anthropic-compatible.ts",
-    "./providers/assemblyai": "./src/providers/assemblyai.ts",
-    "./providers/azure": "./src/providers/azure.ts",
-    "./providers/azure/chat": "./src/providers/azure/chat.ts",
-    "./providers/azure/images": "./src/providers/azure/images.ts",
-    "./providers/azure/responses": "./src/providers/azure/responses.ts",
-    "./providers/baseten": "./src/providers/baseten.ts",
-    "./providers/baseten/decisions": "./src/providers/baseten/decisions.ts",
-    "./providers/black-forest-labs": "./src/providers/black-forest-labs.ts",
-    "./providers/cartesia": "./src/providers/cartesia.ts",
-    "./providers/cerebras": "./src/providers/cerebras.ts",
-    "./providers/cloudflare-ai-gateway": "./src/providers/cloudflare-ai-gateway.ts",
-    "./providers/cloudflare-ai-gateway/decisions": "./src/providers/cloudflare-ai-gateway/decisions.ts",
-    "./providers/cloudflare-workers-ai": "./src/providers/cloudflare-workers-ai.ts",
-    "./providers/cloudflare-workers-ai/decisions": "./src/providers/cloudflare-workers-ai/decisions.ts",
-    "./providers/cloudflare-workers-ai/images": "./src/providers/cloudflare-workers-ai/images.ts",
-    "./providers/cohere": "./src/providers/cohere.ts",
-    "./providers/cohere/chat": "./src/providers/cohere/chat.ts",
-    "./providers/deepgram": "./src/providers/deepgram.ts",
-    "./providers/deepinfra": "./src/providers/deepinfra.ts",
-    "./providers/deepseek": "./src/providers/deepseek.ts",
-    "./providers/digitalocean": "./src/providers/digitalocean.ts",
-    "./providers/digitalocean/decisions": "./src/providers/digitalocean/decisions.ts",
-    "./providers/digitalocean/images": "./src/providers/digitalocean/images.ts",
-    "./providers/elevenlabs": "./src/providers/elevenlabs.ts",
-    "./providers/fal": "./src/providers/fal.ts",
-    "./providers/fireworks": "./src/providers/fireworks.ts",
-    "./providers/google": "./src/providers/google.ts",
-    "./providers/google-vertex": "./src/providers/google-vertex.ts",
-    "./providers/google-vertex-messages": "./src/providers/google-vertex-messages.ts",
-    "./providers/google-vertex/chat": "./src/providers/google-vertex/chat.ts",
-    "./providers/google-vertex/gemini": "./src/providers/google-vertex/gemini.ts",
-    "./providers/google-vertex/images": "./src/providers/google-vertex/images.ts",
-    "./providers/google-vertex/interactions": "./src/providers/google-vertex/interactions.ts",
-    "./providers/google-vertex/messages": "./src/providers/google-vertex/messages.ts",
-    "./providers/google-vertex/mistral": "./src/providers/google-vertex/mistral.ts",
-    "./providers/google-vertex/responses": "./src/providers/google-vertex/responses.ts",
-    "./providers/google/images": "./src/providers/google/images.ts",
-    "./providers/google/interactions": "./src/providers/google/interactions.ts",
-    "./providers/groq": "./src/providers/groq.ts",
-    "./providers/meta": "./src/providers/meta.ts",
-    "./providers/meta/chat": "./src/providers/meta/chat.ts",
-    "./providers/meta/messages": "./src/providers/meta/messages.ts",
-    "./providers/meta/responses": "./src/providers/meta/responses.ts",
-    "./providers/minimax": "./src/providers/minimax.ts",
-    "./providers/minimax/chat": "./src/providers/minimax/chat.ts",
-    "./providers/minimax/messages": "./src/providers/minimax/messages.ts",
-    "./providers/minimax/responses": "./src/providers/minimax/responses.ts",
-    "./providers/mistral": "./src/providers/mistral.ts",
-    "./providers/moonshot": "./src/providers/moonshot.ts",
-    "./providers/moonshot/chat": "./src/providers/moonshot/chat.ts",
-    "./providers/moonshot/messages": "./src/providers/moonshot/messages.ts",
-    "./providers/moonshot/responses": "./src/providers/moonshot/responses.ts",
-    "./providers/openai": "./src/providers/openai.ts",
-    "./providers/openai-compatible": "./src/providers/openai-compatible.ts",
-    "./providers/openai-compatible-responses": "./src/providers/openai-compatible-responses.ts",
-    "./providers/openai-compatible/images": "./src/providers/openai-compatible/images.ts",
-    "./providers/openai-compatible/responses": "./src/providers/openai-compatible/responses.ts",
-    "./providers/openai/chat": "./src/providers/openai/chat.ts",
-    "./providers/openai/images": "./src/providers/openai/images.ts",
-    "./providers/openai/responses": "./src/providers/openai/responses.ts",
-    "./providers/opencode": "./src/providers/opencode.ts",
-    "./providers/opencode/decisions": "./src/providers/opencode/decisions.ts",
-    "./providers/openrouter": "./src/providers/openrouter.ts",
-    "./providers/openrouter/decisions": "./src/providers/openrouter/decisions.ts",
-    "./providers/openrouter/images": "./src/providers/openrouter/images.ts",
-    "./providers/replicate": "./src/providers/replicate.ts",
-    "./providers/runway": "./src/providers/runway.ts",
-    "./providers/stability": "./src/providers/stability.ts",
-    "./providers/togetherai": "./src/providers/togetherai.ts",
-    "./providers/typesafe-ai": "./src/providers/typesafe-ai.ts",
-    "./providers/typesafe-ai/decisions": "./src/providers/typesafe-ai/decisions.ts",
-    "./providers/venice": "./src/providers/venice.ts",
-    "./providers/vercel-ai-gateway": "./src/providers/vercel-ai-gateway.ts",
-    "./providers/vercel-ai-gateway/chat": "./src/providers/vercel-ai-gateway/chat.ts",
-    "./providers/vercel-ai-gateway/decisions": "./src/providers/vercel-ai-gateway/decisions.ts",
-    "./providers/vercel-ai-gateway/images": "./src/providers/vercel-ai-gateway/images.ts",
-    "./providers/vercel-ai-gateway/messages": "./src/providers/vercel-ai-gateway/messages.ts",
-    "./providers/vercel-ai-gateway/responses": "./src/providers/vercel-ai-gateway/responses.ts",
-    "./providers/xai": "./src/providers/xai.ts",
-    "./providers/xai/images": "./src/providers/xai/images.ts",
-    "./providers/zai": "./src/providers/zai.ts",
-    "./providers/zai-coding-plan": "./src/providers/zai-coding-plan.ts",
-    "./providers/zai-coding-plan/chat": "./src/providers/zai-coding-plan/chat.ts",
-    "./providers/zai-coding-plan/messages": "./src/providers/zai-coding-plan/messages.ts",
-    "./providers/zai-coding-plan/responses": "./src/providers/zai-coding-plan/responses.ts",
-    "./providers/zai/chat": "./src/providers/zai/chat.ts",
-    "./providers/zai/images": "./src/providers/zai/images.ts",
-    "./protocols": "./src/protocols.ts",
-    "./protocols/alibaba-images": "./src/protocols/alibaba-images.ts",
-    "./protocols/cloudflare-run-decisions": "./src/protocols/cloudflare-run-decisions.ts",
-    "./protocols/cloudflare-workers-ai-images": "./src/protocols/cloudflare-workers-ai-images.ts",
-    "./protocols/deepgram-transcription": "./src/protocols/deepgram-transcription.ts",
-    "./protocols/google-images": "./src/protocols/google-images.ts",
-    "./protocols/google-speech": "./src/protocols/google-speech.ts",
-    "./protocols/google-transcription": "./src/protocols/google-transcription.ts",
-    "./protocols/openai-chat": "./src/protocols/openai-chat.ts",
-    "./protocols/openai-decisions": "./src/protocols/openai-decisions.ts",
-    "./protocols/openai-images": "./src/protocols/openai-images.ts",
-    "./protocols/openai-responses": "./src/protocols/openai-responses.ts",
-    "./protocols/openai-speech": "./src/protocols/openai-speech.ts",
-    "./protocols/openai-transcription": "./src/protocols/openai-transcription.ts",
-    "./protocols/system-one": "./src/protocols/system-one.ts",
-    "./protocols/xai-images": "./src/protocols/xai-images.ts",
-    "./protocols/xai-video": "./src/protocols/xai-video.ts",
-    "./protocols/zai-images": "./src/protocols/zai-images.ts"
+    ".": {
+      "types": "./src/index.d.vibe.ts",
+      "vibelang-source": "./src/index.vibe",
+      "default": "./.vibelang/js/src/index.js"
+    },
+    "./effect": {
+      "types": "./src/effect.ts",
+      "vibelang-source": "./src/effect.ts",
+      "default": "./.vibelang/js/src/effect.js"
+    },
+    "./testing": {
+      "types": "./src/testing.d.vibe.ts",
+      "vibelang-source": "./src/testing.vibe",
+      "default": "./.vibelang/js/src/testing.js"
+    },
+    "./experimental": {
+      "types": "./src/experimental.ts",
+      "vibelang-source": "./src/experimental.ts",
+      "default": "./.vibelang/js/src/experimental.js"
+    },
+    "./route": {
+      "types": "./src/route.ts",
+      "vibelang-source": "./src/route.ts",
+      "default": "./.vibelang/js/src/route.js"
+    },
+    "./providers": {
+      "types": "./src/providers.ts",
+      "vibelang-source": "./src/providers.ts",
+      "default": "./.vibelang/js/src/providers.js"
+    },
+    "./providers/alibaba": {
+      "types": "./src/providers/alibaba.d.vibe.ts",
+      "vibelang-source": "./src/providers/alibaba.vibe",
+      "default": "./.vibelang/js/src/providers/alibaba.js"
+    },
+    "./providers/alibaba/chat": {
+      "types": "./src/providers/alibaba/chat.ts",
+      "vibelang-source": "./src/providers/alibaba/chat.ts",
+      "default": "./.vibelang/js/src/providers/alibaba/chat.js"
+    },
+    "./providers/alibaba/images": {
+      "types": "./src/providers/alibaba/images.ts",
+      "vibelang-source": "./src/providers/alibaba/images.ts",
+      "default": "./.vibelang/js/src/providers/alibaba/images.js"
+    },
+    "./providers/alibaba/messages": {
+      "types": "./src/providers/alibaba/messages.ts",
+      "vibelang-source": "./src/providers/alibaba/messages.ts",
+      "default": "./.vibelang/js/src/providers/alibaba/messages.js"
+    },
+    "./providers/alibaba/responses": {
+      "types": "./src/providers/alibaba/responses.ts",
+      "vibelang-source": "./src/providers/alibaba/responses.ts",
+      "default": "./.vibelang/js/src/providers/alibaba/responses.js"
+    },
+    "./providers/amazon-bedrock": {
+      "types": "./src/providers/amazon-bedrock.ts",
+      "vibelang-source": "./src/providers/amazon-bedrock.ts",
+      "default": "./.vibelang/js/src/providers/amazon-bedrock.js"
+    },
+    "./providers/amazon-bedrock/mantle": {
+      "types": "./src/providers/amazon-bedrock/mantle.ts",
+      "vibelang-source": "./src/providers/amazon-bedrock/mantle.ts",
+      "default": "./.vibelang/js/src/providers/amazon-bedrock/mantle.js"
+    },
+    "./providers/amazon-bedrock/mantle/chat": {
+      "types": "./src/providers/amazon-bedrock/mantle/chat.ts",
+      "vibelang-source": "./src/providers/amazon-bedrock/mantle/chat.ts",
+      "default": "./.vibelang/js/src/providers/amazon-bedrock/mantle/chat.js"
+    },
+    "./providers/amazon-bedrock/mantle/messages": {
+      "types": "./src/providers/amazon-bedrock/mantle/messages.ts",
+      "vibelang-source": "./src/providers/amazon-bedrock/mantle/messages.ts",
+      "default": "./.vibelang/js/src/providers/amazon-bedrock/mantle/messages.js"
+    },
+    "./providers/amazon-bedrock/mantle/responses": {
+      "types": "./src/providers/amazon-bedrock/mantle/responses.ts",
+      "vibelang-source": "./src/providers/amazon-bedrock/mantle/responses.ts",
+      "default": "./.vibelang/js/src/providers/amazon-bedrock/mantle/responses.js"
+    },
+    "./providers/anthropic": {
+      "types": "./src/providers/anthropic.ts",
+      "vibelang-source": "./src/providers/anthropic.ts",
+      "default": "./.vibelang/js/src/providers/anthropic.js"
+    },
+    "./providers/anthropic-compatible": {
+      "types": "./src/providers/anthropic-compatible.ts",
+      "vibelang-source": "./src/providers/anthropic-compatible.ts",
+      "default": "./.vibelang/js/src/providers/anthropic-compatible.js"
+    },
+    "./providers/assemblyai": {
+      "types": "./src/providers/assemblyai.ts",
+      "vibelang-source": "./src/providers/assemblyai.ts",
+      "default": "./.vibelang/js/src/providers/assemblyai.js"
+    },
+    "./providers/azure": {
+      "types": "./src/providers/azure.ts",
+      "vibelang-source": "./src/providers/azure.ts",
+      "default": "./.vibelang/js/src/providers/azure.js"
+    },
+    "./providers/azure/chat": {
+      "types": "./src/providers/azure/chat.ts",
+      "vibelang-source": "./src/providers/azure/chat.ts",
+      "default": "./.vibelang/js/src/providers/azure/chat.js"
+    },
+    "./providers/azure/images": {
+      "types": "./src/providers/azure/images.ts",
+      "vibelang-source": "./src/providers/azure/images.ts",
+      "default": "./.vibelang/js/src/providers/azure/images.js"
+    },
+    "./providers/azure/responses": {
+      "types": "./src/providers/azure/responses.ts",
+      "vibelang-source": "./src/providers/azure/responses.ts",
+      "default": "./.vibelang/js/src/providers/azure/responses.js"
+    },
+    "./providers/baseten": {
+      "types": "./src/providers/baseten.d.vibe.ts",
+      "vibelang-source": "./src/providers/baseten.vibe",
+      "default": "./.vibelang/js/src/providers/baseten.js"
+    },
+    "./providers/baseten/decisions": {
+      "types": "./src/providers/baseten/decisions.ts",
+      "vibelang-source": "./src/providers/baseten/decisions.ts",
+      "default": "./.vibelang/js/src/providers/baseten/decisions.js"
+    },
+    "./providers/black-forest-labs": {
+      "types": "./src/providers/black-forest-labs.ts",
+      "vibelang-source": "./src/providers/black-forest-labs.ts",
+      "default": "./.vibelang/js/src/providers/black-forest-labs.js"
+    },
+    "./providers/cartesia": {
+      "types": "./src/providers/cartesia.ts",
+      "vibelang-source": "./src/providers/cartesia.ts",
+      "default": "./.vibelang/js/src/providers/cartesia.js"
+    },
+    "./providers/cerebras": {
+      "types": "./src/providers/cerebras.ts",
+      "vibelang-source": "./src/providers/cerebras.ts",
+      "default": "./.vibelang/js/src/providers/cerebras.js"
+    },
+    "./providers/cloudflare-ai-gateway": {
+      "types": "./src/providers/cloudflare-ai-gateway.d.vibe.ts",
+      "vibelang-source": "./src/providers/cloudflare-ai-gateway.vibe",
+      "default": "./.vibelang/js/src/providers/cloudflare-ai-gateway.js"
+    },
+    "./providers/cloudflare-ai-gateway/decisions": {
+      "types": "./src/providers/cloudflare-ai-gateway/decisions.ts",
+      "vibelang-source": "./src/providers/cloudflare-ai-gateway/decisions.ts",
+      "default": "./.vibelang/js/src/providers/cloudflare-ai-gateway/decisions.js"
+    },
+    "./providers/cloudflare-workers-ai": {
+      "types": "./src/providers/cloudflare-workers-ai.ts",
+      "vibelang-source": "./src/providers/cloudflare-workers-ai.ts",
+      "default": "./.vibelang/js/src/providers/cloudflare-workers-ai.js"
+    },
+    "./providers/cloudflare-workers-ai/decisions": {
+      "types": "./src/providers/cloudflare-workers-ai/decisions.ts",
+      "vibelang-source": "./src/providers/cloudflare-workers-ai/decisions.ts",
+      "default": "./.vibelang/js/src/providers/cloudflare-workers-ai/decisions.js"
+    },
+    "./providers/cloudflare-workers-ai/images": {
+      "types": "./src/providers/cloudflare-workers-ai/images.ts",
+      "vibelang-source": "./src/providers/cloudflare-workers-ai/images.ts",
+      "default": "./.vibelang/js/src/providers/cloudflare-workers-ai/images.js"
+    },
+    "./providers/cohere": {
+      "types": "./src/providers/cohere.ts",
+      "vibelang-source": "./src/providers/cohere.ts",
+      "default": "./.vibelang/js/src/providers/cohere.js"
+    },
+    "./providers/cohere/chat": {
+      "types": "./src/providers/cohere/chat.ts",
+      "vibelang-source": "./src/providers/cohere/chat.ts",
+      "default": "./.vibelang/js/src/providers/cohere/chat.js"
+    },
+    "./providers/deepgram": {
+      "types": "./src/providers/deepgram.ts",
+      "vibelang-source": "./src/providers/deepgram.ts",
+      "default": "./.vibelang/js/src/providers/deepgram.js"
+    },
+    "./providers/deepinfra": {
+      "types": "./src/providers/deepinfra.ts",
+      "vibelang-source": "./src/providers/deepinfra.ts",
+      "default": "./.vibelang/js/src/providers/deepinfra.js"
+    },
+    "./providers/deepseek": {
+      "types": "./src/providers/deepseek.ts",
+      "vibelang-source": "./src/providers/deepseek.ts",
+      "default": "./.vibelang/js/src/providers/deepseek.js"
+    },
+    "./providers/digitalocean": {
+      "types": "./src/providers/digitalocean.ts",
+      "vibelang-source": "./src/providers/digitalocean.ts",
+      "default": "./.vibelang/js/src/providers/digitalocean.js"
+    },
+    "./providers/digitalocean/decisions": {
+      "types": "./src/providers/digitalocean/decisions.ts",
+      "vibelang-source": "./src/providers/digitalocean/decisions.ts",
+      "default": "./.vibelang/js/src/providers/digitalocean/decisions.js"
+    },
+    "./providers/digitalocean/images": {
+      "types": "./src/providers/digitalocean/images.ts",
+      "vibelang-source": "./src/providers/digitalocean/images.ts",
+      "default": "./.vibelang/js/src/providers/digitalocean/images.js"
+    },
+    "./providers/elevenlabs": {
+      "types": "./src/providers/elevenlabs.ts",
+      "vibelang-source": "./src/providers/elevenlabs.ts",
+      "default": "./.vibelang/js/src/providers/elevenlabs.js"
+    },
+    "./providers/fal": {
+      "types": "./src/providers/fal.ts",
+      "vibelang-source": "./src/providers/fal.ts",
+      "default": "./.vibelang/js/src/providers/fal.js"
+    },
+    "./providers/fireworks": {
+      "types": "./src/providers/fireworks.ts",
+      "vibelang-source": "./src/providers/fireworks.ts",
+      "default": "./.vibelang/js/src/providers/fireworks.js"
+    },
+    "./providers/google": {
+      "types": "./src/providers/google.ts",
+      "vibelang-source": "./src/providers/google.ts",
+      "default": "./.vibelang/js/src/providers/google.js"
+    },
+    "./providers/google-vertex": {
+      "types": "./src/providers/google-vertex.d.vibe.ts",
+      "vibelang-source": "./src/providers/google-vertex.vibe",
+      "default": "./.vibelang/js/src/providers/google-vertex.js"
+    },
+    "./providers/google-vertex-messages": {
+      "types": "./src/providers/google-vertex-messages.d.vibe.ts",
+      "vibelang-source": "./src/providers/google-vertex-messages.vibe",
+      "default": "./.vibelang/js/src/providers/google-vertex-messages.js"
+    },
+    "./providers/google-vertex/chat": {
+      "types": "./src/providers/google-vertex/chat.ts",
+      "vibelang-source": "./src/providers/google-vertex/chat.ts",
+      "default": "./.vibelang/js/src/providers/google-vertex/chat.js"
+    },
+    "./providers/google-vertex/gemini": {
+      "types": "./src/providers/google-vertex/gemini.ts",
+      "vibelang-source": "./src/providers/google-vertex/gemini.ts",
+      "default": "./.vibelang/js/src/providers/google-vertex/gemini.js"
+    },
+    "./providers/google-vertex/images": {
+      "types": "./src/providers/google-vertex/images.ts",
+      "vibelang-source": "./src/providers/google-vertex/images.ts",
+      "default": "./.vibelang/js/src/providers/google-vertex/images.js"
+    },
+    "./providers/google-vertex/interactions": {
+      "types": "./src/providers/google-vertex/interactions.ts",
+      "vibelang-source": "./src/providers/google-vertex/interactions.ts",
+      "default": "./.vibelang/js/src/providers/google-vertex/interactions.js"
+    },
+    "./providers/google-vertex/messages": {
+      "types": "./src/providers/google-vertex/messages.ts",
+      "vibelang-source": "./src/providers/google-vertex/messages.ts",
+      "default": "./.vibelang/js/src/providers/google-vertex/messages.js"
+    },
+    "./providers/google-vertex/mistral": {
+      "types": "./src/providers/google-vertex/mistral.ts",
+      "vibelang-source": "./src/providers/google-vertex/mistral.ts",
+      "default": "./.vibelang/js/src/providers/google-vertex/mistral.js"
+    },
+    "./providers/google-vertex/responses": {
+      "types": "./src/providers/google-vertex/responses.ts",
+      "vibelang-source": "./src/providers/google-vertex/responses.ts",
+      "default": "./.vibelang/js/src/providers/google-vertex/responses.js"
+    },
+    "./providers/google/images": {
+      "types": "./src/providers/google/images.ts",
+      "vibelang-source": "./src/providers/google/images.ts",
+      "default": "./.vibelang/js/src/providers/google/images.js"
+    },
+    "./providers/google/interactions": {
+      "types": "./src/providers/google/interactions.ts",
+      "vibelang-source": "./src/providers/google/interactions.ts",
+      "default": "./.vibelang/js/src/providers/google/interactions.js"
+    },
+    "./providers/groq": {
+      "types": "./src/providers/groq.d.vibe.ts",
+      "vibelang-source": "./src/providers/groq.vibe",
+      "default": "./.vibelang/js/src/providers/groq.js"
+    },
+    "./providers/meta": {
+      "types": "./src/providers/meta.ts",
+      "vibelang-source": "./src/providers/meta.ts",
+      "default": "./.vibelang/js/src/providers/meta.js"
+    },
+    "./providers/meta/chat": {
+      "types": "./src/providers/meta/chat.ts",
+      "vibelang-source": "./src/providers/meta/chat.ts",
+      "default": "./.vibelang/js/src/providers/meta/chat.js"
+    },
+    "./providers/meta/messages": {
+      "types": "./src/providers/meta/messages.ts",
+      "vibelang-source": "./src/providers/meta/messages.ts",
+      "default": "./.vibelang/js/src/providers/meta/messages.js"
+    },
+    "./providers/meta/responses": {
+      "types": "./src/providers/meta/responses.ts",
+      "vibelang-source": "./src/providers/meta/responses.ts",
+      "default": "./.vibelang/js/src/providers/meta/responses.js"
+    },
+    "./providers/minimax": {
+      "types": "./src/providers/minimax.d.vibe.ts",
+      "vibelang-source": "./src/providers/minimax.vibe",
+      "default": "./.vibelang/js/src/providers/minimax.js"
+    },
+    "./providers/minimax/chat": {
+      "types": "./src/providers/minimax/chat.ts",
+      "vibelang-source": "./src/providers/minimax/chat.ts",
+      "default": "./.vibelang/js/src/providers/minimax/chat.js"
+    },
+    "./providers/minimax/messages": {
+      "types": "./src/providers/minimax/messages.ts",
+      "vibelang-source": "./src/providers/minimax/messages.ts",
+      "default": "./.vibelang/js/src/providers/minimax/messages.js"
+    },
+    "./providers/minimax/responses": {
+      "types": "./src/providers/minimax/responses.ts",
+      "vibelang-source": "./src/providers/minimax/responses.ts",
+      "default": "./.vibelang/js/src/providers/minimax/responses.js"
+    },
+    "./providers/mistral": {
+      "types": "./src/providers/mistral.ts",
+      "vibelang-source": "./src/providers/mistral.ts",
+      "default": "./.vibelang/js/src/providers/mistral.js"
+    },
+    "./providers/moonshot": {
+      "types": "./src/providers/moonshot.d.vibe.ts",
+      "vibelang-source": "./src/providers/moonshot.vibe",
+      "default": "./.vibelang/js/src/providers/moonshot.js"
+    },
+    "./providers/moonshot/chat": {
+      "types": "./src/providers/moonshot/chat.ts",
+      "vibelang-source": "./src/providers/moonshot/chat.ts",
+      "default": "./.vibelang/js/src/providers/moonshot/chat.js"
+    },
+    "./providers/moonshot/messages": {
+      "types": "./src/providers/moonshot/messages.ts",
+      "vibelang-source": "./src/providers/moonshot/messages.ts",
+      "default": "./.vibelang/js/src/providers/moonshot/messages.js"
+    },
+    "./providers/moonshot/responses": {
+      "types": "./src/providers/moonshot/responses.ts",
+      "vibelang-source": "./src/providers/moonshot/responses.ts",
+      "default": "./.vibelang/js/src/providers/moonshot/responses.js"
+    },
+    "./providers/openai": {
+      "types": "./src/providers/openai.ts",
+      "vibelang-source": "./src/providers/openai.ts",
+      "default": "./.vibelang/js/src/providers/openai.js"
+    },
+    "./providers/openai-compatible": {
+      "types": "./src/providers/openai-compatible.ts",
+      "vibelang-source": "./src/providers/openai-compatible.ts",
+      "default": "./.vibelang/js/src/providers/openai-compatible.js"
+    },
+    "./providers/openai-compatible-responses": {
+      "types": "./src/providers/openai-compatible-responses.ts",
+      "vibelang-source": "./src/providers/openai-compatible-responses.ts",
+      "default": "./.vibelang/js/src/providers/openai-compatible-responses.js"
+    },
+    "./providers/openai-compatible/images": {
+      "types": "./src/providers/openai-compatible/images.ts",
+      "vibelang-source": "./src/providers/openai-compatible/images.ts",
+      "default": "./.vibelang/js/src/providers/openai-compatible/images.js"
+    },
+    "./providers/openai-compatible/responses": {
+      "types": "./src/providers/openai-compatible/responses.ts",
+      "vibelang-source": "./src/providers/openai-compatible/responses.ts",
+      "default": "./.vibelang/js/src/providers/openai-compatible/responses.js"
+    },
+    "./providers/openai/chat": {
+      "types": "./src/providers/openai/chat.ts",
+      "vibelang-source": "./src/providers/openai/chat.ts",
+      "default": "./.vibelang/js/src/providers/openai/chat.js"
+    },
+    "./providers/openai/images": {
+      "types": "./src/providers/openai/images.ts",
+      "vibelang-source": "./src/providers/openai/images.ts",
+      "default": "./.vibelang/js/src/providers/openai/images.js"
+    },
+    "./providers/openai/responses": {
+      "types": "./src/providers/openai/responses.ts",
+      "vibelang-source": "./src/providers/openai/responses.ts",
+      "default": "./.vibelang/js/src/providers/openai/responses.js"
+    },
+    "./providers/opencode": {
+      "types": "./src/providers/opencode.ts",
+      "vibelang-source": "./src/providers/opencode.ts",
+      "default": "./.vibelang/js/src/providers/opencode.js"
+    },
+    "./providers/opencode/decisions": {
+      "types": "./src/providers/opencode/decisions.ts",
+      "vibelang-source": "./src/providers/opencode/decisions.ts",
+      "default": "./.vibelang/js/src/providers/opencode/decisions.js"
+    },
+    "./providers/openrouter": {
+      "types": "./src/providers/openrouter.d.vibe.ts",
+      "vibelang-source": "./src/providers/openrouter.vibe",
+      "default": "./.vibelang/js/src/providers/openrouter.js"
+    },
+    "./providers/openrouter/decisions": {
+      "types": "./src/providers/openrouter/decisions.ts",
+      "vibelang-source": "./src/providers/openrouter/decisions.ts",
+      "default": "./.vibelang/js/src/providers/openrouter/decisions.js"
+    },
+    "./providers/openrouter/images": {
+      "types": "./src/providers/openrouter/images.ts",
+      "vibelang-source": "./src/providers/openrouter/images.ts",
+      "default": "./.vibelang/js/src/providers/openrouter/images.js"
+    },
+    "./providers/replicate": {
+      "types": "./src/providers/replicate.ts",
+      "vibelang-source": "./src/providers/replicate.ts",
+      "default": "./.vibelang/js/src/providers/replicate.js"
+    },
+    "./providers/runway": {
+      "types": "./src/providers/runway.ts",
+      "vibelang-source": "./src/providers/runway.ts",
+      "default": "./.vibelang/js/src/providers/runway.js"
+    },
+    "./providers/stability": {
+      "types": "./src/providers/stability.ts",
+      "vibelang-source": "./src/providers/stability.ts",
+      "default": "./.vibelang/js/src/providers/stability.js"
+    },
+    "./providers/togetherai": {
+      "types": "./src/providers/togetherai.ts",
+      "vibelang-source": "./src/providers/togetherai.ts",
+      "default": "./.vibelang/js/src/providers/togetherai.js"
+    },
+    "./providers/typesafe-ai": {
+      "types": "./src/providers/typesafe-ai.ts",
+      "vibelang-source": "./src/providers/typesafe-ai.ts",
+      "default": "./.vibelang/js/src/providers/typesafe-ai.js"
+    },
+    "./providers/typesafe-ai/decisions": {
+      "types": "./src/providers/typesafe-ai/decisions.ts",
+      "vibelang-source": "./src/providers/typesafe-ai/decisions.ts",
+      "default": "./.vibelang/js/src/providers/typesafe-ai/decisions.js"
+    },
+    "./providers/venice": {
+      "types": "./src/providers/venice.ts",
+      "vibelang-source": "./src/providers/venice.ts",
+      "default": "./.vibelang/js/src/providers/venice.js"
+    },
+    "./providers/vercel-ai-gateway": {
+      "types": "./src/providers/vercel-ai-gateway.d.vibe.ts",
+      "vibelang-source": "./src/providers/vercel-ai-gateway.vibe",
+      "default": "./.vibelang/js/src/providers/vercel-ai-gateway.js"
+    },
+    "./providers/vercel-ai-gateway/chat": {
+      "types": "./src/providers/vercel-ai-gateway/chat.ts",
+      "vibelang-source": "./src/providers/vercel-ai-gateway/chat.ts",
+      "default": "./.vibelang/js/src/providers/vercel-ai-gateway/chat.js"
+    },
+    "./providers/vercel-ai-gateway/decisions": {
+      "types": "./src/providers/vercel-ai-gateway/decisions.ts",
+      "vibelang-source": "./src/providers/vercel-ai-gateway/decisions.ts",
+      "default": "./.vibelang/js/src/providers/vercel-ai-gateway/decisions.js"
+    },
+    "./providers/vercel-ai-gateway/images": {
+      "types": "./src/providers/vercel-ai-gateway/images.ts",
+      "vibelang-source": "./src/providers/vercel-ai-gateway/images.ts",
+      "default": "./.vibelang/js/src/providers/vercel-ai-gateway/images.js"
+    },
+    "./providers/vercel-ai-gateway/messages": {
+      "types": "./src/providers/vercel-ai-gateway/messages.ts",
+      "vibelang-source": "./src/providers/vercel-ai-gateway/messages.ts",
+      "default": "./.vibelang/js/src/providers/vercel-ai-gateway/messages.js"
+    },
+    "./providers/vercel-ai-gateway/responses": {
+      "types": "./src/providers/vercel-ai-gateway/responses.ts",
+      "vibelang-source": "./src/providers/vercel-ai-gateway/responses.ts",
+      "default": "./.vibelang/js/src/providers/vercel-ai-gateway/responses.js"
+    },
+    "./providers/xai": {
+      "types": "./src/providers/xai.ts",
+      "vibelang-source": "./src/providers/xai.ts",
+      "default": "./.vibelang/js/src/providers/xai.js"
+    },
+    "./providers/xai/images": {
+      "types": "./src/providers/xai/images.ts",
+      "vibelang-source": "./src/providers/xai/images.ts",
+      "default": "./.vibelang/js/src/providers/xai/images.js"
+    },
+    "./providers/zai": {
+      "types": "./src/providers/zai.ts",
+      "vibelang-source": "./src/providers/zai.ts",
+      "default": "./.vibelang/js/src/providers/zai.js"
+    },
+    "./providers/zai-coding-plan": {
+      "types": "./src/providers/zai-coding-plan.ts",
+      "vibelang-source": "./src/providers/zai-coding-plan.ts",
+      "default": "./.vibelang/js/src/providers/zai-coding-plan.js"
+    },
+    "./providers/zai-coding-plan/chat": {
+      "types": "./src/providers/zai-coding-plan/chat.ts",
+      "vibelang-source": "./src/providers/zai-coding-plan/chat.ts",
+      "default": "./.vibelang/js/src/providers/zai-coding-plan/chat.js"
+    },
+    "./providers/zai-coding-plan/messages": {
+      "types": "./src/providers/zai-coding-plan/messages.ts",
+      "vibelang-source": "./src/providers/zai-coding-plan/messages.ts",
+      "default": "./.vibelang/js/src/providers/zai-coding-plan/messages.js"
+    },
+    "./providers/zai-coding-plan/responses": {
+      "types": "./src/providers/zai-coding-plan/responses.ts",
+      "vibelang-source": "./src/providers/zai-coding-plan/responses.ts",
+      "default": "./.vibelang/js/src/providers/zai-coding-plan/responses.js"
+    },
+    "./providers/zai/chat": {
+      "types": "./src/providers/zai/chat.ts",
+      "vibelang-source": "./src/providers/zai/chat.ts",
+      "default": "./.vibelang/js/src/providers/zai/chat.js"
+    },
+    "./providers/zai/images": {
+      "types": "./src/providers/zai/images.ts",
+      "vibelang-source": "./src/providers/zai/images.ts",
+      "default": "./.vibelang/js/src/providers/zai/images.js"
+    },
+    "./protocols": {
+      "types": "./src/protocols.ts",
+      "vibelang-source": "./src/protocols.ts",
+      "default": "./.vibelang/js/src/protocols.js"
+    },
+    "./protocols/alibaba-images": {
+      "types": "./src/protocols/alibaba-images.d.vibe.ts",
+      "vibelang-source": "./src/protocols/alibaba-images.vibe",
+      "default": "./.vibelang/js/src/protocols/alibaba-images.js"
+    },
+    "./protocols/cloudflare-run-decisions": {
+      "types": "./src/protocols/cloudflare-run-decisions.d.vibe.ts",
+      "vibelang-source": "./src/protocols/cloudflare-run-decisions.vibe",
+      "default": "./.vibelang/js/src/protocols/cloudflare-run-decisions.js"
+    },
+    "./protocols/cloudflare-workers-ai-images": {
+      "types": "./src/protocols/cloudflare-workers-ai-images.d.vibe.ts",
+      "vibelang-source": "./src/protocols/cloudflare-workers-ai-images.vibe",
+      "default": "./.vibelang/js/src/protocols/cloudflare-workers-ai-images.js"
+    },
+    "./protocols/deepgram-transcription": "./src/protocols/deepgram-transcription.vibe",
+    "./protocols/google-images": {
+      "types": "./src/protocols/google-images.d.vibe.ts",
+      "vibelang-source": "./src/protocols/google-images.vibe",
+      "default": "./.vibelang/js/src/protocols/google-images.js"
+    },
+    "./protocols/google-speech": {
+      "types": "./src/protocols/google-speech.d.vibe.ts",
+      "vibelang-source": "./src/protocols/google-speech.vibe",
+      "default": "./.vibelang/js/src/protocols/google-speech.js"
+    },
+    "./protocols/google-transcription": {
+      "types": "./src/protocols/google-transcription.d.vibe.ts",
+      "vibelang-source": "./src/protocols/google-transcription.vibe",
+      "default": "./.vibelang/js/src/protocols/google-transcription.js"
+    },
+    "./protocols/openai-chat": {
+      "types": "./src/protocols/openai-chat.d.vibe.ts",
+      "vibelang-source": "./src/protocols/openai-chat.vibe",
+      "default": "./.vibelang/js/src/protocols/openai-chat.js"
+    },
+    "./protocols/openai-decisions": {
+      "types": "./src/protocols/openai-decisions.d.vibe.ts",
+      "vibelang-source": "./src/protocols/openai-decisions.vibe",
+      "default": "./.vibelang/js/src/protocols/openai-decisions.js"
+    },
+    "./protocols/openai-images": {
+      "types": "./src/protocols/openai-images.d.vibe.ts",
+      "vibelang-source": "./src/protocols/openai-images.vibe",
+      "default": "./.vibelang/js/src/protocols/openai-images.js"
+    },
+    "./protocols/openai-responses": {
+      "types": "./src/protocols/openai-responses.d.vibe.ts",
+      "vibelang-source": "./src/protocols/openai-responses.vibe",
+      "default": "./.vibelang/js/src/protocols/openai-responses.js"
+    },
+    "./protocols/openai-speech": {
+      "types": "./src/protocols/openai-speech.d.vibe.ts",
+      "vibelang-source": "./src/protocols/openai-speech.vibe",
+      "default": "./.vibelang/js/src/protocols/openai-speech.js"
+    },
+    "./protocols/openai-transcription": {
+      "types": "./src/protocols/openai-transcription.d.vibe.ts",
+      "vibelang-source": "./src/protocols/openai-transcription.vibe",
+      "default": "./.vibelang/js/src/protocols/openai-transcription.js"
+    },
+    "./protocols/system-one": {
+      "types": "./src/protocols/system-one.d.vibe.ts",
+      "vibelang-source": "./src/protocols/system-one.vibe",
+      "default": "./.vibelang/js/src/protocols/system-one.js"
+    },
+    "./protocols/xai-images": {
+      "types": "./src/protocols/xai-images.d.vibe.ts",
+      "vibelang-source": "./src/protocols/xai-images.vibe",
+      "default": "./.vibelang/js/src/protocols/xai-images.js"
+    },
+    "./protocols/xai-video": {
+      "types": "./src/protocols/xai-video.d.vibe.ts",
+      "vibelang-source": "./src/protocols/xai-video.vibe",
+      "default": "./.vibelang/js/src/protocols/xai-video.js"
+    },
+    "./protocols/zai-images": {
+      "types": "./src/protocols/zai-images.d.vibe.ts",
+      "vibelang-source": "./src/protocols/zai-images.vibe",
+      "default": "./.vibelang/js/src/protocols/zai-images.js"
+    }
   },
   "devDependencies": {
     "@clack/prompts": "1.0.0-alpha.1",
@@ -147,7 +636,10 @@
     "@tsconfig/bun": "catalog:",
     "@types/bun": "catalog:",
     "@typescript/native": "catalog:",
-    "typescript": "catalog:"
+    "typescript": "catalog:",
+    "vibelang": "file:../../.vibelang-toolchain/0.0.14-pre.d955d06c6696/tarballs/vibelang-0.0.14-pre.d955d06c6696.tgz",
+    "vibelang-vite": "file:../../.vibelang-toolchain/0.0.14-pre.d955d06c6696/tarballs/vibelang-vite-0.0.14-pre.d955d06c6696.tgz",
+    "fast-check": "catalog:"
   },
   "dependencies": {
     "@aws-sdk/credential-providers": "3.1057.0",
@@ -156,7 +648,8 @@
     "@opencode/schema": "workspace:*",
     "aws4fetch": "1.0.20",
     "effect": "catalog:",
-    "google-auth-library": "10.5.0"
+    "google-auth-library": "10.5.0",
+    "vibelang-runtime": "file:../../.vibelang-toolchain/0.0.14-pre.d955d06c6696/tarballs/vibelang-runtime-0.0.14-pre.d955d06c6696.tgz"
   },
   "repository": {
     "type": "git",

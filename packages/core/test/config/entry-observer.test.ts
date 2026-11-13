@@ -3,7 +3,7 @@ import { Config } from "@opencode/core/config"
 import { Document, Info, type Entry } from "@opencode/schema/config"
 import { Event } from "@opencode/schema/event"
 import { Deferred, Effect, PubSub, Ref, Stream } from "effect"
-import { ConfigEntryObserver } from "../../src/config/plugin/entry-observer"
+import { ConfigEntryObserver } from "../../src/config/plugin/entry-observer.vibe"
 import { it } from "../lib/effect"
 import { host } from "../plugin/host"
 

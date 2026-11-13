@@ -1,7 +1,7 @@
 import { expect } from "bun:test"
 import { Effect } from "effect"
 import { it } from "../../core/test/lib/effect"
-import { Status } from "../src/service-status"
+import { Status } from "../src/service-status.vibe"
 
 it.effect("moves from starting to ready", () =>
   Effect.gen(function* () {

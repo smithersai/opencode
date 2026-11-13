@@ -1,0 +1,114 @@
+export * as WebSearchParallel from "./parallel.js"
+
+import { define } from "@opencode/plugin/effect/plugin"
+import { Scope } from "effect"
+import { HttpClient } from "effect/http"
+import { App } from "../../app.js"
+import { WebSearchMcp } from "./mcp.js"
+
+import { trusted } from "vibelang-runtime"
+
+// App.useragent is plain TypeScript that throws only programmer errors.
+const userAgentOf_impl = (void trusted, App.useragent),
+  userAgentOf: typeof userAgentOf_impl = function(...args) {
+    return userAgentOf_impl.apply(void 0, args)
+  }
+
+export const endpoint = "https://search.parallel.ai/mcp"
+
+const McpInput = Schema.Struct({
+  objective: Schema.String,
+  search_queries: Schema.Array(Schema.String),
+  model_name: Schema.String.check(Schema.isMaxLength(100)).pipe(Schema.optional),
+})
+
+const SearchResponse = Schema.Struct({
+  search_id: Schema.String,
+  results: Schema.Array(
+    Schema.Struct({
+      url: Schema.String,
+      title: Schema.NullOr(Schema.String).pipe(Schema.optional),
+      publish_date: Schema.NullOr(Schema.String).pipe(Schema.optional),
+      excerpts: Schema.Array(Schema.String),
+    }),
+  ),
+  warnings: Schema.NullOr(
+    Schema.Array(
+      Schema.Struct({
+        type: Schema.Literals(["spec_validation_warning", "input_validation_warning", "warning"]),
+        message: Schema.String,
+        detail: Schema.NullOr(Schema.Record(Schema.String, Schema.Json)).pipe(Schema.optional),
+      }),
+    ),
+  ).pipe(Schema.optional),
+  usage: Schema.NullOr(
+    Schema.Array(
+      Schema.Struct({
+        name: Schema.String,
+        count: Schema.Int,
+      }),
+    ),
+  ).pipe(Schema.optional),
+  session_id: Schema.String,
+})
+schema McpOutput {
+  readonly content: ReadonlyArray<{ readonly type: "text"; readonly text: string }>
+  readonly structuredContent: SearchResponse
+}
+
+export const Plugin = define<HttpClient.HttpClient | Scope.Scope>({
+  id: "opencode.websearch.parallel",
+  effect: effect (ctx): void!never!(HttpClient.HttpClient | Scope.Scope) =>
+    try withSpan(
+      (effect (): void!never!(HttpClient.HttpClient | Scope.Scope) => {
+        const http = try HttpClient.HttpClient
+        try ctx.integration.transform((editor) => {
+          editor.update("parallel", (integration) => (integration.name = "Parallel"))
+          editor.method.update({
+            integrationID: "parallel",
+            method: { type: "key" },
+          })
+          editor.method.update({
+            integrationID: "parallel",
+            method: { type: "env", names: ["PARALLEL_API_KEY"] },
+          })
+        })
+        try ctx.websearch.transform((editor) => {
+          editor.add({
+            id: "parallel",
+            name: "Parallel",
+            execute: effect (input) => {
+              const connection = try ctx.integration.connection.active("parallel")
+              const credential = connection ? try ctx.integration.connection.resolve(connection) : undefined
+              const result = try WebSearchMcp.call(
+                http,
+                endpoint,
+                "web_search",
+                { input: McpInput, output: McpOutput },
+                {
+                  objective: input.query,
+                  search_queries: [input.query],
+                },
+                {
+                  "User-Agent": try Effect.orDie(Effect.try({ try: () => userAgentOf(ctx.app), catch: (e) => e })),
+                  ...(credential?.type === "key" ? { Authorization: `Bearer ${credential.key}` } : {}),
+                },
+              )
+              return (
+                result?.structuredContent.results.map((item) => {
+                  const published = item.publish_date ? Date.parse(item.publish_date) : undefined
+                  return {
+                    url: item.url,
+                    ...(item.title ? { title: item.title } : {}),
+                    ...(item.excerpts.length ? { content: item.excerpts.join("\n\n") } : {}),
+                    time: { ...(published !== undefined && Number.isFinite(published) ? { published } : {}) },
+                  }
+                }) ?? []
+              )
+            },
+          })
+        })
+      })(),
+      "WebSearchParallel.Plugin",
+    ),
+})

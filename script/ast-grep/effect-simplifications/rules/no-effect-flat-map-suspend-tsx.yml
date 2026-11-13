@@ -52,3 +52,5 @@ constraints:
               - kind: this
               - kind: meta_property
             stopBy: end
+ignores:
+  - "**/*.d.vibe.ts"

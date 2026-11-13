@@ -13,10 +13,11 @@
     "access": "public"
   },
   "files": [
-    "dist"
+    "dist",
+    ".vibelang/js"
   ],
   "scripts": {
-    "db": "bun drizzle-kit",
+    "db": "bun --bun drizzle-kit",
     "migration": "bun run script/migration.ts",
     "fix-node-pty": "bun run script/fix-node-pty.ts",
     "benchmark:location": "bun run script/benchmark-location.ts",
@@ -26,54 +27,1855 @@
     "update-models-snapshot": "bun run script/update-models-snapshot.ts",
     "test": "bun run script/test.ts",
     "typecheck": "bun check --no-script -b -p tsconfig.tests.json",
-    "typecheck:tsc": "tsc -b tsconfig.json tsconfig.tests.json"
+    "typecheck:tsc": "vibelang -b tsconfig.json tsconfig.tests.json"
   },
   "exports": {
-    "./*": "./src/*.ts"
+    "./aisdk-native": {
+      "types": "./src/aisdk-native.d.vibe.ts",
+      "vibelang-source": "./src/aisdk-native.vibe",
+      "default": "./.vibelang/js/src/aisdk-native.js"
+    },
+    "./agent": {
+      "types": "./src/agent.d.vibe.ts",
+      "vibelang-source": "./src/agent.vibe",
+      "default": "./.vibelang/js/src/agent.js"
+    },
+    "./event-logger": {
+      "types": "./src/event-logger.d.vibe.ts",
+      "vibelang-source": "./src/event-logger.vibe",
+      "default": "./.vibelang/js/src/event-logger.js"
+    },
+    "./mcp/socket-client": {
+      "types": "./src/mcp/socket-client.d.vibe.ts",
+      "vibelang-source": "./src/mcp/socket-client.vibe",
+      "default": "./.vibelang/js/src/mcp/socket-client.js"
+    },
+    "./plugin/agent": {
+      "types": "./src/plugin/agent.d.vibe.ts",
+      "vibelang-source": "./src/plugin/agent.vibe",
+      "default": "./.vibelang/js/src/plugin/agent.js"
+    },
+    "./plugin/host": {
+      "types": "./src/plugin/host.d.vibe.ts",
+      "vibelang-source": "./src/plugin/host.vibe",
+      "default": "./.vibelang/js/src/plugin/host.js"
+    },
+    "./plugin/mcp-codemode-defaults": {
+      "types": "./src/plugin/mcp-codemode-defaults.d.vibe.ts",
+      "vibelang-source": "./src/plugin/mcp-codemode-defaults.vibe",
+      "default": "./.vibelang/js/src/plugin/mcp-codemode-defaults.js"
+    },
+    "./plugin/provider/cerebras": {
+      "types": "./src/plugin/provider/cerebras.d.vibe.ts",
+      "vibelang-source": "./src/plugin/provider/cerebras.vibe",
+      "default": "./.vibelang/js/src/plugin/provider/cerebras.js"
+    },
+    "./plugin/provider/factory": {
+      "types": "./src/plugin/provider/factory.d.vibe.ts",
+      "vibelang-source": "./src/plugin/provider/factory.vibe",
+      "default": "./.vibelang/js/src/plugin/provider/factory.js"
+    },
+    "./plugin/provider/kilo": {
+      "types": "./src/plugin/provider/kilo.d.vibe.ts",
+      "vibelang-source": "./src/plugin/provider/kilo.vibe",
+      "default": "./.vibelang/js/src/plugin/provider/kilo.js"
+    },
+    "./plugin/provider/llmgateway": {
+      "types": "./src/plugin/provider/llmgateway.d.vibe.ts",
+      "vibelang-source": "./src/plugin/provider/llmgateway.vibe",
+      "default": "./.vibelang/js/src/plugin/provider/llmgateway.js"
+    },
+    "./plugin/provider/lmstudio": {
+      "types": "./src/plugin/provider/lmstudio.d.vibe.ts",
+      "vibelang-source": "./src/plugin/provider/lmstudio.vibe",
+      "default": "./.vibelang/js/src/plugin/provider/lmstudio.js"
+    },
+    "./plugin/provider/neon": {
+      "types": "./src/plugin/provider/neon.d.vibe.ts",
+      "vibelang-source": "./src/plugin/provider/neon.vibe",
+      "default": "./.vibelang/js/src/plugin/provider/neon.js"
+    },
+    "./plugin/provider/nvidia": {
+      "types": "./src/plugin/provider/nvidia.d.vibe.ts",
+      "vibelang-source": "./src/plugin/provider/nvidia.vibe",
+      "default": "./.vibelang/js/src/plugin/provider/nvidia.js"
+    },
+    "./plugin/provider/ollama": {
+      "types": "./src/plugin/provider/ollama.d.vibe.ts",
+      "vibelang-source": "./src/plugin/provider/ollama.vibe",
+      "default": "./.vibelang/js/src/plugin/provider/ollama.js"
+    },
+    "./plugin/provider/openrouter": {
+      "types": "./src/plugin/provider/openrouter.d.vibe.ts",
+      "vibelang-source": "./src/plugin/provider/openrouter.vibe",
+      "default": "./.vibelang/js/src/plugin/provider/openrouter.js"
+    },
+    "./plugin/provider/prompt-cache-key": {
+      "types": "./src/plugin/provider/prompt-cache-key.d.vibe.ts",
+      "vibelang-source": "./src/plugin/provider/prompt-cache-key.vibe",
+      "default": "./.vibelang/js/src/plugin/provider/prompt-cache-key.js"
+    },
+    "./plugin/provider/sdk-factory": {
+      "types": "./src/plugin/provider/sdk-factory.d.vibe.ts",
+      "vibelang-source": "./src/plugin/provider/sdk-factory.vibe",
+      "default": "./.vibelang/js/src/plugin/provider/sdk-factory.js"
+    },
+    "./plugin/provider/vercel": {
+      "types": "./src/plugin/provider/vercel.d.vibe.ts",
+      "vibelang-source": "./src/plugin/provider/vercel.vibe",
+      "default": "./.vibelang/js/src/plugin/provider/vercel.js"
+    },
+    "./plugin/provider/vllm": {
+      "types": "./src/plugin/provider/vllm.d.vibe.ts",
+      "vibelang-source": "./src/plugin/provider/vllm.vibe",
+      "default": "./.vibelang/js/src/plugin/provider/vllm.js"
+    },
+    "./plugin/provider/zenmux": {
+      "types": "./src/plugin/provider/zenmux.d.vibe.ts",
+      "vibelang-source": "./src/plugin/provider/zenmux.vibe",
+      "default": "./.vibelang/js/src/plugin/provider/zenmux.js"
+    },
+    "./plugin/sdk": {
+      "types": "./src/plugin/sdk.d.vibe.ts",
+      "vibelang-source": "./src/plugin/sdk.vibe",
+      "default": "./.vibelang/js/src/plugin/sdk.js"
+    },
+    "./plugin/service": {
+      "types": "./src/plugin/service.d.vibe.ts",
+      "vibelang-source": "./src/plugin/service.vibe",
+      "default": "./.vibelang/js/src/plugin/service.js"
+    },
+    "./plugin/websearch/exa": {
+      "types": "./src/plugin/websearch/exa.d.vibe.ts",
+      "vibelang-source": "./src/plugin/websearch/exa.vibe",
+      "default": "./.vibelang/js/src/plugin/websearch/exa.js"
+    },
+    "./tool/plugin/opencode": {
+      "types": "./src/tool/plugin/opencode.d.vibe.ts",
+      "vibelang-source": "./src/tool/plugin/opencode.vibe",
+      "default": "./.vibelang/js/src/tool/plugin/opencode.js"
+    },
+    "./tool/plugin/question": {
+      "types": "./src/tool/plugin/question.d.vibe.ts",
+      "vibelang-source": "./src/tool/plugin/question.vibe",
+      "default": "./.vibelang/js/src/tool/plugin/question.js"
+    },
+    "./tool/plugin/todo": {
+      "types": "./src/tool/plugin/todo.d.vibe.ts",
+      "vibelang-source": "./src/tool/plugin/todo.vibe",
+      "default": "./.vibelang/js/src/tool/plugin/todo.js"
+    },
+    "./location-services": {
+      "types": "./src/location-services.d.vibe.ts",
+      "vibelang-source": "./src/location-services.vibe",
+      "default": "./.vibelang/js/src/location-services.js"
+    },
+    "./permission/saved": {
+      "types": "./src/permission/saved.d.vibe.ts",
+      "vibelang-source": "./src/permission/saved.vibe",
+      "default": "./.vibelang/js/src/permission/saved.js"
+    },
+    "./voice": {
+      "types": "./src/voice.d.vibe.ts",
+      "vibelang-source": "./src/voice.vibe",
+      "default": "./.vibelang/js/src/voice.js"
+    },
+    "./mcp/instructions": {
+      "types": "./src/mcp/instructions.d.vibe.ts",
+      "vibelang-source": "./src/mcp/instructions.vibe",
+      "default": "./.vibelang/js/src/mcp/instructions.js"
+    },
+    "./plugin/websearch/firecrawl": {
+      "types": "./src/plugin/websearch/firecrawl.d.vibe.ts",
+      "vibelang-source": "./src/plugin/websearch/firecrawl.vibe",
+      "default": "./.vibelang/js/src/plugin/websearch/firecrawl.js"
+    },
+    "./plugin/websearch/parallel": {
+      "types": "./src/plugin/websearch/parallel.d.vibe.ts",
+      "vibelang-source": "./src/plugin/websearch/parallel.vibe",
+      "default": "./.vibelang/js/src/plugin/websearch/parallel.js"
+    },
+    "./plugin/websearch/tavily": {
+      "types": "./src/plugin/websearch/tavily.d.vibe.ts",
+      "vibelang-source": "./src/plugin/websearch/tavily.vibe",
+      "default": "./.vibelang/js/src/plugin/websearch/tavily.js"
+    },
+    "./plugin/websearch/tinyfish": {
+      "types": "./src/plugin/websearch/tinyfish.d.vibe.ts",
+      "vibelang-source": "./src/plugin/websearch/tinyfish.vibe",
+      "default": "./.vibelang/js/src/plugin/websearch/tinyfish.js"
+    },
+    "./plugin/tool-input-repair": {
+      "types": "./src/plugin/tool-input-repair.d.vibe.ts",
+      "vibelang-source": "./src/plugin/tool-input-repair.vibe",
+      "default": "./.vibelang/js/src/plugin/tool-input-repair.js"
+    },
+    "./config/integration": {
+      "types": "./src/config/integration.d.vibe.ts",
+      "vibelang-source": "./src/config/integration.vibe",
+      "default": "./.vibelang/js/src/config/integration.js"
+    },
+    "./config/plugin/compaction": {
+      "types": "./src/config/plugin/compaction.d.vibe.ts",
+      "vibelang-source": "./src/config/plugin/compaction.vibe",
+      "default": "./.vibelang/js/src/config/plugin/compaction.js"
+    },
+    "./config/plugin/formatter": {
+      "types": "./src/config/plugin/formatter.d.vibe.ts",
+      "vibelang-source": "./src/config/plugin/formatter.vibe",
+      "default": "./.vibelang/js/src/config/plugin/formatter.js"
+    },
+    "./config/plugin/image": {
+      "types": "./src/config/plugin/image.d.vibe.ts",
+      "vibelang-source": "./src/config/plugin/image.vibe",
+      "default": "./.vibelang/js/src/config/plugin/image.js"
+    },
+    "./config/plugin/location-watcher": {
+      "types": "./src/config/plugin/location-watcher.d.vibe.ts",
+      "vibelang-source": "./src/config/plugin/location-watcher.vibe",
+      "default": "./.vibelang/js/src/config/plugin/location-watcher.js"
+    },
+    "./config/plugin/provider": {
+      "types": "./src/config/plugin/provider.d.vibe.ts",
+      "vibelang-source": "./src/config/plugin/provider.vibe",
+      "default": "./.vibelang/js/src/config/plugin/provider.js"
+    },
+    "./config/plugin/shell": {
+      "types": "./src/config/plugin/shell.d.vibe.ts",
+      "vibelang-source": "./src/config/plugin/shell.vibe",
+      "default": "./.vibelang/js/src/config/plugin/shell.js"
+    },
+    "./config/plugin/snapshot": {
+      "types": "./src/config/plugin/snapshot.d.vibe.ts",
+      "vibelang-source": "./src/config/plugin/snapshot.vibe",
+      "default": "./.vibelang/js/src/config/plugin/snapshot.js"
+    },
+    "./config/plugin/tool-output": {
+      "types": "./src/config/plugin/tool-output.d.vibe.ts",
+      "vibelang-source": "./src/config/plugin/tool-output.vibe",
+      "default": "./.vibelang/js/src/config/plugin/tool-output.js"
+    },
+    "./config/plugin/websearch": {
+      "types": "./src/config/plugin/websearch.d.vibe.ts",
+      "vibelang-source": "./src/config/plugin/websearch.vibe",
+      "default": "./.vibelang/js/src/config/plugin/websearch.js"
+    },
+    "./environment/driver": {
+      "types": "./src/environment/driver.d.vibe.ts",
+      "vibelang-source": "./src/environment/driver.vibe",
+      "default": "./.vibelang/js/src/environment/driver.js"
+    },
+    "./environment/unavailable": {
+      "types": "./src/environment/unavailable.d.vibe.ts",
+      "vibelang-source": "./src/environment/unavailable.vibe",
+      "default": "./.vibelang/js/src/environment/unavailable.js"
+    },
+    "./app": {
+      "types": "./src/app.d.vibe.ts",
+      "vibelang-source": "./src/app.vibe",
+      "default": "./.vibelang/js/src/app.js"
+    },
+    "./file-mutation": {
+      "types": "./src/file-mutation.d.vibe.ts",
+      "vibelang-source": "./src/file-mutation.vibe",
+      "default": "./.vibelang/js/src/file-mutation.js"
+    },
+    "./file-retention": {
+      "types": "./src/file-retention.d.vibe.ts",
+      "vibelang-source": "./src/file-retention.vibe",
+      "default": "./.vibelang/js/src/file-retention.js"
+    },
+    "./kv": {
+      "types": "./src/kv.d.vibe.ts",
+      "vibelang-source": "./src/kv.vibe",
+      "default": "./.vibelang/js/src/kv.js"
+    },
+    "./model-retry": {
+      "types": "./src/model-retry.d.vibe.ts",
+      "vibelang-source": "./src/model-retry.vibe",
+      "default": "./.vibelang/js/src/model-retry.js"
+    },
+    "./tool": {
+      "types": "./src/tool.d.vibe.ts",
+      "vibelang-source": "./src/tool.vibe",
+      "default": "./.vibelang/js/src/tool.js"
+    },
+    "./usage-limits": {
+      "types": "./src/usage-limits.d.vibe.ts",
+      "vibelang-source": "./src/usage-limits.vibe",
+      "default": "./.vibelang/js/src/usage-limits.js"
+    },
+    "./codemode/catalog": {
+      "types": "./src/codemode/catalog.d.vibe.ts",
+      "vibelang-source": "./src/codemode/catalog.vibe",
+      "default": "./.vibelang/js/src/codemode/catalog.js"
+    },
+    "./codemode/instructions": {
+      "types": "./src/codemode/instructions.d.vibe.ts",
+      "vibelang-source": "./src/codemode/instructions.vibe",
+      "default": "./.vibelang/js/src/codemode/instructions.js"
+    },
+    "./codemode/tool": {
+      "types": "./src/codemode/tool.d.vibe.ts",
+      "vibelang-source": "./src/codemode/tool.vibe",
+      "default": "./.vibelang/js/src/codemode/tool.js"
+    },
+    "./filesystem/file-watch": {
+      "types": "./src/filesystem/file-watch.d.vibe.ts",
+      "vibelang-source": "./src/filesystem/file-watch.vibe",
+      "default": "./.vibelang/js/src/filesystem/file-watch.js"
+    },
+    "./filesystem/location-watcher-policy": {
+      "types": "./src/filesystem/location-watcher-policy.d.vibe.ts",
+      "vibelang-source": "./src/filesystem/location-watcher-policy.vibe",
+      "default": "./.vibelang/js/src/filesystem/location-watcher-policy.js"
+    },
+    "./models-dev/v1": {
+      "types": "./src/models-dev/v1.d.vibe.ts",
+      "vibelang-source": "./src/models-dev/v1.vibe",
+      "default": "./.vibelang/js/src/models-dev/v1.js"
+    },
+    "./session/command": {
+      "types": "./src/session/command.d.vibe.ts",
+      "vibelang-source": "./src/session/command.vibe",
+      "default": "./.vibelang/js/src/session/command.js"
+    },
+    "./session/environment": {
+      "types": "./src/session/environment.d.vibe.ts",
+      "vibelang-source": "./src/session/environment.vibe",
+      "default": "./.vibelang/js/src/session/environment.js"
+    },
+    "./session/error": {
+      "types": "./src/session/error.d.vibe.ts",
+      "vibelang-source": "./src/session/error.vibe",
+      "default": "./.vibelang/js/src/session/error.js"
+    },
+    "./session/execution/restart": {
+      "types": "./src/session/execution/restart.d.vibe.ts",
+      "vibelang-source": "./src/session/execution/restart.vibe",
+      "default": "./.vibelang/js/src/session/execution/restart.js"
+    },
+    "./session/info": {
+      "types": "./src/session/info.d.vibe.ts",
+      "vibelang-source": "./src/session/info.vibe",
+      "default": "./.vibelang/js/src/session/info.js"
+    },
+    "./session/message-updater": {
+      "types": "./src/session/message-updater.d.vibe.ts",
+      "vibelang-source": "./src/session/message-updater.vibe",
+      "default": "./.vibelang/js/src/session/message-updater.js"
+    },
+    "./session/run-coordinator": {
+      "types": "./src/session/run-coordinator.d.vibe.ts",
+      "vibelang-source": "./src/session/run-coordinator.vibe",
+      "default": "./.vibelang/js/src/session/run-coordinator.js"
+    },
+    "./session/runner/index": {
+      "types": "./src/session/runner/index.d.vibe.ts",
+      "vibelang-source": "./src/session/runner/index.vibe",
+      "default": "./.vibelang/js/src/session/runner/index.js"
+    },
+    "./session/runner/retry": {
+      "types": "./src/session/runner/retry.d.vibe.ts",
+      "vibelang-source": "./src/session/runner/retry.vibe",
+      "default": "./.vibelang/js/src/session/runner/retry.js"
+    },
+    "./session/shell": {
+      "types": "./src/session/shell.d.vibe.ts",
+      "vibelang-source": "./src/session/shell.vibe",
+      "default": "./.vibelang/js/src/session/shell.js"
+    },
+    "./session/skill": {
+      "types": "./src/session/skill.d.vibe.ts",
+      "vibelang-source": "./src/session/skill.vibe",
+      "default": "./.vibelang/js/src/session/skill.js"
+    },
+    "./session/stored": {
+      "types": "./src/session/stored.d.vibe.ts",
+      "vibelang-source": "./src/session/stored.vibe",
+      "default": "./.vibelang/js/src/session/stored.js"
+    },
+    "./session/subagent-completion": {
+      "types": "./src/session/subagent-completion.d.vibe.ts",
+      "vibelang-source": "./src/session/subagent-completion.vibe",
+      "default": "./.vibelang/js/src/session/subagent-completion.js"
+    },
+    "./session/subagent-job": {
+      "types": "./src/session/subagent-job.d.vibe.ts",
+      "vibelang-source": "./src/session/subagent-job.vibe",
+      "default": "./.vibelang/js/src/session/subagent-job.js"
+    },
+    "./image": {
+      "types": "./src/image.d.vibe.ts",
+      "vibelang-source": "./src/image.vibe",
+      "default": "./.vibelang/js/src/image.js"
+    },
+    "./location-lifecycle": {
+      "types": "./src/location-lifecycle.d.vibe.ts",
+      "vibelang-source": "./src/location-lifecycle.vibe",
+      "default": "./.vibelang/js/src/location-lifecycle.js"
+    },
+    "./session/stats": {
+      "types": "./src/session/stats.d.vibe.ts",
+      "vibelang-source": "./src/session/stats.vibe",
+      "default": "./.vibelang/js/src/session/stats.js"
+    },
+    "./session/compaction": {
+      "types": "./src/session/compaction.d.vibe.ts",
+      "vibelang-source": "./src/session/compaction.vibe",
+      "default": "./.vibelang/js/src/session/compaction.js"
+    },
+    "./session/runner/publish-llm-event": {
+      "types": "./src/session/runner/publish-llm-event.d.vibe.ts",
+      "vibelang-source": "./src/session/runner/publish-llm-event.vibe",
+      "default": "./.vibelang/js/src/session/runner/publish-llm-event.js"
+    },
+    "./session/model-transport": {
+      "types": "./src/session/model-transport.d.vibe.ts",
+      "vibelang-source": "./src/session/model-transport.vibe",
+      "default": "./.vibelang/js/src/session/model-transport.js"
+    },
+    "./session/runner/llm": {
+      "types": "./src/session/runner/llm.d.vibe.ts",
+      "vibelang-source": "./src/session/runner/llm.vibe",
+      "default": "./.vibelang/js/src/session/runner/llm.js"
+    },
+    "./session/model-request": {
+      "types": "./src/session/model-request.d.vibe.ts",
+      "vibelang-source": "./src/session/model-request.vibe",
+      "default": "./.vibelang/js/src/session/model-request.js"
+    },
+    "./session/runner/step": {
+      "types": "./src/session/runner/step.d.vibe.ts",
+      "vibelang-source": "./src/session/runner/step.vibe",
+      "default": "./.vibelang/js/src/session/runner/step.js"
+    },
+    "./session/runner/to-llm-message": {
+      "types": "./src/session/runner/to-llm-message.d.vibe.ts",
+      "vibelang-source": "./src/session/runner/to-llm-message.vibe",
+      "default": "./.vibelang/js/src/session/runner/to-llm-message.js"
+    },
+    "./session/runner/model": {
+      "types": "./src/session/runner/model.d.vibe.ts",
+      "vibelang-source": "./src/session/runner/model.vibe",
+      "default": "./.vibelang/js/src/session/runner/model.js"
+    },
+    "./session/prompt": {
+      "types": "./src/session/prompt.d.vibe.ts",
+      "vibelang-source": "./src/session/prompt.vibe",
+      "default": "./.vibelang/js/src/session/prompt.js"
+    },
+    "./session/context": {
+      "types": "./src/session/context.d.vibe.ts",
+      "vibelang-source": "./src/session/context.vibe",
+      "default": "./.vibelang/js/src/session/context.js"
+    },
+    "./session/title": {
+      "types": "./src/session/title.d.vibe.ts",
+      "vibelang-source": "./src/session/title.vibe",
+      "default": "./.vibelang/js/src/session/title.js"
+    },
+    "./session/instructions": {
+      "types": "./src/session/instructions.d.vibe.ts",
+      "vibelang-source": "./src/session/instructions.vibe",
+      "default": "./.vibelang/js/src/session/instructions.js"
+    },
+    "./session/generate": {
+      "types": "./src/session/generate.d.vibe.ts",
+      "vibelang-source": "./src/session/generate.vibe",
+      "default": "./.vibelang/js/src/session/generate.js"
+    },
+    "./session/projector": {
+      "types": "./src/session/projector.d.vibe.ts",
+      "vibelang-source": "./src/session/projector.vibe",
+      "default": "./.vibelang/js/src/session/projector.js"
+    },
+    "./session/inbox": {
+      "types": "./src/session/inbox.d.vibe.ts",
+      "vibelang-source": "./src/session/inbox.vibe",
+      "default": "./.vibelang/js/src/session/inbox.js"
+    },
+    "./session/store": {
+      "types": "./src/session/store.d.vibe.ts",
+      "vibelang-source": "./src/session/store.vibe",
+      "default": "./.vibelang/js/src/session/store.js"
+    },
+    "./session/blob": {
+      "types": "./src/session/blob.d.vibe.ts",
+      "vibelang-source": "./src/session/blob.vibe",
+      "default": "./.vibelang/js/src/session/blob.js"
+    },
+    "./session/history": {
+      "types": "./src/session/history.d.vibe.ts",
+      "vibelang-source": "./src/session/history.vibe",
+      "default": "./.vibelang/js/src/session/history.js"
+    },
+    "./session/instruction-state": {
+      "types": "./src/session/instruction-state.d.vibe.ts",
+      "vibelang-source": "./src/session/instruction-state.vibe",
+      "default": "./.vibelang/js/src/session/instruction-state.js"
+    },
+    "./session/instruction-entry": {
+      "types": "./src/session/instruction-entry.d.vibe.ts",
+      "vibelang-source": "./src/session/instruction-entry.vibe",
+      "default": "./.vibelang/js/src/session/instruction-entry.js"
+    },
+    "./session/transfer": {
+      "types": "./src/session/transfer.d.vibe.ts",
+      "vibelang-source": "./src/session/transfer.vibe",
+      "default": "./.vibelang/js/src/session/transfer.js"
+    },
+    "./session/move": {
+      "types": "./src/session/move.d.vibe.ts",
+      "vibelang-source": "./src/session/move.vibe",
+      "default": "./.vibelang/js/src/session/move.js"
+    },
+    "./session/revert": {
+      "types": "./src/session/revert.d.vibe.ts",
+      "vibelang-source": "./src/session/revert.vibe",
+      "default": "./.vibelang/js/src/session/revert.js"
+    },
+    "./session/diff": {
+      "types": "./src/session/diff.d.vibe.ts",
+      "vibelang-source": "./src/session/diff.vibe",
+      "default": "./.vibelang/js/src/session/diff.js"
+    },
+    "./session/session": {
+      "types": "./src/session/session.d.vibe.ts",
+      "vibelang-source": "./src/session/session.vibe",
+      "default": "./.vibelang/js/src/session/session.js"
+    },
+    "./session/execution": {
+      "types": "./src/session/execution.d.vibe.ts",
+      "vibelang-source": "./src/session/execution.vibe",
+      "default": "./.vibelang/js/src/session/execution.js"
+    },
+    "./generate": {
+      "types": "./src/generate.d.vibe.ts",
+      "vibelang-source": "./src/generate.vibe",
+      "default": "./.vibelang/js/src/generate.js"
+    },
+    "./plugin/hooks": {
+      "types": "./src/plugin/hooks.d.vibe.ts",
+      "vibelang-source": "./src/plugin/hooks.vibe",
+      "default": "./.vibelang/js/src/plugin/hooks.js"
+    },
+    "./plugin/instance": {
+      "types": "./src/plugin/instance.d.vibe.ts",
+      "vibelang-source": "./src/plugin/instance.vibe",
+      "default": "./.vibelang/js/src/plugin/instance.js"
+    },
+    "./plugin/models-dev": {
+      "types": "./src/plugin/models-dev.d.vibe.ts",
+      "vibelang-source": "./src/plugin/models-dev.vibe",
+      "default": "./.vibelang/js/src/plugin/models-dev.js"
+    },
+    "./plugin/provider/configured": {
+      "types": "./src/plugin/provider/configured.d.vibe.ts",
+      "vibelang-source": "./src/plugin/provider/configured.vibe",
+      "default": "./.vibelang/js/src/plugin/provider/configured.js"
+    },
+    "./plugin/provider/dynamic": {
+      "types": "./src/plugin/provider/dynamic.d.vibe.ts",
+      "vibelang-source": "./src/plugin/provider/dynamic.vibe",
+      "default": "./.vibelang/js/src/plugin/provider/dynamic.js"
+    },
+    "./plugin/provider/openai-context-caps": {
+      "types": "./src/plugin/provider/openai-context-caps.d.vibe.ts",
+      "vibelang-source": "./src/plugin/provider/openai-context-caps.vibe",
+      "default": "./.vibelang/js/src/plugin/provider/openai-context-caps.js"
+    },
+    "./plugin/update": {
+      "types": "./src/plugin/update.d.vibe.ts",
+      "vibelang-source": "./src/plugin/update.vibe",
+      "default": "./.vibelang/js/src/plugin/update.js"
+    },
+    "./tool/runtime": {
+      "types": "./src/tool/runtime.d.vibe.ts",
+      "vibelang-source": "./src/tool/runtime.vibe",
+      "default": "./.vibelang/js/src/tool/runtime.js"
+    },
+    "./wellknown/plugin": {
+      "types": "./src/wellknown/plugin.d.vibe.ts",
+      "vibelang-source": "./src/wellknown/plugin.vibe",
+      "default": "./.vibelang/js/src/wellknown/plugin.js"
+    },
+    "./plugin/identity": {
+      "types": "./src/plugin/identity.d.vibe.ts",
+      "vibelang-source": "./src/plugin/identity.vibe",
+      "default": "./.vibelang/js/src/plugin/identity.js"
+    },
+    "./plugin/optimize": {
+      "types": "./src/plugin/optimize.d.vibe.ts",
+      "vibelang-source": "./src/plugin/optimize.vibe",
+      "default": "./.vibelang/js/src/plugin/optimize.js"
+    },
+    "./tool/plugin/edit": {
+      "types": "./src/tool/plugin/edit.d.vibe.ts",
+      "vibelang-source": "./src/tool/plugin/edit.vibe",
+      "default": "./.vibelang/js/src/tool/plugin/edit.js"
+    },
+    "./tool/plugin/mcp-resource": {
+      "types": "./src/tool/plugin/mcp-resource.d.vibe.ts",
+      "vibelang-source": "./src/tool/plugin/mcp-resource.vibe",
+      "default": "./.vibelang/js/src/tool/plugin/mcp-resource.js"
+    },
+    "./tool/plugin/patch": {
+      "types": "./src/tool/plugin/patch.d.vibe.ts",
+      "vibelang-source": "./src/tool/plugin/patch.vibe",
+      "default": "./.vibelang/js/src/tool/plugin/patch.js"
+    },
+    "./tool/plugin/skill": {
+      "types": "./src/tool/plugin/skill.d.vibe.ts",
+      "vibelang-source": "./src/tool/plugin/skill.vibe",
+      "default": "./.vibelang/js/src/tool/plugin/skill.js"
+    },
+    "./tool/plugin/websearch": {
+      "types": "./src/tool/plugin/websearch.d.vibe.ts",
+      "vibelang-source": "./src/tool/plugin/websearch.vibe",
+      "default": "./.vibelang/js/src/tool/plugin/websearch.js"
+    },
+    "./tool/plugin/write": {
+      "types": "./src/tool/plugin/write.d.vibe.ts",
+      "vibelang-source": "./src/tool/plugin/write.vibe",
+      "default": "./.vibelang/js/src/tool/plugin/write.js"
+    },
+    "./command": {
+      "types": "./src/command.d.vibe.ts",
+      "vibelang-source": "./src/command.vibe",
+      "default": "./.vibelang/js/src/command.js"
+    },
+    "./formatter/builtins": {
+      "types": "./src/formatter/builtins.d.vibe.ts",
+      "vibelang-source": "./src/formatter/builtins.vibe",
+      "default": "./.vibelang/js/src/formatter/builtins.js"
+    },
+    "./instance/service": {
+      "types": "./src/instance/service.d.vibe.ts",
+      "vibelang-source": "./src/instance/service.vibe",
+      "default": "./.vibelang/js/src/instance/service.js"
+    },
+    "./reference/instructions": {
+      "types": "./src/reference/instructions.d.vibe.ts",
+      "vibelang-source": "./src/reference/instructions.vibe",
+      "default": "./.vibelang/js/src/reference/instructions.js"
+    },
+    "./worktree": {
+      "types": "./src/worktree.d.vibe.ts",
+      "vibelang-source": "./src/worktree.vibe",
+      "default": "./.vibelang/js/src/worktree.js"
+    },
+    "./worktree.vibe.platform": null,
+    "./worktree/directory": {
+      "types": "./src/worktree/directory.d.vibe.ts",
+      "vibelang-source": "./src/worktree/directory.vibe",
+      "default": "./.vibelang/js/src/worktree/directory.js"
+    },
+    "./location-activity": {
+      "types": "./src/location-activity.d.vibe.ts",
+      "vibelang-source": "./src/location-activity.vibe",
+      "default": "./.vibelang/js/src/location-activity.js"
+    },
+    "./plugin/internal": {
+      "types": "./src/plugin/internal.d.vibe.ts",
+      "vibelang-source": "./src/plugin/internal.vibe",
+      "default": "./.vibelang/js/src/plugin/internal.js"
+    },
+    "./plugin/vcs/git": {
+      "types": "./src/plugin/vcs/git.d.vibe.ts",
+      "vibelang-source": "./src/plugin/vcs/git.vibe",
+      "default": "./.vibelang/js/src/plugin/vcs/git.js"
+    },
+    "./plugin/vcs/hg": {
+      "types": "./src/plugin/vcs/hg.d.vibe.ts",
+      "vibelang-source": "./src/plugin/vcs/hg.vibe",
+      "default": "./.vibelang/js/src/plugin/vcs/hg.js"
+    },
+    "./plugin/provider/local": {
+      "types": "./src/plugin/provider/local.d.vibe.ts",
+      "vibelang-source": "./src/plugin/provider/local.vibe",
+      "default": "./.vibelang/js/src/plugin/provider/local.js"
+    },
+    "./config/plugin/skill": {
+      "types": "./src/config/plugin/skill.d.vibe.ts",
+      "vibelang-source": "./src/config/plugin/skill.vibe",
+      "default": "./.vibelang/js/src/config/plugin/skill.js"
+    },
+    "./skill/discovery": {
+      "types": "./src/skill/discovery.d.vibe.ts",
+      "vibelang-source": "./src/skill/discovery.vibe",
+      "default": "./.vibelang/js/src/skill/discovery.js"
+    },
+    "./image/photon": {
+      "types": "./src/image/photon.d.vibe.ts",
+      "vibelang-source": "./src/image/photon.vibe",
+      "default": "./.vibelang/js/src/image/photon.js"
+    },
+    "./plugin/warming": {
+      "types": "./src/plugin/warming.d.vibe.ts",
+      "vibelang-source": "./src/plugin/warming.vibe",
+      "default": "./.vibelang/js/src/plugin/warming.js"
+    },
+    "./plugin/plan": {
+      "types": "./src/plugin/plan.d.vibe.ts",
+      "vibelang-source": "./src/plugin/plan.vibe",
+      "default": "./.vibelang/js/src/plugin/plan.js"
+    },
+    "./plugin/skill": {
+      "types": "./src/plugin/skill.d.vibe.ts",
+      "vibelang-source": "./src/plugin/skill.vibe",
+      "default": "./.vibelang/js/src/plugin/skill.js"
+    },
+    "./pty/ticket": {
+      "types": "./src/pty/ticket.d.vibe.ts",
+      "vibelang-source": "./src/pty/ticket.vibe",
+      "default": "./.vibelang/js/src/pty/ticket.js"
+    },
+    "./plugin/websearch/mcp": {
+      "types": "./src/plugin/websearch/mcp.d.vibe.ts",
+      "vibelang-source": "./src/plugin/websearch/mcp.vibe",
+      "default": "./.vibelang/js/src/plugin/websearch/mcp.js"
+    },
+    "./plugin/verbosity": {
+      "types": "./src/plugin/verbosity.d.vibe.ts",
+      "vibelang-source": "./src/plugin/verbosity.vibe",
+      "default": "./.vibelang/js/src/plugin/verbosity.js"
+    },
+    "./formatter": {
+      "types": "./src/formatter.d.vibe.ts",
+      "vibelang-source": "./src/formatter.vibe",
+      "default": "./.vibelang/js/src/formatter.js"
+    },
+    "./tool-output": {
+      "types": "./src/tool-output.d.vibe.ts",
+      "vibelang-source": "./src/tool-output.vibe",
+      "default": "./.vibelang/js/src/tool-output.js"
+    },
+    "./filesystem": {
+      "types": "./src/filesystem.d.vibe.ts",
+      "vibelang-source": "./src/filesystem.vibe",
+      "default": "./.vibelang/js/src/filesystem.js"
+    },
+    "./config": {
+      "types": "./src/config.d.vibe.ts",
+      "vibelang-source": "./src/config.vibe",
+      "default": "./.vibelang/js/src/config.js"
+    },
+    "./wellknown": {
+      "types": "./src/wellknown.d.vibe.ts",
+      "vibelang-source": "./src/wellknown.vibe",
+      "default": "./.vibelang/js/src/wellknown.js"
+    },
+    "./instruction-discovery": {
+      "types": "./src/instruction-discovery.d.vibe.ts",
+      "vibelang-source": "./src/instruction-discovery.vibe",
+      "default": "./.vibelang/js/src/instruction-discovery.js"
+    },
+    "./job": {
+      "types": "./src/job.d.vibe.ts",
+      "vibelang-source": "./src/job.vibe",
+      "default": "./.vibelang/js/src/job.js"
+    },
+    "./websearch": {
+      "types": "./src/websearch.d.vibe.ts",
+      "vibelang-source": "./src/websearch.vibe",
+      "default": "./.vibelang/js/src/websearch.js"
+    },
+    "./model": {
+      "types": "./src/model.d.vibe.ts",
+      "vibelang-source": "./src/model.vibe",
+      "default": "./.vibelang/js/src/model.js"
+    },
+    "./model-resolver": {
+      "types": "./src/model-resolver.d.vibe.ts",
+      "vibelang-source": "./src/model-resolver.vibe",
+      "default": "./.vibelang/js/src/model-resolver.js"
+    },
+    "./provider": {
+      "types": "./src/provider.d.vibe.ts",
+      "vibelang-source": "./src/provider.vibe",
+      "default": "./.vibelang/js/src/provider.js"
+    },
+    "./pty": {
+      "types": "./src/pty.d.vibe.ts",
+      "vibelang-source": "./src/pty.vibe",
+      "default": "./.vibelang/js/src/pty.js"
+    },
+    "./ripgrep": {
+      "types": "./src/ripgrep.d.vibe.ts",
+      "vibelang-source": "./src/ripgrep.vibe",
+      "default": "./.vibelang/js/src/ripgrep.js"
+    },
+    "./aisdk": {
+      "types": "./src/aisdk.d.vibe.ts",
+      "vibelang-source": "./src/aisdk.vibe",
+      "default": "./.vibelang/js/src/aisdk.js"
+    },
+    "./file-access": {
+      "types": "./src/file-access.d.vibe.ts",
+      "vibelang-source": "./src/file-access.vibe",
+      "default": "./.vibelang/js/src/file-access.js"
+    },
+    "./instance": {
+      "types": "./src/instance.d.vibe.ts",
+      "vibelang-source": "./src/instance.vibe",
+      "default": "./.vibelang/js/src/instance.js"
+    },
+    "./models-dev": {
+      "types": "./src/models-dev.d.vibe.ts",
+      "vibelang-source": "./src/models-dev.vibe",
+      "default": "./.vibelang/js/src/models-dev.js"
+    },
+    "./permission": {
+      "types": "./src/permission.d.vibe.ts",
+      "vibelang-source": "./src/permission.vibe",
+      "default": "./.vibelang/js/src/permission.js"
+    },
+    "./plugin": {
+      "types": "./src/plugin.d.vibe.ts",
+      "vibelang-source": "./src/plugin.vibe",
+      "default": "./.vibelang/js/src/plugin.js"
+    },
+    "./reference": {
+      "types": "./src/reference.d.vibe.ts",
+      "vibelang-source": "./src/reference.vibe",
+      "default": "./.vibelang/js/src/reference.js"
+    },
+    "./repository-cache": {
+      "types": "./src/repository-cache.d.vibe.ts",
+      "vibelang-source": "./src/repository-cache.vibe",
+      "default": "./.vibelang/js/src/repository-cache.js"
+    },
+    "./rpc": {
+      "types": "./src/rpc.d.vibe.ts",
+      "vibelang-source": "./src/rpc.vibe",
+      "default": "./.vibelang/js/src/rpc.js"
+    },
+    "./shell": {
+      "types": "./src/shell.d.vibe.ts",
+      "vibelang-source": "./src/shell.vibe",
+      "default": "./.vibelang/js/src/shell.js"
+    },
+    "./skill": {
+      "types": "./src/skill.d.vibe.ts",
+      "vibelang-source": "./src/skill.vibe",
+      "default": "./.vibelang/js/src/skill.js"
+    },
+    "./snapshot": {
+      "types": "./src/snapshot.d.vibe.ts",
+      "vibelang-source": "./src/snapshot.vibe",
+      "default": "./.vibelang/js/src/snapshot.js"
+    },
+    "./vcs": {
+      "types": "./src/vcs.d.vibe.ts",
+      "vibelang-source": "./src/vcs.vibe",
+      "default": "./.vibelang/js/src/vcs.js"
+    },
+    "./file-access.vibe.platform": null,
+    "./instance.vibe.platform": null,
+    "./models-dev.vibe.platform": null,
+    "./plugin.vibe.platform": null,
+    "./repository-cache.vibe.platform": null,
+    "./shell.vibe.platform": null,
+    "./skill.vibe.platform": null,
+    "./snapshot.vibe.platform": null,
+    "./vcs.vibe.platform": null,
+    "./filesystem/watcher": {
+      "types": "./src/filesystem/watcher.d.vibe.ts",
+      "vibelang-source": "./src/filesystem/watcher.vibe",
+      "default": "./.vibelang/js/src/filesystem/watcher.js"
+    },
+    "./filesystem/location-watcher": {
+      "types": "./src/filesystem/location-watcher.d.vibe.ts",
+      "vibelang-source": "./src/filesystem/location-watcher.vibe",
+      "default": "./.vibelang/js/src/filesystem/location-watcher.js"
+    },
+    "./filesystem/location-watcher.vibe.platform": null,
+    "./filesystem/watcher.vibe.host": null,
+    "./shell/parse": {
+      "types": "./src/shell/parse.d.vibe.ts",
+      "vibelang-source": "./src/shell/parse.vibe",
+      "default": "./.vibelang/js/src/shell/parse.js"
+    },
+    "./instructions/builtins": {
+      "types": "./src/instructions/builtins.d.vibe.ts",
+      "vibelang-source": "./src/instructions/builtins.vibe",
+      "default": "./.vibelang/js/src/instructions/builtins.js"
+    },
+    "./modal/models": {
+      "types": "./src/modal/models.d.vibe.ts",
+      "vibelang-source": "./src/modal/models.vibe",
+      "default": "./.vibelang/js/src/modal/models.js"
+    },
+    "./skill/instructions": {
+      "types": "./src/skill/instructions.d.vibe.ts",
+      "vibelang-source": "./src/skill/instructions.vibe",
+      "default": "./.vibelang/js/src/skill/instructions.js"
+    },
+    "./worktree/git": {
+      "types": "./src/worktree/git.d.vibe.ts",
+      "vibelang-source": "./src/worktree/git.vibe",
+      "default": "./.vibelang/js/src/worktree/git.js"
+    },
+    "./worktree/strategies": {
+      "types": "./src/worktree/strategies.d.vibe.ts",
+      "vibelang-source": "./src/worktree/strategies.vibe",
+      "default": "./.vibelang/js/src/worktree/strategies.js"
+    },
+    "./github-copilot/models": {
+      "types": "./src/github-copilot/models.d.vibe.ts",
+      "vibelang-source": "./src/github-copilot/models.vibe",
+      "default": "./.vibelang/js/src/github-copilot/models.js"
+    },
+    "./github-copilot/models.vibe.platform": null,
+    "./instructions/builtins.vibe.host": null,
+    "./modal/models.vibe.platform": null,
+    "./shell/parse.platform": null,
+    "./worktree/strategies.vibe.platform": null,
+    "./plugin/provider/amazon-bedrock": {
+      "types": "./src/plugin/provider/amazon-bedrock.d.vibe.ts",
+      "vibelang-source": "./src/plugin/provider/amazon-bedrock.vibe",
+      "default": "./.vibelang/js/src/plugin/provider/amazon-bedrock.js"
+    },
+    "./plugin/provider/azure": {
+      "types": "./src/plugin/provider/azure.d.vibe.ts",
+      "vibelang-source": "./src/plugin/provider/azure.vibe",
+      "default": "./.vibelang/js/src/plugin/provider/azure.js"
+    },
+    "./plugin/provider/chatgpt": {
+      "types": "./src/plugin/provider/chatgpt.d.vibe.ts",
+      "vibelang-source": "./src/plugin/provider/chatgpt.vibe",
+      "default": "./.vibelang/js/src/plugin/provider/chatgpt.js"
+    },
+    "./plugin/provider/cloudflare-ai-gateway": {
+      "types": "./src/plugin/provider/cloudflare-ai-gateway.d.vibe.ts",
+      "vibelang-source": "./src/plugin/provider/cloudflare-ai-gateway.vibe",
+      "default": "./.vibelang/js/src/plugin/provider/cloudflare-ai-gateway.js"
+    },
+    "./plugin/provider/cloudflare-workers-ai": {
+      "types": "./src/plugin/provider/cloudflare-workers-ai.d.vibe.ts",
+      "vibelang-source": "./src/plugin/provider/cloudflare-workers-ai.vibe",
+      "default": "./.vibelang/js/src/plugin/provider/cloudflare-workers-ai.js"
+    },
+    "./plugin/provider/databricks": {
+      "types": "./src/plugin/provider/databricks.d.vibe.ts",
+      "vibelang-source": "./src/plugin/provider/databricks.vibe",
+      "default": "./.vibelang/js/src/plugin/provider/databricks.js"
+    },
+    "./plugin/provider/digitalocean": {
+      "types": "./src/plugin/provider/digitalocean.d.vibe.ts",
+      "vibelang-source": "./src/plugin/provider/digitalocean.vibe",
+      "default": "./.vibelang/js/src/plugin/provider/digitalocean.js"
+    },
+    "./plugin/provider/github-copilot": {
+      "types": "./src/plugin/provider/github-copilot.d.vibe.ts",
+      "vibelang-source": "./src/plugin/provider/github-copilot.vibe",
+      "default": "./.vibelang/js/src/plugin/provider/github-copilot.js"
+    },
+    "./plugin/provider/gitlab": {
+      "types": "./src/plugin/provider/gitlab.d.vibe.ts",
+      "vibelang-source": "./src/plugin/provider/gitlab.vibe",
+      "default": "./.vibelang/js/src/plugin/provider/gitlab.js"
+    },
+    "./plugin/provider/google-vertex": {
+      "types": "./src/plugin/provider/google-vertex.d.vibe.ts",
+      "vibelang-source": "./src/plugin/provider/google-vertex.vibe",
+      "default": "./.vibelang/js/src/plugin/provider/google-vertex.js"
+    },
+    "./plugin/provider/modal": {
+      "types": "./src/plugin/provider/modal.d.vibe.ts",
+      "vibelang-source": "./src/plugin/provider/modal.vibe",
+      "default": "./.vibelang/js/src/plugin/provider/modal.js"
+    },
+    "./plugin/provider/openai": {
+      "types": "./src/plugin/provider/openai.d.vibe.ts",
+      "vibelang-source": "./src/plugin/provider/openai.vibe",
+      "default": "./.vibelang/js/src/plugin/provider/openai.js"
+    },
+    "./plugin/provider/opencode": {
+      "types": "./src/plugin/provider/opencode.d.vibe.ts",
+      "vibelang-source": "./src/plugin/provider/opencode.vibe",
+      "default": "./.vibelang/js/src/plugin/provider/opencode.js"
+    },
+    "./plugin/provider/poe": {
+      "types": "./src/plugin/provider/poe.d.vibe.ts",
+      "vibelang-source": "./src/plugin/provider/poe.vibe",
+      "default": "./.vibelang/js/src/plugin/provider/poe.js"
+    },
+    "./plugin/provider/sap-ai-core": {
+      "types": "./src/plugin/provider/sap-ai-core.d.vibe.ts",
+      "vibelang-source": "./src/plugin/provider/sap-ai-core.vibe",
+      "default": "./.vibelang/js/src/plugin/provider/sap-ai-core.js"
+    },
+    "./plugin/provider/snowflake-cortex": {
+      "types": "./src/plugin/provider/snowflake-cortex.d.vibe.ts",
+      "vibelang-source": "./src/plugin/provider/snowflake-cortex.vibe",
+      "default": "./.vibelang/js/src/plugin/provider/snowflake-cortex.js"
+    },
+    "./plugin/provider/xai": {
+      "types": "./src/plugin/provider/xai.d.vibe.ts",
+      "vibelang-source": "./src/plugin/provider/xai.vibe",
+      "default": "./.vibelang/js/src/plugin/provider/xai.js"
+    },
+    "./plugin/module": {
+      "types": "./src/plugin/module.d.vibe.ts",
+      "vibelang-source": "./src/plugin/module.vibe",
+      "default": "./.vibelang/js/src/plugin/module.js"
+    },
+    "./plugin/source-directory": {
+      "types": "./src/plugin/source-directory.d.vibe.ts",
+      "vibelang-source": "./src/plugin/source-directory.vibe",
+      "default": "./.vibelang/js/src/plugin/source-directory.js"
+    },
+    "./plugin/supervisor": {
+      "types": "./src/plugin/supervisor.d.vibe.ts",
+      "vibelang-source": "./src/plugin/supervisor.vibe",
+      "default": "./.vibelang/js/src/plugin/supervisor.js"
+    },
+    "./tool/http-body": {
+      "types": "./src/tool/http-body.d.vibe.ts",
+      "vibelang-source": "./src/tool/http-body.vibe",
+      "default": "./.vibelang/js/src/tool/http-body.js"
+    },
+    "./tool/mcp": {
+      "types": "./src/tool/mcp.d.vibe.ts",
+      "vibelang-source": "./src/tool/mcp.vibe",
+      "default": "./.vibelang/js/src/tool/mcp.js"
+    },
+    "./tool/plugin/subagent": {
+      "types": "./src/tool/plugin/subagent.d.vibe.ts",
+      "vibelang-source": "./src/tool/plugin/subagent.vibe",
+      "default": "./.vibelang/js/src/tool/plugin/subagent.js"
+    },
+    "./tool/plugin/webfetch": {
+      "types": "./src/tool/plugin/webfetch.d.vibe.ts",
+      "vibelang-source": "./src/tool/plugin/webfetch.vibe",
+      "default": "./.vibelang/js/src/tool/plugin/webfetch.js"
+    },
+    "./tool/read-filesystem": {
+      "types": "./src/tool/read-filesystem.d.vibe.ts",
+      "vibelang-source": "./src/tool/read-filesystem.vibe",
+      "default": "./.vibelang/js/src/tool/read-filesystem.js"
+    },
+    "./session": {
+      "types": "./src/session.d.vibe.ts",
+      "vibelang-source": "./src/session.vibe",
+      "default": "./.vibelang/js/src/session.js"
+    },
+    "./*": {
+      "types": "./src/*.ts",
+      "vibelang-source": "./src/*.ts",
+      "default": "./.vibelang/js/src/*.js"
+    },
+    "./plugin/command": {
+      "types": "./src/plugin/command.d.vibe.ts",
+      "vibelang-source": "./src/plugin/command.vibe",
+      "default": "./.vibelang/js/src/plugin/command.js"
+    },
+    "./config/plugin/entry-observer": {
+      "types": "./src/config/plugin/entry-observer.d.vibe.ts",
+      "vibelang-source": "./src/config/plugin/entry-observer.vibe",
+      "default": "./.vibelang/js/src/config/plugin/entry-observer.js"
+    },
+    "./config/plugin/mcp": {
+      "types": "./src/config/plugin/mcp.d.vibe.ts",
+      "vibelang-source": "./src/config/plugin/mcp.vibe",
+      "default": "./.vibelang/js/src/config/plugin/mcp.js"
+    },
+    "./database/sqlite": {
+      "types": "./src/database/sqlite.d.vibe.ts",
+      "vibelang-source": "./src/database/sqlite.vibe",
+      "default": "./.vibelang/js/src/database/sqlite.js"
+    },
+    "./database/v1-migration.noop": {
+      "types": "./src/database/v1-migration.noop.d.vibe.ts",
+      "vibelang-source": "./src/database/v1-migration.noop.vibe",
+      "default": "./.vibelang/js/src/database/v1-migration.noop.js"
+    },
+    "./effect/app-node-builder": {
+      "types": "./src/effect/app-node-builder.ts",
+      "vibelang-source": "./src/effect/app-node-builder.ts",
+      "default": "./.vibelang/js/src/effect/app-node-builder.js"
+    },
+    "./v1/config/agent": {
+      "types": "./src/v1/config/agent.d.vibe.ts",
+      "vibelang-source": "./src/v1/config/agent.vibe",
+      "default": "./.vibelang/js/src/v1/config/agent.js"
+    },
+    "./v1/config/command": {
+      "types": "./src/v1/config/command.d.vibe.ts",
+      "vibelang-source": "./src/v1/config/command.vibe",
+      "default": "./.vibelang/js/src/v1/config/command.js"
+    },
+    "./v1/config/mcp": {
+      "types": "./src/v1/config/mcp.d.vibe.ts",
+      "vibelang-source": "./src/v1/config/mcp.vibe",
+      "default": "./.vibelang/js/src/v1/config/mcp.js"
+    },
+    "./v1/config/migrate": {
+      "types": "./src/v1/config/migrate.d.vibe.ts",
+      "vibelang-source": "./src/v1/config/migrate.vibe",
+      "default": "./.vibelang/js/src/v1/config/migrate.js"
+    },
+    "./v1/config/plugin": {
+      "types": "./src/v1/config/plugin.d.vibe.ts",
+      "vibelang-source": "./src/v1/config/plugin.vibe",
+      "default": "./.vibelang/js/src/v1/config/plugin.js"
+    },
+    "./v1/config/provider": {
+      "types": "./src/v1/config/provider.d.vibe.ts",
+      "vibelang-source": "./src/v1/config/provider.vibe",
+      "default": "./.vibelang/js/src/v1/config/provider.js"
+    },
+    "./effect/app-node-platform": {
+      "types": "./src/effect/app-node-platform.d.vibe.ts",
+      "vibelang-source": "./src/effect/app-node-platform.vibe",
+      "default": "./.vibelang/js/src/effect/app-node-platform.js"
+    },
+    "./v1/config/permission": {
+      "types": "./src/v1/config/permission.d.vibe.ts",
+      "vibelang-source": "./src/v1/config/permission.vibe",
+      "default": "./.vibelang/js/src/v1/config/permission.js"
+    },
+    "./database/sqlite.bun": {
+      "types": "./src/database/sqlite.bun.d.vibe.ts",
+      "vibelang-source": "./src/database/sqlite.bun.vibe",
+      "default": "./.vibelang/js/src/database/sqlite.bun.js"
+    },
+    "./database/sqlite.node": {
+      "types": "./src/database/sqlite.node.d.vibe.ts",
+      "vibelang-source": "./src/database/sqlite.node.vibe",
+      "default": "./.vibelang/js/src/database/sqlite.node.js"
+    },
+    "./database/sqlite.workerd": {
+      "types": "./src/database/sqlite.workerd.d.vibe.ts",
+      "vibelang-source": "./src/database/sqlite.workerd.vibe",
+      "default": "./.vibelang/js/src/database/sqlite.workerd.js"
+    },
+    "./config/plugin/instruction": {
+      "types": "./src/config/plugin/instruction.d.vibe.ts",
+      "vibelang-source": "./src/config/plugin/instruction.vibe",
+      "default": "./.vibelang/js/src/config/plugin/instruction.js"
+    },
+    "./config/plugin/agent": {
+      "types": "./src/config/plugin/agent.d.vibe.ts",
+      "vibelang-source": "./src/config/plugin/agent.vibe",
+      "default": "./.vibelang/js/src/config/plugin/agent.js"
+    },
+    "./config/plugin/compatibility": {
+      "types": "./src/config/plugin/compatibility.d.vibe.ts",
+      "vibelang-source": "./src/config/plugin/compatibility.vibe",
+      "default": "./.vibelang/js/src/config/plugin/compatibility.js"
+    },
+    "./config/plugin/reference": {
+      "types": "./src/config/plugin/reference.d.vibe.ts",
+      "vibelang-source": "./src/config/plugin/reference.vibe",
+      "default": "./.vibelang/js/src/config/plugin/reference.js"
+    },
+    "./config/plugin/policy": {
+      "types": "./src/config/plugin/policy.d.vibe.ts",
+      "vibelang-source": "./src/config/plugin/policy.vibe",
+      "default": "./.vibelang/js/src/config/plugin/policy.js"
+    },
+    "./config/plugin/skill-file": {
+      "types": "./src/config/plugin/skill-file.d.vibe.ts",
+      "vibelang-source": "./src/config/plugin/skill-file.vibe",
+      "default": "./.vibelang/js/src/config/plugin/skill-file.js"
+    },
+    "./config/plugin/skill-scan": {
+      "types": "./src/config/plugin/skill-scan.d.vibe.ts",
+      "vibelang-source": "./src/config/plugin/skill-scan.vibe",
+      "default": "./.vibelang/js/src/config/plugin/skill-scan.js"
+    },
+    "./config/plugin/worktree": {
+      "types": "./src/config/plugin/worktree.d.vibe.ts",
+      "vibelang-source": "./src/config/plugin/worktree.vibe",
+      "default": "./.vibelang/js/src/config/plugin/worktree.js"
+    },
+    "./tool/plugin/read": {
+      "types": "./src/tool/plugin/read.d.vibe.ts",
+      "vibelang-source": "./src/tool/plugin/read.vibe",
+      "default": "./.vibelang/js/src/tool/plugin/read.js"
+    },
+    "./tool/plugin/grep": {
+      "types": "./src/tool/plugin/grep.d.vibe.ts",
+      "vibelang-source": "./src/tool/plugin/grep.vibe",
+      "default": "./.vibelang/js/src/tool/plugin/grep.js"
+    },
+    "./tool/plugin/glob": {
+      "types": "./src/tool/plugin/glob.d.vibe.ts",
+      "vibelang-source": "./src/tool/plugin/glob.vibe",
+      "default": "./.vibelang/js/src/tool/plugin/glob.js"
+    },
+    "./config/plugin/instruction.vibe.platform": null,
+    "./config/plugin/agent.vibe.platform": null,
+    "./config/plugin/compatibility.vibe.platform": null,
+    "./config/plugin/reference.vibe.platform": null,
+    "./config/plugin/skill-file.vibe.platform": null,
+    "./config/plugin/skill-scan.vibe.platform": null,
+    "./config/plugin/worktree.vibe.platform": null,
+    "./tool/plugin/read.vibe.platform": null,
+    "./tool/plugin/grep.vibe.platform": null,
+    "./tool/plugin/glob.vibe.platform": null,
+    "./database/sqlite.bun.platform": null,
+    "./database/sqlite.node.platform": null,
+    "./plugin/vcs/git.vibe.platform": null,
+    "./plugin/vcs/hg.vibe.platform": null,
+    "./config/plugin/skill.vibe.platform": null,
+    "./config/plugin/command": {
+      "types": "./src/config/plugin/command.d.vibe.ts",
+      "vibelang-source": "./src/config/plugin/command.vibe",
+      "default": "./.vibelang/js/src/config/plugin/command.js"
+    },
+    "./config/plugin/command.vibe.platform": null,
+    "./config/plugin/source": {
+      "types": "./src/config/plugin/source.d.vibe.ts",
+      "vibelang-source": "./src/config/plugin/source.vibe",
+      "default": "./.vibelang/js/src/config/plugin/source.js"
+    },
+    "./config/plugin/source.vibe.platform": null,
+    "./config/variable": {
+      "types": "./src/config/variable.d.vibe.ts",
+      "vibelang-source": "./src/config/variable.vibe",
+      "default": "./.vibelang/js/src/config/variable.js"
+    },
+    "./config/variable.vibe.platform": null,
+    "./skill/discovery.vibe.platform": null,
+    "./image/photon.platform": null,
+    "./plugin/plan.vibe.platform": null,
+    "./plugin/skill.vibe.platform": null,
+    "./pty/ticket.vibe.platform": null,
+    "./aisdk.vibe.platform": null,
+    "./model.vibe.platform": null,
+    "./model-resolver.vibe.platform": null,
+    "./provider.platform": null,
+    "./pty.vibe.platform": null,
+    "./ripgrep.vibe.platform": null,
+    "./formatter.vibe.platform": null,
+    "./tool-output.vibe.platform": null,
+    "./filesystem.vibe.platform": null,
+    "./config.vibe.platform": null,
+    "./wellknown.vibe.platform": null,
+    "./persistent-pty/daemon": {
+      "types": "./src/persistent-pty/daemon.d.vibe.ts",
+      "vibelang-source": "./src/persistent-pty/daemon.vibe",
+      "default": "./.vibelang/js/src/persistent-pty/daemon.js"
+    },
+    "./persistent-pty/daemon.vibe.platform": null,
+    "./persistent-pty/index": {
+      "types": "./src/persistent-pty/index.d.vibe.ts",
+      "vibelang-source": "./src/persistent-pty/index.vibe",
+      "default": "./.vibelang/js/src/persistent-pty/index.js"
+    },
+    "./persistent-pty/index.vibe.platform": null,
+    "./plugin/provider/amazon-bedrock.vibe.platform": null,
+    "./plugin/provider/azure.vibe.platform": null,
+    "./plugin/provider/chatgpt.vibe.platform": null,
+    "./plugin/provider/cloudflare-ai-gateway.vibe.platform": null,
+    "./plugin/provider/cloudflare-workers-ai.vibe.platform": null,
+    "./plugin/provider/databricks.vibe.platform": null,
+    "./plugin/provider/digitalocean.vibe.platform": null,
+    "./plugin/provider/github-copilot.vibe.platform": null,
+    "./plugin/provider/gitlab.vibe.platform": null,
+    "./plugin/provider/google-vertex.vibe.host": null,
+    "./plugin/provider/modal.vibe.platform": null,
+    "./plugin/provider/openai.vibe.platform": null,
+    "./plugin/provider/opencode.vibe.platform": null,
+    "./plugin/provider/poe.vibe.platform": null,
+    "./plugin/provider/sap-ai-core.vibe.platform": null,
+    "./plugin/provider/snowflake-cortex.vibe.platform": null,
+    "./plugin/provider/xai.vibe.platform": null,
+    "./plugin/module.vibe.platform": null,
+    "./plugin/source-directory.vibe.platform": null,
+    "./plugin/supervisor.vibe.platform": null,
+    "./tool/http-body.vibe.platform": null,
+    "./tool/mcp.vibe.platform": null,
+    "./tool/read-filesystem.vibe.platform": null,
+    "./database/migration/20260127222353_familiar_lady_ursula": {
+      "types": "./src/database/migration/20260127222353_familiar_lady_ursula.d.vibe.ts",
+      "vibelang-source": "./src/database/migration/20260127222353_familiar_lady_ursula.vibe",
+      "default": "./.vibelang/js/src/database/migration/20260127222353_familiar_lady_ursula.js"
+    },
+    "./database/migration/20260211171708_add_project_commands": {
+      "types": "./src/database/migration/20260211171708_add_project_commands.d.vibe.ts",
+      "vibelang-source": "./src/database/migration/20260211171708_add_project_commands.vibe",
+      "default": "./.vibelang/js/src/database/migration/20260211171708_add_project_commands.js"
+    },
+    "./database/migration/20260213144116_wakeful_the_professor": {
+      "types": "./src/database/migration/20260213144116_wakeful_the_professor.d.vibe.ts",
+      "vibelang-source": "./src/database/migration/20260213144116_wakeful_the_professor.vibe",
+      "default": "./.vibelang/js/src/database/migration/20260213144116_wakeful_the_professor.js"
+    },
+    "./database/migration/20260225215848_workspace": {
+      "types": "./src/database/migration/20260225215848_workspace.d.vibe.ts",
+      "vibelang-source": "./src/database/migration/20260225215848_workspace.vibe",
+      "default": "./.vibelang/js/src/database/migration/20260225215848_workspace.js"
+    },
+    "./database/migration/20260227213759_add_session_workspace_id": {
+      "types": "./src/database/migration/20260227213759_add_session_workspace_id.d.vibe.ts",
+      "vibelang-source": "./src/database/migration/20260227213759_add_session_workspace_id.vibe",
+      "default": "./.vibelang/js/src/database/migration/20260227213759_add_session_workspace_id.js"
+    },
+    "./database/migration/20260228203230_blue_harpoon": {
+      "types": "./src/database/migration/20260228203230_blue_harpoon.d.vibe.ts",
+      "vibelang-source": "./src/database/migration/20260228203230_blue_harpoon.vibe",
+      "default": "./.vibelang/js/src/database/migration/20260228203230_blue_harpoon.js"
+    },
+    "./database/migration/20260303231226_add_workspace_fields": {
+      "types": "./src/database/migration/20260303231226_add_workspace_fields.d.vibe.ts",
+      "vibelang-source": "./src/database/migration/20260303231226_add_workspace_fields.vibe",
+      "default": "./.vibelang/js/src/database/migration/20260303231226_add_workspace_fields.js"
+    },
+    "./database/migration/20260309230000_move_org_to_state": {
+      "types": "./src/database/migration/20260309230000_move_org_to_state.d.vibe.ts",
+      "vibelang-source": "./src/database/migration/20260309230000_move_org_to_state.vibe",
+      "default": "./.vibelang/js/src/database/migration/20260309230000_move_org_to_state.js"
+    },
+    "./database/migration/20260312043431_session_message_cursor": {
+      "types": "./src/database/migration/20260312043431_session_message_cursor.d.vibe.ts",
+      "vibelang-source": "./src/database/migration/20260312043431_session_message_cursor.vibe",
+      "default": "./.vibelang/js/src/database/migration/20260312043431_session_message_cursor.js"
+    },
+    "./database/migration/20260323234822_events": {
+      "types": "./src/database/migration/20260323234822_events.d.vibe.ts",
+      "vibelang-source": "./src/database/migration/20260323234822_events.vibe",
+      "default": "./.vibelang/js/src/database/migration/20260323234822_events.js"
+    },
+    "./database/migration/20260410174513_workspace-name": {
+      "types": "./src/database/migration/20260410174513_workspace-name.d.vibe.ts",
+      "vibelang-source": "./src/database/migration/20260410174513_workspace-name.vibe",
+      "default": "./.vibelang/js/src/database/migration/20260410174513_workspace-name.js"
+    },
+    "./database/migration/20260413175956_chief_energizer": {
+      "types": "./src/database/migration/20260413175956_chief_energizer.d.vibe.ts",
+      "vibelang-source": "./src/database/migration/20260413175956_chief_energizer.vibe",
+      "default": "./.vibelang/js/src/database/migration/20260413175956_chief_energizer.js"
+    },
+    "./database/migration/20260423070820_add_icon_url_override": {
+      "types": "./src/database/migration/20260423070820_add_icon_url_override.d.vibe.ts",
+      "vibelang-source": "./src/database/migration/20260423070820_add_icon_url_override.vibe",
+      "default": "./.vibelang/js/src/database/migration/20260423070820_add_icon_url_override.js"
+    },
+    "./database/migration/20260427172553_slow_nightmare": {
+      "types": "./src/database/migration/20260427172553_slow_nightmare.d.vibe.ts",
+      "vibelang-source": "./src/database/migration/20260427172553_slow_nightmare.vibe",
+      "default": "./.vibelang/js/src/database/migration/20260427172553_slow_nightmare.js"
+    },
+    "./database/migration/20260428004200_add_session_path": {
+      "types": "./src/database/migration/20260428004200_add_session_path.d.vibe.ts",
+      "vibelang-source": "./src/database/migration/20260428004200_add_session_path.vibe",
+      "default": "./.vibelang/js/src/database/migration/20260428004200_add_session_path.js"
+    },
+    "./database/migration/20260501142318_next_venus": {
+      "types": "./src/database/migration/20260501142318_next_venus.d.vibe.ts",
+      "vibelang-source": "./src/database/migration/20260501142318_next_venus.vibe",
+      "default": "./.vibelang/js/src/database/migration/20260501142318_next_venus.js"
+    },
+    "./database/migration/20260504145000_add_sync_owner": {
+      "types": "./src/database/migration/20260504145000_add_sync_owner.d.vibe.ts",
+      "vibelang-source": "./src/database/migration/20260504145000_add_sync_owner.vibe",
+      "default": "./.vibelang/js/src/database/migration/20260504145000_add_sync_owner.js"
+    },
+    "./database/migration/20260507164347_add_workspace_time": {
+      "types": "./src/database/migration/20260507164347_add_workspace_time.d.vibe.ts",
+      "vibelang-source": "./src/database/migration/20260507164347_add_workspace_time.vibe",
+      "default": "./.vibelang/js/src/database/migration/20260507164347_add_workspace_time.js"
+    },
+    "./database/migration/20260510033149_session_usage": {
+      "types": "./src/database/migration/20260510033149_session_usage.d.vibe.ts",
+      "vibelang-source": "./src/database/migration/20260510033149_session_usage.vibe",
+      "default": "./.vibelang/js/src/database/migration/20260510033149_session_usage.js"
+    },
+    "./database/migration/20260511000411_data_migration_state": {
+      "types": "./src/database/migration/20260511000411_data_migration_state.d.vibe.ts",
+      "vibelang-source": "./src/database/migration/20260511000411_data_migration_state.vibe",
+      "default": "./.vibelang/js/src/database/migration/20260511000411_data_migration_state.js"
+    },
+    "./database/migration/20260511173437_session-metadata": {
+      "types": "./src/database/migration/20260511173437_session-metadata.d.vibe.ts",
+      "vibelang-source": "./src/database/migration/20260511173437_session-metadata.vibe",
+      "default": "./.vibelang/js/src/database/migration/20260511173437_session-metadata.js"
+    },
+    "./database/migration/20260601010001_normalize_storage_paths": {
+      "types": "./src/database/migration/20260601010001_normalize_storage_paths.d.vibe.ts",
+      "vibelang-source": "./src/database/migration/20260601010001_normalize_storage_paths.vibe",
+      "default": "./.vibelang/js/src/database/migration/20260601010001_normalize_storage_paths.js"
+    },
+    "./database/migration/20260601202201_amazing_prowler": {
+      "types": "./src/database/migration/20260601202201_amazing_prowler.d.vibe.ts",
+      "vibelang-source": "./src/database/migration/20260601202201_amazing_prowler.vibe",
+      "default": "./.vibelang/js/src/database/migration/20260601202201_amazing_prowler.js"
+    },
+    "./database/migration/20260602002951_lowly_union_jack": {
+      "types": "./src/database/migration/20260602002951_lowly_union_jack.d.vibe.ts",
+      "vibelang-source": "./src/database/migration/20260602002951_lowly_union_jack.vibe",
+      "default": "./.vibelang/js/src/database/migration/20260602002951_lowly_union_jack.js"
+    },
+    "./database/migration/20260602182828_add_project_directories": {
+      "types": "./src/database/migration/20260602182828_add_project_directories.d.vibe.ts",
+      "vibelang-source": "./src/database/migration/20260602182828_add_project_directories.vibe",
+      "default": "./.vibelang/js/src/database/migration/20260602182828_add_project_directories.js"
+    },
+    "./database/migration/20260603001617_session_message_projection_indexes": {
+      "types": "./src/database/migration/20260603001617_session_message_projection_indexes.d.vibe.ts",
+      "vibelang-source": "./src/database/migration/20260603001617_session_message_projection_indexes.vibe",
+      "default": "./.vibelang/js/src/database/migration/20260603001617_session_message_projection_indexes.js"
+    },
+    "./database/migration/20260603040000_session_message_projection_order": {
+      "types": "./src/database/migration/20260603040000_session_message_projection_order.d.vibe.ts",
+      "vibelang-source": "./src/database/migration/20260603040000_session_message_projection_order.vibe",
+      "default": "./.vibelang/js/src/database/migration/20260603040000_session_message_projection_order.js"
+    },
+    "./database/migration/20260603141458_session_input_inbox": {
+      "types": "./src/database/migration/20260603141458_session_input_inbox.d.vibe.ts",
+      "vibelang-source": "./src/database/migration/20260603141458_session_input_inbox.vibe",
+      "default": "./.vibelang/js/src/database/migration/20260603141458_session_input_inbox.js"
+    },
+    "./database/migration/20260603160727_jittery_ezekiel_stane": {
+      "types": "./src/database/migration/20260603160727_jittery_ezekiel_stane.d.vibe.ts",
+      "vibelang-source": "./src/database/migration/20260603160727_jittery_ezekiel_stane.vibe",
+      "default": "./.vibelang/js/src/database/migration/20260603160727_jittery_ezekiel_stane.js"
+    },
+    "./database/migration/20260604172448_event_sourced_session_input": {
+      "types": "./src/database/migration/20260604172448_event_sourced_session_input.d.vibe.ts",
+      "vibelang-source": "./src/database/migration/20260604172448_event_sourced_session_input.vibe",
+      "default": "./.vibelang/js/src/database/migration/20260604172448_event_sourced_session_input.js"
+    },
+    "./database/migration/20260605003541_add_session_context_snapshot": {
+      "types": "./src/database/migration/20260605003541_add_session_context_snapshot.d.vibe.ts",
+      "vibelang-source": "./src/database/migration/20260605003541_add_session_context_snapshot.vibe",
+      "default": "./.vibelang/js/src/database/migration/20260605003541_add_session_context_snapshot.js"
+    },
+    "./database/migration/20260605042240_add_context_epoch_agent": {
+      "types": "./src/database/migration/20260605042240_add_context_epoch_agent.d.vibe.ts",
+      "vibelang-source": "./src/database/migration/20260605042240_add_context_epoch_agent.vibe",
+      "default": "./.vibelang/js/src/database/migration/20260605042240_add_context_epoch_agent.js"
+    },
+    "./database/migration/20260611035744_credential": {
+      "types": "./src/database/migration/20260611035744_credential.d.vibe.ts",
+      "vibelang-source": "./src/database/migration/20260611035744_credential.vibe",
+      "default": "./.vibelang/js/src/database/migration/20260611035744_credential.js"
+    },
+    "./database/migration/20260611192811_lush_chimera": {
+      "types": "./src/database/migration/20260611192811_lush_chimera.d.vibe.ts",
+      "vibelang-source": "./src/database/migration/20260611192811_lush_chimera.vibe",
+      "default": "./.vibelang/js/src/database/migration/20260611192811_lush_chimera.js"
+    },
+    "./database/migration/20260612174303_project_dir_strategy": {
+      "types": "./src/database/migration/20260612174303_project_dir_strategy.d.vibe.ts",
+      "vibelang-source": "./src/database/migration/20260612174303_project_dir_strategy.vibe",
+      "default": "./.vibelang/js/src/database/migration/20260612174303_project_dir_strategy.js"
+    },
+    "./database/migration/20260622142730_simplify_session_context_epoch": {
+      "types": "./src/database/migration/20260622142730_simplify_session_context_epoch.d.vibe.ts",
+      "vibelang-source": "./src/database/migration/20260622142730_simplify_session_context_epoch.vibe",
+      "default": "./.vibelang/js/src/database/migration/20260622142730_simplify_session_context_epoch.js"
+    },
+    "./database/migration/20260622170816_reset_v2_session_state": {
+      "types": "./src/database/migration/20260622170816_reset_v2_session_state.d.vibe.ts",
+      "vibelang-source": "./src/database/migration/20260622170816_reset_v2_session_state.vibe",
+      "default": "./.vibelang/js/src/database/migration/20260622170816_reset_v2_session_state.js"
+    },
+    "./database/migration/20260622202450_simplify_session_input": {
+      "types": "./src/database/migration/20260622202450_simplify_session_input.d.vibe.ts",
+      "vibelang-source": "./src/database/migration/20260622202450_simplify_session_input.vibe",
+      "default": "./.vibelang/js/src/database/migration/20260622202450_simplify_session_input.js"
+    },
+    "./database/migration/20260804233008_loose_psylocke": {
+      "types": "./src/database/migration/20260804233008_loose_psylocke.d.vibe.ts",
+      "vibelang-source": "./src/database/migration/20260804233008_loose_psylocke.vibe",
+      "default": "./.vibelang/js/src/database/migration/20260804233008_loose_psylocke.js"
+    },
+    "./database/migration/20260808023530_workspace_domain": {
+      "types": "./src/database/migration/20260808023530_workspace_domain.d.vibe.ts",
+      "vibelang-source": "./src/database/migration/20260808023530_workspace_domain.vibe",
+      "default": "./.vibelang/js/src/database/migration/20260808023530_workspace_domain.js"
+    },
+    "./database/migration/20260811161259_execution_claim_attempts": {
+      "types": "./src/database/migration/20260811161259_execution_claim_attempts.d.vibe.ts",
+      "vibelang-source": "./src/database/migration/20260811161259_execution_claim_attempts.vibe",
+      "default": "./.vibelang/js/src/database/migration/20260811161259_execution_claim_attempts.js"
+    },
+    "./database/migration/20260812181746_session_inbox": {
+      "types": "./src/database/migration/20260812181746_session_inbox.d.vibe.ts",
+      "vibelang-source": "./src/database/migration/20260812181746_session_inbox.vibe",
+      "default": "./.vibelang/js/src/database/migration/20260812181746_session_inbox.js"
+    },
+    "./database/migration/20260812213948_worktree": {
+      "types": "./src/database/migration/20260812213948_worktree.d.vibe.ts",
+      "vibelang-source": "./src/database/migration/20260812213948_worktree.vibe",
+      "default": "./.vibelang/js/src/database/migration/20260812213948_worktree.js"
+    },
+    "./database/migration/20260819222447_session_viewed_state": {
+      "types": "./src/database/migration/20260819222447_session_viewed_state.d.vibe.ts",
+      "vibelang-source": "./src/database/migration/20260819222447_session_viewed_state.vibe",
+      "default": "./.vibelang/js/src/database/migration/20260819222447_session_viewed_state.js"
+    },
+    "./database/migration/20260823191254_nullable_workspace_binding": {
+      "types": "./src/database/migration/20260823191254_nullable_workspace_binding.d.vibe.ts",
+      "vibelang-source": "./src/database/migration/20260823191254_nullable_workspace_binding.vibe",
+      "default": "./.vibelang/js/src/database/migration/20260823191254_nullable_workspace_binding.js"
+    },
+    "./database/migration/20260910120000_clear_v1_session_permission": {
+      "types": "./src/database/migration/20260910120000_clear_v1_session_permission.d.vibe.ts",
+      "vibelang-source": "./src/database/migration/20260910120000_clear_v1_session_permission.vibe",
+      "default": "./.vibelang/js/src/database/migration/20260910120000_clear_v1_session_permission.js"
+    },
+    "./database/migration/20260923013825_project_time_active": {
+      "types": "./src/database/migration/20260923013825_project_time_active.d.vibe.ts",
+      "vibelang-source": "./src/database/migration/20260923013825_project_time_active.vibe",
+      "default": "./.vibelang/js/src/database/migration/20260923013825_project_time_active.js"
+    },
+    "./database/migration/20261007190000_azure_cli_external_credential": {
+      "types": "./src/database/migration/20261007190000_azure_cli_external_credential.d.vibe.ts",
+      "vibelang-source": "./src/database/migration/20261007190000_azure_cli_external_credential.vibe",
+      "default": "./.vibelang/js/src/database/migration/20261007190000_azure_cli_external_credential.js"
+    },
+    "./database/migration/20261010180456_project_time_archived": {
+      "types": "./src/database/migration/20261010180456_project_time_archived.d.vibe.ts",
+      "vibelang-source": "./src/database/migration/20261010180456_project_time_archived.vibe",
+      "default": "./.vibelang/js/src/database/migration/20261010180456_project_time_archived.js"
+    },
+    "./database/migration/20261024002554_session_allowance": {
+      "types": "./src/database/migration/20261024002554_session_allowance.d.vibe.ts",
+      "vibelang-source": "./src/database/migration/20261024002554_session_allowance.vibe",
+      "default": "./.vibelang/js/src/database/migration/20261024002554_session_allowance.js"
+    },
+    "./database/migration/20261024175301_drop_session_allowance": {
+      "types": "./src/database/migration/20261024175301_drop_session_allowance.d.vibe.ts",
+      "vibelang-source": "./src/database/migration/20261024175301_drop_session_allowance.vibe",
+      "default": "./.vibelang/js/src/database/migration/20261024175301_drop_session_allowance.js"
+    },
+    "./database/migration/20261025123711_blob": {
+      "types": "./src/database/migration/20261025123711_blob.d.vibe.ts",
+      "vibelang-source": "./src/database/migration/20261025123711_blob.vibe",
+      "default": "./.vibelang/js/src/database/migration/20261025123711_blob.js"
+    },
+    "./database/migration/20261025154125_drop_session_pending": {
+      "types": "./src/database/migration/20261025154125_drop_session_pending.d.vibe.ts",
+      "vibelang-source": "./src/database/migration/20261025154125_drop_session_pending.vibe",
+      "default": "./.vibelang/js/src/database/migration/20261025154125_drop_session_pending.js"
+    },
+    "./database/migration/20260805200742_import_legacy_credentials": {
+      "types": "./src/database/migration/20260805200742_import_legacy_credentials.d.vibe.ts",
+      "vibelang-source": "./src/database/migration/20260805200742_import_legacy_credentials.vibe",
+      "default": "./.vibelang/js/src/database/migration/20260805200742_import_legacy_credentials.js"
+    },
+    "./database/migration/20260805200742_import_legacy_credentials.platform": null,
+    "./effect/keyed-mutex.native": null,
+    "./generate.native": null,
+    "./tool/runtime.vibe.-24-throw-24-ts": null,
+    "./tool/runtime.vibe.$throw$ts": null,
+    "./session/projector.vibe.platform": null,
+    "./session/blob.vibe.platform": null,
+    "./session/instruction-state.vibe.platform": null,
+    "./session/instruction-entry.vibe.platform": null,
+    "./session/transfer.vibe.platform": null,
+    "./session/move.vibe.platform": null,
+    "./session/model-request.vibe.platform": null,
+    "./session/runner/to-llm-message.vibe.platform": null,
+    "./session/prompt.vibe.platform": null,
+    "./session/title.vibe.platform": null,
+    "./session/instructions.vibe.platform": null,
+    "./git": {
+      "types": "./src/git.d.vibe.ts",
+      "vibelang-source": "./src/git.vibe",
+      "default": "./.vibelang/js/src/git.js"
+    },
+    "./integration": {
+      "types": "./src/integration.d.vibe.ts",
+      "vibelang-source": "./src/integration.vibe",
+      "default": "./.vibelang/js/src/integration.js"
+    },
+    "./project": {
+      "types": "./src/project.d.vibe.ts",
+      "vibelang-source": "./src/project.vibe",
+      "default": "./.vibelang/js/src/project.js"
+    },
+    "./workspace": {
+      "types": "./src/workspace.d.vibe.ts",
+      "vibelang-source": "./src/workspace.vibe",
+      "default": "./.vibelang/js/src/workspace.js"
+    },
+    "./location": {
+      "types": "./src/location.d.vibe.ts",
+      "vibelang-source": "./src/location.vibe",
+      "default": "./.vibelang/js/src/location.js"
+    },
+    "./bus": {
+      "types": "./src/bus.d.vibe.ts",
+      "vibelang-source": "./src/bus.vibe",
+      "default": "./.vibelang/js/src/bus.js"
+    },
+    "./credential": {
+      "types": "./src/credential.d.vibe.ts",
+      "vibelang-source": "./src/credential.vibe",
+      "default": "./.vibelang/js/src/credential.js"
+    },
+    "./form": {
+      "types": "./src/form.d.vibe.ts",
+      "vibelang-source": "./src/form.vibe",
+      "default": "./.vibelang/js/src/form.js"
+    },
+    "./mcp/oauth": {
+      "types": "./src/mcp/oauth.d.vibe.ts",
+      "vibelang-source": "./src/mcp/oauth.vibe",
+      "default": "./.vibelang/js/src/mcp/oauth.js"
+    },
+    "./mcp/client": {
+      "types": "./src/mcp/client.d.vibe.ts",
+      "vibelang-source": "./src/mcp/client.vibe",
+      "default": "./.vibelang/js/src/mcp/client.js"
+    },
+    "./mcp/stdio": {
+      "types": "./src/mcp/stdio.d.vibe.ts",
+      "vibelang-source": "./src/mcp/stdio.vibe",
+      "default": "./.vibelang/js/src/mcp/stdio.js"
+    },
+    "./environment/memory": {
+      "types": "./src/environment/memory.d.vibe.ts",
+      "vibelang-source": "./src/environment/memory.vibe",
+      "default": "./.vibelang/js/src/environment/memory.js"
+    },
+    "./environment/local": {
+      "types": "./src/environment/local.d.vibe.ts",
+      "vibelang-source": "./src/environment/local.vibe",
+      "default": "./.vibelang/js/src/environment/local.js"
+    },
+    "./environment/environment": {
+      "types": "./src/environment/environment.d.vibe.ts",
+      "vibelang-source": "./src/environment/environment.vibe",
+      "default": "./.vibelang/js/src/environment/environment.js"
+    },
+    "./environment/exec-defaults": {
+      "types": "./src/environment/exec-defaults.d.vibe.ts",
+      "vibelang-source": "./src/environment/exec-defaults.vibe",
+      "default": "./.vibelang/js/src/environment/exec-defaults.js"
+    },
+    "./environment/files": {
+      "types": "./src/environment/files.d.vibe.ts",
+      "vibelang-source": "./src/environment/files.vibe",
+      "default": "./.vibelang/js/src/environment/files.js"
+    },
+    "./project/icon": {
+      "types": "./src/project/icon.d.vibe.ts",
+      "vibelang-source": "./src/project/icon.vibe",
+      "default": "./.vibelang/js/src/project/icon.js"
+    },
+    "./project/schema": {
+      "types": "./src/project/schema.d.vibe.ts",
+      "vibelang-source": "./src/project/schema.vibe",
+      "default": "./.vibelang/js/src/project/schema.js"
+    },
+    "./util/error-summary": {
+      "types": "./src/util/error-summary.d.vibe.ts",
+      "vibelang-source": "./src/util/error-summary.vibe",
+      "default": "./.vibelang/js/src/util/error-summary.js"
+    },
+    "./workspace/driver": {
+      "types": "./src/workspace/driver.d.vibe.ts",
+      "vibelang-source": "./src/workspace/driver.vibe",
+      "default": "./.vibelang/js/src/workspace/driver.js"
+    },
+    "./git.platform": null,
+    "./integration.platform": null,
+    "./project.platform": null,
+    "./bus.platform": null,
+    "./mcp/oauth.platform": null,
+    "./mcp/client.platform": null,
+    "./mcp/stdio.platform": null,
+    "./environment/memory.platform": null,
+    "./environment/local.platform": null,
+    "./project/icon.platform": null,
+    "./session.vibe.platform": null,
+    "./database/migration": {
+      "types": "./src/database/migration.d.vibe.ts",
+      "vibelang-source": "./src/database/migration.vibe",
+      "default": "./.vibelang/js/src/database/migration.js"
+    },
+    "./database/drizzle/sqlite-core/effect/db": {
+      "types": "./src/database/drizzle/sqlite-core/effect/db.d.vibe.ts",
+      "vibelang-source": "./src/database/drizzle/sqlite-core/effect/db.vibe",
+      "default": "./.vibelang/js/src/database/drizzle/sqlite-core/effect/db.js"
+    },
+    "./database/drizzle/sqlite-core/effect/db.vibe.rawquery": null,
+    "./database/path": {
+      "types": "./src/database/path.d.vibe.ts",
+      "vibelang-source": "./src/database/path.vibe",
+      "default": "./.vibelang/js/src/database/path.js"
+    },
+    "./database/path.vibe.platform": null
   },
   "imports": {
     "#sqlite": {
-      "workerd": "./src/database/sqlite.workerd.ts",
-      "bun": "./src/database/sqlite.bun.ts",
-      "node": "./src/database/sqlite.node.ts",
-      "default": "./src/database/sqlite.node.ts"
+      "workerd": {
+        "types": "./src/database/sqlite.workerd.d.vibe.ts",
+        "vibelang-source": "./src/database/sqlite.workerd.vibe",
+        "default": "./.vibelang/js/src/database/sqlite.workerd.js"
+      },
+      "bun": {
+        "types": "./src/database/sqlite.bun.d.vibe.ts",
+        "vibelang-source": "./src/database/sqlite.bun.vibe",
+        "default": "./.vibelang/js/src/database/sqlite.bun.js"
+      },
+      "node": {
+        "types": "./src/database/sqlite.node.d.vibe.ts",
+        "vibelang-source": "./src/database/sqlite.node.vibe",
+        "default": "./.vibelang/js/src/database/sqlite.node.js"
+      },
+      "default": {
+        "types": "./src/database/sqlite.node.d.vibe.ts",
+        "vibelang-source": "./src/database/sqlite.node.vibe",
+        "default": "./.vibelang/js/src/database/sqlite.node.js"
+      }
     },
     "#pty": {
-      "workerd": "./src/pty/pty.workerd.ts",
-      "bun": "./src/pty/pty.bun.ts",
-      "node": "./src/pty/pty.node.ts",
-      "default": "./src/pty/pty.bun.ts"
+      "workerd": {
+        "types": "./src/pty/pty.workerd.ts",
+        "vibelang-source": "./src/pty/pty.workerd.ts",
+        "default": "./.vibelang/js/src/pty/pty.workerd.js"
+      },
+      "bun": {
+        "types": "./src/pty/pty.bun.ts",
+        "vibelang-source": "./src/pty/pty.bun.ts",
+        "default": "./.vibelang/js/src/pty/pty.bun.js"
+      },
+      "node": {
+        "types": "./src/pty/pty.node.ts",
+        "vibelang-source": "./src/pty/pty.node.ts",
+        "default": "./.vibelang/js/src/pty/pty.node.js"
+      },
+      "default": {
+        "types": "./src/pty/pty.bun.ts",
+        "vibelang-source": "./src/pty/pty.bun.ts",
+        "default": "./.vibelang/js/src/pty/pty.bun.js"
+      }
     },
     "#persistent-pty-binary": {
-      "workerd": "./src/persistent-pty/binary.workerd.ts",
-      "bun": "./src/persistent-pty/binary.bun.ts",
-      "node": "./src/persistent-pty/binary.node.ts",
-      "default": "./src/persistent-pty/binary.bun.ts"
+      "workerd": {
+        "types": "./src/persistent-pty/binary.workerd.ts",
+        "vibelang-source": "./src/persistent-pty/binary.workerd.ts",
+        "default": "./.vibelang/js/src/persistent-pty/binary.workerd.js"
+      },
+      "bun": {
+        "types": "./src/persistent-pty/binary.bun.ts",
+        "vibelang-source": "./src/persistent-pty/binary.bun.ts",
+        "default": "./.vibelang/js/src/persistent-pty/binary.bun.js"
+      },
+      "node": {
+        "types": "./src/persistent-pty/binary.node.ts",
+        "vibelang-source": "./src/persistent-pty/binary.node.ts",
+        "default": "./.vibelang/js/src/persistent-pty/binary.node.js"
+      },
+      "default": {
+        "types": "./src/persistent-pty/binary.bun.ts",
+        "vibelang-source": "./src/persistent-pty/binary.bun.ts",
+        "default": "./.vibelang/js/src/persistent-pty/binary.bun.js"
+      }
     },
     "#fff": {
-      "workerd": "./src/filesystem/fff.workerd.ts",
-      "bun": "./src/filesystem/fff.bun.ts",
-      "node": "./src/filesystem/fff.node.ts",
-      "default": "./src/filesystem/fff.bun.ts"
+      "workerd": {
+        "types": "./src/filesystem/fff.workerd.ts",
+        "vibelang-source": "./src/filesystem/fff.workerd.ts",
+        "default": "./.vibelang/js/src/filesystem/fff.workerd.js"
+      },
+      "bun": {
+        "types": "./src/filesystem/fff.bun.ts",
+        "vibelang-source": "./src/filesystem/fff.bun.ts",
+        "default": "./.vibelang/js/src/filesystem/fff.bun.js"
+      },
+      "node": {
+        "types": "./src/filesystem/fff.node.ts",
+        "vibelang-source": "./src/filesystem/fff.node.ts",
+        "default": "./.vibelang/js/src/filesystem/fff.node.js"
+      },
+      "default": {
+        "types": "./src/filesystem/fff.bun.ts",
+        "vibelang-source": "./src/filesystem/fff.bun.ts",
+        "default": "./.vibelang/js/src/filesystem/fff.bun.js"
+      }
     },
     "#photon-wasm": {
-      "workerd": "./src/image/photon-wasm.workerd.ts",
-      "bun": "./src/image/photon-wasm.bun.ts",
-      "node": "./src/image/photon-wasm.node.ts",
-      "default": "./src/image/photon-wasm.bun.ts"
+      "workerd": {
+        "types": "./src/image/photon-wasm.workerd.ts",
+        "vibelang-source": "./src/image/photon-wasm.workerd.ts",
+        "default": "./.vibelang/js/src/image/photon-wasm.workerd.js"
+      },
+      "bun": {
+        "types": "./src/image/photon-wasm.bun.ts",
+        "vibelang-source": "./src/image/photon-wasm.bun.ts",
+        "default": "./.vibelang/js/src/image/photon-wasm.bun.js"
+      },
+      "node": {
+        "types": "./src/image/photon-wasm.node.ts",
+        "vibelang-source": "./src/image/photon-wasm.node.ts",
+        "default": "./.vibelang/js/src/image/photon-wasm.node.js"
+      },
+      "default": {
+        "types": "./src/image/photon-wasm.bun.ts",
+        "vibelang-source": "./src/image/photon-wasm.bun.ts",
+        "default": "./.vibelang/js/src/image/photon-wasm.bun.js"
+      }
     },
     "#shell-parser-wasm": {
-      "workerd": "./src/shell/parser-wasm.workerd.ts",
-      "bun": "./src/shell/parser-wasm.bun.ts",
-      "node": "./src/shell/parser-wasm.node.ts",
-      "default": "./src/shell/parser-wasm.bun.ts"
+      "workerd": {
+        "types": "./src/shell/parser-wasm.workerd.ts",
+        "vibelang-source": "./src/shell/parser-wasm.workerd.ts",
+        "default": "./.vibelang/js/src/shell/parser-wasm.workerd.js"
+      },
+      "bun": {
+        "types": "./src/shell/parser-wasm.bun.ts",
+        "vibelang-source": "./src/shell/parser-wasm.bun.ts",
+        "default": "./.vibelang/js/src/shell/parser-wasm.bun.js"
+      },
+      "node": {
+        "types": "./src/shell/parser-wasm.node.ts",
+        "vibelang-source": "./src/shell/parser-wasm.node.ts",
+        "default": "./.vibelang/js/src/shell/parser-wasm.node.js"
+      },
+      "default": {
+        "types": "./src/shell/parser-wasm.bun.ts",
+        "vibelang-source": "./src/shell/parser-wasm.bun.ts",
+        "default": "./.vibelang/js/src/shell/parser-wasm.bun.js"
+      }
     },
     "#v1-migration": {
       "types": "./src/database/v1-migration.bun.ts",
-      "bun": "./src/database/v1-migration.bun.ts",
-      "node": "./src/database/v1-migration.noop.ts",
-      "workerd": "./src/database/v1-migration.noop.ts",
-      "default": "./src/database/v1-migration.noop.ts"
+      "bun": {
+        "types": "./src/database/v1-migration.bun.ts",
+        "vibelang-source": "./src/database/v1-migration.bun.ts",
+        "default": "./.vibelang/js/src/database/v1-migration.bun.js"
+      },
+      "node": {
+        "types": "./src/database/v1-migration.noop.d.vibe.ts",
+        "vibelang-source": "./src/database/v1-migration.noop.vibe",
+        "default": "./.vibelang/js/src/database/v1-migration.noop.js"
+      },
+      "workerd": {
+        "types": "./src/database/v1-migration.noop.d.vibe.ts",
+        "vibelang-source": "./src/database/v1-migration.noop.vibe",
+        "default": "./.vibelang/js/src/database/v1-migration.noop.js"
+      },
+      "default": {
+        "types": "./src/database/v1-migration.noop.d.vibe.ts",
+        "vibelang-source": "./src/database/v1-migration.noop.vibe",
+        "default": "./.vibelang/js/src/database/v1-migration.noop.js"
+      }
+    },
+    "#vibelang/emitted/src/config/plugin/entry-observer": {
+      "types": "./src/config/plugin/entry-observer.d.vibe.ts",
+      "vibelang-source": "./src/config/plugin/entry-observer.vibe",
+      "default": "./.vibelang/js/src/config/plugin/entry-observer.js"
+    },
+    "#vibelang/emitted/src/config/plugin/mcp": {
+      "types": "./src/config/plugin/mcp.d.vibe.ts",
+      "vibelang-source": "./src/config/plugin/mcp.vibe",
+      "default": "./.vibelang/js/src/config/plugin/mcp.js"
+    },
+    "#vibelang/emitted/src/shell/select": {
+      "types": "./src/shell/select.ts",
+      "vibelang-source": "./src/shell/select.ts",
+      "default": "./.vibelang/js/src/shell/select.js"
     }
   },
   "devDependencies": {
@@ -95,7 +1897,10 @@
     "@types/node": "catalog:",
     "@types/which": "3.0.4",
     "drizzle-kit": "catalog:",
-    "fast-check": "catalog:"
+    "fast-check": "catalog:",
+    "vibelang": "file:../../.vibelang-toolchain/0.0.14-pre.d955d06c6696/tarballs/vibelang-0.0.14-pre.d955d06c6696.tgz",
+    "vibelang-unplugin": "file:../../.vibelang-toolchain/0.0.14-pre.d955d06c6696/tarballs/vibelang-unplugin-0.0.14-pre.d955d06c6696.tgz",
+    "typescript": "catalog:"
   },
   "dependencies": {
     "@ai-sdk/cohere": "3.0.27",
@@ -136,6 +1941,7 @@
     "tree-sitter-powershell": "0.25.10",
     "web-tree-sitter": "0.25.10",
     "which": "6.0.1",
-    "zod": "catalog:"
+    "zod": "catalog:",
+    "vibelang-runtime": "file:../../.vibelang-toolchain/0.0.14-pre.d955d06c6696/tarballs/vibelang-runtime-0.0.14-pre.d955d06c6696.tgz"
   }
 }

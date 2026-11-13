@@ -5,7 +5,7 @@ import type { Platform } from "@/runtime/platform/platform"
 import { flushPersisted } from "@/runtime/persistence/persist"
 import { Persist, persisted } from "@/runtime/persistence/storage"
 import { Persistence } from "@/runtime/persistence/schema"
-import { TabStorage } from "@/shell/tabs/schema"
+import { TabStorage } from "../src/shell/tabs/schema.vibe"
 
 const Current = Schema.Struct({
   enabled: Schema.Boolean,

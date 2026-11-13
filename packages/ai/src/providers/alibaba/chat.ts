@@ -1,1 +1,1 @@
-export { model, type Settings } from "../alibaba.js"
+export { model, type Settings } from "../alibaba.vibe"

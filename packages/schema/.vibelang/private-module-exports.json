@@ -1,0 +1,13 @@
+{
+  "version": 1,
+  "entries": [
+    {
+      "field": "exports",
+      "key": "./event.vibe.-24-throw-24-ts"
+    },
+    {
+      "field": "exports",
+      "key": "./rpc.vibe.-24-throw-24-ts"
+    }
+  ]
+}

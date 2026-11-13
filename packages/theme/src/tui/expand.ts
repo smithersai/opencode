@@ -5,7 +5,7 @@ import type {
   TextDefinition,
   ThemeTokensDefinition,
 } from "./index.js"
-import { ActionState } from "./schema.js"
+import { ActionState } from "./schema.vibe"
 
 export function expandTheme<Definition extends ModeDefinition>(definition: Definition): Definition {
   return {

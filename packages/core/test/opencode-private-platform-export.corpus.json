@@ -1,0 +1,4 @@
+{
+  "specifier": "@opencode/core/database/migration/20260805200742_import_legacy_credentials.platform",
+  "conditions": ["types", "node", "bun", "vibelang-source", "browser"]
+}

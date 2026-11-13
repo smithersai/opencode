@@ -1,5 +1,5 @@
 import path from "node:path"
-import { OPENCODE_CHANNEL } from "./version"
+import { OPENCODE_CHANNEL } from "./version.ts"
 
 export function databasePath(data: string) {
   const filename =

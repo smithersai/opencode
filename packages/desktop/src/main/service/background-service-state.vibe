@@ -1,0 +1,32 @@
+export * as BackgroundServiceState from "./background-service-state.vibe"
+
+import type { SidecarCredentials } from "./sidecar-credentials"
+
+// The initial connect runs in the background: windows are created as soon as the main process
+// is up, and the renderer loads its bundle while the CLI service is being resolved. Consumers
+// await the first outcome through `connection`, so nothing observes the service before it exists.
+export const make = effect (options: {
+  readonly initial: SidecarCredentials.Data!unknown
+  readonly reconnect: SidecarCredentials.Data!!
+}) =>
+  try withSpan(
+    effect {
+      // Every Exit is an Effect, so the latest resolution replays directly for each consumer.
+      const current = try Ref.make<Exit.Exit<SidecarCredentials.Data, unknown> | undefined>(undefined)
+      const first = try Deferred.make<void>()
+      try (options.initial
+        |> Effect.exit(%)
+        |> Effect.flatMap(%, (exit) => Ref.set(current, exit))
+        |> Effect.ensuring(%, Deferred.succeed(first, undefined))
+        |> Effect.forkScoped(%))
+
+      return {
+        connection: Deferred.await(first)
+          |> Effect.flatMap(%, () => Ref.get(current))
+          |> Effect.flatMap(%, (exit) => exit ?? Exit.die(new Error("background service connect did not resolve")))
+          |> Effect.orDie(%),
+        reconnect: options.reconnect |> Effect.tap(%, (next) => Ref.set(current, Exit.succeed(next))),
+      }
+    },
+    "BackgroundServiceState.make",
+  )

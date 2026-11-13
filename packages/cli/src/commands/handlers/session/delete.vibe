@@ -1,0 +1,49 @@
+module platform {
+  export { EOL } from "node:os"
+
+  export const writeOutput = (...args: Parameters<typeof process.stdout.write>) => process.stdout.write(...args)
+
+  export const writeError = (...args: Parameters<typeof process.stderr.write>) => process.stderr.write(...args)
+
+  export const setExitCode = (code: typeof process.exitCode) => (process.exitCode = code)
+}
+
+import { setExitCode, writeError, writeOutput } from platform
+import { OpenCode } from "@opencode/client"
+import { Service } from "@opencode/client/effect/service"
+import { Effect } from "effect"
+import { EOL } from platform
+import { Commands } from "../../commands.ts"
+import { Runtime } from "../../../framework/runtime"
+import { ServerConnection } from "../../../services/server-connection"
+import { errorMessage } from "../../../util/error"
+
+const handler = Effect.fn("cli.session.delete")(effect function(
+  input: Runtime.Input<typeof Commands.commands.session.commands.delete>,
+) {
+  const server = try ServerConnection.resolve()
+  const client =
+    try ((args: Parameters<typeof OpenCode.make>) => Effect.try(() => OpenCode.make(...args)).pipe(Effect.orDie))([{
+      baseUrl: server.endpoint.url,
+      headers:
+        try ((args: Parameters<typeof Service.headers>) =>
+          Effect.try(() => Service.headers(...args)).pipe(Effect.orDie))([server.endpoint]),
+    }])
+  try Effect.tryPromise({
+    try: (signal) => client.session.remove({ sessionID: input.sessionID }, { signal }),
+    catch: (cause) => cause,
+  })
+  void (try ((args: Parameters<typeof writeOutput>) => Effect.try(() => writeOutput(...args)).pipe(Effect.orDie))([
+    `Session ${input.sessionID} deleted${EOL}`,
+  ]))
+})
+
+export default Runtime.handler(Commands.commands.session.commands.delete, (input) =>
+  handler(input).pipe(
+    Effect.catch((error) =>
+      Effect.sync(() => {
+        writeError(errorMessage(error) + EOL)
+        setExitCode(1)
+      })
+    ),
+  ))

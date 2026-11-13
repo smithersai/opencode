@@ -45,7 +45,7 @@ import {
   type LabEntry,
   type StoryArgs,
   type StoryModule,
-} from "./catalog"
+} from "./catalog.vibe"
 import { applyMotionPatch, motionFields, motionScopes, motionValues, sameMotion, storyMotion } from "./motion"
 
 // How long Play holds each state at full speed. Slow motion doubles it while the motion itself runs 4× longer, so

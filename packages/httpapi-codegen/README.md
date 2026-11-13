@@ -12,6 +12,7 @@ The package is private while its API is explored. Its tests are the executable s
 - Generate a rich Effect client with decoded Effect-native values, runtime schemas, preserved transformations, and `HttpApiClient`.
 - Generate a zero-Effect Promise client with structural wire-oriented values, direct `fetch`, and syntax parsing without runtime structural validation.
 - Keep the Promise surface domain-oriented rather than Hey API compatible: methods return unwrapped values and reject with tagged declared errors or `ClientError`.
+- Promise SSE output retains the original data codec's encoded fields: opaque values stay `any`, explicit JSON stays JSON, and transformations keep their wire types.
 - Return Promise streams as lazy `AsyncIterable` values and Effect streams as `Stream` values. Neither runtime reconnects automatically.
 
 - Flatten path, query, header, and struct payload fields into one input object.

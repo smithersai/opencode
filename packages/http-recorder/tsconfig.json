@@ -2,6 +2,8 @@
   "$schema": "https://json.schemastore.org/tsconfig",
   "extends": "@tsconfig/node22/tsconfig.json",
   "compilerOptions": {
+    "rewriteRelativeImportExtensions": true,
+    "allowArbitraryExtensions": true,
     "types": ["node"],
     "noUnusedLocals": true,
     "rootDir": "src",
@@ -16,7 +18,8 @@
       {
         "name": "@effect/language-service",
         "transform": "@effect/language-service/transform",
-        "namespaceImportPackages": ["effect", "@effect/*"]
+        "namespaceImportPackages": ["effect", "@effect/*"],
+        "ignoreEffectWarningsInTscExitCode": true
       }
     ]
   },

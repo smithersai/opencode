@@ -1,0 +1,16 @@
+{
+  "tracked": [
+    "packages/app/src/Widget.tsx",
+    "packages/app/src/effect.vibe",
+    "packages/app/src/Widget.vibex",
+    "packages/app/src/Widget.d.vibex.ts",
+    "packages/app/src/effect.d.vibe.ts",
+    "packages/app/src/native.d.ts",
+    "packages/core/src/outside.vibex"
+  ],
+  "selected": [
+    "packages/app/src/Widget.tsx",
+    "packages/app/src/effect.vibe",
+    "packages/app/src/Widget.vibex"
+  ]
+}

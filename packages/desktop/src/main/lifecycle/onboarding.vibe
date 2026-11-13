@@ -1,0 +1,88 @@
+import { app } from "electron"
+import { scoped } from "../native/logging"
+import { hasExistingAppState } from "../storage/install-state"
+import { FIRST_LAUNCH_ONBOARDING_COMPLETE_KEY } from "../storage/keys"
+import { getStore } from "../storage/store"
+import { nativeT } from "../native/translations"
+
+export const initializeFirstLaunchOnboarding = effect (userDataPath: string) =>
+  try withSpan(
+    effect {
+      const store = try Effect.orDie(Effect.try({ try: () => getStore(), catch: (e) => e }))
+      const current = try Effect.orDie(
+        Effect.try({ try: () => store.get(FIRST_LAUNCH_ONBOARDING_COMPLETE_KEY), catch: (e) => e }),
+      )
+
+      if (typeof current === "boolean") return current
+
+      const fs = try FileSystem.FileSystem
+      const path = try Path.Path
+      const names = (try fs.exists(userDataPath)) ? try fs.readDirectory(userDataPath) : []
+
+      const entries = try Effect.forEach(
+        names,
+        effect (name) => {
+          const info = try (fs.stat(path.join(userDataPath, name)) |> Effect.option(%))
+
+          return { name, directory: Option.isSome(info) && info.value.type === "Directory" }
+        },
+        { concurrency: "unbounded" },
+      )
+
+      const complete = try Effect.orDie(Effect.try({ try: () => hasExistingAppState(entries), catch: (e) => e }))
+      try Effect.orDie(
+        Effect.try({ try: () => store.set(FIRST_LAUNCH_ONBOARDING_COMPLETE_KEY, complete), catch: (e) => e }),
+      )
+
+      return complete
+    },
+    "Onboarding.initialize",
+  )
+
+export const isFirstLaunchOnboardingPending = effect () =>
+  try withSpan(
+    effect {
+      const pending = (try Effect.orDie(Effect.try({
+        try: () => getStore().get(FIRST_LAUNCH_ONBOARDING_COMPLETE_KEY),
+        catch: (e) => e,
+      }))) !== true
+      try scoped("onboarding", Effect.logInfo("first launch onboarding pending checked", { pending }))
+
+      return pending
+    },
+    "Onboarding.isPending",
+  )
+
+export const finishFirstLaunchOnboarding = effect (createDefaultProject: boolean) =>
+  try withSpan(
+    effect {
+      if (!(try isFirstLaunchOnboardingPending())) {
+        try scoped("onboarding", Effect.logInfo("first launch onboarding already completed"))
+
+        return null
+      }
+
+      const fs = try FileSystem.FileSystem
+      const path = try Path.Path
+
+      const defaultProject = createDefaultProject
+        ? path.join(
+          try Effect.orDie(Effect.try({ try: () => app.getPath("documents"), catch: (e) => e })),
+          try Effect.orDie(Effect.try({ try: () => nativeT("desktop.onboarding.defaultProject"), catch: (e) => e })),
+        )
+        : null
+
+      if (defaultProject) try fs.makeDirectory(defaultProject, { recursive: true })
+
+      try Effect.orDie(
+        Effect.try({ try: () => getStore().set(FIRST_LAUNCH_ONBOARDING_COMPLETE_KEY, true), catch: (e) => e }),
+      )
+      try scoped(
+        "onboarding",
+        Effect.logInfo("first launch onboarding completed", { createDefaultProject, defaultProject }),
+      )
+
+      return defaultProject
+    },
+    "Onboarding.finish",
+  )

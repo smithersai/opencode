@@ -20,3 +20,5 @@ rule:
               - kind: arguments
               - has:
                   kind: template_string
+ignores:
+  - "**/*.d.vibe.ts"

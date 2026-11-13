@@ -2,7 +2,7 @@ import { describe, expect, test } from "bun:test"
 import type { SessionInfo, SessionMessageAssistantTool, ShellInfo } from "@opencode/client/promise"
 import { createRoot } from "solid-js"
 import { createStore } from "solid-js/store"
-import { createSessionBackground } from "@/session/requests/background"
+import { createSessionBackground } from "../src/session/requests/background.vibe"
 
 const tool = (
   id: string,

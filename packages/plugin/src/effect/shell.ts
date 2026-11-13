@@ -1,4 +1,4 @@
-import type { Hooks } from "./registration.js"
+import type { Hooks } from "./registration.vibe"
 
 export interface ShellCreateBefore {
   command: string

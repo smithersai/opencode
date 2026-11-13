@@ -8,7 +8,7 @@ import {
   type MountedSession,
   type Sessions,
 } from "@opencode/plugin/gui"
-import { MAX_TERMINAL_SESSIONS, numberFromTitle, TerminalState, terminalTab, type LocalPTY } from "./state"
+import { MAX_TERMINAL_SESSIONS, numberFromTitle, TerminalState, terminalTab, type LocalPTY } from "./state.vibe"
 import { defaultTitle } from "./title"
 
 const STORE = "terminals"

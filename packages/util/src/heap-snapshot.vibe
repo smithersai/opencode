@@ -1,0 +1,56 @@
+import * as Host from "./heap-snapshot.host.platform.ts"
+import { $platform$1 } from platform
+import { $platform } from platform
+
+// One process-wide permit: the signal listener and the HTTP endpoint share it, so concurrent
+// requests queue instead of serializing two heaps at once.
+const lock = Semaphore.makeUnsafe(1)
+
+/**
+ * Writes a V8 heap snapshot of this process into `directory` and returns once the file is complete, with the
+ * process's memory just before the snapshot: the snapshot holds only the garbage-collected heap, and writing it
+ * raises the process's memory. Blocks the event loop while the heap serializes. The file can contain secrets, so it
+ * is created owner-only before the runtime writes into it.
+ */
+export const write = effect (directory: string) =>
+  try withSpan(
+    effect {
+      const v8 = try $platform()
+      const time = new Date(try Clock.currentTimeMillis).toISOString().replace(/[:.]/g, "")
+      const file = Host.snapshotPath(directory, time)
+      try Effect.tryPromise(async () => {
+        await Host.reserve(directory, file)
+      })
+      const memory = try $platform$1()
+      try Effect.logInfo("writing heap snapshot", { path: file, rss: memory.rss, heapUsed: memory.heapUsed })
+      try Effect.try(() => v8.writeHeapSnapshot(file))
+      try Effect.logInfo("heap snapshot written", { path: file })
+      return {
+        path: file,
+        pid: Host.processID(),
+        memory: {
+          rss: memory.rss,
+          heapTotal: memory.heapTotal,
+          heapUsed: memory.heapUsed,
+          external: memory.external,
+          arrayBuffers: memory.arrayBuffers,
+        },
+      }
+    } |> ((effect) => lock.withPermit(effect))(%),
+    "HeapSnapshot.write",
+  )
+
+export * as HeapSnapshot from "./heap-snapshot.js"
+
+module platform {
+  // Generated platform helpers for this VibeLang module.
+  import { Effect } from "effect"
+  /** @throws {never} */
+  export function $platform() {
+    return Effect.tryPromise(() => import("node:v8"))
+  }
+  /** @throws {never} */
+  export function $platform$1() {
+    return Effect.sync(() => process.memoryUsage())
+  }
+}

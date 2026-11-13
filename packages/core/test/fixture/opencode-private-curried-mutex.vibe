@@ -1,0 +1,6 @@
+import type { KeyedMutex } from "../../src/effect/keyed-mutex.ts"
+import { withKeyedLock } from "../../src/effect/keyed-mutex.native.ts"
+
+export function locked<A, E, R>(mutex: KeyedMutex.KeyedMutex<string>, key: string, work: A!E!R): A!E!R {
+  return withKeyedLock(mutex, key, work)
+}

@@ -1,0 +1,75 @@
+export * as LocationWatcherPolicy from "./location-watcher-policy.js"
+
+import { makeLocationNode } from "@opencode/util/effect/app-node"
+import { State } from "../state.js"
+
+type Data = {
+  ignore: string[]
+}
+
+export type Editor = {
+  add: (ignore: readonly string[]) => void
+  list: () => readonly string[]
+}
+
+export interface Interface extends State.Transformable<Editor> {
+  readonly current: () => readonly string[]
+  readonly observe: (
+    listener: (ignore: readonly string[]) => void!!,
+  ) => State.Registration!never!Scope.Scope
+}
+
+export service Service: Interface {
+  static readonly key = "@opencode/LocationWatcherPolicy"
+}
+
+const layer = Layer.effect(
+  Service,
+  effect {
+    const listeners = new Set<(ignore: readonly string[]) => void!!>()
+    const state = try Effect.orDie(Effect.try({
+      try: () =>
+        State.create<Data, Editor>({
+          name: "location-watcher-policy",
+          initial: () => ({ ignore: [] }),
+          editor: (editor) => ({
+            add: (ignore) => editor.ignore.push(...ignore),
+            list: () => editor.ignore,
+          }),
+          // Read per listener: a reentrant transform inside an earlier listener must reach later ones.
+          notify: () => Effect.forEach(listeners, (listener) => listener(current()), { discard: true }),
+        }),
+      catch: (error) => error,
+    }))
+    // Annotated to break the inference cycle through notify: notify reads current, current reads state.
+    const current = (): readonly string[] => state.get().ignore
+    const observe = effect (
+      listener: (ignore: readonly string[]) => void!!,
+    ) =>
+      try withSpan(
+        effect {
+          const scope = try Scope.Scope
+          let active = true
+          const dispose = effect {
+            return try effect {
+              if (!active) return
+              active = false
+              listeners.delete(listener)
+            }
+          }
+          listeners.add(listener)
+          try Scope.addFinalizer(scope, dispose)
+          return { dispose }
+        },
+        "LocationWatcherPolicy.observe",
+      )
+    return Service.of({
+      transform: state.transform,
+      reload: state.reload,
+      current,
+      observe,
+    })
+  },
+)
+
+export const node = makeLocationNode({ service: Service, layer, deps: [] })

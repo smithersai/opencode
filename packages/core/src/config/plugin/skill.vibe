@@ -1,0 +1,218 @@
+export * as ConfigSkillPlugin from "./skill.js"
+
+import { define } from "@opencode/plugin/effect/plugin"
+import type { Entry } from "@opencode/schema/config"
+import { FSUtil } from "@opencode/util/fs-util"
+import { Global } from "@opencode/util/global"
+import { Effect, FiberMap, PubSub, Semaphore, Stream } from "effect"
+import { Config } from "../../config.js"
+import { Watcher } from "../../filesystem/watcher.js"
+import { Location } from "../../location.js"
+import { AbsolutePath } from "../../schema.js"
+import { Skill } from "../../skill.js"
+import { SkillDiscovery } from "../../skill/discovery.js"
+import { SkillFile } from "./skill-file.js"
+import { SkillScan } from "./skill-scan.js"
+import { dirname, isAbsolute, joinPath, resolve } from platform
+
+type Source = Skill.DirectorySource | Skill.UrlSource
+
+export const Plugin = define({
+  id: "opencode.config.skill",
+  effect: Effect.fn(effect (ctx) => {
+    const config = try Config.Service
+    const discovery = try SkillDiscovery.Service
+    const fs = try FSUtil.Service
+    const global = try Global.Service
+    const location = try Location.Service
+    const watcher = try Watcher.Service
+    const loaded: { entries: Entry[]; skills: Skill.Info[] } = {
+      entries: try config.entries(),
+      skills: [],
+    }
+    const watches = try FiberMap.make<string>()
+    const changes = try PubSub.sliding<string>(1)
+    const lock = Semaphore.makeUnsafe(1)
+
+    const watch = Effect.fn("ConfigSkillPlugin.watch")(effect (directory: string, type: "file" | "directory") => {
+      const target = try Effect.try({ try: () => resolve(directory), catch: (cause) => cause }).pipe(Effect.orDie)
+      const updates = try watcher.subscribe(
+        type === "directory" ? { path: target, type, ignore: SkillScan.ignore } : { path: target, type },
+      )
+      try FiberMap.run(
+        watches,
+        `${type}:${target}`,
+        updates.pipe(Stream.runForEach((update) => PubSub.publish(changes, update.path).pipe(Effect.asVoid))),
+        { onlyIfMissing: true, startImmediately: true },
+      )
+    })
+
+    function firstMissing(target: string): (string | undefined)!! {
+      const parent = dirname(target)
+      if (parent === target) return Effect.undefined
+      return fs.isDir(parent).pipe(Effect.flatMap((exists) => (exists ? Effect.succeed(target) : firstMissing(parent))))
+    }
+
+    const watchDirectory: (directory: string) => string[]!! = Effect.fn(
+      "ConfigSkillPlugin.watchDirectory",
+    )(effect (directory: string) => {
+      const target = try Effect.try({ try: () => resolve(directory), catch: (cause) => cause }).pipe(Effect.orDie)
+      const resolved = try fs.realPath(directory).pipe(Effect.orElseSucceed(() => undefined))
+      if (resolved) {
+        try watch(resolved, "directory")
+        if (resolved !== target) try watch(target, "file")
+        return resolved === target ? [target] : [target, resolved]
+      }
+      const missing = try firstMissing(target)
+      if (missing) try watch(missing, "file")
+      if (
+        try fs.realPath(directory).pipe(
+          Effect.as(true),
+          Effect.orElseSucceed(() => false),
+        )
+      ) {
+        if (missing) {
+          const key = try Effect.try({ try: () => resolve(missing), catch: (cause) => cause }).pipe(Effect.orDie)
+          try FiberMap.remove(watches, `file:${key}`)
+        }
+        return try watchDirectory(directory)
+      }
+      return [target]
+    })
+
+    const sources = () => {
+      const result: Source[] = []
+      const add = (source: Source) => {
+        if (result.some((item) => Skill.Source.equals(item, source))) return
+        result.push(source)
+      }
+      const directories = loaded.entries.flatMap((entry) => (entry.type === "directory" ? [entry.path] : []))
+      const items = loaded.entries.flatMap((entry) => (entry.type === "document" ? (entry.info.skills ?? []) : []))
+      for (const directory of directories) {
+        add(Skill.DirectorySource.make({ type: "directory", path: AbsolutePath.make(joinPath(directory, "skill")) }))
+        add(Skill.DirectorySource.make({ type: "directory", path: AbsolutePath.make(joinPath(directory, "skills")) }))
+      }
+      for (const item of items) {
+        if (URL.canParse(item) && /^(https?:)$/.test(new URL(item).protocol)) {
+          add(Skill.UrlSource.make({ type: "url", url: item }))
+          continue
+        }
+        const expanded = item.startsWith("~/") ? joinPath(global.home, item.slice(2)) : item
+        add(
+          Skill.DirectorySource.make({
+            type: "directory",
+            path: AbsolutePath.make(isAbsolute(expanded) ? expanded : joinPath(location.directory, expanded)),
+          }),
+        )
+      }
+      return result
+    }
+
+    const load = Effect.fn("ConfigSkillPlugin.load")(effect (source: Source) => {
+      const directories = source.type === "directory"
+        ? [source.path]
+        : try discovery.pull(source.url).pipe(
+          Effect.catchCause((cause) =>
+            Effect.logWarning("failed to load skill source", {
+              source: Skill.Source.key(source),
+              cause,
+            }).pipe(Effect.as([] as AbsolutePath[]))
+          ),
+        )
+      const roots = (try Effect.forEach(directories, watchDirectory)).flat()
+      const skills: Skill.Info[] = []
+      for (const directory of directories) {
+        for (const filepath of try SkillScan.scan(directory)) {
+          const resolved = try fs.realPath(filepath).pipe(Effect.orElseSucceed(() => filepath))
+          if (!roots.some((root) => FSUtil.contains(root, resolved))) try watch(resolved, "file")
+          const content = try fs.readFileStringSafe(filepath).pipe(Effect.orElseSucceed(() => undefined))
+          if (!content) continue
+          const parsed = SkillFile.parse(directory, filepath, content)
+          if (parsed._tag === "Skipped") {
+            try Effect.logDebug("skill file skipped", {
+              filepath,
+              reason: parsed.reason,
+              ...(parsed.reason === "frontmatter" ? { issue: parsed.issue } : {}),
+            })
+            continue
+          }
+          skills.push(parsed.skill)
+        }
+      }
+      try Effect.logDebug("skill source loaded", {
+        source: Skill.Source.key(source),
+        type: source.type,
+        directories,
+        skills: skills.map((skill) => skill.id),
+      })
+      return skills
+    })
+
+    const refresh = Effect.fn("ConfigSkillPlugin.refresh")(
+      effect (file?: string) => {
+        try FiberMap.clear(watches)
+        const skills = new Map<Skill.ID, Skill.Info>()
+        const current = sources()
+        for (const source of current) {
+          for (const skill of try load(source)) skills.set(skill.id, skill)
+        }
+        loaded.skills = Array.from(skills.values())
+        if (file) {
+          try Effect.logInfo("skills rescanned", {
+            file,
+            sources: current.map(Skill.Source.key),
+            skills: loaded.skills.map((skill) => skill.id),
+          })
+        }
+      },
+      (self, ..._args: [file?: string]) => lock.withPermit(self),
+    )
+
+    // Editor saves arrive as bursts of watcher events; settle before rescanning once. Subscribe
+    // before debouncing so no update slips through while the debounce starts its pull.
+    const updates = try PubSub.subscribe(changes)
+    try Stream.fromSubscription(updates).pipe(
+      Stream.debounce("100 millis"),
+      Stream.runForEach((file) => refresh(file).pipe(Effect.andThen(ctx.skill.reload()))),
+      Effect.forkScoped({ startImmediately: true }),
+    )
+    try refresh()
+    try ctx.skill.transform((editor) => {
+      for (const skill of loaded.skills) editor.add(skill)
+    })
+    try ctx.event.subscribe({ types: ["config.updated"] }).pipe(
+      Stream.runForEach(() =>
+        config.entries().pipe(
+          Effect.tap((entries) => Effect.sync(() => (loaded.entries = entries))),
+          Effect.andThen(refresh()),
+          Effect.andThen(ctx.skill.reload()),
+        )
+      ),
+      Effect.forkScoped({ startImmediately: true }),
+    )
+  }),
+})
+
+module platform {
+  import path from "path"
+
+  /** Resolves a directory against the process working directory, which may be unavailable. */
+  export function resolve(directory: string) {
+    return path.resolve(directory)
+  }
+
+  /** @throws {never} */
+  export function dirname(target: string) {
+    return path.dirname(target)
+  }
+
+  /** @throws {never} */
+  export function joinPath(directory: string, name: string) {
+    return path.join(directory, name)
+  }
+
+  /** @throws {never} */
+  export function isAbsolute(target: string) {
+    return path.isAbsolute(target)
+  }
+}

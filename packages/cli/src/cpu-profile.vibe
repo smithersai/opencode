@@ -1,0 +1,116 @@
+module host {
+  // The platform code of cpu-profile.vibe: the inspector session, paths, signals and the profile write (EK4402).
+  import hostPath from "node:path"
+
+  export { Session } from "node:inspector"
+
+  /** @throws {never} */
+  function join(...paths: string[]) {
+    return hostPath.join(...paths)
+  }
+
+  /** @throws {never} */
+  function resolve(...paths: string[]) {
+    return hostPath.resolve(...paths)
+  }
+
+  /** @throws {never} */
+  function dirname(value: string) {
+    return hostPath.dirname(value)
+  }
+
+  export const path = { join, resolve, dirname }
+
+  /** @throws {never} */
+  export function platform() {
+    return process.platform
+  }
+
+  /** @throws {never} */
+  export function pid() {
+    return process.pid
+  }
+
+  export function addSignalListener(signal: NodeJS.Signals, listener: NodeJS.SignalsListener) {
+    return process.on(signal, listener)
+  }
+
+  export function removeSignalListener(signal: NodeJS.Signals, listener: NodeJS.SignalsListener) {
+    return process.off(signal, listener)
+  }
+
+  export function writeProfile(target: string, profile: string) {
+    return Bun.write(target, profile)
+  }
+}
+
+export * as CpuProfile from "./cpu-profile"
+
+import { Global } from "@opencode/util/global"
+import { Effect, FileSystem, Queue } from "effect"
+import { addSignalListener, path, pid, platform, removeSignalListener, Session, writeProfile } from host
+
+export const listen = Effect.gen(function*() {
+  const global = yield* Global.Service
+  if (platform() === "win32") return
+  const signals = yield* Queue.dropping<void>(1)
+  yield* Effect.acquireRelease(
+    Effect.sync(() => {
+      const handler = () => Queue.offerUnsafe(signals, undefined)
+      addSignalListener("SIGPROF", handler)
+      return handler
+    }),
+    (handler) => Effect.sync(() => removeSignalListener("SIGPROF", handler)),
+  )
+  yield* Effect.gen(function*() {
+    yield* Queue.take(signals)
+    const file = path.join(
+      global.log,
+      `cpu-${pid()}-${new Date().toISOString().replace(/[:.]/g, "")}.cpuprofile`,
+    )
+    yield* run(file, Effect.sleep("10 seconds")).pipe(
+      Effect.catchCause((cause) => Effect.logError("Failed to capture CPU profile", { path: file, cause })),
+    )
+    yield* Queue.poll(signals)
+  }).pipe(Effect.forever, Effect.forkScoped({ startImmediately: true }))
+})
+
+function run<A, E, R>(file: string, effect: Effect.Effect<A, E, R>) {
+  const target = path.resolve(file)
+  return Effect.acquireUseRelease(
+    Effect.gen(function*() {
+      const fs = yield* FileSystem.FileSystem
+      yield* fs.makeDirectory(path.dirname(target), { recursive: true })
+      const session = new Session()
+      session.connect()
+      yield* command(session, "Profiler.enable")
+      yield* command(session, "Profiler.start")
+      yield* Effect.logInfo("CPU profile started", { path: target })
+      return session
+    }),
+    () => effect,
+    (session) =>
+      Effect.tryPromise(
+        () =>
+          new Promise<void>((resolve, reject) => {
+            session.post("Profiler.stop", (error, result) => {
+              session.disconnect()
+              if (error) return reject(error)
+              writeProfile(target, JSON.stringify(result.profile)).then(() => resolve(), reject)
+            })
+          }),
+      ).pipe(
+        Effect.andThen(Effect.logInfo("CPU profile written", { path: target })),
+        Effect.catchCause((cause) => Effect.logError("Failed to write CPU profile", { path: target, cause })),
+      ),
+  )
+}
+
+function command(session: Session, method: "Profiler.enable" | "Profiler.start") {
+  return Effect.tryPromise(
+    () =>
+      new Promise<void>((resolve, reject) => {
+        session.post(method, (error) => (error ? reject(error) : resolve()))
+      }),
+  )
+}

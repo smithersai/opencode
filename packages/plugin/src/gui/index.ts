@@ -2,7 +2,7 @@ export * from "./core.js"
 
 export * from "./registries.js"
 
-export * from "./host-apis.js"
+export * from "./host-apis.vibe"
 
 export * from "./solid.js"
 

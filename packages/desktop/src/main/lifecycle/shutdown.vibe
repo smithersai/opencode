@@ -1,0 +1,34 @@
+export * as Shutdown from "./shutdown.vibe"
+
+import { Effect, Layer } from "effect"
+
+export interface Interface {
+  readonly add: (effect: void!!) => (() => void)!!
+  readonly run: void!!
+}
+
+export service Service: Interface {
+  static readonly key = "opencode/desktop/Shutdown"
+}
+
+export const layer = Layer.effect(
+  Service,
+  effect {
+    const effects = new Set<void!!>()
+
+    const run = try Effect.cached(
+      effect {
+        return try Effect.forEach(effects, (effect) => effect, { concurrency: "unbounded", discard: true })
+      },
+    )
+
+    return Service.of({
+      add: effect (effect) => {
+        effects.add(effect)
+
+        return () => effects.delete(effect)
+      },
+      run,
+    })
+  },
+)

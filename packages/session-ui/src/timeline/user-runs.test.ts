@@ -2,7 +2,7 @@ import { describe, expect, test } from "bun:test"
 import type { SessionMessageInfo } from "@opencode/client/promise"
 import { timelinePresets } from "./detail"
 import { Timeline } from "./projection"
-import { userMessageRuns, type UserRunMember } from "./user-runs"
+import { userMessageRuns, type UserRunMember } from "./user-runs.vibe"
 
 const user = (id: string, created: number) =>
   ({ id, type: "user", text: id, time: { created } }) satisfies SessionMessageInfo

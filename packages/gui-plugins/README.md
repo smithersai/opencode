@@ -385,7 +385,7 @@ A public `from` names older keys of the same storage. Built-ins also import part
 
 Review imports one session's slice of an app key that holds every session:
 
-<!-- source: src/review/index.ts#session -->
+<!-- source: src/review/index.vibe#session -->
 
 ```ts
 // The mode, selected file and open files of each session.
@@ -406,7 +406,7 @@ session: BuiltinStore.session(
 
 SSH keeps a main store, imported from a key of the desktop settings file. `{ state: [namespace, key] }` names a key of another main storage namespace instead, and `file` another settings file:
 
-<!-- source: src/ssh/main.ts#saved -->
+<!-- source: src/ssh/main.vibe#saved -->
 
 ```ts
 // The saved hosts; stored before in the desktop settings file.
@@ -455,12 +455,11 @@ A built-in always runs, whatever setting is saved under its id, so Extensions â€
 
 Pairing connects another device to this machine's server from anywhere, and keeps the display awake. It is small and uses both processes: a main entry that turns on remote access through the CLI and owns a power-save blocker, and a window entry that adds a settings page and a command. The window asks the local server for its remote address and pairing codes through `ctx.servers`: that server's `ServerRef` is already authenticated in the window, so its credentials never leave main. Each block below is its shipping source.
 
-1. **Define the contract.** `contract.ts` holds the tokens other code may import, here the Ipc between pairing's main and window entries. It carries only what needs the main process: remote access, a setting of the background service, and the display sleep blocker. The schemas type both sides and encode every value.
+1. **Define the contract.** `contract.vibe` holds the tokens other code may import, here the Ipc between pairing's main and window entries. It carries only what needs the main process: remote access, a setting of the background service, and the display sleep blocker. The schemas type both sides and encode every value.
 
-<!-- source: src/pairing/contract.ts -->
+<!-- source: src/pairing/contract.vibe -->
 
 ```ts
-import { Schema } from "effect"
 import { Ipc } from "@opencode/plugin/gui"
 
 /**
@@ -499,87 +498,89 @@ export default Plugin.define({ i18n: { en } })
 
 3. **Provide it from main.** Whether main keeps the display awake is a main store, read synchronously and imported once from the key the desktop kept it under before; a built-in names that older home through `builtinMainContext`. Remote access runs `opencode service` through `ctx.cli`, with the caller's signal for a read and `ctx.signal` for a change a closing window must not cancel. `ctx.onCleanup` releases the blocker when the instance goes away.
 
-<!-- source: src/pairing/main.ts -->
+<!-- source: src/pairing/main.vibe -->
 
 ```ts
-import { execFile } from "node:child_process"
-import { powerSaveBlocker } from "electron"
-import { Schema } from "effect"
-import { builtinMainContext } from "@opencode/plugin/gui/builtin"
-import type { Plugin } from "@opencode/plugin/gui/main"
-import { Pairing } from "./contract"
+module platform {
+  import { execFile } from "node:child_process"
+  import { powerSaveBlocker } from "electron"
+  import { Schema } from "effect"
+  import { builtinMainContext } from "@opencode/plugin/gui/builtin"
+  import type { Plugin } from "@opencode/plugin/gui/main"
+  import { Pairing } from "./contract"
 
-/** The display sleep blocker this instance holds, if any. */
-type Blocker = { id?: number }
+  /** The display sleep blocker this instance holds, if any. */
+  export type Blocker = { id?: number }
+  /** The last `opencode service` command; the next one starts after it settles. */
+  export type Queue = { tail: Promise<unknown> }
+  export const setup: Plugin.MainSetup = (ctx) => {
+    // Whether main keeps the display awake; stored before in the desktop's own settings namespace.
+    const stored = builtinMainContext(ctx).storage.store("keepScreenActive", {
+      schema: Schema.Boolean,
+      initial: false,
+      from: { state: ["opencode.settings", "keepScreenActive"] },
+    })
 
-/** The last `opencode service` command; the next one starts after it settles. */
-type Queue = { tail: Promise<unknown> }
+    const cli = ctx.cli
+    const log = ctx.log
+    const blocker: Blocker = {}
+    const queue: Queue = { tail: Promise.resolve() }
 
-const setup: Plugin.MainSetup = (ctx) => {
-  // Whether main keeps the display awake; stored before in the desktop's own settings namespace.
-  const stored = builtinMainContext(ctx).storage.store("keepScreenActive", {
-    schema: Schema.Boolean,
-    initial: false,
-    from: { state: ["opencode.settings", "keepScreenActive"] },
-  })
+    const release = () => {
+      if (blocker.id === undefined) return
+      powerSaveBlocker.stop(blocker.id)
+      blocker.id = undefined
+    }
 
-  const cli = ctx.cli
-  const log = ctx.log
-  const blocker: Blocker = {}
-  const queue: Queue = { tail: Promise.resolve() }
+    const keepScreenActive = (enabled: boolean) => {
+      if (enabled && blocker.id === undefined) blocker.id = powerSaveBlocker.start("prevent-display-sleep")
 
-  const release = () => {
-    if (blocker.id === undefined) return
-    powerSaveBlocker.stop(blocker.id)
-    blocker.id = undefined
+      if (!enabled) release()
+      stored.set(enabled)
+    }
+
+    // Remote access is a setting of the background service, so it changes through the CLI the app runs, as with
+    // `opencode pair --remote`. A change restarts the service, so commands run one at a time.
+    const service = (args: readonly string[], signal: AbortSignal) => {
+      const run = queue.tail.then(
+        () =>
+          new Promise<string>((resolve, reject) => {
+            execFile(
+              cli.command[0] ?? "opencode",
+              [...cli.command.slice(1), "service", ...args],
+              { signal, windowsHide: true },
+              (error, stdout, stderr) => {
+                if (!error) return resolve(stdout.trim())
+                log.write("error", "pairing service command failed", { args, error: error.message, stderr })
+                reject(error)
+              },
+            )
+          }),
+      )
+
+      queue.tail = run.catch(() => undefined)
+
+      return run
+    }
+
+    if (stored.value) keepScreenActive(true)
+    ctx.onCleanup(release)
+
+    ctx.provide(Pairing, {
+      remote: async (_, caller) => (await service(["get", "remote"], caller.signal)) === "true",
+      // Changing the setting stops the service. Starting it here brings it back, with the tunnel when remote access is
+      // on. A window that closes meanwhile does not cancel the change.
+      setRemote: async (enabled) => {
+        await service(["set", "remote", String(enabled)], ctx.signal)
+        await service(["start"], ctx.signal)
+      },
+      screenActive: () => blocker.id !== undefined && powerSaveBlocker.isStarted(blocker.id),
+      setScreenActive: (enabled) => keepScreenActive(enabled),
+    })
   }
-
-  const keepScreenActive = (enabled: boolean) => {
-    if (enabled && blocker.id === undefined) blocker.id = powerSaveBlocker.start("prevent-display-sleep")
-
-    if (!enabled) release()
-    stored.set(enabled)
-  }
-
-  // Remote access is a setting of the background service, so it changes through the CLI the app runs, as with
-  // `opencode pair --remote`. A change restarts the service, so commands run one at a time.
-  const service = (args: readonly string[], signal: AbortSignal) => {
-    const run = queue.tail.then(
-      () =>
-        new Promise<string>((resolve, reject) => {
-          execFile(
-            cli.command[0] ?? "opencode",
-            [...cli.command.slice(1), "service", ...args],
-            { signal, windowsHide: true },
-            (error, stdout, stderr) => {
-              if (!error) return resolve(stdout.trim())
-              log.write("error", "pairing service command failed", { args, error: error.message, stderr })
-              reject(error)
-            },
-          )
-        }),
-    )
-
-    queue.tail = run.catch(() => undefined)
-
-    return run
-  }
-
-  if (stored.value) keepScreenActive(true)
-  ctx.onCleanup(release)
-
-  ctx.provide(Pairing, {
-    remote: async (_, caller) => (await service(["get", "remote"], caller.signal)) === "true",
-    // Changing the setting stops the service. Starting it here brings it back, with the tunnel when remote access is
-    // on. A window that closes meanwhile does not cancel the change.
-    setRemote: async (enabled) => {
-      await service(["set", "remote", String(enabled)], ctx.signal)
-      await service(["start"], ctx.signal)
-    },
-    screenActive: () => blocker.id !== undefined && powerSaveBlocker.isStarted(blocker.id),
-    setScreenActive: (enabled) => keepScreenActive(enabled),
-  })
 }
+
+import { setup } from platform
 
 export default setup
 ```
@@ -592,7 +593,7 @@ export default setup
 import { lazy, onCleanup, Suspense } from "solid-js"
 import { Command, SettingsPage, type Plugin } from "@opencode/plugin/gui"
 import { onIdle } from "@opencode/plugin/gui/builtin"
-import { Pairing } from "./contract"
+import { Pairing } from "./contract.vibe"
 import type definition from "./index"
 
 const setup: Plugin.Setup<typeof definition> = (ctx) => {
@@ -666,16 +667,16 @@ export default setup
 export const builtins = compose({
   context,
   btw,
-  debug: { ...debug, mainEntry: () => import("./debug/main") },
+  debug: { ...debug, mainEntry: () => import("./debug/main.vibe") },
   terminal,
   file,
   review,
   details,
   browser: { ...browser, mainEntry: () => import("./browser/main") },
-  pairing: { ...pairing, mainEntry: () => import("./pairing/main") },
-  updater: { ...updater, mainEntry: () => import("./updater/main") },
-  ssh: { ...ssh, mainEntry: () => import("./ssh/main") },
-  wsl: { ...wsl, mainEntry: () => import("./wsl/main") },
+  pairing: { ...pairing, mainEntry: () => import("./pairing/main.vibe") },
+  updater: { ...updater, mainEntry: () => import("./updater/main.vibe") },
+  ssh: { ...ssh, mainEntry: () => import("./ssh/main.vibe") },
+  wsl: { ...wsl, mainEntry: () => import("./wsl/main.vibe") },
   "microsoft-office": microsoftOffice,
   sources,
 })
@@ -716,3 +717,5 @@ Your own plugin takes the same steps:
 7. **Register both entries** in `src/renderer.ts` and `src/main.ts`, as above. The graph matrix then boots the app with your plugin disabled.
 8. **Test it.** Unit-test pure logic beside the code. Prove what the user sees with a case in the area's keeper suite in `packages/app/e2e/regression/`.
 9. **Check it.** Run `bun run lint`, which includes `script/sdk-docs.ts`, then `bun run lint:changed`, and `bun typecheck` in `packages/gui-plugins` and `packages/plugin`.
+
+The debug registry is loaded through its authored TypeScript source URL in component stories. Keep that entry available while those consumers name it. The source URL property test covers normalized paths, queries and fragments; the App component suite checks the real registry behavior.

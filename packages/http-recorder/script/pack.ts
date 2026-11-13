@@ -1,5 +1,8 @@
 #!/usr/bin/env bun
-import { $ } from "bun"
+import { $, Glob } from "bun"
+import { copyFile, mkdtemp, rm } from "node:fs/promises"
+import { tmpdir } from "node:os"
+import path from "node:path"
 import { fileURLToPath } from "node:url"
 
 const dir = fileURLToPath(new URL("..", import.meta.url))
@@ -10,20 +13,38 @@ export const pack = async () => {
   const original = await Bun.file("package.json").text()
   // oxlint-disable-next-line typescript-eslint/no-unsafe-type-assertion -- package.json is validated by the package schema and build checks.
   const pkg = JSON.parse(original) as {
+    readonly name: string
     readonly version: string
-    exports: Record<string, string | { readonly import: string; readonly types: string }>
+    exports: Record<
+      string,
+      string | { readonly import?: string; readonly types?: string; readonly "vibelang-source"?: string }
+    >
   }
 
   for (const [key, value] of Object.entries(pkg.exports)) {
-    if (typeof value !== "string") continue
-    const file = value.replace("./src/", "./dist/").replace(/\.ts$/, "")
+    const source = typeof value === "string" ? value : (value["vibelang-source"] ?? value.import)
+    if (!source) continue
+    const file = source.replace("./src/", "./dist/").replace(/\.(?:tsx?|vibex?)$/, "")
     pkg.exports[key] = { import: `${file}.js`, types: `${file}.d.ts` }
   }
   await Bun.write("package.json", JSON.stringify(pkg, null, 2))
+  // Generated platform companions stay private: their headers leave the archive, their runtime files stay.
+  const staging = await mkdtemp(path.join(tmpdir(), "http-recorder-private-declarations-"))
+  const staged: Array<{ readonly original: string; readonly saved: string }> = []
   try {
+    for (const [index, header] of [...new Glob("dist/**/*.platform.d.ts").scanSync(".")].entries()) {
+      const saved = path.join(staging, index + ".d.ts")
+      await copyFile(header, saved)
+      staged.push({ original: header, saved })
+      await rm(header)
+    }
     await $`bun pm pack`
-    return fileURLToPath(new URL(`../opencode-ai-http-recorder-${pkg.version}.tgz`, import.meta.url))
+    return fileURLToPath(
+      new URL(`../${pkg.name.replace("@", "").replace("/", "-")}-${pkg.version}.tgz`, import.meta.url),
+    )
   } finally {
+    for (const { original, saved } of staged) await copyFile(saved, original)
+    await rm(staging, { recursive: true, force: true })
     await Bun.write("package.json", original)
   }
 }

@@ -1,0 +1,6 @@
+{
+  "module": "groups/message",
+  "names": ["SessionMediaMessagesResponse", "SessionMediaMessageResponse"],
+  "nativeDeclaration": "export declare const SessionMediaMessagesResponse: unknown;\nexport declare const SessionMediaMessageResponse: unknown;\n",
+  "contract": "Codec constants declare values without same-named exported types."
+}

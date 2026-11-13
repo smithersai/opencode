@@ -1,0 +1,3454 @@
+[
+  {
+    "source": "packages/ai/src/ai-client.vibe",
+    "imports": [
+      "./decision-client.js",
+      "./image-client.js",
+      "./route/client.js",
+      "./route/executor.js",
+      "./speech-client.js",
+      "./transcription-client.js",
+      "./video-client.js"
+    ]
+  },
+  {
+    "source": "packages/ai/src/decision-client.vibe",
+    "imports": [
+      "./decision.js",
+      "./route/executor.js",
+      "./schema/index.js"
+    ]
+  },
+  {
+    "source": "packages/ai/src/decision.vibe",
+    "imports": [
+      "./decision-client.js",
+      "./media-model.js",
+      "./media.js",
+      "./schema/index.js"
+    ]
+  },
+  {
+    "source": "packages/ai/src/experimental/cloudflare-run-extraction.vibe",
+    "imports": [
+      "../route/media-protocol.js",
+      "../route/media.js",
+      "./extraction.js"
+    ]
+  },
+  {
+    "source": "packages/ai/src/experimental/extraction.vibe",
+    "imports": [
+      "../media-model.js",
+      "../route/executor.js",
+      "../route/media.js",
+      "../schema/index.js"
+    ]
+  },
+  {
+    "source": "packages/ai/src/experimental/realtime.vibe",
+    "imports": [
+      "../route/executor.js",
+      "../utils/json.js"
+    ]
+  },
+  {
+    "source": "packages/ai/src/generation.vibe",
+    "imports": [
+      "./schema/errors.js"
+    ]
+  },
+  {
+    "source": "packages/ai/src/image-client.vibe",
+    "imports": [
+      "./image.js",
+      "./media-client.js"
+    ]
+  },
+  {
+    "source": "packages/ai/src/llm.vibe",
+    "imports": [
+      "./media-model.js",
+      "./route/client.js",
+      "./schema/index.js",
+      "./tool-runtime.js",
+      "./tool.js"
+    ]
+  },
+  {
+    "source": "packages/ai/src/media-client.vibe",
+    "imports": [
+      "./generation.js",
+      "./route/executor.js",
+      "./route/media.js",
+      "./schema/index.js"
+    ]
+  },
+  {
+    "source": "packages/ai/src/media-model.vibe",
+    "imports": [
+      "./route/endpoint.js",
+      "./route/media-protocol.js",
+      "./route/media.js",
+      "./schema/index.js"
+    ]
+  },
+  {
+    "source": "packages/ai/src/protocols/alibaba-chat.vibe",
+    "imports": [
+      "../route/protocol.js",
+      "./utils/open-responses-options.js"
+    ]
+  },
+  {
+    "source": "packages/ai/src/protocols/alibaba-images.vibe",
+    "imports": [
+      "../route/media-protocol.js",
+      "../route/media.js",
+      "./utils/image-sizing.js"
+    ]
+  },
+  {
+    "source": "packages/ai/src/protocols/alibaba-messages.vibe",
+    "imports": [
+      "../route/protocol.js",
+      "../schema/index.js",
+      "./anthropic-messages.js",
+      "./shared.js",
+      "./utils/open-responses-options.js"
+    ]
+  },
+  {
+    "source": "packages/ai/src/protocols/alibaba-responses.vibe",
+    "imports": [
+      "../route/protocol.js",
+      "./utils/open-responses-options.js",
+      "./utils/responses-hosted-tools.js"
+    ]
+  },
+  {
+    "source": "packages/ai/src/protocols/assemblyai-transcription.vibe",
+    "imports": [
+      "../generation.js",
+      "../media.js",
+      "../route/media-protocol.js",
+      "../route/media.js",
+      "../schema/index.js",
+      "../transcription.js",
+      "./shared.js",
+      "./utils/media-input.js"
+    ]
+  },
+  {
+    "source": "packages/ai/src/protocols/bedrock-converse.vibe",
+    "imports": [
+      "../provider-error.js",
+      "../route/protocol.js",
+      "./utils/bedrock-cache.js",
+      "./utils/bedrock-media.js",
+      "./utils/tool-stream.js"
+    ]
+  },
+  {
+    "source": "packages/ai/src/protocols/bfl-images.vibe",
+    "imports": [
+      "../generation.js",
+      "../image.js",
+      "../media.js",
+      "../route/media-protocol.js",
+      "../route/media.js",
+      "../schema/index.js",
+      "./shared.js",
+      "./utils/image-sizing.js"
+    ]
+  },
+  {
+    "source": "packages/ai/src/protocols/cartesia-speech.vibe",
+    "imports": [
+      "../provider-error.js",
+      "../route/framing.js",
+      "../route/media-protocol.js",
+      "../route/media.js",
+      "../schema/index.js",
+      "../speech.js",
+      "./shared.js",
+      "./utils/speech-stream.js"
+    ]
+  },
+  {
+    "source": "packages/ai/src/protocols/cloudflare-run-decisions.vibe",
+    "imports": [
+      "../route/decision.js",
+      "../route/media-protocol.js",
+      "./system-one.js"
+    ]
+  },
+  {
+    "source": "packages/ai/src/protocols/cloudflare-workers-ai-images.vibe",
+    "imports": [
+      "../route/media-protocol.js",
+      "../route/media.js",
+      "./utils/image-sizing.js",
+      "./utils/media-input.js"
+    ]
+  },
+  {
+    "source": "packages/ai/src/protocols/cohere-chat.vibe",
+    "imports": [
+      "../route/framing.js",
+      "../route/protocol.js",
+      "./utils/tool-stream.js"
+    ]
+  },
+  {
+    "source": "packages/ai/src/protocols/deepgram-speech.vibe",
+    "imports": [
+      "../route/media-protocol.js",
+      "../route/media.js",
+      "../schema/index.js",
+      "../speech.js",
+      "./utils/media-input.js",
+      "./utils/speech-stream.js"
+    ]
+  },
+  {
+    "source": "packages/ai/src/protocols/deepgram-transcription.vibe",
+    "imports": [
+      "../route/media-protocol.js",
+      "../route/media.js",
+      "../schema/index.js",
+      "../transcription.js",
+      "./shared.js",
+      "./utils/media-input.js",
+      "./utils/speaker-turns.js"
+    ]
+  },
+  {
+    "source": "packages/ai/src/protocols/elevenlabs-speech.vibe",
+    "imports": [
+      "../route/framing.js",
+      "../route/media-protocol.js",
+      "../route/media.js",
+      "../schema/index.js",
+      "../speech.js",
+      "./shared.js",
+      "./utils/speech-stream.js"
+    ]
+  },
+  {
+    "source": "packages/ai/src/protocols/elevenlabs-transcription.vibe",
+    "imports": [
+      "../route/media-protocol.js",
+      "../route/media.js",
+      "../schema/index.js",
+      "../transcription.js",
+      "../utils/media-type.js",
+      "./shared.js",
+      "./utils/media-input.js",
+      "./utils/speaker-turns.js"
+    ]
+  },
+  {
+    "source": "packages/ai/src/protocols/fal-images.vibe",
+    "imports": [
+      "../image.js",
+      "../media.js",
+      "../route/media-protocol.js",
+      "../route/media.js",
+      "../schema/index.js",
+      "./shared.js",
+      "./utils/fal-queue.js",
+      "./utils/image-sizing.js"
+    ]
+  },
+  {
+    "source": "packages/ai/src/protocols/fal-video.vibe",
+    "imports": [
+      "../media.js",
+      "../route/media-protocol.js",
+      "../route/media.js",
+      "../schema/index.js",
+      "../video.js",
+      "./shared.js",
+      "./utils/fal-queue.js"
+    ]
+  },
+  {
+    "source": "packages/ai/src/protocols/google-images.vibe",
+    "imports": [
+      "../route/media-protocol.js",
+      "../route/media.js",
+      "./utils/gemini-generate-content.js",
+      "./utils/media-input.js"
+    ]
+  },
+  {
+    "source": "packages/ai/src/protocols/google-speech.vibe",
+    "imports": [
+      "../route/media-protocol.js",
+      "../route/media.js",
+      "../schema/index.js",
+      "../speech.js",
+      "./utils/gemini-generate-content.js",
+      "./utils/speech-stream.js"
+    ]
+  },
+  {
+    "source": "packages/ai/src/protocols/google-transcription.vibe",
+    "imports": [
+      "../route/media-protocol.js",
+      "../route/media.js",
+      "../schema/index.js",
+      "../transcription.js",
+      "./utils/gemini-generate-content.js"
+    ]
+  },
+  {
+    "source": "packages/ai/src/protocols/google-video.vibe",
+    "imports": [
+      "../generation.js",
+      "../route/media-protocol.js",
+      "../route/media.js"
+    ]
+  },
+  {
+    "source": "packages/ai/src/protocols/meta-images.vibe",
+    "imports": [
+      "../route/media-protocol.js",
+      "../route/media.js",
+      "./utils/image-sizing.js",
+      "./utils/media-input.js"
+    ]
+  },
+  {
+    "source": "packages/ai/src/protocols/meta-messages.vibe",
+    "imports": [
+      "../route/protocol.js",
+      "../schema/index.js",
+      "./anthropic-messages.js",
+      "./meta-responses.js",
+      "./shared.js"
+    ]
+  },
+  {
+    "source": "packages/ai/src/protocols/meta-responses.vibe",
+    "imports": [
+      "../route/protocol.js",
+      "./utils/responses-hosted-tools.js"
+    ]
+  },
+  {
+    "source": "packages/ai/src/protocols/mistral-chat.vibe",
+    "imports": [
+      "../provider-error.js",
+      "../route/auth.js",
+      "../route/framing.js",
+      "../route/protocol.js",
+      "../route/transport/index.js",
+      "./utils/tool-stream.js"
+    ]
+  },
+  {
+    "source": "packages/ai/src/protocols/open-responses-continuation.vibe",
+    "imports": [
+      "../route/transport/index.js"
+    ]
+  },
+  {
+    "source": "packages/ai/src/protocols/openai-decisions.vibe",
+    "imports": [
+      "../decision.js",
+      "../route/decision.js",
+      "../route/media-protocol.js",
+      "../utils/json.js"
+    ]
+  },
+  {
+    "source": "packages/ai/src/protocols/openai-images.vibe",
+    "imports": [
+      "../provider-error.js",
+      "../route/framing.js",
+      "../route/media-protocol.js",
+      "../route/media.js",
+      "./utils/image-sizing.js",
+      "./utils/media-input.js"
+    ]
+  },
+  {
+    "source": "packages/ai/src/protocols/openai-responses.vibe",
+    "imports": [
+      "../route/auth.js",
+      "../route/protocol.js",
+      "../route/transport/index.js",
+      "./utils/open-responses-options.js",
+      "./utils/responses-checkpoint.js",
+      "./utils/responses-compaction.js",
+      "./utils/responses-hosted-tools.js"
+    ]
+  },
+  {
+    "source": "packages/ai/src/protocols/openai-speech.vibe",
+    "imports": [
+      "../route/framing.js",
+      "../route/media-protocol.js",
+      "../route/media.js",
+      "../schema/index.js",
+      "../speech.js",
+      "./utils/speech-stream.js"
+    ]
+  },
+  {
+    "source": "packages/ai/src/protocols/openai-transcription.vibe",
+    "imports": [
+      "../provider-error.js",
+      "../route/framing.js",
+      "../route/media-protocol.js",
+      "../route/media.js",
+      "../schema/index.js",
+      "../transcription.js",
+      "../utils/media-type.js",
+      "./shared.js",
+      "./utils/media-input.js"
+    ]
+  },
+  {
+    "source": "packages/ai/src/protocols/replicate-images.vibe",
+    "imports": [
+      "../generation.js",
+      "../image.js",
+      "../media.js",
+      "../route/media-protocol.js",
+      "../route/media.js",
+      "../schema/index.js",
+      "./shared.js"
+    ]
+  },
+  {
+    "source": "packages/ai/src/protocols/runway-video.vibe",
+    "imports": [
+      "../generation.js",
+      "../media.js",
+      "../route/media-protocol.js",
+      "../route/media.js",
+      "../schema/index.js",
+      "../video.js",
+      "./shared.js"
+    ]
+  },
+  {
+    "source": "packages/ai/src/protocols/stability-images.vibe",
+    "imports": [
+      "../image.js",
+      "../route/media-protocol.js",
+      "../route/media.js",
+      "../schema/index.js",
+      "./shared.js",
+      "./utils/media-input.js"
+    ]
+  },
+  {
+    "source": "packages/ai/src/protocols/system-one.vibe",
+    "imports": [
+      "../decision.js",
+      "../route/decision.js",
+      "../route/media-protocol.js",
+      "../utils/json.js"
+    ]
+  },
+  {
+    "source": "packages/ai/src/protocols/utils/bedrock-cache.vibe",
+    "imports": [
+      "../../schema/index.js",
+      "./cache.js"
+    ]
+  },
+  {
+    "source": "packages/ai/src/protocols/utils/fal-queue.vibe",
+    "imports": [
+      "../../generation.js",
+      "../../media.js",
+      "../../route/media-protocol.js",
+      "../../schema/index.js",
+      "../shared.js"
+    ]
+  },
+  {
+    "source": "packages/ai/src/protocols/utils/gateway-protocol.vibe",
+    "imports": [
+      "../../route/protocol.js",
+      "../../schema/index.js",
+      "../shared.js"
+    ]
+  },
+  {
+    "source": "packages/ai/src/protocols/utils/gemini-generate-content.vibe",
+    "imports": [
+      "../../route/framing.js",
+      "../../route/media-protocol.js",
+      "./media-input.js"
+    ]
+  },
+  {
+    "source": "packages/ai/src/protocols/utils/image-sizing.vibe",
+    "imports": [
+      "../../route/media-protocol.js"
+    ]
+  },
+  {
+    "source": "packages/ai/src/protocols/utils/media-input.vibe",
+    "imports": [
+      "../../media.js",
+      "../../route/media-protocol.js",
+      "../../schema/index.js",
+      "../../utils/json.js",
+      "../shared.js"
+    ]
+  },
+  {
+    "source": "packages/ai/src/protocols/utils/open-responses-options.vibe",
+    "imports": [
+      "../../schema/index.js",
+      "../shared.js"
+    ]
+  },
+  {
+    "source": "packages/ai/src/protocols/utils/partial-json.vibe",
+    "imports": [
+      "../../utils/json.js",
+      "./partial-json-options.js"
+    ]
+  },
+  {
+    "source": "packages/ai/src/protocols/utils/responses-checkpoint.vibe",
+    "imports": [
+      "../../route/protocol.js"
+    ]
+  },
+  {
+    "source": "packages/ai/src/protocols/utils/responses-compaction.vibe",
+    "imports": [
+      "../../effort-updates.js",
+      "../../media.js",
+      "../../route/client.js",
+      "../../route/endpoint.js",
+      "../../route/executor.js",
+      "../../route/transport/index.js",
+      "../../schema/index.js",
+      "../open-responses.js",
+      "../shared.js"
+    ]
+  },
+  {
+    "source": "packages/ai/src/protocols/utils/responses-hosted-tools.vibe",
+    "imports": [
+      "../../schema/index.js",
+      "../open-responses.js",
+      "./lifecycle.js"
+    ]
+  },
+  {
+    "source": "packages/ai/src/protocols/utils/speech-stream.vibe",
+    "imports": [
+      "../../media.js",
+      "../../route/media-protocol.js",
+      "../../schema/index.js",
+      "../../speech.js",
+      "../../utils/bytes.js"
+    ]
+  },
+  {
+    "source": "packages/ai/src/protocols/utils/tool-stream.vibe",
+    "imports": [
+      "./partial-json.js"
+    ]
+  },
+  {
+    "source": "packages/ai/src/protocols/venice-chat.vibe",
+    "imports": [
+      "../provider-error.js",
+      "../route/protocol.js",
+      "./utils/open-responses-options.js"
+    ]
+  },
+  {
+    "source": "packages/ai/src/protocols/xai-images.vibe",
+    "imports": [
+      "../route/media-protocol.js",
+      "../route/media.js",
+      "./utils/image-sizing.js",
+      "./utils/media-input.js"
+    ]
+  },
+  {
+    "source": "packages/ai/src/protocols/xai-responses.vibe",
+    "imports": [
+      "../route/protocol.js",
+      "./utils/responses-compaction.js",
+      "./utils/responses-hosted-tools.js"
+    ]
+  },
+  {
+    "source": "packages/ai/src/protocols/xai-video.vibe",
+    "imports": [
+      "../generation.js",
+      "../route/media-protocol.js",
+      "../route/media.js"
+    ]
+  },
+  {
+    "source": "packages/ai/src/protocols/zai-chat.vibe",
+    "imports": [
+      "../route/protocol.js",
+      "../schema/index.js",
+      "./openai-chat.js",
+      "./shared.js",
+      "./utils/open-responses-options.js"
+    ]
+  },
+  {
+    "source": "packages/ai/src/protocols/zai-images.vibe",
+    "imports": [
+      "../route/media-protocol.js",
+      "../route/media.js",
+      "./utils/image-sizing.js"
+    ]
+  },
+  {
+    "source": "packages/ai/src/protocols/zai-messages.vibe",
+    "imports": [
+      "../route/protocol.js",
+      "../schema/index.js",
+      "./anthropic-messages.js",
+      "./shared.js",
+      "./utils/open-responses-options.js"
+    ]
+  },
+  {
+    "source": "packages/ai/src/provider-error.vibe",
+    "imports": [
+      "./schema/index.js",
+      "./utils/json.js",
+      "./utils/record.js"
+    ]
+  },
+  {
+    "source": "packages/ai/src/providers/alibaba.vibe",
+    "imports": [
+      "../protocols/alibaba-chat.js",
+      "../protocols/alibaba-images.js",
+      "../protocols/alibaba-messages.js",
+      "../protocols/alibaba-responses.js",
+      "../provider-package.js",
+      "../route/auth-options.js",
+      "../route/client.js",
+      "../route/endpoint.js",
+      "../route/framing.js",
+      "../route/media.js",
+      "../schema/index.js"
+    ]
+  },
+  {
+    "source": "packages/ai/src/providers/baseten.vibe",
+    "imports": [
+      "../protocols/openai-chat.js",
+      "../protocols/system-one.js",
+      "../provider-package.js",
+      "../route/auth-options.js",
+      "../route/client.js",
+      "../route/decision.js",
+      "../route/endpoint.js",
+      "../schema/index.js",
+      "./openai-options.js"
+    ]
+  },
+  {
+    "source": "packages/ai/src/providers/cloudflare-ai-gateway.vibe",
+    "imports": [
+      "../protocols/cloudflare-run-decisions.js",
+      "../protocols/index.js",
+      "../provider-package.js",
+      "../route/auth-options.js",
+      "../route/auth.js",
+      "../route/client.js",
+      "../route/endpoint.js",
+      "../schema/index.js",
+      "../utils/json.js",
+      "./openai-options.js"
+    ]
+  },
+  {
+    "source": "packages/ai/src/providers/google-vertex-messages.vibe",
+    "imports": [
+      "../protocols/anthropic-messages.js",
+      "../provider-package.js",
+      "../route/auth.js",
+      "../route/client.js",
+      "../route/endpoint.js",
+      "../route/protocol.js",
+      "../schema/index.js",
+      "./google-vertex-shared.js"
+    ]
+  },
+  {
+    "source": "packages/ai/src/providers/google-vertex-mistral.vibe",
+    "imports": [
+      "../protocols/mistral-chat.js",
+      "../provider-package.js",
+      "../route/auth.js",
+      "../route/client.js",
+      "../route/endpoint.js",
+      "../route/protocol.js",
+      "../route/transport/index.js",
+      "../schema/index.js",
+      "./google-vertex-shared.js"
+    ]
+  },
+  {
+    "source": "packages/ai/src/providers/google-vertex.vibe",
+    "imports": [
+      "../protocols/gemini.js",
+      "../protocols/google-images.js",
+      "../protocols/shared.js",
+      "../provider-package.js",
+      "../route/auth.js",
+      "../route/client.js",
+      "../route/endpoint.js",
+      "../route/media.js",
+      "../schema/index.js",
+      "./google-vertex-shared.js"
+    ]
+  },
+  {
+    "source": "packages/ai/src/providers/groq.vibe",
+    "imports": [
+      "../protocols/openai-chat.js",
+      "../protocols/shared.js",
+      "../provider-package.js",
+      "../route/auth-options.js",
+      "../route/client.js",
+      "../route/endpoint.js",
+      "../route/protocol.js",
+      "../schema/index.js",
+      "./openai-options.js"
+    ]
+  },
+  {
+    "source": "packages/ai/src/providers/minimax.vibe",
+    "imports": [
+      "../protocols/anthropic-messages.js",
+      "../protocols/open-responses.js",
+      "../protocols/openai-chat.js",
+      "../protocols/shared.js",
+      "../provider-package.js",
+      "../route/auth-options.js",
+      "../route/client.js",
+      "../route/endpoint.js",
+      "../route/framing.js",
+      "../route/protocol.js",
+      "../schema/index.js"
+    ]
+  },
+  {
+    "source": "packages/ai/src/providers/moonshot.vibe",
+    "imports": [
+      "../protocols/anthropic-messages.js",
+      "../protocols/open-responses.js",
+      "../protocols/openai-chat.js",
+      "../protocols/shared.js",
+      "../provider-package.js",
+      "../route/auth-options.js",
+      "../route/client.js",
+      "../route/endpoint.js",
+      "../route/framing.js",
+      "../route/protocol.js",
+      "../schema/index.js"
+    ]
+  },
+  {
+    "source": "packages/ai/src/providers/openrouter.vibe",
+    "imports": [
+      "../protocols/openai-images.js",
+      "../protocols/system-one.js",
+      "../route/auth-options.js",
+      "../route/media.js",
+      "../route/protocol.js"
+    ]
+  },
+  {
+    "source": "packages/ai/src/providers/vercel-ai-gateway.vibe",
+    "imports": [
+      "../protocols/anthropic-messages.js",
+      "../protocols/open-responses.js",
+      "../protocols/openai-chat.js",
+      "../protocols/openai-decisions.js",
+      "../protocols/openai-images.js",
+      "../protocols/shared.js",
+      "../protocols/utils/gateway-protocol.js",
+      "../provider-package.js",
+      "../route/auth-options.js",
+      "../route/client.js",
+      "../route/endpoint.js",
+      "../route/framing.js",
+      "../route/media.js",
+      "../route/protocol.js",
+      "../schema/index.js",
+      "./open-responses-options.js"
+    ]
+  },
+  {
+    "source": "packages/ai/src/route/auth-options.vibe",
+    "imports": [
+      "./auth.js"
+    ]
+  },
+  {
+    "source": "packages/ai/src/route/decision.vibe",
+    "imports": [
+      "../decision.js",
+      "../schema/index.js",
+      "./auth.js",
+      "./endpoint.js",
+      "./executor-service.js",
+      "./media-protocol.js",
+      "./media.js"
+    ]
+  },
+  {
+    "source": "packages/ai/src/route/executor-service.vibe",
+    "imports": [
+      "../schema/errors.js"
+    ]
+  },
+  {
+    "source": "packages/ai/src/route/executor.vibe",
+    "imports": [
+      "../provider-error.js",
+      "../schema/index.js",
+      "./executor-service.js"
+    ]
+  },
+  {
+    "source": "packages/ai/src/route/framing.vibe",
+    "imports": [
+      "../schema/index.js"
+    ]
+  },
+  {
+    "source": "packages/ai/src/route/media-protocol.vibe",
+    "imports": [
+      "../generation.js",
+      "./auth.js",
+      "./executor.js"
+    ]
+  },
+  {
+    "source": "packages/ai/src/route/media.vibe",
+    "imports": [
+      "../generation.js",
+      "../media.js",
+      "../provider-error.js",
+      "../schema/index.js",
+      "../utils/json.js",
+      "../utils/sanitize.js",
+      "./auth.js",
+      "./endpoint.js",
+      "./executor-service.js",
+      "./executor.js",
+      "./media-protocol.js"
+    ]
+  },
+  {
+    "source": "packages/ai/src/route/protocol.vibe",
+    "imports": [
+      "../schema/index.js"
+    ]
+  },
+  {
+    "source": "packages/ai/src/route/transport/http.vibe",
+    "imports": [
+      "../../protocols/shared.js",
+      "../../schema/index.js",
+      "../auth.js",
+      "../endpoint.js",
+      "../executor.js",
+      "../framing.js",
+      "./index.js"
+    ]
+  },
+  {
+    "source": "packages/ai/src/route/transport/index.vibe",
+    "imports": [
+      "../../schema/index.js",
+      "../auth.js",
+      "../endpoint.js",
+      "../executor.js",
+      "./websocket-channel.js",
+      "./websocket.js"
+    ]
+  },
+  {
+    "source": "packages/ai/src/route/transport/websocket-channel.vibe",
+    "imports": [
+      "../../schema/index.js"
+    ]
+  },
+  {
+    "source": "packages/ai/src/schema/errors.vibe",
+    "imports": [
+      "./ids.js"
+    ]
+  },
+  {
+    "source": "packages/ai/src/schema/events.vibe",
+    "imports": [
+      "./errors.js",
+      "./ids.js",
+      "./messages.js",
+      "./options.js"
+    ]
+  },
+  {
+    "source": "packages/ai/src/schema/messages.vibe",
+    "imports": [
+      "../media.js",
+      "../utils/json.js",
+      "./ids.js",
+      "./options.js"
+    ]
+  },
+  {
+    "source": "packages/ai/src/schema/options.vibe",
+    "imports": [
+      "../route/client.js",
+      "../utils/record.js",
+      "./ids.js"
+    ]
+  },
+  {
+    "source": "packages/ai/src/speech-client.vibe",
+    "imports": [
+      "./media-client.js",
+      "./speech.js"
+    ]
+  },
+  {
+    "source": "packages/ai/src/tool-runtime.vibe",
+    "imports": [
+      "./schema/index.js",
+      "./tool.js"
+    ]
+  },
+  {
+    "source": "packages/ai/src/tool.vibe",
+    "imports": [
+      "./schema/index.js",
+      "./utils/record.js"
+    ]
+  },
+  {
+    "source": "packages/ai/src/transcription-client.vibe",
+    "imports": [
+      "./media-client.js",
+      "./transcription.js"
+    ]
+  },
+  {
+    "source": "packages/ai/src/utils/sanitize.vibe",
+    "imports": [
+      "../media.js",
+      "./record.js"
+    ]
+  },
+  {
+    "source": "packages/ai/src/video-client.vibe",
+    "imports": [
+      "./media-client.js",
+      "./video.js"
+    ]
+  },
+  {
+    "source": "packages/client/src/effect/index.vibe",
+    "imports": [
+      "./api.js",
+      "./client.js"
+    ]
+  },
+  {
+    "source": "packages/client/src/effect/rpc.vibe",
+    "imports": [
+      "../rpc-runtime.js"
+    ]
+  },
+  {
+    "source": "packages/codemode/src/codemode.vibe",
+    "imports": [
+      "./extension.js",
+      "./interpreter/execute.js",
+      "./interpreter/extensions.js",
+      "./interpreter/globals.js",
+      "./tool-runtime.js",
+      "./tools.js"
+    ]
+  },
+  {
+    "source": "packages/codemode/src/openapi/index.vibe",
+    "imports": [
+      "../tool.js",
+      "./runtime.js",
+      "./spec.js",
+      "./types.js"
+    ]
+  },
+  {
+    "source": "packages/codemode/src/openapi/runtime.vibe",
+    "imports": [
+      "../tool-error.js",
+      "./spec.js",
+      "./types.js"
+    ]
+  },
+  {
+    "source": "packages/codemode/src/openapi/spec.vibe",
+    "imports": [
+      "../tool.js",
+      "./types.js"
+    ]
+  },
+  {
+    "source": "packages/codemode/src/openapi/types.vibe",
+    "imports": [
+      "../tool.js"
+    ]
+  },
+  {
+    "source": "packages/codemode/src/tool-runtime.vibe",
+    "imports": [
+      "./codemode.js",
+      "./data.js",
+      "./namespace.js",
+      "./tool-error.js",
+      "./tool-schema.js",
+      "./tool.js",
+      "./tools.js"
+    ]
+  },
+  {
+    "source": "packages/codemode/src/tool-schema.vibe",
+    "imports": [
+      "./tool.js"
+    ]
+  },
+  {
+    "source": "packages/codemode/src/tool.vibe",
+    "imports": [
+      "./namespace.js",
+      "./tools.js"
+    ]
+  },
+  {
+    "source": "packages/core/src/agent.vibe",
+    "imports": [
+      "./bus.js",
+      "./state.js"
+    ]
+  },
+  {
+    "source": "packages/core/src/aisdk-native.vibe",
+    "imports": [
+      "./provider.js"
+    ]
+  },
+  {
+    "source": "packages/core/src/codemode/instructions.vibe",
+    "imports": [
+      "../instructions/index.js",
+      "./catalog.js"
+    ]
+  },
+  {
+    "source": "packages/core/src/codemode/tool.vibe",
+    "imports": [
+      "../tool/runtime.js",
+      "./catalog.js",
+      "./web.js"
+    ]
+  },
+  {
+    "source": "packages/core/src/config/plugin/compaction.vibe",
+    "imports": [
+      "../../session/compaction.js",
+      "./entry-observer.js"
+    ]
+  },
+  {
+    "source": "packages/core/src/config/plugin/formatter.vibe",
+    "imports": [
+      "../../formatter/builtins.js",
+      "./entry-observer.js"
+    ]
+  },
+  {
+    "source": "packages/core/src/config/plugin/image.vibe",
+    "imports": [
+      "../../image.js",
+      "./entry-observer.js"
+    ]
+  },
+  {
+    "source": "packages/core/src/config/plugin/location-watcher.vibe",
+    "imports": [
+      "../../filesystem/location-watcher-policy.js",
+      "./entry-observer.js"
+    ]
+  },
+  {
+    "source": "packages/core/src/config/plugin/provider.vibe",
+    "imports": [
+      "../integration.js",
+      "./entry-observer.js"
+    ]
+  },
+  {
+    "source": "packages/core/src/config/plugin/shell.vibe",
+    "imports": [
+      "./entry-observer.js"
+    ]
+  },
+  {
+    "source": "packages/core/src/config/plugin/snapshot.vibe",
+    "imports": [
+      "./entry-observer.js"
+    ]
+  },
+  {
+    "source": "packages/core/src/config/plugin/tool-output.vibe",
+    "imports": [
+      "./entry-observer.js"
+    ]
+  },
+  {
+    "source": "packages/core/src/config/plugin/websearch.vibe",
+    "imports": [
+      "./entry-observer.js"
+    ]
+  },
+  {
+    "source": "packages/core/src/database/sqlite.bun.vibe",
+    "imports": [
+      "./sqlite.js"
+    ]
+  },
+  {
+    "source": "packages/core/src/database/sqlite.node.vibe",
+    "imports": [
+      "./sqlite.js"
+    ]
+  },
+  {
+    "source": "packages/core/src/event-logger.vibe",
+    "imports": [
+      "./bus.js"
+    ]
+  },
+  {
+    "source": "packages/core/src/filesystem/file-watch.vibe",
+    "imports": [
+      "../bus.js",
+      "./watcher.js"
+    ]
+  },
+  {
+    "source": "packages/core/src/filesystem/location-watcher-policy.vibe",
+    "imports": [
+      "../state.js"
+    ]
+  },
+  {
+    "source": "packages/core/src/generate.vibe",
+    "imports": [
+      "./effect/app-node-platform.js",
+      "./model-retry.js"
+    ]
+  },
+  {
+    "source": "packages/core/src/image.vibe",
+    "imports": [
+      "./filesystem.js",
+      "./image/photon.js",
+      "./state.js"
+    ]
+  },
+  {
+    "source": "packages/core/src/location-lifecycle.vibe",
+    "imports": [
+      "./bus.js",
+      "./form.js",
+      "./location-service-map.js",
+      "./location.js",
+      "./permission.js",
+      "./project.js",
+      "./rpc.js",
+      "./session/event.js"
+    ]
+  },
+  {
+    "source": "packages/core/src/location-services.vibe",
+    "imports": [
+      "./location-lifecycle.js"
+    ]
+  },
+  {
+    "source": "packages/core/src/plugin/agent.vibe",
+    "imports": [
+      "../agent.js"
+    ]
+  },
+  {
+    "source": "packages/core/src/plugin/host.vibe",
+    "imports": [
+      "../agent.js",
+      "../app.js",
+      "../command.js",
+      "../generate.js",
+      "../kv.js",
+      "../tool.js",
+      "./hooks.js"
+    ]
+  },
+  {
+    "source": "packages/core/src/plugin/identity.vibe",
+    "imports": [
+      "./optimize.js"
+    ]
+  },
+  {
+    "source": "packages/core/src/plugin/internal.vibe",
+    "imports": [
+      "../agent.js",
+      "../command.js",
+      "../config/plugin/compaction.js",
+      "../config/plugin/formatter.js",
+      "../config/plugin/image.js",
+      "../config/plugin/location-watcher.js",
+      "../config/plugin/provider.js",
+      "../config/plugin/shell.js",
+      "../config/plugin/snapshot.js",
+      "../config/plugin/tool-output.js",
+      "../config/plugin/websearch.js",
+      "../effect/app-node-platform.js",
+      "../file-mutation.js",
+      "../filesystem/location-watcher-policy.js",
+      "../image.js",
+      "../kv.js",
+      "../session/compaction.js",
+      "../session/subagent-job.js",
+      "../tool.js",
+      "../tool/plugin/edit.js",
+      "../tool/plugin/mcp-resource.js",
+      "../tool/plugin/opencode.js",
+      "../tool/plugin/patch.js",
+      "../tool/plugin/question.js",
+      "../tool/plugin/skill.js",
+      "../tool/plugin/subagent.js",
+      "../tool/plugin/todo.js",
+      "../tool/plugin/webfetch.js",
+      "../tool/plugin/websearch.js",
+      "../tool/plugin/write.js",
+      "../wellknown/plugin.js",
+      "./agent.js",
+      "./command.js",
+      "./identity.js",
+      "./mcp-codemode-defaults.js",
+      "./models-dev.js",
+      "./optimize.js",
+      "./tool-input-repair.js",
+      "./verbosity.js",
+      "./warming.js"
+    ]
+  },
+  {
+    "source": "packages/core/src/plugin/provider/dynamic.vibe",
+    "imports": [
+      "./sdk-factory.js"
+    ]
+  },
+  {
+    "source": "packages/core/src/plugin/provider/llmgateway.vibe",
+    "imports": [
+      "../../integration.js"
+    ]
+  },
+  {
+    "source": "packages/core/src/plugin/provider/lmstudio.vibe",
+    "imports": [
+      "./local.js"
+    ]
+  },
+  {
+    "source": "packages/core/src/plugin/provider/ollama.vibe",
+    "imports": [
+      "./local.js"
+    ]
+  },
+  {
+    "source": "packages/core/src/plugin/provider/openai-context-caps.vibe",
+    "imports": [
+      "../internal.js"
+    ]
+  },
+  {
+    "source": "packages/core/src/plugin/provider/openrouter.vibe",
+    "imports": [
+      "../../model.js"
+    ]
+  },
+  {
+    "source": "packages/core/src/plugin/provider/vercel.vibe",
+    "imports": [
+      "../../provider.js"
+    ]
+  },
+  {
+    "source": "packages/core/src/plugin/provider/vllm.vibe",
+    "imports": [
+      "./local.js"
+    ]
+  },
+  {
+    "source": "packages/core/src/plugin/sdk.vibe",
+    "imports": [
+      "../bus.js",
+      "../plugin.js"
+    ]
+  },
+  {
+    "source": "packages/core/src/plugin/tool-input-repair.vibe",
+    "imports": [
+      "../tool/runtime.js"
+    ]
+  },
+  {
+    "source": "packages/core/src/plugin/websearch/exa.vibe",
+    "imports": [
+      "./mcp.js"
+    ]
+  },
+  {
+    "source": "packages/core/src/plugin/websearch/firecrawl.vibe",
+    "imports": [
+      "../../app.js",
+      "./mcp.js"
+    ]
+  },
+  {
+    "source": "packages/core/src/plugin/websearch/parallel.vibe",
+    "imports": [
+      "../../app.js",
+      "./mcp.js"
+    ]
+  },
+  {
+    "source": "packages/core/src/plugin/websearch/tavily.vibe",
+    "imports": [
+      "../../app.js"
+    ]
+  },
+  {
+    "source": "packages/core/src/plugin/websearch/tinyfish.vibe",
+    "imports": [
+      "../../app.js",
+      "../../tool/http-body.js",
+      "./mcp.js"
+    ]
+  },
+  {
+    "source": "packages/core/src/session/command.vibe",
+    "imports": [
+      "../command.js",
+      "../instance/service.js",
+      "../plugin/service.js"
+    ]
+  },
+  {
+    "source": "packages/core/src/session/compaction.vibe",
+    "imports": [
+      "../agent.js",
+      "../effect/app-node-platform.js",
+      "./runner/retry.js"
+    ]
+  },
+  {
+    "source": "packages/core/src/session/environment.vibe",
+    "imports": [
+      "./schema.js"
+    ]
+  },
+  {
+    "source": "packages/core/src/session/error.vibe",
+    "imports": [
+      "./message.js",
+      "./schema.js"
+    ]
+  },
+  {
+    "source": "packages/core/src/session/execution/restart.vibe",
+    "imports": [
+      "../../bus.js",
+      "../../job.js",
+      "../../session.js",
+      "../../shell/result.js",
+      "../event.js",
+      "../execution.js",
+      "../schema.js",
+      "../store.js",
+      "../subagent-completion.js"
+    ]
+  },
+  {
+    "source": "packages/core/src/session/info.vibe",
+    "imports": [
+      "../schema.js",
+      "./schema.js",
+      "./sql.js"
+    ]
+  },
+  {
+    "source": "packages/core/src/session/message-updater.vibe",
+    "imports": [
+      "./event.js",
+      "./message.js"
+    ]
+  },
+  {
+    "source": "packages/core/src/session/run-coordinator.vibe",
+    "imports": [
+      "./inbox.js"
+    ]
+  },
+  {
+    "source": "packages/core/src/session/runner/index.vibe",
+    "imports": [
+      "../../filesystem.js",
+      "../../instructions/index.js",
+      "../error.js",
+      "../inbox.js",
+      "../schema.js",
+      "./model.js"
+    ]
+  },
+  {
+    "source": "packages/core/src/session/runner/retry.vibe",
+    "imports": [
+      "../../bus.js",
+      "../../model-retry.js",
+      "../../plugin/hooks.js",
+      "../event.js",
+      "../message.js",
+      "../schema.js"
+    ]
+  },
+  {
+    "source": "packages/core/src/session/shell.vibe",
+    "imports": [
+      "../instance/service.js",
+      "../plugin/service.js",
+      "../shell.js",
+      "../shell/result.js"
+    ]
+  },
+  {
+    "source": "packages/core/src/session/skill.vibe",
+    "imports": [
+      "../instance/service.js",
+      "../plugin/service.js",
+      "../skill.js",
+      "./error.js"
+    ]
+  },
+  {
+    "source": "packages/core/src/session/stored.vibe",
+    "imports": [
+      "./message.js"
+    ]
+  },
+  {
+    "source": "packages/core/src/session/subagent-completion.vibe",
+    "imports": [
+      "../job.js",
+      "../session.js",
+      "./message.js"
+    ]
+  },
+  {
+    "source": "packages/core/src/session/subagent-job.vibe",
+    "imports": [
+      "../job.js",
+      "../session.js",
+      "./subagent-completion.js"
+    ]
+  },
+  {
+    "source": "packages/core/src/tool/plugin/edit.vibe",
+    "imports": [
+      "../../file-mutation.js"
+    ]
+  },
+  {
+    "source": "packages/core/src/tool/plugin/opencode.vibe",
+    "imports": [
+      "../../file-access.js",
+      "../../git.js",
+      "../../permission.js",
+      "../../worktree.js"
+    ]
+  },
+  {
+    "source": "packages/core/src/tool/plugin/patch.vibe",
+    "imports": [
+      "../../file-mutation.js"
+    ]
+  },
+  {
+    "source": "packages/core/src/tool/plugin/question.vibe",
+    "imports": [
+      "../../form.js",
+      "../../permission.js"
+    ]
+  },
+  {
+    "source": "packages/core/src/tool/plugin/todo.vibe",
+    "imports": [
+      "../../config.js",
+      "../../config/plugin/entry-observer.js",
+      "../../permission.js"
+    ]
+  },
+  {
+    "source": "packages/core/src/tool/plugin/write.vibe",
+    "imports": [
+      "../../file-mutation.js"
+    ]
+  },
+  {
+    "source": "packages/core/src/tool.vibe",
+    "imports": [
+      "./agent.js",
+      "./codemode/catalog.js",
+      "./codemode/tool.js",
+      "./image.js",
+      "./plugin/hooks.js",
+      "./tool/runtime.js"
+    ]
+  },
+  {
+    "source": "packages/core/src/usage-limits.vibe",
+    "imports": [
+      "./console-access.js",
+      "./credential.js",
+      "./integration.js"
+    ]
+  },
+  {
+    "source": "packages/core/src/v1/config/agent.vibe",
+    "imports": [
+      "../../schema.js",
+      "./permission.js"
+    ]
+  },
+  {
+    "source": "packages/core/src/v1/config/mcp.vibe",
+    "imports": [
+      "../../schema.js"
+    ]
+  },
+  {
+    "source": "packages/core/src/v1/config/migrate.vibe",
+    "imports": [
+      "../../model.js",
+      "../../provider.js",
+      "./agent.js",
+      "./command.js",
+      "./mcp.js",
+      "./permission.js",
+      "./provider-options.js",
+      "./provider.js"
+    ]
+  },
+  {
+    "source": "packages/core/src/v1/config/provider.vibe",
+    "imports": [
+      "../../schema.js"
+    ]
+  },
+  {
+    "source": "packages/core/src/voice.vibe",
+    "imports": [
+      "./effect/app-node-platform.js"
+    ]
+  },
+  {
+    "source": "packages/http-recorder/src/cassette/model.vibe",
+    "imports": [
+      "../api.js",
+      "../http/model.js",
+      "../websocket/model.js"
+    ]
+  },
+  {
+    "source": "packages/http-recorder/src/http/matching.vibe",
+    "imports": [
+      "../api.js",
+      "../replay/comparison.js",
+      "./model.js"
+    ]
+  },
+  {
+    "source": "packages/http-recorder/src/http/model.vibe",
+    "imports": [
+      "../api.js"
+    ]
+  },
+  {
+    "source": "packages/http-recorder/src/redaction/redactor.vibe",
+    "imports": [
+      "../http/model.js",
+      "../options.js"
+    ]
+  },
+  {
+    "source": "packages/http-recorder/src/replay/comparison.vibe",
+    "imports": [
+      "../redaction/redactor.js",
+      "../redaction/secrets.js"
+    ]
+  },
+  {
+    "source": "packages/plugin/src/effect/agent.vibe",
+    "imports": [
+      "./registration.js"
+    ]
+  },
+  {
+    "source": "packages/plugin/src/effect/command.vibe",
+    "imports": [
+      "./registration.js"
+    ]
+  },
+  {
+    "source": "packages/plugin/src/effect/integration.vibe",
+    "imports": [
+      "./registration.js"
+    ]
+  },
+  {
+    "source": "packages/plugin/src/effect/mcp.vibe",
+    "imports": [
+      "./registration.js"
+    ]
+  },
+  {
+    "source": "packages/plugin/src/effect/model.vibe",
+    "imports": [
+      "./provider.js",
+      "./registration.js"
+    ]
+  },
+  {
+    "source": "packages/plugin/src/effect/permission.vibe",
+    "imports": [
+      "../permission.js",
+      "./registration.js"
+    ]
+  },
+  {
+    "source": "packages/plugin/src/effect/plugin.vibe",
+    "imports": [
+      "../app.js",
+      "../options.js",
+      "./agent.js",
+      "./aisdk.js",
+      "./command.js",
+      "./event.js",
+      "./integration.js",
+      "./mcp.js",
+      "./model.js",
+      "./permission.js",
+      "./provider.js",
+      "./reference.js",
+      "./rpc.js",
+      "./session.js",
+      "./shell.js",
+      "./skill.js",
+      "./storage.js",
+      "./tool.js",
+      "./vcs.js",
+      "./websearch.js",
+      "./worktree.js"
+    ]
+  },
+  {
+    "source": "packages/plugin/src/effect/provider.vibe",
+    "imports": [
+      "./registration.js"
+    ]
+  },
+  {
+    "source": "packages/plugin/src/effect/reference.vibe",
+    "imports": [
+      "./registration.js"
+    ]
+  },
+  {
+    "source": "packages/plugin/src/effect/rpc.vibe",
+    "imports": [
+      "./registration.js"
+    ]
+  },
+  {
+    "source": "packages/plugin/src/effect/session.vibe",
+    "imports": [
+      "./registration.js"
+    ]
+  },
+  {
+    "source": "packages/plugin/src/effect/skill.vibe",
+    "imports": [
+      "./registration.js"
+    ]
+  },
+  {
+    "source": "packages/plugin/src/effect/storage.vibe",
+    "imports": [
+      "../storage.js"
+    ]
+  },
+  {
+    "source": "packages/plugin/src/effect/tool.vibe",
+    "imports": [
+      "./registration.js"
+    ]
+  },
+  {
+    "source": "packages/plugin/src/effect/vcs.vibe",
+    "imports": [
+      "./registration.js"
+    ]
+  },
+  {
+    "source": "packages/plugin/src/effect/websearch.vibe",
+    "imports": [
+      "./registration.js"
+    ]
+  },
+  {
+    "source": "packages/plugin/src/effect/worktree.vibe",
+    "imports": [
+      "../worktree.js",
+      "./registration.js"
+    ]
+  },
+  {
+    "source": "packages/plugin/src/gui/host-apis.vibe",
+    "imports": [
+      "./core.js",
+      "./registries.js"
+    ]
+  },
+  {
+    "source": "packages/plugin/src/gui/main.vibe",
+    "imports": [
+      "./core.js"
+    ]
+  },
+  {
+    "source": "packages/plugin/src/gui/plugin.typecheck.vibe",
+    "imports": [
+      "./index.js"
+    ]
+  },
+  {
+    "source": "packages/plugin/src/promise/agent.vibe",
+    "imports": [
+      "./registration.js"
+    ]
+  },
+  {
+    "source": "packages/plugin/src/promise/mcp.vibe",
+    "imports": [
+      "./registration.js"
+    ]
+  },
+  {
+    "source": "packages/plugin/src/promise/model.vibe",
+    "imports": [
+      "./provider.js",
+      "./registration.js"
+    ]
+  },
+  {
+    "source": "packages/plugin/src/promise/provider.vibe",
+    "imports": [
+      "./registration.js"
+    ]
+  },
+  {
+    "source": "packages/plugin/src/promise/session.vibe",
+    "imports": [
+      "./registration.js"
+    ]
+  },
+  {
+    "source": "packages/plugin/src/promise/skill.vibe",
+    "imports": [
+      "./registration.js"
+    ]
+  },
+  {
+    "source": "packages/plugin/src/promise/storage.vibe",
+    "imports": [
+      "../storage.js"
+    ]
+  },
+  {
+    "source": "packages/plugin/src/promise/tool.vibe",
+    "imports": [
+      "./registration.js"
+    ]
+  },
+  {
+    "source": "packages/plugin-browser/src/files.vibe",
+    "imports": [
+      "./rpc.js"
+    ]
+  },
+  {
+    "source": "packages/plugin-browser/src/index.vibe",
+    "imports": [
+      "./connection.js",
+      "./tools.js"
+    ]
+  },
+  {
+    "source": "packages/protocol/script/generate-openapi.vibe",
+    "imports": [
+      "../src/client.js"
+    ]
+  },
+  {
+    "source": "packages/protocol/src/api.vibe",
+    "imports": [
+      "./groups/agent.js",
+      "./groups/command.js",
+      "./groups/config.js",
+      "./groups/credential.js",
+      "./groups/debug.js",
+      "./groups/event.js",
+      "./groups/experimental.js",
+      "./groups/form.js",
+      "./groups/fs.js",
+      "./groups/generate.js",
+      "./groups/integration.js",
+      "./groups/location.js",
+      "./groups/mcp.js",
+      "./groups/message.js",
+      "./groups/migration.js",
+      "./groups/model.js",
+      "./groups/permission.js",
+      "./groups/plugin.js",
+      "./groups/project.js",
+      "./groups/provider.js",
+      "./groups/pty.js",
+      "./groups/reference.js",
+      "./groups/rpc.js",
+      "./groups/server.js",
+      "./groups/session.js",
+      "./groups/shell.js",
+      "./groups/skill.js",
+      "./groups/usage.js",
+      "./groups/vcs.js",
+      "./groups/voice.js",
+      "./groups/websearch.js",
+      "./groups/worktree.js",
+      "./middleware/authorization.js",
+      "./middleware/schema-error.js"
+    ]
+  },
+  {
+    "source": "packages/protocol/src/client.vibe",
+    "imports": [
+      "./api.js",
+      "./errors.js",
+      "./groups/event.js"
+    ]
+  },
+  {
+    "source": "packages/protocol/src/groups/agent.vibe",
+    "imports": [
+      "../errors.js",
+      "./location.js"
+    ]
+  },
+  {
+    "source": "packages/protocol/src/groups/command.vibe",
+    "imports": [
+      "./location.js"
+    ]
+  },
+  {
+    "source": "packages/protocol/src/groups/config.vibe",
+    "imports": [
+      "./location.js"
+    ]
+  },
+  {
+    "source": "packages/protocol/src/groups/credential.vibe",
+    "imports": [
+      "../errors.js"
+    ]
+  },
+  {
+    "source": "packages/protocol/src/groups/debug.vibe",
+    "imports": [
+      "../errors.js",
+      "./location.js"
+    ]
+  },
+  {
+    "source": "packages/protocol/src/groups/form.vibe",
+    "imports": [
+      "./location.js"
+    ]
+  },
+  {
+    "source": "packages/protocol/src/groups/fs.vibe",
+    "imports": [
+      "../errors.js",
+      "./location.js"
+    ]
+  },
+  {
+    "source": "packages/protocol/src/groups/generate.vibe",
+    "imports": [
+      "../errors.js"
+    ]
+  },
+  {
+    "source": "packages/protocol/src/groups/integration.vibe",
+    "imports": [
+      "../errors.js",
+      "./location.js"
+    ]
+  },
+  {
+    "source": "packages/protocol/src/groups/location.vibe",
+    "imports": [
+      "../errors.js"
+    ]
+  },
+  {
+    "source": "packages/protocol/src/groups/mcp.vibe",
+    "imports": [
+      "../errors.js",
+      "./location.js",
+      "./pty.js"
+    ]
+  },
+  {
+    "source": "packages/protocol/src/groups/media.vibe",
+    "imports": [
+      "../errors.js"
+    ]
+  },
+  {
+    "source": "packages/protocol/src/groups/message.vibe",
+    "imports": [
+      "../errors.js"
+    ]
+  },
+  {
+    "source": "packages/protocol/src/groups/model.vibe",
+    "imports": [
+      "../errors.js",
+      "./location.js"
+    ]
+  },
+  {
+    "source": "packages/protocol/src/groups/permission.vibe",
+    "imports": [
+      "../errors.js",
+      "./location.js"
+    ]
+  },
+  {
+    "source": "packages/protocol/src/groups/persistent-pty.vibe",
+    "imports": [
+      "../errors.js",
+      "./pty.js"
+    ]
+  },
+  {
+    "source": "packages/protocol/src/groups/plugin.vibe",
+    "imports": [
+      "../errors.js",
+      "./location.js"
+    ]
+  },
+  {
+    "source": "packages/protocol/src/groups/project.vibe",
+    "imports": [
+      "../errors.js"
+    ]
+  },
+  {
+    "source": "packages/protocol/src/groups/provider.vibe",
+    "imports": [
+      "../errors.js",
+      "./location.js"
+    ]
+  },
+  {
+    "source": "packages/protocol/src/groups/pty.vibe",
+    "imports": [
+      "../errors.js",
+      "./location.js"
+    ]
+  },
+  {
+    "source": "packages/protocol/src/groups/reference.vibe",
+    "imports": [
+      "./location.js"
+    ]
+  },
+  {
+    "source": "packages/protocol/src/groups/rpc.vibe",
+    "imports": [
+      "../errors.js",
+      "./location.js"
+    ]
+  },
+  {
+    "source": "packages/protocol/src/groups/server.vibe",
+    "imports": [
+      "../errors.js"
+    ]
+  },
+  {
+    "source": "packages/protocol/src/groups/session.vibe",
+    "imports": [
+      "../errors.js",
+      "./message.js"
+    ]
+  },
+  {
+    "source": "packages/protocol/src/groups/shell.vibe",
+    "imports": [
+      "../errors.js",
+      "./location.js"
+    ]
+  },
+  {
+    "source": "packages/protocol/src/groups/skill.vibe",
+    "imports": [
+      "./location.js"
+    ]
+  },
+  {
+    "source": "packages/protocol/src/groups/usage.vibe",
+    "imports": [
+      "../errors.js",
+      "./location.js"
+    ]
+  },
+  {
+    "source": "packages/protocol/src/groups/vcs.vibe",
+    "imports": [
+      "../errors.js",
+      "./location.js"
+    ]
+  },
+  {
+    "source": "packages/protocol/src/groups/voice.vibe",
+    "imports": [
+      "../errors.js"
+    ]
+  },
+  {
+    "source": "packages/protocol/src/groups/websearch.vibe",
+    "imports": [
+      "../errors.js",
+      "./location.js"
+    ]
+  },
+  {
+    "source": "packages/protocol/src/groups/worktree.vibe",
+    "imports": [
+      "../errors.js"
+    ]
+  },
+  {
+    "source": "packages/protocol/src/middleware/authorization.vibe",
+    "imports": [
+      "../errors.js"
+    ]
+  },
+  {
+    "source": "packages/protocol/src/middleware/schema-error.vibe",
+    "imports": [
+      "../errors.js"
+    ]
+  },
+  {
+    "source": "packages/schema/src/command.vibe",
+    "imports": [
+      "./event.js",
+      "./schema.js"
+    ]
+  },
+  {
+    "source": "packages/schema/src/config/agent.vibe",
+    "imports": [
+      "../permission.js",
+      "../schema.js",
+      "./model.js",
+      "./provider.js"
+    ]
+  },
+  {
+    "source": "packages/schema/src/config/command.vibe",
+    "imports": [
+      "../schema.js",
+      "./model.js"
+    ]
+  },
+  {
+    "source": "packages/schema/src/config/compaction.vibe",
+    "imports": [
+      "../schema.js"
+    ]
+  },
+  {
+    "source": "packages/schema/src/config/experimental.vibe",
+    "imports": [
+      "../schema.js",
+      "./policy.js"
+    ]
+  },
+  {
+    "source": "packages/schema/src/config/formatter.vibe",
+    "imports": [
+      "../schema.js"
+    ]
+  },
+  {
+    "source": "packages/schema/src/config/mcp.vibe",
+    "imports": [
+      "../mcp.js",
+      "../schema.js"
+    ]
+  },
+  {
+    "source": "packages/schema/src/config/media.vibe",
+    "imports": [
+      "../schema.js"
+    ]
+  },
+  {
+    "source": "packages/schema/src/config/model.vibe",
+    "imports": [
+      "../model.js",
+      "../provider.js",
+      "../schema.js"
+    ]
+  },
+  {
+    "source": "packages/schema/src/config/plugin.vibe",
+    "imports": [
+      "../schema.js"
+    ]
+  },
+  {
+    "source": "packages/schema/src/config/provider.vibe",
+    "imports": [
+      "../model-compatibility.js",
+      "../model.js",
+      "../money.js",
+      "../provider.js",
+      "../schema.js"
+    ]
+  },
+  {
+    "source": "packages/schema/src/config/reference.vibe",
+    "imports": [
+      "../schema.js"
+    ]
+  },
+  {
+    "source": "packages/schema/src/config/tool-output.vibe",
+    "imports": [
+      "../schema.js"
+    ]
+  },
+  {
+    "source": "packages/schema/src/config/warming.vibe",
+    "imports": [
+      "../schema.js"
+    ]
+  },
+  {
+    "source": "packages/schema/src/config/watcher.vibe",
+    "imports": [
+      "../schema.js"
+    ]
+  },
+  {
+    "source": "packages/schema/src/config/websearch.vibe",
+    "imports": [
+      "../websearch.js"
+    ]
+  },
+  {
+    "source": "packages/schema/src/config.vibe",
+    "imports": [
+      "./config/agent.js",
+      "./config/command.js",
+      "./config/compaction.js",
+      "./config/experimental.js",
+      "./config/formatter.js",
+      "./config/lsp.js",
+      "./config/mcp.js",
+      "./config/media.js",
+      "./config/model.js",
+      "./config/plugin.js",
+      "./config/policy.js",
+      "./config/provider.js",
+      "./config/reference.js",
+      "./config/tool-output.js",
+      "./config/warming.js",
+      "./config/watcher.js",
+      "./config/websearch.js",
+      "./config/worktree.js",
+      "./event.js",
+      "./permission.js",
+      "./schema.js"
+    ]
+  },
+  {
+    "source": "packages/schema/src/connection.vibe",
+    "imports": [
+      "./credential.js",
+      "./schema.js"
+    ]
+  },
+  {
+    "source": "packages/schema/src/credential-legacy.vibe",
+    "imports": [
+      "./credential.js",
+      "./form.js",
+      "./schema.js"
+    ]
+  },
+  {
+    "source": "packages/schema/src/credential.vibe",
+    "imports": [
+      "./event.js",
+      "./identifier.js",
+      "./integration-id.js",
+      "./schema.js"
+    ]
+  },
+  {
+    "source": "packages/schema/src/event-log.vibe",
+    "imports": [
+      "./event.js",
+      "./schema.js"
+    ]
+  },
+  {
+    "source": "packages/schema/src/event-manifest.vibe",
+    "imports": [
+      "./agent.js",
+      "./command.js",
+      "./config.js",
+      "./credential.js",
+      "./durable-event-manifest.js",
+      "./event.js",
+      "./filesystem-v1.js",
+      "./filesystem.js",
+      "./form.js",
+      "./installation-event.js",
+      "./integration.js",
+      "./legacy-event.js",
+      "./location-event.js",
+      "./lsp-event.js",
+      "./mcp-event.js",
+      "./model.js",
+      "./models-dev.js",
+      "./permission.js",
+      "./persistent-pty.js",
+      "./plugin.js",
+      "./project.js",
+      "./provider.js",
+      "./pty.js",
+      "./reference.js",
+      "./server-event.js",
+      "./session-event.js",
+      "./session-status-event.js",
+      "./shell.js",
+      "./skill.js",
+      "./tui-event.js",
+      "./vcs-event.js",
+      "./websearch.js",
+      "./workspace-event.js",
+      "./worktree-event.js",
+      "./worktree.js"
+    ]
+  },
+  {
+    "source": "packages/schema/src/event.vibe",
+    "imports": [
+      "./location.js",
+      "./schema.js"
+    ]
+  },
+  {
+    "source": "packages/schema/src/file-diff.vibe",
+    "imports": [
+      "./schema.js"
+    ]
+  },
+  {
+    "source": "packages/schema/src/filesystem.vibe",
+    "imports": [
+      "./event.js",
+      "./schema.js"
+    ]
+  },
+  {
+    "source": "packages/schema/src/form.vibe",
+    "imports": [
+      "./event.js",
+      "./identifier.js",
+      "./schema.js"
+    ]
+  },
+  {
+    "source": "packages/schema/src/generate.vibe",
+    "imports": [
+      "./model.js",
+      "./money.js",
+      "./prompt.js",
+      "./schema.js"
+    ]
+  },
+  {
+    "source": "packages/schema/src/installation-event.vibe",
+    "imports": [
+      "./event.js"
+    ]
+  },
+  {
+    "source": "packages/schema/src/location.vibe",
+    "imports": [
+      "./project-id.js",
+      "./schema.js",
+      "./workspace-id.js"
+    ]
+  },
+  {
+    "source": "packages/schema/src/mcp-event.vibe",
+    "imports": [
+      "./event.js"
+    ]
+  },
+  {
+    "source": "packages/schema/src/mcp.vibe",
+    "imports": [
+      "./integration-id.js",
+      "./schema.js"
+    ]
+  },
+  {
+    "source": "packages/schema/src/model-compatibility.vibe",
+    "imports": [
+      "./schema.js"
+    ]
+  },
+  {
+    "source": "packages/schema/src/money.vibe",
+    "imports": [
+      "./schema.js"
+    ]
+  },
+  {
+    "source": "packages/schema/src/permission-saved.vibe",
+    "imports": [
+      "./identifier.js",
+      "./project-id.js",
+      "./schema.js"
+    ]
+  },
+  {
+    "source": "packages/schema/src/permission.vibe",
+    "imports": [
+      "./event.js",
+      "./identifier.js",
+      "./schema.js",
+      "./session-id.js"
+    ]
+  },
+  {
+    "source": "packages/schema/src/persistent-pty.vibe",
+    "imports": [
+      "./event.js",
+      "./pty.js",
+      "./schema.js",
+      "./session.js"
+    ]
+  },
+  {
+    "source": "packages/schema/src/plugin.vibe",
+    "imports": [
+      "./event.js",
+      "./schema.js"
+    ]
+  },
+  {
+    "source": "packages/schema/src/project-id.vibe",
+    "imports": [
+      "./schema.js"
+    ]
+  },
+  {
+    "source": "packages/schema/src/project.vibe",
+    "imports": [
+      "./event.js",
+      "./project-id.js",
+      "./schema.js"
+    ]
+  },
+  {
+    "source": "packages/schema/src/prompt-input.vibe",
+    "imports": [
+      "./prompt.js",
+      "./schema.js",
+      "./skill.js"
+    ]
+  },
+  {
+    "source": "packages/schema/src/prompt.vibe",
+    "imports": [
+      "./schema.js",
+      "./skill.js"
+    ]
+  },
+  {
+    "source": "packages/schema/src/pty-ticket.vibe",
+    "imports": [
+      "./schema.js"
+    ]
+  },
+  {
+    "source": "packages/schema/src/pty.vibe",
+    "imports": [
+      "./event.js",
+      "./identifier.js",
+      "./schema.js"
+    ]
+  },
+  {
+    "source": "packages/schema/src/question.vibe",
+    "imports": [
+      "./schema.js"
+    ]
+  },
+  {
+    "source": "packages/schema/src/reference.vibe",
+    "imports": [
+      "./event.js",
+      "./schema.js"
+    ]
+  },
+  {
+    "source": "packages/schema/src/rpc.vibe",
+    "imports": [
+      "./event.js",
+      "./location.js",
+      "./tool.js"
+    ]
+  },
+  {
+    "source": "packages/schema/src/session-error.vibe",
+    "imports": [
+      "./schema.js"
+    ]
+  },
+  {
+    "source": "packages/schema/src/session-event.vibe",
+    "imports": [
+      "./agent.js",
+      "./event.js",
+      "./instruction-entry.js",
+      "./instruction.js",
+      "./llm.js",
+      "./location.js",
+      "./model.js",
+      "./money.js",
+      "./permission.js",
+      "./project.js",
+      "./schema.js",
+      "./session-error.js",
+      "./session-fork.js",
+      "./session-id.js",
+      "./session-inbox.js",
+      "./session-message.js",
+      "./session-metadata.js",
+      "./session-revert.js",
+      "./shell.js",
+      "./skill.js",
+      "./snapshot.js",
+      "./token-usage.js",
+      "./tool.js"
+    ]
+  },
+  {
+    "source": "packages/schema/src/session-fork.vibe",
+    "imports": [
+      "./session-message.js"
+    ]
+  },
+  {
+    "source": "packages/schema/src/session-id.vibe",
+    "imports": [
+      "./identifier.js",
+      "./schema.js"
+    ]
+  },
+  {
+    "source": "packages/schema/src/session-inbox.vibe",
+    "imports": [
+      "./location.js",
+      "./project.js",
+      "./prompt.js",
+      "./schema.js",
+      "./session-id.js",
+      "./session-message.js"
+    ]
+  },
+  {
+    "source": "packages/schema/src/session-message.vibe",
+    "imports": [
+      "./agent.js",
+      "./identifier.js",
+      "./llm.js",
+      "./location.js",
+      "./model.js",
+      "./money.js",
+      "./project.js",
+      "./prompt.js",
+      "./schema.js",
+      "./session-error.js",
+      "./shell.js",
+      "./skill.js",
+      "./snapshot.js",
+      "./token-usage.js",
+      "./tool.js"
+    ]
+  },
+  {
+    "source": "packages/schema/src/session-revert.vibe",
+    "imports": [
+      "./file-diff.js",
+      "./schema.js",
+      "./session-message.js",
+      "./snapshot.js"
+    ]
+  },
+  {
+    "source": "packages/schema/src/session-stats.vibe",
+    "imports": [
+      "./model.js",
+      "./money.js",
+      "./schema.js",
+      "./token-usage.js"
+    ]
+  },
+  {
+    "source": "packages/schema/src/session-status-event.vibe",
+    "imports": [
+      "./event.js",
+      "./schema.js",
+      "./session-id.js"
+    ]
+  },
+  {
+    "source": "packages/schema/src/session-transfer.vibe",
+    "imports": [
+      "./session-message.js",
+      "./session.js"
+    ]
+  },
+  {
+    "source": "packages/schema/src/session.vibe",
+    "imports": [
+      "./agent.js",
+      "./location.js",
+      "./model.js",
+      "./money.js",
+      "./permission.js",
+      "./project.js",
+      "./schema.js",
+      "./session-event.js",
+      "./session-fork.js",
+      "./session-id.js",
+      "./session-metadata.js",
+      "./session-revert.js",
+      "./token-usage.js"
+    ]
+  },
+  {
+    "source": "packages/schema/src/shell.vibe",
+    "imports": [
+      "./event.js",
+      "./identifier.js",
+      "./schema.js"
+    ]
+  },
+  {
+    "source": "packages/schema/src/skill.vibe",
+    "imports": [
+      "./event.js",
+      "./schema.js"
+    ]
+  },
+  {
+    "source": "packages/schema/src/tool.vibe",
+    "imports": [
+      "./agent.js",
+      "./session-message.js",
+      "./session.js"
+    ]
+  },
+  {
+    "source": "packages/schema/src/tui-event.vibe",
+    "imports": [
+      "./event.js",
+      "./schema.js",
+      "./session-id.js"
+    ]
+  },
+  {
+    "source": "packages/schema/src/usage-limits.vibe",
+    "imports": [
+      "./model.js",
+      "./money.js",
+      "./provider.js",
+      "./schema.js"
+    ]
+  },
+  {
+    "source": "packages/schema/src/v1/filesystem.vibe",
+    "imports": [
+      "../event.js"
+    ]
+  },
+  {
+    "source": "packages/schema/src/v1/legacy-event.vibe",
+    "imports": [
+      "../event.js",
+      "../session-id.js",
+      "./session.js"
+    ]
+  },
+  {
+    "source": "packages/schema/src/v1/permission.vibe",
+    "imports": [
+      "../event.js",
+      "../identifier.js",
+      "../project.js",
+      "../schema.js",
+      "../session-id.js"
+    ]
+  },
+  {
+    "source": "packages/schema/src/v1/session.vibe",
+    "imports": [
+      "../event.js",
+      "../file-diff.js",
+      "../identifier.js",
+      "../model.js",
+      "../project.js",
+      "../provider.js",
+      "../schema.js",
+      "../session-id.js",
+      "../workspace-id.js",
+      "./permission.js"
+    ]
+  },
+  {
+    "source": "packages/schema/src/vcs-event.vibe",
+    "imports": [
+      "./event.js",
+      "./schema.js"
+    ]
+  },
+  {
+    "source": "packages/schema/src/vcs.vibe",
+    "imports": [
+      "./schema.js"
+    ]
+  },
+  {
+    "source": "packages/schema/src/websearch.vibe",
+    "imports": [
+      "./event.js",
+      "./schema.js"
+    ]
+  },
+  {
+    "source": "packages/schema/src/workspace-event.vibe",
+    "imports": [
+      "./event.js",
+      "./workspace-id.js"
+    ]
+  },
+  {
+    "source": "packages/schema/src/workspace-id.vibe",
+    "imports": [
+      "./identifier.js",
+      "./schema.js"
+    ]
+  },
+  {
+    "source": "packages/schema/src/workspace.vibe",
+    "imports": [
+      "./workspace-event.js",
+      "./workspace-id.js"
+    ]
+  },
+  {
+    "source": "packages/schema/src/worktree-event.vibe",
+    "imports": [
+      "./event.js",
+      "./schema.js"
+    ]
+  },
+  {
+    "source": "packages/schema/src/worktree.vibe",
+    "imports": [
+      "./event.js",
+      "./project.js",
+      "./schema.js"
+    ]
+  },
+  {
+    "source": "packages/theme/src/tui/resolve.vibe",
+    "imports": [
+      "./expand.js",
+      "./index.js",
+      "./schema.js",
+      "./select.js"
+    ]
+  },
+  {
+    "source": "packages/util/src/bom.vibe",
+    "imports": [
+      "./fs-util.js"
+    ]
+  },
+  {
+    "source": "packages/util/src/patch.vibe",
+    "imports": [
+      "./bom.js"
+    ]
+  },
+  {
+    "source": "packages/ai/script/setup-recording-env.vibe",
+    "imports": [
+      "../src/providers/cloudflare-ai-gateway.js",
+      "../src/providers/cloudflare-workers-ai.js"
+    ]
+  },
+  {
+    "source": "packages/core/src/config/plugin/agent.vibe",
+    "imports": [
+      "../../agent.js",
+      "../../tool/plugin/edit.js",
+      "../../v1/config/agent.js",
+      "../../v1/config/migrate.js"
+    ]
+  },
+  {
+    "source": "packages/core/src/database/sqlite.workerd.vibe",
+    "imports": [
+      "./sqlite.js"
+    ]
+  },
+  {
+    "source": "packages/core/src/image/photon.vibe",
+    "imports": [
+      "../image.js"
+    ]
+  },
+  {
+    "source": "packages/core/src/plugin/provider/local.vibe",
+    "imports": [
+      "../../environment/unavailable.js",
+      "../internal.js",
+      "./configured.js"
+    ]
+  },
+  {
+    "source": "packages/core/src/plugin/verbosity.vibe",
+    "imports": [
+      "./internal.js"
+    ]
+  },
+  {
+    "source": "packages/core/src/worktree.vibe",
+    "imports": [
+      "./worktree/directory.js"
+    ]
+  },
+  {
+    "source": "packages/util/src/npm.vibe",
+    "imports": [
+      "./npm-config.js"
+    ]
+  },
+  {
+    "source": "packages/ai/src/protocols/bedrock-event-stream.vibe",
+    "imports": [
+      "../route/framing.js"
+    ]
+  },
+  {
+    "source": "packages/client/src/effect/client.vibe",
+    "imports": [
+      "./rpc.js"
+    ]
+  },
+  {
+    "source": "packages/ai/src/image.vibe",
+    "imports": [
+      "./generation.js",
+      "./image-client.js",
+      "./media-model.js",
+      "./route/media.js"
+    ]
+  },
+  {
+    "source": "packages/ai/src/index.vibe",
+    "imports": [
+      "./ai-client.js",
+      "./decision.js",
+      "./generation.js",
+      "./llm.js",
+      "./route/executor.js",
+      "./tool.js"
+    ]
+  },
+  {
+    "source": "packages/ai/src/protocols/anthropic-messages.vibe",
+    "imports": [
+      "../provider-error.js",
+      "../route/auth.js",
+      "../route/framing.js",
+      "../route/protocol.js",
+      "../route/transport/index.js",
+      "./utils/tool-stream.js"
+    ]
+  },
+  {
+    "source": "packages/ai/src/protocols/gemini.vibe",
+    "imports": [
+      "../provider-error.js",
+      "../route/auth.js",
+      "../route/protocol.js",
+      "../route/transport/index.js",
+      "./utils/gemini-generate-content.js"
+    ]
+  },
+  {
+    "source": "packages/ai/src/protocols/google-interactions.vibe",
+    "imports": [
+      "../provider-error.js",
+      "../route/auth.js",
+      "../route/framing.js",
+      "../route/protocol.js",
+      "../utils/json.js",
+      "./utils/gemini-generate-content.js",
+      "./utils/media-input.js",
+      "./utils/tool-stream.js"
+    ]
+  },
+  {
+    "source": "packages/ai/src/protocols/open-responses-channel.vibe",
+    "imports": [
+      "../route/framing.js",
+      "../route/transport/index.js",
+      "./open-responses-continuation.js"
+    ]
+  },
+  {
+    "source": "packages/ai/src/protocols/open-responses.vibe",
+    "imports": [
+      "../provider-error.js",
+      "../route/protocol.js",
+      "../route/transport/index.js",
+      "./utils/open-responses-options.js",
+      "./utils/tool-stream.js"
+    ]
+  },
+  {
+    "source": "packages/ai/src/protocols/openai-chat.vibe",
+    "imports": [
+      "../provider-error.js",
+      "../route/auth.js",
+      "../route/framing.js",
+      "../route/protocol.js",
+      "../route/transport/index.js",
+      "./utils/open-responses-options.js",
+      "./utils/tool-stream.js"
+    ]
+  },
+  {
+    "source": "packages/ai/src/protocols/utils/bedrock-auth.vibe",
+    "imports": [
+      "../../route/auth.js"
+    ]
+  },
+  {
+    "source": "packages/ai/src/speech.vibe",
+    "imports": [
+      "./generation.js",
+      "./media-model.js",
+      "./route/media.js",
+      "./speech-client.js"
+    ]
+  },
+  {
+    "source": "packages/ai/src/transcription.vibe",
+    "imports": [
+      "./generation.js",
+      "./media-model.js",
+      "./route/media.js",
+      "./transcription-client.js"
+    ]
+  },
+  {
+    "source": "packages/ai/src/video.vibe",
+    "imports": [
+      "./generation.js",
+      "./media-model.js",
+      "./route/media.js",
+      "./video-client.js"
+    ]
+  },
+  {
+    "source": "packages/codemode/src/interpreter/execute.vibe",
+    "imports": [
+      "../codemode.js",
+      "../tool-runtime.js"
+    ]
+  },
+  {
+    "source": "packages/core/src/aisdk.vibe",
+    "imports": [
+      "./tool/runtime.js"
+    ]
+  },
+  {
+    "source": "packages/core/src/config.vibe",
+    "imports": [
+      "./config/integration.js"
+    ]
+  },
+  {
+    "source": "packages/core/src/config/plugin/command.vibe",
+    "imports": [
+      "../../agent.js",
+      "../../session/subagent-job.js"
+    ]
+  },
+  {
+    "source": "packages/core/src/environment/local.vibe",
+    "imports": [
+      "./driver.js"
+    ]
+  },
+  {
+    "source": "packages/core/src/environment/memory.vibe",
+    "imports": [
+      "./driver.js"
+    ]
+  },
+  {
+    "source": "packages/core/src/file-access.vibe",
+    "imports": [
+      "./session/error.js",
+      "./tool.js"
+    ]
+  },
+  {
+    "source": "packages/core/src/filesystem/location-watcher.vibe",
+    "imports": [
+      "./location-watcher-policy.js"
+    ]
+  },
+  {
+    "source": "packages/core/src/formatter.vibe",
+    "imports": [
+      "./formatter/builtins.js"
+    ]
+  },
+  {
+    "source": "packages/core/src/instance.vibe",
+    "imports": [
+      "./agent.js",
+      "./command.js",
+      "./file-mutation.js",
+      "./generate.js",
+      "./image.js",
+      "./instance/service.js",
+      "./location-lifecycle.js",
+      "./plugin/hooks.js",
+      "./plugin/instance.js",
+      "./reference/instructions.js",
+      "./session/compaction.js",
+      "./tool.js",
+      "./usage-limits.js",
+      "./voice.js"
+    ]
+  },
+  {
+    "source": "packages/core/src/job.vibe",
+    "imports": [
+      "./kv.js"
+    ]
+  },
+  {
+    "source": "packages/core/src/model.vibe",
+    "imports": [
+      "./aisdk-native.js"
+    ]
+  },
+  {
+    "source": "packages/core/src/models-dev.vibe",
+    "imports": [
+      "./aisdk-native.js",
+      "./app.js",
+      "./kv.js",
+      "./models-dev/v1.js"
+    ]
+  },
+  {
+    "source": "packages/core/src/permission.vibe",
+    "imports": [
+      "./agent.js",
+      "./permission/saved.js",
+      "./plugin/hooks.js",
+      "./session/error.js"
+    ]
+  },
+  {
+    "source": "packages/core/src/plugin.vibe",
+    "imports": [
+      "./kv.js",
+      "./plugin/host.js",
+      "./plugin/service.js"
+    ]
+  },
+  {
+    "source": "packages/core/src/plugin/provider/azure.vibe",
+    "imports": [
+      "../../app.js",
+      "../internal.js",
+      "./configured.js"
+    ]
+  },
+  {
+    "source": "packages/core/src/plugin/provider/chatgpt.vibe",
+    "imports": [
+      "../../app.js",
+      "../internal.js",
+      "./configured.js"
+    ]
+  },
+  {
+    "source": "packages/core/src/plugin/provider/cloudflare-ai-gateway.vibe",
+    "imports": [
+      "./configured.js"
+    ]
+  },
+  {
+    "source": "packages/core/src/plugin/provider/cloudflare-workers-ai.vibe",
+    "imports": [
+      "./configured.js"
+    ]
+  },
+  {
+    "source": "packages/core/src/plugin/provider/digitalocean.vibe",
+    "imports": [
+      "../../app.js",
+      "../internal.js"
+    ]
+  },
+  {
+    "source": "packages/core/src/plugin/provider/github-copilot.vibe",
+    "imports": [
+      "../../agent.js",
+      "../../app.js",
+      "../internal.js"
+    ]
+  },
+  {
+    "source": "packages/core/src/plugin/provider/gitlab.vibe",
+    "imports": [
+      "../../app.js",
+      "../internal.js"
+    ]
+  },
+  {
+    "source": "packages/core/src/plugin/provider/google-vertex.vibe",
+    "imports": [
+      "./configured.js"
+    ]
+  },
+  {
+    "source": "packages/core/src/plugin/provider/modal.vibe",
+    "imports": [
+      "../internal.js"
+    ]
+  },
+  {
+    "source": "packages/core/src/plugin/provider/openai.vibe",
+    "imports": [
+      "../../app.js",
+      "../internal.js",
+      "./configured.js"
+    ]
+  },
+  {
+    "source": "packages/core/src/plugin/provider/opencode.vibe",
+    "imports": [
+      "../../app.js",
+      "../../config/integration.js",
+      "../../config/plugin/provider.js"
+    ]
+  },
+  {
+    "source": "packages/core/src/plugin/provider/sap-ai-core.vibe",
+    "imports": [
+      "./sdk-factory.js"
+    ]
+  },
+  {
+    "source": "packages/core/src/plugin/provider/snowflake-cortex.vibe",
+    "imports": [
+      "../../app.js",
+      "./configured.js"
+    ]
+  },
+  {
+    "source": "packages/core/src/plugin/provider/xai.vibe",
+    "imports": [
+      "../../app.js"
+    ]
+  },
+  {
+    "source": "packages/core/src/plugin/supervisor.vibe",
+    "imports": [
+      "./instance.js",
+      "./internal.js",
+      "./sdk.js",
+      "./update.js"
+    ]
+  },
+  {
+    "source": "packages/core/src/provider.vibe",
+    "imports": [
+      "./aisdk-native.js"
+    ]
+  },
+  {
+    "source": "packages/core/src/repository-cache.vibe",
+    "imports": [
+      "./kv.js"
+    ]
+  },
+  {
+    "source": "packages/core/src/session/blob.vibe",
+    "imports": [
+      "./stored.js"
+    ]
+  },
+  {
+    "source": "packages/core/src/session/context.vibe",
+    "imports": [
+      "../agent.js",
+      "../codemode/instructions.js",
+      "../mcp/instructions.js",
+      "../reference/instructions.js",
+      "../tool.js",
+      "./error.js"
+    ]
+  },
+  {
+    "source": "packages/core/src/session/diff.vibe",
+    "imports": [
+      "./error.js"
+    ]
+  },
+  {
+    "source": "packages/core/src/session/execution.vibe",
+    "imports": [
+      "../instance/service.js",
+      "./run-coordinator.js",
+      "./runner/index.js"
+    ]
+  },
+  {
+    "source": "packages/core/src/session/generate.vibe",
+    "imports": [
+      "../instance/service.js",
+      "../model-retry.js",
+      "../plugin/service.js",
+      "./error.js"
+    ]
+  },
+  {
+    "source": "packages/core/src/session/history.vibe",
+    "imports": [
+      "./error.js",
+      "./stored.js"
+    ]
+  },
+  {
+    "source": "packages/core/src/session/inbox.vibe",
+    "imports": [
+      "./stored.js"
+    ]
+  },
+  {
+    "source": "packages/core/src/session/instructions.vibe",
+    "imports": [
+      "./error.js"
+    ]
+  },
+  {
+    "source": "packages/core/src/session/model-request.vibe",
+    "imports": [
+      "../app.js",
+      "../plugin/hooks.js",
+      "../tool.js",
+      "../tool/plugin/question.js"
+    ]
+  },
+  {
+    "source": "packages/core/src/session/model-transport.vibe",
+    "imports": [
+      "../effect/app-node-platform.js"
+    ]
+  },
+  {
+    "source": "packages/core/src/session/move.vibe",
+    "imports": [
+      "../instance/service.js",
+      "./error.js",
+      "./runner/index.js"
+    ]
+  },
+  {
+    "source": "packages/core/src/session/projector.vibe",
+    "imports": [
+      "./message-updater.js",
+      "./stored.js"
+    ]
+  },
+  {
+    "source": "packages/core/src/session/prompt.vibe",
+    "imports": [
+      "../image.js",
+      "../plugin/hooks.js",
+      "../plugin/service.js",
+      "./error.js",
+      "./stored.js"
+    ]
+  },
+  {
+    "source": "packages/core/src/session/revert.vibe",
+    "imports": [
+      "../instance/service.js",
+      "./error.js"
+    ]
+  },
+  {
+    "source": "packages/core/src/session/runner/llm.vibe",
+    "imports": [
+      "../../effect/app-node-platform.js",
+      "../../location-lifecycle.js",
+      "../compaction.js",
+      "../error.js",
+      "./index.js",
+      "./retry.js"
+    ]
+  },
+  {
+    "source": "packages/core/src/session/runner/model.vibe",
+    "imports": [
+      "../../agent.js"
+    ]
+  },
+  {
+    "source": "packages/core/src/session/runner/publish-llm-event.vibe",
+    "imports": [
+      "../../tool.js",
+      "../../tool/runtime.js"
+    ]
+  },
+  {
+    "source": "packages/core/src/session/runner/step.vibe",
+    "imports": [
+      "../../tool.js",
+      "../../tool/plugin/question.js",
+      "../error.js",
+      "./retry.js"
+    ]
+  },
+  {
+    "source": "packages/core/src/session/session.vibe",
+    "imports": [
+      "../instance/service.js",
+      "./error.js",
+      "./shell.js",
+      "./skill.js"
+    ]
+  },
+  {
+    "source": "packages/core/src/session/store.vibe",
+    "imports": [
+      "./error.js",
+      "./info.js"
+    ]
+  },
+  {
+    "source": "packages/core/src/session/title.vibe",
+    "imports": [
+      "../effect/app-node-platform.js"
+    ]
+  },
+  {
+    "source": "packages/core/src/session/transfer.vibe",
+    "imports": [
+      "../app.js"
+    ]
+  },
+  {
+    "source": "packages/core/src/shell.vibe",
+    "imports": [
+      "./file-retention.js",
+      "./plugin/hooks.js",
+      "./session/environment.js"
+    ]
+  },
+  {
+    "source": "packages/core/src/tool-output.vibe",
+    "imports": [
+      "./file-retention.js",
+      "./tool.js"
+    ]
+  },
+  {
+    "source": "packages/core/src/tool/mcp.vibe",
+    "imports": [
+      "../tool.js"
+    ]
+  },
+  {
+    "source": "packages/core/src/tool/plugin/subagent.vibe",
+    "imports": [
+      "../../agent.js",
+      "../../session/subagent-completion.js",
+      "../../session/subagent-job.js"
+    ]
+  },
+  {
+    "source": "packages/core/src/websearch.vibe",
+    "imports": [
+      "./kv.js"
+    ]
+  },
+  {
+    "source": "packages/core/src/wellknown.vibe",
+    "imports": [
+      "./kv.js"
+    ]
+  },
+  {
+    "source": "packages/core/src/workspace.vibe",
+    "imports": [
+      "./environment/driver.js"
+    ]
+  },
+  {
+    "source": "packages/core/src/workspace/driver.vibe",
+    "imports": [
+      "../environment/driver.js"
+    ]
+  },
+  {
+    "source": "packages/core/src/worktree/git.vibe",
+    "imports": [
+      "./directory.js"
+    ]
+  },
+  {
+    "source": "packages/http-recorder/src/http/recorder.vibe",
+    "imports": [
+      "../cassette/model.js",
+      "../redaction/redactor.js",
+      "./matching.js",
+      "./model.js"
+    ]
+  },
+  {
+    "source": "packages/http-recorder/src/replay/state.vibe",
+    "imports": [
+      "../cassette/model.js"
+    ]
+  },
+  {
+    "source": "packages/plugin-browser/src/connection.vibe",
+    "imports": [
+      "./rpc.js"
+    ]
+  },
+  {
+    "source": "packages/plugin-browser/src/proxy.vibe",
+    "imports": [
+      "./rpc.js"
+    ]
+  },
+  {
+    "source": "packages/plugin-browser/src/tunnel.vibe",
+    "imports": [
+      "./rpc.js"
+    ]
+  },
+  {
+    "source": "packages/plugin/src/gui/builtin.vibe",
+    "imports": [
+      "./host-apis.js",
+      "./main.js"
+    ]
+  },
+  {
+    "source": "packages/plugin/src/promise/adapter.vibe",
+    "imports": [
+      "../effect/plugin.js",
+      "../effect/tool.js",
+      "../permission.js",
+      "./tool.js"
+    ]
+  }
+]

@@ -4,7 +4,7 @@ import { Effect } from "effect"
 import { ChildProcess, ChildProcessSpawner } from "effect/process"
 import { CrossSpawnSpawner } from "@opencode/util/cross-spawn-spawner"
 import { LayerNode } from "@opencode/util/effect/layer-node"
-import { EnvironmentUnavailable } from "../src/environment/unavailable"
+import { EnvironmentUnavailable } from "../src/environment/unavailable.vibe"
 import {
   execDefaults,
   Failed,

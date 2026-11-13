@@ -1,6 +1,6 @@
 import { expect, test } from "bun:test"
 import { OpenApi } from "effect/http-api"
-import { ClientApi } from "../src/client.js"
+import { ClientApi } from "../src/client.vibe"
 
 test("the OpenAPI document keeps string pattern constraints from protocol schemas", () => {
   const patterns = new Set<string>()

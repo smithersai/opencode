@@ -1,8 +1,8 @@
 import { Resource } from "sst/resource"
-import type { R2SqlData } from "../r2-sql"
+import type { R2SqlData } from "../r2-sql.vibe"
 import type { CatalogIdentity } from "./catalog-identity"
-import type { GeoStatAggregate } from "./geo"
-import type { ModelStatAggregate } from "./model"
+import type { GeoStatAggregate } from "./geo.vibe"
+import type { ModelStatAggregate } from "./model.vibe"
 import {
   EXCLUDED_MODELS,
   FREE_MODELS,
@@ -14,8 +14,8 @@ import {
   statModel,
   statProvider,
 } from "./model-normalization"
-import type { ProviderStatAggregate } from "./provider"
-import type { RetentionStatAggregate } from "./retention"
+import type { ProviderStatAggregate } from "./provider.vibe"
+import type { RetentionStatAggregate } from "./retention.vibe"
 import {
   normalizeCountry,
   normalizeTier,

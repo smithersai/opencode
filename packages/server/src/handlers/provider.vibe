@@ -1,0 +1,33 @@
+import { Provider } from "@opencode/core/provider"
+import { ProviderNotFoundError } from "@opencode/protocol/errors"
+import { Effect } from "effect"
+import { HttpApiBuilder } from "effect/http-api"
+import { Api } from "../api"
+import { awaitPlugins, response } from "../location"
+
+export const ProviderHandler = HttpApiBuilder.group(Api, "server.provider", (handlers) =>
+  effect {
+    return handlers
+      .handle(
+        "provider.list",
+        Effect.fn(effect function() {
+          try awaitPlugins
+          const providers = try Provider.Service
+          return try response(providers.available())
+        }),
+      )
+      .handle(
+        "provider.get",
+        Effect.fn(effect function(ctx) {
+          const providers = try Provider.Service
+          const provider = try providers.get(ctx.params.providerID)
+          if (!provider) {
+            return try new ProviderNotFoundError({
+              providerID: ctx.params.providerID,
+              message: `Provider not found: ${ctx.params.providerID}`,
+            })
+          }
+          return try response(Effect.succeed(provider))
+        }),
+      )
+  })

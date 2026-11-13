@@ -14,7 +14,11 @@
   "exports": {
     "./vite-host": "./dev/host.js",
     "./run": "./src/run/index.ts",
-    "./server-process": "./src/server-process.ts"
+    "./server-process": {
+      "types": "./src/server-process.d.vibe.ts",
+      "vibelang-source": "./src/server-process.vibe",
+      "default": "./.vibelang/js/src/server-process.js"
+    }
   },
   "scripts": {
     "build": "bun run script/build.ts",
@@ -24,7 +28,7 @@
     "dev": "bun run src/index.ts",
     "test": "bun test --timeout 30000 --only-failures",
     "typecheck": "bun check --no-script -b",
-    "typecheck:tsc": "tsc -b"
+    "typecheck:tsc": "vibelang -b"
   },
   "dependencies": {
     "@agentclientprotocol/sdk": "1.6.0",
@@ -52,7 +56,8 @@
     "tree-sitter-bash": "0.25.0",
     "tree-sitter-powershell": "0.25.10",
     "web-tree-sitter": "0.25.10",
-    "ws": "8.21.0"
+    "ws": "8.21.0",
+    "vibelang-runtime": "file:../../.vibelang-toolchain/0.0.14-pre.d955d06c6696/tarballs/vibelang-runtime-0.0.14-pre.d955d06c6696.tgz"
   },
   "devDependencies": {
     "@opencode/script": "workspace:*",
@@ -83,11 +88,22 @@
     "@parcel/watcher-win32-x64": "2.5.1",
     "solid-refresh": "0.6.3",
     "vite": "catalog:",
-    "vite-plugin-solid": "catalog:"
+    "vite-plugin-solid": "catalog:",
+    "vibelang": "file:../../.vibelang-toolchain/0.0.14-pre.d955d06c6696/tarballs/vibelang-0.0.14-pre.d955d06c6696.tgz",
+    "vibelang-vite": "file:../../.vibelang-toolchain/0.0.14-pre.d955d06c6696/tarballs/vibelang-vite-0.0.14-pre.d955d06c6696.tgz",
+    "vibelang-unplugin": "file:../../.vibelang-toolchain/0.0.14-pre.d955d06c6696/tarballs/vibelang-unplugin-0.0.14-pre.d955d06c6696.tgz",
+    "fast-check": "catalog:"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/anomalyco/opencode.git",
     "directory": "packages/cli"
+  },
+  "imports": {
+    "#vibelang/emitted/src/version": {
+      "types": "./src/version.ts",
+      "vibelang-source": "./src/version.ts",
+      "default": "./.vibelang/js/src/version.js"
+    }
   }
 }

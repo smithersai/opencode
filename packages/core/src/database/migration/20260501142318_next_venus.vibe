@@ -1,0 +1,13 @@
+import type { DatabaseMigration } from "../migration.js"
+
+const migration: DatabaseMigration.Migration = {
+  id: "20260501142318_next_venus",
+  up(tx) {
+    return effect {
+      try tx.run(`ALTER TABLE \`session\` ADD \`agent\` text;`)
+      try tx.run(`ALTER TABLE \`session\` ADD \`model\` text;`)
+    }
+  },
+}
+
+export default migration

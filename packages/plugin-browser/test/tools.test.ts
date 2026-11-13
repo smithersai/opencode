@@ -2,8 +2,8 @@ import { expect, test } from "bun:test"
 import { rm } from "node:fs/promises"
 import { basename, dirname } from "node:path"
 import { Effect } from "effect"
-import { Browser } from "../src/rpc.js"
-import { BrowserFiles } from "../src/files.js"
+import { Browser } from "../src/rpc.vibe"
+import { BrowserFiles } from "../src/files.vibe"
 import { BrowserTools } from "../src/tools.js"
 
 const tabID = Browser.TabID.make(`tab_${crypto.randomUUID()}`)

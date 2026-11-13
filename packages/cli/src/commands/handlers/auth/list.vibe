@@ -1,0 +1,63 @@
+module platform {
+  export { EOL } from "node:os"
+
+  export const writeError = (...args: Parameters<typeof process.stderr.write>) => process.stderr.write(...args)
+
+  export const setExitCode = (code: typeof process.exitCode) => (process.exitCode = code)
+
+  export const writeOutput = (...args: Parameters<typeof process.stdout.write>) => process.stdout.write(...args)
+}
+
+import { setExitCode, writeError, writeOutput } from platform
+import { EOL } from platform
+import { Effect } from "effect"
+import { Commands } from "../../commands.ts"
+import { Runtime } from "../../../framework/runtime"
+import { createClient, loadIntegrations } from "./shared"
+import { errorMessage } from "../../../util/error"
+
+export default Runtime.handler(Commands.commands.auth.commands.list, (input) =>
+  list(input).pipe(
+    Effect.catch((error) =>
+      Effect.sync(() => {
+        writeError(errorMessage(error) + EOL)
+        setExitCode(1)
+      })
+    ),
+  ))
+
+const list = Effect.fn("cli.auth.list")(effect function(input) {
+  const client = try createClient()
+  const integrations = (try loadIntegrations(client)).filter((integration) => integration.connections.length > 0)
+  if (input.format === "json") {
+    void (try ((args: Parameters<typeof writeOutput>) => Effect.try(() => writeOutput(...args)).pipe(Effect.orDie))([
+      JSON.stringify(
+        integrations.map((integration) => ({
+          id: integration.id,
+          name: integration.name,
+          connections: integration.connections,
+        })),
+        null,
+        2,
+      ) + EOL,
+    ]))
+    return
+  }
+  const rows = integrations.flatMap((integration) =>
+    integration.connections.map((connection) => ({
+      integration: integration.name,
+      source: connection.type === "credential" ? connection.label : connection.name,
+      type: connection.type === "credential" ? "stored" : "environment",
+    }))
+  )
+  if (rows.length === 0) {
+    void (try ((args: Parameters<typeof writeOutput>) => Effect.try(() => writeOutput(...args)).pipe(Effect.orDie))([
+      "No authenticated integrations" + EOL,
+    ]))
+    return
+  }
+  const width = Math.max(...rows.map((row) => row.integration.length)) + 2
+  void (try ((args: Parameters<typeof writeOutput>) => Effect.try(() => writeOutput(...args)).pipe(Effect.orDie))([
+    rows.map((row) => row.integration.padEnd(width) + row.source.padEnd(28) + row.type).join(EOL) + EOL,
+  ]))
+})

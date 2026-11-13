@@ -6,7 +6,7 @@ import { NodeFileSystem, NodePath } from "@effect/platform-node"
 import { sql } from "drizzle-orm"
 import { Effect, Layer } from "effect"
 import { openDatabase } from "./database"
-import { importLegacyStores } from "./legacy"
+import { importLegacyStores } from "./legacy.vibe"
 
 const now = new Date("2026-07-01T00:00:00.000Z")
 

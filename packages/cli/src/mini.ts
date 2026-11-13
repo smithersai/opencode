@@ -6,7 +6,7 @@ import { setTimeout } from "node:timers/promises"
 import { readStdin } from "./util/io"
 import { createMiniHost, INTERACTIVE_INPUT_ERROR, usingInteractiveStdin } from "./mini-host"
 import { parseSessionTargetModel, resolveSessionTarget, type SessionTargetPreparation } from "./session-target"
-import { Env } from "./env"
+import { Env } from "./env.ts"
 
 export type MiniCommandInput = {
   server: {

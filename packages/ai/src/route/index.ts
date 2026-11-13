@@ -16,24 +16,24 @@ export type {
   EndpointCompactOptions,
   TriggerCompactOptions,
 } from "./client.js"
-export * from "./executor.js"
-export { Auth } from "./auth.js"
-export { AuthOptions } from "./auth-options.js"
+export * from "./executor.vibe"
+export { Auth } from "./auth.vibe"
+export { AuthOptions } from "./auth-options.vibe"
 export { Endpoint } from "./endpoint.js"
-export { MediaRoute } from "./media.js"
-export { MediaProtocol } from "./media-protocol.js"
-export { Framing } from "./framing.js"
-export { Protocol } from "./protocol.js"
-export { HttpTransport, WebSocketTransport } from "./transport/index.js"
-export * as Transport from "./transport/index.js"
+export { MediaRoute } from "./media.vibe"
+export { MediaProtocol } from "./media-protocol.vibe"
+export { Framing } from "./framing.vibe"
+export { Protocol } from "./protocol.vibe"
+export { HttpTransport, WebSocketTransport } from "./transport/index.vibe"
+export * as Transport from "./transport/index.vibe"
 export { ProviderShared } from "../protocols/shared.js"
-export { classifyProviderFailure } from "../provider-error.js"
+export { classifyProviderFailure } from "../provider-error.vibe"
 export { mergeHttpOptions } from "../schema/index.js"
-export type { Definition as AuthShape, AuthInput, Credential, CredentialError } from "./auth.js"
-export type { ApiKeyMode, AuthOverride, ProviderAuthOption } from "./auth-options.js"
+export type { Definition as AuthShape, AuthInput, Credential, CredentialError } from "./auth.vibe"
+export type { ApiKeyMode, AuthOverride, ProviderAuthOption } from "./auth-options.vibe"
 export type { Definition as EndpointFn, EndpointInput } from "./endpoint.js"
-export type { Definition as FramingDef } from "./framing.js"
-export type { Protocol as ProtocolDef } from "./protocol.js"
+export type { Definition as FramingDef } from "./framing.vibe"
+export type { Protocol as ProtocolDef } from "./protocol.vibe"
 export type {
   ChannelCheckpoint,
   ChannelCreate,
@@ -51,4 +51,4 @@ export type {
   WebSocketChannelExecutor,
   WebSocketConnector,
   WebSocketRequest,
-} from "./transport/index.js"
+} from "./transport/index.vibe"

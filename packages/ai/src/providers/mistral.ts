@@ -1,6 +1,6 @@
 import type { ProviderPackage } from "../provider-package.js"
-import { MistralChat } from "../protocols/mistral-chat.js"
-import { AuthOptions, type ProviderAuthOption } from "../route/auth-options.js"
+import { MistralChat } from "../protocols/mistral-chat.vibe"
+import { AuthOptions, type ProviderAuthOption } from "../route/auth-options.vibe"
 import type { RouteDefaultsInput } from "../route/client.js"
 import { ProviderID, type ModelID } from "../schema/index.js"
 

@@ -9,9 +9,11 @@
 import path from "node:path"
 import { mkdtempSync } from "node:fs"
 import os from "node:os"
+import vibelang from "vibelang-unplugin/bun"
 
 const outdir = mkdtempSync(path.join(os.tmpdir(), "opencode-workerd-probe-"))
 const result = await Bun.build({
+  plugins: [vibelang()],
   entrypoints: [path.join(import.meta.dir, "../src/workerd.ts")],
   conditions: ["workerd"],
   target: "node",
